@@ -1,0 +1,11 @@
+# Final Standards closure
+
+Reviewed frozen delta `52a95ca4870873e1abe221daca76bf3d244d6055...d4b542bebe9fc520c61c0fa02c8d84c67ad9cd9a`. Earlier Standards reports remain intact.
+
+**The previously reported P3 hard violation is closed.** The only product-code change replaces `data.failure.message` in `SimpleStrategyPanel.tsx:24` with the fixed Chinese guidance “本次策略未完成。请核对原任务、研究依据与服务配置，并保留原提交记录。” The main alert can no longer expose the native English error or filesystem paths through that field. Original failure records, receipts, unknown-state handling and artifact/release guards are unchanged.
+
+**No unresolved documented hard violations or P1/P2 Standards findings remain within the reviewed scope.** No new heuristic finding. The initial optional naming/readability observation remains nonblocking and outside this wording fix.
+
+Evidence reviewed: independent failure-UI report at `.scratch/seven-stage-static-goal-20261111/design/simple-strategy-failure-independent-ui.md`, its byte-identical committed copy `docs/development/evidence/simple-strategy-20261112/failure-ui-review.txt`, and the evidence-source manifest. The copied report SHA256 is `022f284bf21a8df07b6a88df81808ed9ec2113c9a4b0da7752dfb82e927aee46`; the alert screenshot SHA256 is `32dfa63a333165bf43d7868f89a6260f3a263787c38b1e52ec8e3b6040c463a8`. Both match the manifest and appear in both explicit repository/upload lists. The independent report records the exact Chinese alert, original English error retained in GET data, unknown/empty-artifact status retained, equal before/after projects and zero POSTs.
+
+Static closure only: no case, browser, service, database, model call, test or Git mutation rerun. The full check predates this final wording; parent-reported separate type/build and actual UI support the wording change. Accurate-head CI remains a separate receipt. This closes Standards feedback only, not the full business goal or downstream owner-to-copy work.
