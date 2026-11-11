@@ -1,0 +1,81 @@
+{
+  "scope": "New synthetic local PDF UI/engineering and independent review evidence; no business approval; runtime SQLite/originals retained locally",
+  "baseline": "97f13ab562b231f689afb9536e658a2cd3c2558c",
+  "files": [
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/UI-RECEIPT-SUMMARY.json",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/pdf-r1/UI-RECEIPT.json",
+      "projection": "Selected original receipt fields; upload request bodies and complete runtime project remain local",
+      "sourceSha256": "463d5614539b8ad765ee96cd5268d0508545a796e0846143f5c7c3f928a461cf",
+      "sha256": "e11828cb559616519ba691ab7282dc519471ccccc98092eb0bb39ed348dafc1f",
+      "byteLength": 3382
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/http-independent-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/brief-extraction-http-independent-review.md",
+      "sha256": "0b0c5f00bff40ae8d69c0c273e575a567fb725587dc12826cbefab9278d95806",
+      "byteLength": 8935
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/ui-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/pdf-ui-review.md",
+      "sha256": "87402b7a316df535248bfe984e5eaeaf58ca0f7878d4705dcc4cd91f77f41c72",
+      "byteLength": 8979
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/UI-INDEPENDENT-FINAL.json",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/pdf-independent-after-ui.json",
+      "sha256": "47af5c928c5c9f08b4c5d8e3ddc2397c256d9b322ee74cac247dc7d53994341e",
+      "byteLength": 18660
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/zero-pages-before-1280-light.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/pdf-independent-collapsed-1280-light.png",
+      "sha256": "84ac7dac37a20f97a0b973f6f44191cc6145651bfba0ccb443e24b911d8f5b74",
+      "byteLength": 245359
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/zero-pages-after-1280-light.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/pdf-independent-after-collapsed-1280-light.png",
+      "sha256": "0d70b652fa655e978c3396d0ca12602c6d306abb152a5957912fdaedfbbd9cc2",
+      "byteLength": 246810
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/expanded-after-910-dark.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/pdf-independent-after-expanded-910-dark.png",
+      "sha256": "ef38d081749db936ce801fc084c1901d818f5efef8d51ea37359cbad64ef97aa",
+      "byteLength": 517723
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/unparsed-before-1280-light.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/pdf-r1/before-1280-light.png",
+      "sha256": "18c30982dd954e72099aefc90f95209ed31dc99b123e42ce449937b37538b58b",
+      "byteLength": 237354
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/pdf-final-spec-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/pdf-final-spec-review.md",
+      "sha256": "fe477d54922ee5a1657265f24c9d2def54e14cb97dc0b1f888b5fe0de62f9587",
+      "byteLength": 1021
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/pdf-final-standards-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/pdf-final-standards-review.md",
+      "sha256": "8e6e41ef57faad3a038e652dcbfaaa674308f7c0b2dc1d064bc21f6b5145bafa",
+      "byteLength": 845
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/python-environment-fix-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/pdf-python-environment-fix-review.md",
+      "sha256": "82241f3aea4445cbb9be23acb8fb306e25e5326b75d6c5e934eb6bb4ed0784e5",
+      "byteLength": 3427
+    }
+  ],
+  "finalTwoAxisReview": {
+    "commit": "5af651db99cc04c2c52ee0a737c45a93b701bace",
+    "specFindings": 0,
+    "standardsFindings": 1,
+    "status": "Original fixed-commit Spec passed; Standards venv P2 repaired and independently reverified in a separate report",
+    "fixReview": "python-environment-fix-review.txt; independent 21/21 and old/new symlink venv probe"
+  }
+}

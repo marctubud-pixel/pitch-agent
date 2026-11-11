@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.4.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.5.1。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -39,7 +39,7 @@
 
 ## PDF原件子路径
 
-默认test:brief-http加入brief-intake-service与brief-original-http两组，使用自有小SQLite与原件fixture，覆盖未确认保存/读取/重开、同体恢复、跨项目/错版/损坏、字段与HTTP边界，仍不执行解析或模型。前端intakeHttp使用真实受限处理器与Blob，实际Chrome和独立只读UI另见[本轮核验](brief-originals-verification-20261111.md)。该PDF保存核验不覆盖读者运行；读者新工作包另见下节，策略仍待接。
+默认test:brief-http加入brief-intake-service与brief-original-http两组，使用自有小SQLite与原件fixture，覆盖未确认保存/读取/重开、同体恢复、跨项目/错版/损坏、字段与HTTP边界，原件子包当时不执行解析或模型。前端intakeHttp使用真实受限处理器与Blob，实际Chrome和独立只读UI另见[本轮核验](brief-originals-verification-20261111.md)。该PDF保存核验不覆盖读者运行；读者新工作包另见下节，策略仍待接。
 
 
 ## 研究读者回归
@@ -47,3 +47,15 @@
 `test:research-contract`覆盖预登记、完整正文、独立席位、原生调用、typed修订、逐项处置、同版复查、owner绑定、真实文件损坏及恢复。部分测试启动仅本机合成HTTP提供方；不访问真实模型或旧run。前端reader测试调用当前native处理器及新临时SQLite，验证原文SHA、回执、权限和丢响应同体恢复。
 
 实际Chrome及独立只读UI另留[核验记录](research-reader-verification-20261111.md)。范围包括理解通过的工程正例与仍待补的实际界面负例，不把测试数量或UI通过当成研究语义质量。全链包装/KV及PPT验收仍按总目标另做。
+
+## 本地PDF解析专项
+
+当前`test:brief-http`另含解析HTTP组。本地无专用Python环境时仍测原件/缺能力/旧卡及HTTP边界；真实解析专项明确skip。Application CI在独立虚拟环境安装固定PDF依赖并明确设置PITCH_PDF_TEST_PYTHON，真实专项不能以skip代替通过。指定环境后运行：
+
+```sh
+PITCH_PDF_TEST_PYTHON=/absolute/path/to/python3 npm run test:brief-http
+```
+
+指定但不能运行应FAIL，不能把skip计通过。真实专项涵盖partial/空页/no_text/UTF16、加密/非法/资源限制、原件与JSON哈希、同body/错body/换卡历史、失败显式重试和running未知零重发；仅新临时SQLite和已装本地工具。首claim永久中断尚无接管，不冒称所有恢复已完成。前端及Chrome实际范围单独按最终回执记录，后续全链与原生PPT专项不由此通过。
+
+`intake-python-environment.test.mjs`加入Brief/PDF组：标准无pip symlink venv通过.pth引用已装实际包，真实probe/mixed/UTF16与资源限制验证配置环境；直接Python、缺路径、调用中配置变动、symlink重定向/删除分别核受控结果。它不安装软件或修改系统环境。原realpath后spawn基础解释器的失败反例保留；CI同样必须以配置venv运行。

@@ -1,3 +1,4 @@
+import {createLocalPdfExtractor} from './intake-pdf.mjs';
 import {createIntakeRuntime} from './intake-runtime.mjs';
 import {cardHash} from './intake-contract.mjs';
 import {digest, requireIntake as need, DOCUMENT_LIMITS} from './intake-document-store.mjs';
@@ -8,11 +9,13 @@ export const BRIEF_ORIGINAL_PROTOCOL = 'brief-original-v1';
 const fields = ['commandId', 'expectedRevision', 'originalFilename', 'taskCardId', 'taskCardHash'];
 const validId = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,199}$/.test(value);
 
-// Storage only: the existing runtime registers the PDF parser job but never executes it here.
-export function createBriefIntakeService({store, rootDir}) {
+// Upload remains storage-only. Explicit local parsing claims only its selected registered PDF job.
+export function createBriefIntakeService({store, rootDir, intakeConfiguration = null}) {
   need(store && typeof store.read === 'function' && typeof store.command === 'function', 'INVALID_REQUEST', 'A project store is required');
   need(typeof rootDir === 'string' && rootDir.trim(), 'INVALID_REQUEST', 'An explicit original storage root is required');
-  const intake = createIntakeRuntime({store, root: rootDir, providers: {}, bindings: {}});
+  const intake = createIntakeRuntime({store, root: rootDir, providers: {}, bindings: {}, configuration: intakeConfiguration});
+  const parser = createLocalPdfExtractor(intakeConfiguration);
+  let parserCapability = {available:false,configured:Boolean(intakeConfiguration),reason:'PDF_CAPABILITY_NOT_CHECKED'};
   const project = id => {const p = store.read(id); requireResearchWorkflow(p); return p;};
   const card = p => p.taskCards.find(item => item.id === p.activeTaskCardId);
   function operation(p, documentId) {
@@ -23,7 +26,8 @@ export function createBriefIntakeService({store, rootDir}) {
   }
   function metadata(p, document, saved) {
     need(document.projectId === p.id && document.origin?.kind === 'upload' && document.kind === 'pdf'
-      && document.raw?.mediaType === 'application/pdf', 'DOCUMENT_CORRUPT', 'Project original identity changed');
+      && document.raw?.mediaType === 'application/pdf' && document.raw.sha256 === saved.request.sha256
+      && document.raw.byteLength === saved.request.byteLength && document.origin.originalFilename === saved.request.originalFilename, 'DOCUMENT_CORRUPT', 'Project original identity changed');
     const binding = saved.request, active = card(p);
     return {
       id: document.id, projectId: p.id, originalFilename: document.origin.originalFilename,
@@ -43,10 +47,17 @@ export function createBriefIntakeService({store, rootDir}) {
     need(current && equal(current, loaded.document) && equal(operation(p, documentId), saved), 'DOCUMENT_CORRUPT', 'Original registration changed during read');
     return {document: metadata(p, current, saved), bytes: loaded.bytes};
   }
+  async function extraction(projectId, documentId) {
+      const revision=project(projectId).revision;
+      const original = await checked(projectId, documentId), loaded = await intake.checkedDocument(projectId, documentId);
+      need(project(projectId).revision===revision,'REVISION_CONFLICT','Project changed while reading extraction');
+      return {document: original.document, extraction: loaded.extraction, extractionRef: loaded.document.extraction ?? null,
+        scope: 'local_pdf_extraction', modelReading:'not_verified', humanAdoption:'not_verified'};
+  }
   return Object.freeze({
     capability: () => ({protocol: BRIEF_ORIGINAL_PROTOCOL, originalStorage: true,
       mediaTypes: ['application/pdf'], maxBytes: DOCUMENT_LIMITS.bytes, maxDocuments: DOCUMENT_LIMITS.documents,
-      localExtractionAvailable: false, modelExtractionAvailable: false,
+      localExtractionAvailable: parserCapability.available, localExtraction: structuredClone(parserCapability), modelExtractionAvailable: false,
       imageUploadAvailable: false, imageUploadReason: 'Existing PNG/JPEG pixel validation is not configured on this restricted surface'}),
     async upload(projectId, request, bytes) {
       need(request && typeof request === 'object' && !Array.isArray(request)
@@ -98,6 +109,41 @@ export function createBriefIntakeService({store, rootDir}) {
       for (const id of ids) documents.push((await checked(projectId, id)).document);
       need(project(projectId).revision === p.revision, 'REVISION_CONFLICT', 'Project changed while listing originals');
       return {projectId, revision: p.revision, documents};
+    },
+    async extractionCapability() {parserCapability = await parser.capability(); return structuredClone(parserCapability);},
+    extraction,
+    async extract(projectId, request, context) {
+      const keys=['documentId','taskCardId','taskCardHash','commandId','expectedRevision','action'];
+      need(request&&typeof request==='object'&&!Array.isArray(request)&&Object.keys(request).length===keys.length&&keys.every(k=>Object.hasOwn(request,k))
+        &&validId(request.documentId)&&validId(request.commandId)&&validId(request.taskCardId)&&/^[a-f0-9]{64}$/.test(request.taskCardHash)
+        &&Number.isSafeInteger(request.expectedRevision)&&request.expectedRevision>=0&&['extract','retry_local'].includes(request.action),'INVALID_REQUEST','Exact bounded PDF extraction request required');
+      let p=project(projectId);const saved=Object.hasOwn(p.processedCommands,request.commandId)?JSON.parse(p.processedCommands[request.commandId]):null;
+      const registration=operation(p,request.documentId), job=p.jobs.find(j=>j.id===registration.response.jobId);
+      need(job&&job.purpose==='intake_document'&&job.stage==='intake'&&job.task.kind==='pdf'&&job.documentId===request.documentId
+        &&equal(job.binding,{providerId:'local-pdf',model:'pdf-extraction-v1',role:'document-parser'}),'DOCUMENT_CORRUPT','Exact registered local PDF job required');
+      if(saved){
+        need((saved.kind==='intake-start'&&saved.jobId===job.id&&equal(saved.request,request))
+          ||(saved.kind==='intake-retry-local'&&saved.request.jobId===job.id&&equal(saved.request,{...request,jobId:job.id})),'COMMAND_ID_REUSED','Command ID belongs to another extraction request');
+        if(saved.kind==='intake-retry-local'&&job.status==='queued'){
+          const current=await checked(projectId,request.documentId);need(current.document.isCurrent,'STALE_TASK_CARD','Historical recovery cannot dispatch for a changed task');
+          parserCapability=await parser.capability();need(parserCapability.available,'PDF_EXTRACTOR_UNAVAILABLE',parserCapability.reason??'Local parser unavailable');
+          need(project(projectId).revision===p.revision,'REVISION_CONFLICT','Project changed during recovery preflight');
+          await intake.execute(projectId,job.id,{localRequest:request,localAdmissionRevision:p.revision});p=project(projectId);
+        }
+        return {...await extraction(projectId,request.documentId),jobId:job.id,revision:p.revision,receipt:{commandId:request.commandId,replayed:true}};
+      }
+      need(p.revision===request.expectedRevision,'REVISION_CONFLICT','Project changed');
+      const loaded=await checked(projectId,request.documentId);
+      need(loaded.document.isCurrent&&registration.request.taskCardId===request.taskCardId&&registration.request.taskCardHash===request.taskCardHash,'STALE_TASK_CARD','Only the current task original may be parsed');
+      need(request.action==='extract'?job.status==='queued'&&job.attempts.length===0:['failed','blocked','awaiting_reconciliation'].includes(job.status),'LOCAL_EXTRACTION_STATE','Use the original command or explicit local recovery');
+      parserCapability=await parser.capability();need(parserCapability.available,'PDF_EXTRACTOR_UNAVAILABLE',parserCapability.reason??'Local parser unavailable');
+      p=project(projectId);need(p.revision===request.expectedRevision,'REVISION_CONFLICT','Project changed during parser preflight');
+      if(request.action==='retry_local'){
+        need(context?.actorType==='human','HUMAN_REQUIRED','Explicit local recovery requires the actual operator');
+        await intake.humanAction(projectId,'intake-retry-local',{...request,jobId:job.id},context);
+        await intake.execute(projectId,job.id,{localRequest:request,localAdmissionRevision:request.expectedRevision+1});
+      }else await intake.execute(projectId,job.id,{localRequest:request});
+      return {...await extraction(projectId,request.documentId),jobId:job.id,revision:project(projectId).revision,receipt:{commandId:request.commandId,replayed:false}};
     },
     read: checked,
   });

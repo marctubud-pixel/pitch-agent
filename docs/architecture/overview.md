@@ -200,3 +200,7 @@ qingyu-themes/preview.ts绑定当前策略展示稿ID并复用既有只读依据
 R4 发布器另提供折叠的工程参考记录统计，数据来自同一案例的参考素材元数据。它位于原生提案之外，不表示市场或消费者数据。发布实现的固定身份和独立审查见[采用记录](../../.scratch/dexian-final-run/PUBLICATION-ADOPTION.json)。
 
 [最终HTTP工具](../../.scratch/dexian-final-run/verify-static-complete.mjs)将验证原件资源、重复GET和同根重开；[产物收集器](../../.scratch/dexian-final-run/collect-static-delivery.py)核对静态PPT/PDF、页面图和文字。两工具当前只完成代码/早期准入检查，实际整案尚未执行，视觉溢出仍需实际页面检查。
+
+## 当前PDF解析接缝
+
+本地HTTP的指定PDF解析继续复用旧intake，服务端原claim与实际原件/抽取JSON保持同一store；当前应用资料行的可选originalDocuments接口显示分页结果和缺能力/历史/未知状态，不创建新的业务阶段。合同见[本地解析](../development/brief-extraction.md)，模型读取、人工采用和自动采集分别接入。

@@ -1,0 +1,55 @@
+{
+  "id": "project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963",
+  "url": "http://127.0.0.1:4432/#/p/project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963/proposal/brief",
+  "scope": "Real Chrome/current source/API/new SQLite/actual local Python; no model, human adoption, task confirmation or business approval",
+  "sameBody": true,
+  "extractionBodies": [
+    "{\"documentId\":\"document-94fae9f8c148e19fe7c966cd60144f2568e55cd15c347e74188333b518b2ea99\",\"taskCardId\":\"project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963:scope:1\",\"taskCardHash\":\"fcc5772927a70faae61801de1e45fe97341d1e05407a39da051bb41e07f08525\",\"action\":\"extract\",\"commandId\":\"cmd-ddb5b523-3273-4e3c-8222-b9205d1b8ff4\",\"expectedRevision\":3}",
+    "{\"documentId\":\"document-94fae9f8c148e19fe7c966cd60144f2568e55cd15c347e74188333b518b2ea99\",\"taskCardId\":\"project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963:scope:1\",\"taskCardHash\":\"fcc5772927a70faae61801de1e45fe97341d1e05407a39da051bb41e07f08525\",\"action\":\"extract\",\"commandId\":\"cmd-ddb5b523-3273-4e3c-8222-b9205d1b8ff4\",\"expectedRevision\":3}",
+    "{\"documentId\":\"document-de5e22055eefcbbc9210891e8ae046a3030bd0b5d69b2af81c78e866ddc20f98\",\"taskCardId\":\"project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963:scope:1\",\"taskCardHash\":\"fcc5772927a70faae61801de1e45fe97341d1e05407a39da051bb41e07f08525\",\"action\":\"extract\",\"commandId\":\"cmd-f8610945-b388-4b5f-9e5b-d0b1aab4f5ea\",\"expectedRevision\":5}",
+    "{\"documentId\":\"document-033587f9ed37afac46edc1cd1dabc8bac0290619b8f5dda8d803000a24ee9692\",\"taskCardId\":\"project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963:scope:1\",\"taskCardHash\":\"fcc5772927a70faae61801de1e45fe97341d1e05407a39da051bb41e07f08525\",\"action\":\"extract\",\"commandId\":\"cmd-aeffc465-699c-42d0-a361-4b761ce64348\",\"expectedRevision\":7}"
+  ],
+  "originalSha256": "5b7bc3fc471b7c44fce7867b81da84a8ea3a06d74d2167d62b7d73a9f99f3767",
+  "results": [
+    {
+      "documentId": "document-94fae9f8c148e19fe7c966cd60144f2568e55cd15c347e74188333b518b2ea99",
+      "status": "partial",
+      "extractionRef": {
+        "sha256": "119a496035749642be48d7ef9e24000176776096276efa742e433f869b14de00",
+        "byteLength": 2535
+      },
+      "pages": 2
+    },
+    {
+      "documentId": "document-de5e22055eefcbbc9210891e8ae046a3030bd0b5d69b2af81c78e866ddc20f98",
+      "status": "password_required",
+      "extractionRef": {
+        "sha256": "5dd8ecee5ae49e9665f95197bd8bb9dafc47db3a802c3a3681180207f45b6fd0",
+        "byteLength": 1220
+      },
+      "pages": 0
+    },
+    {
+      "documentId": "document-033587f9ed37afac46edc1cd1dabc8bac0290619b8f5dda8d803000a24ee9692",
+      "status": "invalid",
+      "extractionRef": {
+        "sha256": "7b94a761b8013095178770aad15e94192c68c3d53f24c92c6205d93a5a9b283e",
+        "byteLength": 1224
+      },
+      "pages": 0
+    }
+  ],
+  "attemptCount": 3,
+  "confirmations": 0,
+  "light": {
+    "viewport": 1280,
+    "scrollWidth": 1280
+  },
+  "dark": {
+    "viewport": 910,
+    "scrollWidth": 910
+  },
+  "errors": [],
+  "sourceSha256": "463d5614539b8ad765ee96cd5268d0508545a796e0846143f5c7c3f928a461cf",
+  "projection": "Selected original receipt fields; upload request bodies and complete runtime project remain local"
+}

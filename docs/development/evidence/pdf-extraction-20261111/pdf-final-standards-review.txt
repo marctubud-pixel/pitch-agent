@@ -1,0 +1,5 @@
+Standards独立审查：固定97f13ab…5af651d，51文件；按仓库/Brief/工具及TS规则核新增差异，未重审全部历史。
+
+硬违例：[P2] `.github/workflows/application.yml:29`创建默认symlink venv并在其中装包，但`intake-pdf.mjs:20,25`先realpath再spawn，会启动基础Python，绕过venv依赖。违反`testing.md`与`configuration.md`要求CI所选独立环境真实运行解析专项。新临时CLI venv实证：同一marker从配置路径可见，realpath路径不可见；脚本和输出在`/tmp/design/pdf-ci-venv-probe.{py,jsonl}`。建议venv加`--copies`或保留配置路径启动，仅用realpath核身份。未运行远程CI。
+
+Smell判断：未发现需独立列项的新smell；原有大模块与前后端各自边界核验不算新增重复。其余硬违例未检出；不代签业务/UI通过。

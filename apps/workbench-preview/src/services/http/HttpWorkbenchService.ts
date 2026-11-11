@@ -1,3 +1,5 @@
+import type {OriginalDocumentsService} from '../../domain/originalDocuments';
+import {originalDocumentState,extractionReceipt} from './originalDocumentsProjection';
 import {readerState,readerReport,readerExcerpts} from './researchReaderProjection';
 import type {ResearchReaderService} from '../../domain/researchReader';
 import type {BrandResourceUploadPolicy} from '../../domain/proposal';
@@ -31,7 +33,7 @@ export async function mapHttpError(response: Response | null, _cause?: unknown):
   if (!response) return new ServiceError('network', '无法连接简报服务，请检查本地服务。', {retryable: true});
   let message = `服务请求失败（${response.status}）。`, code = '';
   try { const body = object(await response.json()), error = body.error ? object(body.error) : body; code = text(error.code); } catch { /* Non-JSON error. */ }
-  const messages: Record<string, string> = {RESEARCH_QUESTIONS_NOT_PREREGISTERED:'当前研究稿未使用预登记问题，请重新生成研究稿。', RESEARCH_QUESTIONS_REQUIRED:'请先登记当前简报的研究问题。', RESEARCH_READER_UNCONFIGURED:'独立读者尚未配置，本次未调用。', READER_OUTCOME_UNSETTLED:'该读者已有待核或已保存结果，请核对原记录。', RESEARCH_READER_ORIGINAL_CHANGED:'读者报告原件核对失败，请保留文件与原始记录。', RESEARCH_R7_READER_REQUIRED:'独立读者回环尚未完成，研究交接与正式放行仍待核。',SEVEN_STAGE_ROUTE_REQUIRED:'当前阶段尚未接入此执行入口。',RESEARCH_EXECUTION_UNAVAILABLE: '研究执行未配置或仍处于暂停状态，本次未启动。', WORKFLOW_VERSION_REQUIRED: '旧项目保持原运行身份，不能直接采用新阶段规则。', REVISION_CONFLICT: '项目已更新，请保留当前草稿并核对新版本。', COMMAND_ID_REUSED: '同一命令标识已用于其他内容，未覆盖原记录。', NOT_FOUND: '未找到此项目或修订。', COMMAND_FORBIDDEN: '当前简报入口不允许此操作。', INVALID_REQUEST: '请求内容不符合简报合同，未保存。', CROSS_ORIGIN: '请求来源未获本地简报服务允许。'};
+  const messages: Record<string, string> = {PDF_EXTRACTOR_UNAVAILABLE:'本地PDF解析器不可用，请检查本机配置与资源监测条件。', LOCAL_EXTRACTION_STATE:'当前解析任务不能重新启动，请核对原提交和已保存结果。', STALE_TASK_CARD:'资料属于历史任务卡，请先核对当前简报。', DOCUMENT_CORRUPT:'资料原件或解析文件核对失败，请保留原件与原请求。', HUMAN_REQUIRED:'本地重试需要实际操作人发起。', RESEARCH_QUESTIONS_NOT_PREREGISTERED:'当前研究稿未使用预登记问题，请重新生成研究稿。', RESEARCH_QUESTIONS_REQUIRED:'请先登记当前简报的研究问题。', RESEARCH_READER_UNCONFIGURED:'独立读者尚未配置，本次未调用。', READER_OUTCOME_UNSETTLED:'该读者已有待核或已保存结果，请核对原记录。', RESEARCH_READER_ORIGINAL_CHANGED:'读者报告原件核对失败，请保留文件与原始记录。', RESEARCH_R7_READER_REQUIRED:'独立读者回环尚未完成，研究交接与正式放行仍待核。',SEVEN_STAGE_ROUTE_REQUIRED:'当前阶段尚未接入此执行入口。',RESEARCH_EXECUTION_UNAVAILABLE: '研究执行未配置或仍处于暂停状态，本次未启动。', WORKFLOW_VERSION_REQUIRED: '旧项目保持原运行身份，不能直接采用新阶段规则。', REVISION_CONFLICT: '项目已更新，请保留当前草稿并核对新版本。', COMMAND_ID_REUSED: '同一命令标识已用于其他内容，未覆盖原记录。', NOT_FOUND: '未找到此项目或修订。', COMMAND_FORBIDDEN: '当前简报入口不允许此操作。', INVALID_REQUEST: '请求内容不符合简报合同，未保存。', CROSS_ORIGIN: '请求来源未获本地简报服务允许。'};
   if (messages[code]) message = messages[code];
   if (code === 'RESEARCH_EXECUTION_UNAVAILABLE') return new ServiceError('unavailable', message);
   if (code === 'COMMAND_ID_REUSED') return new ServiceError('idempotency_mismatch', message);
@@ -84,7 +86,8 @@ export class HttpWorkbenchService implements WorkbenchService {
             if (p.activeTaskCardId !== card.id) throw new ServiceError('conflict', '原提交已记入历史，当前简报已有新稿。请查看保留内容与当前任务卡，再结束此记录。', {conflict: {expectedRevision: Number(body.expectedRevision), currentRevision: p.revision, changedBy: p.audit.at(-1)?.actorId ?? null, changeSummary: '原任务卡已被新稿替代。'}});
           }
           let historicalReader=false;
-          if (pending.kind === 'upload_original') await this.verifyOriginalReceipt(p, object(result.value), body);
+          if(pending.kind==='extract_original'){extractionReceipt(p,result.value,body);const state=await originalDocumentState(result.value,p,text(body.documentId),this.nativeCapability.originals);historicalReader=!state.current;}
+          else if (pending.kind === 'upload_original') await this.verifyOriginalReceipt(p, object(result.value), body);
           else if (!['create_project','save_brief','confirm_brief'].includes(pending.kind)) historicalReader=this.verifyResearchReceipt(p, object(object(result.value).receipt), body, pending.path);
           journal.clear(pending.commandId); this.emit();
           if(historicalReader)throw new ServiceError('conflict',READER_HISTORY_MESSAGE);
@@ -173,6 +176,25 @@ export class HttpWorkbenchService implements WorkbenchService {
       throw error;
     }
   }
+  readonly originalDocuments:OriginalDocumentsService={
+    get:async(id,resourceId)=>{
+      const before=await this.snapshot(id),original=registeredOriginals(before).find(d=>d.resource?.id===resourceId||d.id===resourceId);
+      if(!original)throw new ServiceError('not_found','没有该项目的PDF原件。');
+      const value=(await this.request('GET',`/projects/${encodeURIComponent(id)}/documents/${encodeURIComponent(original.id)}/extraction`)).value,p=parseSnapshot(value);mapProject(p);
+      if(p.id!==id)throw new ServiceError('validation','PDF原件项目不一致。');
+      return originalDocumentState(value,p,original.id,this.nativeCapability.originals);
+    },
+    extract:async(id,input,meta)=>{
+      await this.snapshot(id,meta.expectedRevision);
+      if(object(this.nativeCapability.originals).localExtractionAvailable!==true)throw new ServiceError('unavailable','本地PDF解析尚未配置，本次未发送。');
+      const body={...input,commandId:meta.commandId,expectedRevision:meta.expectedRevision},path=`/projects/${encodeURIComponent(id)}/documents/${encodeURIComponent(input.documentId)}/extraction`;
+      const value=(await this.write(path,body,'解析PDF原件')).value;
+      let p:Snapshot;try{p=parseSnapshot(value);mapProject(p);if(p.id!==id)throw Error('Wrong project');}catch{throw new ServiceError('response_lost','解析响应不完整，原请求仍保留。',{outcomeUnknown:true});}
+      extractionReceipt(p,value,body);const data=await originalDocumentState(value,p,input.documentId,this.nativeCapability.originals);this.completed(meta.commandId);
+      if(!data.current)throw new ServiceError('conflict',READER_HISTORY_MESSAGE);
+      return {data,revision:p.revision,commandId:meta.commandId,replayed:object(object(value).receipt).replayed===true};
+    },
+  };
   async originalUploadPolicy(): Promise<BrandResourceUploadPolicy> {
     try {
       await this.connect(); const capability = originalCapability(this.nativeCapability.originals);
@@ -190,7 +212,7 @@ export class HttpWorkbenchService implements WorkbenchService {
     const receipt = object(value.receipt), document = object(value.document);
     const saved = registeredOriginals(p).find(d => d.id === receipt.documentId && d.operation.commandId === body.commandId);
     if (!saved || !saved.resource || receipt.commandId !== body.commandId || typeof receipt.replayed !== 'boolean' || document.id !== saved.id || document.sha256 !== saved.sha256
-      || document.storage !== 'original_saved' || document.localExtractionStatus !== 'queued' || document.modelReading !== 'not_verified' || document.humanAdoption !== 'not_verified') throw new ServiceError('response_lost', '原件回执未绑定实际保存记录，请保留原提交核对。', {outcomeUnknown: true});
+      || document.storage !== 'original_saved' || document.localExtractionStatus !== (saved.document.extraction?'retained':saved.document.status) || document.modelReading !== 'not_verified' || document.humanAdoption !== 'not_verified') throw new ServiceError('response_lost', '原件回执未绑定实际保存记录，请保留原提交核对。', {outcomeUnknown: true});
     const request = object(saved.operation.request);
     for (const key of ['commandId', 'expectedRevision', 'originalFilename', 'taskCardId', 'taskCardHash']) if (request[key] !== body[key]) throw new ServiceError('response_lost', '原件回执与原提交不同，请核对。', {outcomeUnknown: true});
     if (JSON.stringify(request.metadata) !== JSON.stringify(body.metadata)) throw new ServiceError('response_lost', '原件元数据回执不一致。', {outcomeUnknown: true});

@@ -77,7 +77,7 @@ function frontendOrigin(value) {
   return value;
 }
 
-export function createBriefServer({dbPath, port = 4182, origin, researchOptions} = {}) {
+export function createBriefServer({dbPath, port = 4182, origin, researchOptions, intakeConfiguration = null} = {}) {
   if (typeof dbPath !== 'string' || !dbPath.trim()) throw new Error('An explicit dbPath is required');
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('port must be between 1 and 65535');
   const allowedOrigin = frontendOrigin(origin);
@@ -85,11 +85,18 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
   let research, intake;
   try {
     research = createResearchService({rootDir: resolve(`${dbPath}.research`), ...researchOptions, store});
-    intake = createBriefIntakeService({store, rootDir: resolve(`${dbPath}.originals`)});
+    intake = createBriefIntakeService({store, rootDir: resolve(`${dbPath}.originals`), intakeConfiguration});
   } catch(error) {store.close();throw error;}
   const result = async project => {
     const native = projectView(project), rw = project.workflow ? await research.workflowSnapshot(project) : null;
     return {project: layoutPublicProject(project), view: {...native, proposalWorkflow: workflowView(project,{researchWorkflow:rw}), researchWorkflow:rw}};
+  };
+  const extractionResult = async (id, documentId, receipt = {}) => {
+    const p = store.read(id);
+    if (receipt.revision !== undefined && receipt.revision !== p.revision) throw new HttpError(409, 'REVISION_CONFLICT', 'Project changed after local extraction');
+    const extracted = await intake.extraction(id, documentId), snapshot = await result(p);
+    if (store.read(id).revision !== p.revision) throw new HttpError(409, 'REVISION_CONFLICT', 'Project changed while reading local extraction');
+    return {...snapshot, ...receipt, ...extracted, revision:p.revision};
   };
   const requests = new Set();
   let closing = false, shutdown, closeResult;
@@ -116,10 +123,10 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
         res.setHeader('Vary', 'Origin');
       }
       const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/(?:commands|sources|research-workflow|research-jobs|research-verification|research-readiness|research-handoffs|research-release|research-questions|research-readers|research-reader-reconciliations|research-reader-dispositions|research-revisions)|\/artifacts\/([A-Za-z0-9:._%-]+)\/content)?$/.exec(url.pathname);
-      const documentMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/documents(?:\/([A-Za-z0-9-]+)\/original)?$/.exec(url.pathname);
+      const documentMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/documents(?:\/([A-Za-z0-9-]+)\/(original|extraction))?$/.exec(url.pathname);
       const readerMatch=/^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/research-reader-reports\/([A-Za-z0-9-]+)$/.exec(url.pathname);
       const resource = projectMatch?.[2];
-      const methods = readerMatch ? ['GET'] : documentMatch ? documentMatch[2] ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
+      const methods = readerMatch ? ['GET'] : documentMatch ? documentMatch[3] === 'original' ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
       if (!methods.length) throw new HttpError(404, 'NOT_FOUND', 'Route not found');
       const revision = url.searchParams.get('revision');
       const targetMethod = req.method === 'OPTIONS' ? req.headers['access-control-request-method'] : req.method;
@@ -132,11 +139,21 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
       }
       if (!methods.includes(req.method)) throw new HttpError(405, 'METHOD_NOT_ALLOWED', 'Method not allowed');
       if (url.pathname === '/api/v1/capabilities') {
+        await intake.extractionCapability();
         response(res, 200, {apiVersion: 'v1', surface: research.capability().executionAllowed ? 'research-v1' : 'brief-v1', workflowVersion:WORKFLOW_VERSION, executionAvailable: research.capability().executionAllowed, research:research.capability(), originals:intake.capability(), commands: Object.keys(commandFields)}); return;
       }
       if(readerMatch){response(res,200,await research.readerReport(readerMatch[1],readerMatch[2]));return;}
       if (documentMatch) {
         const id = documentMatch[1];
+        if (documentMatch[3] === 'extraction') {
+          const documentId = documentMatch[2];
+          if (req.method === 'GET') {response(res,200,await extractionResult(id,documentId));return;}
+          const body = await jsonBody(req);
+          fields(body,['documentId','taskCardId','taskCardHash','commandId','expectedRevision','action']);
+          if (body.documentId !== documentId) invalid('Document ID must match the extraction route');
+          const receipt = await intake.extract(id,body,humanContext());
+          response(res,200,await extractionResult(id,documentId,receipt));return;
+        }
         if (req.method === 'GET' && !documentMatch[2]) {response(res,200,await intake.list(id));return;}
         if (req.method === 'GET') {
           const {document,bytes} = await intake.read(id,documentMatch[2]);
@@ -234,7 +251,7 @@ async function main() {
   try {
     const options = {}, args = process.argv.slice(2);
     for (let i = 0; i < args.length; i += 2) {
-      if (!['--db', '--port', '--origin', '--research-config', '--research-execution'].includes(args[i]) || args[i + 1] === undefined || Object.hasOwn(options, args[i])) throw new Error('Use --db PATH [--port PORT] [--origin HTTP_LOOPBACK_ORIGIN]');
+      if (!['--db', '--port', '--origin', '--research-config', '--research-execution', '--pdf-python'].includes(args[i]) || args[i + 1] === undefined || Object.hasOwn(options, args[i])) throw new Error('Use --db PATH [--port PORT] [--origin HTTP_LOOPBACK_ORIGIN] [--pdf-python ABS_PATH]');
       options[args[i]] = args[i + 1];
     }
     let researchOptions;
@@ -246,7 +263,8 @@ async function main() {
       if(resolve(configured.dbPath)!==resolve(options['--db']))throw new Error('Research configuration must name the same explicit isolated database');
       researchOptions={...configured,executionAllowed:options['--research-execution']==='enabled'};
     }
-    const server = createBriefServer({researchOptions,dbPath: options['--db'], port: options['--port'] === undefined ? 4182 : Number(options['--port']), origin: options['--origin']});
+    const intakeConfiguration=options['--pdf-python']===undefined?null:{pythonBinary:options['--pdf-python']};
+    const server = createBriefServer({researchOptions,intakeConfiguration,dbPath: options['--db'], port: options['--port'] === undefined ? 4182 : Number(options['--port']), origin: options['--origin']});
     server.once('error', error => { console.error(error.message); server.close(() => { process.exitCode = 1; }); });
     server.listen(() => console.log(`Brief service available at http://127.0.0.1:${server.address().port}`));
     for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => server.close(error => { if (error) process.exitCode = 1; }));

@@ -29,19 +29,27 @@ export function registeredOriginals(p: Snapshot): RegisteredOriginal[] {
   });
 }
 export function bridgeStorageJob(p: Snapshot, job: Record<string, unknown>): boolean {
-  if (p.workflowVersion !== 'proposal-seven-v1' || job.stage !== 'intake' || job.purpose !== 'intake_document' || job.status !== 'queued'
-    || !Array.isArray(job.attempts) || job.attempts.length !== 0 || (job.outputVersionIds !== undefined && (!Array.isArray(job.outputVersionIds) || job.outputVersionIds.length !== 0))) return false;
+  if (p.workflowVersion !== 'proposal-seven-v1' || job.stage !== 'intake' || job.purpose !== 'intake_document'
+    || !Array.isArray(job.attempts)) return false;
   const binding = object(job.binding), task = object(job.task);
   if (binding.providerId !== 'local-pdf' || binding.model !== 'pdf-extraction-v1' || binding.role !== 'document-parser' || task.kind !== 'pdf' || task.id !== job.documentId) return false;
-  const originals = registeredOriginals(p).filter(d => d.id === job.documentId && object(d.operation.response).jobId === job.id && d.document.status === 'queued' && !d.document.extraction);
-  return originals.length === 1 && p.jobs.filter(j => j.documentId === job.documentId).length === 1;
+  const originals = registeredOriginals(p).filter(d => d.id === job.documentId && object(d.operation.response).jobId === job.id);
+  if(originals.length!==1||p.jobs.filter(j=>j.documentId===job.documentId).length!==1)return false;
+  const document=originals[0].document;
+  if(job.status==='queued'&&!job.attempts.length)return document.status==='queued'&&!document.extraction;
+  if(!['queued','running','succeeded','failed','blocked'].includes(text(job.status))||!job.attempts.length)return false;
+  const commands=Object.values(p.processedCommands).map(raw=>{try{return object(JSON.parse(text(raw)));}catch{return {};}});
+  if(!commands.some(c=>c.kind==='intake-start'&&c.jobId===job.id&&c.request&&object(c.request).documentId===job.documentId&&object(c.request).taskCardId===originals[0].taskCardId&&object(c.request).taskCardHash===originals[0].taskCardHash))return false;
+  if(job.attempts.some(raw=>{const a=object(raw);return typeof a.id!=='string'||a.dispatchStarted!==false||a.httpAttemptLocator!==undefined||a.resultEvidence!==undefined||a.requestEvidence!==undefined;}))return false;
+  if(job.status==='succeeded')return document.status==='ready'&&Boolean(document.extraction)&&JSON.stringify(job.outputVersionIds)===JSON.stringify([document.id])&&object(job.attempts.at(-1)).status==='succeeded'&&JSON.stringify(object(job.attempts.at(-1)).documentSnapshot)===JSON.stringify(document);
+  return job.status==='running'?document.status==='queued'&&object(job.attempts.at(-1)).status==='running':job.status==='queued'?document.status==='queued':document.status==='failed'&&object(job.attempts.at(-1)).status===job.status;
 }
 export function originalCapability(value: unknown) {
   if (value === undefined) throw new ServiceError('unavailable', '资料原件存储尚未接通。');
   const c = object(value);
   if (c.protocol !== 'brief-original-v1' || c.originalStorage !== true || !Array.isArray(c.mediaTypes) || !c.mediaTypes.includes('application/pdf')
     || integer(c.maxBytes) < 1 || integer(c.maxBytes) > 12 * 1024 * 1024 || integer(c.maxDocuments) < 1
-    || c.localExtractionAvailable !== false || c.modelExtractionAvailable !== false) return invalid('资料原件存储尚未接通。');
+    || typeof c.localExtractionAvailable !== 'boolean' || c.modelExtractionAvailable !== false) return invalid('资料原件存储尚未接通。');
   return {maxBytes: integer(c.maxBytes), maxDocuments: integer(c.maxDocuments), accept: c.mediaTypes.filter(type => type === 'application/pdf').join(',')};
 }
 export async function validateOriginalUploads(resources: BrandResourceUpload[], capability: ReturnType<typeof originalCapability>) {

@@ -1998,12 +1998,12 @@
       "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
     },
     "apps/workbench-preview/src/domain/service.ts": {
-      "sha256": "59c57c8a878dde72f90f715016096cad23509a204f386725e95377621ae5490d",
-      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
+      "sha256": "e24b75aba29121dd2820e9412394e39956251086ca47f0174e5ea3c9aec759b1",
+      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "sha256": "febe15dc18cc2ec679078d432890e6d919bfaab38e1ddc128684c8948f26ee8a",
-      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准；独立复审修正同卡旧修订实际输出/旧问题计划历史回执分类，已知历史与unknown分别保留"
+      "sha256": "1d4d7674508291685ca3872d31aa2074fec3a74d8861f93295bc76acb112f658",
+      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
@@ -2014,8 +2014,8 @@
       "sha256": "5af8ad8684f2e4a8a3956b6429fda5a9c6047d54defcdf9801ea2625aa88fbad"
     },
     "apps/workbench-preview/src/collaboration/protectServices.ts": {
-      "sha256": "63ed6a0bedc98012fe48a47ce46539679ae4020d82042d8c56096444423b9561",
-      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
+      "sha256": "1da760bd5e13f12328362f0ccc782aa4e60b912405a508a0b54cbd5feb9689d4",
+      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
     },
     "apps/workbench-preview/src/domain/models.ts": {
       "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
@@ -2038,8 +2038,8 @@
       "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
     },
     "apps/workbench-preview/src/collaboration/types.ts": {
-      "sha256": "90e7f4125999577dc50cb8a2a6f5a16a0bd9c6bd95e16f3cbac328233d9e355b",
-      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
+      "sha256": "01283be8e7ac3f0aac47df226966fe8bb4d5cd8f4a5b84baf4ec56e6abed4749",
+      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
     },
     "apps/workbench-preview/src/i18n/messages/zh-CN.ts": {
       "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
@@ -2074,8 +2074,8 @@
       "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/proposal/BrandResources.tsx": {
-      "sha256": "d38e98eb0a5fb56210a882cf44f173c4a9581e9bbd8648c55f68a4c1875cbddb",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "9e77e09648b6e26120afbfd034929b32167d0217c6bdb3b2c12b95a1a6bfad2b",
+      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
     }
   }
 }

@@ -24,6 +24,7 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const uploadPolicy = raw.proposals.getBrandResourceUploadPolicy?.bind(raw.proposals);
   const recovery = service.briefRecovery;
   const reader = service.researchReader;
+  const originals = service.originalDocuments;
   const recoveryAction = (): TeamAction => {
     const pending = recovery?.getPending();
     if (!pending) throw new ServiceError('validation', '没有待核对的简报提交。');
@@ -37,6 +38,10 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const workbench: WorkbenchService = {
     get environment() { return service.environment; },
     briefRecovery,
+    originalDocuments: originals ? {
+      get:(id,resourceId)=>originals.get(id,resourceId),
+      extract:(id,input,meta)=>store.run({kind:'manage'},actor=>originals.extract(id,input,{...meta,actor})),
+    }:undefined,
     researchReader: reader ? {
       excerpts: (id,artifactId) => reader.excerpts(id,artifactId),
       revise: (id,artifactId,meta) => store.run({kind:'workflow'},actor=>reader.revise(id,artifactId,{...meta,actor})),

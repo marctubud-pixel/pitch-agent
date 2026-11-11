@@ -17,12 +17,13 @@ export function createLocalPdfExtractor(configuration){
  const limits={...PDF_LIMITS,...configuration?.limits};
  async function invoke(bytes,probe,signal){
   requireIntake(configuration,'PDF_EXTRACTOR_UNAVAILABLE','Configure moduleConfigs.intake with an absolute Python binary');
-  const binary=await realpath(configuration.pythonBinary);
+  const configuredBinary=configuration.pythonBinary;
+  const binary=await realpath(configuredBinary);
   const binaryStat=await stat(binary);requireIntake(binaryStat.isFile()&&binaryStat.size<=64*1024*1024,'PDF_EXTRACTOR_UNAVAILABLE','Python executable unavailable');
   const script=await readFile(scriptPath);requireIntake(script.length<65536,'PDF_EXTRACTOR_UNAVAILABLE','Owned PDF worker exceeds code bound');
-  const identity={binary, configuredBinary:configuration.pythonBinary,binarySha256:digest(await readFile(binary)),scriptSha256:digest(script)};
+  const identity={binary, configuredBinary,binarySha256:digest(await readFile(binary)),scriptSha256:digest(script)};
   const result=await new Promise((resolveResult,reject)=>{
-   const child=spawn(binary,['-I','-B','-c',script.toString('utf8'),JSON.stringify(limits),...(probe?['--probe']:[])],{shell:false,stdio:['pipe','pipe','pipe'],env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'}});
+   const child=spawn(configuredBinary,['-I','-B','-c',script.toString('utf8'),JSON.stringify(limits),...(probe?['--probe']:[])],{shell:false,stdio:['pipe','pipe','pipe'],env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'}});
    const chunks=[];let size=0,errorBytes=0,reason=null,spawnError=null,exited=false,memorySamples=0,peakObservedRssBytes=0;
    child.once('exit',()=>{exited=true;});
    const stop=why=>{reason??=why;if(!exited)child.kill('SIGKILL');};
@@ -45,6 +46,9 @@ export function createLocalPdfExtractor(configuration){
    child.on('close',async(code,exitSignal)=>{clearTimeout(timer);clearInterval(memoryTimer);await sample;signal?.removeEventListener('abort',abort);if(spawnError)return reject(intakeError('PDF_EXTRACTOR_UNAVAILABLE','Could not start configured Python'));if(!memorySamples&&!reason)reason='memory_monitor_unavailable';resolveResult({code,exitSignal,reason,memorySamples,peakObservedRssBytes,stdout:Buffer.concat(chunks)});});
    child.stdin.end(bytes??Buffer.alloc(0));
   });
+  let unchanged=false;
+  try{unchanged=await realpath(configuredBinary)===binary&&digest(await readFile(binary))===identity.binarySha256;}catch{}
+  requireIntake(unchanged,'PDF_EXTRACTOR_ENVIRONMENT_CHANGED','Configured Python path or physical binary changed during execution');
   return {identity,...result};
  }
  return {

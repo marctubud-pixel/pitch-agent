@@ -1,3 +1,4 @@
+import {OriginalDocumentPanel} from './OriginalDocumentPanel';
 import { useRef, useState } from 'react';
 import { Download, FileText, Upload, X } from 'lucide-react';
 import { useProposals } from '../app/services';
@@ -106,13 +107,14 @@ export function BrandResourceList({ proposal }: { proposal: Proposal }) {
   return (
     <section className="brand-resources" aria-label={t('brand.title')} data-testid="brand-resources-readonly">
       <h2 className="pw-h3">{t('brand.title')}</h2>
-      <p className="small muted">{service.backing === 'connected' ? '保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。' : t('brand.referenceHint')}</p>
+      <p className="small muted">{service.backing === 'connected' ? '保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口。' : t('brand.referenceHint')}</p>
       <ul className="brand-files" data-testid="brand-resources-list">
         {resources.map((resource) => <li key={resource.id} className="brand-files__row" data-testid="brand-resource-row">
           <FileText size={18} aria-hidden="true" />
           <div className="brand-files__body">
             <p className="brand-files__name">{resource.fileName} <span className="small muted">{brandResourceSize(resource.size)}</span></p>
             {resource.note && <p className="small brand-files__description">{resource.note}</p>}
+            {service.backing==='connected'&&<OriginalDocumentPanel projectId={proposal.id} resourceId={resource.id}/>}
             {downloads[resource.id]?.error && <p className="field__error" role="alert">{downloads[resource.id].error}</p>}
           </div>
           <button type="button" className="btn btn--secondary btn--sm" disabled={downloads[resource.id]?.pending}
