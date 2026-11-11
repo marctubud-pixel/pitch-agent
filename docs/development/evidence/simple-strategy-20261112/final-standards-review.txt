@@ -1,0 +1,25 @@
+# Final Standards review — simple strategy
+
+Scope: frozen `359650601f992086b0825e9efc5d5d268dbfa387...6766324502ce6c82a3b060f1ecb24acd61aaf22a`; sole commit `67663245 feat: connect bounded three-block strategy and recovery UI`. Standards axis only; independent of Spec review. Pending working-tree evidence/manifests are outside this verdict.
+
+## Documented hard violations
+
+No actionable P1/P2 violation identified in the reviewed change. Applicable rules: root/module AGENTS, CONTRIBUTING, `docs/specs/{change-control,repository-scope,ui-system}.md`, `docs/development/{testing,git-and-recovery}.md`, `tools/AGENTS.md`, and the installed TypeScript best-practices/type-system-discipline skills. Tool-enforced formatting/type/manifest issues were not duplicated as findings.
+
+The change keeps current application ownership, explicit service-boundary permissions, unknown-result journals, immutable original bindings, and separate generation/review/acceptance labels. Architecture, configuration, contracts, registered versions/lock, default test entry and CI are updated. These observations do not certify the implementation against the originating business specification.
+
+## Heuristic observation — nonblocking
+
+P3, **Mysterious Name**, `tools/workbench/simple-strategy-service.mjs:25–27`:
+
+> `async function original(p,a)`
+>
+> `const j=producer(p,a),t=j?.attempts.at(-1),r=p.reconciliations?.find(r=>r.id===a.reconciliationId)`
+
+The new recovered-original validator combines job, attempt, reconciliation, command, audit and receipt identities in one long predicate. Names `j/t/r/c/a` make it expensive to check which authority each equality binds. Locally expand this predicate and name these values `producerJob`, `attempt`, `reconciliation`, `command`, and `artifact`; retain every comparison and existing tests. This is a readability suggestion, not a correctness defect or documented hard violation, and does not justify a wider refactor.
+
+## Evidence and limits
+
+Evidence: frozen Git diff; `tools/workbench/{simple-strategy-service,simple-strategy-http,seven-stage-strategy,project,executor,owner-edge}.mjs`; `apps/workbench-preview/src/services/http/{simpleStrategyProjection,HttpWorkbenchService,HttpProposalService,briefModels,briefRecovery}.ts`; `src/proposal/SimpleStrategyPanel.tsx`; `src/app/BriefRecoveryPanel.tsx`; corresponding committed tests and contract updates.
+
+Static read-only inspection; no tests, old runs, services, databases, model calls or Git mutations executed. Root-supplied full-check/UI results were not independently rerun. UI evidence copying remains pending and must be recorded separately. This verdict does not imply full-goal, remote-CI, real-model, owner-to-copy, or customer approval success.

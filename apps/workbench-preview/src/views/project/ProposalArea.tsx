@@ -42,6 +42,8 @@ const BACKING: Record<StageId, 'connected' | 'prototype'> = {
 
 export function ProposalArea({ proposal: p, stage }: { proposal: Proposal; stage: ActiveStageId }) {
   const t = useT();
+  const {service, proposals} = useServiceContext();
+  const connectedStrategy = stage === 'strategy' && proposals.backing === 'connected' && Boolean(service.simpleStrategy);
   const pid = p.workbenchId;
   const state = p.stages[stage];
   const i = ACTIVE_STAGES.indexOf(stage);
@@ -86,7 +88,7 @@ export function ProposalArea({ proposal: p, stage }: { proposal: Proposal; stage
               </div>
               <div className="pw-stage__meta">
                 <StatusPill status={state.status} />
-                <Backed as={BACKING[stage]} note={(stage === 'layout' || stage === 'delivery') && p.id === 'qingyu-pack' && p.layout === null ? '当前演练稿；本地终审与正式流程状态分别记录' : visualPreview ? '设计试稿预览，含构图探索与模拟样机；正式流程状态保持。' : p.id === 'qingyu-pack' && pid === 'qingyu' && p.type === 'packaging' && stage === 'strategy' && p.strategy === null ? '策略分析为定位建设与优先验证方向预览；未启动正式策略流程。' : stage === 'brief' || stage === 'research' ? t('pw.backing.partly') : undefined} />
+                <Backed as={connectedStrategy ? 'connected' : BACKING[stage]} note={connectedStrategy ? '策略正文与核验记录来自本地服务；负责人接收与后续文案尚待接线。' : (stage === 'layout' || stage === 'delivery') && p.id === 'qingyu-pack' && p.layout === null ? '当前演练稿；本地终审与正式流程状态分别记录' : visualPreview ? '设计试稿预览，含构图探索与模拟样机；正式流程状态保持。' : p.id === 'qingyu-pack' && pid === 'qingyu' && p.type === 'packaging' && stage === 'strategy' && p.strategy === null ? '策略分析为定位建设与优先验证方向预览；未启动正式策略流程。' : stage === 'brief' || stage === 'research' ? t('pw.backing.partly') : undefined} />
                 {/* While the stage waits, the status already says so; otherwise the checkpoint is a quiet note. */}
                 {isCheckpoint && state.status !== 'waiting_for_you' && (
                   <span className="pw-tag" data-tone="neutral">

@@ -1,3 +1,5 @@
+import type {SimpleStrategyService} from '../../domain/simpleStrategy';
+import {simpleStrategyState,simpleStrategyReceipt} from './simpleStrategyProjection';
 import type {ResearchAcquisitionService} from '../../domain/researchAcquisition';
 import {acquisitionState,acquisitionReceipt} from './researchAcquisitionProjection';
 import type {OriginalDocumentsService} from '../../domain/originalDocuments';
@@ -88,7 +90,8 @@ export class HttpWorkbenchService implements WorkbenchService {
             if (p.activeTaskCardId !== card.id) throw new ServiceError('conflict', '原提交已记入历史，当前简报已有新稿。请查看保留内容与当前任务卡，再结束此记录。', {conflict: {expectedRevision: Number(body.expectedRevision), currentRevision: p.revision, changedBy: p.audit.at(-1)?.actorId ?? null, changeSummary: '原任务卡已被新稿替代。'}});
           }
           let historicalReader=false;
-          if(['start_acquisition','step_acquisition','reconcile_acquisition'].includes(pending.kind)){historicalReader=acquisitionReceipt(result.value,p,body,pending.path);await acquisitionState(result.value,p);}
+          if(['continue_simple_strategy','verify_simple_strategy','reconcile_simple_strategy'].includes(pending.kind)){historicalReader=simpleStrategyReceipt(result.value,p,body,pending.path);await simpleStrategyState(result.value,p);}
+          else if(['start_acquisition','step_acquisition','reconcile_acquisition'].includes(pending.kind)){historicalReader=acquisitionReceipt(result.value,p,body,pending.path);await acquisitionState(result.value,p);}
           else if(pending.kind==='extract_original'){extractionReceipt(p,result.value,body);const state=await originalDocumentState(result.value,p,text(body.documentId),this.nativeCapability.originals);historicalReader=!state.current;}
           else if (pending.kind === 'upload_original') await this.verifyOriginalReceipt(p, object(result.value), body);
           else if (!['create_project','save_brief','confirm_brief'].includes(pending.kind)) historicalReader=this.verifyResearchReceipt(p, object(object(result.value).receipt), body, pending.path);
@@ -315,6 +318,18 @@ export class HttpWorkbenchService implements WorkbenchService {
     const target = p.artifacts.find(a => a.id === p.stages.find(s => s.stage === 'research')?.activeArtifactId && a.stage === 'research');
     if (!target || !Array.isArray(target.inputVersionIds) || !target.inputVersionIds.includes(p.activeTaskCardId) || p.stages.find(s => s.stage === 'research')?.status === 'stale') throw new ServiceError('not_eligible', '当前简报尚无有效研究产物，历史稿不能代替当前输入。');
     return target;
+  }
+  readonly simpleStrategy:SimpleStrategyService={
+    get:async id=>{await this.connect();const value=(await this.request('GET',`/projects/${encodeURIComponent(id)}/simple-strategy`)).value,p=parseSnapshot(value);if(p.id!==id)throw new ServiceError('validation','策略项目身份不一致。');mapProject(p);return simpleStrategyState(value,p);},
+    continue:(id,input,meta)=>this.simpleStrategyMutation(id,'continue',input,meta),
+    verify:(id,input,meta)=>this.simpleStrategyMutation(id,'verify',input,meta),
+    reconcile:(id,input,meta)=>this.simpleStrategyMutation(id,'reconcile',input,meta),
+  };
+  private async simpleStrategyMutation(id:string,operation:'continue'|'verify'|'reconcile',input:object,meta:CommandMeta){
+    await this.connect();const path=`/projects/${encodeURIComponent(id)}/simple-strategy/${operation}`,body={commandId:meta.commandId,expectedRevision:meta.expectedRevision,...input};
+    const value=(await this.write(path,body,'策略操作')).value;
+    try{const p=parseSnapshot(value);if(p.id!==id)throw Error('Wrong project');mapProject(p);const historical=simpleStrategyReceipt(value,p,body,path),data=await simpleStrategyState(value,p);this.completed(meta.commandId);if(historical)throw new ServiceError('conflict','原策略结果已核对为历史；未重新派发或将历史稿用于当前任务。');return {data,revision:p.revision,commandId:meta.commandId,replayed:object(object(value).receipt).replayed===true};}
+    catch(error){if(error instanceof ServiceError&&(error.outcomeUnknown||error.kind==='conflict'))throw error;throw new ServiceError('response_lost','策略回执核对不完整，请保留原提交。',{outcomeUnknown:true,retryable:true});}
   }
   readonly researchAcquisition: ResearchAcquisitionService = {
     get: async id => {

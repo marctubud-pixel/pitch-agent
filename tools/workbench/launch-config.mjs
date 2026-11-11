@@ -1,3 +1,4 @@
+import {STAGES} from './project.mjs';
 import {validateAcquisitionConfiguration} from './research-acquisition.mjs';
 import {validateResearchSearchProvider} from './research-search.mjs';
 import {validateIntakeConfiguration} from './intake-pdf.mjs';
@@ -86,8 +87,8 @@ export async function loadLaunchSettings({configPath,legacySettings={}}={}){
  for(const name of legacyNames)configNeed(!Object.hasOwn(legacySettings,name),`/environment/${name}`,'CONFLICTING_LEGACY_SETTING');
  const file=resolve(configPath),base=dirname(file),counter={bytes:0};const raw=await readJson(file,65536,counter,'/');
  configFields(raw,['schemaVersion','server','textProviders','bindings','creativeCalibrations','moduleConfigs','imageConfigPath','researchAcquisition','searchProviders']);configNeed(raw.schemaVersion==='workbench-launch-v1','/schemaVersion');
- configFields(raw.server,['port','dbPath','executionRoot','maxConcurrentJobs','uiPath'],'/server');
- const s=raw.server;configNeed(Number.isSafeInteger(s.port)&&s.port>=1&&s.port<=65535,'/server/port');configNeed(Number.isSafeInteger(s.maxConcurrentJobs??2)&&(s.maxConcurrentJobs??2)>=1&&(s.maxConcurrentJobs??2)<=8,'/server/maxConcurrentJobs');
+ configFields(raw.server,['port','dbPath','executionRoot','maxConcurrentJobs','uiPath','creationAuthorizedThrough'],'/server');
+ const s=raw.server;configNeed(s.creationAuthorizedThrough===undefined||typeof s.creationAuthorizedThrough==='string'&&Object.hasOwn(STAGES,s.creationAuthorizedThrough),'/server/creationAuthorizedThrough');configNeed(Number.isSafeInteger(s.port)&&s.port>=1&&s.port<=65535,'/server/port');configNeed(Number.isSafeInteger(s.maxConcurrentJobs??2)&&(s.maxConcurrentJobs??2)>=1&&(s.maxConcurrentJobs??2)<=8,'/server/maxConcurrentJobs');
  s.dbPath=pathAt(base,s.dbPath,'/server/dbPath');s.executionRoot=pathAt(base,s.executionRoot,'/server/executionRoot');if(s.uiPath!==undefined)s.uiPath=pathAt(base,s.uiPath,'/server/uiPath');
  const providers=raw.textProviders??{};configFields(providers,Object.keys(providers),'/textProviders');
  for(const [id,p]of Object.entries(providers)){
@@ -128,6 +129,6 @@ export function buildLaunchOptions(settings){
  }
  configNeed(settings.mode==='configured','/mode');
  const providers=Object.fromEntries(Object.entries(settings.textProviders).map(([id,p])=>[id,p.adapter==='workbench-model-http-v1'?Object.freeze({adapter:p.adapter,model:p.model,operatorConfig:p}):createCodexProvider({model:p.model,...(p.binary?{binary:p.binary}:{}),...(p.timeoutMs?{timeoutMs:p.timeoutMs}:{}),rootDir:join(settings.server.executionRoot,'provider',id)})]));
- return {launchConfiguration:settings,dbPath:settings.server.dbPath,port:settings.server.port,rootDir:settings.server.executionRoot,maxConcurrentJobs:settings.server.maxConcurrentJobs??2,...(settings.server.uiPath?{uiPath:settings.server.uiPath}:{}),providers,...(settings.researchAcquisition?{researchAcquisitionConfiguration:settings.researchAcquisition,searchProviders:settings.searchProviders}:{}),bindings:settings.bindings,creativeCalibrations:settings.creativeCalibrations,...Object.fromEntries(Object.entries(settings.moduleConfigs).map(([k,v])=>[optionNames[k],v])),imageProvider:loadImageProvider({config:settings.imageConfig,resolveCredential:name=>process.env[name]})};
+ return {launchConfiguration:settings,creationAuthorizedThrough:settings.server.creationAuthorizedThrough??'research',dbPath:settings.server.dbPath,port:settings.server.port,rootDir:settings.server.executionRoot,maxConcurrentJobs:settings.server.maxConcurrentJobs??2,...(settings.server.uiPath?{uiPath:settings.server.uiPath}:{}),providers,...(settings.researchAcquisition?{researchAcquisitionConfiguration:settings.researchAcquisition,searchProviders:settings.searchProviders}:{}),bindings:settings.bindings,creativeCalibrations:settings.creativeCalibrations,...Object.fromEntries(Object.entries(settings.moduleConfigs).map(([k,v])=>[optionNames[k],v])),imageProvider:loadImageProvider({config:settings.imageConfig,resolveCredential:name=>process.env[name]})};
 }
 export function legacyLaunchEnvironment(env){return Object.fromEntries(legacyNames.filter(key=>Object.hasOwn(env,key)).map(key=>[key,env[key]]));}

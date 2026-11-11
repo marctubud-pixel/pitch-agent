@@ -1,0 +1,85 @@
+# 简洁策略 · 独立只读UI审核
+
+2026-11-12。审核者未参与策略页实现、R3样本创作或模型生产操作。按项目固定`skills/ui-review/SKILL.md`、页面strategy 1.1.0、UI基线1.1.2、simple-strategy运行合同1.0.0执行。规范入口基线1.10.0。
+
+当前结论：三项问题由开发修复，独立审核者已在原R3同案复验确认改善。实际检查范围内无未解决UI问题；本报告不批准业务阶段，也不证明未测状态。
+
+## 对象与边界
+
+- 现有R3项目`project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df`，本机4438前端与4194后端。输入handle位于`../simple-strategy-r3/HANDLE.json`。baseline snapshot revision46。
+- 独立Google Chrome独立临时context，桌面1280×1000浅色、910×1000深色，locale zh-CN，DPR1，默认缩放；等待networkidle及document.fonts.ready。只执行GET/HEAD/OPTIONS，路由守卫拒绝任何业务变更请求。
+- 本审核未创建/修改fixture、未执行模型或业务POST、未签负责人接收/客户批准，未Git或重启服务。creator的生成/verify丢响应恢复属于另一个实际功能操作范围，不作为本审核亲自执行。
+- 样本是合成KV工程案与工程release，不能证明真实客户批准、真实消费者验证、完整Brief至PPTX或包装/KV两整链通过。
+
+## 实际问题
+
+| 位置、观察与任务影响 | 原则 | 修改前证据 | 期望与验证 | 当前状态 |
+| --- | --- | --- | --- | --- |
+| 概览当前阶段仍为研究，研究摘要显示“未启动策略生产”；同案策略正文为当前/已保存，snapshot中producer和verification均succeeded。误导用户回研究而非处理策略接收。源码HttpProposalService把已确认简报的currentStage固定research，release摘要固定未启动。 | 01、15、20 | `../simple-strategy-independent/before-overview-1280-light.png`及同名txt，snapshot-before.json与baseline.json | 根据真实当前策略任务映射当前阶段及研究摘要；同项目overview/research/strategy逐页核查，不把保存映射done。 | 已修复并独立复验 |
+| 策略头“需要修改”、概览“策略需要修改”。native.view.stages.strategy为awaiting_release且仅OWNER_REQUIRED，缺的是负责人接收；不能把它译成稿件内容需修。 | 15、20 | before-strategy-1280-light.png、baseline.json内native.view.stages | 区分待接收与内容错误，核同案仍保留非批准状态。 | 已修复并独立复验 |
+| 910深色三环标签浅字叠浅圈，可读性不足。原图910×3868的圈区域x60..400/y1100..1430实测单圈底RGB126/132/135，文字核心237/237/234，对比3.2329996283171836:1；源码16px、图形约1.125倍仍普通字号，要求4.5:1。before未取得DOM填充，旧色为实际位图取值。 | 14、18 | before-strategy-expanded-910-dark.png，Pillow像素计数 | 使用与浅圈稳定对比的文字色；同案同主题同宽度核DOM实际fill与截图，不改圈语义、顺序。 | 已修复并独立复验 |
+
+## 同案修后复验结果
+
+原creator进程后来结束，4194连接拒绝。开发统筹只重开原数据库和原件，未新建样本/运行/任务；复验handle为`../simple-strategy-r3/READBACK-HANDLE.json`。复验服务明确关闭模型执行，能力不可用属于本次读取环境，不能冒称原生产服务仍在运行。本人没有重启服务。
+
+`snapshot-before.json`与`snapshot-after.json`的`project`对象完全相等，revision46、9个job不变；`view`仅researchWorkflow能力变化，反映模型执行关闭。实际策略producer/verification身份、正文SHA和原文件沿用。
+
+- `after-overview-1280-light.png`当前第3/7阶段策略、进行中，下一步查看策略，摘要“策略稿已保存，待双方负责人接收。”；`after-research-1280-light.txt`及`after-strategy-1280-light.txt`没有“未启动策略生产”与“需要修改”误译。原native awaiting_release/OWNER_REQUIRED保留，不改成done或客户批准。
+- `after-venn-910-dark.png`与`after.json.vennColors`实测三标签fill均rgb(17,24,39)，fontSize16px；circle仍rgb(220,231,238)/0.55、底色rgb(11,11,10)，单圈合成位图rgb(126,132,135)。对比度按WCAG线性化亮度公式为4.677780542360403:1，超普通文字4.5阈值；实际截图标签清楚。三环、三标签、图注与右侧结论保持。
+- Chrome在原稿JSON上选中文字并按Meta+C，浏览器剪贴板读回1875字符与选取原文完全相等（after.json.copyMatches=true）。页面无复制按钮，本次证明浏览器键盘复制可用，没有宣称应用内复制按钮已实现。
+- `after-details.json`与`after-report-1280-light.png`、`after-report-910-dark.png`记录实际展开“已保存全文核验报告 · 查看原报告”，原报告区域1290字符及免责范围可读。原稿/SHA并列可展开，无需触发核验写动作。
+- 修后五个主截图状态及两个报告展开状态，document.scrollWidth均等1280/910，无水平溢出。after主检查0POST、0拦截、0console/page/HTTP错误，追加报告检查0pageerror/0变更。Enter/Tab实测保留2px可见焦点。
+
+复验命令：`UI_PHASE=after node .scratch/seven-stage-static-goal-20261111/simple-strategy-independent/check.mjs`与`node .scratch/seven-stage-static-goal-20261111/simple-strategy-independent/details.mjs`，均退出0。脚本只拦截意外写动作，本次未出现任何被拦截请求。
+
+## Header身份标签 · 第三次窄修补验
+
+该项由开发统筹在阅读after图时发现：真实本地HTTP策略页stage header仍沿固定BACKING显示“演示内容”。开发统筹只将connected proposals且存在simpleStrategy能力的策略页映射为connected，其他Mock/青屿条件保留；独立审核未参与实现。该项关联原则01、15，属于身份文案校准，不扩大三板块布局或业务权限。
+
+独立仅补局部header实测，没有重跑前述七个状态。脚本`../simple-strategy-independent/backing.mjs`退出0，`backing-result.json`保存实际文本、title和data-backing；本次0POST、0被拦截变更、0pageerror。
+
+- 同原R3 4438策略页，1280浅色和910深色header均显示“本地操作”，data-backing=connected；实际title为“策略正文与核验记录来自本地服务；负责人接收与后续文案尚待接线。”状态仍进行中，不冒称负责人已接收。
+- 当前已运行4420默认Mock青屿`#/p/qingyu/proposal/strategy`只读局部核查，仍显示“演示内容”，data-backing=prototype，title仍为“策略分析为定位建设与优先验证方向预览；未启动正式策略流程。”没有启动旧服务或扩展全青屿测试。
+- 新证据分别为`backing-r3-1280-light.png`、`backing-r3-910-dark.png`、`backing-mock-qingyu-1280-light.png`，不覆盖前后原图。结论：该项已修复并独立实际复验，演示/真实本地来源身份保持区分。
+
+## 已实际检查
+
+`../simple-strategy-independent/check.mjs`为可重复执行审核脚本。第一次执行因sandbox loopback EPERM未进入UI；经受控执行后baseline通过。随后测色/复制追加运行因4194 ECONNREFUSED在GET处终止，未将环境障碍当成产品错误。
+
+- 三个标题顺序为研究结论、方向交叉点、策略发力点。SVG有产品、人群、竞争三个圆与标签，右侧结论存在；明确图注说明非统计面积/非已验证人群重合。
+- 三组引用折叠分别1/2/2项，点击均可展开来源原句、sourceId及JSON Pointer；原文英文保持来源身份。方向适用条件保留Synthetic test only、Synthetic reader及不得从颜色推断偏好，不能升级事实。
+- 原稿/SHA可展开，原报告入口存在；完整核验报告基线未展开，修后已另补实际展开。没有复制按钮；修后已补浏览器选择/键盘复制完整读回。
+- details的Enter可关闭及重新打开；Tab落到“核验当前策略全文”，实际焦点outline为rgb(10,56,184) solid 2px。未触发该写操作。
+- 五个截图状态document.scrollWidth均等于viewport（1280或910），main内未发现越出右侧的元素。原文/SHA展开也未横溢。
+- baseline记录0业务POST、0被拦截变更、0pageerror、0console error、0HTTP≥400。不是后续生产功能/全部异常状态通过。
+- 研究与策略沿同research-method组件，蓝色标题带、分隔、灰色背景与限制橙框体系一致。保留三板块结构，没有建议改版。
+
+## 20项原则处置
+
+以下“已满足”均仅限实测状态，不等于整页可访问性认证。
+
+| # | 处置 | 依据或限制 |
+| --- | --- | --- |
+| 01 | 已满足 | 研究/策略样式一致，概览/阶段状态矛盾已同案修复复验。 |
+| 02 | 无法验证 | 未生成独立灰度诊断图，不把彩色截图折算通过。 |
+| 03 | 已满足 | 标题28px、板块17px、正文12px，实图扫描顺序清楚。 |
+| 04 | 已满足 | 当前策略导航蓝色与文字并存，展开操作可发现。 |
+| 05 | 已满足 | 判断类型、来源、SHA承担含义，未发现可安全删除的重复业务标签。 |
+| 06 | 已满足 | 当前已产出时不重复提供继续生成；核验写操作折叠于原件区。本审核未点击。 |
+| 07 | 已满足 | 板块与判断分隔明显，展开来源仍可读。 |
+| 08 | 已满足 | 1280及910无横溢，三环与结论保持并列。 |
+| 09 | 已满足 | 三板块标题与各自引用分组明确，图注在图下。 |
+| 10 | 已满足 | 目标中文桌面与910边界已实测；项目不提供手机产品模式。 |
+| 11 | 已满足 | 当前中文样本行高20.4px/12px，引用与原稿长标识可换行；超长真实商业稿及放大未验。 |
+| 12 | 已满足 | 当前类型标签/判断文字无基线遮挡；图标居中保留。 |
+| 13 | 已满足 | 实测共用主题颜色及研究组件；未改共享变量。 |
+| 14 | 已满足 | 三环深色标签修后实测4.677780542360403:1；仅限该标签组合，未做整页合规判断。 |
+| 15 | 已满足 | 状态有文字线索，待owner状态现明确显示待双方负责人接收。 |
+| 16 | 不适用 | 现有当前导航、限制框已有充分边界，不需额外强调线。 |
+| 17 | 不适用 | 本页没有照片/视频叠字，SVG标签按14核查。 |
+| 18 | 已满足 | 原生三环可辨认，深色文字已修复，保持原比例及含义。 |
+| 19 | 已满足 | 分组分隔保留必要边界；键盘焦点2px可见。 |
+| 20 | 已满足（已测状态） | 已保存/待负责人接收状态修后准确；首次空态、unknown、历史、原件错误本独立context未触发，均未验证。 |
+
+复盘：源码疑点已被当前snapshot与真实概览证实，单看策略页本体不能发现概览投影失真。深色三环原先继承主题文字损伤局部对比；固定稳定深色后在原数据、原主题与原视口实测改善。未改Skill规则；未测状态继续保留未验证。

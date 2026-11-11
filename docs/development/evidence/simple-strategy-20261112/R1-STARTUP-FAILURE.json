@@ -1,0 +1,56 @@
+{
+  "url": "http://127.0.0.1:4436/#/p/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799/proposal/strategy",
+  "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n全部提案\n\nSynthetic current HTTP\n\n概览\n提案\n资料库\n流程与历史\n交付\n无法加载此视图\n\n出了点问题。\n\n您保存的内容没有丢失。如果演示场景设置为“网络错误”，请通过页眉中的演示控制切换回“正常数据”。\n\n重试\n问问 工作助手\n: 打开 工作助手 助手",
+  "errors": [
+    {
+      "kind": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4192/api/v1/capabilities",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4192/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+      "status": 200
+    }
+  ]
+}

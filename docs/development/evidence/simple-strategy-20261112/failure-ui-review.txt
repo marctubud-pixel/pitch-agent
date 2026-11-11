@@ -1,0 +1,25 @@
+# 简洁策略fallback失败提示 · 独立窄补验
+
+2026-11-12。结论：failure存在而blockedOutput=null分支的可见主alert已改为中文通用提示，未泄漏原Quote英文或源码路径；原错误记录及unknown身份保持。独立实际UI范围通过，没有签业务完成或恢复成功。
+
+## 本次范围
+
+Standards发现与开发统筹修复的P3仅为主alert文案。独立审核者未参与实现。沿项目固定ui-review方法，只核本分支的状态、文案与原记录保护（原则01、15、20），不重做R4二十项或既有视觉基线。
+
+输入[`simple-strategy-r2-readback/HANDLE.json`](../simple-strategy-r2-readback/HANDLE.json)指向原R2数据库和原件，API4198/Vite4442。开发统筹只读重开旧失败案，模型执行关闭，未新建fixture或重派任务；不能把此读回服务冒称原生产过程仍live。
+
+独立Chrome临时context只打开`http://127.0.0.1:4442/#/p/project-53de95880eb65124c7408fadfbf7af9539216782bd96dc2556026b013f1954cb/proposal/strategy`，1280×1000浅色、zh-CN、DPR1、默认缩放。等待networkidle和字体稳定；仅读GET与展开原结果说明，没有点击“核对原策略生成结果”。
+
+## 实际结果
+
+- 可见`role=alert`精确为“本次策略未完成。请核对原任务、研究依据与服务配置，并保留原提交记录。”，与预期字符串完全一致。独立人审[alert截图](../simple-strategy-failure-independent/failure-visible-alert-1280-light.png)及[展开截图](../simple-strategy-failure-independent/failure-readonly-expanded-1280-light.png)确认中文可读。
+- 原`failure.code=INVALID_SIMPLE_STRATEGY`、`message=Quote not found at original source location`仍存在于真实GET workspace记录；正文内该原句精确匹配数0，实际策略区域可见文本无原Quote英文及源码路径。只替换产品提示，没有改写原error/receipt身份。
+- `producerStatus=awaiting_reconciliation`，一个unknownJobs原stage job，`artifactId=null`、`blockedOutput=null`、`verification=null`。页面显示“原结果待核”和没有已核SHA正文，不冒充完成稿。
+- 展开原结果后仅出现“核对原策略生成结果”，策略全文核验按钮数0；原核回入口未点击，没有签回核成功、负责人接收、copy或release。
+- [snapshot-before](../simple-strategy-failure-independent/snapshot-before.json)与[snapshot-after](../simple-strategy-failure-independent/snapshot-after.json)的project JSON完整相等，revision41、8jobs不变。0POST、0被拦截变更、0pageerror、0console error、0HTTP≥400，document.scrollWidth=1280等于视口。
+
+脚本[`check.mjs`](../simple-strategy-failure-independent/check.mjs)实际运行退出0，结果与原可见正文保存在[`result.json`](../simple-strategy-failure-independent/result.json)，完整GET原记录在[`workspace.json`](../simple-strategy-failure-independent/workspace.json)。执行命令为`node .scratch/seven-stage-static-goal-20261111/simple-strategy-failure-independent/check.mjs`。
+
+未扩深色、其他错误、R4具体gaps或其他页面状态；R4此前受阻诊断报告保持原结论。未对原结果执行恢复、模型重派或业务写入，未启动/停止服务。本补验只证明旧R2原数据在修后真实UI中的中文fallback与状态保留，不代替生产执行、原件全量审计或客户批准。
+
+复盘：产品主提示可以给出中文可行动说明，同时保持原错误原件可追溯；本次证据支持这项窄修，不需要改视觉基线或Skill规则。

@@ -1,0 +1,186 @@
+{
+  "scope": "Independent actual Chrome readonly UI, synthetic R3, no customer approval",
+  "sources": [
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/baseline.json",
+      "sha256": "c580adfdbc93b230bb02789a0430594e14c9c1d48893b0f542ad14742f718ef1"
+    },
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/after.json",
+      "sha256": "bd8f355a1273c88f174355b4e550644cb7da7d6f4e92954a8a1ce1133220e30e"
+    }
+  ],
+  "snapshots": [
+    {
+      "source": "baseline.json",
+      "time": "2026-11-11T20:12:57.622Z",
+      "projectId": "project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df",
+      "revision": 46,
+      "jobs": 9,
+      "postRequests": 0,
+      "blockedMutations": [],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "httpErrors": [],
+      "states": [
+        {
+          "name": "before-overview-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "before-research-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/research",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "before-strategy-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/strategy",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "before-strategy-expanded-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/strategy",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "before-strategy-expanded-910-dark",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/strategy",
+          "width": 910,
+          "scrollWidth": 910,
+          "overflow": []
+        }
+      ],
+      "vennColors": null,
+      "keyboard": {
+        "afterEnter": null,
+        "afterTab": {
+          "tag": "BUTTON",
+          "text": "核验当前策略全文",
+          "outline": "rgb(10, 56, 184) solid 2px"
+        }
+      }
+    },
+    {
+      "source": "after.json",
+      "time": "2026-11-11T20:17:12.495Z",
+      "projectId": "project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df",
+      "revision": 46,
+      "jobs": 9,
+      "postRequests": 0,
+      "blockedMutations": [],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "httpErrors": [],
+      "states": [
+        {
+          "name": "after-overview-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "after-research-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/research",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "after-strategy-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/strategy",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "after-strategy-expanded-1280-light",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/strategy",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": []
+        },
+        {
+          "name": "after-strategy-expanded-910-dark",
+          "url": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/strategy",
+          "width": 910,
+          "scrollWidth": 910,
+          "overflow": []
+        }
+      ],
+      "vennColors": {
+        "text": [
+          {
+            "text": "产品",
+            "fill": "rgb(17, 24, 39)",
+            "size": "16px"
+          },
+          {
+            "text": "人群",
+            "fill": "rgb(17, 24, 39)",
+            "size": "16px"
+          },
+          {
+            "text": "竞争",
+            "fill": "rgb(17, 24, 39)",
+            "size": "16px"
+          }
+        ],
+        "circles": [
+          {
+            "fill": "rgb(220, 231, 238)",
+            "opacity": "0.55"
+          },
+          {
+            "fill": "rgb(220, 231, 238)",
+            "opacity": "0.55"
+          },
+          {
+            "fill": "rgb(220, 231, 238)",
+            "opacity": "0.55"
+          }
+        ],
+        "background": [
+          {
+            "tag": "svg",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "tag": "FIGURE",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "tag": "DIV",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "tag": "SECTION",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "tag": "BODY",
+            "background": "rgb(11, 11, 10)"
+          }
+        ]
+      },
+      "keyboard": {
+        "afterEnter": null,
+        "afterTab": {
+          "tag": "BUTTON",
+          "text": "核验当前策略全文",
+          "outline": "rgb(10, 56, 184) solid 2px"
+        }
+      }
+    }
+  ],
+  "projectExactlyUnchanged": true
+}

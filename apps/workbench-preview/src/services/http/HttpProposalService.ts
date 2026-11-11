@@ -6,7 +6,7 @@ import {ServiceError} from '../../domain/service';
 import {isProposalType} from '../../domain/proposalType';
 import {currentCard, mapBrief, mapProject, briefVersions, mapAttachments} from './briefModels';
 import {readBrief} from './briefEnvelope';
-import type {Snapshot} from './dto';
+import {object, type Snapshot} from './dto';
 import type {HttpWorkbenchService} from './HttpWorkbenchService';
 
 const unavailable = (): Promise<never> => Promise.reject(new ServiceError('unavailable', '此操作尚未接入当前本地服务。'));
@@ -17,13 +17,28 @@ function proposal(p: Snapshot): Proposal {
   const hasResearch = Boolean(research?.activeArtifactId || p.jobs.some(j => j.stage === 'research'));
   const released = Boolean(workflow && Array.isArray(workflow.checks) && workflow.checks.some(c => c && typeof c === 'object' && 'id' in c && c.id === 'release' && 'passed' in c && c.passed === true));
   const researchStatus: StageState['status'] = !hasResearch ? 'not_started' : research && (['stale','blocked','failed','awaiting_reconciliation'].includes(research.status) || research.blockedReasons.length) ? 'needs_revision' : released ? 'done' : 'in_progress';
-  const stage = (id: StageId): StageState => ({status: id === 'brief' ? brief.confirmedBy ? 'done' : 'in_progress' : id === 'research' ? researchStatus : 'not_started', summary: id === 'brief' ? brief.confirmedBy ? '当前简报已确认。' : '当前简报待确认。' : id === 'research' ? !hasResearch ? '当前尚无研究产物；真实执行以配置与授权为准。' : released ? '当前研究已有真实放行记录；未启动策略生产。' : '当前研究仍待核验或负责人交接，已有产物可阅读。' : '本轮尚未接通此阶段。', updatedAt: id === 'brief' ? brief.updatedAt || null : id === 'research' && hasResearch ? project.updatedAt || null : null, lead: '', version: id === 'brief' ? brief.version : id === 'research' ? p.artifacts.filter(a => a.stage === 'research').length : 0});
+  const strategy = p.stages.find(s => s.stage === 'strategy');
+  const strategyJobs = p.jobs.filter(j => j.stage === 'strategy' && !j.purpose);
+  const strategyJob = strategyJobs.at(-1);
+  const currentStrategyJob = strategyJobs.findLast(j => {
+    const basis = object(object(j.task ?? {}).strategyBasis ?? {});
+    return basis.taskCardId === p.activeTaskCardId && basis.researchArtifactId === research?.activeArtifactId
+      && object(object(basis.handoff ?? {}).policy ?? {}).version === p.policy.version;
+  });
+  const strategyNeedsRevision = strategy?.status === 'stale' || ['blocked', 'failed', 'awaiting_reconciliation'].includes(strategy?.status ?? '')
+    || Boolean(strategy?.blockedReasons.some(reason => reason !== 'OWNER_REQUIRED'));
+  const researchSummary = !hasResearch ? '当前尚无研究产物；真实执行以配置与授权为准。'
+    : released ? strategyJob ? '当前研究已有真实放行记录；策略进度见策略页。' : '当前研究已有真实放行记录；未启动策略生产。'
+    : '当前研究仍待核验或负责人交接，已有产物可阅读。';
+  const strategySummary = strategy?.status === 'awaiting_release' && strategy.blockedReasons.length === 1 && strategy.blockedReasons[0] === 'OWNER_REQUIRED'
+    ? '策略稿已保存，待双方负责人接收。' : '策略生成、全文核验与负责人接收分别记录。';
+  const stage = (id: StageId): StageState => ({status: id === 'brief' ? brief.confirmedBy ? 'done' : 'in_progress' : id === 'research' ? researchStatus : id==='strategy'&&strategyJob ? strategyNeedsRevision?'needs_revision':'in_progress':'not_started', summary: id === 'brief' ? brief.confirmedBy ? '当前简报已确认。' : '当前简报待确认。' : id === 'research' ? researchSummary : id==='strategy'?strategySummary:'本轮尚未接通此阶段。', updatedAt: id === 'brief' ? brief.updatedAt || null : id === 'research' && hasResearch ? project.updatedAt || null : null, lead: '', version: id === 'brief' ? brief.version : id === 'research' ? p.artifacts.filter(a => a.stage === 'research').length : 0});
   const gates: Record<string, CheckpointStage | undefined> = {strategy: 'strategy', copy: 'themes', visual: 'visual', final_review: 'delivery'};
   return {id: p.id, workbenchId: p.id, name: p.name, client: project.client || '客户尚未填写', type: brief.proposalType,
     ...(envelope.metadata.presentationLocalTime ? {presentationLocalTime: envelope.metadata.presentationLocalTime} : {}),
     summary: project.summary, cover: null, mode: p.policy.mode === 'auto' ? 'automatic' : 'assisted',
     checkpoints: p.policy.humanGates.flatMap(value => {const gate = gates[value]; return gate ? [gate] : [];}),
-    currentStage: brief.confirmedBy ? 'research' : 'brief',
+    currentStage: !brief.confirmedBy ? 'brief' : released && currentStrategyJob ? 'strategy' : 'research',
     stages: {brief: stage('brief'), research: stage('research'), strategy: stage('strategy'), themes: stage('themes'), visual: stage('visual'), content_review: stage('content_review'), layout: stage('layout'), delivery: stage('delivery')},
     task: {assignment: brief.background, output: brief.deliverables.join('\n'), occasion: null, scope: brief.constraints,
       inputs: mapAttachments(p).filter(item => brief.attachmentIds.includes(item.id)).map(item => ({id: item.id, kind: 'text', title: item.fileName ?? '简报原文', note: item.text})),

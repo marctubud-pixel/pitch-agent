@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.5.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.6.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -74,3 +74,9 @@ brief-intake-service复用intake-runtime→intake-pdf旧工具，显式extractio
 `research-acquisition-service.mjs`复用原`research-acquisition-runtime`及executor，受限HTTP增加读取、start、step和reconcile。`researchAcquisitionHttpRequests`保存原技术请求及固定任务集合，actual claim核完整卡、问题计划和CAS；不建立新调度器或人类批准记录。计划、四分支、封口和唯一r7生产者继续使用原存储与实际文件。
 
 前端可选`researchAcquisition`由严格HTTP投影和workflow权限保护，Mock不补此能力。HTTP传输待核与原生unknown分开，刷新不续跑；历史计划/分支可核原IO，历史研究生产者未支持。新配置显式共根才允许选入PDF。详细模块合同见[采集运行合同](../development/research-acquisition.md)。
+
+## 简洁三板块策略bridge
+
+`seven-stage-strategy`保存SIMPLE输入原件、三板块schema、引用及继承限制，复用原研究continuation派生唯一strategy job。`simple-strategy-service`与research-service共用executor；`simple-strategy-http`冻结原请求、job/binding和完整当前快照，actual claim核CAS。公共创建body不扩授权，服务器creationAuthorizedThrough只作用新建。
+
+前端可选simpleStrategy投影仅接真实SIMPLE产物和verification，不伪造旧Proposal.strategy。策略原稿仍显示needs_acceptance。独立全文核验保持原HARD_BLOCKER；当前核验unknown通过窄native transition保存原executor，recoveredBy单记恢复人。历史/缺IO不重派，双owner-to-copy未完成。详细协议见[策略运行合同](../development/simple-strategy.md)。

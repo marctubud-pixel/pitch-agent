@@ -208,3 +208,7 @@ R4 发布器另提供折叠的工程参考记录统计，数据来自同一案�
 ## 当前研究自动采集接缝 · 2026-11-12
 
 受限brief-server现通过research-acquisition-service复用旧四分支runtime、封口及唯一r7生产者；技术请求账本冻结原body与所选job，actual claim再核当前卡、原问题计划与revision。前端optional researchAcquisition保留原页面结构，单次显式有限推进、刷新不续跑。新隔离配置显式共根才允许当前PDF输入；原件和历史unknown继续留存。接口、恢复限制及当前未验范围见[采集运行合同](../development/research-acquisition.md)。旧模块地图和旧运行记录保留各自时点身份。
+
+## 当前简洁策略接缝 · 2026-11-12
+
+当前SIMPLE策略复用研究continuation、原生存储及独立全文核验，simple-strategy-service提供GET/continue/verify/reconcile。技术账本与actual claim绑定原job、卡/问题登记/研究release/完整policy和binding，unknown不重派。服务器创建授权默认research，显式工程终点只作用新建；策略保存仍为needs_acceptance。当前原IO窄恢复与双owner-to-copy未完成范围见[简洁策略合同](../development/simple-strategy.md)，不将三板块稿保存签作整链或客户批准。

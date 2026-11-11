@@ -1998,12 +1998,12 @@
       "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
     },
     "apps/workbench-preview/src/domain/service.ts": {
-      "sha256": "fb028a07feee02ba36bef87c5baa8f56afc903ceb16a9a6c652b601c90a32e8b",
-      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
+      "sha256": "ecee4dc12bc77d86f42e56e19079648cb939e10332cd34a2cc03b6803496ad05",
+      "reason": "加入可选简洁策略服务及三种原请求恢复身份，演示服务兼容既有能力。"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "sha256": "fc4ece77a03c910dd0b7d231724b71deadbacbda7b28715e229f20451b7b12d2",
-      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
+      "sha256": "4835ca348c584ff6dbbb1654f5c390469b96174b9e6913e35610ff37fc28fbb4",
+      "reason": "连接受限简洁策略HTTP、严格同版原件投影与同body恢复，不开放任意阶段执行。"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
@@ -2014,8 +2014,8 @@
       "sha256": "5af8ad8684f2e4a8a3956b6429fda5a9c6047d54defcdf9801ea2625aa88fbad"
     },
     "apps/workbench-preview/src/collaboration/protectServices.ts": {
-      "sha256": "3dcb992e7d19a9016db0d9e91248c30eed3cb1fec48a22cb0168f60caa45f689",
-      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
+      "sha256": "562b2e4df20b2f116f0925947feb6f187c354adcea87de39e7ee5b9a537d64e8",
+      "reason": "按既有协作权限保护简洁策略服务，访客与无workflow权限不能写入。"
     },
     "apps/workbench-preview/src/domain/models.ts": {
       "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
@@ -2070,12 +2070,20 @@
       "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/collaboration/protectServices.test.ts": {
-      "sha256": "5f0cbf831929e3f46ea60d1880379f724dd3441064b958423f5d5eca77e77268",
-      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
+      "sha256": "99484021305aa04202bc670ca62c9b6afc9752ca1f464f709d54c620cf8500b8",
+      "reason": "策略workflow权限保护与optional service的实际拒绝验证。"
     },
     "apps/workbench-preview/src/proposal/BrandResources.tsx": {
       "sha256": "9e77e09648b6e26120afbfd034929b32167d0217c6bdb3b2c12b95a1a6bfad2b",
       "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
+    },
+    "apps/workbench-preview/src/views/stages/StrategyStage.tsx": {
+      "sha256": "9df380063fe9f47b543bb794f8096ae377786da11508577d37369d22cf08cd8a",
+      "reason": "真实HTTP使用三板块简洁策略；既有演示与青屿视图保留。"
+    },
+    "apps/workbench-preview/src/views/project/ProposalArea.tsx": {
+      "sha256": "67fa5a63e1e15a3351fef369adf9b4cf6c3fcc88a2737a28b35efe93bfad97e3",
+      "reason": "；仅具备简洁策略服务的connected策略页标本地操作，演示与青屿继续保留原身份。"
     }
   }
 }

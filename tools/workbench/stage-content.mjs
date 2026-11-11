@@ -1,3 +1,4 @@
+import {SIMPLE_STRATEGY_VERSION,buildSimpleStrategyRequest,validateSimpleStrategyOutput} from './seven-stage-strategy.mjs';
 import {CHART_DATA_SCHEMA} from '../auto-layout/native-charts/chart-data-schema.mjs';
 import {RESEARCH_DATA_VERSION,requireResearchDataBasis,validateResearchChartCandidate} from './research-chart-data.mjs';
 import {STRATEGY_CONTRACT_VERSION,strategySchema,validateStrategy,requireStrategyInputs,STRATEGY_INSTRUCTIONS} from './strategy-contract.mjs';
@@ -97,6 +98,10 @@ function outputSchema(stage, records, visualCatalogue = [], revisionInput, copyC
 }
 
 export function buildStageRequest({stage, brief, inputArtifacts = [], sourceRecords = [], visualCatalogue = [], revisionInput, copyContractVersion, correctionInput,researchRevision,strategyContractVersion,strategyBasis,researchContractVersion,researchDataBasis}) {
+  if(strategyContractVersion===SIMPLE_STRATEGY_VERSION){
+    if(stage!=='strategy'||revisionInput||correctionInput)invalid('Simple strategy requires its initial production contract');
+    return buildSimpleStrategyRequest(strategyBasis);
+  }
   requireEvidenceProjection(correctionInput,sourceRecords,visualCatalogue);
   if(researchContractVersion===RESEARCH_DATA_VERSION)requireResearchDataBasis(researchDataBasis,sourceRecords);
   const records = sources(sourceRecords);
@@ -124,6 +129,11 @@ export function buildStageRequest({stage, brief, inputArtifacts = [], sourceReco
 }
 
 export function validateStageOutput(stage, raw, {sourceRecords = [], visualCatalogue = [], revisionInput, copyContractVersion, correctionInput,researchRevision,strategyContractVersion,strategyBasis,researchContractVersion,researchDataBasis} = {}) {
+  if(strategyContractVersion===SIMPLE_STRATEGY_VERSION){
+    if(stage!=='strategy'||revisionInput||correctionInput)invalid('Simple strategy requires its initial production contract');
+    const value=validateSimpleStrategyOutput(raw,strategyBasis);
+    return {...value,claims:[],content:structuredClone(value)};
+  }
   requireEvidenceProjection(correctionInput,sourceRecords,visualCatalogue);
   if(researchContractVersion===RESEARCH_DATA_VERSION)requireResearchDataBasis(researchDataBasis,sourceRecords);
   const records = sources(sourceRecords);

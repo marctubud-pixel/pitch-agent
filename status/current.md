@@ -1,3 +1,27 @@
+# 简洁策略本地验收收束 · 2026-11-12
+
+功能67663245、受阻诊断修复52a95ca4及中文失败提示已完成；最终完整check763前端/1既有skip、78核心、26域、57简报/PDF、80研究、61采集、26策略全部通过，类型构建通过。独立Spec原P2、UI实证和Standards中文P3均已修，原件/失败/同案复验见[核验](../docs/development/simple-strategy-verification-20261112.md)。规范1.10.1，57项及16固定截图、393导入/147封存保持。
+
+[PR #8](https://github.com/marctubud-pixel/pitch-agent/pull/8)已创建草稿，最终准确head CI和合并尚待真实回执；此处不提前签远程成功或七阶段完整闭环。copy前后端候选在隔离WT已专项通过并保留恢复身份，根尚未采用。空间恢复检查点保留，最新约48GiB，不能将系统增加全部算清理收益。以下历史节点保留。
+
+# 策略受阻结果纠错 · 2026-11-12
+
+固定67663245独立两轴：Standards无硬违例/无P1/P2，Spec实证blocked原结论与gaps在页面不可达的P2。已按独立诊断补齐，保持job blocked/空artifact/无下游放行；同原案80原件SHA及project未变、篡改拒绝，具名typed R4真实Chrome通过受阻态专项。规范1.10.1；独立R4 UI、修后整套检查及远程回执继续中，见[核验](../docs/development/simple-strategy-verification-20261112.md)。以下原节点保留。
+
+# 简洁策略工作包核验 · 2026-11-12
+
+功能提交67663245已保存：受限生产、独立全文核验与同原请求恢复，见[本轮核验](../docs/development/simple-strategy-verification-20261112.md)。根完整检查退出0，最终UI窄修另经类型/构建/4项实际HTTP及独立浅深主题复验；R1/R2失败、R3观察竞态及错误断言原日志保留。当前两轴独立审查与远程PR/CI待回执，不能签完整目标。以下按时间保留。
+
+# 目标接续：空间恢复与简洁策略 · 2026-11-12
+
+采集[PR #7](https://github.com/marctubud-pixel/pitch-agent/pull/7)准确最终head双CI与实际安装/测试步骤成功，已合并35965060。当前`codex/simple-strategy-20261112`采用三板块策略、受限HTTP与当前策略页，尚未提交或签最终UI通过；研究r7及既有页面方法沿用，不重跑旧业务。
+
+用户授权空间处理已完成，27处可重建派生产物删除；源码、资料、数据库和原回执保持。后续同字节副本采用同路径APFS写时复制并经独立核对，见[空间检查点](checkpoints/2026-11-12-space-recovery.json)。最新约48GiB可用；后续系统级增加不全部归因本次清理。保留至少3GiB运行门槛。
+
+策略纯协议44项、原生运行7项、受限HTTP与配置9项、unknown新命令拒绝及相邻接口均已专项验证；前端真实HTTP4项通过，随后结构化KV任务卡与ProposalService正例单独通过。真实UI R1缺提案类型、R2合成引用路径不适配均被原守卫拦下，原失败保留；只修测试夹具。具名R3已真实保存唯一策略稿，全文核验/恢复与独立UI仍在核对。最终门禁、锁、两轴与PR按完成回执另记，不以专项替代全链。
+
+完整七阶段本地工程目标仍未完成：策略双owner到三方向文案在隔离候选并行验证，视觉、同版Deck、终审和包装/KV整链尚待串联。旧run、原数据库、付费/真实模型、生产账号、外部通知、云部署及在线编辑保存暂停边界保持。以下为当时历史节点。
+
 # 目标模式：研究自动采集接线 · 2026-11-12
 
 PDF包[PR #6](https://github.com/marctubud-pixel/pitch-agent/pull/6)准确8404d26a双CI及显式venv步骤成功，已合并a532697e。当前采集分支复用四分支/封口/唯一r7生产者，严格原body与固定job、actual claim卡/问题/CAS守卫、partial PDF共根资格和原IO核回；默认执行仍关闭。[合同](../docs/development/research-acquisition.md)及[本轮核验](../docs/development/research-acquisition-verification-20261112.md)分别说明规则与实际范围。

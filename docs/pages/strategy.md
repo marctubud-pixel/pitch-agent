@@ -1,6 +1,6 @@
 # 策略 · 页面开发规格
 
-规范版本：1.0.1。页面ID：`strategy`。状态：已确认要求汇编；本次整理待核对。负责人见[strategy-owner](../agents/strategy-owner.md)。
+规范版本：1.1.0。页面ID：`strategy`。状态：已确认要求汇编；本次整理待核对。负责人见[strategy-owner](../agents/strategy-owner.md)。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 
@@ -54,3 +54,11 @@
 ## 来源与版本
 
 要求来源：现有[用户决定索引](../specs/decisions.md)、[版本沿革](../handoffs/提案工作台_版本沿革与已确认要求_20261111.md)及本次[来源清单](../specs/source-provenance.json)。图像是证据，不覆盖当前文字要求。新需求通过[变更与PR规则](../specs/change-control.md)更新本文件版本。
+
+## 当前HTTP三板块工作区
+
+当前HTTP策略页以可选simpleStrategy能力读取实际SIMPLE合同稿件，沿既有三板块与三环加右侧结论结构。逐点显示事实、任务要求、推论或假设、引用及限制；原稿与SHA、全文核验和历史身份折叠。三环只说明产品、人群、竞争关系，不表示统计面积或已验证人群重合。Mock及青屿原样保持身份。
+
+未配置、默认research授权、研究未放行、历史及原件错误均显示原因。只有当前研究全部前置、原release与显式创建授权成立，才允许策略页明确生成。导航只读，不自动生成；游客不能执行或恢复写操作。报告保存保持待核验/待接收，原生`needs_acceptance`不表示stage complete或客户批准。
+
+原body待核、native unknown和已核历史分别呈现。策略及核验原结果只恢复仍当前的已保存IO，历史或缺IO不重派。当前未完成策略双owner到copy及策略修订，不能以保存按钮签通过。接口、创建授权及原件边界见[简洁策略运行合同](../development/simple-strategy.md)。实际UI范围另按原生核验记录登记。

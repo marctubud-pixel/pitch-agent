@@ -1,0 +1,20 @@
+{
+  "verifyJobId": "job-9c8b09cadbbec5055c64ac3ff4863e6db4213d46bd5a4f5f88b982cb8ab537c3",
+  "firstSavedResponseAttemptIds": [
+    "4d072f33-839e-4903-9db2-e78fa804fc2a"
+  ],
+  "afterReplayAttemptIds": [
+    "4d072f33-839e-4903-9db2-e78fa804fc2a"
+  ],
+  "verifyOriginalModelInvocationId": "35e96ea8-8796-47e2-bdf6-5fbe36f428c6",
+  "firstSavedJobs": 9,
+  "afterReplayJobs": 9,
+  "firstSavedRevision": 46,
+  "afterReplayRevision": 46,
+  "strategyReleaseCount": 0,
+  "releaseStages": [
+    null
+  ],
+  "customerApprovalClaimed": false,
+  "limitation": "Native isolated fixture synthetic engineering only; no actual customer approval."
+}

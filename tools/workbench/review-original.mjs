@@ -1,3 +1,4 @@
+import {SIMPLE_STRATEGY_VERSION} from './seven-stage-strategy.mjs';
 import {verifyResearchReaderOriginal} from './research-reader-original.mjs';
 import {verifySplitProjectOriginals,validateSplitExecution} from './readiness-split-runtime.mjs';
 import {createHash} from 'node:crypto';
@@ -51,7 +52,7 @@ export async function verifyReviewOriginal(project,kind,report,{executionRoot,im
  const receipt=report.executionReceipt;
  const content=await readArtifactContent(project,artifact.id,executionRoot);
  const panel=kind==='creative_panel'?member(project.creativePanels,report.panelId):null;
- need(kind==='research_reader'?content.contentText===job.task.readerContentText:equal(content.content,input.content??panel?.packet.content),'Original reviewed content bytes changed');
+ need(kind==='research_reader'?content.contentText===job.task.readerContentText:equal(kind==='verification'&&artifact.strategyContract?.version===SIMPLE_STRATEGY_VERSION?{...content.content,claims:[]}:content.content,input.content??panel?.packet.content),'Original reviewed content bytes changed');
  const attachments=[];
  for(const [occurrenceIndex,image] of (receipt.images??[]).entries()){
   need(imageStore&&typeof imageStore.read==='function','Managed image store required');

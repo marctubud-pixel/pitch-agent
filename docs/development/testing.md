@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.6.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.7.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -35,11 +35,11 @@
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，后续生产仍未完成；默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略生产与全文核验另按[策略合同](simple-strategy.md)接线，后续生产仍未完成；默认不执行模型。
 
 ## PDF原件子路径
 
-默认test:brief-http加入brief-intake-service与brief-original-http两组，使用自有小SQLite与原件fixture，覆盖未确认保存/读取/重开、同体恢复、跨项目/错版/损坏、字段与HTTP边界，原件子包当时不执行解析或模型。前端intakeHttp使用真实受限处理器与Blob，实际Chrome和独立只读UI另见[本轮核验](brief-originals-verification-20261111.md)。该PDF保存核验不覆盖读者运行；读者新工作包另见下节，策略仍待接。
+默认test:brief-http加入brief-intake-service与brief-original-http两组，使用自有小SQLite与原件fixture，覆盖未确认保存/读取/重开、同体恢复、跨项目/错版/损坏、字段与HTTP边界，原件子包当时不执行解析或模型。前端intakeHttp使用真实受限处理器与Blob，实际Chrome和独立只读UI另见[本轮核验](brief-originals-verification-20261111.md)。该PDF保存核验不覆盖读者运行；读者新工作包另见下节，简洁策略另按专项核验，不由原件保存测试证明。
 
 
 ## 研究读者回归
@@ -65,3 +65,11 @@ PITCH_PDF_TEST_PYTHON=/absolute/path/to/python3 npm run test:brief-http
 `npm run test:research-acquisition`明示执行basic、boundary、selection、material、manifest以及新service、bridge-http七文件。默认根`check`和Application CI纳入此集合；CI先安装冻结的workbench依赖。它不执行旧完整`research-acquisition-http.test.mjs`或恢复旧scheduler。
 
 新测试核新SQLite上的默认零执行、固定原任务重放、actual claim的卡/问题登记/revision竞争、真实PDF原件及封口、unknown原IO恢复和历史生产者拒绝。实际PDF专项需要显式`PITCH_PDF_TEST_PYTHON`；无环境的明确skip不算PDF正例通过。前端专项另核严格回执、同body日志、权限及原生unknown停止。真实界面、独立复核、远程CI与两案例整链各按实际回执登记，详见[采集合同](research-acquisition.md)。
+
+## 简洁策略专项边界
+
+`npm run test:simple-strategy`串行执行三板块纯合同、实际原生运行、显式配置与受限HTTP四文件，纳入根`check`和Application CI。前端真实HTTP专项使用新SQLite、原生处理器及仅本机合成模型；其中正例使用当前结构化KV任务卡，并读取真实ProposalService，避免只测WorkbenchService而漏掉页面类型边界。
+
+纯协议`seven-stage-strategy.test.mjs`检查三板块、真实原句定位、事实/要求/假设性质及限制继承。`simple-strategy-runtime.test.mjs`核原研究continuation及实际全文核验，HARD_BLOCKER不能因空claims而删除。`simple-strategy-http.test.mjs`和`simple-strategy-configuration.test.mjs`使用新隔离SQLite、本机合成模型HTTP，分别核原job/回执/当前性、创建授权/原终点重放、producer与verification原IO恢复，以及历史unknown拒绝。
+
+当前源码专项、完整门禁、真实UI、独立审查和策略双owner-to-copy必须分别留证，先前候选日志不证明后来字节已验。各专项最终字节的实际结果以本轮原生回执为准。磁盘不足期间只保存小文档和静态审查，不能用它们代替暂缓的运行验收。具体合同见[简洁策略](simple-strategy.md)。

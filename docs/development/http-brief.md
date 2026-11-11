@@ -1,6 +1,6 @@
 # 本地简报HTTP合同与联调
 
-规范版本：1.4.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
+规范版本：1.5.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
 
 ## 启动与数据
 
@@ -59,3 +59,9 @@ Brief附件目前只保存原文和元数据，`fileAvailable: false`，不提�
 ## 自动采集接口
 
 GET `projects/:id/research-acquisition`及POST其`start`、`step`、`reconcile`子路径复用既有四分支与执行器。接口继续限制普通128KiB、字段白名单、方法、Host、Origin及query。每步明确1至4个原job，技术账本冻结原body、卡和问题计划；重放不能改选后来队列。原始回执、两层未知、共根PDF资格及历史生产者未支持范围见[采集运行合同](research-acquisition.md)。默认读取和确认不启动采集。
+
+## 简洁策略接口
+
+GET `projects/:id/simple-strategy`和POST其`continue`、`verify`、`reconcile`继续使用128KiB、严格字段、方法、Host、Origin及query守卫。技术账本绑定原body、唯一job与当前卡/policy/研究release/问题计划和binding；actual claim核捕获revision，不重派unknown。正文读取仅额外开放SIMPLE合同策略，不放开任意stage。
+
+服务器创建授权默认research，可显式为新工程项目选择final_review，公共创建body无此字段。当前原IO恢复与recoveredBy、历史/缺IO拒绝及同revision包络见[简洁策略合同](simple-strategy.md)。保存稿件不签策略双方接收或copy完成。

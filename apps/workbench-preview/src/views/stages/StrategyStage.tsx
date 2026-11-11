@@ -1,3 +1,5 @@
+import {useService,useServiceContext} from '../../app/services';
+import {SimpleStrategyPanel} from '../../proposal/SimpleStrategyPanel';
 /**
  * C. Strategy. Starts from the question the proposal must answer, shows where category, brand
  * and audience meet (with the evidence behind each), argues to a conclusion that answers the
@@ -29,6 +31,7 @@ const CIRCLES: Circle[] = ['category', 'brand', 'audience'];
 
 export function StrategyStage({ proposal: p }: { proposal: Proposal }) {
   const t = useT();
+  const simple=useService().simpleStrategy,connected=useServiceContext().proposals.backing==='connected';
   const pid = p.workbenchId;
   const s = p.strategy;
   // Coming back from a piece of evidence (`?focus=circle-brand`) reopens the circle it came from.
@@ -39,6 +42,7 @@ export function StrategyStage({ proposal: p }: { proposal: Proposal }) {
     return c && (CIRCLES as readonly string[]).includes(c) ? c : 'center';
   });
   if (p.id === 'qingyu-pack' && p.workbenchId === 'qingyu' && p.type === 'packaging' && s === null) return <QingyuStrategyPreview proposal={p} />;
+  if(connected&&simple&&pid!=='qingyu'&&pid!=='luma')return <SimpleStrategyPanel projectId={pid}/>;
   if (!s) return <StageEmpty proposal={p} stage="strategy" />;
   const dirs = p.themes?.directions ?? [];
   return (
