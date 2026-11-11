@@ -1,0 +1,57 @@
+{
+  "baseline": "df719104205662812b28b3ad3a91af52d14860d1",
+  "date": "2026-11-11",
+  "method": "三个worker分两批六条线只读核对，根逐项汇总和抽查；本JSON仅锁本地报告身份",
+  "reports": [
+    {
+      "slice": "research",
+      "localReport": ".scratch/capability-reconciliation-20261111/research.md",
+      "sha256": "144d6b8b28565b79221ef13c32a6b5ef7d21d2d0e445b54ad2f1c723a0eb7480",
+      "result": "ISSUES",
+      "meaning": "对账已完成，发现接线/方法/证据范围差异；不是旧业务失败"
+    },
+    {
+      "slice": "creative",
+      "localReport": ".scratch/capability-reconciliation-20261111/creative.md",
+      "sha256": "a9146974162553c18ba227f1b0a8a0543cabe9fc72b6aae4b55994594e6d66e0",
+      "result": "ISSUES",
+      "meaning": "对账已完成，发现接线/方法/证据范围差异；不是旧业务失败"
+    },
+    {
+      "slice": "visual",
+      "localReport": ".scratch/capability-reconciliation-20261111/visual.md",
+      "sha256": "23168ccdf95f1cbece809c4b52359e271d8661828e5f3b7eae3534a14687108f",
+      "result": "ISSUES",
+      "meaning": "对账已完成，发现接线/方法/证据范围差异；不是旧业务失败"
+    },
+    {
+      "slice": "runtime-integration",
+      "localReport": ".scratch/capability-reconciliation-20261111/runtime-integration.md",
+      "sha256": "328020cc7c2a5715cc14dd0abe5a455fa42d0d7b9f9ba6aa7fd3a640af0031ff",
+      "result": "ISSUES",
+      "meaning": "对账已完成，发现接线/方法/证据范围差异；不是旧业务失败"
+    },
+    {
+      "slice": "layout-delivery",
+      "localReport": ".scratch/capability-reconciliation-20261111/layout-delivery.md",
+      "sha256": "58be3bda35b1571870927106041ade46c3397ee06740eaa114e7e7ddb7983950",
+      "result": "ISSUES",
+      "meaning": "对账已完成，发现接线/方法/证据范围差异；不是旧业务失败"
+    },
+    {
+      "slice": "pages-governance",
+      "localReport": ".scratch/capability-reconciliation-20261111/pages-governance.md",
+      "sha256": "7d47fc181e581fdd15b84efa0ecc808e2d0133de7525378e5e937b707ee78c88",
+      "result": "ISSUES",
+      "meaning": "对账已完成，发现接线/方法/证据范围差异；不是旧业务失败"
+    }
+  ],
+  "limits": "没有业务执行、测试重跑、DB读取、真实模型或新UI验收；历史原件保持本地，不整体上传",
+  "independentReview": {
+    "localReport": ".scratch/capability-reconciliation-20261111/independent-review.md",
+    "sha256": "65257f67648a1f247a2ea5426260ea36866282b547e7eb8ad6ef41b8b5ba123b",
+    "result": "PASS",
+    "reviewedSummarySha256": "b00a6eb99327bfacc19f98aad08dda24cc0d5d2a65beebfbd608e5835638fd98",
+    "scope": "六线对账与最终文档差异；不是测试、UI或业务批准"
+  }
+}

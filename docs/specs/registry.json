@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.5.0",
+  "baselineVersion": "1.5.1",
   "date": "2026-11-11",
-  "status": "七阶段独立协议及受限研究接线；独立读者回环和完整研究交接待实现",
+  "status": "六线既有能力对账与接线导航纠正；旧成果按原范围继承，新协议差异定向适配",
   "workflow": [
     "brief",
     "research",
@@ -494,7 +494,7 @@
       "kind": "contract",
       "title": "页面基线与责任索引",
       "path": "docs/pages/README.md",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.workbench-ui-owner",
@@ -526,7 +526,7 @@
       "kind": "contract",
       "title": "开发启动与工程入口",
       "path": "docs/development/README.md",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -535,7 +535,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -562,7 +562,7 @@
       "kind": "contract",
       "title": "Git与PR及版本恢复",
       "path": "docs/development/git-and-recovery.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -580,7 +580,7 @@
       "kind": "contract",
       "title": "工作台操作说明",
       "path": "docs/usage/README.md",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -589,7 +589,7 @@
       "kind": "contract",
       "title": "Pitch Agent后续调整顺序",
       "path": "docs/development/remaining-work.md",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
@@ -627,7 +627,7 @@
       "title": "七阶段研究入口接续",
       "kind": "contract",
       "path": "docs/development/seven-stage-research.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.workflow",

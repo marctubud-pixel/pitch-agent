@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.5.0",
-  "registrySha256": "3fcb5742a6245e30086f2fa76289d930d64f24ad29a40887bf8138dff3ce99c3",
+  "baselineVersion": "1.5.1",
+  "registrySha256": "680f2a23e3fa83bbed3b754be538fe65c1281e8a86745ec4f6fa5e07fea90615",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -290,10 +290,10 @@
       }
     },
     "contract.pages": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/README.md": "44aede7310feb09d89d103f1fb85d99e5666004c6160b66b41facd4a8d600d4c"
+        "docs/pages/README.md": "b45f5a1fe19608a15c91b5751d4828fe79ae82e7d591c2dd48b8279f1ef49830"
       }
     },
     "contract.final-review": {
@@ -311,17 +311,17 @@
       }
     },
     "contract.development": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/README.md": "b2da1c20bfdae01a4b3564a8ce82074238f658e57b73652bf382204b02962299"
+        "docs/development/README.md": "637681208c80b49fd4de63b7bf8969a7ac37a1f86b247780152cd30d34cf3793"
       }
     },
     "contract.runtime": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "files": {
-        "docs/architecture/runtime.md": "c43af6d3e629dfab8d5e2327c9d490e2394977729b4e7fc7a362b921a711a003"
+        "docs/architecture/runtime.md": "f2602cd08239715d9687f5683285ef2f058b62f0126279d5e7baf3e8faf75f48"
       }
     },
     "contract.configuration": {
@@ -339,10 +339,10 @@
       }
     },
     "contract.git": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "files": {
-        "docs/development/git-and-recovery.md": "0c265cd26698c980a703b4c559b7abd561e0fab449ac636cc54132c6d53027f8"
+        "docs/development/git-and-recovery.md": "e03020081ffd671732fe83f25f5596e68bd4c43452e5fb94949d4a00f3238745"
       }
     },
     "contract.resources": {
@@ -353,17 +353,17 @@
       }
     },
     "contract.usage": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "files": {
-        "docs/usage/README.md": "3669646de18c794d1fe534087ff4aa4b725cbe44e5a206925ceafae5f1110391"
+        "docs/usage/README.md": "12c87885e2c3d0fd11628244cd51ab48557a31f550086d77695eea2d235671c3"
       }
     },
     "contract.remaining-work": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/remaining-work.md": "a0b614e82d5d6b1cf4aa3897ec4f58b0b041dc04376874c2d7636b3779513754"
+        "docs/development/remaining-work.md": "ec4f544ba743247c0719b2481a03549423ab13bf1e4b9644d3aa5311b4965fb8"
       }
     },
     "contract.http-brief": {
@@ -381,10 +381,10 @@
       }
     },
     "contract.seven-stage-research": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/seven-stage-research.md": "6333058f7aa328bd2ccf55a38f03c9ad273833035d3a4ecddcbfbad37758c6bd"
+        "docs/development/seven-stage-research.md": "80662bff6b4b8495c1fbf0dbcbbd5394114adb2e1a28f2cffe90222cdbf6f95f"
       }
     }
   },
@@ -395,7 +395,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "1c648304f660e0c9ade0982b7b80364baff2fc5cbcf971904ea4dcaca5fa1e33",
-    "docs/specs/README.md": "d3ba314984beef5c62ca1c17a0f9c7b9e74fcd1013c9cee6e0ba6d3cd02ae2b7",
+    "docs/specs/README.md": "e59fdffd199f84b4e942d226524aafd02df19e81ff4a40f8ad8579c0b8621c42",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

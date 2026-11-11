@@ -1,6 +1,6 @@
 # 页面基线与责任索引
 
-规范版本：1.1.0。16份页面规格含15个当前页面条目和1个退役条目。当前条目不表示该页完整交互已经定稿或正式接通。
+规范版本：1.1.1。16份页面规格含15个当前页面条目和1个退役条目。当前条目不表示该页完整交互已经定稿或正式接通。
 
 全部当前页面由[工作台UI负责人](../agents/workbench-ui-owner.md)维护外观与交互一致性，由开发统筹派发实现，修改后按[UI审核岗位](../agents/ui-review-owner.md)核真实界面。下表列业务内容责任人；内容责任不等于该岗位兼做前端开发。
 
@@ -50,4 +50,4 @@
 
 路由合同从 `src/app/router.tsx` 定位。青屿layout与delivery复用 `src/proposal/qingyu-layout/QingyuLayoutPreview.tsx`，本地终审摘要在 `src/proposal/qingyu-final-review`，它们不写正式阶段通过。
 
-`src/services/index.ts`中的提案阶段目前仍使用MockProposalService，即使配置HTTP地址也保持该边界；默认助手为Mock。正式岗位调度、权限和账号不能仅凭当前页面或工具面板的存在判定已接通。
+`src/services/index.ts`默认使用MockProposalService；配置HTTP地址后使用HttpWorkbenchService与HttpProposalService读取真实同快照，研究原件通过WorkbenchService独立读取，未接阶段保持空态。HTTP助手仍为显式不可用占位，默认演示助手为Mock；旧助手后端已有实现，尚未迁入此入口。四辅助页已有组件和局部动作，专项未定稿不等于没有实现。跨页UI负责人是维护职责，无需因本次对账另建常驻巡检服务。实际复用和接线差异见[六线对账](../development/capability-reconciliation-20261111.md)。

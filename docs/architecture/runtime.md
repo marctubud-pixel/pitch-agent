@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.2.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。
+规范版本：1.2.1。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -20,7 +20,7 @@ flowchart LR
 
 `apps/workbench-preview/src/App.tsx`装配应用、路由、服务、主题、人类协作和WorkBot。`src/app/router.tsx`负责hash路由，`views/ProjectWorkspace.tsx`装配五项目区域；`ProposalArea.tsx`装配七生产阶段。页面ID与实际路由映射见[页面索引](../pages/README.md)。
 
-`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台、提案和助手为Mock，本地Brief解析另有实际提取能力。HTTP模式用HttpWorkbenchService与HttpProposalService读取同一真实快照，完成项目和简报读写；独立brief-server没有执行器，助手及后续生产动作仍未接通。DTO、Brief封装、历史基准重试与业务版本投影见[简报HTTP合同](../development/http-brief.md)，设置地址本身不代表连接成功。
+`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台、提案和助手为Mock，本地Brief解析另有实际提取能力。HTTP模式用HttpWorkbenchService与HttpProposalService读取同一真实快照，完成项目和简报读写，研究原件另有真实读取。brief-server默认没有执行器，显式配置可执行指定研究job，不扫描恢复旧任务。HTTP助手及后续生产未迁移此入口，旧助手后端已有实现与限定工程证据。DTO、Brief封装、重试与业务版本见[简报HTTP合同](../development/http-brief.md)和[研究接续](../development/seven-stage-research.md)，设置地址本身不代表连接成功。
 
 `src/services/proposal`及`collaboration`负责本地提案、角色、修订和草稿保护。本地权限矩阵不等于生产身份服务；浏览器持久化不是远程数据库。案例投影在`src/proposal/qingyu-*`，依输入、版本与哈希守卫只读显示原稿和原评，不能反写正式阶段通过。
 
@@ -30,10 +30,10 @@ flowchart LR
 
 | 模块 | 输入与输出 | 实现入口与依赖 |
 | --- | --- | --- |
-| 受限简报HTTP | 项目读／新建、任务卡保存／确认，输出真实快照与重放回执 | `brief-server.mjs`，仅store与域，不恢复或派发job |
+| 受限简报与研究HTTP | 项目与任务卡、来源、研究原件及核验，输出真实快照与重放回执 | `brief-server.mjs`默认store与域；显式研究配置只执行指定job，不扫描或恢复旧任务 |
 | 任务与业务域 | 命令、当前修订和权限输入，输出新状态或明确拒绝 | `tools/workbench/project.mjs`、各阶段合同 |
 | 存储 | 版本、head、执行与回执，读取可信快照 | `store.mjs`，Node SQLite，业务数据在`.data` |
-| 派发与恢复 | 有效任务和预算，输出job、attempt和原生执行记录 | `executor.mjs`、`scheduler.mjs`、`recovery.mjs` |
+| 派发与恢复 | 有效任务和资源边界，输出job、attempt和原生执行记录 | `executor.mjs`、`server.mjs`内部pump/schedule及`recovery.mjs`；没有独立scheduler.mjs |
 | HTTP与配置 | DTO及实际供应商配置，输出受限接口和结果 | `server.mjs`、`launch-config.mjs`；不能从界面示例推断接通 |
 | 研究与创意 | 证据、当前稿、隔离评审输入及能力配置 | 研究、文案、参考、草图及视觉各runtime；与最新简化岗位规则仍需对接核验 |
 | 正式终审 | 可信快照、实际多版原生页及覆盖义务 | `final-review-*`等模块；能力、签收和最终交付不能由规划器输出替代 |
