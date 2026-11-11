@@ -4,9 +4,14 @@ import type {PendingBriefWrite, PendingWriteKind} from '../../domain/service';
 
 export function pendingWriteKind(path: string, body: Record<string, unknown>): PendingWriteKind {
   if (path === '/projects') return 'create_project';
-  const suffix = /^\/projects\/[A-Za-z0-9-]+\/(commands|sources|research-jobs|research-verification|research-readiness|research-handoffs|research-release|documents)$/.exec(path)?.[1];
+  const suffix = /^\/projects\/[A-Za-z0-9-]+\/(commands|sources|research-jobs|research-verification|research-readiness|research-handoffs|research-release|documents|research-questions|research-readers|research-reader-reconciliations|research-revisions|research-reader-dispositions)$/.exec(path)?.[1];
   switch (suffix) {
     case 'commands': if (body.kind === 'revise-task-card') return 'save_brief'; if (body.kind === 'confirm-task-card') return 'confirm_brief'; break;
+    case 'research-revisions': return 'revise_research';
+    case 'research-reader-dispositions': return 'dispose_reader';
+    case 'research-questions': return 'register_research_questions';
+    case 'research-readers': return 'read_research';
+    case 'research-reader-reconciliations': return 'reconcile_reader';
     case 'documents': return 'upload_original';
     case 'sources': return 'add_source';
     case 'research-jobs': return 'generate_research';
@@ -17,7 +22,7 @@ export function pendingWriteKind(path: string, body: Record<string, unknown>): P
   }
   throw new ServiceError('validation', '未决提交不是受限简报或研究操作。');
 }
-export const pendingWriteLabels: Record<PendingWriteKind, string> = {create_project: '新建提案', save_brief: '保存简报', confirm_brief: '确认简报', add_source: '登记来源', generate_research: '开始研究', verify_research: '核验研究事实', review_readiness: '核验研究有效性', record_handoff: '提交研究交接', release_research: '放行研究', upload_original: '保存资料原件'};
+export const pendingWriteLabels: Record<PendingWriteKind, string> = {create_project: '新建提案', save_brief: '保存简报', confirm_brief: '确认简报', add_source: '登记来源', generate_research: '开始研究', verify_research: '核验研究事实', review_readiness: '核验研究有效性', record_handoff: '提交研究交接', release_research: '放行研究', upload_original: '保存资料原件', register_research_questions:'登记研究问题', read_research:'开始独立首读', reconcile_reader:'核对原读者结果', revise_research:'按读者问题修订研究', dispose_reader:'保存逐项处理'};
 
 export class BriefWriteJournal {
   private cached: PendingBriefWrite | null = null;

@@ -1,5 +1,7 @@
 import {verifySplitProjectOriginals} from './readiness-split-runtime.mjs';
 import {buildSemanticRequest} from './research-semantic-review.mjs';
+import {buildResearchReaderRequest} from './research-reader-loop.mjs';
+import {applyResearchMethod} from './research-method.mjs';
 import {MODEL_VIEW_CONTENT_CONTRACT,planningContentPacket} from './content-contract-versions.mjs';
 import {reopenContentPlanningOriginal} from './content-planning-original.mjs';
 import {createHash} from 'node:crypto';
@@ -44,7 +46,8 @@ export async function ordinaryJobInput(project,job,attempt,{executionRoot}){
   const root=project.jobs.find(j=>j.id===job.contentRootJobId);need(root);request=contentRequest(project,root,job.node).request;
  }else{
   const task=job.task;
-  if(job.purpose==='owner_acceptance')request=buildOwnerRequest(task.ownerInput);
+  if(job.purpose==='research_reader')request=buildResearchReaderRequest(task.readerInput);
+  else if(job.purpose==='owner_acceptance')request=buildOwnerRequest(task.ownerInput);
   else if(job.purpose==='correction_review')request=buildCorrectionReviewRequest(task.correctionReviewInput);
   else if(job.purpose==='feedback_review')request=buildFeedbackReviewRequest(task.feedbackReviewInput);
   else if(job.purpose==='creative_review')request=buildCreativeRequest(task.creativeInput);
@@ -60,6 +63,7 @@ export async function ordinaryJobInput(project,job,attempt,{executionRoot}){
    const inputArtifacts=[];
    for(const id of job.inputVersionIds){const artifact=project.artifacts.find(a=>a.id===id);if(!artifact)continue;const loaded=await readArtifactContent(project,id,executionRoot);inputArtifacts.push({id,stage:artifact.stage,content:loaded.content,...(task.upstreamReviewConstraints?.[id]?{reviewConstraints:task.upstreamReviewConstraints[id]}:{})});}
    request=buildStageRequest({stage:job.stage,brief:task.brief,inputArtifacts,sourceRecords:task.sourceRecords??[],visualCatalogue:task.visualCatalogue??[],revisionInput:task.revisionInput,correctionInput:task.correctionInput,copyContractVersion:task.copyContractVersion,strategyContractVersion:task.strategyContractVersion,strategyBasis:task.strategyBasis,researchContractVersion:task.researchContractVersion,researchDataBasis:task.researchDataBasis,researchRevision:task.researchRevision});
+   if(job.stage==='research'&&task.researchMethod)request=applyResearchMethod(request,task.researchMethod,task.researchQuestionRegistration);
   }
   imageRefs=imageRefs.length?imageRefs:job.purpose==='observation'?task.observationInput.images:job.purpose==='observation_review'?task.observationReviewInput.images:job.purpose==='feedback_review'?task.feedbackReviewInput.revisionInput.materials:job.purpose==='correction_review'?task.correctionReviewInput.correctionInput.materials:(task.correctionInput??task.revisionInput)?.materials??[];
   packet=JSON.stringify({projectId:project.id,jobId:job.id,attemptId:attempt.id,inputVersionIds:job.inputVersionIds,sourceRecords:task.sourceRecords??[],...request},null,2);

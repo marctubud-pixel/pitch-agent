@@ -23,6 +23,7 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const service = raw.workbench;
   const uploadPolicy = raw.proposals.getBrandResourceUploadPolicy?.bind(raw.proposals);
   const recovery = service.briefRecovery;
+  const reader = service.researchReader;
   const recoveryAction = (): TeamAction => {
     const pending = recovery?.getPending();
     if (!pending) throw new ServiceError('validation', '没有待核对的简报提交。');
@@ -36,6 +37,16 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const workbench: WorkbenchService = {
     get environment() { return service.environment; },
     briefRecovery,
+    researchReader: reader ? {
+      excerpts: (id,artifactId) => reader.excerpts(id,artifactId),
+      revise: (id,artifactId,meta) => store.run({kind:'workflow'},actor=>reader.revise(id,artifactId,{...meta,actor})),
+      dispose: (id,input,meta) => store.run({kind:'edit_research'},actor=>reader.dispose(id,input,{...meta,actor})),
+      get: id => reader.get(id),
+      report: (id,reportId) => reader.report(id,reportId),
+      register: (id,input,meta) => store.run({kind:'edit_research'},actor=>reader.register(id,input,{...meta,actor})),
+      start: (id,input,meta) => store.run({kind:'workflow'},actor=>reader.start(id,input,{...meta,actor})),
+      reconcile: (id,jobId,meta) => store.run({kind:'workflow'},actor=>reader.reconcile(id,jobId,{...meta,actor})),
+    } : undefined,
     subscribe: (listener) => service.subscribe(listener), setLocale: (locale) => service.setLocale(locale),
     getCapabilities: () => service.getCapabilities(), listProjects: (query) => service.listProjects(query),
     getProjectOverview: (id) => service.getProjectOverview(id), getBriefHistory: (id) => service.getBriefHistory(id),

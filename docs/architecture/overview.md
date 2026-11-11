@@ -4,7 +4,7 @@
 
 # 七阶段运行协议与研究接入 · 2026-11-11
 
-新项目proposal-seven-v1从原生域和SQLite保存协议身份，旧记录保持旧STAGES。研究任务绑定固定r7方法SHA和实际prompt回执，受限服务仅处理指定研究，不恢复旧job；HTTP研究原件按实际正文SHA读取。默认执行关闭，r7读者回环缺失时正向交接及放行拒绝。模块职责与缺口见[接续](../development/seven-stage-research.md)。
+新项目proposal-seven-v1从原生域和SQLite保存协议身份，旧记录保持旧STAGES。研究任务绑定固定r7方法SHA和实际prompt回执，受限服务仅处理指定研究，不恢复旧job；HTTP研究原件按实际正文SHA读取。默认执行关闭；当前读者登记、首读、typed修订和独立复查复用旧执行器，实际文件与全部席位齐备后才允许相应研究交接。模块职责与缺口见[接续](../development/seven-stage-research.md)和[读者运行合同](../development/research-reader.md)。
 
 # 本地简报HTTP合流 · 2026-11-11
 

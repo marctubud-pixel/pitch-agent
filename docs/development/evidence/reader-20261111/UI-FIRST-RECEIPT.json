@@ -1,0 +1,82 @@
+{
+  "id": "project-0f4031f7d4c6c11120e11839d6d3312bf9d49676da1f7b91c6488d66668312f7",
+  "url": "http://127.0.0.1:4430/#/p/project-0f4031f7d4c6c11120e11839d6d3312bf9d49676da1f7b91c6488d66668312f7/proposal/research",
+  "posts": [
+    "{\"artifactId\":\"2a824e7a-3840-440b-8a0f-d22be95b394d\",\"registrationId\":\"questions-d463b414063ba9ff9f3e173d6c9ec46f3a92f3668ee6a05f62ccf43053c7339a\",\"seat\":0,\"commandId\":\"cmd-bbe6d6cd-60cb-44b4-981b-2a42da80e632\",\"expectedRevision\":7}",
+    "{\"artifactId\":\"2a824e7a-3840-440b-8a0f-d22be95b394d\",\"registrationId\":\"questions-d463b414063ba9ff9f3e173d6c9ec46f3a92f3668ee6a05f62ccf43053c7339a\",\"seat\":0,\"commandId\":\"cmd-bbe6d6cd-60cb-44b4-981b-2a42da80e632\",\"expectedRevision\":7}"
+  ],
+  "sameBody": true,
+  "readerJobs": [
+    {
+      "id": "reader-ba0778995f56ff0e01bd95e0eadca5caa9ef69f7e2baab4b6330e1221d46f571",
+      "status": "succeeded",
+      "attempts": 1
+    }
+  ],
+  "reportId": "90f83c2e-f634-4a5c-9ccb-a512025f270e",
+  "artifactId": "2a824e7a-3840-440b-8a0f-d22be95b394d",
+  "contentHash": "3634aa13b5d818420636959ca4acc8f8e62722c33846cdc921b551bff955324a",
+  "reportHash": "402fa30ec64bbafa1a1fdeca02a1e2cd8bf2abfa610ef86eb19f36ddf6819d0d",
+  "eligibility": {
+    "understandingComplete": false,
+    "blocking": [
+      "question:q1",
+      "issue:reader-gap-1"
+    ],
+    "artifactId": "2a824e7a-3840-440b-8a0f-d22be95b394d",
+    "contentHash": "3634aa13b5d818420636959ca4acc8f8e62722c33846cdc921b551bff955324a",
+    "packetHash": "1453e742f9118a18a4a741e62484e9e34bdf05996b70f65484365d4661d4a080",
+    "reportHash": "a3d21baba05575e46690513d891d51ed6075db532897a1d4132e6a165d976a7b",
+    "factualSufficiencyVerified": false,
+    "humanApproval": false,
+    "consumerValidation": false
+  },
+  "original": {
+    "reportId": "90f83c2e-f634-4a5c-9ccb-a512025f270e",
+    "jobId": "reader-ba0778995f56ff0e01bd95e0eadca5caa9ef69f7e2baab4b6330e1221d46f571",
+    "attemptId": "04e8248d-dd77-42ff-b8f4-94733dabda83",
+    "artifactId": "2a824e7a-3840-440b-8a0f-d22be95b394d",
+    "contentHash": "3634aa13b5d818420636959ca4acc8f8e62722c33846cdc921b551bff955324a",
+    "packetHash": "1453e742f9118a18a4a741e62484e9e34bdf05996b70f65484365d4661d4a080",
+    "reportHash": "402fa30ec64bbafa1a1fdeca02a1e2cd8bf2abfa610ef86eb19f36ddf6819d0d",
+    "registrationId": "questions-d463b414063ba9ff9f3e173d6c9ec46f3a92f3668ee6a05f62ccf43053c7339a",
+    "registrationHash": "7cde9c3f2298cfdbfaa2b3f2fbd5189c76e969daf19092bedde3a090a81d1f90",
+    "method": {
+      "id": "design-research-lead",
+      "version": "r7-20261109",
+      "sha256": "ebd616b74559263847c44aa3adcf6e92bfc8306a0657107dba103dd937f39a2c"
+    },
+    "rawResponseHash": "a3d21baba05575e46690513d891d51ed6075db532897a1d4132e6a165d976a7b",
+    "readerSeat": 0,
+    "current": true,
+    "scope": "saved-report-prose",
+    "eligibility": {
+      "understandingComplete": false,
+      "blocking": [
+        "question:q1",
+        "issue:reader-gap-1"
+      ],
+      "artifactId": "2a824e7a-3840-440b-8a0f-d22be95b394d",
+      "contentHash": "3634aa13b5d818420636959ca4acc8f8e62722c33846cdc921b551bff955324a",
+      "packetHash": "1453e742f9118a18a4a741e62484e9e34bdf05996b70f65484365d4661d4a080",
+      "reportHash": "a3d21baba05575e46690513d891d51ed6075db532897a1d4132e6a165d976a7b",
+      "factualSufficiencyVerified": false,
+      "humanApproval": false,
+      "consumerValidation": false
+    }
+  },
+  "geometry": {
+    "width": 910,
+    "scrollWidth": 910,
+    "scrollY": 0,
+    "topbar": 0
+  },
+  "control": {
+    "className": "btn btn--secondary",
+    "borderStyle": "solid",
+    "padding": "7px 18px"
+  },
+  "errors": [],
+  "researchRelease": 0,
+  "scope": "Actual current UI with new local synthetic HTTP; no factual sufficiency, consumer validation or human release"
+}

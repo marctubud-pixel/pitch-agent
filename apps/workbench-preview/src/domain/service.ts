@@ -1,3 +1,4 @@
+import type {ResearchReaderService} from './researchReader';
 import type {
   Artifact,
   ArtifactDetail,
@@ -37,7 +38,7 @@ import type {
  * The only way components talk to data. The demo uses MockWorkbenchService; a real backend
  * gets an HttpWorkbenchService implementing the same interface (src/services/http).
  */
-export type PendingWriteKind = 'create_project' | 'save_brief' | 'confirm_brief' | 'add_source' | 'generate_research' | 'verify_research' | 'review_readiness' | 'record_handoff' | 'release_research' | 'upload_original';
+export type PendingWriteKind = 'create_project' | 'save_brief' | 'confirm_brief' | 'add_source' | 'generate_research' | 'verify_research' | 'review_readiness' | 'record_handoff' | 'release_research' | 'upload_original' | 'register_research_questions' | 'read_research' | 'reconcile_reader' | 'revise_research' | 'dispose_reader';
 export interface PendingBriefWrite {kind: PendingWriteKind; path: string; body: string; commandId: string; label: string}
 export interface BriefRecovery {
   getPending(): PendingBriefWrite | null;
@@ -47,6 +48,7 @@ export interface BriefRecovery {
 export interface WorkbenchService {
   readonly environment: EnvironmentInfo;
   readonly briefRecovery?: BriefRecovery;
+  readonly researchReader?: ResearchReaderService;
 
   /** Notifies when data may have changed so views can refresh. */
   subscribe(listener: ServiceListener): () => void;

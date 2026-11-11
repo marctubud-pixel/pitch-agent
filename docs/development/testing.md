@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.3.1。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.4.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -35,8 +35,15 @@
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。r7独立读者回环未接入，完整研究交接与生产仍未完成。默认运行不会执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集和后续生产仍未完成；默认不执行模型。
 
 ## PDF原件子路径
 
-默认test:brief-http加入brief-intake-service与brief-original-http两组，使用自有小SQLite与原件fixture，覆盖未确认保存/读取/重开、同体恢复、跨项目/错版/损坏、字段与HTTP边界，仍不执行解析或模型。前端intakeHttp使用真实受限处理器与Blob，实际Chrome和独立只读UI另见[本轮核验](brief-originals-verification-20261111.md)。读者和策略纯候选未因此纳入本轮通过。
+默认test:brief-http加入brief-intake-service与brief-original-http两组，使用自有小SQLite与原件fixture，覆盖未确认保存/读取/重开、同体恢复、跨项目/错版/损坏、字段与HTTP边界，仍不执行解析或模型。前端intakeHttp使用真实受限处理器与Blob，实际Chrome和独立只读UI另见[本轮核验](brief-originals-verification-20261111.md)。该PDF保存核验不覆盖读者运行；读者新工作包另见下节，策略仍待接。
+
+
+## 研究读者回归
+
+`test:research-contract`覆盖预登记、完整正文、独立席位、原生调用、typed修订、逐项处置、同版复查、owner绑定、真实文件损坏及恢复。部分测试启动仅本机合成HTTP提供方；不访问真实模型或旧run。前端reader测试调用当前native处理器及新临时SQLite，验证原文SHA、回执、权限和丢响应同体恢复。
+
+实际Chrome及独立只读UI另留[核验记录](research-reader-verification-20261111.md)。范围包括理解通过的工程正例与仍待补的实际界面负例，不把测试数量或UI通过当成研究语义质量。全链包装/KV及PPT验收仍按总目标另做。

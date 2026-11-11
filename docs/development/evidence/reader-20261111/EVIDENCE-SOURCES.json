@@ -1,0 +1,67 @@
+{
+  "scope": "Current reader UI/engineering evidence only; no business approval; runtime DB and full model originals remain local",
+  "baseline": "44c495b14677cc8e16b77957fe060a483a4d3f84",
+  "files": [
+    {
+      "path": "docs/development/evidence/reader-20261111/UI-FIRST-RECEIPT.json",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-r2/READER-UI-RECEIPT.json",
+      "sha256": "5901ba8dfa35b3961d0d022d484a8554fa17d214271db4a81ffc138371b25768",
+      "byteLength": 3790
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/UI-RECHECK-RECEIPT.json",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-r2/READER-UI-RECHECK-RECEIPT.json",
+      "sha256": "adffd13c2df528257b97d94d7e2c57ec8c23892e6d562c0a71a380b9222403b2",
+      "byteLength": 5706
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/UI-INDEPENDENT-FINAL.json",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-independent-history-final.json",
+      "sha256": "99deb0b0a3819ee947ac10d808bab8e8205d540d71da18073166d20e7ed4fd23",
+      "byteLength": 14940
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/form-before-1280-light.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-independent-form-1280-light.png",
+      "sha256": "c19631798f9be5146c06daafe6880ba1ef11453343f0f742b2790cec46c565fc",
+      "byteLength": 276062
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/form-after-1280-light.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-independent-final-form-1280-light.png",
+      "sha256": "270386919a6320299339b86cb3cd3651dd8157716c66dd9833c394d3a6cb31d7",
+      "byteLength": 273644
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/history-before-1280-light.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-independent-recheck-history-1280-light.png",
+      "sha256": "61440036db229990e3a28a017a2e7d9a0abcf1d2421473c9f880b5a81338616e",
+      "byteLength": 448331
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/history-after-1280-light.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-independent-history-final-1280-light-detail.png",
+      "sha256": "12d6da79c2b319963d25ae888d0ef07610971c044408c037efbcae90a8ebb363",
+      "byteLength": 55041
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/recheck-after-910-dark.png",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/reader-independent-consumed-final-910-dark-detail.png",
+      "sha256": "2888e10be788578a65b568a3c52eee2c9f63d6de2ba28c0934599ba30844b926",
+      "byteLength": 49205
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/ui-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/reader-ui-review.md",
+      "sha256": "590efc79867de340f1515cf70d93b36e8300b8aa15ac073e86ed713f7104a418",
+      "byteLength": 22384
+    },
+    {
+      "path": "docs/development/evidence/reader-20261111/standards-increment-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/reader-runtime-standards-review.md",
+      "sha256": "63e8720666dc442952b6371bb7a1fe75263ea06e1126e926c62a0f2c11515138",
+      "byteLength": 11898
+    }
+  ],
+  "finalTwoAxisReview": "Pending fixed-commit review; increment review is scoped as its raw report states"
+}

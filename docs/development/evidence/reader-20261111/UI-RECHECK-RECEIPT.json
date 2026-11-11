@@ -1,0 +1,162 @@
+{
+  "id": "project-0f4031f7d4c6c11120e11839d6d3312bf9d49676da1f7b91c6488d66668312f7",
+  "url": "http://127.0.0.1:4430/#/p/project-0f4031f7d4c6c11120e11839d6d3312bf9d49676da1f7b91c6488d66668312f7/proposal/research",
+  "dispositionPosts": [
+    "{\"artifactId\":\"3abd1f72-89b9-4ece-8488-3ace129dc918\",\"previousReportId\":\"90f83c2e-f634-4a5c-9ccb-a512025f270e\",\"dispositions\":[{\"issueId\":\"reader-gap-1\",\"action\":\"narrowed\",\"response\":\"已把颜色事实与偏好推断分开；真实人群依据仍待补，本轮不签解决或研究完成。\",\"locations\":[{\"location\":\"/summary\",\"quote\":\"Synthetic package is blue. 颜色事实不能证明人群购买偏好，相关依据仍未知。\"}]}],\"commandId\":\"cmd-a120049a-bef6-458f-a67c-f0d1350d82cf\",\"expectedRevision\":16}",
+    "{\"artifactId\":\"3abd1f72-89b9-4ece-8488-3ace129dc918\",\"previousReportId\":\"90f83c2e-f634-4a5c-9ccb-a512025f270e\",\"dispositions\":[{\"issueId\":\"reader-gap-1\",\"action\":\"narrowed\",\"response\":\"已把颜色事实与偏好推断分开；真实人群依据仍待补，本轮不签解决或研究完成。\",\"locations\":[{\"location\":\"/summary\",\"quote\":\"Synthetic package is blue. 颜色事实不能证明人群购买偏好，相关依据仍未知。\"}]}],\"commandId\":\"cmd-a120049a-bef6-458f-a67c-f0d1350d82cf\",\"expectedRevision\":16}"
+  ],
+  "sameBody": true,
+  "artifactCount": 2,
+  "dispositionCount": 1,
+  "readerJobs": [
+    {
+      "id": "reader-ba0778995f56ff0e01bd95e0eadca5caa9ef69f7e2baab4b6330e1221d46f571",
+      "status": "succeeded",
+      "phase": "first_read",
+      "attempts": 1
+    },
+    {
+      "id": "reader-0fcb822e48827ea64fd30a68f4e38e69dfa70d07935d38843377b81cbc5121f5",
+      "status": "succeeded",
+      "phase": "recheck",
+      "attempts": 1
+    }
+  ],
+  "reportId": "a067d8c9-cf5a-46f7-bcda-6e4239af1144",
+  "artifactId": "3abd1f72-89b9-4ece-8488-3ace129dc918",
+  "contentHash": "2bfe35969607f603a3c70c40d116f853451e847a72eaebcfd22b7b76c3d10dbc",
+  "reportHash": "c3a5378ef104ccc44a40b9456f89cd86d3ce3aaae5600be4beb7ea183d170569",
+  "eligibility": {
+    "understandingComplete": false,
+    "blocking": [
+      "question:q1",
+      "issue:reader-gap-1",
+      "previous_issue:reader-gap-1"
+    ],
+    "artifactId": "3abd1f72-89b9-4ece-8488-3ace129dc918",
+    "contentHash": "2bfe35969607f603a3c70c40d116f853451e847a72eaebcfd22b7b76c3d10dbc",
+    "packetHash": "24d0ece84222bc9bd20159c419146249731657f3a9943c4cb0027680b5405112",
+    "reportHash": "53d4113da75cb9c2f1aab7b07f0a7d0f990687cf2bd295b0dc79a4183e20e107",
+    "factualSufficiencyVerified": false,
+    "humanApproval": false,
+    "consumerValidation": false
+  },
+  "rechecks": [
+    {
+      "issueId": "reader-gap-1",
+      "status": "unresolved",
+      "explanation": "新版澄清了关系，但实际人群依据仍缺，不能签解决。",
+      "locations": [
+        {
+          "location": "/summary",
+          "quote": "Synthetic package is blue. 颜色事实不能证明人群购买偏好，相关依据仍未知。"
+        }
+      ]
+    }
+  ],
+  "workflow": {
+    "protocolVersion": "research-handoff-v3",
+    "ownerReports": {
+      "producer": {
+        "declarationId": null,
+        "jobId": null,
+        "reportId": null,
+        "status": "not_requested",
+        "decision": null
+      },
+      "consumer": {
+        "declarationId": null,
+        "jobId": null,
+        "reportId": null,
+        "status": "not_requested",
+        "decision": null
+      }
+    },
+    "currentReleaseId": null,
+    "verificationReportIds": [],
+    "canReturn": {
+      "allowed": false,
+      "reason": "RESEARCH_R7_READER_REQUIRED"
+    },
+    "authorizationPath": "model-owners",
+    "artifactId": "3abd1f72-89b9-4ece-8488-3ace129dc918",
+    "basisHash": null,
+    "producerDeclarationId": null,
+    "consumerDeclarationId": null,
+    "currentDeclarationIds": [],
+    "assessmentId": null,
+    "checks": [
+      {
+        "id": "verification",
+        "label": "verification",
+        "passed": false,
+        "detail": "HARD_BLOCKER",
+        "fix": null
+      },
+      {
+        "id": "readiness",
+        "label": "readiness",
+        "passed": false,
+        "detail": "RESEARCH_READINESS_REQUIRED",
+        "fix": null
+      },
+      {
+        "id": "delivery",
+        "label": "delivery",
+        "passed": false,
+        "detail": "HANDOFF_REQUIRED",
+        "fix": null
+      },
+      {
+        "id": "acceptance",
+        "label": "acceptance",
+        "passed": false,
+        "detail": "HANDOFF_REQUIRED",
+        "fix": null
+      },
+      {
+        "id": "release",
+        "label": "release",
+        "passed": false,
+        "detail": "RESEARCH_R7_READER_REQUIRED",
+        "fix": null
+      },
+      {
+        "id": "reader_loop",
+        "label": "独立读者回环",
+        "passed": false,
+        "detail": "RESEARCH_R7_READER_REQUIRED",
+        "fix": null
+      }
+    ],
+    "canDeliver": {
+      "allowed": false,
+      "reason": "RESEARCH_R7_READER_REQUIRED"
+    },
+    "canAccept": {
+      "allowed": false,
+      "reason": "RESEARCH_R7_READER_REQUIRED"
+    },
+    "canRelease": {
+      "allowed": false,
+      "reason": "RESEARCH_R7_READER_REQUIRED"
+    },
+    "suggested": {
+      "permittedUses": [],
+      "prohibitedInferences": [],
+      "unresolvedIssues": []
+    },
+    "alreadyContinued": false,
+    "eligible": false,
+    "summary": "RESEARCH_R7_READER_REQUIRED"
+  },
+  "geometry": {
+    "width": 910,
+    "scrollWidth": 910,
+    "scrollY": 0,
+    "topbar": 0
+  },
+  "errors": [],
+  "releases": 0,
+  "scope": "Actual current browser revision/disposition/recheck; synthetic local HTTP; missing evidence remains unresolved, no research release"
+}

@@ -196,3 +196,14 @@ describe('identity-scoped assistant storage', () => {
      await expect(api.proposals.ensureBrandResourceStorage(resources)).rejects.toMatchObject({kind: 'forbidden'}); expect(calls).toHaveLength(1);
    } finally {f.team.destroy();}
  });
+
+it('protects optional independent-reader commands and passes the actual operator identity',async()=>{
+ const {raw,team}=setup(),calls:unknown[][]=[];
+ const stop=async(...args:unknown[]):Promise<never>=>{calls.push(args);throw Error('reached test boundary');};
+ const reader={excerpts:stop,revise:stop,dispose:stop,get:stop,report:stop,register:stop,start:stop,reconcile:stop} satisfies import('../domain/researchReader').ResearchReaderService;
+ const api=protectServices({...raw,workbench:Object.assign(raw.workbench,{researchReader:reader})},team),protectedReader=api.workbench.researchReader;
+ if(!protectedReader)throw Error('Missing optional reader');
+ team.selectActor('human-guest');const input={questions:[{id:'q',question:'事实边界？',critical:true}],readerCount:1} satisfies {questions:import('../domain/researchReader').ReaderQuestion[];readerCount:1|2};
+ await expect(protectedReader.register('luma',input,meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.start('luma',{artifactId:'a',registrationId:'r',seat:0},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.reconcile('luma','job',meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.revise('luma','artifact',meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.dispose('luma',{artifactId:'new',previousReportId:'old',dispositions:[]},meta)).rejects.toMatchObject({kind:'forbidden'});expect(calls).toEqual([]);
+ team.selectActor('human-owner');await expect(protectedReader.register('luma',input,meta)).rejects.toThrow('reached test boundary');expect(calls[0][2]).toMatchObject({actor:{id:'human-owner'}});team.destroy();
+});

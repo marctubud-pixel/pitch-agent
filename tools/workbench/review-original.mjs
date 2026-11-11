@@ -1,3 +1,4 @@
+import {verifyResearchReaderOriginal} from './research-reader-original.mjs';
 import {verifySplitProjectOriginals,validateSplitExecution} from './readiness-split-runtime.mjs';
 import {createHash} from 'node:crypto';
 import {loadSavedReadinessProof} from './readiness-evidence.mjs';
@@ -16,7 +17,9 @@ export async function verifyReviewOriginal(project,kind,report,{executionRoot,im
  const checked=validateStoredReview(project,kind,report),{source,request,input,collection,outputFilename}=checked;
  need(equal(member(project[collection],report.id),report),'Exact registered report required');
  const job=member(project.jobs,report.jobId),attempt=member(job.attempts,report.attemptId),artifact=member(project.artifacts,report.artifactId);
- if(report.resolutionId){
+ if(kind==='research_reader'){
+  await verifyResearchReaderOriginal(project,report,{executionRoot});
+ }else if(report.resolutionId){
   need(kind==='readiness','Only readiness has a recovered original owner');
   const resolution=member(project.readinessResolutions,report.resolutionId);
   need(resolution.kind==='recovered-result'&&resolution.jobId===job.id&&resolution.attemptId===attempt.id&&resolution.reportId===report.id,'Exact registered readiness recovery required');
@@ -48,7 +51,7 @@ export async function verifyReviewOriginal(project,kind,report,{executionRoot,im
  const receipt=report.executionReceipt;
  const content=await readArtifactContent(project,artifact.id,executionRoot);
  const panel=kind==='creative_panel'?member(project.creativePanels,report.panelId):null;
- need(equal(content.content,input.content??panel?.packet.content),'Original reviewed content bytes changed');
+ need(kind==='research_reader'?content.contentText===job.task.readerContentText:equal(content.content,input.content??panel?.packet.content),'Original reviewed content bytes changed');
  const attachments=[];
  for(const [occurrenceIndex,image] of (receipt.images??[]).entries()){
   need(imageStore&&typeof imageStore.read==='function','Managed image store required');

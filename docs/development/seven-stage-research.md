@@ -1,31 +1,32 @@
 # 七阶段与研究入口接续
 
-规范版本：1.0.1。使用当前开发应用，保持默认演示及旧预览。业务判断见[七阶段运行合同](../specs/seven-stage-runtime.md)，旧成果与接线差异见[六线对账](capability-reconciliation-20261111.md)。
+规范版本：1.1.0。当前应用沿用已认可页面和旧业务模块。运行规则见[七阶段合同](../specs/seven-stage-runtime.md)，既有成果见[六线对账](capability-reconciliation-20261111.md)。
 
-## 默认运行
+## 启动本地入口
 
-沿用两个终端`npm run dev:brief`和`npm run dev:http`。新项目自动登记七阶段协议，当前任务确认后可读取研究工作区、登记本版来源和查看真实研究记录；旧项目不会自动升级。默认研究执行关闭，界面显示原因，生成按钮禁用。来源原文可落库，但仍未独立核实；没有研究产物不画示例图补全。
+1. 运行`npm run dev:brief`和`npm run dev:http`。
+2. 在当前应用新建并确认简报。
+3. 在研究页展开**研究问题与独立读者**，先登记问题及读者数量。
+4. 登记本版来源。品牌PDF可按[原件说明](brief-originals.md)保存，保存不代表已抽取或采用。
 
-来源、研究请求、核验、交接等提交沿用未决记录。记录以接口和本地角色隔离，按path/body重建稳定kind与权限；保留旧简报会话记录兼容。刷新后核对同一原始命令，身份在整个核对过程中锁定；错版返回冲突，原请求保留。
+默认执行关闭。未配置时显示原因，不创建模型job。显式执行仍使用同一隔离数据库的`--research-config PATH --research-execution enabled`；reader另需独立岗位binding。配置参考[读者合同](research-reader.md)，不因开关存在就授权真实费用。
 
-## 实际接口
+## 生成与核研究
 
-API根仍为`/api/v1`。受限服务增加本版来源登记、研究工作流、原生正文读取、研究请求／证据核验／充分性检查及交接／放行入口。JSON字段白名单、Host、Origin和body上限保持。正文返回artifactId、contentHash、content及contentText，前端按实际原文字节核SHA和对象一致性。
+显式本地配置可生产本版研究稿，读取实际正文和来源，分别运行事实、充分性及semantic检查。论点未分类或缺证时保留原文与缺口。r7方法SHA与预登记问题实际进入研究请求，旧稿不能补标签改身份。
 
-HTTP原件、论点、来源、核验和交接投影从旧正式前端定向迁移。声明不生成接受记录；已有研究但没有当前报告、核验或接收时保留待核。未分类证据保留在原文并提示缺口，不猜用途。策略续接始终拒绝，不使用旧复杂策略合同。
+在折叠面板发起独立正文首读。打开原报告查看六维复述、问答、跨维综合、具体问题、限制和正文依据。必要时按原问题生成修订稿，逐项保存负责人处理并选择新稿实际原文，再单独发起复查。保存回应不是复查通过，AI理解不是事实成立。
 
-## 执行配置边界
+同版预定席位及原始文件齐备后，才继续既有研究交出、策略负责人接收及显式放行。声明要对应真实owner报告，不能直接建立接受结果。HTTP快照和正向操作核实际文件，损坏或未知调用保持待核。策略执行仍关闭，不能解封旧strategy-v2。
 
-默认没有执行器。程序化researchOptions或CLI显式研究配置可加载既有供应商与独立评审设置；启用执行需同时提供同一隔离数据库的配置和`--research-execution enabled`。配置入口为`--research-config PATH`，未启用时只作读取，不执行模型。配置中的独立semantic角色使用既有原生配置租约，不自动改现存不同配置。
+## 核对丢失的返回
 
-这套入口只执行本次请求指定研究任务，不恢复旧job，不自动重试未知结果，不接旧完整server的调度循环。命令示例不替代真实运行授权与预算；本轮使用新临时SQLite及合成provider验证合同，没有实际计费调用。
+页面上方出现原提交时，核对同一请求；不要换命令或使用新head重造body。已知历史结果明确提示历史，并保留原问题、回应和引用。真正未知不自动retry；保存的HTTP结果可按原locator恢复，缺原结果仍unknown。
 
-r7独立读者方法、三任务理解测试和青屿修订后回读已有成果；当前缺少新协议的同版读者执行/报告与复核判定，正向交接及正式放行仍拒绝。来源、生成、核验与原件读取可单独验收，完整“Brief→研究→研究交接”仍未接完。下一项复用旧intake/采集模块，接品牌原文件与同版读者报告，不重做研究Skill或旧报告。本地工程接线可用明确测试配置在新隔离项目验证，真实模型质量和费用另按授权处理，不补成功记录。
+## 查看本轮证据
 
-## 验证与Git
+[研究读者核验](research-reader-verification-20261111.md)记录实际新SQLite、合成HTTP调用、版本、坏原件反例、恢复和真实UI范围。合成研究、AI评审及工程操作员不代表真实市场结论、客户批准或消费者验证。
 
-本轮首先创建[简报PR #1](https://github.com/marctubud-pixel/pitch-agent/pull/1)，其specifications和application两项远程CI均success，正常合并为`4aaf32163b76026b88b0d44747523817399d5b09`。七阶段与研究工程随后经[PR #2](https://github.com/marctubud-pixel/pitch-agent/pull/2)两项CI成功合并为`df719104205662812b28b3ad3a91af52d14860d1`。本地原生checks和merge回执保存在`.scratch/seven-stage-research-20261111/PUBLISH-RECEIPT.json`；保护设置未由此证明。
+[PR #1](https://github.com/marctubud-pixel/pitch-agent/pull/1)和[PR #2](https://github.com/marctubud-pixel/pitch-agent/pull/2)分别接Brief与受限研究，PDF原件经[PR #4](https://github.com/marctubud-pixel/pitch-agent/pull/4)双CI成功合并。当前读者包的Git/PR/CI按最终原生回执登记，不提前签发布。
 
-本轮专用命令`npm run test:research-contract`验证新旧协议、方法实际字节、回执调用、默认拒绝、来源重放和合成生成。前端HTTP回归核原件SHA、投影、旧稿失效、角色与恢复；实际UI按项目固定ui-review另留证。核心域、既有工程与新变更分别验证，不将合成研究作为真实市场结论。
-
-本轮实际范围与证据见[核验记录](seven-stage-verification-20261111.md)。
+自动采集、PDF解析/模型提取、简洁策略及后续仍待接。原得闲/青屿、旧数据库、真实模型、费用、生产账号、通知、云部署和已暂缓在线编辑不在本轮恢复范围。
