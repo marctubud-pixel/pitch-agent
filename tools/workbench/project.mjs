@@ -1,4 +1,4 @@
-import {reduceCopyHttp,requireCopyHttpJob} from './simple-copy-http.mjs';
+import {copyHttpJobs,reduceCopyHttp,requireCopyHttpJob} from './simple-copy-http.mjs';
 import {reduceSimpleHttp,requireSimpleHttpJob} from './simple-strategy-http.mjs';
 import {requireAcquisitionHttpJob} from './research-acquisition.mjs';
 import {SIMPLE_STRATEGY_VERSION,createSimpleStrategyBasis} from './seven-stage-strategy.mjs';
@@ -2149,7 +2149,7 @@ export function applyCommand(project, command, context) {
     case 'start-job':
     case 'retry-job': {
       const job = p.jobs.find(j => j.id === c.jobId);
-      if(c.copyHttpRequestId)requireCopyHttpJob(p,c.copyHttpRequestId,job);
+      if(c.copyHttpRequestId){const edgeId=requireCopyHttpJob(p,c.copyHttpRequestId,job);requireValue(!copyHttpJobs(p,edgeId).some(j=>['running','awaiting_reconciliation'].includes(j.status)),'COPY_OUTCOME_UNKNOWN','The original copy edge has an unsettled result');}
       if(c.simpleStrategyHttpRequestId)requireSimpleHttpJob(p,c.simpleStrategyHttpRequestId,job);
       if(c.acquisitionHttpRequestId)requireAcquisitionHttpJob(p,c.acquisitionHttpRequestId,job);
       requireValue(job?.purpose!==LAYOUT_PURPOSE&&!['layout','final_review'].includes(job?.stage),'LAYOUT_EXECUTION_UNAVAILABLE','Dedicated native executor is not implemented; generic dispatch cannot replace it');

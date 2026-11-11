@@ -126,6 +126,102 @@
       "file": "readback-910-dark.png",
       "sha256": "5be0de366b5ec11a6e0e86a0daa2ecae0e1b9490fe184846d2bf455cd73b1889",
       "bytes": 114725
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-root-check-tool-transcript.txt",
+      "file": "root-check-tool-transcript.txt",
+      "sha256": "73a16809b5e1392ac5ac25c0671b3d8e296e57796b2233f02d9c0e946c9d2d57",
+      "bytes": 48827
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-explicit-pdf.log",
+      "file": "root-explicit-pdf.txt",
+      "sha256": "2467b2d19041e667793a7385036b62c1ebac590508b510935e2b15f6ad084469",
+      "bytes": 6825
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-explicit-pdf-frontend.log",
+      "file": "root-explicit-pdf-acquisition-frontend.txt",
+      "sha256": "9313545be80c036940c4f659fecd1f8f4489bf2596e92f5f3495de964d4f8d92",
+      "bytes": 599
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-explicit-pdf-original-frontend.log",
+      "file": "root-explicit-pdf-original-frontend.txt",
+      "sha256": "bce6243b6b3cbbfe1d837aba84a8c75f0b9aef760fc113a49681256e01ce23c7",
+      "bytes": 600
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-explicit-pdf-acquisition.log",
+      "file": "root-explicit-pdf-acquisition.txt",
+      "sha256": "3e62778a7ca2c89dd835d190f02cf26980f28524764a2be0506d375925ce4a21",
+      "bytes": 438
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-final-spec.md",
+      "file": "final-spec.txt",
+      "sha256": "553571e42bef5c2a7a8a9533bcca3d5da8cb0be7cdf9acff2aeb1767a68b7553",
+      "bytes": 2637
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-final-spec-fixed.md",
+      "file": "final-spec-fixed.txt",
+      "sha256": "158adbfc31607013915fdd6cedc0f8ce1f4f81bb07941a3ef77c4555d1004efa",
+      "bytes": 2293
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-final-spec-readonly-result.json",
+      "file": "final-spec-readonly-result.json",
+      "sha256": "eed9323174f1aaf00b28f1c41c34b55b2785f823b8e6f790b11d55a294cf2c83",
+      "bytes": 529
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-final-spec-fixed-result.json",
+      "file": "final-spec-fixed-result.json",
+      "sha256": "98fc266a8dc632fe54e9df177d7323d0ded1500a0dd631513e26f70c79b2fe25",
+      "bytes": 543
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-final-spec-recovered-fixed-result.json",
+      "file": "final-spec-recovered-fixed-result.json",
+      "sha256": "5af90b8a3a6413fadb70b0394a3f2a566a99e9e7dbc5a8a7915929bfce561001",
+      "bytes": 498
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-final-standards.md",
+      "file": "final-standards.txt",
+      "sha256": "3c3340fc9e1a856337704a720006ccc0261894e2592a7f8d072cff2fba3413f9",
+      "bytes": 1854
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-stop-red.log",
+      "file": "stop-red.txt",
+      "sha256": "5fa587c4876df6790a2cc83db167d67072cdc56ac25f42e682b3c392dbc33a4d",
+      "bytes": 4174
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-stop-green.log",
+      "file": "stop-green.txt",
+      "sha256": "dc3f06794779668c89f029fc7c4edbe65937a205b96fa4e2b0ff5a285f725e8f",
+      "bytes": 786
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-final-standards-fixed.md",
+      "file": "final-standards-fixed.txt",
+      "sha256": "67985058d829e115c83c760f26bda9f664c1fb74eee55434936695aba632328e",
+      "bytes": 2186
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-stop-neighbors.log",
+      "file": "stop-neighbors.txt",
+      "sha256": "6fa2f430e563526d878dfda874c0246f5e20e36a98c4eec7002b0c352bf78fbe",
+      "bytes": 4737
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-stop-frontend-http.log",
+      "file": "stop-frontend-http.txt",
+      "sha256": "648a09bf85525dee1498e97de54312754b5775bfeed8bda1df427d089385c405",
+      "bytes": 455
     }
   ]
 }

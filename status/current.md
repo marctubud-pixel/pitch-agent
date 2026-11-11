@@ -1,8 +1,8 @@
 # 文案工作包本地接线 · 2026-11-12
 
-策略[PR #8](https://github.com/marctubud-pixel/pitch-agent/pull/8)最终1008676f准确双CI与实际安装/测试/构建步骤成功，已合并3e230d51。当前独立codex/simple-copy-20261112已按SHA采用backend14与frontend r2 20文件；只窄合测试fixture保留受阻诊断，旧数据/青屿不改。规范1.11.0已生成锁，最终门禁仍待收束。
+策略[PR #8](https://github.com/marctubud-pixel/pitch-agent/pull/8)最终1008676f准确双CI与实际安装/测试/构建步骤成功，已合并3e230d51。当前独立codex/simple-copy-20261112已按SHA采用backend14与frontend r2 20文件；只窄合测试fixture保留受阻诊断，旧数据/青屿不改。规范1.11.1已同步未知停止回归，最终锁，最终门禁仍待收束。
 
-根typecheck、25项可移植纯绑定/历史/权限与7项原生变化/未知/来源边界通过。具名包装R1真实UI已完成双owner、唯一三方向copy及全文核验，同原body恢复零重复；17评审推进时旧UI队列刷新窗口重复点击被原native守卫422拒绝，原记录保留。已修刷新禁写、中文系统标题与待评审状态投影，同案延迟GET探针证明刷新中禁止新写；随后原队列完成17份报告、revision163/30job各1attempt、人类决定0。已补待视觉交接与已保存按钮说明，最后同案只读UI复验已通过（0POST、project/原稿/17报告不变），完整根回归进行中，见[文案核验](../docs/development/simple-copy-verification-20261112.md)。
+根typecheck、25项可移植纯绑定/历史/权限与7项原生变化/未知/来源边界通过。具名包装R1真实UI已完成双owner、唯一三方向copy及全文核验，同原body恢复零重复；17评审推进时旧UI队列刷新窗口重复点击被原native守卫422拒绝，原记录保留。已修刷新禁写、中文系统标题与待评审状态投影，同案延迟GET探针证明刷新中禁止新写；随后原队列完成17份报告、revision163/30job各1attempt、人类决定0。已补待视觉交接与已保存按钮说明，最后同案只读UI复验已通过（0POST、project/原稿/17报告不变）。功能c22184ba完整根回归通过，未配置PDF的环境专项已显式补验；独立Spec发现组内unknown续派P2，现已补服务停止/原actual claim双守卫，5项先红后绿及同原快照独立复验通过，修后原实际HTTP2+unknown1、前端HTTP2及域26/调度5全通过，Standards字段共享P3亦独立关闭，见[文案核验](../docs/development/simple-copy-verification-20261112.md)。
 
 文案后续unknown恢复/改稿再评、视觉到Deck/终审及包装/KV整链仍待完成；视觉A仅隔离推进参考/草图/v2原生接线。最新资源约45GiB，清理检查点与未归因系统增加的说明保留。下面为历史节点。
 

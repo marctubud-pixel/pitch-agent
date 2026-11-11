@@ -1,0 +1,21 @@
+# SIMPLE文案接续 · Standards修复复核
+
+范围：以`c22184bacc8cadae41056fa71fa6b7a310fb582d`为基准，只读审查当前未提交的四源码增量（simple-copy-http、simple-copy-service、brief-server、project）、新增simple-copy-stop测试，以及simple-copy-http测试新增的原snapshot actual-claim断言。原固定提交报告保留。本次不扩大到其他未提交文件。
+
+## Hard violations
+
+未发现新增可确证硬规范违例，无P1/P2。沿用原报告已读的根／应用AGENTS、CONTRIBUTING、change-control、ui-system、tools边界和simple-copy合同。新增验证集中在HTTP准入与原生claim边界；未扩大授权、重新派发未知任务或改写原生产者身份。
+
+## Code smells（判断项）
+
+原P3 **Duplicated Code已关闭**：`tools/workbench/simple-copy-http.mjs:6`导出唯一`COPY_HTTP_FIELDS`，`brief-server.mjs:150`和`simple-copy-service.mjs:16`共享。实际Node断言确认外层对象及每个字段数组均冻结。两层仍分别调用验证，没有删掉边界校验。
+
+未发现值得报告的新增明显smell。`copyHttpJobs`复用同edge集合且无edge返回空，避免把缺省edge与其他阶段任务混淆；服务入账前、逐项dispatch前与`project.mjs:2152`原生claim各自保护其真实边界，不将必要的分层检查判为重复代码。
+
+## 实际验证与限制
+
+本审查独立执行`node --test tools/workbench/simple-copy-stop.test.mjs`：5/5通过、零skip。覆盖首unknown停止、原请求重放零续派、新请求入账前拒绝、同edge running/unknown拒绝、其他edge隔离及无edge投影。另实际执行共享表冻结与无edge空集合断言，均通过。
+
+已静态核读HTTP测试：从原revision的已登记snapshot派生第二claim可运行正例，再把首job标dispatch/interrupted，断言第二claim抛`COPY_OUTCOME_UNKNOWN`；调用纯`applyCommand`，另核原store revision未变。本次未执行这项较长HTTP用例，不冒称实际DB反例、恢复SIMPLE身份专项、根回归或两项前端HTTP由本审查运行；它们由对应责任方另留证。
+
+未改源码、Git、数据库或服务，仅新增本复核报告。

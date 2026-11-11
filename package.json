@@ -25,6 +25,6 @@
     "setup:workbench": "npx --yes pnpm@11.25.0 --dir tools/workbench install --frozen-lockfile --ignore-scripts",
     "test:research-acquisition": "node --test tools/workbench/research-acquisition.test.mjs tools/workbench/research-acquisition-boundary.test.mjs tools/workbench/research-acquisition-selection.test.mjs tools/workbench/research-acquisition-material.test.mjs tools/workbench/research-acquisition-manifest.test.mjs tools/workbench/research-acquisition-service.test.mjs tools/workbench/research-acquisition-bridge-http.test.mjs",
     "test:simple-strategy": "node --test --test-concurrency=1 tools/workbench/seven-stage-strategy.test.mjs tools/workbench/simple-strategy-runtime.test.mjs tools/workbench/simple-strategy-configuration.test.mjs tools/workbench/simple-strategy-http.test.mjs",
-    "test:simple-copy": "node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs"
+    "test:simple-copy": "node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs tools/workbench/simple-copy-stop.test.mjs"
   }
 }

@@ -1,0 +1,77 @@
+
+> pitch-agent-workspace@0.1.0 test:brief-http
+> node --test tools/workbench/brief-server.test.mjs tools/workbench/brief-intake-service.test.mjs tools/workbench/brief-original-http.test.mjs tools/workbench/brief-extraction-http.test.mjs tools/workbench/intake-python-environment.test.mjs
+
+(node:52347) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ extraction routes read the saved current original and default to no parser or dispatch (51.108667ms)
+✔ extraction request boundaries reject wrong paths, fields, methods, origins, queries and oversized bodies before dispatch (23.531625ms)
+✔ missing configured Python reports actual unavailable capability without running any job (19.076666ms)
+✔ actual local PDF parsing and historical same-body readback survive SQLite reopen without another attempt (568.649667ms)
+✔ actual HTTP PDF result retains text_extracted without claiming model reading (422.457416ms)
+✔ actual HTTP PDF result retains password_required without claiming model reading (425.438209ms)
+✔ actual HTTP PDF result retains invalid without claiming model reading (407.928417ms)
+✔ actual HTTP PDF result retains limit_exceeded without claiming model reading (412.956417ms)
+✔ a durable unknown local claim reopens with original body and no implicit retry (22.065917ms)
+✔ revision changes during extraction read return conflict instead of combining an old file with a new project (14.445709ms)
+✔ failed local work requires explicit HTTP retry, preserving the first attempt and actual local human authority (422.911916ms)
+✔ CLI accepts the PDF option only as explicit absolute parser configuration (108.276625ms)
+✔ actual blank PDF retains no_text even though the local job finished (480.069666ms)
+(node:52348) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ unconfirmed task stores actual PDF bytes without extraction or adoption and survives reopen (49.054459ms)
+✔ lost response replay retains exact body and bytes, without another job or version (20.33925ms)
+✔ project ownership prevents reading another project original (19.33325ms)
+✔ task revision marks retained original stale; historical same-body replay remains safe (18.682ms)
+✔ corrupted saved bytes are rejected by read, list and replay without generating replacement (15.203917ms)
+✔ symlink substitution cannot replace a managed original (14.976917ms)
+✔ strict request boundary rejects unsupported MIME, spoofed fields and malformed metadata (3.815084ms)
+✔ selection identity cannot be reassigned to different bytes or metadata under a fresh command (11.804292ms)
+✔ client selections reject metadata that the brand UI cannot represent before saving (23.063667ms)
+✔ actual configured local extraction before confirmation retains pages and command across reopen without a second attempt (424.826584ms)
+✔ default or missing parser preserves queued zero-attempt work with a truthful capability (25.282959ms)
+✔ old-card originals stay downloadable but a new extraction cannot use stale task identity (14.501459ms)
+✔ actual encrypted, invalid and bounded PDF outcomes are retained without calling them readable text (1144.755208ms)
+✔ explicit local recovery keeps original job and failed attempt; replay never auto-retries (679.562084ms)
+✔ tampered extraction bytes refuse read and replay without another attempt (284.043792ms)
+✔ a committed local retry resumes its queued work once after its return is lost (676.082209ms)
+✔ fresh retry refuses an asynchronous task-card at admission (135.875875ms)
+✔ fresh retry refuses an asynchronous task-card at commit (137.125083ms)
+✔ fresh retry refuses an asynchronous unrelated-revision at admission (145.882125ms)
+✔ fresh retry refuses an asynchronous unrelated-revision at commit (139.270875ms)
+✔ queued-replay retry refuses an asynchronous task-card at admission (146.413792ms)
+✔ queued-replay retry refuses an asynchronous task-card at commit (140.077291ms)
+✔ queued-replay retry refuses an asynchronous unrelated-revision at admission (136.842ms)
+✔ queued-replay retry refuses an asynchronous unrelated-revision at commit (137.867833ms)
+✔ retry start has a distinct stable command and its committed unknown cannot dispatch again after reopen (137.093041ms)
+(node:52349) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ PDF original saves before confirmation and reopens with exact bytes and receipt (51.365417ms)
+✔ original routes retain local origin, exact query, body and method boundaries (9.231458ms)
+(node:52350) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ create, immutable save, confirm and refresh persist with native identity and idempotency (34.695125ms)
+✔ restricted surface exposes no generic execution, policy or fabricated identity (11.786917ms)
+✔ strict JSON, size, revision, string and query validation (9.48725ms)
+✔ loopback host and explicit frontend origin gate CORS and preflight (17.413334ms)
+✔ existing queued and interrupted jobs remain untouched across service startup, reads and Brief writes (13.39175ms)
+✔ requires explicit database and loopback-only listening configuration (0.433416ms)
+✔ shutdown waits for an accepted body before closing SQLite and rejects later requests (6.838416ms)
+✔ browser historical reads allow preflight only for valid revision queries (4.332666ms)
+✔ new projects persist seven-stage protocol and current r7 capability without enabling execution (10.113209ms)
+✔ registered sources retain original task and unverified identity with exact replay (10.293291ms)
+✔ unconfirmed and unconfigured research writes never create jobs or advance strategy (10.357334ms)
+✔ configured symlink venv keeps its Python environment while physical hashes and PDF resource limits remain verified (828.978334ms)
+✔ direct configured Python still probes and parses with the configured interpreter identity (261.09925ms)
+✔ unconfigured and missing Python paths remain unavailable without fallback (0.672917ms)
+✔ an invocation captures its configured path before asynchronous identity reads (124.783959ms)
+✔ a configured symlink retargeted during Python startup is a controlled identity failure (532.569875ms)
+✔ a configured symlink deleted during Python startup is a controlled identity failure (524.204708ms)
+ℹ tests 57
+ℹ suites 0
+ℹ pass 57
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4838.111375

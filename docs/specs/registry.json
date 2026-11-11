@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.11.0",
+  "baselineVersion": "1.11.1",
   "date": "2026-11-12",
   "status": "SIMPLE双负责人至唯一三方向文案、全文核验与原四岗评审已接；下游恢复、改稿及视觉至交付继续目标模式",
   "workflow": [
@@ -553,7 +553,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.8.0",
+      "version": "1.8.1",
       "lifecycle": "current",
       "dependsOn": []
     },

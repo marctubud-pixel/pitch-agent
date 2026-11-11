@@ -1,0 +1,15 @@
+# SIMPLE文案接续 · Standards独立审查
+
+固定范围：`git diff 3e230d5117ab6a485daa4364bbe06ab1c0c627d9...c22184bacc8cadae41056fa71fa6b7a310fb582d`。已实际核对两ref、非空85文件差异，提交列表仅`c22184ba feat: connect simple strategy handoff to native copy review`。实现依据均取该提交，未用未提交内容或视觉隔离worktree代替。
+
+## Hard violations
+
+未发现可确证的文档规范硬违例；无P1/P2。已读根AGENTS、CONTRIBUTING、应用AGENTS、规范入口、change-control、ui-system及tools边界，并按对应策略／文案页面和运行合同核对新增接缝。架构、来源适配、规范注册／变更记录均有定点更新；不将现存大文件或长行风格认定为新增硬违例。TypeScript阅读应用已安装的pstack typescript-best-practices及其type-system-discipline。
+
+## Code smells（判断项）
+
+- **[P3] Duplicated Code：五操作字段表复制。** 新hunk `tools/workbench/brief-server.mjs:149`与新增`tools/workbench/simple-copy-service.mjs:16`都完整声明`continue/step/verify/review/confirm`允许字段。两层验证本身必要，但协议字段将来调整需同步改两份，漂移时可能出现路由已接受、服务再拒绝的维护问题。建议从HTTP协议模块导出同一字段表，两处保留各自验证调用。属可选维护改进，不是当前行为故障或硬门槛。
+
+实际廉价核证：以Python读取固定commit的两份`git show`，确认上述完整字段表逐字出现于149／16行；未改源码、Git、数据库或服务，未跑业务长链。未报告格式、类型或清单等工具已覆盖项目。其余基线smell未形成值得报告的新增问题。
+
+根回归、专项与独立UI结果由主任务另行留证，不冒称本审查执行；本报告也不代表业务或人类批准。

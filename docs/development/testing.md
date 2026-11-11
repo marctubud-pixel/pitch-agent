@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.8.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.8.1。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -76,14 +76,16 @@ PITCH_PDF_TEST_PYTHON=/absolute/path/to/python3 npm run test:brief-http
 
 ## 文案接续专项
 
-当前源码有simple-copy-runtime、simple-copy-http、simple-copy-negative和simple-copy-scope四组专项。可直接串行执行：
+当前源码有simple-copy-runtime、simple-copy-http、simple-copy-negative、simple-copy-scope和simple-copy-stop五组专项。可直接串行执行：
 
 ```sh
-node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs
+node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs tools/workbench/simple-copy-stop.test.mjs
 ```
 
 这些测试使用新SQLite和本机合成HTTP，覆盖实际双负责人、唯一copy、全文核验、17节点、明确人工策略checkpoint、固定集合重放、unknown及上游变化拒绝。已核回SIMPLE专项另核原作者、原attempt、原IO文件身份在下游执行前后保持。工程IO证明不能代替原生校准、真实语义异议处理或客户批准。
 
 前端copyWorkflowHttp、copyCreativeProjection及既有恢复、权限测试核正文SHA、原回执、17节点完整packet/phase/inputs与合法历史可读。copyCreativeProjection默认读取仓库内明确合成的原生快照，原packet/17节点反例与合法历史测试不再依赖个人.scratch环境或静默skip；可显式PITCH_COPY_PROJECTION_SNAPSHOT覆盖为另一实际快照。快照来源和SHA记录在test-fixtures/simple-copy/origin.json；纯投影不代表CI实际访问了历史原件文件。
 
-`npm run test:simple-copy`已按上述四文件串行集合加入根check及Application CI。实际原生双owner与17评审有真实IO成本，Application job上限由15分钟调为30分钟，不降低任何测试断言或业务门槛。候选owner测试和独立反例只支持其冻结字节与具体范围。当前根typecheck已有通过记录，最终check、实际UI和PR #9仍待真实回执。不得用旧候选自述签根验收，也不把合成空异议票称为真实质量通过。
+`simple-copy-stop`直接检查整组首项未知后停止、原body重放零续派、新命令入账前拒绝、无edge不混入研究和不同edge隔离。实际HTTP正例另用同一新案的原历史快照执行合法start/dispatched/interrupted，再核第二原claim拒绝；不写原历史或重造模型结果。
+
+`npm run test:simple-copy`已按上述五文件串行集合加入根check及Application CI。实际原生双owner与17评审有真实IO成本，Application job上限由15分钟调为30分钟，不降低任何测试断言或业务门槛。候选owner测试和独立反例只支持其冻结字节与具体范围。根完整回归、修后受影响检查、实际UI及PR #9分别记录在[本轮核验](simple-copy-verification-20261112.md)，远程结果按准确head回执更新。不得用旧候选自述签根验收，也不把合成空异议票称为真实质量通过。

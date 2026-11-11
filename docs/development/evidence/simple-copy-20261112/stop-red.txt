@@ -1,0 +1,96 @@
+(node:74710) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ a fixed four-job step stops at its first unknown and exact replay does not dispatch the remainder (2.647709ms)
+✖ a prior running on the same edge refuses a new step before its ledger entry (0.574083ms)
+✖ a prior awaiting_reconciliation on the same edge refuses a new step before its ledger entry (0.432958ms)
+✔ an unsettled job on another edge does not block this fixed group (0.409458ms)
+✖ a workspace without an owner edge never presents unrelated research jobs as copy jobs (0.22925ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 1
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 133.35675
+
+✖ failing tests:
+
+test at tools/workbench/simple-copy-stop.test.mjs:22:1
+✖ a fixed four-job step stops at its first unknown and exact replay does not dispatch the remainder (2.647709ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      'job-0',
+  +   'job-1',
+  +   'job-2',
+  +   'job-3'
+    ]
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/tools/workbench/simple-copy-stop.test.mjs:24:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'job-0', 'job-1', 'job-2', 'job-3' ],
+    expected: [ 'job-0' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tools/workbench/simple-copy-stop.test.mjs:31:67
+✖ a prior running on the same edge refuses a new step before its ledger entry (0.574083ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/tools/workbench/simple-copy-stop.test.mjs:32:36)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'COPY_OUTCOME_UNKNOWN' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tools/workbench/simple-copy-stop.test.mjs:31:67
+✖ a prior awaiting_reconciliation on the same edge refuses a new step before its ledger entry (0.432958ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/tools/workbench/simple-copy-stop.test.mjs:32:36)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'COPY_OUTCOME_UNKNOWN' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tools/workbench/simple-copy-stop.test.mjs:38:1
+✖ a workspace without an owner edge never presents unrelated research jobs as copy jobs (0.22925ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'job-0',
+  +   'job-1',
+  +   'job-2',
+  +   'job-3'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/tools/workbench/simple-copy-stop.test.mjs:39:77)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'job-0', 'job-1', 'job-2', 'job-3' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -40,6 +40,10 @@ actual claim仍检查原commit、双负责人、当前任务卡/问题/policy/bi
 
 根类型检查、2项实际前端HTTP测试、25项可移植绑定/合法历史/权限测试、7项原生变化/未知/来源边界已通过。portable快照只保存合成历史metadata，不包含物理原IO，不代替原生验收。精选[HTTP日志](evidence/simple-copy-20261112/root-http.txt)、[边界日志](evidence/simple-copy-20261112/root-boundaries.txt)及[类型日志](evidence/simple-copy-20261112/root-typecheck.txt)保留实际输出。
 
-完整根检查、最终两轴审查和PR/CI仍在收束；不由以上专项推定全部通过。规范基线1.11.0、58项注册及16张固定页面截图；393份导入和147份封存原件身份继续核对。
+功能提交`c22184bacc8cadae41056fa71fa6b7a310fb582d`的根功能回归退出0：前端765通过/7跳过、核心78、域26、Brief/PDF31通过/26环境专项跳过、研究80、采集60通过/1环境专项跳过、策略26、文案12，类型、依赖原字节检查及构建通过。该命令未配置PDF环境；随后使用已安装的显式Python补验Brief/PDF57/57、前端原件5项及采集1项、后端采集1项均通过。六个前端环境专项已补齐，余1项为既有跳过。过滤命令中未选测试的skip不冒称执行；构建保留大chunk提示。[工具输出转录](evidence/simple-copy-20261112/root-check-tool-transcript.txt)注明初始命令标题已规范化及build stdout被重定向，不冒充完整原始stdout。
+
+固定`c22184ba`两轴审查中，Standards无硬规范违例、1项字段表复制P3；Spec证实1项P2：原四节点组首项合法变为未知后，后续claim仍能启动。原报告和只读反例保留，见[Spec](evidence/simple-copy-20261112/final-spec.txt)、[Standards](evidence/simple-copy-20261112/final-standards.txt)。修复后新step在入账前拒同edge未决工作，已受理原组每次dispatch前重新读取并停止；原实际claim也用同edge门槛。缺edge不再误纳研究任务，已恢复SIMPLE的成功job及未知原attempt保持合法。五项调度行为先4红/1绿，再5/5通过；独立同原revision82证实第二claim由running变为`COPY_OUTCOME_UNKNOWN`，见[修后独立核验](evidence/simple-copy-20261112/final-spec-fixed.txt)。五操作字段表已共享，Standards窄复核无新增问题。修后域26+调度5、实际HTTP两项（含同一新案历史快照的合法unknown actual-claim拒绝）、原unknown边界1项及前端实际HTTP2项全部退出0，见[修后后端](evidence/simple-copy-20261112/stop-neighbors.txt)、[修后前端](evidence/simple-copy-20261112/stop-frontend-http.txt)和[Standards补核](evidence/simple-copy-20261112/final-standards-fixed.txt)。原完整通过与修后针对性验证分别保留。
+
+[PR #9](https://github.com/marctubud-pixel/pitch-agent/pull/9)已建立草稿；最终head的远程CI及合并仍待真实回执。最终规范基线1.11.1、58项注册及16张固定页面截图；393份导入和147份封存原件身份继续核对。视觉纯解码性能修复另在隔离候选验证，没有混入本PR。
 
 [证据来源](evidence/simple-copy-20261112/EVIDENCE-SOURCES.json)逐文件记录原路径、字节数和SHA。完整SQLite、native快照、原IO、大图和失败留本地原位；仓库精选不能恢复未纳管的运行数据。
