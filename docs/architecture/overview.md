@@ -218,3 +218,7 @@ R4 发布器另提供折叠的工程参考记录统计，数据来自同一案�
 brief-server通过simple-copy-service和simple-copy-http复用原生双负责人、owner commit、唯一copy-message-v2、全文核验与原四岗17节点评审。前端可选copyWorkflow由CopyWorkflowPanel展示当前实际正文与业务动作，完整packet与原执行输入由copyCreativeProjection核验，保留合法历史只读身份。
 
 人工策略采用与续接分开，GET报告不声明逐份物理复核全部原票。原件、校准、业务质量和人类选案各有独立依据；下游unknown恢复、改稿再评及视觉至交付仍待接。接口与模块边界见[文案接续合同](../development/simple-copy.md)。此前案例记录保持各自时点身份。
+
+## 图片原件只读核验接缝 · 2026-11-12
+
+ordinary-model-project的两个原件verifier通过model-http-authority私有scope仅复用成功图片dimensions，每次原件读取及上下文校验保持，invoke关闭祖先scope，拒绝失效及generation防回填。当前微型便携回归另有明确Pillow环境，见[读取合同与证据](../development/image-readback.md)。不由此签视觉A或质量通过。

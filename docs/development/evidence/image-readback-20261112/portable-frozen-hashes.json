@@ -1,0 +1,42 @@
+{
+  "status": "test-candidate-only-not-adopted",
+  "runtime": {
+    "node": "v24.13.0",
+    "python": "3.11",
+    "Pillow": "12.0.0"
+  },
+  "results": {
+    "base": {
+      "pass": 1,
+      "fail": 8,
+      "skip": 0
+    },
+    "r1": {
+      "pass": 3,
+      "fail": 6,
+      "skip": 0
+    },
+    "r2": {
+      "pass": 9,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "files": {
+    "README.md": "efd611fd133aa99dd6642ad9bf05491e8c07d18a5262c68b784ac3824fd4ed40",
+    "http-original-fixture.mjs": "1e23ca9ab2f3d16606ba8fa1c460955e54e8d2266b59d4fb910a0df2441bda5a",
+    "overlay-loader.mjs": "fd1d6be01b5fc269ff193bcb0d08365c631860c3e026148490eba1ef85aa81ea",
+    "portable-regression.test.mjs": "5b6e02501a9b29c6f97957a4452d1a5d022b0b44c6c1ba433020a47e7692318e",
+    "base-red.log": "f4458a44b88addedac0ec03fb9c5830ee965474361f318a4c0edd9fae8ae45f9",
+    "r1-red.log": "2114bb1253b3cc59708e8ed493da72a65bb42d37c58452ebabba2f9c6079833c",
+    "r2.log": "d792e3784663ed1d03561d1c25b5b4c59b600966821e21f79546e5d8537508b2"
+  },
+  "inputModules": {
+    "tools/workbench/model-http-authority.mjs": "59f48ae5714d777f447f186349812d01d4542b4af93ca8a3af233695c4e2ec7d",
+    "tools/workbench/model-http-image-check.mjs": "60aefb7f07a9e006f0a82c372b685eb6f1c9bd5e31c237ef168400e4e2710db1",
+    "tools/workbench/image-evidence.mjs": "0252a7e166a7f629d748f6518cbd03aec1e35f9c7e96a7e90d9e3350ad2ab914",
+    "tools/workbench/image-decoder.mjs": "0b03106ab9d093793c85b421577b3b79c7ecc0a345e68749a5807d8a0c977b8c",
+    ".scratch/seven-stage-static-goal-20261111/design/perf-candidate/tools/workbench/model-http-authority.mjs": "f3672562d9bda36c7b7bf7e782e58ab0908e8d53061d1624010c2845da8db5c1",
+    ".scratch/seven-stage-static-goal-20261111/design/perf-candidate-r2/tools/workbench/model-http-authority.mjs": "73109caf2fffaaca5afaa94de947a2b90e7f7ec15c63943560f700e94f230924"
+  }
+}

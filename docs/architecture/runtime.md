@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.7.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.8.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -86,3 +86,7 @@ brief-intake-service复用intake-runtime→intake-pdf旧工具，显式extractio
 `simple-copy-service.mjs`复用原executor、owner edge和creative panel，`simple-copy-http.mjs`冻结原请求与固定job bindings，brief-server只开放六个受限接口。当前SIMPLE经实际双负责人和原子commit派生唯一copy-message-v2，全文核验及原17节点评审分别执行。策略人工节点由humanContext显式adopt-creative，不用generic release-stage。
 
 前端可选copyWorkflow及CopyWorkflowPanel按业务阶段展示操作。copyWorkflowProjection核来源、正文与报告，copyCreativeProjection核完整冻结packet、phase、17节点和原执行输入，同步SHA仅用于snapshot准入。合法历史保持可读，当前写资格另判。GET originalsVerified=false，不把投影冒称全原票物理核验。下游unknown恢复、文案改稿再评、视觉继续和Deck整链仍待接，详见[文案合同](../development/simple-copy.md)。
+
+## 图片原件只读核验
+
+原普通/reference project verifier拥有单次纯图片解码scope，底层HTTP authority私有管理相同实际bytes的成功dimensions；每次原件IO、SHA、上下文及预算保持。invoke、拒绝及嵌套生命周期按[只读核验合同](../development/image-readback.md)失效，业务门槛和默认执行授权不变。ordinarySameContext只提前比较不同HTTP context标签；matching仍完整校验双方，不引入第二缓存。该读取优化不等于视觉或整链已接通。

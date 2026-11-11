@@ -1,0 +1,33 @@
+{
+  "baseCommit": "b5687cf3644be0e4f34b33eaf221e48e59745c0c",
+  "sourcePatchSHA256": "a312cfed4bbd7a6f4ff42ee2180e02fd0adc291698e4ceffb1ababbad90b37c5",
+  "productionFiles": {
+    "tools/workbench/model-http-authority.mjs": {
+      "base": "59f48ae5714d777f447f186349812d01d4542b4af93ca8a3af233695c4e2ec7d",
+      "r1": "f3672562d9bda36c7b7bf7e782e58ab0908e8d53061d1624010c2845da8db5c1",
+      "r2": "73109caf2fffaaca5afaa94de947a2b90e7f7ec15c63943560f700e94f230924"
+    },
+    "tools/workbench/ordinary-model-project.mjs": {
+      "base": "eecbc89b71afdafc7e7ac57f68c4da6210018ad4658b5f3ff67c23a838ba0ac6",
+      "r1": "45470416970de50e5eff3f87e868fef404dfa6a577fcb72db0e2cffd56b240f7",
+      "r2": "45470416970de50e5eff3f87e868fef404dfa6a577fcb72db0e2cffd56b240f7"
+    }
+  },
+  "tests": [
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs",
+      "target": "tools/workbench/image-verification-scope.test.mjs",
+      "sourceSHA256": "5b6e02501a9b29c6f97957a4452d1a5d022b0b44c6c1ba433020a47e7692318e",
+      "targetSHA256": "2295f515ed0f0bcac50c5586a3a4bd4bf50cc1395f27ff55de1746cb81d186a0",
+      "adaptation": "Helper import renamed"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/perf-portable/http-original-fixture.mjs",
+      "target": "tools/workbench/image-verification-http-fixture.mjs",
+      "sourceSHA256": "1e23ca9ab2f3d16606ba8fa1c460955e54e8d2266b59d4fb910a0df2441bda5a",
+      "targetSHA256": "1e23ca9ab2f3d16606ba8fa1c460955e54e8d2266b59d4fb910a0df2441bda5a",
+      "adaptation": "Byte-identical source"
+    }
+  ],
+  "scope": "Separate local optimization branch; source adoption does not imply root validation or remote CI success."
+}

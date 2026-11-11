@@ -1,0 +1,7 @@
+{
+  "scope": "Corrected only the new root-added sixth test expectation, not the frozen five tests or production. ordinarySuccess checks bounded depth; duplicate-key rejection belongs to transport authority and was not assumed here.",
+  "beforeSHA256": "63e20cd88d27956e05cd8cd3f9161070d55cc5d1068c1497b98e90ee1f2864e9",
+  "afterSHA256": "c615772d66d871d1f8e0729bc5f6a2120a2acf35fdc1328279909f7504e10e9c",
+  "failedLog": ".scratch/seven-stage-static-goal-20261111/image-readback-final-root-tests.log",
+  "productionChanged": false
+}

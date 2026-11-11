@@ -1,0 +1,45 @@
+{
+  "done": true,
+  "mode": "projectView",
+  "revision": 565,
+  "wallMs": 5621.576958,
+  "cpuUs": {
+    "user": 5138185,
+    "system": 769603
+  },
+  "reads": 0,
+  "error": null,
+  "outputSha256": "4b254293c42716818261d8efbcc5d2516b5de284b1cd19642405ac688275a724",
+  "signal": {},
+  "counts": {
+    "projectViewWithin": 1,
+    "ordinarySuccess": 7088,
+    "parseBoundedHttpJSON": 7088,
+    "precheckHttpJSON": 7088,
+    "referenceCorrectionSources": 32,
+    "validateStoredReferenceReports": 35,
+    "validatedReferenceReportPrefix": 35,
+    "validateReferenceReceipt": 1750,
+    "buildReferenceProductionRequest": 700
+  },
+  "uniqueReceiptObjects": 80,
+  "sqlite": {
+    "wallMs": 46.431708,
+    "cpuUs": {
+      "user": 49984,
+      "system": 6104
+    },
+    "bytes": 10234615,
+    "snapshotSha256": "256ee70c9abf9d1939fe1c8919cebac3e77b3013201dbf7b1766fbc7cb0e6300"
+  },
+  "confirmation": {
+    "count": 1,
+    "audits": [
+      {
+        "revision": 1,
+        "at": null
+      }
+    ]
+  },
+  "verdict": "GREEN_COMPLETED"
+}

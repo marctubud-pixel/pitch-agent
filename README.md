@@ -35,6 +35,8 @@ npm run dev
 npm run check
 ```
 
+图片原件核验回归另需当前`python3`可用Pillow；已有PDF测试venv可按[读取验证](docs/development/image-readback.md)复用其环境。
+
 包括规范及隔离反例、仓库与证据身份、前端类型及测试、明示核心域测试和构建。[测试说明](docs/development/testing.md)另列已知旧后端失败、实际UI和原生PPT未验范围。CI文件已配置，远程运行结果与保护设置须按实际GitHub回执确认。
 
 ## 源码和数据

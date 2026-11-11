@@ -1,0 +1,134 @@
+authority overlay: /Users/marc/Documents/ChatGPT/调研agent/.scratch/seven-stage-static-goal-20261111/design/perf-candidate/tools/workbench/model-http-authority.mjs
+✔ same scope reuses two real decodes while every occurrence rereads source and persisted image (768.556375ms)
+✔ separate operations, concurrent scopes and detached closed continuations cannot share decodes (1759.950125ms)
+✔ warm decodes cannot bypass late source, hash, MIME, binding or persisted-original rejection (2240.754459ms)
+RETAINED failed fixture: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/portable-image-original-l6BrPU
+✖ nested invoke revokes ancestor successes (752.878083ms)
+RETAINED failed fixture: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/portable-image-original-0QKgfX
+✖ nested reopen rejection revokes ancestor successes (719.59225ms)
+RETAINED failed fixture: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/portable-image-original-SdYBCA
+✖ nested callback rejection revokes ancestor successes (759.110708ms)
+RETAINED failed fixture: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/portable-image-original-0HEWVj
+✖ nested invoke clears ancestors without clearing concurrent sibling's own cache (914.868125ms)
+RETAINED failed fixture: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/portable-image-original-Xiw8gC
+✖ nested reject clears ancestors without clearing concurrent sibling's own cache (903.486084ms)
+RETAINED failed fixture: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/portable-image-original-QwUGrk
+✖ pending decode from before nested rejection cannot refill an invalidated ancestor (568.255834ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 3
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9436.954042
+
+✖ failing tests:
+
+test at .scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:83:3
+✖ nested invoke revokes ancestor successes (752.878083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 8
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:94:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 8,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:83:3
+✖ nested reopen rejection revokes ancestor successes (719.59225ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 4
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:94:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:83:3
+✖ nested callback rejection revokes ancestor successes (759.110708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 4
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:94:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:100:3
+✖ nested invoke clears ancestors without clearing concurrent sibling's own cache (914.868125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 10
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:117:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 10,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:100:3
+✖ nested reject clears ancestors without clearing concurrent sibling's own cache (903.486084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 6
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:117:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 6,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:122:1
+✖ pending decode from before nested rejection cannot refill an invalidated ancestor (568.255834ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+  +   decodes: 2,
+  -   decodes: 3,
+      originalReads: 4,
+      sourceReads: 4
+    }
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/perf-portable/portable-regression.test.mjs:132:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { decodes: 2, sourceReads: 4, originalReads: 4 },
+    expected: { decodes: 3, sourceReads: 4, originalReads: 4 },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

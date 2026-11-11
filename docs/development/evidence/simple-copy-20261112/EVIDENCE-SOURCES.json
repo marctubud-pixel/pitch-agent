@@ -246,6 +246,24 @@
       "file": "ci-timeout-independent.txt",
       "sha256": "2cde52e168a3f0d65331a89c4eb4866135c49a184907a426783549a4580833e3",
       "bytes": 1918
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/SIMPLE-COPY-PR-FINAL-CI.json",
+      "file": "pr-final-ci.json",
+      "sha256": "bfe23e917b57d9c535f59f9a8ec1ca8ef98d5ec8a97459009cd1e7f03c046943",
+      "bytes": 10247
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/SIMPLE-COPY-PR-FINAL-JOB.json",
+      "file": "pr-final-job.json",
+      "sha256": "1d0885d16c0ab3fa5cd6928fdb525b6fd75e1b8941483b5e25a66f369f1ca0bd",
+      "bytes": 4180
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/SIMPLE-COPY-PR-MERGE.json",
+      "file": "pr-merge.json",
+      "sha256": "3b64489fc81afd38ed409970a1f2ef4f2c103ec240d77db8f81fd73ba9437e0c",
+      "bytes": 122
     }
   ]
 }

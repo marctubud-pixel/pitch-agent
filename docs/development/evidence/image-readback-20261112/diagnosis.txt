@@ -1,0 +1,90 @@
+# 视觉 A 原件回读性能诊断（未修复）
+
+2026-11-12。结论：找到可实际运行、约半秒的红回归 seam。两个真实 reference attempts 在同一 immutable revision 的一次只读核验中，将三份完全相同的实际图片 bytes 各交给纯解码子流程两次。应先考虑保留每次原件 IO、复用已读 bytes 的纯解码结果，不能以减少原件核验换速度。尚未实施、没有加速结论，也不证明视觉 A 通过。
+
+## 身份与边界
+
+- 候选：`.scratch/seven-stage-static-goal-20261111/worktrees/simple-strategy-rebased`；实际工具源码 SHA 见 `perf-probe/identity-and-environment.json`。不是根已采用的生产改动。
+- 原案：`/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-1IpZQ2`；project `project-714a07beddf178027ddd90c48979d5e741f13a8dc2dc9b15de37c7673ee2c58f`。
+- 仅 SQLite `readOnly:true` 取历史 revision 398；解压前后验证 snapshot hash、实际 project/revision。没有读取变化中的 head 来形成结论。原 72 jobs / 56 attempts / 26 reference reports 保持原身份；不是门槛降为26票。
+- 没有启动服务、模型、付费 API、新业务 run；没有接 inspector、暂停或 kill 当前进程。没有改生产源码、原 DB、原件、阈值或票数。既有图片解码器自身会在系统临时目录创建并清理解码文件，未写案例目录。
+- root `GLOSSARY.md`、规范入口、Agent责任、tools边界与 diagnosing-bugs / benchmark-checklist / explain-the-number 已读；`docs/adr/` 不存在。只在本诊断目录写脚本/结果/报告。
+
+## 先实际跑红 loop，再提出假设
+
+最初已运行固定 rev398 的真实 `verifyOrdinaryProject`。两次均成功验证原件，720 opens / 661 唯一路径 / 59 次重复打开，读取 84,542,638 bytes；记录 `perf-probe/initial-loop-rev398.json`。这只是定位重复读取，并不能证明这些 IO 是慢的主因。
+
+当时交给开发统筹并由其转述的四个排序假设：
+
+1. 同一次验证内重复原图读取有实质贡献；若成立，按 path 聚合会集中，缩到少量真实含图 attempts 仍能复现。
+2. ordinaryJobInput/referenceRequest 累积输入重建造成 CPU 增长；若成立，记录真实重建次数并分离图片检查等待后仍应看到显著剩余 CPU。
+3. reference 验证同时扫描非 reference 上游；若成立，单次 `verifyOrdinaryReferenceProject` 应实际进入那些上游 attempts。
+4. HTTP result 的额外 workflowSnapshot 放大派生工作；若成立，真实 GET 的次数高于 native status。
+
+后续观测将重点从重复 IO 转向重复纯解码。没有用未符号化的一秒 sample 推算函数 CPU 占比。
+
+## 当前最小红命令与判定
+
+从仓库根运行：
+
+```sh
+MODE=two RUNS=2 node .scratch/seven-stage-static-goal-20261111/design/perf-probe/probe.mjs
+```
+
+实际输出信号（详细 JSON 在 `perf-probe/measurement-two-none-rev398.json`）：
+
+```text
+2 runs: original validation errors=0; opens=34, uniquePaths=31; bytes=265117
+reopenOrdinaryJob=2; ordinaryJobInput=2; referenceNodePlan=2; referenceNodeInput=4
+model-http-image-check children=6, unique actual stdin SHA256=3, duplicateDecodes=3
+childFailures=0; RED_DUPLICATE_DECODE; exit=2
+```
+
+两次边界 wall 505.060 / 491.985 ms。它们只说明探针足够紧，不能用来宣称修复后加速。`MODE=one` 删除一份真实 attempt 后，3 次检查 / 3 个实际 bytes hash，`GREEN_DISTINCT_DECODE`，exit 0。保留原 project、原 request、原 HTTP authority、原原件，仅缩窄要验证的真实 attempts；未合成票或新 run。
+
+红预算的意图是：在一次显式拥有生命周期的只读操作内，同一解码器配置对同一 SHA256 的实际 bytes 至多纯解码一次。不是要求原 IO 至多一次；当前两票的 34 次 opens、每个 occurrence 的 descriptor 和上下文核验应保留。未实现 scope 以前，现有函数自然仍为红；不能把 `dimensions` 局部一次调用当成已覆盖跨 attempt 重复的浅层测试。
+
+## 原件拒绝反例
+
+以下均实际运行且 exit 0 / `GREEN_REFUSED_CHANGED_INPUT`，结果在同目录 JSON：
+
+```sh
+MODE=two COUNTEREXAMPLE=image-bytes node .scratch/seven-stage-static-goal-20261111/design/perf-probe/probe.mjs
+MODE=two COUNTEREXAMPLE=image-bytes-late node .scratch/seven-stage-static-goal-20261111/design/perf-probe/probe.mjs
+MODE=two COUNTEREXAMPLE=binding node .scratch/seven-stage-static-goal-20261111/design/perf-probe/probe.mjs
+```
+
+前两项只翻转 `handle.read` 已读到进程内 Buffer 的一 byte，绝不写原文件。late 项在第一票的三张图已成功解码后，到第二票再次读取同一路径才翻转，实际得到 `original-invalid`，第二票不能靠先前解码成功获得放行。binding 项只修改从历史 snapshot 解码出的内存对象，同样 `original-invalid`。
+
+本轮未声称重验全部 Qpolicy、unknown、来源变化和恢复拒绝门禁；这些必须作为后续修复独立验收，不能由上述三反例替代。
+
+## 较大边界与计数分离
+
+`MODE=full RUNS=5` 实际运行五次，均原件验证成功，计数完全一致：
+
+| 原件微路径 | 实际观测 |
+| --- | --- |
+| ordinary attempts reopened / input rebuilt | 56 / 56 |
+| referenceNodePlan / referenceNodeInput | 26 / 52 |
+| 原件 open / unique / repeated | 720 / 661 / 59 |
+| 实际读取 bytes | 84,542,638 |
+| 图片检查 node 子进程 / 唯一 bytes SHA / 重复纯解码 | 66 / 9 / 57 |
+| 子进程失败 | 0 |
+
+wall 中位数 6958.854 ms，范围 6889.354–7226.095 ms；图片检查 node 子边界累计 5467.334–5812.276 ms。父进程 user+system CPU 约1.53–1.63秒，不含子进程 CPU，不等于 JSON CPU。这些 child wall 包含 Node 启动、模块加载、Python 解码、临时文件、调度和退出，不能称为纯算法 CPU 时间。串行子边界有实际 stdout 成功结果并被 authority 消费，实际输入 hash 来自 stdin bytes；没有把没有发生的工作或拒绝当成速度。
+
+单次 `MODE=reference` 也实际成功：30 个非 reference ordinary attempts 重开、26 个 reference node 输入重建，66 个图片检查 node 子进程 / 9种实际输入 bytes。原普通重核路径的56次与这里30次的区别来自已由 reference-original 核过的26票，不能简单把两个次数相加当一遍请求的执行。reference 边界另有原 imageStore 读取与直接 Python 解码，当前 child 累计只统计 `model-http-image-check.mjs`，不是全部子进程。
+
+这支持假设3的实际扫描，也显示假设2的 builder 次数确实存在，但未测到逐函数 CPU，不能宣称它是主要瓶颈。假设4没有真实 GET/status 对照，本轮不下结论。
+
+测量限制：Node v24.13.0，12 logical CPUs；初始 load average 2.23/2.80/4.04。原 writer 继续运行，五次 full 样本还和单次 reference 诊断短时重叠；OS cache 未规定冷暖，有轻量 tracing 与 source-loader 计数。它们是诊断观察，不是 tuned 配置比较或采用 benchmark，没有 old/new 两侧，不能推算端到端节省或模型耗时。采用前需同固定历史原件、两侧交替各至少五次，并另测真实 GET/status 和请求全过程；所获差异若小于噪声不宣称提升。
+
+## 最小后续修复建议（尚未实施）
+
+先做一个单次只读核验操作拥有、不可外部伪造、结束即废弃的纯解码 memo；memo entry 的输入必须来自本次 freshly read bytes 的实际 SHA256、byteLength 和明确 decoder/policy identity，保存的仅是完整检查成功后的 immutable mediaType/width/height。不能使用文件 mtime、不共享 mutable captured bytes、不跨请求/claim/dispatch/complete/phase，也不缓存成功的原件读取或领域放行。
+
+每个 occurrence 仍实际执行 sourceImage 的受限 IO、路径/符号链接/文件稳定性、expected SHA、binding、expected MIME、imageId、byteLength、manifest、累计 bytes/pixels、当前 budget/abort/deadline；复用之后仍执行该上下文的 policy 检查。变更 bytes/hash 必须重新解码或拒绝，late 反例不得变绿为接受。Qpolicy、unknown、源/packet/binding 变化不能因 decoder memo 获得放行。
+
+范围先限制 `ordinary-model-project` 的一个 verifier-owned scope，显式传到 `ordinary-model` → `model-http-authority` 的 `dimensions`。若要覆盖真实 reference verify，还需经 `reference-original` 的直接 reopen 路径传同一只读 scope；独立 native execute/dispatch 不继承它。源码接口如何实现由实现者定，不能为了省传参变为进程级跨阶段缓存。
+
+独立验收至少保留：两票红→减少纯decode重复而原 opens/逐项验证不减；一票绿；late bytes/hash/MIME/ID/binding/context 改变仍拒绝；跨操作再读再解码；并发操作不共享 scope；Qpolicy/unknown/source变化原门禁；固定原件真实 GET/status 对照。不执行新全链。现有129参考及54 v2门槛完全保持。

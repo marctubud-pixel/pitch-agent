@@ -1,0 +1,50 @@
+
+> pitch-agent-workspace@0.1.0 test:image-scope
+> node --test tools/workbench/image-verification-scope.test.mjs tools/workbench/ordinary-model-claims-short-circuit.test.mjs
+
+✔ same scope reuses two real decodes while every occurrence rereads source and persisted image (773.584625ms)
+✔ separate operations, concurrent scopes and detached closed continuations cannot share decodes (1676.017083ms)
+✔ warm decodes cannot bypass late source, hash, MIME, binding or persisted-original rejection (2178.663042ms)
+✔ nested invoke revokes ancestor successes (1252.041833ms)
+✔ nested reopen rejection revokes ancestor successes (890.368708ms)
+✔ nested callback rejection revokes ancestor successes (861.249291ms)
+✔ nested invoke clears ancestors without clearing concurrent sibling's own cache (1338.414084ms)
+✔ nested reject clears ancestors without clearing concurrent sibling's own cache (1013.049042ms)
+✔ pending decode from before nested rejection cannot refill an invalidated ancestor (643.629542ms)
+✔ different valid HTTP contexts skip parsing both response bodies (1.18475ms)
+✔ matching valid HTTP contexts fully parse both receipts (0.161875ms)
+✔ matching context cannot turn malformed JSON into a successful claim (0.110417ms)
+✔ missing or malformed context and null inputs remain false without throwing (0.27325ms)
+✔ legacy thread comparison and mixed HTTP/legacy behavior are preserved (0.07175ms)
+✖ bounded matching claims still enforce JSON grammar while disjoint claims avoid parsing (1.344834ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 14
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10680.6095
+
+✖ failing tests:
+
+test at tools/workbench/ordinary-model-claims-short-circuit.test.mjs:40:1
+✖ bounded matching claims still enforce JSON grammar while disjoint claims avoid parsing (1.344834ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/tools/workbench/ordinary-model-claims-short-circuit.test.mjs:45:75)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

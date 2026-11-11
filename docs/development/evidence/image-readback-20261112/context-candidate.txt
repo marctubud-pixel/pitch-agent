@@ -1,0 +1,66 @@
+# ordinarySameContext 短路候选（未采用）
+
+仅生产源码 `ordinary-model-claims.mjs` 一行谓词重排；在独立overlay中实现，未改根/A WT、原DB/原件、已有freeze、模型或在途A。没有添加接口、ALS、WeakMap或缓存。
+
+## 行为
+
+原HTTP分支先完整ordinarySuccess(a/b)，再比较namespace/invocationId。候选先判双方HTTP，再安全比较 `a.context?.namespace` / `a.context?.invocationId`，不相等即原样false；相等时仍完整ordinarySuccess(a)与ordinarySuccess(b)。缺context不会因直接属性访问产生新异常；空字段相等也不会得到成功，因为后面的完整验证仍拒绝。
+
+legacy分支和所有其他claims谓词未改。matching坏receipt仍false；不能把false上下文比较当成该receipt已获得原件资格，每份票的既有validateReferenceReceipt/ordinarySuccess路径仍保留。role字段属于上层领域检查，单改role在原谓词可保持true；本候选严格保留原truth table，不擅自新增资格。
+
+等值结论覆盖实际保留receipt及系统构造的序列化数据输入；没有将纯数据域结果泛化为任意带副作用getter/Proxy对象的求值顺序证明。
+
+## 红→绿与等值
+
+`equivalence-red-base.log`：原源码3pass/1fail，精确红断言“不同实际HTTP上下文不应parse响应体”实得2、期望0。matching合法仍parse双方，matching坏JSON仍false。
+
+`equivalence-green-candidate.log`：4/4通过；固定历史565的80张实际成功HTTP票全部6400 pairs原新bool一致。25类系统变体（null/undefined、legacy/unknown、缺字段、context各形态/各字段、badJSON/hash/protocol、role、wrapper、origin等）及原子值共10144次比较，逐个同时比较bool或异常形态，全部一致。1440个matching invalid HTTP条件仍false。
+
+命令：
+
+```sh
+# 原源码，实际红2!=0
+node --test .scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/equivalence.test.mjs
+# 候选
+node --import ./.scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/overlay-loader.mjs --test .scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/equivalence.test.mjs
+```
+
+## 同原输入的派生计数
+
+两侧均固定565 snapshot+原semantic epoch/hash，DatabaseSync readOnly；相同源码除了这一行。各组件单次单独运行，计数器只在内存模块加载时注入，不写源文件。没有调用活服务或Astep。
+
+| 实际边界 | 原源码 | 候选 | 原检查保持 |
+| --- | --- | --- | --- |
+| correctionSources(research) 完整parse/ordinarySuccess | 8050 | 150 | 50份stored票逐份validate、1次完整prefix、20次production request重建 |
+| projectView 完整parse/ordinarySuccess | 345638 | 7088 | 35次完整prefix、1750次validateReferenceReceipt、700次production request重建 |
+
+各自baseline/candidate的完整派生输出JSON SHA逐项相同，未只比“有结果”；两侧均无验证异常。完整字段、CPU微秒和wall在 `correctionSources-{base,candidate}.json` / `projectView-{base,candidate}.json`，具体derived SHA亦在这些原回执中。
+
+原诊断的“parse次数≤唯一receipt对象数”宽预算仍为红：150次残余是原有效检查，本候选不追该预算、不继续加缓存。精确短路回归是disjoint合法上下文0次body parse；matching上下文仍各自完整parse。没有删除报告/票/来源核验。两组件本就纯派生，不含原件IO；此次没有改变任何原IO函数。
+
+这些是实际重复工作计数和单次诊断CPU观察，不是同配置交替五轮或端到端HTTP benchmark，不报告加速比例，不把项目GET已解决或主UI已恢复作为结论。时间缺失的mapper严格拒绝完全未改。
+
+## 便携unit，单独供纳管
+
+`tools/workbench/ordinary-model-claims-short-circuit.test.mjs`仅构造可被claims语法验证的合成metadata receipt，不构造真实HTTP执行或伪造权威原票，无DB、文件、模型、服务或网络依赖。直接统计实际JSON.parse调用，5项覆盖：disjoint双向0parse；matching valid两次parse；matching badJSON false且一次parse；缺/坏context、null不抛；legacy与混合HTTP/legacy行为。
+
+`portable-red-base.log`为4pass/1fail，原实际2!=0；`portable-green-candidate.log`为5/5通过。独立的 `portable-regression.patch`把该测试放在生产claims同目录，纳管后可直接 `node --test tools/workbench/ordinary-model-claims-short-circuit.test.mjs`，不依赖本机历史DB或overlay。
+
+在当前隔离目录运行（loader只将单元测试相对claims导入映射回原模块URL）：
+
+```sh
+CLAIMS_BASELINE=1 node --import ./.scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/overlay-loader.mjs --test .scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/tools/workbench/ordinary-model-claims-short-circuit.test.mjs
+node --import ./.scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/overlay-loader.mjs --test .scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/tools/workbench/ordinary-model-claims-short-circuit.test.mjs
+```
+
+## 邻接与限制
+
+sandbox下所选authority before-dispatch测试触发Node24 native execution_async_id断言，原源码和候选同命令均失败；日志 `authority-baseline.log` / `authority-candidate-retry.log` / `adjacent.log`如实保留。没有修Node或当成绿。
+
+统筹明确授权本地合成HTTP require_escalated后，同选定authority/claims命令实际4/4通过：配置/凭证/logical不符在dispatch前拒绝，以及claims的原3项身份/非法success测试。`adjacent-authorized-local.log`为真实日志；该选定authority用例断言fixture请求数0，不调用模型或原业务API。本轮不是整套authority或业务全链验证。
+
+## 冻结
+
+`ordinary-context-short-circuit.patch`只含一个生产文件的一行重排；`portable-regression.patch`单独新增无DB测试。`frozen-hashes.json`含生产before/after、便携测试与全部产物SHA、固定snapshot/semantic身份以及原诊断freeze未改核验。
+
+候选尚未采用。独立复核应继续核matching非法票的拒绝、完整票据资格/独立性检查与原IO不变；不能因便宜的disjoint false认为该票有效，也不能降低129参考/54v2、unknown/Qpolicy或人类确认资格。
