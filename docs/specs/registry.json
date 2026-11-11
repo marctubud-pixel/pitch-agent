@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.2.0",
+  "baselineVersion": "1.2.1",
   "date": "2026-11-11",
   "status": "按用户授权建立应用与Agent仓库工程；实际提交、推送和运行分别留证",
   "workflow": [
@@ -438,7 +438,7 @@
       "kind": "contract",
       "title": "已确认决定与待定范围",
       "path": "docs/specs/decisions.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": []
     },

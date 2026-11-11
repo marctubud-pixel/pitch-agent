@@ -1,3 +1,5 @@
+> 当前工程发布已完成，见[真实发布回执](../development/publish-20261111.md)。以下为首轮准备记录，按原历史范围阅读。
+
 # 首次GitHub纳管准备
 
 历史准备记录，非远程创建、推送或PR回执。2026-11-11再次核查，本地已有规范提交，origin已配置为 `git@github.com:marctubud-pixel/pitch-agent.git`；此前“无remote”不再是现状。远程可见性、推送、PR、CI与分支保护本轮未核，实际范围见[Git纳管边界](repository-scope.md)。以下PR草稿保留首次整理范围。

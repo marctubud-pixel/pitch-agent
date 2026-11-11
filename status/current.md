@@ -1,6 +1,6 @@
 # 仓库工程基线 · 2026-11-11
 
-用户授权补齐应用与Agent工程，并推送至既有GitHub origin。当前仓库开发入口为`apps/workbench-preview`，原scratch活跃源和旧4417保持；旧apps和三组tools源码、测试、必要夹具及vendor单独纳管。开发、配置、使用、架构、验证及PR回退从[工程入口](../docs/development/README.md)读取，规范基线为1.2.0。
+用户授权补齐应用与Agent工程，并推送至既有GitHub origin。当前仓库开发入口为`apps/workbench-preview`，原scratch活跃源和旧4417保持；旧apps和三组tools源码、测试、必要夹具及vendor单独纳管。开发、配置、使用、架构、验证及PR回退从[工程入口](../docs/development/README.md)读取，规范基线为1.2.1。源码工程基线618abb61已推送至main及工程分支，检查点同版，见[发布回执](../docs/development/publish-20261111.md)。
 
 [本轮验证](../docs/development/verification-20261111.md)记录独立检出安装与根检查退出0，690前端测试及78明示核心测试通过，9项规范隔离检查通过。浏览器控制两次连接超时，本轮真实UI复验未完成；未改变页面视觉或回填业务状态。旧后端10项夹具失败、依赖1项high、原生移植与正式接线见[问题清单](issues/README.md)。
 
