@@ -1,14 +1,16 @@
 # 配置与服务边界
 
-规范版本：1.0.1。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.1.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
 应用配置位置为`apps/workbench-preview/.env.local`，示例见同目录`.env.example`。默认不设置`VITE_WORKBENCH_API_URL`，使用本地演示服务。Vite的`VITE_`变量会进入浏览器，不能存放密钥。
 
-设置`VITE_WORKBENCH_API_URL`只选择当前占位workbench、intake、assistant HTTP适配，它们尚不执行完整业务请求，并准确显示后端未接通；提案阶段仍是Mock。较早正式前端另有已实现适配，需按当前合同迁移。实际接口定义见`src/domain`、`src/services/http`及原有[前后端说明](../versioned-api-v1.md)，接口存在不等于已联调通过。
+设置完整`VITE_WORKBENCH_API_URL`选择真实简报HTTP适配及同快照提案投影；Brief提取仍使用实际本地解析，助手仍未接通。握手通过后显示本地简报服务；其余阶段不补入Mock产物。启动、修订、原件和单机身份边界见[简报HTTP合同](http-brief.md)。旧[前后端说明](../versioned-api-v1.md)供迁移追溯，不能作为当前全链路通过证明。
 
 ## 后端
+
+当前已验入口为根`npm run dev:brief`，显式指定新SQLite与loopback来源，要求Node 24且无供应商配置。下述完整业务入口继续作为历史能力保留，不随本轮简报接线启动。
 
 `tools/workbench`要求Node `>=24.13.0 <25`；parse5依赖由该目录package.json和pnpm-lock.yaml固定，可使用其声明的pnpm版本安装。默认开发命令不自动启动它。
 

@@ -20,8 +20,20 @@ function editAction(stage: StageId): TeamAction {
 type ProtectedServices = Pick<Services, 'workbench' | 'intake' | 'assistant' | 'proposals'>;
 export function protectServices(raw: ProtectedServices, store: LocalTeamStore): ProtectedServices {
   const service = raw.workbench;
+  const recovery = service.briefRecovery;
+  const recoveryAction = (): TeamAction => {
+    const pending = recovery?.getPending();
+    if (!pending) throw new ServiceError('validation', '没有待核对的简报提交。');
+    return {kind: pending.label === '新建提案' ? 'manage' : pending.label === '保存简报' ? 'edit_brief' : 'workflow'};
+  };
+  const briefRecovery = recovery ? {
+    getPending: recovery.getPending,
+    retry: () => store.run(recoveryAction(), () => recovery.retry()),
+    acknowledge: () => {store.require(recoveryAction()); recovery.acknowledge();},
+  } : undefined;
   const workbench: WorkbenchService = {
     get environment() { return service.environment; },
+    briefRecovery,
     subscribe: (listener) => service.subscribe(listener), setLocale: (locale) => service.setLocale(locale),
     getCapabilities: () => service.getCapabilities(), listProjects: (query) => service.listProjects(query),
     getProjectOverview: (id) => service.getProjectOverview(id), getBriefHistory: (id) => service.getBriefHistory(id),

@@ -1,3 +1,7 @@
+# 本地简报HTTP合流 · 2026-11-11
+
+当前`apps/workbench-preview/src/services/http`以DTO、Brief封装和briefModels从同一原生快照投影项目、任务卡和七阶段提案。`tools/workbench/brief-server.mjs`提供项目与简报受限读写，只复用域和存储；没有执行器、恢复或调度副作用。根dev:brief与dev:http为独立入口，旧完整server、scratch、运行数据保持。具体修订、版本、回执和限制见[合同](../development/http-brief.md)。
+
 # 岗位组织与页面治理 · 2026-11-11
 
 业务分工与开发分工统一见[Agent组织总览](../agents/README.md)，逐页责任、保留结构及实际入口见[页面索引](../pages/README.md)。比稿Agent统筹业务，开发统筹组织实现，工作台UI负责人维护共同基线，独立UI审核者复验。排版内部页面由排版负责人负责；[整案终审](../specs/final-review.md)与内容、代码、UI及人类决定分开留证。

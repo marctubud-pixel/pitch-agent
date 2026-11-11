@@ -147,7 +147,7 @@ export function NewProjectView() {
     }
     setTimeError(null);
     const brief = { ...toBriefInput(card, done ? attachmentFrom(done.doc, done.mapping.mode) : null), proposalType: ptype };
-    const input = { name, client: settings.client, summary: card.background.text.trim().split(/(?<=[.!?])\s/)[0]?.slice(0, 160) ?? '', mode: (pmode === 'automatic' ? 'supervised' : 'step_by_step') as ExecutionMode, researchOwner: settings.researchOwner, strategyOwner: settings.strategyOwner, brief };
+    const input = { name, client: settings.client, summary: card.background.text.trim().split(/(?<=[.!?])\s/)[0]?.slice(0, 160) ?? '', mode: (pmode === 'automatic' ? 'supervised' : 'step_by_step') as ExecutionMode, researchOwner: settings.researchOwner, strategyOwner: settings.strategyOwner, brief, checkpoints: pmode === 'assisted' ? [...checkpoints] : [], ...(presentationLocalTime ? { presentationLocalTime } : {}) };
     const frozenUploads = brandUploads.map((upload) => ({ file: upload.file, resource: { ...upload.resource } }));
     const proposalInput = {
       name, client: settings.client || '客户尚未填写', type: ptype, mode: pmode,

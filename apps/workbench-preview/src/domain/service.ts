@@ -37,8 +37,15 @@ import type {
  * The only way components talk to data. The demo uses MockWorkbenchService; a real backend
  * gets an HttpWorkbenchService implementing the same interface (src/services/http).
  */
+export interface PendingBriefWrite {path: string; body: string; commandId: string; label: string}
+export interface BriefRecovery {
+  getPending(): PendingBriefWrite | null;
+  retry(): Promise<string>;
+  acknowledge(): void;
+}
 export interface WorkbenchService {
   readonly environment: EnvironmentInfo;
+  readonly briefRecovery?: BriefRecovery;
 
   /** Notifies when data may have changed so views can refresh. */
   subscribe(listener: ServiceListener): () => void;
