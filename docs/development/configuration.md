@@ -1,6 +1,6 @@
 # 配置与服务边界
 
-规范版本：1.4.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.4.1。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
@@ -46,3 +46,5 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 配置与能力按[本地解析合同](brief-extraction.md)。服务端程序化`intakeConfiguration`默认为null；CLI只有明确`--pdf-python`才选用相应绝对路径。actual probe核Python、worker、包和RSS监测，失败如实不可用；不自动安装或启用任务卡模型。测试专用`PITCH_PDF_TEST_PYTHON`只用于真实PDF专项，不是业务开关；指定错误环境必须失败。原件保存仍默认queued零attempt。
 
 PDF可选运行依赖固定在`tools/workbench/requirements-pdf.txt`，包含实际已测的两个解析包及所需传递依赖。服务不会自行安装；Application CI使用独立venv和binary wheel显式安装、pip check后运行真实解析专项，不触系统环境或旧业务。远程安装和测试是否成功以本次PR实际CI为准。
+
+普通symlink虚拟环境按所配置的Python路径启动；解析器不会将它替换为基础解释器。物理realpath/SHA仍核验，运行中路径或二进制变化将停止采用结果。历史提取JSON保留原实际工具身份，不据配置修复重新解析旧原件。

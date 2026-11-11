@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.5.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.5.1。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -57,3 +57,5 @@ PITCH_PDF_TEST_PYTHON=/absolute/path/to/python3 npm run test:brief-http
 ```
 
 指定但不能运行应FAIL，不能把skip计通过。真实专项涵盖partial/空页/no_text/UTF16、加密/非法/资源限制、原件与JSON哈希、同body/错body/换卡历史、失败显式重试和running未知零重发；仅新临时SQLite和已装本地工具。首claim永久中断尚无接管，不冒称所有恢复已完成。前端及Chrome实际范围单独按最终回执记录，后续全链与原生PPT专项不由此通过。
+
+`intake-python-environment.test.mjs`加入Brief/PDF组：标准无pip symlink venv通过.pth引用已装实际包，真实probe/mixed/UTF16与资源限制验证配置环境；直接Python、缺路径、调用中配置变动、symlink重定向/删除分别核受控结果。它不安装软件或修改系统环境。原realpath后spawn基础解释器的失败反例保留；CI同样必须以配置venv运行。

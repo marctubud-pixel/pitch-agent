@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.8.0",
-  "registrySha256": "faddc84b78d8855d6dc83ef982851fd6b2626db2eedaeca629781fa8b34140d5",
+  "baselineVersion": "1.8.1",
+  "registrySha256": "fc1ad54625616e28dc623c0a977213ca0495590b9079e9f9ab0ce93b85ba420c",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -325,17 +325,17 @@
       }
     },
     "contract.configuration": {
-      "version": "1.4.0",
+      "version": "1.4.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/configuration.md": "8d78000880dc968555716f8883e1b1c7574dbac5ab1a4ab8eccdaf722d73d2db"
+        "docs/development/configuration.md": "af99c0fba8e8b9e8aff9d919500d5b289b0be849c87d52965ce742a1b74299b4"
       }
     },
     "contract.testing": {
-      "version": "1.5.0",
+      "version": "1.5.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "d9d9dc4b992a1df221d73fd8f3bea7a463ffca6a4483b884b09471ebcf416613"
+        "docs/development/testing.md": "bc3c39a243b79b55c6f15a0e72eaa30cdd619c2a01512a1dcf3ae5498a29a6db"
       }
     },
     "contract.git": {
@@ -402,10 +402,10 @@
       }
     },
     "contract.brief-extraction": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/brief-extraction.md": "30a41274a2fe27d78c21599cba1f2a8a96c9ae7deeab1797998c98807bde3c8a"
+        "docs/development/brief-extraction.md": "8381804b04984bfcc167f2dfdd54b2cd1473d3c9b6e6ff4deb281c8b7e172db6"
       }
     }
   },
@@ -416,7 +416,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "1c648304f660e0c9ade0982b7b80364baff2fc5cbcf971904ea4dcaca5fa1e33",
-    "docs/specs/README.md": "3f099a8271e7ca34e69072dad595864c6cf00290e872aa0b6c6f00e25101a5ac",
+    "docs/specs/README.md": "b443007fb95a9b8a55681158f780a9684c703d8177a35ca5323e399dae6f02cc",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

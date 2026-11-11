@@ -1,6 +1,6 @@
 # 当前项目PDF本地解析
 
-规范版本：1.0.0。复用旧intake的本地PDF解析器，在[原件保存](brief-originals.md)之上接入显式解析、原结果读取和同体请求核对。它是简报的内部资料能力，不增加前台阶段，不执行任务卡模型、采集或研究，也不自动采用任何字段。
+规范版本：1.0.1。复用旧intake的本地PDF解析器，在[原件保存](brief-originals.md)之上接入显式解析、原结果读取和同体请求核对。它是简报的内部资料能力，不增加前台阶段，不执行任务卡模型、采集或研究，也不自动采用任何字段。
 
 ## 默认与配置
 
@@ -12,7 +12,7 @@
 node tools/workbench/brief-server.mjs --db .data/pdf-example.sqlite --port 4182 --origin http://127.0.0.1:4420 --pdf-python /absolute/path/to/python3
 ```
 
-所选Python需具备既有pypdf、pdfplumber及实际可用的资源监测；服务不自动安装、寻找或替换它。开发者可在独立Python虚拟环境中按`tools/workbench/requirements-pdf.txt`显式安装已测固定依赖，再将该环境的Python绝对路径交给服务；不要修改系统或旧业务环境。程序化配置为`createBriefServer({intakeConfiguration:{pythonBinary:ABS_PATH}, ...})`，不借研究执行开关启动解析。`/capabilities.originals`先实际probe再报告`localExtractionAvailable`与`localExtraction`，模型读取能力仍为false。探针不可用时显示真实原因，不能根据沙箱拒绝资源监测就断言缺库。
+所选Python需具备既有pypdf、pdfplumber及实际可用的资源监测；服务不自动安装、寻找或替换它。开发者可在独立Python虚拟环境中按`tools/workbench/requirements-pdf.txt`显式安装已测固定依赖，再将该环境的Python绝对路径交给服务；不要修改系统或旧业务环境。解析器按捕获的配置路径启动Python，以保留普通symlink虚拟环境的site-packages；realpath及物理二进制SHA只用于身份核对，执行后还核路径与字节未变。路径重定向或删除时受控拒绝，不回退到系统Python。程序化配置为`createBriefServer({intakeConfiguration:{pythonBinary:ABS_PATH}, ...})`，不借研究执行开关启动解析。`/capabilities.originals`先实际probe再报告`localExtractionAvailable`与`localExtraction`，模型读取能力仍为false。探针不可用时显示真实原因，不能根据沙箱拒绝资源监测就断言缺库。
 
 PDF限制沿旧工具：12MiB原件、100页、1MiB提取文本、100000文字节点、4MiB工具输出、20秒和512MiB监测预算；程序化limits只能缩小。保存实际Python/worker身份、包版本、限制及资源监测结果。平台不支持硬地址空间限制时，按实际RSS监测报告，不能声称硬内存上限已生效。
 

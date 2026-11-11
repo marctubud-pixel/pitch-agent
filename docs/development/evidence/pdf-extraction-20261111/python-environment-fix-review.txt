@@ -1,0 +1,31 @@
+# PDF Python环境修复独立复核
+
+结论：本次修复的原Standards P2已关闭；在限定差异中未发现新增P1/P2或需单列的新增smell。独立复核不代表远程CI通过、业务批准、UI批准或七阶段总目标完成。
+
+## 范围与身份
+
+固定基点 `5af651db99cc04c2c52ee0a737c45a93b701bace`，仅审根当前 `tools/workbench/intake-pdf.mjs` 与新增 `tools/workbench/intake-python-environment.test.mjs`。已读根/tools AGENTS、规范入口、`docs/development/{brief-extraction,testing,configuration}.md`、原Standards报告、owner记录、patch及hash清单；其他变更不在本次独立批准范围。
+
+- 基点parser SHA256：`67b01cfa0f04f928a21c316db2f94d2acbd64bccf474a64e859253a5687d3d0f`。
+- 当前parser：`93e19a28e4c2b54f7a5a29c8a820450b4bde64f5482f17b520a9fb8679965620`。
+- 当前新增测试：`e9e896061e360819452cb8707d4abcbf3434ca50dbbf32d506d81b530279b32e`。
+
+## 独立实证
+
+另写 `/tmp/pdf-python-independent-review.mjs`，从固定提交读取旧parser，仅调整临时副本的模块/worker定位以运行，不修改旧逻辑。创建新的 `venv --without-pip --symlinks`，验证bin/python确为symlink，venv局部.pth仅引用已装真实PDF包；无联网、安装、旧DB/run或外部模型。运行记录 `/tmp/pdf-python-independent-review.json`。
+
+同一新venv直接以 `-I -B` 运行时，sys.executable/sys.prefix属于该venv，isolated=1且dont_write_bytecode=true。旧parser的identity.python却为基础python3.12，配置解释器身份断言实际失败；当前parser保持venv路径，同时identity.binary与binarySha256仍为相同物理Python。注意本机基础Python也已有PDF包，因此旧版本地capability为true：这里实证的是丢失所选环境，不冒称本机复现缺包或远程CI失败。
+
+当前venv真实probe与mixed.pdf解析均成功：partial、2页、第二页no_text，原件SHA与worker SHA均核对；实际RSS采样3次、峰值43433984字节，hardRssCap=false。
+
+在明确已装运行时 `/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3` 下，以 `node --unhandled-rejections=strict --test` 独立运行：
+
+- 新环境6项 + 原PDF2项：8 passed / 0 failed / 0 skipped。
+- HTTP解析13项：13 passed / 0 failed / 0 skipped，日志 `/tmp/pdf-python-review-http.log`。
+- 合计21项；真实ps/RSS调用经本机权限执行，非mock。无环境另跑新测试：1 passed / 5明确skip，不计真实解析通过。两个修改文件node --check成功。
+
+## 差异判断
+
+configuredBinary在首次await之前捕获并用于spawn，保留symlink venv语义；realpath和文件SHA继续记录物理身份。新guard位于await child Promise之后的普通async控制流，读取/解析失败归一为 `PDF_EXTRACTOR_ENVIRONMENT_CHANGED`，未在async事件监听器中新增会逸出的文件读取。启动中重定向/删除symlink的capability及extract用例均实际通过，严格unhandled模式无未处理拒绝。
+
+直接Python正例、配置快照、缺配置/坏路径、worker SHA、UTF16和混合页结果均已核验。`-I`、`-B`、shell:false、worker传递、RSS watchdog及原输入/页数/文本/节点/输出/时间/内存限制未改；既有实际资源限制测试全部通过。未扩大到venv内全部依赖文件的不可变性保证，也未声称检测已恢复的瞬时替换。未修改产品源码、Git或规范。

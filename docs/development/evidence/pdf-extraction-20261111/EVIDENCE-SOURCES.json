@@ -51,7 +51,31 @@
       "sourcePath": ".scratch/seven-stage-static-goal-20261111/pdf-r1/before-1280-light.png",
       "sha256": "18c30982dd954e72099aefc90f95209ed31dc99b123e42ce449937b37538b58b",
       "byteLength": 237354
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/pdf-final-spec-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/pdf-final-spec-review.md",
+      "sha256": "fe477d54922ee5a1657265f24c9d2def54e14cb97dc0b1f888b5fe0de62f9587",
+      "byteLength": 1021
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/pdf-final-standards-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/pdf-final-standards-review.md",
+      "sha256": "8e6e41ef57faad3a038e652dcbfaaa674308f7c0b2dc1d064bc21f6b5145bafa",
+      "byteLength": 845
+    },
+    {
+      "path": "docs/development/evidence/pdf-extraction-20261111/python-environment-fix-review.txt",
+      "sourcePath": ".scratch/seven-stage-static-goal-20261111/design/pdf-python-environment-fix-review.md",
+      "sha256": "82241f3aea4445cbb9be23acb8fb306e25e5326b75d6c5e934eb6bb4ed0784e5",
+      "byteLength": 3427
     }
   ],
-  "finalTwoAxisReview": "Pending fixed feature commit review; backend and actual UI reviews cover scopes stated in raw reports"
+  "finalTwoAxisReview": {
+    "commit": "5af651db99cc04c2c52ee0a737c45a93b701bace",
+    "specFindings": 0,
+    "standardsFindings": 1,
+    "status": "Original fixed-commit Spec passed; Standards venv P2 repaired and independently reverified in a separate report",
+    "fixReview": "python-environment-fix-review.txt; independent 21/21 and old/new symlink venv probe"
+  }
 }

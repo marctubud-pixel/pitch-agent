@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.8.0",
+  "baselineVersion": "1.8.1",
   "date": "2026-11-11",
   "status": "研究读者与交接已合并；显式PDF本地解析合同接入，自动采集和后续继续目标模式",
   "workflow": [
@@ -544,7 +544,7 @@
       "kind": "contract",
       "title": "配置与服务边界",
       "path": "docs/development/configuration.md",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -553,7 +553,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -666,7 +666,7 @@
       "kind": "contract",
       "title": "指定PDF本地解析与原请求恢复",
       "path": "docs/development/brief-extraction.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.brief-originals",

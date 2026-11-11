@@ -1,0 +1,7 @@
+# PDF解析包独立Spec终审
+
+固定范围：`97f13ab562b231f689afb9536e658a2cd3c2558c...5af651db99cc04c2c52ee0a737c45a93b701bace`，51文件；主基线1.8.0。结论：本包未发现确证P1/P2、遗漏必交能力或范围扩张。
+
+依据《brief-extraction》“默认没有解析配置”“同体重放不会自动新增attempt”“历史原件和抽取可在关闭解析配置时读取”。独立真实Python＋临时SQLite探针通过：同body并发首次解析仅1attempt；关闭配置并重开SQLite仍核回partial与空页，零确认；retry实际claim前改卡拒绝新增attempt，原retry重放继续拒绝历史派发。探针：`/private/tmp/pdf-final-spec-probe.mjs`（最终退出0）。源码核对页码、UTF16、hash、原请求日志及not_verified边界；未独立重做UI评分或远程CI。
+
+首claim永久中断running、succeeded＋failed结果不能retry均为明确未覆盖边界。七阶段总目标仍部分完成；本结论只限PDF包，不签整体闭环或真实审批。

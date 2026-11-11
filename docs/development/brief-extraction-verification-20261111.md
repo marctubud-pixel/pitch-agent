@@ -38,6 +38,6 @@
 
 ## 最终工程验收
 
-候选三文件独立预审24项加3个独立中断/历史反例通过；根原始采用16/16，retry修复后service25及相关HTTP/旧局部46项通过。前端作者实际native7项、745前端/1既有skip及类型构建通过。根完整整仓检查实际退出0：745前端/1既有skip、78核心、26域、51Brief/PDF HTTP、80研究合同，类型和构建通过；55规范、9项规范隔离、4项Git反例通过。当时1638项纳管，393导入/147封存身份保持。随后固定可选PDF依赖并配置CI独立venv实际跑解析专项；已核9个已测版本均与本机相同、官方发行及wheel存在，YAML解析通过，最终清单门禁另核。固定提交Spec/Standards及远程Git/CI按实际回执补录，不据候选自测写成最终通过。
+候选三文件独立预审24项加3个独立中断/历史反例通过；根原始采用16/16，retry修复后service25及相关HTTP/旧局部46项通过。前端作者实际native7项、745前端/1既有skip及类型构建通过。根完整整仓检查实际退出0：745前端/1既有skip、78核心、26域、51Brief/PDF HTTP、80研究合同，类型和构建通过；55规范、9项规范隔离、4项Git反例通过。当时1638项纳管，393导入/147封存身份保持。随后固定可选PDF依赖并配置CI独立venv实际跑解析专项；已核9个已测版本均与本机相同、官方发行及wheel存在，YAML解析通过，最终清单门禁另核。固定5af651db的[Spec审查](evidence/pdf-extraction-20261111/pdf-final-spec-review.txt)无P1/P2，[Standards审查](evidence/pdf-extraction-20261111/pdf-final-standards-review.txt)发现普通symlink venv被替换为base Python的P2。现以配置路径启动、保留物理SHA并执行后核未变；[独立修后复验](evidence/pdf-extraction-20261111/python-environment-fix-review.txt)21/21及旧/新venv对照通过。原本机base已装包，旧失败证明丢配置身份，不写成旧本机cap必为false。修后完整check再次退出0：745前端/1既有skip、78核心、26域、57Brief/PDF HTTP、80研究合同，类型构建通过，规范1.8.1；当时1642清单，最终补入独立报告后另核。远程Git/CI按实际回执补录。
 
 自动采集、简洁策略、三方向文案/视觉、通用Deck/终审及包装/KV整链仍继续。真实供应商/付费/生产账号/通知/云部署和在线PPT编辑保存专项保持暂停。原件、数据库和失败回执原位保留，Git不代替运行数据恢复。
