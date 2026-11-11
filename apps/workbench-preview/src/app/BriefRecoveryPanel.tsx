@@ -1,3 +1,4 @@
+import {pendingWriteAction} from '../collaboration/types';
 import {readBrief} from '../services/http/briefEnvelope';
 import {object, text} from '../services/http/dto';
 import {useState, useSyncExternalStore} from 'react';
@@ -16,8 +17,8 @@ export function BriefRecoveryPanel() {
   if (!pending || !recovery) return null;
   const body = object(JSON.parse(pending.body));
   const fields = typeof body.brief === 'string' ? readBrief(body.brief).fields : null;
-  const preserved = fields ? [text(body.name) && `项目：${text(body.name)}`, `类型：${fields.proposalType === 'packaging' ? '包装' : fields.proposalType === 'kv' ? '主视觉 / 海报' : '未记录'}`, `品牌或产品：${fields.brand ?? ''}`, `背景：${fields.background}`, `目标受众：${fields.audience}`, `交付内容：${fields.deliverables.join('、')}`, `限制条件：${fields.constraints.join('、')}`].filter(Boolean).join('\n\n') : '保留了对当时任务卡的确认请求。核对将沿用原始版本。';
-  const permitted = can({kind: pending.label === '新建提案' ? 'manage' : pending.label === '保存简报' ? 'edit_brief' : 'workflow'});
+  const preserved = fields ? [text(body.name) && `项目：${text(body.name)}`, `类型：${fields.proposalType === 'packaging' ? '包装' : fields.proposalType === 'kv' ? '主视觉 / 海报' : '未记录'}`, `品牌或产品：${fields.brand ?? ''}`, `背景：${fields.background}`, `目标受众：${fields.audience}`, `交付内容：${fields.deliverables.join('、')}`, `限制条件：${fields.constraints.join('、')}`].filter(Boolean).join('\n\n') : pending.kind === 'add_source' ? `来源：${text(object(body.input).title)}\n\n${text(object(body.input).excerpt)}` : pending.kind === 'record_handoff' ? `交接说明：${text(object(body.input).note)}\n\n核对将沿用提交时的研究版本与限制。` : '已保留原始版本和当时请求。核对不会改用当前稿件替代原输入。';
+  const permitted = can(pendingWriteAction(pending.kind));
   return <div className="page" style={{paddingBlock: 16}}><section className="card" role="status" aria-label="未决简报提交">
     <h2>上次{pending.label}待核对</h2>
     <p>原请求已保存在当前浏览器会话中。请先核对结果，再继续提交。</p>
@@ -25,7 +26,7 @@ export function BriefRecoveryPanel() {
     <div className="cluster">
       <button type="button" className="btn btn--primary" disabled={busy || !permitted} onClick={async () => {
         setBusy(true); setError('');
-        try {const id = await recovery.retry(); reloadAll(); void navigate(projectPath(id, 'proposal', {stage: 'brief'}));}
+        try {const id = await recovery.retry(); reloadAll(); void navigate(projectPath(id, 'proposal', {stage: ['create_project','save_brief','confirm_brief'].includes(pending.kind) ? 'brief' : 'research'}));}
         catch (cause) {setError(toServiceError(cause).message);} finally {setBusy(false);}
       }}>核对原提交</button>
       <button type="button" className="btn btn--secondary" disabled={busy || !permitted} onClick={() => {

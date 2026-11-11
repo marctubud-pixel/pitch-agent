@@ -1,6 +1,6 @@
 # Git、PR与版本恢复
 
-规范版本：1.0.0。origin为 `git@github.com:marctubud-pixel/pitch-agent.git`。可见性与远程保护设置按实际GitHub状态判断，不能由本地配置推断。
+规范版本：1.0.1。origin为 `git@github.com:marctubud-pixel/pitch-agent.git`。可见性与远程保护设置按实际GitHub状态判断，不能由本地配置推断。
 
 ## 日常PR
 
@@ -35,3 +35,7 @@ git worktree add --detach /tmp/pitch-agent-checkpoint 提交SHA
 ## 运行数据恢复
 
 SQLite主文件、WAL和SHM按同一数据库处理，使用既有恢复协议、原生回执和隔离验证。不要复制活跃数据库充当Git备份。当前运行数据与完整历史产物没有纳入Git；恢复边界见[存储保留](../storage-retention.md)。
+
+## 已核PR回执
+
+2026-11-11简报[PR #1](https://github.com/marctubud-pixel/pitch-agent/pull/1)的application与specifications两项远程检查成功，已正常合并为4aaf32163b76026b88b0d44747523817399d5b09。此回执只覆盖该PR；保护规则和后续PR仍需独立核验。

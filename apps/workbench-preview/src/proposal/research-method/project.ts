@@ -6,7 +6,7 @@ import type { ResearchFigure } from './model';
 
 export const supportLabels = { supported: '有支持', partial: '部分支持', unsupported: '不支持', missing_citation: '缺少引用', unverified: '未核验' };
 export const sourceLabels = { verified: '已核验', unverified: '未核验', insufficient: '依据不足' };
-const topicLabels: Record<EvidenceTopic, string> = { audience: '人群', category: '行业', competitor: '竞争', cultural: '文化背景', production: '产品' };
+const topicLabels: Record<EvidenceTopic, string> = { audience: '人群', category: '行业', competitor: '竞争', cultural: '文化背景', production: '产品', unclassified: '未分类' };
 export type MethodProjection = {
   identity: string;
   artifactLabel: string;

@@ -68,7 +68,7 @@ describe('current frontend against actual restricted HTTP handler and SQLite', (
     expect(p).toMatchObject({type: 'packaging', presentationLocalTime: '2026-12-01T10:30', mode: 'assisted', checkpoints: ['strategy', 'delivery'], cover: null, research: null, decisions: [], revision: 0});
     expect(p.stages.content_review.status).toBe('not_started');
     await expect(proposals.ensureBrandResourceStorage()).rejects.toMatchObject({kind: 'unavailable'});
-    await expect(service.generateResearch()).rejects.toMatchObject({kind: 'unavailable'});
+    await expect(service.generateResearch(created.data.id,{commandId:'disabled-research',expectedRevision:created.revision})).rejects.toMatchObject({kind: 'not_eligible'});
   });
   it('keeps draft business version, hidden fields and provenance while native heads stay immutable', async () => {
     const host = await fixture(), service = host.service(), created = await service.createProject(input(), {commandId: 'create-draft', expectedRevision: 0}), id = created.data.id;

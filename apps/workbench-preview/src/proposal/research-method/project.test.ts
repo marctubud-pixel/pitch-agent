@@ -164,7 +164,7 @@ describe('research method projection', () => {
     workspace.artifact.claimIds = workspace.claims.map(claim => claim.id);
     const matrix = projectResearch(workspace, history).figures.find(figure => figure.kind === 'matrix');
     if (!matrix || matrix.kind !== 'matrix') throw new Error('Evidence matrix required');
-    expect(matrix.rows.map(row => row.label.split(' · ')[1])).toEqual(workspace.claims.map(claim => ({ audience: '人群', category: '行业', competitor: '竞争', cultural: '文化背景', production: '产品' })[claim.topic]));
+    expect(matrix.rows.map(row => row.label.split(' · ')[1])).toEqual(workspace.claims.map(claim => ({ audience: '人群', category: '行业', competitor: '竞争', cultural: '文化背景', production: '产品', unclassified:'未分类' })[claim.topic]));
     expect(matrix.rows.some(row => row.label.endsWith('文化背景'))).toBe(true);
   });
 });

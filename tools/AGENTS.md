@@ -5,5 +5,5 @@
 - 纯域测试使用根`npm run test:core`的明示集合。旧全链路测试、原生PPT、真实供应商和跨进程验收另按各模块合同执行，不能批量运行全部历史脚本。
 - `workbench/fixtures`和vendor属于源码依赖；保留压缩夹具及vendor许可证。数据库、原始run和执行回执按存储约定原位保留。
 - `auto-layout`的本机运行库、字体和原生工具依赖尚未移植，`workbench`真实模型及正式终审仍受既有合同约束。不得统一替换历史路径或放宽能力校验以通过测试。
-- 简报联调使用根`npm run dev:brief`及独立SQLite，先读[受限HTTP合同](../docs/development/http-brief.md)。此入口只读写简报，不创建执行器；旧完整服务仍按既有授权边界。
+- 简报联调使用根`npm run dev:brief`及独立SQLite，先读[受限HTTP合同](../docs/development/http-brief.md)。新项目按[七阶段运行合同](../docs/specs/seven-stage-runtime.md)进入；默认无执行器，研究来源与原件可读写，显式配置只处理指定研究任务；旧完整服务仍按既有授权边界。
 - 修改DTO、回执、恢复或权限先读相关合同及测试，更新架构与状态，保留原失败和独立复核。

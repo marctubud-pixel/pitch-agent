@@ -1,6 +1,6 @@
 import { useTeam } from '../collaboration/context';
 import { PermissionFields } from '../collaboration/TeamTools';
-import { useEffect, useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, useSyncExternalStore, type FormEvent } from 'react';
 import { ArrowRight, Plus, Search } from 'lucide-react';
 import { useCommand } from '../app/commands';
 import { useServiceQuery } from '../app/query';
@@ -38,6 +38,8 @@ export function SourcesView({ projectId }: { projectId: string }) {
     { projectId, keepPreviousData: true },
   );
   const adding = params.get('add') === '1';
+  const service=useService();
+  const pending=useSyncExternalStore(listener=>service.subscribe(()=>listener()),()=>{try{return service.briefRecovery?.getPending()??null;}catch{return null;}},()=>null);
 
   return (
     <div className="page">
@@ -50,8 +52,8 @@ export function SourcesView({ projectId }: { projectId: string }) {
             variant="primary"
             icon={<Plus size={16} aria-hidden="true" />}
             onClick={() => setParams({ add: '1' })}
-            disabled={!query.data}
-            reason={t('src.addWaiting')}
+            disabled={!query.data || pending !== null}
+            reason={pending ? '请先核对页面上方保留的原提交。' : t('src.addWaiting')}
           />
         }
       >
@@ -137,7 +139,7 @@ export function SourcesView({ projectId }: { projectId: string }) {
                 </ul>
               </>
             )}
-            <AddSourceDialog open={adding && can({ kind: 'edit_research' })} data={data} initialClaim={params.get('claim')} onClose={() => setParams({ add: null, claim: null })} />
+            <AddSourceDialog open={adding && pending === null && can({ kind: 'edit_research' })} data={data} initialClaim={params.get('claim')} onClose={() => setParams({ add: null, claim: null })} />
           </>
         )}
       </QueryView>
@@ -150,7 +152,8 @@ function AddSourceDialog({ open, data, initialClaim, onClose }: { open: boolean;
   const command = useCommand();
   const t = useT();
   const formId = useId();
-  const blank = (): SourceInput => ({ title: '', publisher: '', url: '', excerpt: '', intendedUse: 'audience', attachToClaimId: initialClaim });
+  const live = service.environment.kind === 'live';
+  const blank = (): SourceInput => ({ title: '', publisher: '', url: '', excerpt: '', intendedUse: live ? 'unclassified' : 'audience', attachToClaimId: initialClaim });
   const [form, setForm] = useState<SourceInput>(blank);
   const [touched, setTouched] = useState(false);
 
@@ -211,12 +214,14 @@ function AddSourceDialog({ open, data, initialClaim, onClose }: { open: boolean;
           <TextInput label={t('src.f.title')} value={form.title} onChange={set('title')} error={errors.title} />
           <TextInput label={t('src.f.publisher')} value={form.publisher} onChange={set('publisher')} error={errors.publisher} />
         </div>
-        <TextInput label={t('src.f.link')} type="url" value={form.url} onChange={set('url')} optional hint={t('src.f.linkHint')} />
-        <TextArea label={t('src.f.excerpt')} value={form.excerpt} onChange={set('excerpt')} rows={4} error={errors.excerpt} hint={t('src.f.excerptHint')} />
+        <TextInput label={t('src.f.link')} type="url" value={form.url} onChange={set('url')} optional hint={live ? '可留空；未提供出处时保持未知，不生成示例链接。' : t('src.f.linkHint')} />
+        <TextArea label={t('src.f.excerpt')} value={form.excerpt} onChange={set('excerpt')} rows={4} error={errors.excerpt} hint={live ? '请粘贴来源原文；登记不等于已经独立核实。' : t('src.f.excerptHint')} />
         <div className="grid-2">
-          <SelectInput label={t('src.use')} value={form.intendedUse} onChange={set('intendedUse')} options={TOPICS.map((id) => ({ value: id, label: t(`topic.${id}`) }))} hint={t('src.f.useHint')} />
+          <SelectInput label={t('src.use')} value={form.intendedUse} onChange={set('intendedUse')} options={TOPICS.map((id) => ({ value: id, label: t(`topic.${id}`) }))} hint={live ? '用途是查找分类，能否支持论点仍需独立核验。' : t('src.f.useHint')} />
           <SelectInput
             label={t('src.f.attach')}
+            disabled={live}
+            hint={live ? '关联已有论点尚未接入。' : undefined}
             value={form.attachToClaimId ?? ''}
             onChange={(e) => setForm((f) => ({ ...f, attachToClaimId: e.target.value || null }))}
             options={[{ value: '', label: t('src.f.noAttach') }, ...data.attachableClaims.map((c) => ({ value: c.id, label: `${c.text.slice(0, 70)}${c.text.length > 70 ? '…' : ''}` }))]}

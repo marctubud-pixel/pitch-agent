@@ -1,0 +1,31 @@
+{
+  "id": "project-b4bdb2e495de7ea0390d3a154d17ca586ebae472551da4a193ba810aa7e3dbf1",
+  "workflowVersion": "proposal-seven-v1",
+  "stages": [
+    "brief",
+    "research",
+    "strategy",
+    "themes",
+    "visual",
+    "layout",
+    "delivery"
+  ],
+  "sourceCount": 3,
+  "sourceUrl": "",
+  "sourceStatus": "unverified",
+  "recoveredSameBody": true,
+  "jobCount": 0,
+  "artifactCount": 0,
+  "readerLoop": {
+    "id": "reader_loop",
+    "label": "独立读者回环",
+    "passed": false,
+    "detail": "固定r7独立读者回环尚未接入，不能签研究交接或正式放行。",
+    "fix": null
+  },
+  "overflow": {
+    "width": 910,
+    "scrollWidth": 910
+  },
+  "errors": []
+}

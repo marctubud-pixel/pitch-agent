@@ -1,3 +1,4 @@
+import {pendingWriteAction} from './types';
 import type { ProposalWriteMeta, StageId } from '../domain/proposal';
 import { ServiceError, type WorkbenchService } from '../domain/service';
 import type { Services } from '../services';
@@ -24,7 +25,7 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const recoveryAction = (): TeamAction => {
     const pending = recovery?.getPending();
     if (!pending) throw new ServiceError('validation', '没有待核对的简报提交。');
-    return {kind: pending.label === '新建提案' ? 'manage' : pending.label === '保存简报' ? 'edit_brief' : 'workflow'};
+    return pendingWriteAction(pending.kind);
   };
   const briefRecovery = recovery ? {
     getPending: recovery.getPending,

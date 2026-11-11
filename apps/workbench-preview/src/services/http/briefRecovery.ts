@@ -1,6 +1,22 @@
 import {ServiceError} from '../../domain/service';
 
-import type {PendingBriefWrite} from '../../domain/service';
+import type {PendingBriefWrite, PendingWriteKind} from '../../domain/service';
+
+export function pendingWriteKind(path: string, body: Record<string, unknown>): PendingWriteKind {
+  if (path === '/projects') return 'create_project';
+  const suffix = /^\/projects\/[A-Za-z0-9-]+\/(commands|sources|research-jobs|research-verification|research-readiness|research-handoffs|research-release)$/.exec(path)?.[1];
+  switch (suffix) {
+    case 'commands': if (body.kind === 'revise-task-card') return 'save_brief'; if (body.kind === 'confirm-task-card') return 'confirm_brief'; break;
+    case 'sources': return 'add_source';
+    case 'research-jobs': return 'generate_research';
+    case 'research-verification': return 'verify_research';
+    case 'research-readiness': return 'review_readiness';
+    case 'research-handoffs': return 'record_handoff';
+    case 'research-release': return 'release_research';
+  }
+  throw new ServiceError('validation', '未决提交不是受限简报或研究操作。');
+}
+export const pendingWriteLabels: Record<PendingWriteKind, string> = {create_project: '新建提案', save_brief: '保存简报', confirm_brief: '确认简报', add_source: '登记来源', generate_research: '开始研究', verify_research: '核验研究事实', review_readiness: '核验研究有效性', record_handoff: '提交研究交接', release_research: '放行研究'};
 
 export class BriefWriteJournal {
   private cached: PendingBriefWrite | null = null;
@@ -15,12 +31,11 @@ export class BriefWriteJournal {
       if (raw) {
         const value: unknown = JSON.parse(raw);
         if (!value || typeof value !== 'object' || !('path' in value) || !('body' in value) || !('commandId' in value) || !('label' in value)
-          || typeof value.path !== 'string' || typeof value.body !== 'string' || typeof value.commandId !== 'string' || typeof value.label !== 'string'
-          || !(/^\/projects(?:\/[A-Za-z0-9-]+\/commands)?$/.test(value.path))) throw new Error('Invalid journal');
+          || typeof value.path !== 'string' || typeof value.body !== 'string' || typeof value.commandId !== 'string' || typeof value.label !== 'string') throw new Error('Invalid journal');
         const body: unknown = JSON.parse(value.body);
-        if (!body || typeof body !== 'object' || !('commandId' in body) || body.commandId !== value.commandId) throw new Error('Invalid command identity');
-        if (value.path !== '/projects' && (!('kind' in body) || !['revise-task-card', 'confirm-task-card'].includes(String(body.kind)))) throw new Error('Invalid command kind');
-        pending = {path: value.path, body: value.body, commandId: value.commandId, label: value.path === '/projects' ? '新建提案' : 'kind' in body && body.kind === 'revise-task-card' ? '保存简报' : '确认简报'};
+        if (!body || typeof body !== 'object' || Array.isArray(body) || !('commandId' in body) || body.commandId !== value.commandId) throw new Error('Invalid command identity');
+        const kind = pendingWriteKind(value.path, Object.fromEntries(Object.entries(body)));
+        pending = {kind, path: value.path, body: value.body, commandId: value.commandId, label: pendingWriteLabels[kind]};
       }
       this.cachedKey = key; this.serialized = raw; this.cached = pending;
       return pending;

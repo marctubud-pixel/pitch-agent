@@ -11,7 +11,11 @@ const unavailable = (): Promise<never> => Promise.reject(new ServiceError('unava
 function proposal(p: Snapshot): Proposal {
   const project = mapProject(p), card = currentCard(p), brief = mapBrief(p, card), envelope = readBrief(card.brief);
   if (!isProposalType(brief.proposalType)) throw new ServiceError('unavailable', '历史任务卡未记录提案类型，不能自动补成已确认类型。');
-  const stage = (id: StageId): StageState => ({status: id === 'brief' ? brief.confirmedBy ? 'done' : 'in_progress' : 'not_started', summary: id === 'brief' ? brief.confirmedBy ? '当前简报已确认，未启动后续执行。' : '当前简报待确认。' : '本轮尚未接通此阶段。', updatedAt: id === 'brief' ? brief.updatedAt || null : null, lead: '', version: id === 'brief' ? brief.version : 0});
+  const research = p.stages.find(s => s.stage === 'research'), workflow = p.researchWorkflow;
+  const hasResearch = Boolean(research?.activeArtifactId || p.jobs.some(j => j.stage === 'research'));
+  const released = Boolean(workflow && Array.isArray(workflow.checks) && workflow.checks.some(c => c && typeof c === 'object' && 'id' in c && c.id === 'release' && 'passed' in c && c.passed === true));
+  const researchStatus: StageState['status'] = !hasResearch ? 'not_started' : research && (['stale','blocked','failed','awaiting_reconciliation'].includes(research.status) || research.blockedReasons.length) ? 'needs_revision' : released ? 'done' : 'in_progress';
+  const stage = (id: StageId): StageState => ({status: id === 'brief' ? brief.confirmedBy ? 'done' : 'in_progress' : id === 'research' ? researchStatus : 'not_started', summary: id === 'brief' ? brief.confirmedBy ? '当前简报已确认。' : '当前简报待确认。' : id === 'research' ? !hasResearch ? '当前尚无研究产物；真实执行以配置与授权为准。' : released ? '当前研究已有真实放行记录；未启动策略生产。' : '当前研究仍待核验或负责人交接，已有产物可阅读。' : '本轮尚未接通此阶段。', updatedAt: id === 'brief' ? brief.updatedAt || null : id === 'research' && hasResearch ? project.updatedAt || null : null, lead: '', version: id === 'brief' ? brief.version : id === 'research' ? p.artifacts.filter(a => a.stage === 'research').length : 0});
   const gates: Record<string, CheckpointStage | undefined> = {strategy: 'strategy', copy: 'themes', visual: 'visual', final_review: 'delivery'};
   return {id: p.id, workbenchId: p.id, name: p.name, client: project.client || '客户尚未填写', type: brief.proposalType,
     ...(envelope.metadata.presentationLocalTime ? {presentationLocalTime: envelope.metadata.presentationLocalTime} : {}),

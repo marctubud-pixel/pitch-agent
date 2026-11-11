@@ -1,3 +1,7 @@
+# 七阶段运行协议与研究接入 · 2026-11-11
+
+新项目proposal-seven-v1从原生域和SQLite保存协议身份，旧记录保持旧STAGES。研究任务绑定固定r7方法SHA和实际prompt回执，受限服务仅处理指定研究，不恢复旧job；HTTP研究原件按实际正文SHA读取。默认执行关闭，r7读者回环缺失时正向交接及放行拒绝。模块职责与缺口见[接续](../development/seven-stage-research.md)。
+
 # 本地简报HTTP合流 · 2026-11-11
 
 当前`apps/workbench-preview/src/services/http`以DTO、Brief封装和briefModels从同一原生快照投影项目、任务卡和七阶段提案。`tools/workbench/brief-server.mjs`提供项目与简报受限读写，只复用域和存储；没有执行器、恢复或调度副作用。根dev:brief与dev:http为独立入口，旧完整server、scratch、运行数据保持。具体修订、版本、回执和限制见[合同](../development/http-brief.md)。

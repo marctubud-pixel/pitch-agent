@@ -1,3 +1,4 @@
+import {applyResearchMethod} from './research-method.mjs';
 import {ordinaryOriginMatches} from './ordinary-model-claims.mjs';
 import {reopenOrdinary,isOrdinaryHttp,ordinarySuccessfulStatus,ordinaryHasContext} from './ordinary-model.mjs';
 import {verifyResearchAcquisitionOriginal} from './research-acquisition-original.mjs';
@@ -78,7 +79,8 @@ export async function verifyStageOriginal(project,artifact,{executionRoot}) {
   dependencies.push({kind:'artifact',artifactId:id,contentHash:source.contentHash,provenance:source.provenance,inputIndex:index});
  }
  for(const [artifactId,constraints] of Object.entries(job.task.upstreamReviewConstraints??{}))dependencies.push({kind:'upstream_review_constraints',artifactId,constraints:structuredClone(constraints)});
- const request=buildStageRequest({stage:job.stage,brief:job.task.brief,inputArtifacts,sourceRecords:job.task.sourceRecords??[],visualCatalogue:[],copyContractVersion:job.task.copyContractVersion,strategyContractVersion:job.task.strategyContractVersion,strategyBasis:job.task.strategyBasis,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis});
+ let request=buildStageRequest({stage:job.stage,brief:job.task.brief,inputArtifacts,sourceRecords:job.task.sourceRecords??[],visualCatalogue:[],copyContractVersion:job.task.copyContractVersion,strategyContractVersion:job.task.strategyContractVersion,strategyBasis:job.task.strategyBasis,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis});
+ if(job.stage==='research'&&job.task.researchMethod)request=applyResearchMethod(request,job.task.researchMethod);
  need(equal(original.packet,{projectId:project.id,jobId:job.id,attemptId:attempt.id,inputVersionIds:job.inputVersionIds,sourceRecords:job.task.sourceRecords??[],...request}),'Original stage request changed');
  need(equal(original.input,{runId:attempt.id,model:job.binding.model,...request}),'Original provider input has unsupported fields or changed request');
  const output=validateStageOutput(job.stage,parsed,{sourceRecords:job.task.sourceRecords??[],visualCatalogue:[],copyContractVersion:job.task.copyContractVersion,strategyContractVersion:job.task.strategyContractVersion,strategyBasis:job.task.strategyBasis,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis});
@@ -130,7 +132,8 @@ export async function verifyResearchDataOriginal(project,artifact,{executionRoot
  if(job.task.researchDataBasis?.acquisition)await verifyResearchAcquisitionOriginal(project,job.task.researchDataBasis.acquisition,{executionRoot,historical:true});
  const original=await readStageInvocationOriginal(project,job,attempt,{executionRoot});
  const options={sourceRecords:job.task.sourceRecords??[],visualCatalogue:job.task.visualCatalogue??[],revisionInput:job.task.revisionInput,correctionInput:job.task.correctionInput,researchRevision:job.task.researchRevision,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis};
- const request=buildStageRequest({stage:'research',brief:job.task.brief,inputArtifacts:job.task.revisionInputArtifacts??[],...options});
+ let request=buildStageRequest({stage:'research',brief:job.task.brief,inputArtifacts:job.task.revisionInputArtifacts??[],...options});
+ if(job.stage==='research'&&job.task.researchMethod)request=applyResearchMethod(request,job.task.researchMethod);
  const materials=(job.task.correctionInput??job.task.revisionInput)?.materials;
  need(equal(original.packet,{projectId:project.id,jobId:job.id,attemptId:attempt.id,inputVersionIds:job.inputVersionIds,sourceRecords:job.task.sourceRecords??[],...request})&&equal(original.input,{runId:attempt.id,model:job.binding.model,...request,...(materials?.length?{images:materials}:{})}),'Original numerical request changed');
  const output=validateStageOutput('research',original.outputText,options),loaded=await readArtifactContent(project,artifact.id,executionRoot);

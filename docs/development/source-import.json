@@ -1998,12 +1998,12 @@
       "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
     },
     "apps/workbench-preview/src/domain/service.ts": {
-      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
-      "sha256": "01cfaf3f37b3183042d10fa5ff6fa99f22a3c6bf7931238e2fdf477e027dcc15"
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "e4d2e15d1a6861729580cb617aaec45e664b2ce127dd48812e5239399fe8c35e"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
-      "sha256": "0cc39e901891b8958c42f6e13d565f381033403241ee326ff59889b645a149f3"
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "9eeba272219cd2290a8f64a31b53a6678e8078ee413a692be6f65bba117e6f88"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
@@ -2014,20 +2014,20 @@
       "sha256": "5af8ad8684f2e4a8a3956b6429fda5a9c6047d54defcdf9801ea2625aa88fbad"
     },
     "apps/workbench-preview/src/collaboration/protectServices.ts": {
-      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
-      "sha256": "30f98b11f60dc2ecbe8a91b2a3df4fc4f151d0a009f3b671f3b139a35a40a963"
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "77cd29a4c5447db0eec87083a1955f846e4f95dbbc8391322c55624ca74994ed"
     },
     "apps/workbench-preview/src/domain/models.ts": {
-      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
-      "sha256": "52aa8f529087f9c777905b810111b3db09aa5dcb1a1eb86d4b7903696631b69f"
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "8be30d8116e3930f15b3cce4ef3b764545b70d70d2103a6cc40028c8e9d994a6"
     },
     "apps/workbench-preview/src/domain/proposal.ts": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
       "sha256": "6e8145eb77781c3a4f7e7eef6061f6e516d4442153680a34f447d1395bba9a2a"
     },
     "apps/workbench-preview/src/services/index.ts": {
-      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
-      "sha256": "bade9bcf19d1850eee693bd58170a3b4137a432a7489537e90e93b1a5a510cd9"
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "0a59d9712ca81b4d888bb9805500f949dce9c0bd24492cb9fa1a4f1111399b22"
     },
     "apps/workbench-preview/src/views/HomeView.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
@@ -2036,6 +2036,38 @@
     "apps/workbench-preview/src/views/NewProjectView.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
       "sha256": "87e5aef36f092c67a654b995c636adf762659f2afc006fc893cf1373500f33a1"
+    },
+    "apps/workbench-preview/src/collaboration/types.ts": {
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "a3958f8db79c6e1def93ff7f1af4e2fec0d366384059ad7e64f798abe2017a7b"
+    },
+    "apps/workbench-preview/src/i18n/messages/zh-CN.ts": {
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "fc82ea3d231854e9336c2a54d27c2a7080ca26aa92214ba94d3e174856816354"
+    },
+    "apps/workbench-preview/src/proposal/research-method/project.test.ts": {
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "72f8f8e2927e6235b1bb47c1ed634765ee3827dbe1a8737672070bfc855ce72e"
+    },
+    "apps/workbench-preview/src/proposal/research-method/project.ts": {
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "a28a3514b5dd907b3dc7de6dff6cd2551d6125d1719536aab8938aaadd1562dc"
+    },
+    "apps/workbench-preview/src/services/mock/messages/zh-CN.ts": {
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "dd5719dc8de0a1db70b286b0ef27f864a975e5f22312d749f52320a620b18e82"
+    },
+    "apps/workbench-preview/src/views/ResearchView.tsx": {
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "c2a6cee5c49020c4c1ec3963e70f847402a2bd0dcb9c4d531bb29a80d7365fe0"
+    },
+    "apps/workbench-preview/src/views/SourcesView.tsx": {
+      "reason": "按1.5.0维护受限研究、未分类原件投影及未决提交优先核对；原导入身份保留",
+      "sha256": "5f7e44c96f3f782c656ca4397c4871bca5bc3e9a22416809f076349d8e8ee902"
+    },
+    "apps/workbench-preview/src/views/stages/ResearchStage.tsx": {
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
+      "sha256": "89f56d1bbfd61b292bd4b3f5fb5f719c4a9cfddbdcaf45c41fea7799ee5b501e"
     }
   }
 }

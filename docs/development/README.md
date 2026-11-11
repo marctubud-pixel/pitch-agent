@@ -1,6 +1,6 @@
 # 开发、运行与使用
 
-规范版本：1.2.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
+规范版本：1.3.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
 
 ## 本地启动
 
@@ -46,3 +46,7 @@ npm run check
 继续阅读[运行架构](../architecture/runtime.md)、[配置与服务边界](configuration.md)、[提交与回退](git-and-recovery.md)。后续改进见[已知问题](../../status/issues/README.md)。
 
 本轮已修与真实生产能力缺口见[后续调整顺序](remaining-work.md)。不要将域测试转绿当作真实七阶段生产链完成。
+
+## 当前七阶段与研究接入
+
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。r7独立读者回环未接入，完整研究交接与生产仍未完成。默认运行不会执行模型。

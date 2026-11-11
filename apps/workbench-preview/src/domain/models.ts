@@ -224,7 +224,7 @@ export interface Brief {
 // Evidence
 // ---------------------------------------------------------------------------
 
-export type EvidenceTopic = 'audience' | 'category' | 'competitor' | 'cultural' | 'production';
+export type EvidenceTopic = 'audience' | 'category' | 'competitor' | 'cultural' | 'production' | 'unclassified';
 
 export const TOPIC_LABELS: Record<EvidenceTopic, string> = {
   audience: 'Audience',
@@ -232,6 +232,7 @@ export const TOPIC_LABELS: Record<EvidenceTopic, string> = {
   competitor: 'Competitor',
   cultural: 'Cultural context',
   production: 'Production',
+  unclassified: 'Unclassified',
 };
 
 export type SourceVerificationStatus = 'verified' | 'unverified' | 'insufficient';
@@ -537,7 +538,8 @@ export interface FeatureAvailability {
   reason: string;
 }
 
-export type Capabilities = Record<FeatureKey, FeatureAvailability>;
+export interface ResearchCapability {configured: boolean; executionAllowed: boolean; method: {id: string; version: string; sha256: string}; reason: string}
+export type Capabilities = Record<FeatureKey, FeatureAvailability> & {research?: ResearchCapability};
 
 export interface EligibilityCheck {
   id: string;
