@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.7.0",
+  "baselineVersion": "1.7.1",
   "date": "2026-11-11",
   "status": "同版研究正文阅读、实际修订复查与原件/交接已接；自动采集及策略后续继续目标模式",
   "workflow": [
@@ -202,7 +202,7 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
@@ -653,7 +653,7 @@
       "title": "研究独立读者运行合同",
       "kind": "contract",
       "path": "docs/development/research-reader.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.seven-stage-runtime",

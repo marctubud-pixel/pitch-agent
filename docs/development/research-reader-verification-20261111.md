@@ -1,6 +1,6 @@
 # 研究读者运行接入核验
 
-2026-11-11，基线`44c495b14677cc8e16b77957fe060a483a4d3f84`，分支`codex/research-reader-20261111`。本轮是完整七阶段目标中的研究工作包，目标仍active。合同见[研究读者运行](research-reader.md)。最终整仓检查与固定提交两轴复核按实际回执补录，不能由下列局部通过推断整目标完成。
+2026-11-11，基线`44c495b14677cc8e16b77957fe060a483a4d3f84`，分支`codex/research-reader-20261111`。本轮是完整七阶段目标中的研究工作包，目标仍active。合同见[研究读者运行](research-reader.md)。固定006b6896的两轴审查发现3项P2并已定点修复，原失败报告与修后独立复验分别保留；不能由本工作包通过推断整目标完成。
 
 ## 实际完成的接线
 
@@ -32,9 +32,12 @@ R1合成夹具回了不属于本版的source ID，被既有守卫拒绝为`INVAL
 | 研究修订原生receipt漏方法/问题前缀 | 按实际request重建相同r7方法及登记，不放宽hash；真实新版及后续原件验证通过 |
 | 新按钮是原生样式、输入框可拖拽、无稿文案误称未绑定 | 复用btn、局部禁resize、区分无稿；真实1280浅色/910深色复验 |
 | 复查后历史guard隐藏已存回应/动作/引用 | 新只读历史组件保留全部对应处理，复查按原job的disposition身份关联；两席隔离/实际SSR反例及真实只读复制复验 |
+| 已保存HTTP读者结果换卡/换问题计划后被当前守卫挡住 | 按冻结原卡/计划/全文与同一HTTP locator核回历史，current=false；坏原稿继续unknown，0重发 |
+| 原请求入队后执行前重启停在queued | 仅当前合法、配置与冻结binding一致、零attempt queued同体请求继续执行；20项独立重开及拒绝反例 |
+| 同卡旧修订B被C替换，或旧计划Q1被Q2替换后误报当前成功 | 修订核唯一实际输出与当前稿；计划核同卡latest；错回执unknown保留、已知历史清日志并提示 |
 | 状态显示“复查·首读已保存” | 按phase显示首读/复查，未解决与不放行文字保持 |
 
-[独立增量代码审查原件](evidence/reader-20261111/standards-increment-review.txt)限定其已查范围；不把早先局部PASS当成后加资格包的最终审核。固定提交两轴审查与远程CI另按最终回执记录。
+[独立增量代码审查原件](evidence/reader-20261111/standards-increment-review.txt)限定其已查范围；不把早先局部PASS当成后加资格包的最终审核。固定提交[Spec审查](evidence/reader-20261111/reader-final-spec-review.txt)发现2项恢复P2，[Standards审查](evidence/reader-20261111/reader-final-standards-review.txt)发现1项历史分类P2；先红后绿修复，[queued独立复验](evidence/reader-20261111/reader-queued-fix-review.txt)20项及8个独立反例通过；[历史恢复独立复验](evidence/reader-20261111/reader-historical-recovery-review.txt)37项通过，另发现历史采集误用当前守卫并修复，原失败及新回归保留。[历史分类与原请求详情独立复验](evidence/reader-20261111/reader-history-classification-review.txt)6项native测试及真实Chrome精确路由回放通过：错回执保留unknown，旧稿/计划归历史，真实后端POST0；原通用提示P3已修，Meta+C与原body逐字相等。远程CI另按最终回执登记。
 
 ## UI审核范围
 
@@ -50,12 +53,12 @@ R1合成夹具回了不属于本版的source ID，被既有守卫拒绝为`INVAL
 | 历史处理及完整引文恢复 | [修改后](evidence/reader-20261111/history-after-1280-light.png) |
 | 当前复查及其实际处理 | [910深色](evidence/reader-20261111/recheck-after-910-dark.png) |
 
-原件来源、长度和SHA见[证据清单](evidence/reader-20261111/EVIDENCE-SOURCES.json)。截图为工程数据，不是品牌或审美批准。
+原件来源、长度和SHA见[证据清单](evidence/reader-20261111/EVIDENCE-SOURCES.json)。截图为工程数据，不是品牌或审美批准。恢复详情的[修前通用提示](evidence/reader-20261111/recovery-before-1280-light.png)、[修后浅色](evidence/reader-20261111/recovery-after-1280-light.png)和[修后深色](evidence/reader-20261111/recovery-after-910-dark.png)按同一Chrome精确路由夹具复验；[实际回执](evidence/reader-20261111/UI-HISTORY-RECOVERY-FINAL.json)核原body复制和无溢出，不冒称真实TCP断连验收。
 
 ## 验证与未接范围
 
-完整`npm run check`实际退出0：前端736通过/1既有跳过，核心78、域26、原件与Brief HTTP22、研究合同57项通过，类型与构建通过。54项规范、9项隔离反例、首轮1610项纳管及4项Git反例通过；393份导入身份、147份封存证明保留。跨基线规范检查亦通过。构建保留既有bundle体积提示。实际HTTP提供方仅本机，非真实模型。
+首轮完整`npm run check`实际退出0：前端736通过/1既有跳过，核心78、域26、原件与Brief HTTP22、研究合同57项通过，类型与构建通过。54项规范、9项隔离反例、首轮1610项纳管及4项Git反例通过；393份导入身份、147份封存证明保留。跨基线规范检查亦通过。复审修复后的完整检查亦实际退出0：738前端/1旧skip、78核心、26域、22Brief HTTP、79研究合同；规范1.7.1与当时1612项纳管通过。新增历史采集原件路径调整后，当前reader/owner及真实sealed采集历史定向12/12通过。最终源码完整检查再次退出0：738前端/1既有skip、78核心、26域、22Brief HTTP、80研究合同；类型与构建通过。最终明示证据补入后的纳管门禁另核。构建保留既有bundle体积提示。实际HTTP提供方仅本机，非真实模型。
 
-旧correction-runtime扩跑夹具在初次生产即失败，根同版复现，未为它放宽守卫，也未计入通过。历史业务run没有重新验收。临时测试库与本轮原运行数据不纳Git；Git保护实现和明示证据，不能代替业务原件恢复。
+旧correction-runtime扩跑夹具在初次生产即失败，根同版复现，未为它放宽守卫，也未计入通过。额外扩跑既有acquisition-boundary组有6项在写只读store.command的旧夹具注入处失败；原store和该测试与006b6896字节相同，失败不计为通过，也不修改生产store守卫迁就夹具。下一采集接入包需适配其故障注入。其余当前reader/owner定向通过，历史采集reader核回另用实际sealed链的新测试验证。历史业务run没有重新验收。临时测试库与本轮原运行数据不纳Git；Git保护实现和明示证据，不能代替业务原件恢复。
 
 PDF解析/自动采集、简洁策略、文案视觉、通用Deck/终审及包装/KV全链仍继续总目标。真实模型质量与费用、生产账号、外部通知、云部署、在线PPT编辑保存专项保持原边界。本轮不宣布全链或目标完成。

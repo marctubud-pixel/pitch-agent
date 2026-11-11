@@ -97,3 +97,26 @@ test('reader capability never advertises execution when required research roles 
  assert.equal(partial.capability().configured,false);assert.equal(partial.capability().reader.configured,false);assert.equal(partial.capability().reader.recheckAvailable,false);assert.equal(partial.capability().handoffAvailable,false);
  const calls=f.calls.length;await assert.rejects(partial.readReport('new',f.request()),{code:'RESEARCH_EXECUTION_UNAVAILABLE'});assert.equal(f.calls.length,calls);assert.equal(f.store.read('new').jobs.filter(j=>j.purpose==='research_reader').length,0);
 });
+
+for(const change of ['task-card','question-plan'])test(`saved reader outcome is reconciled as history after ${change} changes without redispatch`,async t=>{
+ const f=await fixture(t,{httpModel:true,loseReaderReturn:true});const receipt=await f.service.readReport('new',f.request());
+ const before=f.store.read('new'),job=before.jobs.find(j=>j.id===receipt.jobId);assert.equal(job.status,'awaiting_reconciliation');
+ if(change==='task-card')f.store.command('new',{kind:'revise-task-card',taskCardId:'new:scope:next',brief:'New engineering scope; old reader output is historical.',commandId:'next-card',expectedRevision:before.revision},human);
+ else f.service.registerQuestions('new',{questions:[{id:'q2',question:'What remains unknown about the synthetic product?',critical:true}],readerCount:1,commandId:'next-questions',expectedRevision:before.revision},human);
+ const reopened=f.reopen(),noModels=createResearchService({store:reopened.store,rootDir:f.root}),calls=f.calls.length;
+ const request={jobId:job.id,commandId:'recover-historical',expectedRevision:reopened.store.read('new').revision};
+ const sourceFile=before.artifacts.find(a=>a.id===f.artifactId).payloadRef,sourceBytes=await readFile(sourceFile);
+ await writeFile(sourceFile,'{}');
+ await assert.rejects(noModels.reconcileReader('new',request));
+ assert.equal(reopened.store.read('new').jobs.find(j=>j.id===job.id).status,'awaiting_reconciliation');
+ assert.equal(reopened.store.read('new').researchReaderReports?.length??0,0);assert.equal(f.calls.length,calls);
+ await writeFile(sourceFile,sourceBytes);
+ await noModels.reconcileReader('new',request);
+ const after=reopened.store.read('new'),saved=after.researchReaderReports[0];
+ assert.equal(after.jobs.find(j=>j.id===job.id).status,'succeeded');assert.equal(after.jobs.find(j=>j.id===job.id).attempts.length,1);
+ assert.equal(saved.artifactId,f.artifactId);assert.equal(saved.registrationId,f.registrationId);assert.equal(f.calls.length,calls);
+ const history=await noModels.readerReport('new',saved.id);assert.equal(history.original.current,false);assert.equal(history.report.rawReport.packetHash,job.task.readerInput.packetHash);
+ await assert.rejects(verifyResearchReaderOriginal(after,saved,{executionRoot:f.root,current:true}));
+ assert.equal((await noModels.workflowSnapshot(after)).canRelease.allowed,false);
+ await noModels.reconcileReader('new',request);assert.equal(f.calls.length,calls);
+});

@@ -5,7 +5,7 @@ import {isDeepStrictEqual} from 'node:util';
 import {verifyResearchReaderOriginal} from './research-reader-original.mjs';
 import {SEMANTIC_PROTOCOL} from './semantic-authority.mjs';
 import {createExecutor} from './executor.mjs';
-import {DomainError, inputsFor, researchWorkflowView} from './project.mjs';
+import {DomainError, inputsFor, researchWorkflowView, researchReaderTarget, researchQuestionRegistration} from './project.mjs';
 import {registeredSources} from './research-sources.mjs';
 import {readArtifactContent} from './artifact-content.mjs';
 import {researchMethodIdentity} from './research-method.mjs';
@@ -35,6 +35,21 @@ export function createResearchService({store, rootDir, executionAllowed = false,
     if (job.status === 'queued') await executor.execute(id, jobId);
     return jobId;
   };
+  const resumeQueued = async (id, jobId, artifactId, role) => {
+    const p = project(id), job = p.jobs.find(j => j.id === jobId);
+    if (job.status !== 'queued' || job.attempts.length) return jobId;
+    ready(id);
+    need(configured(role), 'RESEARCH_READER_UNCONFIGURED', '独立读者尚未配置。');
+    need(isDeepStrictEqual(job.binding, bindings[role]), 'RESEARCH_MODEL_BINDING_CHANGED', '原任务的模型绑定已改变，不能续执行。');
+    const artifact = p.artifacts.find(a => a.id === artifactId);
+    need(p.activeByStage.research === artifactId && artifact?.inputVersionIds.includes(p.activeTaskCardId), 'STALE_RESEARCH_READER', '历史研究任务不能续执行。');
+    if (role === 'reader') researchReaderTarget(p, job);
+    else {
+      need(job.task.taskCardId === p.activeTaskCardId, 'STALE_RESEARCH_READER', '修订任务属于历史任务卡。');
+      need(isDeepStrictEqual(job.task.researchMethod, researchMethodIdentity()) && isDeepStrictEqual(job.task.researchQuestionRegistration ?? null, researchQuestionRegistration(p)), 'RESEARCH_QUESTIONS_CHANGED', '修订任务的研究方法或问题计划已改变。');
+    }
+    return execute(id, jobId);
+  };
   return {
     capability,
     async readerReport(id, reportId) {
@@ -59,7 +74,8 @@ export function createResearchService({store, rootDir, executionAllowed = false,
       const p=project(id);
       if(p.jobs.some(j=>j.purpose==='research_reader'&&j.task?.request?.commandId===request.commandId)){
         const reader=executor??createExecutor({store,rootDir});
-        return {jobId:await reader.enqueueResearchReader(id,request.artifactId,request)};
+        const jobId=await reader.enqueueResearchReader(id,request.artifactId,request);
+        return {jobId:await resumeQueued(id,jobId,request.artifactId,'reader')};
       }
       ready(id);need(capability().reader.configured,'RESEARCH_READER_UNCONFIGURED','独立读者尚未配置。');
       const jobId=await executor.enqueueResearchReader(id,request.artifactId,request);await execute(id,jobId);return {jobId};
@@ -78,7 +94,8 @@ export function createResearchService({store, rootDir, executionAllowed = false,
     async revise(id,request) {
       const p=project(id);
       if(p.jobs.some(j=>j.task?.revisionRequest?.commandId===request.commandId)){
-        const reader=executor??createExecutor({store,rootDir});return {jobId:await reader.enqueueRevision(id,request)};
+        const reader=executor??createExecutor({store,rootDir}),jobId=await reader.enqueueRevision(id,request);
+        return {jobId:await resumeQueued(id,jobId,request.artifactId,'research')};
       }
       ready(id);const jobId=await executor.enqueueRevision(id,request);await execute(id,jobId);return {jobId};
     },

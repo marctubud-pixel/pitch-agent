@@ -11,11 +11,11 @@ const text=x=>typeof x==='string'&&x.trim()&&x.length<=100000;
 const fields=(v,keys)=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).sort().join(',')===[...keys].sort().join(',');
 const overlap=(a,b)=>['actorId','runId','contextId'].some(k=>a?.[k]===b?.[k])||(a?.parentRunIds??[]).includes(b?.runId)||(b?.parentRunIds??[]).includes(a?.runId)||(a?.ancestorActorIds??[]).includes(b?.actorId)||(b?.ancestorActorIds??[]).includes(a?.actorId);
 function workflow(p){need(p.workflow?.version==='proposal-seven-v1','SEVEN_STAGE_WORKFLOW_REQUIRED','Reader state belongs to current workflow');}
-function registered(p,r){
-  need(r && r.taskCardId===p.activeTaskCardId,'RESEARCH_QUESTIONS_REQUIRED','Current preregistered questions required');
+function registered(p,r,{historical=false}={}){
+  need(r && (historical||r.taskCardId===p.activeTaskCardId),'RESEARCH_QUESTIONS_REQUIRED','Current preregistered questions required');
   const core=Object.fromEntries(['id','taskCardId','taskCardHash','method','questions','readerCount'].map(k=>[k,r[k]]));
-  need(equal(r.method,researchMethodIdentity()),'RESEARCH_METHOD_CHANGED','Question plan belongs to an older fixed method');
-  need(r.taskCardHash===semanticHash(p.taskCards.find(c=>c.id===p.activeTaskCardId)),'RESEARCH_QUESTIONS_CHANGED','Confirmed task bytes changed');
+  need(historical||equal(r.method,researchMethodIdentity()),'RESEARCH_METHOD_CHANGED','Question plan belongs to an older fixed method');
+  need(r.taskCardHash===semanticHash(p.taskCards.find(c=>c.id===r.taskCardId)),'RESEARCH_QUESTIONS_CHANGED','Confirmed task bytes changed');
   need(r.registrationHash===semanticHash(core),'RESEARCH_QUESTIONS_CHANGED','Question registration changed');return r;
 }
 export function researchQuestionRegistration(p){const r=(p.researchQuestionRegistrations??[]).filter(r=>r.taskCardId===p.activeTaskCardId).at(-1);return r?registered(p,r):null;}
@@ -71,11 +71,11 @@ function recheckPrevious(p,a,r,seat,previousReportId,dispositionId,excludeJobId,
   need(d&&d.dispositionHash===semanticHash(core)&&d.registrationId===r.id&&d.readerSeat===seat&&d.artifactId===a.id&&d.contentHash===a.contentHash&&d.oldArtifactId===old.report.artifactId&&d.oldContentHash===old.report.contentHash&&d.previousReportId===old.report.id&&d.previousReportHash===old.report.reportHash&&d.previousPacketHash===old.packet.packetHash,'STALE_READER_DISPOSITION','Exact original and revised disposition binding required');
   return {packet:old.packet,rawReport:old.report.rawReport,dispositions:d.dispositions};
 }
-export function researchReaderTarget(p,job){
+export function researchReaderTarget(p,job,{historical=false}={}){
   workflow(p);
-  const a=p.artifacts.find(a=>a.id===job.targetArtifactId),packet=job.task?.readerInput,r=registered(p,researchQuestionRegistration(p));
-  need(a?.stage==='research'&&a.provenance==='provider_execution'&&p.activeByStage.research===a.id&&a.inputVersionIds.includes(p.activeTaskCardId)&&equal(job.inputVersionIds,[a.id]),'STALE_RESEARCH_READER','Current research required');
-  const card=p.taskCards.find(c=>c.id===p.activeTaskCardId),producer=p.jobs.find(j=>j.outputVersionIds?.includes(a.id)&&(!j.purpose||j.purpose==='stage'));
+  const a=p.artifacts.find(a=>a.id===job.targetArtifactId),packet=job.task?.readerInput,r=historical?registered(p,(p.researchQuestionRegistrations??[]).find(r=>r.id===job.registrationId),{historical:true}):registered(p,researchQuestionRegistration(p));
+  need(a?.stage==='research'&&a.provenance==='provider_execution'&&(historical||p.activeByStage.research===a.id)&&a.inputVersionIds.includes(r.taskCardId)&&equal(job.inputVersionIds,[a.id]),'STALE_RESEARCH_READER','Current research required');
+  const card=p.taskCards.find(c=>c.id===r.taskCardId),producer=p.jobs.find(j=>j.outputVersionIds?.includes(a.id)&&(!j.purpose||j.purpose==='stage'));
   need(card&&p.confirmations.some(c=>c.taskCardId===card.id),'TASK_CARD_UNCONFIRMED','Confirmed reader task required');
   need(producer&&equal(producer.task?.researchMethod,r.method)&&equal(producer.task?.researchQuestionRegistration,r)&&producer.task?.researchQuestionRegistrationId===r.id&&producer.task?.researchQuestionRegistrationHash===r.registrationHash,'RESEARCH_QUESTIONS_NOT_PREREGISTERED','Producer must consume exact preregistered questions');
   const requested=p.audit.find(e=>{try {const c=JSON.parse(p.processedCommands[e.commandId]);return c.kind==='request-stage'&&c.jobId===producer.id;}catch{return false;}});
@@ -85,8 +85,8 @@ export function researchReaderTarget(p,job){
   need(typeof job.task.readerContentText==='string'&&hash(job.task.readerContentText)===a.contentHash&&equal(packet.visibleReport,projectResearchReaderReport(job.task.readerContentText)),'INVALID_READER_SOURCE','Reader projection must preserve the actual source bytes');
   need(packet.visibleReport.renderings.length===0,'RESEARCH_READER_SCOPE_UNSUPPORTED','Pixel reader is not connected');
   let previous=null;
-  if(packet.phase==='first_read'){need(!job.task.readerPreviousReportId&&!job.task.readerDispositionId&&!latestNeedsRecheck(p,r,job.readerSeat,job.id),'READER_RECHECK_REQUIRED','Prior reader questions cannot be hidden by a new first read');}
-  else previous=recheckPrevious(p,a,r,job.readerSeat,job.task.readerPreviousReportId,job.task.readerDispositionId,job.id);
+  if(packet.phase==='first_read'){need(!job.task.readerPreviousReportId&&!job.task.readerDispositionId&&(historical||!latestNeedsRecheck(p,r,job.readerSeat,job.id)),'READER_RECHECK_REQUIRED','Prior reader questions cannot be hidden by a new first read');}
+  else previous=recheckPrevious(p,a,r,job.readerSeat,job.task.readerPreviousReportId,job.task.readerDispositionId,job.id,{historical});
   const rebuilt=buildResearchReaderPacket({taskCard:packet.taskCard,artifactId:a.id,contentHash:a.contentHash,contentText:job.task.readerContentText,method:r.method,questionRegistration:packet.questionRegistration,visibleReport:projectResearchReaderReport(job.task.readerContentText),phase:packet.phase,previous});
   need(equal(packet,rebuilt),'INVALID_READER_SOURCE','Stored recheck packet differs from source and disposition originals');
   buildResearchReaderRequest(packet);return a;
@@ -122,8 +122,8 @@ export function reduceResearchReaderCommand(p,c,context,hooks){
     p.jobs.push(job);return;
   }
   const job=p.jobs.find(j=>j.id===c.jobId);need(job?.purpose==='research_reader','INVALID_JOB','Reader job required');
-  const a=researchReaderTarget(p,job);hooks.target(p,a.id);
   const recovery=c.kind==='recover-research-reader';
+  const a=researchReaderTarget(p,job,{historical:recovery});if(!recovery)hooks.target(p,a.id);
   let attempt;
   if(recovery){attempt=job.attempts.at(-1);need(context.actorType==='agent'&&job.status==='awaiting_reconciliation'&&attempt?.status==='awaiting_reconciliation'&&attempt.id===c.attemptId&&attempt.receipt&&['validatedOutputPath','validatedOutputHash'].every(k=>!Object.hasOwn(attempt.receipt,k)||equal(attempt.receipt[k],c.executionReceipt?.[k]))&&equal(Object.fromEntries(Object.entries(attempt.receipt).filter(([k])=>!['validatedOutputPath','validatedOutputHash'].includes(k))),Object.fromEntries(Object.entries(c.executionReceipt??{}).filter(([k])=>!['validatedOutputPath','validatedOutputHash'].includes(k)))),'READER_RECOVERY_REQUIRED','Recover only an exact saved original attempt');}
   else attempt=hooks.running(job,c,context);

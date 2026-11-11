@@ -660,7 +660,11 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       const recoveryRequest={jobId,commandId,expectedRevision};
       if(Object.hasOwn(p.processedCommands,commandId)){const prior=JSON.parse(p.processedCommands[commandId]);if(prior.kind!=='recover-research-reader'||!isDeepStrictEqual(prior.recoveryRequest,recoveryRequest))throw new DomainError('COMMAND_ID_REUSED','Reader recovery request changed');await verifyOrdinaryProject(p,{executionRoot:root});return job;}
       if(p.revision!==expectedRevision)throw new DomainError('REVISION_CONFLICT','Project changed before reader reconciliation');
-      researchReaderTarget(p,job);
+      const artifact=researchReaderTarget(p,job,{historical:true});
+      await verifyResearchDataOriginal(p,artifact,{executionRoot:root});
+      const loaded=await readArtifactContent(p,artifact.id,root);
+      if(loaded.contentText!==job.task.readerContentText)throw new DomainError('INVALID_READER_SOURCE','Saved reader source bytes changed');
+      if(job.task.readerPreviousReportId)await verifyResearchReaderOriginal(p,researchReaderReport(p,job.task.readerPreviousReportId).report,{executionRoot:root});
       if(job.status!=='awaiting_reconciliation'||!attempt?.httpAttemptLocator)throw new DomainError('READER_RECOVERY_REQUIRED','Reconcile an original saved HTTP attempt; never dispatch a replacement');
       const receipt=await restoreOrdinaryJob(store,root,projectId,jobId,{imageStore});
       p=store.read(projectId);job=p.jobs.find(j=>j.id===jobId);attempt=job.attempts.at(-1);

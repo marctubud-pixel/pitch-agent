@@ -2002,8 +2002,8 @@
       "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "sha256": "4821e6def59dee33a8f8691b7379af0800e5a4ebd782cf5159426a1779671b64",
-      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
+      "sha256": "febe15dc18cc2ec679078d432890e6d919bfaab38e1ddc128684c8948f26ee8a",
+      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准；独立复审修正同卡旧修订实际输出/旧问题计划历史回执分类，已知历史与unknown分别保留"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",

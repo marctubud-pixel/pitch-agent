@@ -315,7 +315,15 @@ export class HttpWorkbenchService implements WorkbenchService {
       if(path.endsWith('/research-revisions')){
         const job=p.jobs.find(j=>j.id===receipt.jobId&&j.stage==='research'),task=job?object(job.task):null;
         if(!job||!task||command.kind!=='request-stage'||command.jobId!==job.id||!sameRequest(task.revisionRequest,body)||!sameRequest(object(command.task).revisionRequest,body))throw new ServiceError('response_lost','修订回执未绑定原稿与原请求，记录仍保留。',{outcomeUnknown:true,retryable:true});
-        return task.taskCardId!==p.activeTaskCardId;
+        const currentArtifactId=p.stages.find(s=>s.stage==='research')?.activeArtifactId;
+        if(job.status==='succeeded'){
+          if(!Array.isArray(job.outputVersionIds)||job.outputVersionIds.length!==1)throw new ServiceError('response_lost','修订回执缺少唯一实际产物，原请求仍保留。',{outcomeUnknown:true,retryable:true});
+          const outputVersionId=job.outputVersionIds[0];
+          const output=p.artifacts.find(a=>a.id===outputVersionId&&a.stage==='research'&&Array.isArray(a.inputVersionIds)&&a.inputVersionIds.includes(task.taskCardId));
+          if(!output)throw new ServiceError('response_lost','修订产物未绑定原任务卡，原请求仍保留。',{outcomeUnknown:true,retryable:true});
+          return task.taskCardId!==p.activeTaskCardId||output.id!==currentArtifactId;
+        }
+        return task.taskCardId!==p.activeTaskCardId||body.artifactId!==currentArtifactId;
       }
       if(path.endsWith('/research-reader-dispositions')){
         const record=(p.readerDispositions??[]).find(d=>d.id===receipt.dispositionId),plan=record?(p.readerPlans??[]).find(r=>r.id===record.registrationId):null;
@@ -325,7 +333,7 @@ export class HttpWorkbenchService implements WorkbenchService {
       if(path.endsWith('/research-questions')){
         const plan=(p.readerPlans??[]).find(r=>r.id===receipt.registrationId);
         if(command.kind!=='register-research-questions'||!sameRequest(command.request,body)||!plan||command.registrationId!==plan.id||command.taskCardId!==plan.taskCardId||!sameRequest(plan.questions,body.questions)||plan.readerCount!==body.readerCount||!p.cards.some(c=>c.id===plan.taskCardId))throw new ServiceError('response_lost','问题登记回执未绑定原始问题，提交仍保留。',{outcomeUnknown:true,retryable:true});
-        return plan.taskCardId!==p.activeTaskCardId;
+        return plan.taskCardId!==p.activeTaskCardId||(p.readerPlans??[]).filter(r=>r.taskCardId===plan.taskCardId).at(-1)?.id!==plan.id;
       }
       const job=p.jobs.find(j=>j.id===receipt.jobId&&j.purpose==='research_reader'),task=job?object(job.task):null;
       const start=path.endsWith('/research-readers');
