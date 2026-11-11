@@ -1,6 +1,6 @@
 # 简洁三板块策略运行合同
 
-规范版本：1.0.0。本合同规定当前七阶段应用的策略接线。业务要求仍是[策略负责人](../agents/strategy-owner.md)的两项基础要求，不恢复旧复杂策略Skill、候选推理图或固定多轮评分。
+规范版本：1.0.1。本合同规定当前七阶段应用的策略接线。业务要求仍是[策略负责人](../agents/strategy-owner.md)的两项基础要求，不恢复旧复杂策略Skill、候选推理图或固定多轮评分。
 
 ## 输入与三板块输出
 
@@ -44,7 +44,9 @@
 
 body必须与操作的字段集合完全一致。接口沿用128KiB、JSON、方法、loopback Host、明确Origin及query守卫。GET包络为`{project,view,strategy,capability,revision}`；POST另有`receipt:{commandId,replayed,operation,jobId}`。异步读取前后核同revision，不将正文与另一版状态拼接。
 
-`strategy.protocolVersion`为`simple-strategy-workspace-v1`。工作区含taskCardId、researchArtifactId、policyVersion、producerJobId/producerStatus/attemptCount、artifactId/contentHash/content、current、history、verification、unknownJobs和reason。未产出时content为null，历史保存真实artifactId/contentHash。原内容和报告先核实际文件，不以metadata补通过。
+`strategy.protocolVersion`为`simple-strategy-workspace-v1`。工作区含taskCardId、researchArtifactId、policyVersion、producerJobId/producerStatus/attemptCount、artifactId/contentHash/content、blockedOutput、failure、current、history、verification、unknownJobs和reason。未产出时content为null，历史保存真实artifactId/contentHash。原内容和报告先核实际文件，不以metadata补通过。
+
+受阻结果保持job=blocked、artifactId/content=null，不登记完成稿。`blockedOutput`仅是原attempt诊断，含attemptId、contentHash和保留三板块的content；读取时核冻结原packet、原模型HTTP响应、schema、normalized路径与真实字节SHA。只有原STAGE_INPUT_GAP且确实blocked的输出才返回该诊断；不能用它启动核验、双owner或copy。`failure`绑定原job的code/message，页面就地显示缺项、已有结论及限制，不能只显示泛空态。旧完成稿不与较新的受阻producer拼接。
 
 ## 固定任务、版本与全文核验
 

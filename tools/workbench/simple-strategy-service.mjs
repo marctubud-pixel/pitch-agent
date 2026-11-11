@@ -14,6 +14,7 @@ import {validateEvidenceReviewOutput} from './evidence-review.mjs';
 import {reconcileStage} from './reconcile-stage.mjs';
 import {verifyCurrentResearchReaders} from './research-reader-workflow.mjs';
 import {requireSimpleHttpJob} from './simple-strategy-http.mjs';
+import {readManagedLayoutBytes} from './managed-layout-bytes.mjs';
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const need=(v,c,m=c)=>{if(!v)throw new DomainError(c,m);};
 const actor=()=>({actorType:'agent',actorId:'simple-strategy-http',runId:randomUUID(),contextId:randomUUID()});
@@ -26,12 +27,24 @@ export function createSimpleStrategyService({store,rootDir,executor,executionAll
   need(a.strategyContract?.version===SIMPLE_STRATEGY_VERSION,'SIMPLE_STRATEGY_REQUIRED');const j=producer(p,a),t=j?.attempts.at(-1),r=p.reconciliations?.find(r=>r.id===a.reconciliationId),commands=Object.values(p.processedCommands).map(x=>JSON.parse(x)).filter(c=>c.kind==='reconcile-stage'&&c.reconciliationId===r?.id);need(r&&j&&t&&commands.length===1,'SIMPLE_ORIGINAL_CHANGED');const c=commands[0],audits=p.audit.filter(x=>x.commandId===c.commandId);need(audits.length===1&&audits[0].kind==='reconcile-stage'&&audits[0].actorId===r.context.actorId&&['succeeded','succeeded_stale'].includes(j.status)&&t.status==='awaiting_reconciliation'&&j.outputVersionIds.length===1&&j.outputVersionIds[0]===a.id&&r.jobId===j.id&&r.attemptId===t.id&&r.artifactId===a.id&&equal(t.receipt,a.executionReceipt)&&equal(t.executor,a.author)&&c.jobId===j.id&&c.attemptId===t.id&&c.artifactId===a.id&&c.payloadRef===a.payloadRef&&c.contentHash===a.contentHash&&r.originalReceiptHash===hash(JSON.stringify(t.receipt))&&r.rawOutputHash===hash(t.receipt.responseText)&&r.inputPacketHash===t.receipt.inputPacketHash&&r.validatedOutputHash===a.contentHash,'SIMPLE_ORIGINAL_CHANGED');
   const saved=await readStageInvocationOriginal(p,j,t,{executionRoot:rootDir}),output=validateStageOutput('strategy',JSON.parse(saved.outputText),{strategyContractVersion:SIMPLE_STRATEGY_VERSION,strategyBasis:j.task.strategyBasis,sourceRecords:j.task.sourceRecords??[],visualCatalogue:j.task.visualCatalogue??[]}),loaded=await readArtifactContent(p,a.id,rootDir);need(loaded.contentText===JSON.stringify(output.content,null,2)&&a.strategyContract.basisHash===j.task.strategyBasis.basisHash&&a.strategyContract.contentHash===a.contentHash&&equal(a.claims,output.claims)&&equal(a.technicalReceipts,{sourceCatalogue:{version:1,records:j.task.sourceRecords??[]},visualCatalogue:j.task.visualCatalogue??[]}),'SIMPLE_ORIGINAL_CHANGED');
  }
- async function status(id){const p=read(id),artifacts=p.artifacts.filter(a=>a.strategyContract?.version===SIMPLE_STRATEGY_VERSION),a=artifacts.find(a=>a.id===p.activeByStage.strategy),j=a?producer(p,a):p.jobs.filter(j=>j.task?.strategyContractVersion===SIMPLE_STRATEGY_VERSION).at(-1);let applicable=false,reason='尚无策略。',content=null;
+ async function status(id){const p=read(id),artifacts=p.artifacts.filter(a=>a.strategyContract?.version===SIMPLE_STRATEGY_VERSION),j=p.jobs.filter(j=>j.task?.strategyContractVersion===SIMPLE_STRATEGY_VERSION).at(-1),a=artifacts.find(a=>a.id===p.activeByStage.strategy&&j?.outputVersionIds?.includes(a.id));let applicable=false,reason='尚无策略。',content=null,blockedOutput=null;
   if(j)try{current(p,j);applicable=true;reason='策略仍需独立全文核验和下游负责人接收。';}catch(error){reason=error.code??'历史策略';}
   if(a){await original(p,a);content=(await readArtifactContent(p,a.id,rootDir)).content;}
+  const failure=j?.error?{code:j.error.code,message:j.error.message}:null;
+  if(j?.status==='blocked'&&j.error?.code==='STAGE_INPUT_GAP'){
+   const attempt=j.attempts.find(t=>t.id===j.attemptId),receipt=attempt?.receipt;
+   need(attempt?.status==='blocked'&&receipt,'SIMPLE_BLOCKED_ORIGINAL_INVALID');
+   const saved=await readStageInvocationOriginal(p,j,attempt,{executionRoot:rootDir});
+   const output=validateStageOutput('strategy',JSON.parse(saved.outputText),{strategyContractVersion:SIMPLE_STRATEGY_VERSION,strategyBasis:j.task.strategyBasis,sourceRecords:j.task.sourceRecords??[],visualCatalogue:j.task.visualCatalogue??[]});
+   const normalized=JSON.stringify(output.content,null,2),path=join(rootDir,attempt.id,'output.json');
+   need(output.status==='blocked'&&receipt.validatedOutputPath===path&&receipt.validatedOutputHash===hash(normalized)
+    &&(await readManagedLayoutBytes(rootDir,path)).toString('utf8')===normalized,'SIMPLE_BLOCKED_ORIGINAL_INVALID');
+   blockedOutput={attemptId:attempt.id,contentHash:hash(normalized),content:output.content};
+   if(applicable)reason='关键依据待补；保留已有结论，不是完成稿或可交接策略。';
+  }
   const verification=p.verifications.filter(r=>r.artifactId===a?.id).at(-1)??null;if(verification)await verifyReviewOriginal(p,'verification',verification,{executionRoot:rootDir});
   need(read(id).revision===p.revision,'REVISION_CONFLICT');
-  return {strategy:{protocolVersion:'simple-strategy-workspace-v1',taskCardId:p.activeTaskCardId,researchArtifactId:p.activeByStage.research??null,policyVersion:p.policies.at(-1).version,producerJobId:j?.id??null,producerStatus:j?.status??null,attemptCount:j?.attempts.length??0,artifactId:a?.id??null,contentHash:a?.contentHash??null,content,current:applicable,history:artifacts.filter(x=>x.id!==a?.id).map(x=>({artifactId:x.id,contentHash:x.contentHash})),verification,unknownJobs:p.jobs.filter(x=>x.status==='awaiting_reconciliation'&&(x.id===j?.id||x.purpose==='verification'&&x.targetArtifactId===a?.id)).map(x=>({jobId:x.id,purpose:x.purpose??'stage'})),reason},capability:capable(),revision:p.revision};
+  return {strategy:{protocolVersion:'simple-strategy-workspace-v1',taskCardId:p.activeTaskCardId,researchArtifactId:p.activeByStage.research??null,policyVersion:p.policies.at(-1).version,producerJobId:j?.id??null,producerStatus:j?.status??null,attemptCount:j?.attempts.length??0,artifactId:a?.id??null,contentHash:a?.contentHash??null,content,blockedOutput,failure,current:applicable,history:artifacts.filter(x=>x.id!==a?.id).map(x=>({artifactId:x.id,contentHash:x.contentHash})),verification,unknownJobs:p.jobs.filter(x=>x.status==='awaiting_reconciliation'&&(x.id===j?.id||x.purpose==='verification'&&x.targetArtifactId===a?.id)).map(x=>({jobId:x.id,purpose:x.purpose??'stage'})),reason},capability:capable(),revision:p.revision};
  }
  async function recoverVerification(id,jobId,request){let p=read(id),j=p.jobs.find(x=>x.id===jobId),t=j.attempts.at(-1);if(j.status==='succeeded')return;
   need(j.status==='awaiting_reconciliation'&&t?.httpAttemptLocator,'SIMPLE_ORIGINAL_UNAVAILABLE');

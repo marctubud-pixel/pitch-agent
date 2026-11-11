@@ -1,0 +1,58 @@
+# 清理候选独立只读核查
+
+2026-11-12。本审查由清理核查子Agent执行，只读盘点，未删除、移动、压缩或替换任何资料。仅写本小报告及设计目录盘点JSON，不声称已释放空间。用户授权清理不必要文件；实际执行由根根据即时状态处理。
+
+## 可重建构建候选
+
+`cleanup-dist-qualified.json`给出24个精确dist路径、分配占用、父源码/锁和逐目录重建命令，合计909876KiB（约889MiB）。这些不是模型图片或业务数据库。全部具有src、public、package-lock及`build: tsc --noEmit && vite build`，没有项目prebuild/postbuild或install生命周期脚本。包与锁SHA保存在`cleanup-dist-build-identities.json`。
+
+每份dist中非生成资源均逐件SHA匹配其保留的public/src；额外的pdf.worker.min-qwK7q_zL.mjs资源已逐字匹配保留的pdfjs-dist依赖文件。JS/CSS/HTML/映射及打包字体属于既有构建器生成，未将源码、原始PNG/照片/PPT等视为可删。构建恢复需要npm锁定依赖，成本为本机编译和依赖下载，不调用业务模型；未实际重建验证，不承诺生成二进制哈希绝对一致。
+
+已排除原frontend活跃源、版本atlas、qingyu-layout整组、Deck Studio样本、visual-boards等高价值或入口不确定目录。`frontend-ui-optimization/serve-preview.py`的4415根实际是output/frontend-ui-optimized-20261108，本清单未选该交付根。当前4430/4432/4434的source/Vite缓存也未选。24处候选只建议删除dist，父源码、public、锁、截图、失败记录及报告必须保留。
+
+## 依赖候选与明确拒绝项
+
+- `sites/light-baijiu-research/node_modules`约264MiB：package.json和package-lock存在，README记录dev/build/preview/studio用途；Remotion/Player固定4.0.534。只读进程/打开路径盘点没有sites依赖或该目录服务。可在根即时复核后清理，恢复命令`npm --prefix sites/light-baijiu-research ci`。保留它的dist（约135MiB）、public、源码、README和原研究交付。
+- **不能清理**`apps/proposal-workbench/node_modules`约592MiB：提升权限lsof确证PID69486正在打开其rolldown-binding与fsevents；该PID实际为当前4420的Vite。不能依据“旧前端暂停”推断共享依赖无人使用。
+- 当前workbench-preview依赖、根工作台依赖和所有Git内部对象均未建议清理。
+
+## 运行与引用核查范围
+
+`cleanup-open-paths.json`保留全局提升权限lsof过滤到本项目的结果（exit0/stderr空）及有关进程命令。没有24处dist的打开文件或指向这些目录的已知静态服务器；当前活跃DB及现有Vite依赖明确列出。另查python http.server/serve-preview和node serve/preview命令，未发现候选目录服务。静态服务器可能按需读取后关文件，因此根执行前仍须核其已知服务配置及即刻打开状态；本报告不是以后任何时刻可直接重放的删除授权清单。
+
+## 三组旧恢复备份：保留
+
+closing-oom/backup-before-resume/projects.sqlite及m6-backup-before-resume/projects.sqlite是cold-layout-recovery-backup-v1备份，MANIFEST分别绑定1319/1322修订、原snapshot SHA、主库与WAL SHA和原来源。FINAL-OPERATOR-REVIEW、validate-resume-backup、read-resume-manifest及后续源码审查仍引用第一备份。cold-backup-clone.sqlite记录于cold-clone-result及independent-a1的migration/first-prepare来源记录，是从冷备份演练layout迁移后的独立版本，不能认定为无用重复DB。
+
+当前lsof过滤列表未见三组备份主文件/WAL/SHM持有者，仍应完整保留其组关系。不能只删WAL或SHM、不能以年龄或文件名删除主库，也不能对备份实际重新运行迁移/业务。根曾考虑透明压缩但已报告小探针无显著收益并放弃；本审查未执行该探针或修改DB。即使未来透明压缩，也须全组原SHA、无writer、同路径字节验证及容量峰值控制，且APFS原COW共享块会令“逻辑大小”不同于实际可回收量。
+
+## 结论
+
+目前有依据的可重建候选总量约1.13GiB，仍不足以单独满足3GiB门槛。其余建议通过已确认同源源码/资源副本的APFS写时复制原位共享处理，保留路径及字节；不为凑空间删除归档blobs、旧数据库、付费图片、唯一回执或有效交付。根实际处理后再记录观测可用空间，不能将本盘点大小当成已释放量。
+
+## 实际执行后的独立后验（最终）
+
+根已执行清理，本审核者未参与删除或COW替换。实际文件为`.scratch/space-recovery-20261112/derived-cleanup-plan.json`、`derived-cleanup-result.json`、`qualified-source-cow-plan.json`及`qualified-source-cow-result.json`（不是子目录result.json）。以下重新从磁盘读取，不以根自报替代实物核对。
+
+- 27个删除目标全部不存在，包括原核24处dist、2处Vitest文件系统缓存和静态白酒站依赖；未扩大到父源码/原公共素材/数据库。
+- 清理计划冻结的1679个保留文件逐件SHA全部匹配，无缺失或差异。已有策略分支未提交改动没有被误判为清理回归。
+- 934对COW的保留canonical与原位target全量重新读取SHA，全部与计划相符；target的mtime_ns及mode逐件相符，0缺失/差异。前一轮395个新停用工作树COW目标SHA也全量匹配其原计划，独立计为另一轮，不重复计释放量。
+- 首个Python探针因本环境缺os.listxattr退出，未动任何原件；后续仅完成上述内容和mtime/mode检查。没有独立清理前xattr字节清单，因此本后验不另签原xattr等价，保留根自行核对的范围。
+- 旧正式前端node_modules及锁保留；提升权限lsof再次确证PID69486仍打开其中rolldown/fsevents二进制，没有为了清理强停该进程。
+- 两组closing-oom原恢复备份的主数据库与WAL共4文件重新流式SHA，全部匹配原MANIFEST；两SHM存在。cold-backup-clone主文件2030325760B、WAL0B及SHM32768B仍原位存在，本审核没有清理前SHA，故只独立证明存在/尺寸。归档目录仍有1723份blob文件及git-recovery.git；未全量重新解压/哈希旧恢复档，也未打开SQLite或执行任何旧业务。
+
+根记录删除分配1661505536B；该步骤观测可用1448136704→3102793728B。后续934COW步骤观测3091877888→3865296896B，逻辑克隆835888684B不当作实际物理回收。审核即时实际可用3843424256B（约3.58GiB），高于本项目3GiB大运行门槛；并发进程会继续改变读数，下一大运行仍需即时复核。
+
+独立原始回执为`.scratch/space-recovery-20261112/independent-cleanup-verification.json`和`independent-protected-verification.json`。本报告确认上述清理后验，不签策略业务、实际新UI、PPT或整个目标完成；本次未启动新服务、安装或大测试。
+
+## 后续两轮COW独立追加核验
+
+2026-11-12，仅只读后验，未复制、删除、安装、启动服务或打开数据库。完整回执：`independent-later-cow-verification.json`。
+
+- 小工作树源码9372份：source/target SHA、目标size/mtime_ns/mode全量匹配，0缺失或差异，受保护路径没有成为target，canonical与target集合不相交。
+- 图片/字体/PPTX重复副本4754份：同项全量匹配；按SHA/长度共506组，每组恰有1个未作为target的canonical。apps、原活跃scratch、两处受保护交付output、DB、Git和恢复archives均不在target集合。
+- 小源码有959个内容组，其中22组因原始岗位/来源路径不同，保留多个同字节canonical（如正式/预览源码、Skill与封存原件）；这些canonical均未成为target。这不是按全仓内容强行只剩一份原件；实际保留更多原语义路径，无缺件。
+- 小源码步骤记录可用2761089024→2964221952B；资源步骤2954600448→5243707392B。审核即时可用5215367168B，约4.86GiB。逻辑克隆196959228B/3212740919B与观测空间变化分开，不直接当成物理释放量。
+- 此前空间从约3.6GiB回落至2.6GiB的外部变化没有独立根因，不归因于项目清理。27处删除、1679保留身份、934对和此前395份COW、原备份DB/WAL/SHM及恢复档的结论仍保留在前一轮独立报告，未在本轮重新扩大签署范围。
+
+限制：没有独立清前xattr字节清单，本轮不另签全历史xattr等价；当前内容/SHA及mtime/mode不证明所有ACL/属性或全项目恢复。活跃dependency-cow计划未据此执行或批准。未验证策略UI、PPT或完整目标。

@@ -13,13 +13,15 @@ export function SimpleStrategyPanel({projectId}:{projectId:string}){
  return <QueryView query={query} skeleton={<Skeleton lines={4}/>}>{data=>data?<StrategyContents data={data} simple={simple}/>:null}</QueryView>;
 }
 function StrategyContents({data,simple}:{data:SimpleStrategyWorkspace;simple:SimpleStrategyService}){
- const command=useCommand(),pending=command.state.status==='pending',s=data.content,unknown=data.unknownJobs.length>0;
- const continueResearch=()=>{const artifactId=data.researchArtifactId;if(!artifactId)return;const input={artifactId,policyVersion:data.policyVersion};void command.run({label:'明确从研究继续策略',payload:input,expectedRevision:data.revision,execute:meta=>simple.continue(data.projectId,input,meta),success:'策略执行结果已保存，请核对正文与限制。'});};
+ const command=useCommand(),pending=command.state.status==='pending',s=data.content??data.blockedOutput?.content,unknown=data.unknownJobs.length>0;
+ const continueResearch=()=>{const artifactId=data.researchArtifactId;if(!artifactId)return;const input={artifactId,policyVersion:data.policyVersion};void command.run({label:'明确从研究继续策略',payload:input,expectedRevision:data.revision,execute:meta=>simple.continue(data.projectId,input,meta),success:'策略执行结果已返回，请核对正文、限制与待补项。'});};
  return <section className="research-method pw-strategy" aria-label="当前简洁策略">
   <header className="rm-header"><div><p className="rm-kicker">策略 · 依据与方向</p><h2>{s?.title??'从已放行研究继续策略'}</h2><p>{s?.summary??'将研究结论、产品真实特质与目标用户连接，说明优先放大什么及其依据。'}</p></div></header>
-  <div className="rm-binding"><strong>{data.current?'当前任务对应策略':data.producerJobId?'历史或待核策略':'尚无策略原稿'}</strong><span>{data.producerStatus?STATUS[data.producerStatus]??'状态待核':'尚未执行'}</span></div>
+  <div className="rm-binding"><strong>{data.current?data.blockedOutput?'当前受阻策略结果':'当前任务对应策略':data.producerJobId?'历史或待核策略':'尚无策略原稿'}</strong><span>{data.producerStatus?STATUS[data.producerStatus]??'状态待核':'尚未执行'}</span></div>
   {!data.producerJobId&&<Action permission={{kind:'workflow'}} label="明确从研究继续策略" variant="primary" pending={pending} disabled={!data.canContinue} reason={!data.available?data.reason:data.continueReason} onClick={continueResearch}/>}
   <p className="rm-note">研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。</p>
+  {data.blockedOutput&&<p className="rm-note">此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。</p>}
+  {data.failure&&!data.blockedOutput&&<p className="rm-alert" role="alert">本次策略受阻：{data.failure.message}</p>}
   {s?<>
    <section className="rm-questions"><h3>研究结论</h3>{s.strategy.researchConclusions.length?s.strategy.researchConclusions.map(p=><Point key={p.id} point={p}/>):<p>尚无可登记的研究结论。</p>}</section>
    <section className="rm-questions"><h3>方向交叉点</h3><div className="pw-venn-grid">
@@ -34,7 +36,7 @@ function StrategyContents({data,simple}:{data:SimpleStrategyWorkspace;simple:Sim
    {data.artifactId&&<Action permission={{kind:'workflow'}} label="核验当前策略全文" pending={pending} disabled={!data.current||!data.available||unknown||data.verification!==null} reason={!data.current?'历史策略不能作为当前核验对象。':unknown?'先核对原结果。':data.verification?'已有核验原报告，请先阅读。':data.reason} onClick={()=>{const artifactId=data.artifactId;if(!artifactId)return;const input={artifactId};void command.run({label:'核验策略全文',payload:input,expectedRevision:data.revision,execute:meta=>simple.verify(data.projectId,input,meta),success:'已保存全文核验原报告，不代替负责人接收。'});}}/>}
    {data.verification&&<details><summary>{data.verification.hasBlockingFindings?'全文核验存在阻断':'已保存全文核验报告'} · 查看原报告</summary><pre style={{whiteSpace:'pre-wrap'}}>{data.verification.report}</pre><p className="muted">摘录支持及模型全文判断，不认证网站真实性、消费者验证或交接批准。</p></details>}
    {data.unknownJobs.map(job=><Action key={job.jobId} permission={{kind:'workflow'}} label={job.purpose==='verification'?'核对原策略核验结果':'核对原策略生成结果'} variant="secondary" pending={pending} disabled={!data.current} reason="历史或输入变更后的未知结果仍待核；本入口不重调模型。" onClick={()=>{const input={jobId:job.jobId};void command.run({label:'核对原策略结果',payload:input,expectedRevision:data.revision,execute:meta=>simple.reconcile(data.projectId,input,meta),success:'仅核对原始保存结果，未重新派发。'});}}/>)}
-   {s&&<details><summary>当前展示原稿与SHA</summary><p>{data.artifactId} · SHA256 {data.contentHash}</p><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(s,null,2)}</pre></details>}
+   {s&&<details><summary>{data.blockedOutput?'受阻原结果与SHA':'当前展示原稿与SHA'}</summary><p>{data.blockedOutput?`原尝试 ${data.blockedOutput.attemptId}`:data.artifactId} · SHA256 {data.blockedOutput?.contentHash??data.contentHash}</p><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(s,null,2)}</pre></details>}
    {data.history.length>0&&<details><summary>历史策略身份 · {data.history.length}份</summary><ul>{data.history.map(a=><li key={a.artifactId}>{a.artifactId} · SHA256 {a.contentHash}（历史身份，不是当前推荐）</li>)}</ul></details>}
   </details><CommandFeedback command={command}/>
  </section>;

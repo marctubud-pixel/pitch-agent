@@ -1,0 +1,31 @@
+
+> proposal-workbench@0.1.0 test
+> vitest run --run src/services/http/simpleStrategyHttp.test.ts
+
+
+ RUN  v5.0.5 /Users/marc/Documents/ChatGPT/调研agent/apps/workbench-preview
+
+(node:92139) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/services/http/simpleStrategyHttp.test.ts (4 tests | 1 failed) 51941ms
+   × projects actual unique SIMPLE three-block SHA content and independent full-text verification without copy 13834ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/services/http/simpleStrategyHttp.test.ts > projects actual unique SIMPLE three-block SHA content and independent full-text verification without copy
+AssertionError: expected 'needs_revision' to be 'in_progress' // Object.is equality
+
+Expected: "in_progress"
+Received: "needs_revision"
+
+ ❯ src/services/http/simpleStrategyHttp.test.ts:39:469
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  04:17:16
+   Duration  52.09s (tests 100%)
+

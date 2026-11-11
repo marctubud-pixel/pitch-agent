@@ -1,0 +1,12 @@
+{
+  "source": {
+    "id": "task:project-53de95880eb65124c7408fadfbf7af9539216782bd96dc2556026b013f1954cb:scope:1",
+    "role": "task",
+    "nature": "requirement",
+    "contentText": "{\"format\":\"proposal-workbench-brief-v1\",\"savedAt\":\"2026-11-11T20:05:02.856Z\",\"metadata\":{\"client\":\"合成工程\",\"summary\":\"仅策略UI工程测试\",\"researchOwner\":\"工程研究负责人\",\"strategyOwner\":\"工程策略负责人\",\"type\":\"kv\"},\"fields\":{\"proposalType\":\"kv\",\"background\":\"只核合成蓝色产品，不推断购买偏好。\",\"audience\":\"未验证人群\",\"objectives\":[\"探索有界方向\"],\"deliverables\":[\"KV策略工程稿\"],\"constraints\":[\"不代表客户批准，不推断真实偏好\"],\"changeNote\":\"R2 typed engineering input\",\"brand\":\"合成蓝色产品\",\"researchQuestions\":[\"颜色能证明偏好吗？\"],\"deliverableType\":\"kv\",\"timeline\":\"本地工程测试\",\"budget\":\"零付费模型\",\"references\":[],\"openQuestions\":[],\"provenance\":{},\"attachment\":null}}",
+    "contentHash": "be6fce678472cee471531e8bfbe9d6328de4d18926bcada5d2afcb77147add1f"
+  },
+  "pointer": "/fields/background",
+  "quote": "合成蓝色产品",
+  "locatedValue": "只核合成蓝色产品，不推断购买偏好。"
+}

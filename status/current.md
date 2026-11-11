@@ -1,3 +1,11 @@
+# 策略受阻结果纠错 · 2026-11-12
+
+固定67663245独立两轴：Standards无硬违例/无P1/P2，Spec实证blocked原结论与gaps在页面不可达的P2。已按独立诊断补齐，保持job blocked/空artifact/无下游放行；同原案80原件SHA及project未变、篡改拒绝，具名typed R4真实Chrome通过受阻态专项。规范1.10.1；独立R4 UI、修后整套检查及远程回执继续中，见[核验](../docs/development/simple-strategy-verification-20261112.md)。以下原节点保留。
+
+# 简洁策略工作包核验 · 2026-11-12
+
+功能提交67663245已保存：受限生产、独立全文核验与同原请求恢复，见[本轮核验](../docs/development/simple-strategy-verification-20261112.md)。根完整检查退出0，最终UI窄修另经类型/构建/4项实际HTTP及独立浅深主题复验；R1/R2失败、R3观察竞态及错误断言原日志保留。当前两轴独立审查与远程PR/CI待回执，不能签完整目标。以下按时间保留。
+
 # 目标接续：空间恢复与简洁策略 · 2026-11-12
 
 采集[PR #7](https://github.com/marctubud-pixel/pitch-agent/pull/7)准确最终head双CI与实际安装/测试步骤成功，已合并35965060。当前`codex/simple-strategy-20261112`采用三板块策略、受限HTTP与当前策略页，尚未提交或签最终UI通过；研究r7及既有页面方法沿用，不重跑旧业务。

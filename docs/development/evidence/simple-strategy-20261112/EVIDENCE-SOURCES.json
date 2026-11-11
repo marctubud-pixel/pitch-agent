@@ -1,0 +1,144 @@
+{
+  "featureCommit": "6766324502ce6c82a3b060f1ecb24acd61aaf22a",
+  "copies": [
+    {
+      "file": "ui-review.txt",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/design/simple-strategy-independent-ui.md",
+      "sha256": "ada17914f98e8fe3f03ba6509cd6ed91c178a9cae69e53dfb814273159de11fc",
+      "bytes": 10997,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "cleanup-review.txt",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/design/cleanup-redundancy-audit-20261112.md",
+      "sha256": "cdbc0700713556c177ca80f0f3a712b38691ce466f76f3ca1c824299a2282cdd",
+      "bytes": 8585,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "root-check.txt",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-root-check.log",
+      "sha256": "4b57bf399343ceb1762ee9311fa6c3502445e1f1ef001dfdf88e7b5e26554e9a",
+      "bytes": 46855,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "final-ui-http.txt",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-final-ui-http-r2.log",
+      "sha256": "896768ba8381957f602a4ee53107d4dacc3bdaf252a6fe9d0358922723ecc123",
+      "bytes": 456,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "prior-ui-assertion-failure.txt",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-final-ui-http.log",
+      "sha256": "0ebbeecd02d3a866f10db84c5cdec61984e90250d39f53c352e55a8207455fcf",
+      "bytes": 1165,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "R1-STARTUP-FAILURE.json",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-r1/UI-STARTUP-ROOT-DIAG.json",
+      "sha256": "4b5ca1c17f4f5a9431a6a2a5b3c56074bd9e7a8492d33cd7af77975bc5ca9ceb",
+      "bytes": 2526,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "R2-BLOCKER.json",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-r2/BLOCKER-ADDENDUM.json",
+      "sha256": "a278462e262706b3ceff8c22e686c00579a717029ebc82b7f2830cf23673533c",
+      "bytes": 1188,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "TYPED-POINTER-PROOF.json",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-r2/typed-task-pointer-proof.json",
+      "sha256": "2c52e81ddd179c4084a4e64075a1064e174f10bd81443531088673823678fd31",
+      "bytes": 1288,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "UI-VERIFY-RECEIPT.json",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-r3/VERIFY-UI-RECEIPT.json",
+      "sha256": "79cc995fb55fa5b28d8e9d67734bb676e99fb29e9936111524fc3ab9f2eca07d",
+      "bytes": 1636,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "UI-NO-REEXECUTION.json",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-r3/VERIFY-NO-REEXECUTION.json",
+      "sha256": "328e28900ce26a453ac5f01f84cbf0a669761a95815a664a887dd7fd8a3b7e36",
+      "bytes": 634,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "before-overview-1280-light.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/before-overview-1280-light.png",
+      "sha256": "f7b3c1811aa2bff46522e57ba72bd55fae4b07c9efd05583a01b927e6fad6cb4",
+      "bytes": 166150,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "before-strategy-expanded-910-dark.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/before-strategy-expanded-910-dark.png",
+      "sha256": "eadc98c002b2a2cd87d95c2639a8efae94af0971e2967fd1cb64ab8dc095718e",
+      "bytes": 404838,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "after-overview-1280-light.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/after-overview-1280-light.png",
+      "sha256": "088243531f432e2e8e54c46a3ccdf7d993d6139b35fd71a1735867eea4415243",
+      "bytes": 140347,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "after-strategy-1280-light.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/after-strategy-1280-light.png",
+      "sha256": "aec9096385b45fd980666e145721783b299ef31b44c0360c5482aa890faa1490",
+      "bytes": 213868,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "after-strategy-expanded-910-dark.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/after-strategy-expanded-910-dark.png",
+      "sha256": "cb44728ccacf98108d0f2328e5981c86183227d4c68b47c93e7aba2ff1ff5bb4",
+      "bytes": 391208,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "backing-result.json",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/backing-result.json",
+      "sha256": "dca1745e4d3cbe45bc57137792e8c68fdcce3b156b6d2b264069330e430f3e8a",
+      "bytes": 2321,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "backing-r3-1280-light.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/backing-r3-1280-light.png",
+      "sha256": "f6819de08c926ed57a58c5b6dadcacbc53a4695fdf664bb0cc9668e6a1065a00",
+      "bytes": 22334,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "backing-r3-910-dark.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/backing-r3-910-dark.png",
+      "sha256": "e28acf560cb97077f3a9d2ee1f9f69ecbc9a28d6d869d085579998da1cb58eda",
+      "bytes": 22836,
+      "identity": "byte-identical copy"
+    },
+    {
+      "file": "backing-mock-qingyu-1280-light.png",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/simple-strategy-independent/backing-mock-qingyu-1280-light.png",
+      "sha256": "ad9e14e554aa89aa1dbcb4d18090cdd488a29b7f524d884d48f5d5d5df824898",
+      "bytes": 24290,
+      "identity": "byte-identical copy"
+    }
+  ],
+  "derivedSummary": "UI-INDEPENDENT-SUMMARY.json preserves source hashes; full native snapshots remain local",
+  "limits": [
+    "Feature check began before final UI-only corrections; those final bytes have separate typecheck, four actual HTTP tests, build and independent UI results.",
+    "Initial route before observation raced reload; not signed as before-route success.",
+    "Creator processes ended; independent after reopens same R3 DB with execution disabled."
+  ]
+}

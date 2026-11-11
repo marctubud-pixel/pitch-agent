@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.10.0",
-  "registrySha256": "33cb4ebe0e65612017a660bdcdab335c38103daf5bb59cdbe626c5104b0276b3",
+  "baselineVersion": "1.10.1",
+  "registrySha256": "746327c5fa2c2178dfd5416a1dc71e6938ef9c7f27a7c67f70c8a86673d6cb72",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -416,10 +416,10 @@
       }
     },
     "contract.simple-strategy": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/simple-strategy.md": "246c5cbe5fbb0b9d32251675cf57eff7dbf61db451ce457912f5cdc0f5374b3f"
+        "docs/development/simple-strategy.md": "46f678091a4f259b03de221b33a147615399ac17c7de675c0c89f7c4b6cf51f7"
       }
     }
   },
@@ -430,7 +430,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "e1d607bd5c59c97603013306e2bbd72b4665890fdd6dbb7b7c95429d72506ffc",
+    "docs/specs/README.md": "a4488977bd08b68976c296a7fa652495309b051ea3a74a1f6695880072b86f1b",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.10.0",
+  "baselineVersion": "1.10.1",
   "date": "2026-11-12",
   "status": "简洁三板块策略生成/全文核验接线；默认research授权，双owner到copy及整链继续目标模式",
   "workflow": [
@@ -693,7 +693,7 @@
       "kind": "contract",
       "title": "简洁三板块策略运行合同",
       "path": "docs/development/simple-strategy.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.seven-stage-runtime",

@@ -1,5 +1,9 @@
 # 规范变更记录
 
+## 1.10.1 · 2026-11-12
+
+固定67663245的独立Spec实跑发现受阻策略原结论与具体缺项在磁盘存在、工作区却不可读的P2。简洁策略合同1.0.1新增独立blockedOutput诊断及原job failure投影；核原packet/HTTP响应/normalized字节SHA，保持blocked与空artifact，不改变通用完成或放行守卫。前端明确非完成稿、保留原结论/限制/具体gaps，没有核验或交接入口。独立同原案复验原project及80份原件SHA不变，新增受阻HTTP/前端/真实UI范围按实际回执记录。
+
 ## 1.10.0 · 2026-11-12
 
 新增简洁策略运行合同1.0.0与策略页1.1.0，复用原研究continuation及独立全文核验，只输出研究结论、方向交叉点和策略发力点。保留r7/reader/事实/readiness/semantic/研究双owner和显式release、完整原件限制与HARD_BLOCKER，不恢复旧复杂策略Skill。默认创建授权research，服务器显式终点仅作用新建，公共body及旧项目不升级。

@@ -1,0 +1,15 @@
+{
+  "result": "BLOCKED: native strategy output rejected, not successful saved-artifact recovery",
+  "error": {
+    "code": "INVALID_SIMPLE_STRATEGY",
+    "message": "Quote not found at original source location"
+  },
+  "artifactId": null,
+  "jobId": "job-d516966f07898f64c923be93d03f17f4930ed146811c4dcec2668513bc653475",
+  "attemptCount": 1,
+  "producerStatus": "awaiting_reconciliation",
+  "cause": "Synthetic fixture hardcodes task ref /text, but typed BriefEnvelope is JSON with background at /fields/background. Validator correctly rejects invalid original quote location.",
+  "scope": "New isolated synthetic strategy UI fixture, actual r7/reader/facts/readiness/semantic/owner/engineering release; NOT complete packaging/KV from-Brief acceptance or business/customer approval",
+  "priorReceiptCaveat": "CONTINUE-UI-RECEIPT result text says Continue saved, but only original HTTP receipt/ledger was saved. No strategy artifact saved; recoveryReturnedToStrategy=true is unknown/native pending branch and does not test successful recovery navigation. Original receipt preserved unchanged.",
+  "action": "Paused; no verify, no new command/job, no manual navigation or source repair."
+}

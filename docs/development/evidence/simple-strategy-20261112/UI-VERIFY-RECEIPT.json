@@ -1,0 +1,31 @@
+{
+  "scope": "New isolated synthetic strategy UI fixture, actual r7/reader/facts/readiness/semantic/owner/engineering release; NOT complete packaging/KV from-Brief acceptance or business/customer approval",
+  "result": "Actual first verify lost-response + reload exact-body recovery; stable route and content remain strategy after fix. Continue before route not verified due original observer race.",
+  "recoveredUrl": "http://127.0.0.1:4438/#/p/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/proposal/strategy",
+  "navigationPostCount": 0,
+  "refreshPostCount": 0,
+  "producer": {
+    "id": "job-b7c8189cca0085787b518a9cba8cfac088a19e26f96518d2ef1d105159b4be97",
+    "status": "succeeded",
+    "attempts": 1
+  },
+  "verification": {
+    "id": "job-9c8b09cadbbec5055c64ac3ff4863e6db4213d46bd5a4f5f88b982cb8ab537c3",
+    "status": "succeeded",
+    "attempts": 1
+  },
+  "artifacts": 2,
+  "researchEngineeringReleases": 1,
+  "copyJobs": 0,
+  "errors": [],
+  "trace": [
+    {
+      "url": "http://127.0.0.1:4194/api/v1/projects/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/simple-strategy/verify",
+      "body": "{\"commandId\":\"cmd-ec1e0ffb-f0eb-4aab-a84a-3e4870895b89\",\"expectedRevision\":41,\"artifactId\":\"a8e6f18d-e1b5-46a7-bc25-f256df4eb12c\"}"
+    },
+    {
+      "url": "http://127.0.0.1:4194/api/v1/projects/project-05161bdc3a073773f4850767536227b8d3a436ecd684190216cea9534afa38df/simple-strategy/verify",
+      "body": "{\"commandId\":\"cmd-ec1e0ffb-f0eb-4aab-a84a-3e4870895b89\",\"expectedRevision\":41,\"artifactId\":\"a8e6f18d-e1b5-46a7-bc25-f256df4eb12c\"}"
+    }
+  ]
+}

@@ -62,12 +62,22 @@ export async function simpleStrategyState(value:unknown,p:Snapshot):Promise<Simp
   if(!snapshot||basis.taskCardId!==p.activeTaskCardId||basis.researchArtifactId!==s.researchArtifactId||!same(snapshot,{card,policy,researchId:s.researchArtifactId,questions,release})||!release||release.policyVersion!==p.policy.version)return invalid();
  }
  const parsed=s.content===null?null:basis&&artifact?await content(s.content,basis,s.contentHash):invalid();
+ let blockedOutput:SimpleStrategyWorkspace['blockedOutput']=null;
+ if(s.blockedOutput!=null){
+  const diagnostic=object(s.blockedOutput);exact(diagnostic,['attemptId','contentHash','content']);
+  const attempt=producer?records(producer.attempts).find(t=>t.id===diagnostic.attemptId):undefined;
+  if(!producer||!basis||artifact||producer.status!=='blocked'||producer.attemptId!==diagnostic.attemptId||attempt?.status!=='blocked'||object(producer.error).code!=='STAGE_INPUT_GAP'||object(attempt.receipt).validatedOutputHash!==diagnostic.contentHash)return invalid();
+  const parsed=await content(diagnostic.content,basis,diagnostic.contentHash);if(parsed.status!=='blocked')return invalid();
+  blockedOutput={attemptId:required(diagnostic.attemptId),contentHash:required(diagnostic.contentHash),content:parsed};
+ }
+ let failure:SimpleStrategyWorkspace['failure']=null;
+ if(s.failure!=null){const value=object(s.failure);exact(value,['code','message']);if(!producer||!same(value,producer.error))return invalid();failure={code:required(value.code),message:required(value.message)};}
  const history=records(s.history).map(a=>{if(!p.artifacts.some(x=>x.id===a.artifactId&&x.contentHash===a.contentHash&&object(x.strategyContract).version===SIMPLE_STRATEGY))return invalid();return {artifactId:required(a.artifactId),contentHash:required(a.contentHash)};});
  let verification:SimpleStrategyWorkspace['verification']=null;
  if(s.verification!==null){const r=object(s.verification),saved=p.textReports.verification.find(x=>x.id===r.id),job=p.jobs.find(j=>j.id===r.jobId);if(!saved||!same(saved,r)||r.artifactId!==s.artifactId||r.contentHash!==s.contentHash||typeof r.hasBlockingFindings!=='boolean'||!job||!bridgeSimpleJob(p,job))return invalid();verification={id:required(r.id),hasBlockingFindings:r.hasBlockingFindings,report:JSON.stringify(r.rawReport,null,2)};}
  const unknownJobs=records(s.unknownJobs).map(j=>{if(!p.jobs.some(x=>x.id===j.jobId&&x.status==='awaiting_reconciliation'&&bridgeSimpleJob(p,x)))return invalid();return {jobId:required(j.jobId),purpose:required(j.purpose)};});
  const canContinue=cap.available===true&&workflow.eligible===true&&typeof workflow.currentReleaseId==='string'&&p.releases.some(r=>r.id===workflow.currentReleaseId&&r.artifactId===s.researchArtifactId&&r.policyVersion===p.policy.version)&&p.policy.authorizedThrough!=='research'&&!producer;
- return {projectId:p.id,revision:integer(root.revision),taskCardId:required(s.taskCardId),researchArtifactId:text(s.researchArtifactId)||null,policyVersion:integer(s.policyVersion),producerJobId:text(s.producerJobId)||null,producerStatus:text(s.producerStatus)||null,artifactId:text(s.artifactId)||null,contentHash:text(s.contentHash)||null,content:parsed,current:s.current,available:cap.available,reason:required(cap.reason),canContinue,continueReason:canContinue?'':text(workflow.summary)||'当前研究尚未获本版放行或策略执行未授权。',history,verification,unknownJobs};
+ return {projectId:p.id,revision:integer(root.revision),taskCardId:required(s.taskCardId),researchArtifactId:text(s.researchArtifactId)||null,policyVersion:integer(s.policyVersion),producerJobId:text(s.producerJobId)||null,producerStatus:text(s.producerStatus)||null,artifactId:text(s.artifactId)||null,contentHash:text(s.contentHash)||null,content:parsed,blockedOutput,failure,current:s.current,available:cap.available,reason:required(cap.reason),canContinue,continueReason:canContinue?'':text(workflow.summary)||'当前研究尚未获本版放行或策略执行未授权。',history,verification,unknownJobs};
 }
 export function simpleStrategyReceipt(value:unknown,p:Snapshot,body:Record<string,unknown>,path:string):boolean{
  const root=object(value),receipt=object(root.receipt),operation=path.split('/').at(-1),row=p.simpleStrategyRequests?.find(r=>object(r.request).commandId===body.commandId),job=p.jobs.find(j=>j.id===receipt.jobId);
