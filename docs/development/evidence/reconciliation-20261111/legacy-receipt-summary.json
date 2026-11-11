@@ -1,0 +1,80 @@
+{
+  "baseline": "df719104205662812b28b3ad3a91af52d14860d1",
+  "method": "只读原件JSON，提取已存状态；不是新运行或数据库重开验收",
+  "source": ".scratch/dexian-final-run/RECEIPT-274.json",
+  "sourceSha256": "bc2380183ce6c836f0d42f12bc73c45440cf3bb4cef0f514c1c99ebda929d410",
+  "projectRevision": 1292,
+  "syntheticOnly": true,
+  "complete": false,
+  "stages": [
+    {
+      "module": "brief",
+      "status": "complete",
+      "deliveryReady": null,
+      "releaseEligible": null
+    },
+    {
+      "module": "research",
+      "status": "complete",
+      "deliveryReady": true,
+      "releaseEligible": true
+    },
+    {
+      "module": "strategy",
+      "status": "complete",
+      "deliveryReady": true,
+      "releaseEligible": true
+    },
+    {
+      "module": "copy",
+      "status": "complete",
+      "deliveryReady": true,
+      "releaseEligible": true
+    },
+    {
+      "module": "references",
+      "status": "complete",
+      "deliveryReady": true,
+      "releaseEligible": null
+    },
+    {
+      "module": "sketch",
+      "status": "complete",
+      "deliveryReady": true,
+      "releaseEligible": null
+    },
+    {
+      "module": "visual",
+      "status": "complete",
+      "deliveryReady": true,
+      "releaseEligible": null
+    },
+    {
+      "module": "content",
+      "status": "pending",
+      "deliveryReady": null,
+      "releaseEligible": null
+    },
+    {
+      "module": "layout",
+      "status": "pending",
+      "deliveryReady": null,
+      "releaseEligible": null
+    },
+    {
+      "module": "final_review",
+      "status": "pending",
+      "deliveryReady": null,
+      "releaseEligible": null
+    }
+  ],
+  "nextAction": {
+    "status": "pending",
+    "nextOperation": "advance",
+    "rootJobId": "content-bdd7238bbe79ad97bbb8ad6a174fcb0b74fc00423ea6e0874fbef9e75b53e8e4",
+    "syntheticOnly": true,
+    "realQualityVerified": false,
+    "module": "content",
+    "evidenceHash": "453250e4ece0e8665767c746b162e713225756c985efb212d764f91bf8e306c3"
+  }
+}

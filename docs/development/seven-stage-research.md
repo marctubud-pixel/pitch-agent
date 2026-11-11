@@ -1,6 +1,6 @@
 # 七阶段与研究入口接续
 
-规范版本：1.0.0。使用当前开发应用，保持默认演示及旧预览。业务判断见[七阶段运行合同](../specs/seven-stage-runtime.md)。
+规范版本：1.0.1。使用当前开发应用，保持默认演示及旧预览。业务判断见[七阶段运行合同](../specs/seven-stage-runtime.md)，旧成果与接线差异见[六线对账](capability-reconciliation-20261111.md)。
 
 ## 默认运行
 
@@ -20,11 +20,11 @@ HTTP原件、论点、来源、核验和交接投影从旧正式前端定向迁�
 
 这套入口只执行本次请求指定研究任务，不恢复旧job，不自动重试未知结果，不接旧完整server的调度循环。命令示例不替代真实运行授权与预算；本轮使用新临时SQLite及合成provider验证合同，没有实际计费调用。
 
-r7独立读者回环当前尚未接入，正向交接及正式放行明确拒绝。现有来源登记、生成、核验与原件读取可单独验收，完整“Brief→研究→研究交接”仍保持未完成。生产所需品牌原文件存储、真实模型配置和读者回环是下一项，不补成功记录。
+r7独立读者方法、三任务理解测试和青屿修订后回读已有成果；当前缺少新协议的同版读者执行/报告与复核判定，正向交接及正式放行仍拒绝。来源、生成、核验与原件读取可单独验收，完整“Brief→研究→研究交接”仍未接完。下一项复用旧intake/采集模块，接品牌原文件与同版读者报告，不重做研究Skill或旧报告。本地工程接线可用明确测试配置在新隔离项目验证，真实模型质量和费用另按授权处理，不补成功记录。
 
 ## 验证与Git
 
-本轮首先创建[简报PR #1](https://github.com/marctubud-pixel/pitch-agent/pull/1)，其specifications和application两项远程CI均success，正常合并为`4aaf32163b76026b88b0d44747523817399d5b09`。当前七阶段工作基于该提交的新codex分支，实际新提交、PR和CI另记。
+本轮首先创建[简报PR #1](https://github.com/marctubud-pixel/pitch-agent/pull/1)，其specifications和application两项远程CI均success，正常合并为`4aaf32163b76026b88b0d44747523817399d5b09`。七阶段与研究工程随后经[PR #2](https://github.com/marctubud-pixel/pitch-agent/pull/2)两项CI成功合并为`df719104205662812b28b3ad3a91af52d14860d1`。本地原生checks和merge回执保存在`.scratch/seven-stage-research-20261111/PUBLISH-RECEIPT.json`；保护设置未由此证明。
 
 本轮专用命令`npm run test:research-contract`验证新旧协议、方法实际字节、回执调用、默认拒绝、来源重放和合成生成。前端HTTP回归核原件SHA、投影、旧稿失效、角色与恢复；实际UI按项目固定ui-review另留证。核心域、既有工程与新变更分别验证，不将合成研究作为真实市场结论。
 

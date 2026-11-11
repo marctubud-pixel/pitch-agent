@@ -15,7 +15,7 @@ npm run dev
 
 打开 http://127.0.0.1:4420/ 。默认本地演示不需要密钥或业务后端。青屿终审位于 `#/p/qingyu/proposal/delivery`。完整操作见[使用说明](docs/usage/README.md)。
 
-本地简报真实读写已接通：按[HTTP启动与范围](docs/development/http-brief.md)运行`npm run dev:brief`和`npm run dev:http`，使用独立SQLite；后续生产阶段仍待接线。
+本地简报真实读写已接通：按[HTTP启动与范围](docs/development/http-brief.md)运行`npm run dev:brief`和`npm run dev:http`，使用独立SQLite。来源登记和研究原件读取亦已接入，默认不执行模型；显式受限研究及后续边界见[研究接续](docs/development/seven-stage-research.md)。
 
 ## 开发与协作
 
@@ -26,6 +26,7 @@ npm run dev
 - [规范基线](docs/specs/README.md)：固定方法、版本锁、交接和[终审协议](docs/specs/final-review.md)。
 - [提交约定](CONTRIBUTING.md)与[PR和回退](docs/development/git-and-recovery.md)：分支、检查、评审和版本恢复。
 - [当前状态](status/current.md)与[明确待办](status/issues/README.md)：已验范围、失败与下一步。
+- [六线能力对账](docs/development/capability-reconciliation-20261111.md)：旧实现与验收如何沿用、当前接线差异、可并行准备的工作包及串联顺序。
 
 ## 检查
 
@@ -41,4 +42,4 @@ npm run check
 
 数据库、原业务run、失败原件、外部PDF和完整交付池保持本地原位，不整体上传。Git保护明示纳管的源码和文档，不能恢复未纳管运行数据或重建此前未提交历史。研究参照、品牌图片、生成试稿及第三方代码保留各自来源和权利，未新授予统一开源许可。
 
-七阶段运行协议与受限研究接入见[当前接续](docs/development/seven-stage-research.md)。新项目与旧记录隔离，完整研究交接仍等待r7独立读者回环和真实运行条件。
+七阶段运行协议与受限研究接入见[当前接续](docs/development/seven-stage-research.md)。新项目与旧记录隔离；r7方法和局部读者实践已存在，完整研究交接仍等待新协议同版读者报告接线，不要求为此重做旧研究或Skill。

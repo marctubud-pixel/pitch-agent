@@ -1,6 +1,6 @@
 # 开发、运行与使用
 
-规范版本：1.3.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
+规范版本：1.3.1。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
 
 ## 本地启动
 
@@ -17,7 +17,7 @@ npm run dev
 
 ## 连接本地简报服务
 
-新建、读取、保存与确认已接入独立SQLite服务。按[简报HTTP合同](http-brief.md)在两个终端运行`npm run dev:brief`和`npm run dev:http`。这条入口只处理简报，不启动模型或后续阶段，默认演示入口保持。
+新建、读取、保存与确认已接入独立SQLite服务。按[简报HTTP合同](http-brief.md)在两个终端运行`npm run dev:brief`和`npm run dev:http`；当前还可登记来源、读取研究原件及检查。默认不启动模型，显式研究配置可启用指定研究任务，策略及后续生产未开放，详见[研究接续](seven-stage-research.md)。默认演示入口保持。
 
 ## 日常验证
 
@@ -45,7 +45,7 @@ npm run check
 
 继续阅读[运行架构](../architecture/runtime.md)、[配置与服务边界](configuration.md)、[提交与回退](git-and-recovery.md)。后续改进见[已知问题](../../status/issues/README.md)。
 
-本轮已修与真实生产能力缺口见[后续调整顺序](remaining-work.md)。不要将域测试转绿当作真实七阶段生产链完成。
+既有成果、当前接线及方法差异先查[六线能力对账](capability-reconciliation-20261111.md)，再按[后续调整顺序](remaining-work.md)迁移。旧实现和原范围通过证据应沿用，不把当前页面未接说成尚未实现；也不将域测试转绿当作真实七阶段生产链完成。
 
 ## 当前七阶段与研究接入
 
