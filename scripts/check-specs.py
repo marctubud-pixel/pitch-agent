@@ -80,7 +80,13 @@ def snapshot(registry, freezing=False):
             raise ValueError('Fixed method snapshot differs: ' + method['path'])
     # Only normative Markdown links are required in a portable checkout.
     link_paths = set(x['path'] for x in entries if x['path'].endswith('.md'))
-    link_paths.add('docs/specs/README.md')
+    link_paths.update(['docs/specs/README.md', 'AGENTS.md'])
+    selected_files = set(load('scripts/spec-upload-files.json')['files'])
+    entry_documents = {}
+    for name in registry['entryDocuments']:
+        entry_documents[name] = sha(local(name))
+        if name not in selected_files:
+            raise ValueError('Required entry document missing from selected checkout: ' + name)
     for name in link_paths:
         path = local(name)
         text = re.sub(r'```.*?```', '', path.read_text(), flags=re.S)
@@ -93,8 +99,11 @@ def snapshot(registry, freezing=False):
                 continue
             if not resolved.is_relative_to(ROOT) or not resolved.is_file():
                 raise ValueError('Broken local link in ' + name + ': ' + target)
+            if str(resolved.relative_to(ROOT)) not in selected_files:
+                raise ValueError('Required link missing from selected checkout: ' + name + ': ' + target)
     return {'schemaVersion': 1, 'baselineVersion': registry['baselineVersion'], 'registrySha256': sha(ROOT / REGISTRY),
-            'entries': frozen, 'screenshots': {x['path']: x['sha256'] for x in images}}
+            'entries': frozen, 'entryDocuments': entry_documents,
+            'screenshots': {x['path']: x['sha256'] for x in images}}
 
 
 def compare_base(current, base):

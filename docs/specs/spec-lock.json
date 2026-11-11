@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.0.0",
-  "registrySha256": "f46db765ec78d7324fb2c8da0cb3d88e928006d57462fafd248da6a6e7c84f98",
+  "baselineVersion": "1.0.1",
+  "registrySha256": "61e85654c8b3a752776283bbb65d989277adbc863b87c3147594c0094cfcbc82",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.0",
@@ -32,10 +32,10 @@
       }
     },
     "agent.copy-owner": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/copy-owner.md": "8239c441df122cfcb322823f69e762c1fe6f1a829a1e81a0d447589631502b2a"
+        "docs/agents/copy-owner.md": "c76153b942c4f2a39239b221eb7f6c7fb4d39eb6006b68e4aa927641f4dcc0d1"
       }
     },
     "agent.visual-owner": {
@@ -60,10 +60,10 @@
       }
     },
     "agent.independent-reviewer": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/independent-reviewer.md": "1a6e8266443674b3b2fdb884e8a07db584d6de3c6b47476a371fca0f397bdf99"
+        "docs/agents/independent-reviewer.md": "d00ce7ab8ad60710a5c6805de46fb68025543dcf7fc6e26e22a9db0e512e7849"
       }
     },
     "agent.ui-review-owner": {
@@ -74,115 +74,115 @@
       }
     },
     "page.home": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/home.md": "145a88a349279c3eee92a476a990b327c8c313f59411966764de07e42634a363"
+        "docs/pages/home.md": "27a2c7fd759ea04ddbf5e6539f0ac6cb3702ebe004b555423a4a58cbb36a0c5f"
       }
     },
     "page.new": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/new.md": "9a01b6ad4f616fd10687b3b960f040263e22619fd12429ee39fc861d97be536f"
+        "docs/pages/new.md": "19ad2c0afec2bbf667839bd594d5e14651551a640750f1363b527bb4536135af"
       }
     },
     "page.overview": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/overview.md": "30c5354c7daa5b2961c498ec1ee4216aa37fa78e43871d951ca8beed2fd67688"
+        "docs/pages/overview.md": "cf7043b53a10abc42f57fab2eeedb05e79d422dcdc38169681292c06e47ba962"
       }
     },
     "page.brief": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/brief.md": "e478a5f7e9f0f302b9ee8f6812a21367a14e3dcebce8d8cf59f0bc396ae2615f"
+        "docs/pages/brief.md": "43424668d3d5923e4b67a827b86c47d49785adc4c04ffb93457dff99ef7f6774"
       }
     },
     "page.research": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/research.md": "2423cd7c3bf05ff3671c34df87c9901ee2436cfb377dc3c51d2884f69776c156"
+        "docs/pages/research.md": "6da3507d0cd6cb3213d8569f4ea68f007a20a5f472440ffecf2aca07d8de48f1"
       }
     },
     "page.strategy": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "763cd7131b54cd7f51108b34cc18ef8d6175af8e6ae253626482aa9b580bc016"
+        "docs/pages/strategy.md": "015f6561214167ae052fd5ab5fe3fdaf16e11f916b34f1bd916272f1b0896746"
       }
     },
     "page.themes": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "ea4e77e9f74cdd64e9c6069356250c4e570c25f8973f3e06b5ff7cadb467399a"
+        "docs/pages/themes.md": "3febae6df56309d19821d36eaeeded22e87cdea481900f4207ebe21b3701ebb8"
       }
     },
     "page.visual": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "07901466c3b216a0b731548bdd2ca0d0d8ec98270130953356319e8db27b2171"
+        "docs/pages/visual.md": "45f42272d4f332d5d7c0e4306239b2b7b8328a4a74a8beb348521fe70f85bde4"
       }
     },
     "page.layout": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/layout.md": "4a0ea739fefb1a7eb4b3c5faac4cb37f8d75578d626418b51e3987f004f276b2"
+        "docs/pages/layout.md": "8cc0f6853e1de3abe48e0ddd63f2750f4fa3b79dee2ef4abc3476462a2d67428"
       }
     },
     "page.delivery": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/delivery.md": "ac9ef623c64efa4aab097ff47835b638812f84fd1fd5acff410b3f90a115de0f"
+        "docs/pages/delivery.md": "7811c8666d8b9d6abe4071e5d724a029a6ee95c3c9efc4d06348d9436e8e3296"
       }
     },
     "page.content_review": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "retired",
       "files": {
-        "docs/pages/content_review.md": "339e2e6cc6f7af26cf53bcfc6d0406af9c191f19aea2f28d7633d683576f9df2"
+        "docs/pages/content_review.md": "ab8ee867190ba617661a9de5e4a1e6d1d9204aa53a1506c16df72c7f9c24169f"
       }
     },
     "page.library": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/library.md": "92a606d45249a7ec721c479ec85623ad87dccc02f418923a22ef72f964c6be96"
+        "docs/pages/library.md": "8860092a803a7ca6737aa7ad52adf4e083659574a002c32911784b9588bdd7a4"
       }
     },
     "page.history": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/history.md": "5e280d47dceb1260f8e355ed91887570dd6650ca1e2c444db9e1899794e7e6a3"
+        "docs/pages/history.md": "b48187cd31de37a675ac467288151bad713f77e7afd1ca4dc96329623d89c5bc"
       }
     },
     "page.team": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/team.md": "5f592aed11af9512c7815d3ef79ff2bb95465e86d92ad59b69e489919b8ff200"
+        "docs/pages/team.md": "106e8cc3fe0321e7263d1763da1c0d27c07f798aaf1d47a0ee141ac86c437b5a"
       }
     },
     "page.delivery_center": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/delivery_center.md": "d9c620b113150cea369b63339fce16463add4a9ec55dfe263cc003d3719d542c"
+        "docs/pages/delivery_center.md": "4d3b889d135d1a2842078bfb7cba5f34273596ad7d870fc8067b66cf8047e44c"
       }
     },
     "page.assistant": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/assistant.md": "9b433f7da24bed1bfa72ad5dc58d85435664d81822904e82b47c5ee60ff08c06"
+        "docs/pages/assistant.md": "efd6f5403ce5e4fb6e55208fea27bb5dd4a41a78fae96569d1413af767d7dd13"
       }
     },
     "method.research": {
@@ -248,10 +248,10 @@
       }
     },
     "contract.change": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/change-control.md": "00a94942f33d8b5a1c8676fa4d55dd2dd4ead260c9fc4264691ae04c672e954e"
+        "docs/specs/change-control.md": "cd14e53831b8ee3b34c191e2f3236f2ff9a810a5bbc636142119635c71d3cddf"
       }
     },
     "contract.decisions": {
@@ -260,7 +260,22 @@
       "files": {
         "docs/specs/decisions.md": "cdef7b35b7b2dc266ea09533eb56f2989819988dcefbe9b38a7e5381ef61cd89"
       }
+    },
+    "method.review": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/evaluation/双团评审输出契约_v2.md": "3a1a89f73b2fd153afb59fd3f533b1ec8b381b343c8519ba474f65c256d8ecab"
+      }
     }
+  },
+  "entryDocuments": {
+    "AGENTS.md": "ea02027a5bcd94be7084e79b97383222af4af8c65e9773538a8a69d25af97de5",
+    "docs/agents/skills-installation.json": "1e6191692293183bf4ae2d45a45e8be35dff56663aa5825960a61a868f655dce",
+    "docs/agents/issue-tracker.md": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e",
+    "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
+    "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
+    "docs/storage-retention.md": "1c648304f660e0c9ade0982b7b80364baff2fc5cbcf971904ea4dcaca5fa1e33"
   },
   "screenshots": {
     "docs/specs/screenshots/home.png": "9031e9fe130ecf30798ce76da9d58bbad8667d814a91d547aa62a1e1cab64b24",

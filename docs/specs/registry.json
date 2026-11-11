@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.0.0",
+  "baselineVersion": "1.0.1",
   "date": "2026-11-11",
   "status": "首次规范整理；既有决定沿用，本次新增工程治理待审阅",
   "workflow": [
@@ -67,10 +67,11 @@
       "kind": "agent",
       "title": "文案与主题负责人",
       "path": "docs/agents/copy-owner.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
-        "contract.handoff"
+        "contract.handoff",
+        "method.review"
       ],
       "stage": "themes"
     },
@@ -116,10 +117,11 @@
       "kind": "agent",
       "title": "独立业务评审者",
       "path": "docs/agents/independent-reviewer.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
-        "contract.handoff"
+        "contract.handoff",
+        "method.review"
       ],
       "stage": "按阶段适用"
     },
@@ -141,7 +143,7 @@
       "kind": "page",
       "title": "首页",
       "path": "docs/pages/home.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.ui-review-owner",
@@ -155,7 +157,7 @@
       "kind": "page",
       "title": "新建提案",
       "path": "docs/pages/new.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -169,7 +171,7 @@
       "kind": "page",
       "title": "项目概览",
       "path": "docs/pages/overview.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.proposal-director",
@@ -183,7 +185,7 @@
       "kind": "page",
       "title": "简报与任务",
       "path": "docs/pages/brief.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -197,7 +199,7 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
@@ -211,7 +213,7 @@
       "kind": "page",
       "title": "策略",
       "path": "docs/pages/strategy.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.strategy-owner",
@@ -225,7 +227,7 @@
       "kind": "page",
       "title": "文案与主题",
       "path": "docs/pages/themes.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.copy-owner",
@@ -239,7 +241,7 @@
       "kind": "page",
       "title": "视觉开发",
       "path": "docs/pages/visual.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.visual-owner",
@@ -253,7 +255,7 @@
       "kind": "page",
       "title": "版式与整案排版",
       "path": "docs/pages/layout.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.layout-owner",
@@ -267,7 +269,7 @@
       "kind": "page",
       "title": "终审与交付",
       "path": "docs/pages/delivery.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.final-review-owner",
@@ -281,7 +283,7 @@
       "kind": "page",
       "title": "旧内容审阅",
       "path": "docs/pages/content_review.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "retired",
       "dependsOn": [
         "agent.proposal-director",
@@ -295,7 +297,7 @@
       "kind": "page",
       "title": "资料库",
       "path": "docs/pages/library.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -309,7 +311,7 @@
       "kind": "page",
       "title": "流程与历史",
       "path": "docs/pages/history.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.proposal-director",
@@ -323,7 +325,7 @@
       "kind": "page",
       "title": "全局协作与通知",
       "path": "docs/pages/team.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.proposal-director",
@@ -337,7 +339,7 @@
       "kind": "page",
       "title": "交付中心",
       "path": "docs/pages/delivery_center.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.final-review-owner",
@@ -351,7 +353,7 @@
       "kind": "page",
       "title": "工作助手",
       "path": "docs/pages/assistant.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.proposal-director",
@@ -424,7 +426,7 @@
       "kind": "contract",
       "title": "变更与PR规则",
       "path": "docs/specs/change-control.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -436,6 +438,24 @@
       "version": "1.0.0",
       "lifecycle": "current",
       "dependsOn": []
+    },
+    {
+      "id": "method.review",
+      "kind": "method",
+      "title": "双团评审输出协议固定版本",
+      "path": "docs/evaluation/双团评审输出契约_v2.md",
+      "version": "1.0.0",
+      "sourceVersion": "v2（试行协议，按岗位适用范围）",
+      "lifecycle": "current",
+      "dependsOn": []
     }
+  ],
+  "entryDocuments": [
+    "AGENTS.md",
+    "docs/agents/skills-installation.json",
+    "docs/agents/issue-tracker.md",
+    "docs/agents/triage-labels.md",
+    "docs/agents/domain.md",
+    "docs/storage-retention.md"
   ]
 }

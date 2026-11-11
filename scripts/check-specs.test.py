@@ -58,6 +58,12 @@ class SpecificationChecks(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Missing or nonlocal', result.stderr)
 
+    def test_missing_agent_entrypoint_support_document_fails(self):
+        (self.root / 'docs/agents/issue-tracker.md').unlink()
+        result = self.run_check()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('docs/agents/issue-tracker.md', result.stderr)
+
     def test_broken_page_reference_fails_even_when_freezing(self):
         path = self.root / 'docs/pages/brief.md'
         path.write_text(path.read_text() + '\n[丢失规范](missing.md)\n')
@@ -86,6 +92,22 @@ class SpecificationChecks(unittest.TestCase):
         result = self.run_check('--base', result.stdout.strip())
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)['baseMode'], 'bootstrap')
+
+    def test_review_threshold_change_requires_a_new_protocol_version(self):
+        for args in [('init', '-q'), ('add', '.'), ('-c', 'user.name=Spec Test', '-c', 'user.email=spec-test@invalid', 'commit', '-qm', 'fixture baseline')]:
+            result = subprocess.run(['git', *args], cwd=self.root, env=self.env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        result = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=self.root, env=self.env, capture_output=True, text=True)
+        base = result.stdout.strip()
+        path = self.root / 'docs/evaluation/双团评审输出契约_v2.md'
+        original = path.read_text()
+        changed = original.replace('适用必评维度不足4', '适用必评维度不足3')
+        self.assertNotEqual(original, changed)
+        path.write_text(changed)
+        self.assertEqual(self.run_check('--freeze').returncode, 0)
+        result = self.run_check('--base', base)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('higher version: method.review', result.stderr)
 
 
 if __name__ == '__main__':
