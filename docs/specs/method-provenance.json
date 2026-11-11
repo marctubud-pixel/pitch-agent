@@ -1,0 +1,98 @@
+[
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
+    "path": "skills/design-research-lead/SKILL.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/agents/openai.yaml",
+    "path": "skills/design-research-lead/agents/openai.yaml",
+    "sourceVersion": "r7-20261109",
+    "sha256": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/analysis-models.md",
+    "path": "skills/design-research-lead/references/analysis-models.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/contracts.md",
+    "path": "skills/design-research-lead/references/contracts.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "0fd12ab71ceccf16744a12872a6a942a4b0c89bfc9aac768e11f777079ad3003"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/layout-templates.md",
+    "path": "skills/design-research-lead/references/layout-templates.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "8dbe10c7e96ce2b959fac502118bcd56b7c30c1f7b918ca192e439659c15bc9b"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/reader-loop.md",
+    "path": "skills/design-research-lead/references/reader-loop.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "842f504c542aada5b5f52a5481df72ebe12c0426dc1ad5881b1f7972517a7fe7"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/reference-judgment.md",
+    "path": "skills/design-research-lead/references/reference-judgment.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "3782cf1234fef5caa4d3790f74d85db773adeea8ed0a19b3420f86e4698b8f84"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/review.md",
+    "path": "skills/design-research-lead/references/review.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "cebe32e36290455cebb969111cac57ac3f0de5870dcc8f0ddcd3d42f60fbd75d"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/task-methods.md",
+    "path": "skills/design-research-lead/references/task-methods.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "21e74d769729bf6932caf1b7df46a2b755db865f7752273ab7477cdc4f6078eb"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/visual-boards.md",
+    "path": "skills/design-research-lead/references/visual-boards.md",
+    "sourceVersion": "r7-20261109",
+    "sha256": "09210d56294636dc3e9f98622a2134f10a99c8e2e6922468b1fa5beb9087be31"
+  },
+  {
+    "source": "/Users/marc/.codex/skills/ui-review/SKILL.md",
+    "path": "skills/ui-review/SKILL.md",
+    "sourceVersion": "原版无版本号；2026-11-11字节快照",
+    "sha256": "3f04ca892dd34c2302dcf93887b1f4d4a945dd501cd05b5c8a7372d67cc076fe"
+  },
+  {
+    "source": "/Users/marc/.codex/skills/ui-review/agents/openai.yaml",
+    "path": "skills/ui-review/agents/openai.yaml",
+    "sourceVersion": "原版无版本号；2026-11-11字节快照",
+    "sha256": "4811a545db79a34e29ccccbe11705afd9d7e27bf6a818c8244c630675ccd7742"
+  },
+  {
+    "source": "/Users/marc/.codex/skills/ui-review/references/learning.md",
+    "path": "skills/ui-review/references/learning.md",
+    "sourceVersion": "原版无版本号；2026-11-11字节快照",
+    "sha256": "928f0e3d4bf8717903322706874f199384b3c3922a4667fbc71070bab5bd19f0"
+  },
+  {
+    "source": "/Users/marc/.codex/skills/ui-review/references/principles.md",
+    "path": "skills/ui-review/references/principles.md",
+    "sourceVersion": "原版无版本号；2026-11-11字节快照",
+    "sha256": "1e8f3edc17d7a42c141d4915eb504d97a3f71fe5a810c64090667e6abd5ff178"
+  },
+  {
+    "source": "/Users/marc/.codex/skills/ui-review/references/verification.md",
+    "path": "skills/ui-review/references/verification.md",
+    "sourceVersion": "原版无版本号；2026-11-11字节快照",
+    "sha256": "46ac99d6cf0581b9e74e9ccb03864e04393a11569f68eed9918977f80daab9b4"
+  },
+  {
+    "source": "/Users/marc/.codex/skills/ui-review/references/visual-evidence.md",
+    "path": "skills/ui-review/references/visual-evidence.md",
+    "sourceVersion": "原版无版本号；2026-11-11字节快照",
+    "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
+  }
+]

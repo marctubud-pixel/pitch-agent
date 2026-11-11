@@ -1,0 +1,101 @@
+{
+  "version": "proposal-evaluation-v1",
+  "as_of": "2026-10-21",
+  "status": "methods_documented_templates_ready_not_executed_on_artifacts",
+  "workflow": "docs/workflows/评估方法与裁判协议_v1.md",
+  "official_models_installed": false,
+  "official_models_run": false,
+  "methods": [
+    {
+      "id": "posterreward",
+      "repo": "https://github.com/MeiGen-AI/PosterReward",
+      "commit": "33a9ef798c74277fafffba557c7c820aff3178fc",
+      "type": "reward_model_and_benchmark",
+      "adopted_methods": [
+        "five_domain_diagnosis",
+        "single_then_comparison",
+        "order_reversal"
+      ],
+      "native_unit": "learned_scalar_reward",
+      "integration_level": "method_adaptation_documented",
+      "native_execution_status": "not_run",
+      "limits": "未运行；权重许可与代码附件分开核；未验证Mac/中文品牌领域"
+    },
+    {
+      "id": "aeseval",
+      "repo": "https://github.com/arctanxarc/AesEval-Bench",
+      "commit": "d361f14b78be467d8c47c6e35d8af9c17e13760e",
+      "type": "defect_detection_benchmark",
+      "adopted_methods": [
+        "four_domains_twelve_checks",
+        "localized_defects",
+        "judge_calibration"
+      ],
+      "native_unit": "accuracy_or_iou_against_ground_truth",
+      "integration_level": "method_adaptation_documented",
+      "native_execution_status": "not_run",
+      "limits": "未运行；许可未明；API失败与无缺陷须分开；默认缩图不足材质验收"
+    },
+    {
+      "id": "posteriq",
+      "repo": "https://github.com/ArtmeScienceLab/PosterIQ-Benchmark",
+      "commit": "1fed7545d19e33653a600f5f2190edae3aa3ae05",
+      "type": "understanding_generation_benchmark",
+      "adopted_methods": [
+        "unprimed_intent_read",
+        "frozen_keypoint_check",
+        "element_geometry"
+      ],
+      "native_unit": "task_specific_keypoints_or_rating",
+      "integration_level": "method_adaptation_documented",
+      "native_execution_status": "not_run",
+      "limits": "未运行；中文OCR清洗不可照搬；部分论文/代码口径不同；数据非商业研究许可"
+    },
+    {
+      "id": "prism",
+      "repo": "https://github.com/monaGandhi09/Through-the-PRISM",
+      "commit": "7c2b23a4ffed91e9cd4f7e1730b5e915ee8a2f16",
+      "type": "principle_assessment_localisation_editing_research",
+      "adopted_methods": [
+        "five_principles",
+        "element_localisation",
+        "bounded_edit_and_regression"
+      ],
+      "native_unit": "per_principle_probability_or_baseline_score_separately",
+      "integration_level": "method_adaptation_documented",
+      "native_execution_status": "not_run",
+      "limits": "未运行；代码许可待核；完整专家权重/环境需另准备；0.5非商业质量门槛"
+    },
+    {
+      "id": "aesthetic_foundations",
+      "repo": "https://github.com/caoxg/claude-skill-aesthetic-foundations",
+      "commit": "359695c10e476520f40eaa0dc7a94e6268bc9e4e",
+      "type": "skill",
+      "adopted_methods": [
+        "seven_step_critique",
+        "reference_based_moves"
+      ],
+      "native_unit": "no_native_numeric_score",
+      "integration_level": "method_adaptation_documented",
+      "native_execution_status": "not_run",
+      "limits": "MIT；只转述方法并写模板；历史引述未逐条核实；没有自动审美保证"
+    },
+    {
+      "id": "copy_that_sells",
+      "repo": "https://github.com/avectats7/copy-that-sells",
+      "commit": "aef838698152ef7904d1344a71213721ffe4b474",
+      "type": "skill_with_rule_validator",
+      "adopted_methods": [
+        "diagnosis_before_rewrite",
+        "brand_swap",
+        "compression",
+        "headline_visual_unit",
+        "adapted_four_us"
+      ],
+      "native_unit": "heuristics_and_optional_anti_ai_score",
+      "integration_level": "method_adaptation_documented",
+      "native_execution_status": "not_run",
+      "limits": "MIT；脚本未运行；英文/西语规则不能等同中文创意评分；品牌KV需情境改编"
+    }
+  ]
+}

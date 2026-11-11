@@ -1,0 +1,24 @@
+name: Specification baseline
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  specifications:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check specification versions and references
+        env:
+          SPEC_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "$SPEC_BASE_SHA" ]; then
+            python3 scripts/check-specs.py --base "$SPEC_BASE_SHA"
+          else
+            python3 scripts/check-specs.py
+          fi

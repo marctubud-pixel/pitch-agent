@@ -1,0 +1,135 @@
+{
+  "template_version": "proposal-evaluation-v1",
+  "template_only": true,
+  "run_id": null,
+  "stage": null,
+  "object_type": null,
+  "artifact_id": null,
+  "artifact_version": null,
+  "content_hash": null,
+  "delivery_level": null,
+  "rubric": "docs/workflows/评估方法与裁判协议_v1.md",
+  "applicable_specialist_standard": null,
+  "brief": {
+    "confirmed_task_card": null,
+    "core_question": null,
+    "brand_and_sku": null,
+    "audience_age_confirmed_by_user": null,
+    "buyer_user_gifter_priority": null,
+    "occasion": null,
+    "channel_and_display_size": null,
+    "required_completion_level": null
+  },
+  "frozen_before_review": {
+    "proposition": null,
+    "headline": null,
+    "subcopy": null,
+    "keypoints": [],
+    "keypoint_fields": [
+      "id",
+      "observable_claim",
+      "critical",
+      "evidence_or_authority",
+      "expected_region_if_relevant"
+    ],
+    "brand_asset_ids": [],
+    "historical_case_ids": [],
+    "quality_reference_ids": [],
+    "reference_user_approval_record": null,
+    "direction_roles": [],
+    "required_dimensions": [],
+    "known_unknowns": []
+  },
+  "assets": [],
+  "asset_fields": [
+    "id",
+    "path",
+    "sha256",
+    "role",
+    "pixel_size",
+    "source",
+    "crop_relationship"
+  ],
+  "phase_one": {
+    "anonymous_asset_ids": [],
+    "questions": [
+      "最强焦点是什么",
+      "读出了什么节点与品牌",
+      "核心意思和可见线索是什么",
+      "哪里不确定"
+    ],
+    "excluded_inputs": [
+      "author_rationale",
+      "author_recommendation",
+      "prior_scores",
+      "other_reviews"
+    ],
+    "mode": "model_first_read_not_measured_exposure",
+    "saved_response_path": null
+  },
+  "phase_two": {
+    "release_after_phase_one_saved": true,
+    "brief_and_reference_bundle_path": null,
+    "required_views": [
+      "full_image",
+      "text_and_product_detail",
+      "quality_reference_comparison",
+      "unicode_preserving_chinese_text_transcription_and_crop_verification"
+    ],
+    "method_ids": [],
+    "observed_input_resolution": null
+  },
+  "reviewers": [],
+  "reviewer_fields": [
+    "role",
+    "actual_model_or_unknown",
+    "independence",
+    "calibration_status",
+    "report_path",
+    "explicit_conclusion"
+  ],
+  "set_review": {
+    "required_for_multiple_directions": true,
+    "same_version_contact_sheet": null,
+    "pairwise_matrix_path": null,
+    "display_order_log": [],
+    "order_reversal_result": null,
+    "visual_director_overview": null,
+    "independent_visual_conclusion": null,
+    "independent_spread_conclusion": null
+  },
+  "scoring": {
+    "project_scale": "internal_1_to_5_v1",
+    "native_scores": [],
+    "aggregate_across_different_units": false,
+    "pass_rule": "critical_gates_met_and_all_required_applicable_dimensions_at_least_4_and_explicit_required_role_passes_and_set_pass",
+    "missing_required_input": "cannot_assess",
+    "tool_failure": "failed",
+    "uncalibrated_verdict_ceiling": "cannot_assess"
+  },
+  "execution": {
+    "method_adaptations_used": [],
+    "native_model_runs": [],
+    "real_audience_test": false,
+    "effectiveness_validation": false
+  },
+  "issues": [],
+  "revision_history": [],
+  "conclusion": null,
+  "dispatch": {
+    "full_packet_for": "coordinator_only",
+    "phase_one_redacted_bundle_path": null,
+    "phase_one_redacted_bundle_hash": null,
+    "phase_one_contains_expected_meanings_or_full_packet_links": false,
+    "phase_two_separate_bundle_path": null,
+    "release_phase_two_only_after_first_read_saved": true,
+    "isolation_implemented_by": "manual_separate_files_and_sequential_dispatch_not_automated"
+  },
+  "human_decision": {
+    "status": "not_recorded",
+    "artifact_version": null,
+    "by": null,
+    "record_path": null,
+    "separate_from_model_calibration_and_judge_pass": true
+  }
+}

@@ -1,0 +1,441 @@
+{
+  "schemaVersion": 1,
+  "baselineVersion": "1.0.0",
+  "date": "2026-11-11",
+  "status": "首次规范整理；既有决定沿用，本次新增工程治理待审阅",
+  "workflow": [
+    "brief",
+    "research",
+    "strategy",
+    "themes",
+    "visual",
+    "layout",
+    "delivery"
+  ],
+  "entries": [
+    {
+      "id": "agent.proposal-director",
+      "kind": "agent",
+      "title": "比稿 Agent",
+      "path": "docs/agents/proposal-director.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ],
+      "stage": "全阶段"
+    },
+    {
+      "id": "agent.brief-owner",
+      "kind": "agent",
+      "title": "简报与任务负责人",
+      "path": "docs/agents/brief-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ],
+      "stage": "brief"
+    },
+    {
+      "id": "agent.research-owner",
+      "kind": "agent",
+      "title": "调研负责人",
+      "path": "docs/agents/research-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "method.research",
+        "contract.handoff"
+      ],
+      "stage": "research"
+    },
+    {
+      "id": "agent.strategy-owner",
+      "kind": "agent",
+      "title": "策略负责人",
+      "path": "docs/agents/strategy-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ],
+      "stage": "strategy"
+    },
+    {
+      "id": "agent.copy-owner",
+      "kind": "agent",
+      "title": "文案与主题负责人",
+      "path": "docs/agents/copy-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ],
+      "stage": "themes"
+    },
+    {
+      "id": "agent.visual-owner",
+      "kind": "agent",
+      "title": "视觉开发负责人",
+      "path": "docs/agents/visual-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "method.visual",
+        "contract.handoff"
+      ],
+      "stage": "visual"
+    },
+    {
+      "id": "agent.layout-owner",
+      "kind": "agent",
+      "title": "排版负责人",
+      "path": "docs/agents/layout-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ],
+      "stage": "layout"
+    },
+    {
+      "id": "agent.final-review-owner",
+      "kind": "agent",
+      "title": "终审与交付负责人",
+      "path": "docs/agents/final-review-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ],
+      "stage": "delivery"
+    },
+    {
+      "id": "agent.independent-reviewer",
+      "kind": "agent",
+      "title": "独立业务评审者",
+      "path": "docs/agents/independent-reviewer.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ],
+      "stage": "按阶段适用"
+    },
+    {
+      "id": "agent.ui-review-owner",
+      "kind": "agent",
+      "title": "开发 UI 审核者",
+      "path": "docs/agents/ui-review-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "method.ui",
+        "contract.handoff"
+      ],
+      "stage": "开发页面"
+    },
+    {
+      "id": "page.home",
+      "kind": "page",
+      "title": "首页",
+      "path": "docs/pages/home.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.ui-review-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "home"
+    },
+    {
+      "id": "page.new",
+      "kind": "page",
+      "title": "新建提案",
+      "path": "docs/pages/new.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.brief-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "new"
+    },
+    {
+      "id": "page.overview",
+      "kind": "page",
+      "title": "项目概览",
+      "path": "docs/pages/overview.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.proposal-director",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "overview"
+    },
+    {
+      "id": "page.brief",
+      "kind": "page",
+      "title": "简报与任务",
+      "path": "docs/pages/brief.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.brief-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "brief"
+    },
+    {
+      "id": "page.research",
+      "kind": "page",
+      "title": "研究",
+      "path": "docs/pages/research.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.research-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "research"
+    },
+    {
+      "id": "page.strategy",
+      "kind": "page",
+      "title": "策略",
+      "path": "docs/pages/strategy.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.strategy-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "strategy"
+    },
+    {
+      "id": "page.themes",
+      "kind": "page",
+      "title": "文案与主题",
+      "path": "docs/pages/themes.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.copy-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "themes"
+    },
+    {
+      "id": "page.visual",
+      "kind": "page",
+      "title": "视觉开发",
+      "path": "docs/pages/visual.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.visual-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "visual"
+    },
+    {
+      "id": "page.layout",
+      "kind": "page",
+      "title": "版式与整案排版",
+      "path": "docs/pages/layout.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.layout-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "layout"
+    },
+    {
+      "id": "page.delivery",
+      "kind": "page",
+      "title": "终审与交付",
+      "path": "docs/pages/delivery.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.final-review-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "delivery"
+    },
+    {
+      "id": "page.content_review",
+      "kind": "page",
+      "title": "旧内容审阅",
+      "path": "docs/pages/content_review.md",
+      "version": "1.0.0",
+      "lifecycle": "retired",
+      "dependsOn": [
+        "agent.proposal-director",
+        "contract.ui"
+      ],
+      "confirmedScope": "退役；保留历史",
+      "routeKey": "content_review"
+    },
+    {
+      "id": "page.library",
+      "kind": "page",
+      "title": "资料库",
+      "path": "docs/pages/library.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.brief-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "部分要求已确认；完整页面待细化",
+      "routeKey": "library"
+    },
+    {
+      "id": "page.history",
+      "kind": "page",
+      "title": "流程与历史",
+      "path": "docs/pages/history.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.proposal-director",
+        "contract.ui"
+      ],
+      "confirmedScope": "部分要求已确认；完整页面待细化",
+      "routeKey": "history"
+    },
+    {
+      "id": "page.team",
+      "kind": "page",
+      "title": "全局协作与通知",
+      "path": "docs/pages/team.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.proposal-director",
+        "contract.ui"
+      ],
+      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "routeKey": "team"
+    },
+    {
+      "id": "page.delivery_center",
+      "kind": "page",
+      "title": "交付中心",
+      "path": "docs/pages/delivery_center.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.final-review-owner",
+        "contract.ui"
+      ],
+      "confirmedScope": "部分要求已确认；完整页面待细化",
+      "routeKey": "delivery_center"
+    },
+    {
+      "id": "page.assistant",
+      "kind": "page",
+      "title": "工作助手",
+      "path": "docs/pages/assistant.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.proposal-director",
+        "contract.ui"
+      ],
+      "confirmedScope": "部分要求已确认；完整页面待细化",
+      "routeKey": "assistant"
+    },
+    {
+      "id": "method.research",
+      "kind": "method",
+      "title": "调研负责人Skill r7",
+      "path": "skills/design-research-lead/SKILL.md",
+      "version": "1.0.0",
+      "sourceVersion": "r7-20261109",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "method.visual",
+      "kind": "method",
+      "title": "视觉开发负责人Skill",
+      "path": "skills/visual-development-lead/SKILL.md",
+      "version": "1.0.0",
+      "sourceVersion": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "method.ui",
+      "kind": "method",
+      "title": "UI审核项目固定快照",
+      "path": "skills/ui-review/SKILL.md",
+      "version": "1.0.0",
+      "sourceVersion": "无原版号；2026-11-11快照",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.handoff",
+      "kind": "contract",
+      "title": "版本与阶段交接",
+      "path": "docs/specs/handoff.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.ui",
+      "kind": "contract",
+      "title": "中文桌面UI基线",
+      "path": "docs/specs/ui-system.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "method.ui"
+      ]
+    },
+    {
+      "id": "contract.workflow",
+      "kind": "contract",
+      "title": "七阶段现行工作流",
+      "path": "docs/workflows/提案工作流_现行规则.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.change",
+      "kind": "contract",
+      "title": "变更与PR规则",
+      "path": "docs/specs/change-control.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.decisions",
+      "kind": "contract",
+      "title": "已确认决定与待定范围",
+      "path": "docs/specs/decisions.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    }
+  ]
+}

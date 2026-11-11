@@ -1,0 +1,5 @@
+interface:
+  display_name: "UI审核"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,146 @@
+[
+  {
+    "pageId": "home",
+    "original": "output/home-gray-alignment/after-1440.png",
+    "path": "docs/specs/screenshots/home.png",
+    "sha256": "9031e9fe130ecf30798ce76da9d58bbad8667d814a91d547aa62a1e1cab64b24",
+    "kind": "历史截图",
+    "caption": "after-1440.png",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "new",
+    "original": "output/newpage-refine-20261108/final-preview.png",
+    "path": "docs/specs/screenshots/new.png",
+    "sha256": "d47d998dabd84f8f8eb106bb333a7ecdc0b4a143ac380eabf8720417aa4c609a",
+    "kind": "历史截图",
+    "caption": "final-preview.png",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "overview",
+    "original": "output/project-page-refine-20261108/final-overview.png",
+    "path": "docs/specs/screenshots/overview.png",
+    "sha256": "3c84c06f06bb1612832e5671ee42ea355616199c06770b9843f4721789f74f4f",
+    "kind": "历史截图",
+    "caption": "final-overview.png",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "brief",
+    "original": "output/taskcard-actions-20261109/after.png",
+    "path": "docs/specs/screenshots/brief.png",
+    "sha256": "e19c3a0652242846202830fa88208b5bd209805552d8b293a0829768b8cb4065",
+    "kind": "历史截图",
+    "caption": "after.png",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "research",
+    "original": "output/deck-studio-integration-20261109/live-research.jpg",
+    "path": "docs/specs/screenshots/research.jpg",
+    "sha256": "3798c02a60cff509f2148aa9ed2d487f796fd4d7aa158e336c35441aa894242e",
+    "kind": "历史截图",
+    "caption": "当前默认图版中的四件包装同屏，截图为研究界面",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "strategy",
+    "original": "output/strategy-rings-copy-20261110/strategy-rings.jpg",
+    "path": "docs/specs/screenshots/strategy.jpg",
+    "sha256": "e987827ab8c2158377f3b527d0e7e0be605cf5114fb35c8a3b0fa8818b555622",
+    "kind": "历史截图",
+    "caption": "当前策略三环交集与右侧结论",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "themes",
+    "original": "output/qingyu-copy-full-20261110/after-main-wide.jpg",
+    "path": "docs/specs/screenshots/themes.jpg",
+    "sha256": "3de93dc53acc55e95eab97810c9a6b3ccb0731b00d9611b45582c3f7e1e12f25",
+    "kind": "历史截图",
+    "caption": "当前三方向主副文与推荐，1280桌面",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "visual",
+    "original": "output/qingyu-visual-ui-fill-20261110/after-current-final-default.jpg",
+    "path": "docs/specs/screenshots/visual.jpg",
+    "sha256": "65fbc564a602491036c857ae84845f1d0fd4ed98e527d7143737e64c23d1edf5",
+    "kind": "历史截图",
+    "caption": "当前主图与右侧文案说明",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "layout",
+    "original": "output/qingyu-layout-20261111/workspace.jpg",
+    "path": "docs/specs/screenshots/layout.jpg",
+    "sha256": "a0221f833dc8e0380d812ceefa2655ee519a14ce7ce5655f046f6c935ca215de",
+    "kind": "历史截图",
+    "caption": "当前七阶段版式页与顶部下载",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "delivery",
+    "original": "output/qingyu-delivery-20261111/delivery-preview.jpg",
+    "path": "docs/specs/screenshots/delivery.jpg",
+    "sha256": "dd31fca2fbd6d8fe15c15f4c9f2dddec47e893fb31f064f3c90e7f1e082deb49",
+    "kind": "本地界面截图",
+    "caption": "2026-11-11终审页当前实现：演练稿未正式终审",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "content_review",
+    "original": ".scratch/content-review-page-20261110/ui/after-final-1280.png",
+    "path": "docs/specs/screenshots/content_review.png",
+    "sha256": "a73ad4d5a2ca5bfba5ed145356550fe05393cc3d5f39c4e9d3fad22d44e35f41",
+    "kind": "历史截图",
+    "caption": "青屿旧内容审阅页，实际三项待处理",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "library",
+    "original": "output/frontend-desktop-cn-20261108/screenshots/library-materials.png",
+    "path": "docs/specs/screenshots/library.png",
+    "sha256": "89802e3361c39486e4a18f3657c93e2234facbf6f668b85f53a70efea0d08fa1",
+    "kind": "历史截图",
+    "caption": "library-materials.png",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "history",
+    "original": "output/frontend-desktop-cn-20261108/screenshots/process-agents.png",
+    "path": "docs/specs/screenshots/history.png",
+    "sha256": "978a898ba1c92483dc5ee297ae4238f335b89735bc8aee7849b1897806ebc65b",
+    "kind": "历史截图",
+    "caption": "process-agents.png",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "team",
+    "original": "output/frontend-team-20261108/screenshots/notification-inbox.png",
+    "path": "docs/specs/screenshots/team.png",
+    "sha256": "f7b529e1c9efb8785c3860ce59aab374cce7e6589deb53dd6095d47efc7d69de",
+    "kind": "历史截图",
+    "caption": "notification-inbox.png",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "delivery_center",
+    "original": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/screenshots/desktop-light/40-delivery-area.png",
+    "path": "docs/specs/screenshots/delivery_center.png",
+    "sha256": "3938d259f27a513873ae3ceb3c6a2f1bcbe1b69917e0f255612d27fbcacca49f",
+    "kind": "历史截图",
+    "caption": "旧八阶段演示 · 交付中心",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  },
+  {
+    "pageId": "assistant",
+    "original": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/screenshots/desktop-light/50-workbot-open.png",
+    "path": "docs/specs/screenshots/assistant.png",
+    "sha256": "60678be4e8a4173bb956bb61ae0effc1a64d8e5afcad62245cb8a1b7a44061d3",
+    "kind": "历史截图",
+    "caption": "旧八阶段演示 · 工作助手",
+    "scope": "既有界面留档，不证明所有现行要求已实现或获批"
+  }
+]

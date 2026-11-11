@@ -1,0 +1,205 @@
+[
+  {
+    "path": ".scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
+    "sha256": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
+    "bytes": 9545,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": ".scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/references/layout-templates.md",
+    "sha256": "8dbe10c7e96ce2b959fac502118bcd56b7c30c1f7b918ca192e439659c15bc9b",
+    "bytes": 3294,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/DESIGN-SPEC.md",
+    "sha256": "93e87152f0acf06a071debccb47f54e82a3f2a116d5c9e83eb6ec7aab0dcb2da",
+    "bytes": 23177,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/TEAM-COLLABORATION.md",
+    "sha256": "1d0d626f4ca61f23a074a1fa3a82daa93b2e4fb8284c26fcedc988f7aeae7bdd",
+    "bytes": 4792,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": ".scratch/taskcard-actions-20261109/design.md",
+    "sha256": "f9b86dd910ce319cab5ce52dd9525d8c4f1aba9b503f7ec34bebc555d7554015",
+    "bytes": 1308,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": ".scratch/taskcard-content-20261108/grounding.md",
+    "sha256": "ef1ae62a469653dc114318254721f5446612325aa01c8bc13dc7e82032f58e7f",
+    "bytes": 3126,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "AGENTS.md",
+    "sha256": "c14df700558f2acac8189a8a8073beee9c6c664a06d53aeb5d37fe6ebbaffa34",
+    "bytes": 4249,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": true
+  },
+  {
+    "path": "GLOSSARY.md",
+    "sha256": "710a78c608c2e2c288e8146c365c5652e758dc64eb7eb38372282ebb949b3adb",
+    "bytes": 4536,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "docs/agents/content-review-owner.md",
+    "sha256": "3768a2017ad1810aa432c023ce51cba165834c650bd4f89841b9ebac17b6d66e",
+    "bytes": 2384,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "docs/agents/layout-owner.md",
+    "sha256": "a1cdddf4ae977b9099030d4316600de75a7225b1c2b009297c2c2cdb13458999",
+    "bytes": 2009,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": true
+  },
+  {
+    "path": "docs/agents/proposal-director.md",
+    "sha256": "c81541141c18670af9f6a3ee1b6aa82eb740f9ddcd4df8253c7a7b38c25e6062",
+    "bytes": 1921,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": true
+  },
+  {
+    "path": "docs/agents/strategy-owner.md",
+    "sha256": "a34cf2a82a8c5d4c03fd388cecf6a68977e9a9d7ba9e7516406876c8a2d02ba9",
+    "bytes": 1225,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": true
+  },
+  {
+    "path": "docs/architecture/context-map.md",
+    "sha256": "5367a60ced37355fb9a39116da9da9bfa4c27d8363d8c248ebecb9e5bc9e5d0c",
+    "bytes": 2719,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "docs/evaluation/双团评审输出契约_v2.md",
+    "sha256": "3a1a89f73b2fd153afb59fd3f533b1ec8b381b343c8519ba474f65c256d8ecab",
+    "bytes": 2610,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "docs/handoffs/提案工作台_版本沿革与已确认要求_20261111.md",
+    "sha256": "dd319716d29ce07012a4b6f56bd309e34c04acba13d75d59411b1d88659749c4",
+    "bytes": 30773,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "docs/workflows/人类角色与协作通知.md",
+    "sha256": "3d35e7a9976ace1d297c6e6623fe1bb240a81e9e2f91a7bddcc2e02c54d13fa2",
+    "bytes": 4211,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "docs/workflows/对抗审查试行规则.md",
+    "sha256": "88433397459bcd77e39124c9a7e4bf4dd257d0b502e9ced4fefe7b7cc1cab1b6",
+    "bytes": 8359,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "docs/workflows/提案工作流_现行规则.md",
+    "sha256": "006d1a7d5e5a4817b399ed3b5abf59717d11204966f3ed7b970ba2a400e9d61e",
+    "bytes": 15632,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": true
+  },
+  {
+    "path": "output/brand-resources-20261108/review.html",
+    "sha256": "1a75603c05d392cc02b484b250b46e5e28f47075d8da0a4cbb121c35673581f0",
+    "bytes": 5251,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "output/deck-studio-integration-20261109/README.md",
+    "sha256": "aa20d1140ad4da2639bf460c22018d734435ec867c203f70a5560e86dedfd36a",
+    "bytes": 3873,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "output/home-b-colors/README.md",
+    "sha256": "e017ecf130e523a4fef6989a3d0883a8461b62f9fd207dabc0c1e0863eebad3a",
+    "bytes": 524,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "output/new-proposal-time/review.html",
+    "sha256": "55e98474c769695aa26abef923d67197d5531620e2af2863dc2a1598b8879850",
+    "bytes": 10337,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "output/qingyu-delivery-20261111/FRONTEND-HANDOFF.md",
+    "sha256": "01e7bb2fb2faa153e6f95dc1a8665f8f3691bec17f22fe8a4249e0512deaab92",
+    "bytes": 1946,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "output/qingyu-delivery-20261111/README.md",
+    "sha256": "e07e746997d5b27ce69fbd79aa5702a0673fde5ddf05913d4f28e6ec6e8452bc",
+    "bytes": 1737,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "skills/visual-development-lead/SKILL.md",
+    "sha256": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464",
+    "bytes": 4576,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "skills/visual-development-lead/references/kv.md",
+    "sha256": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
+    "bytes": 1103,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "skills/visual-development-lead/references/packaging.md",
+    "sha256": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a",
+    "bytes": 1150,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "skills/visual-development-lead/references/stage-review.md",
+    "sha256": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528",
+    "bytes": 3545,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  },
+  {
+    "path": "status/current.md",
+    "sha256": "a886f819e89539b20f1e41a390a92617a3a5b5abc73936daf8fb682f11f76429",
+    "bytes": 60599,
+    "scope": "本次读取的原始依据；可为本地历史证据，不要求纳入GitHub",
+    "capturedBeforeRewrite": false
+  }
+]
