@@ -4,6 +4,12 @@ import type {PendingBriefWrite, PendingWriteKind} from '../../domain/service';
 
 export function pendingWriteKind(path: string, body: Record<string, unknown>): PendingWriteKind {
   if (/^\/projects\/[A-Za-z0-9-]+\/documents\/[A-Za-z0-9_.:-]+\/extraction$/.test(path)) return 'extract_original';
+  if (/^\/projects\/[A-Za-z0-9-]+\/strategy-continuations$/.test(path)) return 'continue_copy';
+  if (/^\/projects\/[A-Za-z0-9-]+\/simple-strategy\/confirm$/.test(path)) return 'confirm_strategy';
+  const copy=/^\/projects\/[A-Za-z0-9-]+\/copy-workflow\/(step|verify|review)$/.exec(path)?.[1];
+  if(copy==='step') return 'step_copy';
+  if(copy==='verify') return 'verify_copy';
+  if(copy==='review') return 'review_copy';
   const simple=/^\/projects\/[A-Za-z0-9-]+\/simple-strategy\/(continue|verify|reconcile)$/.exec(path)?.[1];
   if(simple==='continue')return 'continue_simple_strategy';
   if(simple==='verify')return 'verify_simple_strategy';
@@ -31,7 +37,7 @@ export function pendingWriteKind(path: string, body: Record<string, unknown>): P
   }
   throw new ServiceError('validation', '未决提交不是受限简报或研究操作。');
 }
-export const pendingWriteLabels: Record<PendingWriteKind, string> = {continue_simple_strategy:'明确继续策略',verify_simple_strategy:'核验策略全文',reconcile_simple_strategy:'核对原策略结果',start_acquisition:'采集并生成研究',step_acquisition:'继续本次研究',reconcile_acquisition:'核对原采集结果',extract_original:'解析PDF原件',create_project: '新建提案', save_brief: '保存简报', confirm_brief: '确认简报', add_source: '登记来源', generate_research: '开始研究', verify_research: '核验研究事实', review_readiness: '核验研究有效性', record_handoff: '提交研究交接', release_research: '放行研究', upload_original: '保存资料原件', register_research_questions:'登记研究问题', read_research:'开始独立首读', reconcile_reader:'核对原读者结果', revise_research:'按读者问题修订研究', dispose_reader:'保存逐项处理'};
+export const pendingWriteLabels: Record<PendingWriteKind, string> = {continue_copy:'提交策略双负责人交接',confirm_strategy:'人工采用当前策略',step_copy:'执行本组原文案节点',verify_copy:'登记文案全文核验',review_copy:'登记文案四岗评审',continue_simple_strategy:'明确继续策略',verify_simple_strategy:'核验策略全文',reconcile_simple_strategy:'核对原策略结果',start_acquisition:'采集并生成研究',step_acquisition:'继续本次研究',reconcile_acquisition:'核对原采集结果',extract_original:'解析PDF原件',create_project: '新建提案', save_brief: '保存简报', confirm_brief: '确认简报', add_source: '登记来源', generate_research: '开始研究', verify_research: '核验研究事实', review_readiness: '核验研究有效性', record_handoff: '提交研究交接', release_research: '放行研究', upload_original: '保存资料原件', register_research_questions:'登记研究问题', read_research:'开始独立首读', reconcile_reader:'核对原读者结果', revise_research:'按读者问题修订研究', dispose_reader:'保存逐项处理'};
 
 export class BriefWriteJournal {
   private cached: PendingBriefWrite | null = null;

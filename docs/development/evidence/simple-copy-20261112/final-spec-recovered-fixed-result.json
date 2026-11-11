@@ -1,0 +1,11 @@
+{
+  "scope": "Read-only retained recovered SIMPLE; in-memory ledger/claim only; no executor/provider",
+  "dbPath": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-xbpQCV/db",
+  "originalRevision": 61,
+  "snapshotBlobSHA256": "2ce298a2cd96bee5e7a790621160db12e59300fa7d774d10f8866c74cc156fee",
+  "sourceStatus": "succeeded",
+  "originalAttemptStatus": "awaiting_reconciliation",
+  "sourceIncludedInScopedJobs": false,
+  "sourceJobUnchanged": true,
+  "copyStatus": "running"
+}

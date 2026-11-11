@@ -1,0 +1,15 @@
+(node:75234) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a fixed four-job step stops at its first unknown and exact replay does not dispatch the remainder (2.223125ms)
+✔ a prior running on the same edge refuses a new step before its ledger entry (0.139833ms)
+✔ a prior awaiting_reconciliation on the same edge refuses a new step before its ledger entry (0.104958ms)
+✔ an unsettled job on another edge does not block this fixed group (0.419625ms)
+✔ a workspace without an owner edge never presents unrelated research jobs as copy jobs (0.129833ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 136.304958

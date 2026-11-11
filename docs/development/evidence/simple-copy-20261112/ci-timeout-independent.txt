@@ -1,0 +1,14 @@
+# SIMPLE文案CI测试时限 · 独立窄复核
+
+基准已实际核回：HEAD为`b1ef4726503e3a292bd4422a34ecdbe91fd2b628`。本次仅审查`apps/workbench-preview/src/services/http/simpleStrategyHttp.test.ts`未提交增量、`simple-copy-ci-timeout-fix.json`及保存的原CI job日志；不重跑大型HTTP链路，不修改源码、Git、数据库或服务。
+
+结论：这是**测试外层wall timeout调整，不是业务guard降级**。未发现P1/P2或硬规范违例；无新增retry、skip或语义／断言调整。
+
+实际证据：
+
+- 原日志442–464行显示simpleStrategyHttp五项中仅正例失败，耗时30385ms；明确错误为`Test timed out in 30000ms`。前端总计770 pass、1 fail、1 skip；skip属于原deck测试。copyWorkflowHttp两项通过，原生HTTP正例201300ms。本判断仅说明日志中的失败类型，不推断运行变慢的全部根因。
+- 独立Python从固定基准读取原文件，计算SHA并与receipt核对：before为`20aa670f5ee0cd106b4b8aa5e325176fb7813a121c1eddab41d05006c4bb845b`，after为`15cd2453be21d305d37fccad68d825acdb5ef19abe4314df500d71edf80331ac`，均一致。
+- 实际逆变换仅移除新增注释／`HTTP_WORKFLOW_TIMEOUT=120_000`声明，并把五处外层`},HTTP_WORKFLOW_TIMEOUT);`还原为`},30000);`，结果与基准原文件**逐字节相等**。因此五项完整正文、断言、fixture和清理行为保持原样。调用点均为Vitest `it`的第三参数，非HTTP/provider期限。
+- 另核`git diff --name-only`：apps／tools下只有该测试文件变化；生产代码及provider配置未变。其他工作树文档和清单更新不纳入本窄修结论。
+
+120秒给包括隔离研究准备在内的整项测试更多运行时间，仍有有限外层期限。它不证明CI必然转绿，也不证明不存在性能问题；五项实际复跑和远程CI结果由主任务另行留证，本审查没有冒称已执行。

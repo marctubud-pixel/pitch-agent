@@ -211,4 +211,10 @@ R4 发布器另提供折叠的工程参考记录统计，数据来自同一案�
 
 ## 当前简洁策略接缝 · 2026-11-12
 
-当前SIMPLE策略复用研究continuation、原生存储及独立全文核验，simple-strategy-service提供GET/continue/verify/reconcile。技术账本与actual claim绑定原job、卡/问题登记/研究release/完整policy和binding，unknown不重派。服务器创建授权默认research，显式工程终点只作用新建；策略保存仍为needs_acceptance。当前原IO窄恢复与双owner-to-copy未完成范围见[简洁策略合同](../development/simple-strategy.md)，不将三板块稿保存签作整链或客户批准。
+当前SIMPLE策略复用研究continuation、原生存储及独立全文核验，simple-strategy-service提供GET/continue/verify/reconcile。技术账本与actual claim绑定原job、卡/问题登记/研究release/完整policy和binding，unknown不重派。服务器创建授权默认research，显式工程终点只作用新建；策略保存仍为needs_acceptance。当前策略原IO窄恢复见[简洁策略合同](../development/simple-strategy.md)，双负责人至文案接续见[文案合同](../development/simple-copy.md)，不将三板块稿保存签作整链或客户批准。
+
+## 当前SIMPLE策略至文案接缝 · 2026-11-12
+
+brief-server通过simple-copy-service和simple-copy-http复用原生双负责人、owner commit、唯一copy-message-v2、全文核验与原四岗17节点评审。前端可选copyWorkflow由CopyWorkflowPanel展示当前实际正文与业务动作，完整packet与原执行输入由copyCreativeProjection核验，保留合法历史只读身份。
+
+人工策略采用与续接分开，GET报告不声明逐份物理复核全部原票。原件、校准、业务质量和人类选案各有独立依据；下游unknown恢复、改稿再评及视觉至交付仍待接。接口与模块边界见[文案接续合同](../development/simple-copy.md)。此前案例记录保持各自时点身份。

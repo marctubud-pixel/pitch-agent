@@ -1,0 +1,15 @@
+# 前端候选P2修复交接（r2）
+
+原候选 `8beb941aea67cb8e37cb4a72b3dee71e205885296590a92359eee5dd65d5b4fc` 有独立证实P2：creative_review桥只看局部node/key/binding和17个数量，错role、错packetHash、旧task输入仍可能被mapProject接受。原补丁、manifest、报告完整保存在simple-copy-frontend-original/；独立before/after原件证据在simple-copy-frontend-independent-evidence/。原通过测试不推翻P2，未修改原失败证据。
+
+仅独立WT修复，无根源码、backend、旧DB写入或新模型大案。新的20路径frontend-only全量候选为simple-copy-frontend-r2.patch；base仍6766324502ce6c82a3b060f1ecb24acd61aaf22a，要求原copybackend生产字节，before/after与完整patch SHA见simple-copy-frontend-r2-hashes.json。相对8beb新增三个文件：copyCreativeProjection.ts、copyCreativeProjection.test.ts、sha256.ts，修改copyWorkflowProjection.ts调用完整桥并核报告binding，其余前端原字节保持。
+
+桥核实际SHA(packet/content)、原request-creative-panel中完整冻结packet/nodes、17唯一key/jobIds及role/phase/dependencies、原artifact/contentHash、冻结taskCard/policy/sources/upstreamConstraints、三方向anonymous subjects，以及每个phase完整creativeInput和原前置报告。copyState同核报告metadata/raw/hash与原panel/node/job。同步SHA仅服务同步mapProject admission，UTF8和块边界对照Node通过。
+
+冻结历史准入与current能力分开：桥保留合法旧packet与原task/policy，不能因新简报或policy让整个项目变成不可读；current仍由copyState与服务器写门禁判断。中途独立review指出active-copy检查会误拒合法历史，已删除，并用纯内存新简报保护案复验，未写DB。
+
+实际廉价测试：以独立reviewer只读解码保留的真实snapshot（native-snapshot.json.gz）运行copyCreativeProjection.test.ts + 原三组target：25/25通过、退出0，1.07s。最终类型检查通过。实际stdout：simple-copy-frontend-target-r2.log、simple-copy-frontend-typecheck-r2.log；命令需PITCH_COPY_PROJECTION_SNAPSHOT指向独立冻结snapshot，未提供时4个真实证据案明确skip，SHA案仍跑。该snapshot不装作repo自带样例。
+
+独立reviewer复验：原baseline为true，四个主反例与duplicate17均false；实际native applyCommand纯内存revise-task-card后保留active copy，17原creative jobs历史均可读；新增5/5通过、独立tsc通过，同步SHA对照Node29值通过。具体证据由其独立报告维护。
+
+修后不为补日志重开156秒大案。原8beb的156.95s 2/2和20/20没有独立raw文件，如实标来源的工具回执摘录在simple-copy-frontend-original-tool-receipts.md。根采用最终字节后仍需实际集成与UI审核。未知结果恢复、改稿、语义质量、选案和后续视觉仍未验；本包无UI批准。

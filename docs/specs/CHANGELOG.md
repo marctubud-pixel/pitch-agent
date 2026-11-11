@@ -1,5 +1,17 @@
 # 规范变更记录
 
+## 1.11.1 · 2026-11-12
+
+验证范围1.8.1登记文案整组未知停止回归与真实原历史快照的actual-claim检查，默认文案测试集合增至五文件。既有“未知保留并停止”的合同落实到新step入账前、每次dispatch及原生claim；同原body回放不续派，不影响已恢复SIMPLE或其他edge。岗位、业务门槛与固定16截图保持；修后实际范围和独立原P2/复验分别留证，不将未知改成成功。
+
+## 1.11.0 · 2026-11-12
+
+新增文案接续合同1.0.0，策略页1.2.0、文案页1.1.0及运行/开发/使用导航同步。当前SIMPLE经实际双负责人和原commit派生唯一copy-message-v2，再接全文核验及原四岗17节点。六接口固定原请求、来源和1至4个原任务；人工strategy checkpoint单独以artifact/hash/reason调用adopt-creative，不使用release-stage或自动签采用。
+
+策略合同1.0.2只同步下游导航，1.0.1的blockedOutput、failure、原件与失败守卫保持。默认research及仅新案显式授权不变；已核回SIMPLE保留原作者/attempt/IO身份。GET originalsVerified=false，前端完整packet/phase/input核验与合法历史读取不等于全部原票物理复核、校准或质量批准。
+
+copy/owner/creative unknown恢复、文案改稿再评、视觉继续与包装/KV整链仍待接。当前根最终门禁、实际UI及PR #9按真实回执登记，不将候选owner报告写成根验收。原件、旧青屿、数据库、岗位方法、Skill与16份固定截图保持。
+
 ## 1.10.1 · 2026-11-12
 
 固定67663245的独立Spec实跑发现受阻策略原结论与具体缺项在磁盘存在、工作区却不可读的P2。简洁策略合同1.0.1新增独立blockedOutput诊断及原job failure投影；核原packet/HTTP响应/normalized字节SHA，保持blocked与空artifact，不改变通用完成或放行守卫。前端明确非完成稿、保留原结论/限制/具体gaps，没有核验或交接入口。独立同原案复验原project及80份原件SHA不变，新增受阻HTTP/前端/真实UI范围按实际回执记录。

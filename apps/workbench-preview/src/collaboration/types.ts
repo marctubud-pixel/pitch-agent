@@ -55,6 +55,7 @@ export interface TeamSnapshot {
 }
 
 export function pendingWriteAction(kind: PendingWriteKind): TeamAction {
+  if(kind==='confirm_strategy') return {kind:'decide',stage:'strategy'};
   if (kind === 'register_research_questions' || kind === 'dispose_reader') return {kind:'edit_research'};
   if (kind === 'read_research' || kind === 'revise_research' || kind === 'reconcile_reader') return {kind:'workflow'};
   if ((kind === 'upload_original' || kind === 'extract_original')) return {kind: 'manage'};

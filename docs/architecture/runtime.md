@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.6.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.7.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -20,7 +20,7 @@ flowchart LR
 
 `apps/workbench-preview/src/App.tsx`装配应用、路由、服务、主题、人类协作和WorkBot。`src/app/router.tsx`负责hash路由，`views/ProjectWorkspace.tsx`装配五项目区域；`ProposalArea.tsx`装配七生产阶段。页面ID与实际路由映射见[页面索引](../pages/README.md)。
 
-`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台、提案和助手为Mock，本地Brief解析另有实际提取能力。HTTP模式用HttpWorkbenchService与HttpProposalService读取同一真实快照，完成项目和简报读写，研究原件另有真实读取。brief-server默认没有执行器，显式配置可执行指定研究job，不扫描恢复旧任务。HTTP助手及后续生产未迁移此入口，旧助手后端已有实现与限定工程证据。DTO、Brief封装、重试与业务版本见[简报HTTP合同](../development/http-brief.md)和[研究接续](../development/seven-stage-research.md)，设置地址本身不代表连接成功。
+`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台、提案和助手为Mock，本地Brief解析另有实际提取能力。HTTP模式用HttpWorkbenchService与HttpProposalService读取同一真实快照，完成项目和简报读写，研究原件另有真实读取。brief-server默认没有执行器，显式配置可执行指定研究job，不扫描恢复旧任务。HTTP助手及视觉至交付未迁移此入口，旧助手后端已有实现与限定工程证据。DTO、Brief封装、重试与业务版本见[简报HTTP合同](../development/http-brief.md)和[研究接续](../development/seven-stage-research.md)，设置地址本身不代表连接成功。
 
 `src/services/proposal`及`collaboration`负责本地提案、角色、修订和草稿保护。本地权限矩阵不等于生产身份服务；浏览器持久化不是远程数据库。案例投影在`src/proposal/qingyu-*`，依输入、版本与哈希守卫只读显示原稿和原评，不能反写正式阶段通过。
 
@@ -79,4 +79,10 @@ brief-intake-service复用intake-runtime→intake-pdf旧工具，显式extractio
 
 `seven-stage-strategy`保存SIMPLE输入原件、三板块schema、引用及继承限制，复用原研究continuation派生唯一strategy job。`simple-strategy-service`与research-service共用executor；`simple-strategy-http`冻结原请求、job/binding和完整当前快照，actual claim核CAS。公共创建body不扩授权，服务器creationAuthorizedThrough只作用新建。
 
-前端可选simpleStrategy投影仅接真实SIMPLE产物和verification，不伪造旧Proposal.strategy。策略原稿仍显示needs_acceptance。独立全文核验保持原HARD_BLOCKER；当前核验unknown通过窄native transition保存原executor，recoveredBy单记恢复人。历史/缺IO不重派，双owner-to-copy未完成。详细协议见[策略运行合同](../development/simple-strategy.md)。
+前端可选simpleStrategy投影仅接真实SIMPLE产物和verification，不伪造旧Proposal.strategy。策略原稿仍显示needs_acceptance。独立全文核验保持原HARD_BLOCKER；当前核验unknown通过窄native transition保存原executor，recoveredBy单记恢复人。历史/缺IO不重派，双负责人至copy已按[文案合同](../development/simple-copy.md)接线。详细协议见[策略运行合同](../development/simple-strategy.md)。
+
+## SIMPLE双负责人至文案bridge
+
+`simple-copy-service.mjs`复用原executor、owner edge和creative panel，`simple-copy-http.mjs`冻结原请求与固定job bindings，brief-server只开放六个受限接口。当前SIMPLE经实际双负责人和原子commit派生唯一copy-message-v2，全文核验及原17节点评审分别执行。策略人工节点由humanContext显式adopt-creative，不用generic release-stage。
+
+前端可选copyWorkflow及CopyWorkflowPanel按业务阶段展示操作。copyWorkflowProjection核来源、正文与报告，copyCreativeProjection核完整冻结packet、phase、17节点和原执行输入，同步SHA仅用于snapshot准入。合法历史保持可读，当前写资格另判。GET originalsVerified=false，不把投影冒称全原票物理核验。下游unknown恢复、文案改稿再评、视觉继续和Deck整链仍待接，详见[文案合同](../development/simple-copy.md)。

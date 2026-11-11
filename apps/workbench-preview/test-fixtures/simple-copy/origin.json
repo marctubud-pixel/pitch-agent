@@ -1,0 +1,12 @@
+{
+  "scope": "Synthetic retained native snapshot for pure admission regression tests; no model calls, no current release or customer approval claim.",
+  "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-frontend-independent-evidence/native-snapshot.json.gz",
+  "sha256": "6f415d065a143cad32e40594252051687a35d16ff7ef5fa513a6a0b9c1e03b81",
+  "bytes": 673040,
+  "originalCase": "reader-owner-xbpQCV",
+  "originalState": "rev155 after deliberate Q invalidation; original jobs remain readable as history.",
+  "limits": [
+    "Metadata projection fixture only; original IO byte verification belongs to native runtime tests.",
+    "Original absolute paths and loopback endpoints are identity metadata, not opened or called by these pure tests."
+  ]
+}

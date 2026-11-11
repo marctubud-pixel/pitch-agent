@@ -1,4 +1,5 @@
 import {useService,useServiceContext} from '../../app/services';
+import {CopyWorkflowPanel} from '../../proposal/CopyWorkflowPanel';
 import {SimpleStrategyPanel} from '../../proposal/SimpleStrategyPanel';
 /**
  * C. Strategy. Starts from the question the proposal must answer, shows where category, brand
@@ -42,7 +43,7 @@ export function StrategyStage({ proposal: p }: { proposal: Proposal }) {
     return c && (CIRCLES as readonly string[]).includes(c) ? c : 'center';
   });
   if (p.id === 'qingyu-pack' && p.workbenchId === 'qingyu' && p.type === 'packaging' && s === null) return <QingyuStrategyPreview proposal={p} />;
-  if(connected&&simple&&pid!=='qingyu'&&pid!=='luma')return <SimpleStrategyPanel projectId={pid}/>;
+  if(connected&&simple&&pid!=='qingyu'&&pid!=='luma')return <><SimpleStrategyPanel projectId={pid}/><CopyWorkflowPanel projectId={pid} strategy/></>;
   if (!s) return <StageEmpty proposal={p} stage="strategy" />;
   const dirs = p.themes?.directions ?? [];
   return (

@@ -11,7 +11,7 @@ concurrency:
 jobs:
   application:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       PITCH_PDF_TEST_PYTHON: ${{ github.workspace }}/.scratch/pdf-test-runtime/bin/python
     steps:
@@ -36,6 +36,6 @@ jobs:
       - name: Typecheck and test current application
         run: npm run typecheck && npm run test:frontend
       - name: Test portable domain and storage boundaries
-        run: npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:dependency
+        run: npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:simple-copy && npm run test:dependency
       - name: Build current application
         run: npm run build

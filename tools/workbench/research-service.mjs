@@ -1,3 +1,4 @@
+import {createSimpleCopyService} from './simple-copy-service.mjs';
 import {createSimpleStrategyService} from './simple-strategy-service.mjs';
 import {SIMPLE_STRATEGY_VERSION} from './seven-stage-strategy.mjs';
 import {createAcquisitionService} from './research-acquisition-service.mjs';
@@ -55,7 +56,9 @@ export function createResearchService({store, rootDir, executionAllowed = false,
   };
   const acquisition=createAcquisitionService({store,rootDir,executionAllowed,executor,...options});
   const simple=createSimpleStrategyService({store,rootDir,executor,executionAllowed,bindings,providers});
+  const copy=createSimpleCopyService({store,rootDir,executor,executionAllowed,bindings,providers,simple});
   return {
+    copyStatus:copy.status,copyCommand:copy.run,
     simpleStrategyStatus:simple.status,simpleStrategyContinue:simple.continue,simpleStrategyVerify:simple.verify,simpleStrategyReconcile:simple.reconcile,
     acquisitionStatus:acquisition.status,acquisitionStart:acquisition.start,acquisitionStep:acquisition.step,acquisitionReconcile:acquisition.reconcile,
     capability:()=>({...capability(),acquisition:acquisition.capability(),simpleStrategy:simple.capability()}),

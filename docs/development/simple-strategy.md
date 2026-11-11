@@ -1,6 +1,6 @@
 # 简洁三板块策略运行合同
 
-规范版本：1.0.1。本合同规定当前七阶段应用的策略接线。业务要求仍是[策略负责人](../agents/strategy-owner.md)的两项基础要求，不恢复旧复杂策略Skill、候选推理图或固定多轮评分。
+规范版本：1.0.2。本合同规定当前七阶段应用的策略接线。业务要求仍是[策略负责人](../agents/strategy-owner.md)的两项基础要求，不恢复旧复杂策略Skill、候选推理图或固定多轮评分。
 
 ## 输入与三板块输出
 
@@ -27,7 +27,7 @@
 
 服务端`creationAuthorizedThrough`默认research。程序化服务和launch配置`server.creationAuthorizedThrough`按既有`STAGES`枚举校验，本轮隔离整链工程配置显式选用final_review。公共项目创建body不接受该字段；创建重放核原终点。修改服务器默认值不升级旧项目，也不开放旧`set-policy`。
 
-授权终点与可执行路由分别成立。当前新增的只有简洁策略生产与独立全文核验，设置final_review不自动开放文案、视觉、排版或终审生产。
+授权终点与可执行路由分别成立。简洁策略生产与独立全文核验沿用本合同；策略双负责人至文案评审另见[文案接续合同](simple-copy.md)。设置final_review不自动开放视觉、排版或终审生产。
 
 `capability`固定策略协议，并返回configured、executionAllowed、available和reason。configured核strategy/verification岗位与模型绑定、HTTP适配器标识或execute函数；它不是HTTP配置、凭据、远端在线或实际调用成功的完整探测。默认没有执行器，不扫描或恢复队列。执行还需当前版本、授权、研究放行及原件资格，不能凭available绕过。
 
@@ -72,10 +72,10 @@ HTTP丢响应、错回执或无法绑定原记录时，前端保存精确path/bo
 
 逐点展示事实、任务要求、推论或假设、原引用及限制。原稿/SHA、完整核验及历史详情折叠；真正错误与未知不显示为完成。写入口和原提交恢复按workflow权限保护，游客只读。导航只GET，不自动继续、重派或签接收。
 
-生成动作位于策略页，研究页旧`continueToStrategy`未因此改接。原生投影对有效SIMPLE产物显示`needs_acceptance`，不是stage complete；前端也不填造旧Proposal.strategy结构。策略双负责人交接到copy、策略修订及后续生产仍未完成。
+生成动作位于策略页，研究页旧`continueToStrategy`未因此改接。原生投影对有效SIMPLE产物显示`needs_acceptance`，不是stage complete；前端也不填造旧Proposal.strategy结构。策略双负责人交接到copy已按[文案接续合同](simple-copy.md)接线；策略修订、文案改稿再评及视觉至交付仍待接。
 
 ## 当前核验边界
 
 本轮样本与HTTP模型仅为新隔离SQLite和本机合成工程配置，研究前置通过原r7/reader/事实/readiness/semantic/双负责人及显式工程release。HTTP/config专项结果、最终门禁、真实UI及独立复核分别按原生回执登记，候选静态审查不能替代运行通过。
 
-完整目标还需三方向文案与独立评审、视觉参考/草图/成稿/样机、同版Deck与终审、包装及KV两类整链和实际可编辑PPTX。旧得闲/青屿、原件/库/票及付费或真实模型、生产账号、通知、云部署和已暂缓在线编辑保存范围保持。
+三方向文案与独立评审已接线。完整目标还需文案改稿再评、视觉参考/草图/成稿/样机、同版Deck与终审、包装及KV两类整链和实际可编辑PPTX。旧得闲/青屿、原件/库/票及付费或真实模型、生产账号、通知、云部署和已暂缓在线编辑保存范围保持。

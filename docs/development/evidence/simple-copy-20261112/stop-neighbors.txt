@@ -1,0 +1,67 @@
+(node:76751) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ synthetic generic sequence requires scope and independent handoffs, stopping at dedicated sketch authority (15.473375ms)
+✔ metadata-only copy cannot release through manual review or human adoption, even with forged completeness receipts (4.911292ms)
+✔ assisted selected gate remains paused after pass and requires human adoption (8.043375ms)
+✔ creative disagreement can be adopted but factual unknown remains blocked with original review retained (1.525958ms)
+✔ independent review rejects author identity, run, ancestry and contaminated first reads (1.808333ms)
+✔ scope edit invalidates descendants and old in-flight completion stays historical (1.740791ms)
+✔ generic content and native stages reject exported-file flags and technical receipts before job creation (7.30175ms)
+✔ optimistic conflict, immutable input and idempotent command replay (0.208875ms)
+✔ human may adopt creative rejection without rewriting original independent verdict (1.47225ms)
+✔ updated copy invalidates released references and retains original artifacts and releases (11.374542ms)
+✔ generic content review and unreviewed sketch cannot skip dedicated authority (6.3865ms)
+✔ new blocking rejection revokes current release and downstream use transitively (7.644084ms)
+✔ each consuming edge needs its own two-owner handoff (1.546666ms)
+✔ older same-input completion is historical after newer request (0.182834ms)
+✔ panel cannot collapse seats or waive new dissent with an earlier decision (1.784458ms)
+✔ endpoint limits generic authorization and selected gates require current human adoption (12.4525ms)
+✔ reference fit uses separate criteria even with four high original scores (5.756959ms)
+✔ minor actionable observations do not become hard blockers (1.244542ms)
+✔ empty rejection stays unresolved and a single visual role cannot fill the panel (5.841209ms)
+✔ four-role panel is frozen before scores and original low scores cannot be replaced (8.825125ms)
+✔ human disposition outcomes never satisfy a selected gate and adoption binds current reviews (3.459792ms)
+✔ pending or deferred criticism cannot resolve a rejection and hard findings cannot be waived (2.695208ms)
+✔ legacy native metadata cannot release or gain authority even with all technical receipts (1.520458ms)
+✔ current sketch algorithm preserves four original scores and rejects an unrounded mean below four (1.739542ms)
+✔ current sketch algorithm requires all original votes and keeps unknown necessary conditions blocked (0.180959ms)
+✔ generic completion cannot convert old in-flight sketch or native jobs into current authority (0.97175ms)
+(node:76752) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a fixed four-job step stops at its first unknown and exact replay does not dispatch the remainder (2.520042ms)
+✔ a prior running on the same edge refuses a new step before its ledger entry (0.152125ms)
+✔ a prior awaiting_reconciliation on the same edge refuses a new step before its ledger entry (0.117125ms)
+✔ an unsettled job on another edge does not block this fixed group (0.44125ms)
+✔ a workspace without an owner edge never presents unrelated research jobs as copy jobs (0.135834ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 250.139375
+(node:76754) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ current limited HTTP binds two actual owners, fixed selected jobs, copy verification and four-role original panel (128175.633917ms)
+✔ manual strategy checkpoint has an explicit current HTTP confirmation before owners (19188.091833ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 147511.8925
+(node:79069) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"mode":"unknown","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-qInL4A","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves unknown boundary without another dispatch (30367.701625ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 30535.967417

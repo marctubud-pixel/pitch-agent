@@ -1,0 +1,14 @@
+{
+  "source": "apps/workbench-preview/src/services/http/simpleStrategyHttp.test.ts",
+  "beforeSHA256": "20aa670f5ee0cd106b4b8aa5e325176fb7813a121c1eddab41d05006c4bb845b",
+  "afterSHA256": "15cd2453be21d305d37fccad68d825acdb5ef19abe4314df500d71edf80331ac",
+  "onlyChange": "Five complete-workflow harness wall timeouts 30s to 120s via named constant; all test bodies/assertions and production/provider deadlines byte-identical",
+  "failedCIHead": "b1ef4726503e3a292bd4422a34ecdbe91fd2b628",
+  "failedJob": 130836895289,
+  "observedFailureMs": 30385,
+  "CIFrontend": {
+    "passed": 770,
+    "failed": 1,
+    "existingSkipped": 1
+  }
+}

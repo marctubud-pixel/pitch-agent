@@ -1,0 +1,535 @@
+Observed exec tool output; initial command heading normalized. Build stdout was redirected to /dev/null by the original command; completed tool result chunk a7a415 exit_code=0 covers build. This is not a byte-for-byte shell stdout file.
+
+> pitch-agent-workspace@0.1.0 typecheck
+> npm --prefix apps/workbench-preview run typecheck
+> tsc --noEmit
+> pitch-agent-workspace@0.1.0 test:frontend
+> vitest run
+
+ RUN  v5.0.5 /Users/marc/Documents/ChatGPT/调研agent/apps/workbench-preview
+
+(node:42805) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42800) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42796) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42797) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42795) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42798) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42900) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42918) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42958) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  65 passed (65)
+      Tests  765 passed | 7 skipped (772)
+   Start at  06:13:56
+   Duration  173.85s (tests 97%, import 2%, transform 1%)
+
+
+> pitch-agent-workspace@0.1.0 test:core
+> node --test tools/workbench/store-codec.test.mjs tools/workbench/case-identity.test.mjs tools/workbench/schema-enum-partition.test.mjs tools/local-acceptance/client-flow.test.mjs tools/local-acceptance/browser-pending.test.mjs tools/local-acceptance/reference-input-controller.test.mjs tools/auto-layout/native-charts/chart-data.test.mjs
+
+✔ literal complete matrix, order, precision and explicit percent conversion survive (4.42475ms)
+✔ precision policy permits exact decimal serialization and refuses loss (0.195625ms)
+✔ missing cell (0.273209ms)
+✔ null cell (0.142834ms)
+✔ declared counts (0.118708ms)
+✔ duplicate category IDs (0.098625ms)
+✔ duplicate series IDs (0.092875ms)
+✔ unsupported type (0.1325ms)
+✔ mixed unit (0.705459ms)
+✔ wrong format (0.136209ms)
+✔ unknown transform (0.118167ms)
+✔ hidden percent conversion (0.138958ms)
+✔ wrong original text hash (0.074666ms)
+✔ stale source binding (0.073917ms)
+✔ unknown source (0.270292ms)
+✔ out of bounds locator (0.170458ms)
+✔ byte instead of UTF16 (0.096917ms)
+✔ excerpt changed (0.06825ms)
+✔ literal label changed (0.10125ms)
+✔ value differs from original (0.281583ms)
+✔ invalid surrogate source (0.217959ms)
+✔ unknown field (0.090125ms)
+✔ UTF16 offsets reject ranges splitting emoji and every raw source change invalidates digest (1.89425ms)
+✔ actual API wrapper persists before dispatch and refresh reads case before same-id unknown advance replay (5.9605ms)
+✔ committed decision settles only after matching server request digest; changed basis never guessed (2.95825ms)
+✔ create and editor bodies are not stored or automatically reconstructed; exact user input reuses original command (0.98775ms)
+✔ storage or locking failure stops actual API mutation; non-success outcomes retain pending identity (2.946166ms)
+✔ two tabs serialize writes, retain different resources and reuse same request ID without overriding pending items (1.224333ms)
+✔ write verification failure and corrupt persisted schema never fall back to volatile mutation (0.800709ms)
+✔ one page joins duplicate same-ID requests rather than dispatching twice (1.00275ms)
+✔ only an exact durable pre-admission stale receipt settles a nonempty decision request (2.576167ms)
+✔ settlement storage failure and unavailable receipt endpoint never trigger a replacement mutation (0.502458ms)
+✔ a new committed receipt must match completely and never falls back to legacy body acknowledgement (0.938ms)
+✔ sequential controller advances beyond the old64-step client limit (2.473875ms)
+✔ human and reconciliation gates never dispatch or approve another action (0.1285ms)
+✔ unknown or missing server action state never dispatches a speculative operation (0.129791ms)
+✔ pause waits for the one in-flight action to resolve and does not abort or duplicate it (0.10475ms)
+✔ unchanged progress and safety exhaustion pause without manufacturing completion (0.123958ms)
+✔ a rejected network operation is not retried or counted as successful progression (0.241708ms)
+✔ strategy revision sends the typed human contribution bound to the currently viewed basis (0.2165ms)
+✔ unconnected revision stages, empty opinions and unviewed bases cannot dispatch a fabricated contribution (0.121875ms)
+✔ copy theme submission explicitly selects a currently offered direction and retains the viewed basis (0.126917ms)
+✔ copy inputs cannot reuse a stale catalog, guess a direction, omit intent or escape a pending decision (0.179958ms)
+✔ approving the current copy does not silently submit populated theme fields (1.087041ms)
+✔ upload and explicit purpose are separate commands with fresh revision and no evidence authority (2.338958ms)
+✔ reload reuses registered originals without uploading their bytes again (0.220959ms)
+✔ changed case, copy, basis or revision during file read refuses before dispatch (1.162625ms)
+✔ legacy, sealed, unselected and unconfirmed checkpoints cannot dispatch (0.271292ms)
+✔ uncertain outcome is not retried and pending reconciliation blocks another action (0.15775ms)
+✔ double submission while file decoding has one dispatcher (0.170875ms)
+✔ invalid file, unmatched direction/image and unsupported profile never reach API (0.231666ms)
+✔ unexpected asset or material response does not claim success (0.679625ms)
+✔ 2xx without a settled receipt or refreshed original listing is never announced as an uploaded reference (0.351ms)
+✔ a journal-reused actual command id is accepted only for this exact request digest (0.335084ms)
+✔ WebP is rejected before journal preparation because native decoder does not support it (0.081292ms)
+✔ committed upload or material plus failed refresh blocks a second POST until exact GET projection arrives (0.369459ms)
+✔ withdrawal uses exact material identity, records no adoption, and waits for a removed projection after commit (0.371625ms)
+✔ explicit correction projection is recognized without changing the underlying blocked state or enabling arbitrary blocked inputs (0.076875ms)
+✔ identity packet sends neutral complete capture and both ordered images without attachment paths (3.918792ms)
+✔ usable bounded case preserves original attributed text and captured verification (0.793542ms)
+✔ packet rejects image URL absent from actual captured page and capture URL spoofing (0.596375ms)
+✔ packet rejects changed capture/extracted text and stale source bytes (0.44575ms)
+✔ actual ordered attachment manifest and full packet hash reject stale review (0.361334ms)
+✔ supported match requires visible regions from both actual images (0.255542ms)
+✔ exact page quotations cannot cite operator metadata or invented text (0.653167ms)
+✔ unknown dates stay unknown and cannot carry invented value or affirmative quote (0.267458ms)
+✔ adjacent or uncertain correspondence blocks record derivation (0.838ms)
+✔ contradicted brand cannot be made usable and extra authenticity claims are rejected (0.877125ms)
+✔ capture redirect final must follow recorded image request chain (0.289792ms)
+✔ legacy case identity request bytes match the pre-declaration fixture hash (0.307584ms)
+✔ script candidate notice applies only to a selected script-declared image (0.375ms)
+✔ disjoint enum partitions retain exact overlapping sets and literal property names (9.848375ms)
+✔ schema budgets reject overflow without removing choices or constraints (11.885083ms)
+(node:48664) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ legacy TEXT bytes, new BLOB bytes, history, replay and positional TEXT inserts coexist (9.570167ms)
+✔ BLOB decoding rejects corrupt framing, digests, streams, UTF-8 and JSON (6.109417ms)
+✔ unsupported SQL storage class is distinct from legacy JSON text (3.169917ms)
+✔ serialization and SQL aborts roll back both revision and head (4.472292ms)
+✔ SQL BLOB projection suppresses oversized bodies before JavaScript receives them (168.1235ms)
+ℹ tests 78
+ℹ suites 0
+ℹ pass 78
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 334.094541
+
+> pitch-agent-workspace@0.1.0 test:domain
+> node --test tools/workbench/project.test.mjs
+
+(node:48704) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ synthetic generic sequence requires scope and independent handoffs, stopping at dedicated sketch authority (15.586042ms)
+✔ metadata-only copy cannot release through manual review or human adoption, even with forged completeness receipts (5.162458ms)
+✔ assisted selected gate remains paused after pass and requires human adoption (8.266833ms)
+✔ creative disagreement can be adopted but factual unknown remains blocked with original review retained (1.7985ms)
+✔ independent review rejects author identity, run, ancestry and contaminated first reads (1.967375ms)
+✔ scope edit invalidates descendants and old in-flight completion stays historical (1.844667ms)
+✔ generic content and native stages reject exported-file flags and technical receipts before job creation (7.993125ms)
+✔ optimistic conflict, immutable input and idempotent command replay (0.217833ms)
+✔ human may adopt creative rejection without rewriting original independent verdict (1.607792ms)
+✔ updated copy invalidates released references and retains original artifacts and releases (12.439709ms)
+✔ generic content review and unreviewed sketch cannot skip dedicated authority (6.695625ms)
+✔ new blocking rejection revokes current release and downstream use transitively (8.515459ms)
+✔ each consuming edge needs its own two-owner handoff (1.722334ms)
+✔ older same-input completion is historical after newer request (0.19275ms)
+✔ panel cannot collapse seats or waive new dissent with an earlier decision (1.883417ms)
+✔ endpoint limits generic authorization and selected gates require current human adoption (13.486084ms)
+✔ reference fit uses separate criteria even with four high original scores (6.094375ms)
+✔ minor actionable observations do not become hard blockers (1.355667ms)
+✔ empty rejection stays unresolved and a single visual role cannot fill the panel (6.508834ms)
+✔ four-role panel is frozen before scores and original low scores cannot be replaced (9.609584ms)
+✔ human disposition outcomes never satisfy a selected gate and adoption binds current reviews (3.650375ms)
+✔ pending or deferred criticism cannot resolve a rejection and hard findings cannot be waived (2.844708ms)
+✔ legacy native metadata cannot release or gain authority even with all technical receipts (1.649125ms)
+✔ current sketch algorithm preserves four original scores and rejects an unrounded mean below four (1.805375ms)
+✔ current sketch algorithm requires all original votes and keeps unknown necessary conditions blocked (0.189333ms)
+✔ generic completion cannot convert old in-flight sketch or native jobs into current authority (1.014917ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 233.444208
+
+> pitch-agent-workspace@0.1.0 test:brief-http
+> node --test tools/workbench/brief-server.test.mjs tools/workbench/brief-intake-service.test.mjs tools/workbench/brief-original-http.test.mjs tools/workbench/brief-extraction-http.test.mjs tools/workbench/intake-python-environment.test.mjs
+
+(node:48743) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ extraction routes read the saved current original and default to no parser or dispatch (38.869292ms)
+✔ extraction request boundaries reject wrong paths, fields, methods, origins, queries and oversized bodies before dispatch (21.652917ms)
+✔ missing configured Python reports actual unavailable capability without running any job (21.75425ms)
+﹣ actual local PDF parsing and historical same-body readback survive SQLite reopen without another attempt (0.058959ms) # Set PITCH_PDF_TEST_PYTHON to an installed PDF runtime; real parser not verified
+﹣ actual HTTP PDF result retains text_extracted without claiming model reading (0.032875ms) # Set PITCH_PDF_TEST_PYTHON to an installed PDF runtime; real parser not verified
+﹣ actual HTTP PDF result retains password_required without claiming model reading (0.033ms) # Set PITCH_PDF_TEST_PYTHON to an installed PDF runtime; real parser not verified
+﹣ actual HTTP PDF result retains invalid without claiming model reading (0.044666ms) # Set PITCH_PDF_TEST_PYTHON to an installed PDF runtime; real parser not verified
+﹣ actual HTTP PDF result retains limit_exceeded without claiming model reading (0.032416ms) # Set PITCH_PDF_TEST_PYTHON to an installed PDF runtime; real parser not verified
+✔ a durable unknown local claim reopens with original body and no implicit retry (23.358292ms)
+✔ revision changes during extraction read return conflict instead of combining an old file with a new project (18.849333ms)
+﹣ failed local work requires explicit HTTP retry, preserving the first attempt and actual local human authority (0.049166ms) # Set PITCH_PDF_TEST_PYTHON to an installed PDF runtime; real parser not verified
+✔ CLI accepts the PDF option only as explicit absolute parser configuration (107.62525ms)
+﹣ actual blank PDF retains no_text even though the local job finished (0.051209ms) # Set PITCH_PDF_TEST_PYTHON to an installed PDF runtime; real parser not verified
+(node:48744) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ unconfirmed task stores actual PDF bytes without extraction or adoption and survives reopen (26.639208ms)
+✔ lost response replay retains exact body and bytes, without another job or version (29.381625ms)
+✔ project ownership prevents reading another project original (18.201958ms)
+✔ task revision marks retained original stale; historical same-body replay remains safe (18.903208ms)
+✔ corrupted saved bytes are rejected by read, list and replay without generating replacement (12.557375ms)
+✔ symlink substitution cannot replace a managed original (12.355375ms)
+✔ strict request boundary rejects unsupported MIME, spoofed fields and malformed metadata (3.487625ms)
+✔ selection identity cannot be reassigned to different bytes or metadata under a fresh command (16.851708ms)
+✔ client selections reject metadata that the brand UI cannot represent before saving (12.601083ms)
+﹣ actual configured local extraction before confirmation retains pages and command across reopen without a second attempt (0.082334ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+✔ default or missing parser preserves queued zero-attempt work with a truthful capability (24.23125ms)
+✔ old-card originals stay downloadable but a new extraction cannot use stale task identity (17.608542ms)
+﹣ actual encrypted, invalid and bounded PDF outcomes are retained without calling them readable text (0.051333ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ explicit local recovery keeps original job and failed attempt; replay never auto-retries (0.018167ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ tampered extraction bytes refuse read and replay without another attempt (0.015041ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ a committed local retry resumes its queued work once after its return is lost (0.014125ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ fresh retry refuses an asynchronous task-card at admission (0.013625ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ fresh retry refuses an asynchronous task-card at commit (0.013084ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ fresh retry refuses an asynchronous unrelated-revision at admission (0.012917ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ fresh retry refuses an asynchronous unrelated-revision at commit (0.013917ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ queued-replay retry refuses an asynchronous task-card at admission (0.021125ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ queued-replay retry refuses an asynchronous task-card at commit (0.013375ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ queued-replay retry refuses an asynchronous unrelated-revision at admission (0.012875ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ queued-replay retry refuses an asynchronous unrelated-revision at commit (0.014125ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+﹣ retry start has a distinct stable command and its committed unknown cannot dispatch again after reopen (0.012916ms) # Set PITCH_PDF_TEST_PYTHON to an available configured local PDF runtime
+(node:48745) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ PDF original saves before confirmation and reopens with exact bytes and receipt (50.893708ms)
+✔ original routes retain local origin, exact query, body and method boundaries (8.959ms)
+(node:48746) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ create, immutable save, confirm and refresh persist with native identity and idempotency (36.262958ms)
+✔ restricted surface exposes no generic execution, policy or fabricated identity (11.097459ms)
+✔ strict JSON, size, revision, string and query validation (8.507166ms)
+✔ loopback host and explicit frontend origin gate CORS and preflight (12.109166ms)
+✔ existing queued and interrupted jobs remain untouched across service startup, reads and Brief writes (14.776833ms)
+✔ requires explicit database and loopback-only listening configuration (0.382ms)
+✔ shutdown waits for an accepted body before closing SQLite and rejects later requests (7.168291ms)
+✔ browser historical reads allow preflight only for valid revision queries (7.071792ms)
+✔ new projects persist seven-stage protocol and current r7 capability without enabling execution (9.521542ms)
+✔ registered sources retain original task and unverified identity with exact replay (7.412916ms)
+✔ unconfirmed and unconfigured research writes never create jobs or advance strategy (13.867709ms)
+﹣ configured symlink venv keeps its Python environment while physical hashes and PDF resource limits remain verified (0.358375ms) # Set PITCH_PDF_TEST_PYTHON to an installed local PDF runtime; environment parsing unverified
+﹣ direct configured Python still probes and parses with the configured interpreter identity (0.054833ms) # Set PITCH_PDF_TEST_PYTHON to an installed local PDF runtime; environment parsing unverified
+✔ unconfigured and missing Python paths remain unavailable without fallback (2.788334ms)
+﹣ an invocation captures its configured path before asynchronous identity reads (0.0895ms) # Set PITCH_PDF_TEST_PYTHON to an installed local PDF runtime; environment parsing unverified
+﹣ a configured symlink retargeted during Python startup is a controlled identity failure (0.050334ms) # Set PITCH_PDF_TEST_PYTHON to an installed local PDF runtime; environment parsing unverified
+﹣ a configured symlink deleted during Python startup is a controlled identity failure (0.034459ms) # Set PITCH_PDF_TEST_PYTHON to an installed local PDF runtime; environment parsing unverified
+ℹ tests 57
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 26
+ℹ todo 0
+ℹ duration_ms 358.043833
+
+> pitch-agent-workspace@0.1.0 test:research-contract
+> node --test tools/workbench/seven-stage-workflow.test.mjs tools/workbench/research-method.test.mjs tools/workbench/research-service.test.mjs tools/workbench/research-reader-loop.test.mjs tools/workbench/research-reader-state.test.mjs tools/workbench/research-reader-service.test.mjs tools/workbench/research-reader-http.test.mjs tools/workbench/reader-correction.test.mjs tools/workbench/reader-handoff.test.mjs tools/workbench/reader-queued-recovery.test.mjs tools/workbench/reader-acquired-history.test.mjs
+
+(node:48789) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ saved reader of acquired research recovers as history without live acquisition configuration (1113.583ms)
+(node:48790) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual saved reader findings enter typed correction and the existing revision enqueue path (163.233416ms)
+✔ reader correction rejects mutated source, target and normalized projection (93.067ms)
+✔ actual research revision and located dispositions produce an independent same-version recheck (591.931375ms)
+(node:48791) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reader metadata proof requires every exact current seat and refuses unknown or changed methods (238.651166ms)
+✔ unanswered latest reader cannot become positive evidence (103.560791ms)
+✔ actual owner packet includes original reader packets and preserves their limits (427.028167ms)
+✔ actual owner invocations and explicit engineering operator release retain exact reader originals (7783.042208ms)
+(node:48792) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reader: same-body replay after SQLite reopen executes only the original queued task (135.165667ms)
+✔ revision: same-body replay after SQLite reopen executes only the original queued task (163.931417ms)
+✔ reader: queued replay does not dispatch with disabled (48.823708ms)
+✔ reader: queued replay does not dispatch with missing-providers (41.538375ms)
+✔ reader: queued replay does not dispatch with missing-role (46.713167ms)
+✔ reader: queued replay does not dispatch with changed-binding (39.500417ms)
+✔ reader: changed replay body cannot dispatch the queued original (53.743459ms)
+✔ reader: historical queued task cannot dispatch after card replacement (56.432708ms)
+✔ reader: an unknown dispatched outcome is never executed by replay (51.473291ms)
+✔ reader: successful historical replay needs no execution configuration (68.860791ms)
+✔ revision: queued replay does not dispatch with disabled (101.992083ms)
+✔ revision: queued replay does not dispatch with missing-providers (104.602167ms)
+✔ revision: queued replay does not dispatch with missing-role (90.435792ms)
+✔ revision: queued replay does not dispatch with changed-binding (92.586ms)
+✔ revision: changed replay body cannot dispatch the queued original (88.1085ms)
+✔ revision: historical queued task cannot dispatch after card replacement (95.810459ms)
+✔ revision: an unknown dispatched outcome is never executed by replay (117.43175ms)
+✔ revision: successful historical replay needs no execution configuration (124.04275ms)
+✔ reader: replaced question registration cannot resume an older queued plan (37.119042ms)
+✔ revision: replaced question registration cannot resume an older queued plan (97.520292ms)
+(node:48793) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ fixed method uses actual retained r7 bytes and refuses changed identities (2.87575ms)
+✔ new seven-stage jobs persist r7 identity and bind it into the real provider request (32.581584ms)
+✔ the current protocol cannot use old acknowledgments or generic release to bypass the r7 reader gate (4.716958ms)
+(node:48794) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ default local service can preregister questions and replays the exact request without executing a reader (43.092583ms)
+✔ reader packet binds exact source bytes and excludes extra author/reviewer metadata (1.689625ms)
+✔ independent retelling completion never certifies facts or human approval (0.529709ms)
+✔ critical unanswered questions and major misunderstandings block completion (4.192458ms)
+✔ invented evidence, missing dimensions and duplicate synthesis cannot pass (1.174959ms)
+✔ recheck reads revised source and independently resolves each original issue (0.790958ms)
+✔ author reply alone, wrong task and old report cannot impersonate revised review (1.095333ms)
+✔ first read refuses prior reviews, unsupported method and hidden recommendation locations (0.254417ms)
+✔ rehashing an injected prior score does not turn it into a valid blind packet (0.124209ms)
+✔ critical missing evidence remains blocking even when marked minor (0.195167ms)
+✔ actual producer headings, claim limitations and gaps all reach the first reader (1.092416ms)
+✔ persisted packet cannot rehash malformed or duplicate rendered page identities (4.149291ms)
+✔ a native 33-claim report preserves all 104 visible blocks (2.43125ms)
+✔ whole source JSON can exceed a single-field limit while staying within reader packet budget (10.543875ms)
+✔ native report content still cannot exceed the one MiB byte budget (2.661792ms)
+✔ internal source and projection copies have separate byte budgets (10.176875ms)
+✔ separate source budget does not permit an oversized final reader packet (9.96575ms)
+(node:48796) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ preregistered questions enter actual production; a saved independent reader report survives replay and reopen (217.2185ms)
+✔ a question plan added after generation cannot retroactively qualify the old report (42.832542ms)
+✔ preregistered reader seats are independent, unique and cannot retry an unknown call (163.8045ms)
+✔ saved HTTP reader calls reopen without providers after a committed result loses its return (535.229208ms)
+✔ reader capability never advertises execution when required research roles are missing (21.966875ms)
+✔ saved reader outcome is reconciled as history after task-card changes without redispatch (510.886833ms)
+✔ saved reader outcome is reconciled as history after question-plan changes without redispatch (482.704791ms)
+(node:48797) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ preregister exact full card and preserve question identity (7.127667ms)
+✔ current reader job rejects changed card, producer registration and creator self review (12.435791ms)
+✔ reader requires one dispatch and exact native reply before persisting a blocked understanding report (15.014625ms)
+✔ reader recovery uses the exact saved call, adds only normalized wrapper fields and never retries (8.911833ms)
+✔ human declaration cannot create a reader model report (6.557958ms)
+✔ reader rejects registration made at or after producer request revision (5.58825ms)
+✔ packet hashes cannot hide altered or incomplete source projection (5.892917ms)
+✔ two preregistered reader seats require different independent executor contexts (8.919416ms)
+✔ recheck binds actual revision, original report and exact located dispositions (27.397458ms)
+✔ old negative review cannot be bypassed with another first read or unrelated artifact (14.343125ms)
+✔ unresolved rechecks must carry original issues instead of dropping them (18.487167ms)
+✔ current fixed method changes cannot reuse an old plan or alter historical raw reports (10.051333ms)
+✔ all planned seats must have current reports and unknown work blocks coverage (13.277417ms)
+(node:48798) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ without explicit execution authorization the restricted service never creates a model job (16.340833ms)
+✔ explicit test providers exercise real immutable generation, original content, replay and revision refusal (329.15375ms)
+✔ a colliding derived semantic command never resumes a different queued generation (32.667792ms)
+✔ new workflow fixes seven business stages and separates visual substeps (0.739708ms)
+✔ old snapshots keep existing stage guards but cannot enter the new research route (0.405875ms)
+✔ unknown or malformed versions never become current seven-stage projects (0.152416ms)
+✔ new projects expose research production only; downstream and old content review routes are refused (0.123583ms)
+✔ confirmation completes Brief only and never invents research results (0.085666ms)
+✔ a current artifact alone is not an independently checked or released research (0.215166ms)
+✔ native verification, delivery, acceptance and release remain distinct states (0.150083ms)
+✔ changing the confirmed Brief invalidates research without deleting the historical artifact or checks (0.154917ms)
+✔ old research remains historical even when supplied positive checks (0.079084ms)
+ℹ tests 80
+ℹ suites 0
+ℹ pass 80
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8717.482709
+
+> pitch-agent-workspace@0.1.0 test:research-acquisition
+> node --test tools/workbench/research-acquisition.test.mjs tools/workbench/research-acquisition-boundary.test.mjs tools/workbench/research-acquisition-selection.test.mjs tools/workbench/research-acquisition-material.test.mjs tools/workbench/research-acquisition-manifest.test.mjs tools/workbench/research-acquisition-service.test.mjs tools/workbench/research-acquisition-bridge-http.test.mjs
+
+(node:48968) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ json-http-v1 empty bounded originals keep empty acquisition basis and blocked research_plan (626.594291ms)
+✔ ddg-lite-v1 empty bounded originals keep empty acquisition basis and blocked research_plan (792.124041ms)
+✔ invalid over-budget and contradictory planner responses are retained and reject without truncation or search (435.108125ms)
+✔ unknown branch and finite query/capture allowance close partial coverage without factual upgrades (662.288542ms)
+✔ claim-before-effect and immutable saved-original reconciliation survive crash without repeated search (801.8025ms)
+✔ planner saved-original reconciliation repairs interrupted registration without another model call (875.998875ms)
+✔ truly unknown planner outcome cannot redispatch, seal or create a replacement generation (41.413459ms)
+✔ task/policy changes during actual search cannot commit a stale branch or admission (145.973916ms)
+✔ persisted deadline and fixed concurrency cannot be reset by restarting the executor (46.676667ms)
+✔ seal-to-enqueue failure repairs only deterministic producer intent (827.081042ms)
+✔ exact request replay is idempotent and a different payload with the same ID is rejected (28.299875ms)
+✔ cancel before dispatch terminates queued work and dispatched unknown retains its reservation (157.58225ms)
+✔ one executed fixture rejects source, search attempt, raw, extraction, manifest and admission tampering (2118.302417ms)
+✔ search config bounds, public DNS pinning, redirects and complete considered JSON window remain enforced (26.362291ms)
+✔ actual human correction retains exact ancestral acquisition even when a newer generation exists (670.123792ms)
+✔ one actual sealed fixture forks bounded producer tamper negatives and rejects the same originals at later authorities (2962.402625ms)
+✔ acquisition-only DDG window retains first 50 considered anchors while the legacy receipt still refuses over-limit HTML (83.20225ms)
+✔ four independently scheduled branch journals enforce atomic fixed slices and concurrency under overlapping transport (536.629291ms)
+✔ historical inspection uses frozen config while new authority rejects changed live provider or budget configuration (565.58325ms)
+✔ confirmed task change during awaited planner result preserves actual result and blocks all discovery (41.907417ms)
+✔ physical seal reads revision R and a concurrent unrelated command forces complete revalidation (509.404042ms)
+✔ live configuration changed during awaited physical seal reads cannot reuse the old proof (505.535083ms)
+✔ project request-stage reconstructs optional acquisition from the exact registry and rejects forged refs or incomplete catalogues (512.848417ms)
+✔ default envelope executes exactly eight queries and twelve bounded page attempts without per-result model calls (799.661833ms)
+✔ same-purpose branch labels cannot upgrade captured background into direct comparison (530.523625ms)
+✔ an adapter that never returns still reaches the persisted planner deadline without redispatch (86.878542ms)
+✔ ordinary restart recovery proves an acquisition owner died before dispatch and keeps dispatched unknown work closed (46.275542ms)
+(node:48969) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ HTTP acquisition is read-only by default and never activates existing queued jobs (51.013625ms)
+✔ HTTP bounded selection and exact receipts connect planner, branches, seal and a single r7 producer (1598.057667ms)
+✔ HTTP acquisition retains exact fields, 128KiB, method, query, Host and Origin boundaries (33.73725ms)
+(node:48970) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual legal 400-anchor acquisition manifest exceeds ordinary 4 MiB, uses the exclusive 16 MiB store and reopens within cumulative budget (12306.071834ms)
+ℹ {"root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/acquisition-engineering-1a2seM","manifest":{"sha256":"8cb5e547ad59ec1bd40299feb4448876a9a32b26b1428cae6df5f82862383963","byteLength":5310657},"actualBytes":5310657,"sha256":"8cb5e547ad59ec1bd40299feb4448876a9a32b26b1428cae6df5f82862383963","edges":400,"queries":8,"captures":12,"plannerCalls":1,"readBudget":{"reservedBytes":111987269,"files":116,"limits":{"bytes":536870912,"files":512,"manifestBytes":16777216}},"ordinary4MiB":"rejected","acquisition16MiB":"saved_and_physically_reopened","externalCalls":0,"totalModelCalls":2,"allJobsTerminal":true}
+✔ exclusive manifest storage and read reject above 16 MiB, ordinary intake remains 4 MiB, and cumulative read allowance fails closed (89.11175ms)
+(node:48971) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual intake adoption and every field decision freeze complete task, selected manual attribution and material originals (1629.711208ms)
+✔ material raw corruption blocks a new generation before planner or discovery actions (118.937542ms)
+✔ scope/policy change during awaited original material read conflicts rather than accepting a newly read revision (144.111916ms)
+✔ actual PDF capture and bounded extractor receipt are retained and reopened independently from source hashes (811.283292ms)
+✔ material physical bytes changed after one awaited read are reopened before generation registration (137.870458ms)
+✔ failed PDF extraction retains the PDF reservation and cannot exceed four actual extractor effects (666.543875ms)
+(node:48972) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ explicit fresh generation preserves the previous envelope and originals with its actual parent ID (2461.107583ms)
+✔ new generation registration rejects forged ancestry even with a rehashed envelope (965.653333ms)
+✔ result cap excludes duplicate destinations and selected duplicates retain provenance, selected duplicate false (667.307667ms)
+✔ result cap excludes duplicate destinations and selected duplicates retain provenance, selected duplicate true (518.072458ms)
+✔ another query may select an earlier excluded destination while all matching edges remain attached (1099.050334ms)
+✔ out-of-scope branches do not spend effects while remaining branches keep partial coverage and selection caps (381.484542ms)
+(node:48973) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ default current research service exposes read-only acquisition status without dispatch (20.777ms)
+✔ explicit bounded original job sets produce four branches, a sealed catalogue and one r7 producer (1472.530834ms)
+✔ step ledger survives a committed lost response and rejects different bodies without selecting later jobs (141.01725ms)
+✔ plan actual claim blocks a concurrent question-plan change without a model dispatch (71.917625ms)
+✔ producer actual claim blocks a concurrent question-plan change without a model dispatch (1030.384917ms)
+✔ an unknown branch never retries and exact saved tool originals reconcile as history with no providers (232.357417ms)
+﹣ actual parsed current PDF and registered source enter the sealed r7 producer; mismatched roots and corrupt originals refuse dispatch (0.120083ms) # Set PITCH_PDF_TEST_PYTHON to verify actual PDF acquisition input
+✔ known old step receipts remain historical after a card replacement and never dispatch new work (144.05775ms)
+✔ actual step claim uses captured revision after card changes (65.600334ms)
+✔ actual step claim uses captured revision after unrelated-revision changes (41.774125ms)
+✔ default disabled replay never executes a queued selected job (31.082625ms)
+✔ capability checks actual search and model adapter shapes; missing question registration cannot be supplemented after start (15.052209ms)
+✔ saved synthetic HTTP producer reconciles on its original current version without a new invocation (1299.618542ms)
+✔ saved synthetic HTTP producer history remains pending without a new invocation (1127.379417ms)
+(node:48974) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ json-http-v1 executes bounded plan, four branches, physical admission and research producer (1304.903708ms)
+✔ ddg-lite-v1 executes bounded plan, four branches, physical admission and research producer (2308.456083ms)
+✔ unconfirmed task blocks before any planner, search, capture or extraction action (10.091166ms)
+ℹ tests 61
+ℹ suites 0
+ℹ pass 60
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 15589.076792
+
+> pitch-agent-workspace@0.1.0 test:simple-strategy
+> node --test --test-concurrency=1 tools/workbench/seven-stage-strategy.test.mjs tools/workbench/simple-strategy-runtime.test.mjs tools/workbench/simple-strategy-configuration.test.mjs tools/workbench/simple-strategy-http.test.mjs
+
+✔ three blocks consume exact research and raw task without optional product/user fields (1.563792ms)
+✔ BriefEnvelope remains unparsed original JSON and quotes actual locations (0.449459ms)
+✔ exact original hashes and basis mutation cannot be reused (0.233791ms)
+✔ missing input retains existing conclusions and specific gap without invented direction (0.16675ms)
+✔ source quotations and required original limits are preserved (0.561167ms)
+✔ task requirements and explicit assumptions cannot become facts (0.166417ms)
+✔ assumption source must stay uncertain, and restrictions retain stable paths (0.280667ms)
+✔ complete cannot consist of one source, empty blocks, or old candidates and reasoning (0.222792ms)
+✔ prototype paths and duplicate source/point identities cannot forge originals (0.217125ms)
+(node:49595) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ configured creation endpoint maps explicitly, defaults research and rejects undefined endpoints (4.24475ms)
+✔ actual creation replay binds original server authorization and public fields stay closed (19.79725ms)
+(node:49596) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual bounded HTTP new final authorization, research release, simple content and independent whole-text verification (15770.699375ms)
+✔ default creation authorization remains research and cannot continue despite actual research release (7249.971708ms)
+✔ unknown strategy exact HTTP original reconciles without provider and never redispatches (12559.308625ms)
+✔ unknown verification exact HTTP original reconciles without provider and never redispatches (16528.712792ms)
+✔ actual native claim CAS blocks a changed question plan before strategy model dispatch (9151.774042ms)
+✔ current HTTP schema rejects injected policy endpoint, query and extra result fields (6845.167583ms)
+✔ historical unknown simple producer after question change refuses recovery and keeps original outcome (10587.414084ms)
+✔ blocked SIMPLE output exposes verified original conclusions and gaps without artifact or retry (13470.15925ms)
+(node:53293) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reader metadata proof requires every exact current seat and refuses unknown or changed methods (169.104833ms)
+✔ unanswered latest reader cannot become positive evidence (71.451333ms)
+✔ actual owner packet includes original reader packets and preserves their limits (361.884375ms)
+✔ actual owner invocations and explicit engineering operator release retain exact reader originals (7761.532625ms)
+✔ explicit isolated seven-stage continuation produces a single actual simple strategy and exact owner packet (12842.941208ms)
+✔ unknown simple strategy stays one original attempt and is never redispatched (9928.640041ms)
+✔ empty claim manifest does not hide unsupported product superiority and audience assertions from actual verifier (11976.87825ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 135747.560583
+
+> pitch-agent-workspace@0.1.0 test:simple-copy
+> node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs
+
+(node:55147) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ current limited HTTP binds two actual owners, fixed selected jobs, copy verification and four-role original panel (127038.083833ms)
+✔ manual strategy checkpoint has an explicit current HTTP confirmation before owners (19530.616542ms)
+(node:60642) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"mode":"unknown","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-lhIyUT","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves unknown boundary without another dispatch (30152.78ms)
+{"mode":"questions","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-EhTrt7","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves questions boundary without another dispatch (26223.797459ms)
+{"mode":"card","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-gsRid6","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves card boundary without another dispatch (24777.844916ms)
+{"mode":"policy","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-bjwq6j","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves policy boundary without another dispatch (24490.09ms)
+{"mode":"binding","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-LogF7m","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves binding boundary without another dispatch (24670.414959ms)
+{"mode":"tampered","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-Bzhy3e","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves tampered boundary without another dispatch (25786.2115ms)
+(node:66347) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ SIMPLE normal strategy actual dual owners and native three-direction copy (101867.593542ms)
+{"scope":"Retained synthetic recovered-owner identity test; not real business approval","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-nY4HXQ"}
+✔ SIMPLE recovered strategy actual dual owners and native three-direction copy (99448.221625ms)
+✔ explicit strategy checkpoint stops owners until current human adoption (15431.460167ms)
+(node:71830) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ explicit owner source restriction never substitutes the later active strategy (13282.066666ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 533333.516667
+
+> pitch-agent-workspace@0.1.0 test:dependency
+> node scripts/check-pptx-dependency.mjs
+
+{"result":"PASS","app":"/Users/marc/Documents/ChatGPT/调研agent/apps/workbench-preview","malformedIcns":"rejected","png":"1x1","nativePptxImageBytes":"preserved"}
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+

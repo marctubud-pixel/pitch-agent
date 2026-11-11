@@ -1,0 +1,16 @@
+{
+  "dbPath": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-FyRazA/db",
+  "originalRevision": 82,
+  "snapshotBlobSHA256": "b9c6c92bcc5f2a1dfdacccbcb7aa6d5cf30cf8dee92ebbad40ce90e770c30e78",
+  "scope": "Read-only original SQLite; all native transitions in memory; no dispatch",
+  "baseline": {
+    "firstStatus": "queued",
+    "secondStatus": "running",
+    "revision": 83
+  },
+  "same-edge-unknown": {
+    "firstStatus": "awaiting_reconciliation",
+    "secondStatus": "running",
+    "revision": 86
+  }
+}

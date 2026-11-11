@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.10.1",
-  "registrySha256": "746327c5fa2c2178dfd5416a1dc71e6938ef9c7f27a7c67f70c8a86673d6cb72",
+  "baselineVersion": "1.11.1",
+  "registrySha256": "d99b3ce0d8de262cb13f28c72e3e8a30fbb35f1a5fae7b809e35f40bd3a4b9a9",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -109,17 +109,17 @@
       }
     },
     "page.strategy": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "2a637ca7fb5c9a7b9a3ac99032dd87b1fe5cf295365c168bb138707617c42d94"
+        "docs/pages/strategy.md": "12c92c5cb1b10392287d54850fb11780916a1642ff417ed6e89f260274d18782"
       }
     },
     "page.themes": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "3febae6df56309d19821d36eaeeded22e87cdea481900f4207ebe21b3701ebb8"
+        "docs/pages/themes.md": "8e87e2990e96fe912b547ca98504812ba4d7df05a10b7b450ba52fea7f3bf575"
       }
     },
     "page.visual": {
@@ -311,31 +311,31 @@
       }
     },
     "contract.development": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/README.md": "9c1e17d324b14c0d954850c14201932b8d532755091c63e219ab7b46310c0eff"
+        "docs/development/README.md": "ddff0a975150a78c257634919532869ecb5d68826d534545fc2f7f8d62c530f1"
       }
     },
     "contract.runtime": {
-      "version": "1.6.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/architecture/runtime.md": "3777eaad8d75c9ee8eaf30263c4aa44b35bdaf4046b57e0570f071531519f4f1"
-      }
-    },
-    "contract.configuration": {
-      "version": "1.6.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/development/configuration.md": "f88304c6a77c6ddc1cc1334ea0660cd45de8864839e5f91448759a3bb734e3e5"
-      }
-    },
-    "contract.testing": {
       "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "5092b2a74b45a12154191774367d6f16092af720d03c292272c11fac469a6114"
+        "docs/architecture/runtime.md": "7eed1f358c3bcbae66a5c64a08d4391c5a1a8acdc4be46e0f6b5884b13c10037"
+      }
+    },
+    "contract.configuration": {
+      "version": "1.7.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/configuration.md": "d14479863bd3e6d08c6c3ce4ee7e21d0786d5a653ff26cd5a343c769bbc492f4"
+      }
+    },
+    "contract.testing": {
+      "version": "1.8.1",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/testing.md": "3a862053f9c19e6bdd9f7968098047bdaffd4a71c7fc40c52134ef3ec4f368ed"
       }
     },
     "contract.git": {
@@ -353,38 +353,38 @@
       }
     },
     "contract.usage": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/usage/README.md": "ca0d501f5305fc63065763f6409b1e865b1d7f93845d75ac7084db3897b2192c"
+        "docs/usage/README.md": "997a6a08be0ed22ef9074d484de9808816072ba129ae6c1137212689ffef5b9d"
       }
     },
     "contract.remaining-work": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/remaining-work.md": "e458b54f25946181349d0cafdefdf55ffebd783ca7a0cce57f8a58f7c481a6d7"
+        "docs/development/remaining-work.md": "008a19675dab15d642c85565eb0fac25432b609b0875675c6578a54e226705f5"
       }
     },
     "contract.http-brief": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/http-brief.md": "c464a5c7a299f01b1aa954ccad977f8379fa937c12808572946a5884f967dd7d"
+        "docs/development/http-brief.md": "2344e6ceacd4ee9ad6008b3d08f08fed08ac8792fdb8a8b91b656fba97ca41e0"
       }
     },
     "contract.seven-stage-runtime": {
-      "version": "1.3.0",
+      "version": "1.4.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/seven-stage-runtime.md": "f0defa7558d3f97bbaa1e7677d88df8c08416135b76754a7c4fc37318f0e87fa"
+        "docs/specs/seven-stage-runtime.md": "4714b91c868c17ee11b4761f2904c05d58a77aaa448d506a5b329c8b11cab543"
       }
     },
     "contract.seven-stage-research": {
-      "version": "1.3.0",
+      "version": "1.4.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/seven-stage-research.md": "369542b3ad848a92f9fd684d550b2b2066fd444edb40a6dbf19f76b4590c9c28"
+        "docs/development/seven-stage-research.md": "8aac8274b589ba20ba6d64f2122985b9b0e5b08f6f60ddb30398f31456f8215e"
       }
     },
     "contract.brief-originals": {
@@ -416,10 +416,17 @@
       }
     },
     "contract.simple-strategy": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "files": {
-        "docs/development/simple-strategy.md": "46f678091a4f259b03de221b33a147615399ac17c7de675c0c89f7c4b6cf51f7"
+        "docs/development/simple-strategy.md": "aea8fd6a89e126141286e32227715cd9092edd6247c911f52df4aa160210a78e"
+      }
+    },
+    "contract.simple-copy": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/simple-copy.md": "b5afd425a7af4751f7981d7cb9ace4d75dd6eb129623fb9a6431ff8768ac9c85"
       }
     }
   },
@@ -430,7 +437,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "a4488977bd08b68976c296a7fa652495309b051ea3a74a1f6695880072b86f1b",
+    "docs/specs/README.md": "270cf102e38e9309c16344e28270e31c2acea02b4f6936476262b1462cc5dd65",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

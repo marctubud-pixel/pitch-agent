@@ -1,0 +1,19 @@
+# SIMPLE copy 固定提交 Spec 独立审查
+
+审查：`3e230d5117ab6a485daa4364bbe06ab1c0c627d9...c22184bacc8cadae41056fa71fa6b7a310fb582d`；两端commit均存在，HEAD为后者，范围只有`c22184ba`。2026-11-12，只读源码、规范及保留原证据，不审视觉隔离WT或新性能候选。
+
+## a. 缺失／部分实现
+
+**[P2] 固定任务组遇到未知结果仍继续派发。** 规范[themes.md:64](../../../docs/pages/themes.md#L64)要求“原结果未知时停止执行并保留原记录”，[seven-stage-runtime.md](../../../docs/specs/seven-stage-runtime.md)末段同样要求文案、owner、creative未知时停止。新增[服务:24](../../../tools/workbench/simple-copy-service.mjs#L24)逐项`await executor.execute`后未检查未知状态；原执行器在派发异常后保存`awaiting_reconciliation`并正常返回（executor.mjs:940–942），循环因此继续其余独立首读节点。新增服务:20只核所选任务queued；:21的未知守卫只覆盖verify/review；新增[actual-claim守卫:6](../../../tools/workbench/simple-copy-http.mjs#L6)也不阻止同edge未知任务后的claim。页面禁用只能阻止下一次点击，挡不住当前四项组及原body重放。
+
+实际反例：从保留R1数据库只读取得revision82及原semantic配置，在内存用原`applyCommand`执行首节点`start-job → mark-creative-dispatched → mark-interrupted`，合法得到`awaiting_reconciliation`；同原copyHttpRequestId继续第二节点，仍得到`running`（revision86）。基线第二节点也为running。见[可重跑脚本](simple-copy-final-spec-readonly.mjs)及[原结果](simple-copy-final-spec-readonly-result.json)。没有写原DB、派发模型或启动服务。修复应限定同edge当前任务，避免误挡已合法核回SIMPLE的原未知attempt。
+
+## b. 越范围行为
+
+未发现其他可证P1/P2。默认research及新建服务器授权隔离、显式人工adopt、视觉未开放均保留；未知恢复、改稿再评、视觉/PPT及两整链明确属后续，不列缺陷。
+
+## c. 看似实现但错误
+
+除上述停止门槛，无其他可证P1/P2。已追读原任务卡／完整policy／问题与研究来源、固定集合及body重放、原commit及actual claim、17唯一节点与phase/input/packet绑定、合法历史读取、recovered SIMPLE原作者及attempt保持。中文状态与AI／人类决定分离按源码及既有实际UI证据核对，未自行重跑UI。
+
+本次读到的合成报告不证明客户批准或创意质量。根类型、专项及完整回归由父任务执行，非本审查执行；不提前签CI、PR或整链验收。

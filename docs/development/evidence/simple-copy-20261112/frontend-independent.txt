@@ -1,0 +1,43 @@
+# SIMPLE copy 前端候选独立审查
+
+2026-11-12。审查原候选 `8beb941aea67cb8e37cb4a72b3dee71e205885296590a92359eee5dd65d5b4fc`，冻结 base `6766324502ce6c82a3b060f1ecb24acd61aaf22a`。根策略 PR8 验收与此包分离。未采用补丁、未改根或候选生产源码、未修改 Git／原 DB、未开服务、未真实或付费调用。审查依据为根／模块 AGENTS、现行七阶段、copy／strategy 岗位与 themes／strategy 页面合同。原候选一项 P2 已由原owner在自身WT定点修复，修后独立反例复验通过。最终候选为 r2 `50287895e39cc23cb12953128ce60fdb35ca7139776ab965d05a51a6e2ee4f47`（20个frontend路径）；此结论限所列代码／廉价运行核验，不是 actual UI 或整链批准。
+
+## Confirmed
+
+- patch SHA、恰17个 frontend-only 路径、manifest 的17个 after SHA及通过只读 `git show <base>:<path>` 核对的17个 before SHA（新增文件在base不存在）均实际一致。patch 不含 backend 或 SimpleStrategyPanel／simpleStrategy domain/projection，不能以候选旧文件全量覆盖根后续 blockedOutput/failure 修复。backend runtime test 的旧8b188身份留在WT，本frontend包不导入它。
+- 可选 copyWorkflow 接五种受限动作，GET 路径无 POST／自动执行；bridge 持续要求 proposal-seven-v1、严格 SIMPLE 来源、原 owner edge／commit 与 copy-message-v2。未全开任意 stage 或 generic command。step 页面固定本次读到的原 edge 和前1–4个原 queued 零attempt jobs，服务端执行仍有原 jobset 门禁。
+- BriefWriteJournal 保留原 body；receipt 检查原 command、operation、jobIds、保存 row 与 processedCommands。失败不另造请求，成功历史清 pending 并报 conflict。continue／confirm 恢复路由 strategy；step／verify／review 路由 themes。
+- confirm 单独 decide/strategy 权限，页面只在 strategy humanGate 未确认时给出显式操作，需要已核同版 artifact/hash 与非空理由；continue 不替人签采用。guest 的五种动作均有保护层。
+- 三卡内容直接来自经正文 SHA 检查的 directions；主副文、推导、解释、依据和 gaps 不复制青屿默认字段，不伪造推荐、获选或批准。全文核验与原四岗首读／评分、异议、director 裁定分区保留，不折成单一分数。
+- 本次独立运行 `tsc --noEmit --incremental false -p <WT>/apps/workbench-preview/tsconfig.json`，退出0。没有启动新大型 fixture。
+
+## Findings
+
+### P2：creative bridge 未核原 packet 与执行输入，错版仍被接纳
+
+位置：原候选 `apps/workbench-preview/src/services/http/copyWorkflowProjection.ts:25`（以及依赖它的 mapProject 与 copyState 报告检查）。当前只检查 packet protocol/artifact/contentHash、nodes.length=17 和匹配节点 key/jobId/binding，未核 panel.packetHash、job.task.creativeInput 的 role/phase/panelPacketHash 与原 node 完整输入、panel task/policy/feedback/current 绑定。
+
+实际反例读取保留合成 SQLite `reader-owner-xbpQCV/db` 的 rev155，使用 `mode=ro`，解码后只在独立内存副本修改。原 baseline bridgeCopyJob=true；分别改 `creativeInput.role`、`creativeInput.panelPacketHash`、`panel.packetHash` 或 `packet.taskCard.brief`，被改 job 及全部 copy/owner jobs 的桥接仍均 true。重复17节点的辅助反例仅该 job 为 true，其他 job 整体失败，不夸成全链通过。此证据限 DTO／项目准入桥：没有实际派发、没有证明可绕过后端执行门禁，也没有将无 copyHttpRequests 的保留原native样本冒充新HTTP完整case。
+
+影响：响应或历史原件出现错绑定时，前端仍把不同 role／旧 task／坏 packet 的评审 job 认作当前受支持记录，背离同版原评审身份合同。后端 `creativeTargetWithin/creativeJobTargetWithin` 会核 packet SHA、当前 task/policy/feedback 和精确 creativeNodeInput；前端应在窄桥接中同样核身份，并完整核17唯一键，保留合法历史只读语义。
+
+修前可重跑证据：`node design/simple-copy-frontend-independent-evidence/probe-before.mjs`（从本scratch工作目录运行），使用冻结的未改候选 bundle 和 gzip native snapshot；各文件 SHA 在 evidence-hashes.json。仅写其 before-result.json；不接 DB／网络或模型。修后使用同 snapshot 的内存副本复验已完成，见下节。
+
+## 原 owner 验证的准确范围
+
+原 owner 报告称：最终 typed Brief + 实际 brief-server/SQLite 两案 2/2，156.95s，覆盖原双owner、三方向、17原评、themes 路由、正文SHA篡改、lost/corrupt receipt 原body重放；邻接权限／投影／服务测试20/20。此处核对其测试源码身份，不冒充本次重跑或已读取不存在的原始落盘log。对应 frontend test SHA `b7e6bc1b02741fc01c44be072921101f25047d6f5f0ef4ef3e28c2d5f133f070`，fixture SHA `3931dc50b8b0c68e11b609ad2104035e55ef680e75ddca995679fe2b85b3c11b`；保护层test SHA `1adba779e26438971cc90f40878481e659695c2e4a7ca523025d1be6b8b9988c`。owner工具回执的可用范围与后续根集成检查分开记录。
+
+## 未验
+
+没有 actual UI／浏览器 ui-review，不签页面视觉或交互批准；由根后续独立UI核 strategy/themes、权限、pending恢复和桌面／窄屏。没有重跑134／156秒大案，没有真实文案语义、未知 owner/copy/review 物理原件恢复、改稿复评、人类文案选案、视觉继续或后续整链结论。旧8beb与本报告修前证据保留。修后仍须根最终采用字节的实际集成与独立UI。
+
+## r2 独立复验与最终身份
+
+- r2 patch 实际 SHA 为 `50287895e39cc23cb12953128ce60fdb35ca7139776ab965d05a51a6e2ee4f47`；manifest SHA 为 `b02590a5d232fd16095cd70477ec2eef89beaeede0b85e6c21b983ab93d6ed24`。已独立读回20个 after 全一致，原17 before 与旧manifest一致；新3文件 before=null。相对原包只修改 copyWorkflowProjection.ts，新增 copyCreativeProjection.ts／copyCreativeProjection.test.ts／sha256.ts，其余16路径字节相同。未修改backend。
+- helper 核原 request-creative-panel 中的完整 packet/nodes、实际 packet/content SHA、冻结原task/policy/sources/constraints、17唯一角色阶段key和jobId、依赖以及每phase完整 creativeInput。copyState 同核原report metadata→panel/node/job/raw绑定。最终helper SHA `78ba65043d5951ec178dd98ee30412c10393db7ebeed02a3d2310c13530b7a35`。
+- 独立 `probe-after.mjs`：原 baseline 仍 true；四个主要错绑定与重复17节点均 false。额外顶层 `job.role` 字段反例仍 true：原job未定义该字段，实际执行角色来自已核 creativeInput，故不将无效辅助字段当未修缺陷。
+- 独立实际调用 native `applyCommand` **仅内存** `revise-task-card`：activeByStage.copy确实保留，17原creative job仍全部桥接可读。冻结历史身份与当前写能力分开，未因新brief把整个项目误拒为不支持。
+- 独立新5案实际通过（session `82773`，chunk `fbb4aa`，exit0，971ms），最终 tsc --noEmit --incremental false 退出0。同步SHA另与Node crypto对照29个输入，包括空、中文emoji、55/56/63/64/65字节附近与随机文本，全部相同。owner最终落盘target log显示新5+旧20共25/25、1.07s，typecheck stdout也已读回；不把owner执行算作本次独立重跑25案。
+- owner新增原tool receipt摘录 `simple-copy-frontend-original-tool-receipts.md` 如实标明其为事后摘录（两案156.95s/session96812/chunk edb50e、20案353ms/session71042/chunk aedc9d），不是原raw日志。大案未重开。最终typedBrief HTTP两案源码／fixture仍为上文SHA，P2修后完整HTTP大案及actualUI留根采用后核验。
+
+本轮结论：原P2已修，未留下本次范围内可证实的P1/P2阻断。没有因此签业务内容质量、真实用户批准、物理原件全面重验或UI。证据和脚本的最终SHA见独立 evidence-hashes.json。

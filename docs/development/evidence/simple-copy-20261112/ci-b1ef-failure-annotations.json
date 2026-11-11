@@ -1,0 +1,38 @@
+[
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/marctubud-pixel/pitch-agent/blob/b1ef4726503e3a292bd4422a34ecdbe91fd2b628/.github",
+    "start_line": 179,
+    "start_column": null,
+    "end_line": 179,
+    "end_column": null,
+    "annotation_level": "failure",
+    "title": "",
+    "message": "Process completed with exit code 1.",
+    "raw_details": ""
+  },
+  {
+    "path": "apps/workbench-preview/src/services/http/simpleStrategyHttp.test.ts",
+    "blob_href": "https://github.com/marctubud-pixel/pitch-agent/blob/b1ef4726503e3a292bd4422a34ecdbe91fd2b628/apps/workbench-preview/src/services/http/simpleStrategyHttp.test.ts",
+    "start_line": 36,
+    "start_column": null,
+    "end_line": 36,
+    "end_column": null,
+    "annotation_level": "failure",
+    "title": "src/services/http/simpleStrategyHttp.test.ts > projects actual unique SIMPLE three-block SHA content and independent full-text verification without copy",
+    "message": "Error: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ src/services/http/simpleStrategyHttp.test.ts:36:1\n\n",
+    "raw_details": ""
+  },
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/marctubud-pixel/pitch-agent/blob/b1ef4726503e3a292bd4422a34ecdbe91fd2b628/.github",
+    "start_line": 1,
+    "start_column": null,
+    "end_line": 1,
+    "end_column": null,
+    "annotation_level": "notice",
+    "title": "",
+    "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\"",
+    "raw_details": ""
+  }
+]

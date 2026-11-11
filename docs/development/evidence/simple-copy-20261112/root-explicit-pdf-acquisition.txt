@@ -1,0 +1,11 @@
+(node:54079) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual parsed current PDF and registered source enter the sealed r7 producer; mismatched roots and corrupt originals refuse dispatch (1258.603208ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1406.642459

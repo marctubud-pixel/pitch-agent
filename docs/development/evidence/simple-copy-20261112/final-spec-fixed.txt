@@ -1,0 +1,20 @@
+# SIMPLE copy P2 修后独立复验
+
+2026-11-12。复验根未提交窄修；原`c22184ba`报告与P2原结果保持不改。范围仅同edge未知停止、原actual claim及recovered SIMPLE兼容，不签整链、UI、CI或PR。
+
+**该P2在当前窄修上关闭。** 共享`copyHttpJobs`限定原edge；新step入账前拒同edge running/unknown，原任务组每次派发前复读并停止，actual原子claim再拒`COPY_OUTCOME_UNKNOWN`。无edge返回空集合，避免研究任务误投文案；其他edge不被全项目阻断。
+
+本审查实际重新运行原[只读脚本](simple-copy-final-spec-readonly.mjs)，取得[修后结果](simple-copy-final-spec-fixed-result.json)：原DB仍是revision82同一blob SHA `b9c6c92bcc5f2a1dfdacccbcb7aa6d5cf30cf8dee92ebbad40ce90e770c30e78`。基线第二节点仍可claim为running；首节点通过原生start、mark-dispatched、interrupted合法进入unknown后，第二节点被`COPY_OUTCOME_UNKNOWN`拒绝，revision停85。全部命令只在内存，无原DB写入。
+
+另从保留recovered案例`reader-owner-xbpQCV/db`只读取得revision61，运行[兼容脚本](simple-copy-final-spec-recovered-readonly.mjs)，见[结果](simple-copy-final-spec-recovered-fixed-result.json)。策略job为succeeded、原attempt仍awaiting_reconciliation；不属于原edge scoped jobs。内存登记固定copy账本后，真实`applyCommand(start-job)`成功为running；策略原job逐字不变。故修复未因上游已核回attempt未知而误挡copy。
+
+实际独立执行`node --test tools/workbench/simple-copy-stop.test.mjs`：5/5通过，涵盖首unknown后余3项保持queued、精确重放不派发、新command拒绝且不入账、同edge running拒绝、其他edge隔离及无edge不混研究。它是内存调度验证，不冒称模型IO实跑。
+
+复验源码SHA256：
+
+- simple-copy-http.mjs：`fb33990d426bc4e6657114445be3ead1093ff6a2ea8eb3b00e889d020f3e09bb`
+- simple-copy-service.mjs：`80837a388c9fe47944bb00fbd1960e3b8cfbeda9359589f600486d5fd3a51db5`
+- project.mjs：`dddd7bdcce46d92ce875db90b716e0e8d3ccb37f9a277f3ed0c4c2e564543fd1`
+- brief-server.mjs：`81c6bbc70276cf008906788c7ce6c97b4f8f97a76bf38b48e339f72fc763a201`
+
+未修改生产源码、原件、数据库、服务或Git；仅保存独立报告及小脚本／结果。

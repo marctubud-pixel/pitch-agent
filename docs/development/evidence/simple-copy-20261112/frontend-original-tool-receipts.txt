@@ -1,0 +1,31 @@
+# 原前端候选测试tool receipt摘录（非原raw日志）
+
+原8beb候选执行时没有把stdout落为独立日志文件。下面仅抄录当前会话真实exec/write_stdin工具回执，供关联审查；这份事后摘录不能冒称当时的原raw日志。没有为补纸面日志重开大案。
+
+## actual HTTP / SQLite typed Brief专项
+
+原命令：`npm --prefix apps/workbench-preview test -- src/services/http/copyWorkflowHttp.test.ts`，独立WT cwd。
+exec session_id `96812`；最终write_stdin工具回执 chunk_id `edb50e`、exit_code `0`：
+
+```text
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  04:41:23
+   Duration  156.95s (tests 100%)
+```
+
+## 原相关20案
+
+原命令：`npm --prefix apps/workbench-preview test -- src/collaboration/protectServices.test.ts src/services/http/researchReaderProjection.test.ts src/services/http/HttpWorkbenchService.test.ts`，独立WT cwd。
+exec session_id `71042`；最终write_stdin工具回执 chunk_id `aedc9d`、exit_code `0`：
+
+```text
+ RUN  v5.0.5 /Users/marc/Documents/ChatGPT/调研agent/.scratch/seven-stage-static-goal-20261111/worktrees/simple-copy-ui/apps/workbench-preview
+
+ Test Files  3 passed (3)
+      Tests  20 passed (20)
+   Start at  04:40:10
+   Duration  353ms (tests 41%, import 30%, transform 27%, worker 1%)
+```
+
+上述结果属于修复P2之前候选；不证明P2不存在，也不替代修复后的检查。P2独立before证据保持在simple-copy-frontend-independent-evidence/。修后廉价target与typecheck实际stdout另落simple-copy-frontend-target-r2.log、simple-copy-frontend-typecheck-r2.log，后续根采用应对最终字节重新做实际集成与UI。

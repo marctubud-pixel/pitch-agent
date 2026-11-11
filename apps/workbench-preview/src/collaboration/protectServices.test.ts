@@ -9,6 +9,8 @@ import { MemoryBrandResourceTestRepository } from '../services/proposal/BrandRes
 import { MockProposalService } from '../services/proposal/MockProposalService';
 import { actorKeyValueStore, actorScopedAssistant } from './assistant';
 import { LocalTeamStore } from './LocalTeamStore';
+import {pendingWriteAction} from './types';
+import type {CopyWorkflowService} from '../domain/copyWorkflow';
 import { protectServices } from './protectServices';
 import { TestStorage } from './testSupport';
 
@@ -226,4 +228,12 @@ it('requires workflow permission for optional SIMPLE continuation, verification 
  try{team.selectActor('human-guest');await expect(api.continue('p',{artifactId:'released-research',policyVersion:1},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(api.verify('p',{artifactId:'strategy'},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(api.reconcile('p',{jobId:'fixed-original'},meta)).rejects.toMatchObject({kind:'forbidden'});expect(calls).toEqual([]);
  team.selectActor('human-owner');await expect(api.continue('p',{artifactId:'released-research',policyVersion:1},meta)).rejects.toThrow('SIMPLE boundary');expect(calls[0][2]).toMatchObject({actor:{id:'human-owner'}});
  }finally{team.destroy();}
+});
+
+it('guards all optional copy workflow writes and preserves the separate human strategy decision',async()=>{
+ const {raw,team}=setup();let calls=0;const write=async()=>{calls++;throw Error('called-authorized-native-seam');};
+ const copyWorkflow:CopyWorkflowService={get:async()=>{throw Error('unused');},continue:write,confirm:write,step:write,verify:write,review:write};
+ const api=protectServices({...raw,workbench:Object.assign(raw.workbench,{copyWorkflow})},team).workbench.copyWorkflow;if(!api)throw Error('Missing optional service');
+ team.selectActor('human-guest');for(const operation of [()=>api.continue('p',{artifactId:'a'},meta),()=>api.confirm('p',{artifactId:'a',contentHash:'h',reason:'explicit'},meta),()=>api.step('p',{edgeId:'edge',jobIds:['original']},meta),()=>api.verify('p',{artifactId:'a'},meta),()=>api.review('p',{artifactId:'a'},meta)])await expect(operation()).rejects.toMatchObject({kind:'forbidden'});
+ expect(calls).toBe(0);expect(pendingWriteAction('confirm_strategy')).toEqual({kind:'decide',stage:'strategy'});for(const kind of ['continue_copy','step_copy','verify_copy','review_copy'] satisfies Array<'continue_copy'|'step_copy'|'verify_copy'|'review_copy'>)expect(pendingWriteAction(kind)).toEqual({kind:'workflow'});team.destroy();
 });
