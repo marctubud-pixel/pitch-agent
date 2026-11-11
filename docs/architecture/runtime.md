@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.2.1。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.2.2。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -53,3 +53,7 @@ flowchart LR
 ## 新七阶段协议
 
 `seven-stage-workflow.mjs`定义proposal-seven-v1身份与只读状态；project保留旧STAGES并对新协议另设执行守卫。`research-method.mjs`绑定实际r7方法字节，executor和原生回执核同一请求。`research-service.mjs`只处理指定研究任务，无全库恢复或续接；brief-server增加受限研究路由。当前HTTP研究读取使用researchProjection和R7ResearchView，默认执行关闭。reader_loop未满足时拒正向交接和正式放行，详见[运行合同](../specs/seven-stage-runtime.md)。
+
+## PDF原件bridge
+
+brief-server复用brief-intake-service→旧intake-runtime/intake-document-store保存原字节与intakeOperations，沿用同一project store；只新增受限documents路由，无schedule/recover。上传附带PDF解析queued零attempt job，前端仅按真实bridge登记关系窄投影；卡原始身份、客户端选择ID、服务器文档ID与字节SHA分别核。HTTP/Mock资料位置说明分开，见[原件合同](../development/brief-originals.md)。

@@ -1,6 +1,6 @@
 # 新建提案 · 页面开发规格
 
-规范版本：1.0.2。页面ID：`new`。状态：已确认要求汇编；本次整理待核对。负责人见[brief-owner](../agents/brief-owner.md)。
+规范版本：1.0.3。页面ID：`new`。状态：已确认要求汇编；本次整理待核对。负责人见[brief-owner](../agents/brief-owner.md)。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 
@@ -56,3 +56,7 @@ final-preview.png。既有界面留档，不证明所有现行要求已实现或
 ## 当前HTTP接入边界
 
 HTTP新建将提案类型、汇报时间、工作方式和人工节点随同简报一次保存。未接通品牌原件存储时在创建前拒绝这类上传，保留输入与选择。完整合同见[本地简报HTTP](../development/http-brief.md)。本轮简报范围实际UI见[核验](../development/http-brief-verification-20261111.md)，旧基线截图保留原身份。
+
+## 当前PDF原件保存
+
+新七阶段HTTP已接[PDF原件子路径](../development/brief-originals.md)。新建按实际能力预检后创建及保存原件，默认仅PDF/12MiB且前端最多10份；不支持文件在创建前拒绝，保存不代表解析/模型读取/采用。未知结果保原body核对，成功回Brief，不重建项目。默认Mock旧格式与版式保留。

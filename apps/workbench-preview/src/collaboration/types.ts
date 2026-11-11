@@ -55,6 +55,7 @@ export interface TeamSnapshot {
 }
 
 export function pendingWriteAction(kind: PendingWriteKind): TeamAction {
+  if (kind === 'upload_original') return {kind: 'manage'};
   if (kind === 'create_project') return {kind: 'manage'};
   if (kind === 'save_brief') return {kind: 'edit_brief'};
   if (kind === 'add_source') return {kind: 'edit_research'};

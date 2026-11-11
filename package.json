@@ -20,7 +20,7 @@
     "test:dependency": "node scripts/check-pptx-dependency.mjs",
     "dev:brief": "node tools/workbench/brief-server.mjs --db .data/brief-workbench.sqlite --port 4182 --origin http://127.0.0.1:4420",
     "dev:http": "node scripts/dev-http.mjs",
-    "test:brief-http": "node --test tools/workbench/brief-server.test.mjs",
+    "test:brief-http": "node --test tools/workbench/brief-server.test.mjs tools/workbench/brief-intake-service.test.mjs tools/workbench/brief-original-http.test.mjs",
     "test:research-contract": "node --test tools/workbench/seven-stage-workflow.test.mjs tools/workbench/research-method.test.mjs tools/workbench/research-service.test.mjs"
   }
 }

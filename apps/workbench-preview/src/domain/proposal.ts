@@ -597,9 +597,12 @@ export interface ContributionInput {
 }
 
 /** Prototype service for the creative stages. Replace with a backend adapter when one exists. */
+export type BrandResourceUploadPolicy = {available: true; accept: string; maxBytes: number; maxCount: number; hint: string} | {available: false; reason: string};
+
 export interface ProposalService {
   readonly backing: Backing;
-  ensureBrandResourceStorage(): Promise<void>;
+  getBrandResourceUploadPolicy?(): Promise<BrandResourceUploadPolicy>;
+  ensureBrandResourceStorage(resources?: BrandResourceUpload[]): Promise<void>;
   stageBrandResources(input: { workbenchId: ID; resources: BrandResourceUpload[] }): Promise<void>;
   getBrandResourceFile(proposalId: ID, resourceId: string): Promise<Blob>;
   listProposals(): Promise<ProposalSummary[]>;

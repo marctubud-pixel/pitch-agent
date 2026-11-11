@@ -1,0 +1,26 @@
+{
+  "baseline": "fd3f5a1791c9d3699d34d16d68582daf980fd57a",
+  "scope": "PDF原件保存子路径；不含reader运行/采集/后续整案",
+  "independentUi": {
+    "localReport": ".scratch/seven-stage-static-goal-20261111/design/intake-ui-review.md",
+    "sha256": "306ac448ea1154fb4f0ad565998f734d51e58fffc4eecdd658271bcd713c8f16",
+    "result": "PASS scoped",
+    "postCount": 0,
+    "actualViewports": [
+      "1280 light",
+      "910 dark"
+    ],
+    "limits": "只读；根的实际上传/恢复另见UI-ORIGINAL-RECEIPT.json；未签业务或完整目标"
+  },
+  "candidateReader": "纯协议R4位于本地隔离候选，未在本PR采用或解除reader_loop守卫",
+  "specReview": {
+    "localReport": ".scratch/seven-stage-static-goal-20261111/design/first-spec-review.md",
+    "sha256": "b6887f1d6592b01c420f21c27a3b718772a94892cf05e4e1115cf1e82d3b199c",
+    "result": "PASS scoped to PDF original slice; reader protocol separately verified but not integrated"
+  },
+  "standardsReview": {
+    "localReport": ".scratch/seven-stage-static-goal-20261111/design/first-standards-review.md",
+    "sha256": "79f8f6588edf737ce26eee89c33a810d8f620594b0d82849ed035bd33d1b2207",
+    "result": "PASS scoped to PDF original slice; reader protocol separately verified but not integrated"
+  }
+}

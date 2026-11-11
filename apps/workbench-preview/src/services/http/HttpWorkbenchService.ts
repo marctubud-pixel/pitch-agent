@@ -1,3 +1,7 @@
+import type {BrandResourceUploadPolicy} from '../../domain/proposal';
+import {BRAND_RESOURCE_LIMITS, brandResourceSize} from '../../domain/brandResources';
+import {originalCapability, validateOriginalUploads, originalHash, originalBase64, registeredOriginals} from './intakeProjection';
+import {sameBrandResource, type BrandResourceUpload} from '../../domain/brandResources';
 import {projectResearchWorkspace, projectSources, projectHandoff, readResearchArtifact, mapArtifact, artifactSummary, mapHandoff, projectResearchJob} from './researchProjection';
 import {pendingWriteKind, pendingWriteLabels, BriefWriteJournal} from './briefRecovery';
 import type {BriefRecovery, PendingWriteKind} from '../../domain/service';
@@ -75,16 +79,18 @@ export class HttpWorkbenchService implements WorkbenchService {
             if (!card || (body.kind === 'revise-task-card' && card.brief !== body.brief) || (body.kind === 'confirm-task-card' && !p.confirmations.some(item => item.taskCardId === card.id))) throw new ServiceError('response_lost', '核对响应未绑定原任务卡，原提交仍保留。', {outcomeUnknown: true, retryable: true});
             if (p.activeTaskCardId !== card.id) throw new ServiceError('conflict', '原提交已记入历史，当前简报已有新稿。请查看保留内容与当前任务卡，再结束此记录。', {conflict: {expectedRevision: Number(body.expectedRevision), currentRevision: p.revision, changedBy: p.audit.at(-1)?.actorId ?? null, changeSummary: '原任务卡已被新稿替代。'}});
           }
-          if (!['create_project','save_brief','confirm_brief'].includes(pending.kind)) this.verifyResearchReceipt(p, object(object(result.value).receipt), body, pending.path);
+          if (pending.kind === 'upload_original') await this.verifyOriginalReceipt(p, object(result.value), body);
+          else if (!['create_project','save_brief','confirm_brief'].includes(pending.kind)) this.verifyResearchReceipt(p, object(object(result.value).receipt), body, pending.path);
           journal.clear(pending.commandId); this.emit(); return p.id;
         },
         acknowledge: () => { if (this.writing) return; const pending = journal.getPending(); if (pending) {recovery?.authorize(pending.kind); journal.clear(pending.commandId);} this.emit(); },
       };
     }
   }
+  private bodyLimit(path: string) {return /^\/projects\/[A-Za-z0-9-]+\/documents$/.test(path) ? 17 * 1024 * 1024 : 128 * 1024;}
   private async write(path: string, body: Record<string, unknown>, label: string) {
     if (this.writing) throw new ServiceError('validation', '当前简报提交仍在处理中。');
-    if (new TextEncoder().encode(JSON.stringify(body)).byteLength > 128 * 1024) throw new ServiceError('validation', '任务卡请求超过128 KiB，未保存。');
+    if (new TextEncoder().encode(JSON.stringify(body)).byteLength > this.bodyLimit(path)) throw new ServiceError('validation', '请求超过当前操作允许的大小，未发送。');
     const commandId = text(body.commandId);
     const kind = pendingWriteKind(path, body);
     this.journal?.begin({kind, path, body: JSON.stringify(body), commandId, label: pendingWriteLabels[kind] || label});
@@ -106,7 +112,7 @@ export class HttpWorkbenchService implements WorkbenchService {
   }
   private async request(method: 'GET' | 'POST', path: string, body?: unknown): Promise<{value: unknown; status: number}> {
     const encoded = body === undefined ? undefined : JSON.stringify(body);
-    if (encoded && new TextEncoder().encode(encoded).byteLength > 128 * 1024) throw new ServiceError('validation', '任务卡请求超过128 KiB，未保存。');
+    if (encoded && new TextEncoder().encode(encoded).byteLength > this.bodyLimit(path)) throw new ServiceError('validation', '请求超过当前操作允许的大小，未发送。');
     let response: Response;
     try { response = await (this.options.fetchImpl ?? fetch)(`${this.options.baseUrl.replace(/\/$/, '')}${path}`, {method, headers: {'Content-Type': 'application/json', 'Accept-Language': this.locale, ...await this.options.getHeaders?.()}, cache: 'no-store', body: encoded}); }
     catch { this.availability(false); throw new ServiceError('network', '无法连接简报服务，请检查本地服务。', {retryable: true, outcomeUnknown: method !== 'GET'}); }
@@ -159,6 +165,62 @@ export class HttpWorkbenchService implements WorkbenchService {
       }
       throw error;
     }
+  }
+  async originalUploadPolicy(): Promise<BrandResourceUploadPolicy> {
+    try {
+      await this.connect(); const capability = originalCapability(this.nativeCapability.originals);
+      const maxCount = Math.min(capability.maxDocuments, BRAND_RESOURCE_LIMITS.count);
+      return {available: true, accept: capability.accept, maxBytes: capability.maxBytes, maxCount, hint: `当前服务支持PDF原件，每份不超过${brandResourceSize(capability.maxBytes)}，最多${maxCount}份。保存不表示已解析、被模型读取或采用。`};
+    } catch (error) {return {available: false, reason: error instanceof Error ? error.message : '资料存储能力尚未核实。'};}
+  }
+  async ensureOriginalStorage(resources: BrandResourceUpload[] = []): Promise<void> {
+    await this.connect();
+    const capability = originalCapability(this.nativeCapability.originals);
+    await validateOriginalUploads(resources, capability);
+    for (const upload of resources) this.journal?.checkCapacity(JSON.stringify({base64: originalBase64(new Uint8Array(await upload.file.arrayBuffer())), metadata: upload.resource, overhead: ' '.repeat(2048)}));
+  }
+  private async verifyOriginalReceipt(p: Snapshot, value: Record<string, unknown>, body: Record<string, unknown>) {
+    const receipt = object(value.receipt), document = object(value.document);
+    const saved = registeredOriginals(p).find(d => d.id === receipt.documentId && d.operation.commandId === body.commandId);
+    if (!saved || !saved.resource || receipt.commandId !== body.commandId || typeof receipt.replayed !== 'boolean' || document.id !== saved.id || document.sha256 !== saved.sha256
+      || document.storage !== 'original_saved' || document.localExtractionStatus !== 'queued' || document.modelReading !== 'not_verified' || document.humanAdoption !== 'not_verified') throw new ServiceError('response_lost', '原件回执未绑定实际保存记录，请保留原提交核对。', {outcomeUnknown: true});
+    const request = object(saved.operation.request);
+    for (const key of ['commandId', 'expectedRevision', 'originalFilename', 'taskCardId', 'taskCardHash']) if (request[key] !== body[key]) throw new ServiceError('response_lost', '原件回执与原提交不同，请核对。', {outcomeUnknown: true});
+    if (JSON.stringify(request.metadata) !== JSON.stringify(body.metadata)) throw new ServiceError('response_lost', '原件元数据回执不一致。', {outcomeUnknown: true});
+    const bytes = Uint8Array.from(atob(text(body.base64)), c => c.charCodeAt(0));
+    if (bytes.byteLength !== saved.resource.size || await originalHash(bytes) !== saved.sha256) throw new ServiceError('response_lost', '原件字节与提交不一致。', {outcomeUnknown: true});
+  }
+  async saveBrandResources(id: string, resources: BrandResourceUpload[]): Promise<void> {
+    await this.ensureOriginalStorage(resources);
+    for (const upload of resources) {
+      const p = await this.snapshot(id), existing = registeredOriginals(p).find(d => d.resource?.id === upload.resource.id);
+      const bytes = new Uint8Array(await upload.file.arrayBuffer());
+      if (existing?.resource) {
+        if (!sameBrandResource(existing.resource, upload.resource) || existing.sha256 !== await originalHash(bytes)) throw new ServiceError('conflict', '这份资料标识已对应其他原件，请核对保存记录。');
+        continue;
+      }
+      const card = currentCard(p);
+      if (!card.original) throw new ServiceError('validation', '缺少原生任务卡身份，未发送原件。');
+      const commandId = `original-${id}-${upload.resource.id}`;
+      const body = {base64: originalBase64(bytes), commandId, expectedRevision: p.revision, originalFilename: upload.resource.fileName, taskCardId: card.id,
+        taskCardHash: await originalHash(new TextEncoder().encode(JSON.stringify(card.original))),
+        metadata: {clientResourceId: upload.resource.id, declaredMediaType: upload.resource.mediaType, lastModified: upload.resource.lastModified, note: upload.resource.note}};
+      const result = await this.write(`/projects/${encodeURIComponent(id)}/documents`, body, '保存资料原件');
+      try {const next = parseSnapshot(result.value); if (next.id !== id) throw new Error('Other project'); mapProject(next); await this.verifyOriginalReceipt(next, object(result.value), body);}
+      catch (error) {if (error instanceof ServiceError && error.outcomeUnknown) throw error; throw new ServiceError('response_lost', '保存响应不完整，请保留原命令核对。', {outcomeUnknown: true});}
+      this.completed(commandId);
+    }
+  }
+  async readBrandResource(id: string, clientId: string): Promise<Blob> {
+    const p = await this.snapshot(id), saved = registeredOriginals(p).find(d => d.resource?.id === clientId);
+    if (!saved?.resource) throw new ServiceError('not_found', '未找到对应资料原件。');
+    let response: Response;
+    try {response = await (this.options.fetchImpl ?? fetch)(`${this.options.baseUrl.replace(/\/$/, '')}/projects/${encodeURIComponent(id)}/documents/${encodeURIComponent(saved.id)}/original`, {cache: 'no-store', headers: {...await this.options.getHeaders?.()}});}
+    catch {throw new ServiceError('network', '无法读取资料原件。', {retryable: true});}
+    if (!response.ok) throw await mapHttpError(response);
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (response.headers.get('content-type')?.split(';')[0].trim() !== 'application/pdf' || bytes.byteLength !== saved.resource.size || await originalHash(bytes) !== saved.sha256 || String.fromCharCode(...bytes.subarray(0, 5)) !== '%PDF-') throw new ServiceError('validation', '下载原件与保存字节不一致，未采用。');
+    return new Blob([bytes], {type: 'application/pdf'});
   }
   getCapabilities = async () => {
     await this.connect();

@@ -21,6 +21,7 @@ function editAction(stage: StageId): TeamAction {
 type ProtectedServices = Pick<Services, 'workbench' | 'intake' | 'assistant' | 'proposals'>;
 export function protectServices(raw: ProtectedServices, store: LocalTeamStore): ProtectedServices {
   const service = raw.workbench;
+  const uploadPolicy = raw.proposals.getBrandResourceUploadPolicy?.bind(raw.proposals);
   const recovery = service.briefRecovery;
   const recoveryAction = (): TeamAction => {
     const pending = recovery?.getPending();
@@ -86,7 +87,8 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
     },
     proposals: {
       get backing() { return raw.proposals.backing; },
-      ensureBrandResourceStorage: () => store.run({ kind: 'manage' }, () => raw.proposals.ensureBrandResourceStorage()),
+      getBrandResourceUploadPolicy: uploadPolicy ? () => {store.require({kind: 'read'}); return uploadPolicy();} : undefined,
+      ensureBrandResourceStorage: resources => store.run({ kind: 'manage' }, () => raw.proposals.ensureBrandResourceStorage(resources)),
       stageBrandResources: (input) => store.run({ kind: 'manage' }, () => raw.proposals.stageBrandResources(input)),
       getBrandResourceFile: (id, resourceId) => { store.require({ kind: 'read' }); return raw.proposals.getBrandResourceFile(id, resourceId); },
       listProposals: () => raw.proposals.listProposals(), getProposal: (id) => raw.proposals.getProposal(id),
