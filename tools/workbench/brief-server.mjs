@@ -1,5 +1,6 @@
 import {WORKFLOW_VERSION, workflowView, requireResearchWorkflow} from './seven-stage-workflow.mjs';
 import {createResearchService} from './research-service.mjs';
+import {createBriefIntakeService} from './brief-intake-service.mjs';
 import http from 'node:http';
 import {randomUUID, createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
@@ -22,14 +23,14 @@ function string(body, key, required = true) {
   if (body[key] === undefined && !required) return;
   if (typeof body[key] !== 'string' || !body[key].trim() || body[key].length > 60000) invalid(`${key} must be a nonempty string of at most 60000 characters`);
 }
-async function jsonBody(req) {
+async function jsonBody(req, maxBytes = MAX_BODY_BYTES) {
   if (!/^application\/json(?:\s*;.*)?$/i.test(req.headers['content-type'] ?? '')) throw new HttpError(415, 'JSON_REQUIRED', 'Use application/json');
-  if (Number(req.headers['content-length']) > MAX_BODY_BYTES) throw new HttpError(413, 'BODY_TOO_LARGE', 'JSON body exceeds permitted size');
+  if (Number(req.headers['content-length']) > maxBytes) throw new HttpError(413, 'BODY_TOO_LARGE', 'JSON body exceeds permitted size');
   const chunks = [];
   let size = 0;
   for await (const chunk of req) {
     size += Buffer.byteLength(chunk);
-    if (size > MAX_BODY_BYTES) throw new HttpError(413, 'BODY_TOO_LARGE', 'JSON body exceeds permitted size');
+    if (size > maxBytes) throw new HttpError(413, 'BODY_TOO_LARGE', 'JSON body exceeds permitted size');
     chunks.push(Buffer.from(chunk));
   }
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); }
@@ -54,8 +55,11 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('port must be between 1 and 65535');
   const allowedOrigin = frontendOrigin(origin);
   const store = openStore(dbPath);
-  let research;
-  try {research = createResearchService({rootDir: resolve(`${dbPath}.research`), ...researchOptions, store});} catch(error) {store.close();throw error;}
+  let research, intake;
+  try {
+    research = createResearchService({rootDir: resolve(`${dbPath}.research`), ...researchOptions, store});
+    intake = createBriefIntakeService({store, rootDir: resolve(`${dbPath}.originals`)});
+  } catch(error) {store.close();throw error;}
   const result = project => {
     const native = projectView(project), rw = project.workflow ? researchWorkflowView(project, researchOptions) : null;
     return {project: layoutPublicProject(project), view: {...native, proposalWorkflow: workflowView(project,{researchWorkflow:rw}), researchWorkflow:rw}};
@@ -85,8 +89,9 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
         res.setHeader('Vary', 'Origin');
       }
       const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/(?:commands|sources|research-workflow|research-jobs|research-verification|research-readiness|research-handoffs|research-release)|\/artifacts\/([A-Za-z0-9:._%-]+)\/content)?$/.exec(url.pathname);
+      const documentMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/documents(?:\/([A-Za-z0-9-]+)\/original)?$/.exec(url.pathname);
       const resource = projectMatch?.[2];
-      const methods = url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
+      const methods = documentMatch ? documentMatch[2] ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
       if (!methods.length) throw new HttpError(404, 'NOT_FOUND', 'Route not found');
       const revision = url.searchParams.get('revision');
       const targetMethod = req.method === 'OPTIONS' ? req.headers['access-control-request-method'] : req.method;
@@ -99,7 +104,23 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
       }
       if (!methods.includes(req.method)) throw new HttpError(405, 'METHOD_NOT_ALLOWED', 'Method not allowed');
       if (url.pathname === '/api/v1/capabilities') {
-        response(res, 200, {apiVersion: 'v1', surface: research.capability().executionAllowed ? 'research-v1' : 'brief-v1', workflowVersion:WORKFLOW_VERSION, executionAvailable: research.capability().executionAllowed, research:research.capability(), commands: Object.keys(commandFields)}); return;
+        response(res, 200, {apiVersion: 'v1', surface: research.capability().executionAllowed ? 'research-v1' : 'brief-v1', workflowVersion:WORKFLOW_VERSION, executionAvailable: research.capability().executionAllowed, research:research.capability(), originals:intake.capability(), commands: Object.keys(commandFields)}); return;
+      }
+      if (documentMatch) {
+        const id = documentMatch[1];
+        if (req.method === 'GET' && !documentMatch[2]) {response(res,200,await intake.list(id));return;}
+        if (req.method === 'GET') {
+          const {document,bytes} = await intake.read(id,documentMatch[2]);
+          res.writeHead(200,{'Content-Type':document.mediaType,'Content-Length':bytes.length,'Content-Disposition':'attachment','ETag':`"${document.sha256}"`});
+          res.end(bytes);return;
+        }
+        const body=await jsonBody(req,4*Math.ceil(intake.capability().maxBytes/3)+16384);
+        fields(body,['base64','commandId','expectedRevision','originalFilename','taskCardId','taskCardHash','metadata']);
+        if(typeof body.base64!=='string'||body.base64.length>4*Math.ceil(intake.capability().maxBytes/3)||!/^[A-Za-z0-9+/]*={0,2}$/.test(body.base64))invalid('Bounded canonical base64 required');
+        const bytes=Buffer.from(body.base64,'base64');
+        if(bytes.toString('base64')!==body.base64)invalid('Canonical base64 required');
+        const {base64,...request}=body, receipt=await intake.upload(id,request,bytes);
+        response(res,200,{...result(store.read(id)),document:receipt.document,receipt:{documentId:receipt.documentId,commandId:body.commandId,replayed:receipt.receipt.replayed}});return;
       }
       if (url.pathname === '/api/v1/projects' && req.method === 'GET') {
         response(res, 200, {projects: store.list().map(({id}) => { const p = store.read(id); return {id, name: p.name, revision: p.revision}; })}); return;

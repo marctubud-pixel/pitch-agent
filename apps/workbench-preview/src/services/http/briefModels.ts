@@ -1,6 +1,7 @@
 import type {Brief, BriefAttachment, Project, ProjectOverview, Capabilities} from '../../domain/models';
 import {STAGES, STAGE_LABELS} from '../../domain/models';
 import {ServiceError} from '../../domain/service';
+import {bridgeStorageJob} from './intakeProjection';
 import {readBrief} from './briefEnvelope';
 import {object, type Snapshot, type BackendCard} from './dto';
 
@@ -56,7 +57,7 @@ export function mapAttachments(p: Snapshot): BriefAttachment[] {
   });
 }
 export function mapProject(p: Snapshot): Project {
-  if ((p.jobs.length || p.artifacts.length) && (p.workflowVersion !== 'proposal-seven-v1' || p.jobs.some(j => j.stage !== 'research') || p.artifacts.some(a => a.stage !== 'research'))) throw new ServiceError('unavailable', '此项目已有执行记录，本轮简报入口不映射旧生产链，请使用原运行记录。');
+  if ((p.jobs.length || p.artifacts.length) && (p.workflowVersion !== 'proposal-seven-v1' || p.jobs.some(j => j.stage !== 'research' && !bridgeStorageJob(p, j)) || p.artifacts.some(a => a.stage !== 'research'))) throw new ServiceError('unavailable', '此项目已有执行记录，本轮简报入口不映射旧生产链，请使用原运行记录。');
   const card = currentCard(p), b = mapBrief(p, card), m = readBrief(card.brief).metadata;
   const confirmed = p.confirmations.some(item => item.taskCardId === card.id);
   return {id: p.id, name: p.name, client: m.client, summary: m.summary, revision: p.revision,

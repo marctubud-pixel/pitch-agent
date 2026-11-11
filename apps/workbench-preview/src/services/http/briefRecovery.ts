@@ -4,9 +4,10 @@ import type {PendingBriefWrite, PendingWriteKind} from '../../domain/service';
 
 export function pendingWriteKind(path: string, body: Record<string, unknown>): PendingWriteKind {
   if (path === '/projects') return 'create_project';
-  const suffix = /^\/projects\/[A-Za-z0-9-]+\/(commands|sources|research-jobs|research-verification|research-readiness|research-handoffs|research-release)$/.exec(path)?.[1];
+  const suffix = /^\/projects\/[A-Za-z0-9-]+\/(commands|sources|research-jobs|research-verification|research-readiness|research-handoffs|research-release|documents)$/.exec(path)?.[1];
   switch (suffix) {
     case 'commands': if (body.kind === 'revise-task-card') return 'save_brief'; if (body.kind === 'confirm-task-card') return 'confirm_brief'; break;
+    case 'documents': return 'upload_original';
     case 'sources': return 'add_source';
     case 'research-jobs': return 'generate_research';
     case 'research-verification': return 'verify_research';
@@ -16,7 +17,7 @@ export function pendingWriteKind(path: string, body: Record<string, unknown>): P
   }
   throw new ServiceError('validation', '未决提交不是受限简报或研究操作。');
 }
-export const pendingWriteLabels: Record<PendingWriteKind, string> = {create_project: '新建提案', save_brief: '保存简报', confirm_brief: '确认简报', add_source: '登记来源', generate_research: '开始研究', verify_research: '核验研究事实', review_readiness: '核验研究有效性', record_handoff: '提交研究交接', release_research: '放行研究'};
+export const pendingWriteLabels: Record<PendingWriteKind, string> = {create_project: '新建提案', save_brief: '保存简报', confirm_brief: '确认简报', add_source: '登记来源', generate_research: '开始研究', verify_research: '核验研究事实', review_readiness: '核验研究有效性', record_handoff: '提交研究交接', release_research: '放行研究', upload_original: '保存资料原件'};
 
 export class BriefWriteJournal {
   private cached: PendingBriefWrite | null = null;
@@ -41,6 +42,12 @@ export class BriefWriteJournal {
       return pending;
     } catch { throw new ServiceError('unavailable', '未决简报记录无法读取，请保留当前浏览器数据并检查会话存储。'); }
   };
+  checkCapacity(body: string): void {
+    const storage = this.storage(), key = `${this.key()}:capacity-probe`, previous = storage.getItem(key);
+    try {storage.setItem(key, body);}
+    catch {throw new ServiceError('unavailable', '浏览器无法保留这份原件的刷新恢复记录，请选择较小文件；本次未发送。');}
+    finally {if (previous === null) storage.removeItem(key); else storage.setItem(key, previous);}
+  }
   begin(pending: PendingBriefWrite): void {
     const previous = this.getPending();
     if (previous && (previous.commandId !== pending.commandId || previous.path !== pending.path || previous.body !== pending.body)) throw new ServiceError('unavailable', '上次简报提交尚待核对，请先处理页面上方的未决提交。', {outcomeUnknown: true});

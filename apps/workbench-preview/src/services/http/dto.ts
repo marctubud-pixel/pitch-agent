@@ -13,12 +13,13 @@ export function integer(value: unknown): number {
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) throw new ServiceError('validation', '简报服务返回的修订号无效。');
   return value;
 }
-export interface BackendCard { id: string; brief: string; createdBy: string }
+export interface BackendCard { id: string; brief: string; createdBy: string; original?: Record<string, unknown> }
 export interface BackendStage { stage: string; status: string; activeArtifactId: string | null; blockedReasons: string[] }
 export interface Snapshot {
   id: string; name: string; revision: number; activeTaskCardId: string;
   workflowVersion: string | null; researchWorkflow: Record<string, unknown> | null;
   cards: BackendCard[];
+  intakeDocuments?: Record<string, unknown>[]; intakeOperations?: Record<string, unknown>[];
   confirmations: Array<{ taskCardId: string; actorId: string }>;
   policy: { mode: 'auto' | 'assisted'; humanGates: string[]; authorizedThrough: string; version: number | null };
   stages: BackendStage[];
@@ -38,7 +39,7 @@ export function parseSnapshot(value: unknown): Snapshot {
   return {
     workflowVersion: p.workflow ? text(object(p.workflow).version) : null, researchWorkflow: view.researchWorkflow ? object(view.researchWorkflow) : null,
     id: text(p.id), name: text(p.name), revision: integer(p.revision), activeTaskCardId: text(p.activeTaskCardId),
-    cards: records(p.taskCards).map((c) => ({ id: text(c.id), brief: text(c.brief), createdBy: text(c.createdBy) })),
+    cards: records(p.taskCards).map((c) => ({ id: text(c.id), brief: text(c.brief), createdBy: text(c.createdBy), original: c })),
     confirmations: records(p.confirmations).map((c) => ({ taskCardId: text(c.taskCardId), actorId: text(c.actorId) })),
     policy: { mode: policy.mode === 'auto' ? 'auto' : 'assisted', humanGates: strings(policy.humanGates), authorizedThrough: text(policy.authorizedThrough), version: policy.version === undefined ? null : integer(policy.version) },
     stages: records(view.stages).map((s) => ({ stage: text(s.stage), status: text(s.status), activeArtifactId: text(s.activeArtifactId) || null, blockedReasons: strings(s.blockedReasons) })),
@@ -47,6 +48,7 @@ export function parseSnapshot(value: unknown): Snapshot {
     textReports: { verification: records(p.verifications), readiness: records(p.readinessReports), handoff: records(p.handoffReports), correction: records(p.correctionReviews) },
     readinessResolutions: records(p.readinessResolutions),
     stageAssessments: Object.fromEntries(records(view.stages).filter((stage) => stage.researchAssessment !== undefined).map((stage) => [text(stage.stage), { body: JSON.stringify(stage.researchAssessment), currentId: stage.researchAssessment && object(stage.researchAssessment).current === true ? text(object(stage.researchAssessment).assessmentId) || null : null }])),
+    intakeDocuments: records(p.intakeDocuments), intakeOperations: records(p.intakeOperations),
     jobs: records(p.jobs), artifacts: records(p.artifacts),
     audit: records(p.audit).map((a) => ({ commandId: text(a.commandId), kind: text(a.kind), actorId: text(a.actorId), revision: integer(a.revision), at: text(a.at) })),
     processedCommands: object(p.processedCommands), complete: view.complete === true,

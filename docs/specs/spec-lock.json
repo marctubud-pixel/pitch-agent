@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.5.1",
-  "registrySha256": "680f2a23e3fa83bbed3b754be538fe65c1281e8a86745ec4f6fa5e07fea90615",
+  "baselineVersion": "1.6.0",
+  "registrySha256": "749ec2bc26362c2f678a665feac9c595ae674b24be2979c330a70b2bffdc193b",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -81,10 +81,10 @@
       }
     },
     "page.new": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "current",
       "files": {
-        "docs/pages/new.md": "76a8469cd2200745f316b6078df9ed2ffdbf1a4be6340376a6f92d3ba54f89d3"
+        "docs/pages/new.md": "1c02702c3a9878e298870a3e4d2ccd8701f894d337a4ee44f390535970e82f75"
       }
     },
     "page.overview": {
@@ -95,10 +95,10 @@
       }
     },
     "page.brief": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "current",
       "files": {
-        "docs/pages/brief.md": "a3871b2d8d6441a70c1e4120ba8dd1181dc161267f368d911b3653b6a55ff0a4"
+        "docs/pages/brief.md": "950ff5391b702b942d9437e8cdb98407a7281630eb994a94a1c1ee1da6c204fc"
       }
     },
     "page.research": {
@@ -151,10 +151,10 @@
       }
     },
     "page.library": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "current",
       "files": {
-        "docs/pages/library.md": "d038d5d3bc51e6eb20dab00f47c2ab744cc0e9164c9986bd565fe8c5d1664364"
+        "docs/pages/library.md": "0964820ec8b0ea78d29e1fdc60c064b5b7931b7b5de8efe010e5eeaaff4b9e08"
       }
     },
     "page.history": {
@@ -311,31 +311,31 @@
       }
     },
     "contract.development": {
-      "version": "1.3.1",
+      "version": "1.3.2",
       "lifecycle": "current",
       "files": {
-        "docs/development/README.md": "637681208c80b49fd4de63b7bf8969a7ac37a1f86b247780152cd30d34cf3793"
+        "docs/development/README.md": "1ba0cda0c61b7775c4384f4a1356e4d57b7423a713cd7054b5e4099c322b238a"
       }
     },
     "contract.runtime": {
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "files": {
-        "docs/architecture/runtime.md": "f2602cd08239715d9687f5683285ef2f058b62f0126279d5e7baf3e8faf75f48"
+        "docs/architecture/runtime.md": "097d51e94ea5806907ca32e35426db30565d7b7a3f0a4f451e1a662a4486f368"
       }
     },
     "contract.configuration": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/configuration.md": "e8e2dc01064ae7578d4dde452cddba9cd7cde74c8a0ca421526d818071e2c0d3"
+        "docs/development/configuration.md": "670af4053bb53b0696066e06f67a1984e4597041c04154184825889477231bf0"
       }
     },
     "contract.testing": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "f9b32afe7b13cc1f9cb1c4d78fdbec34d9034e3690805af4d086b55868d39a8a"
+        "docs/development/testing.md": "9bc926c26914d79d92aa86ab21f3348b2174da17429aa5f943d457016089327c"
       }
     },
     "contract.git": {
@@ -353,24 +353,24 @@
       }
     },
     "contract.usage": {
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "files": {
-        "docs/usage/README.md": "12c87885e2c3d0fd11628244cd51ab48557a31f550086d77695eea2d235671c3"
+        "docs/usage/README.md": "aeb4621f4588b53cdaee4ea346e4f55e2db6e27cf8daa5be6dba86c8aacb497f"
       }
     },
     "contract.remaining-work": {
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "files": {
-        "docs/development/remaining-work.md": "ec4f544ba743247c0719b2481a03549423ab13bf1e4b9644d3aa5311b4965fb8"
+        "docs/development/remaining-work.md": "349df529f0cb018c06349022d4edf2087b991b175c2314b2e0bf6967851fb4d5"
       }
     },
     "contract.http-brief": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/http-brief.md": "b0904f243bfaac55a255cd64c4b72dbeaaaa37c73683c6eb0c56a0425e15dfb6"
+        "docs/development/http-brief.md": "0d7f862a616d1631eeef70c1a08439dee51d28abaa5fc51e812987f64564205b"
       }
     },
     "contract.seven-stage-runtime": {
@@ -386,6 +386,13 @@
       "files": {
         "docs/development/seven-stage-research.md": "80662bff6b4b8495c1fbf0dbcbbd5394114adb2e1a28f2cffe90222cdbf6f95f"
       }
+    },
+    "contract.brief-originals": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/brief-originals.md": "b69a07d0dd24837624d3f2233fb74e124914666a9e7e75fdfc610e337beae8ed"
+      }
     }
   },
   "entryDocuments": {
@@ -395,7 +402,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "1c648304f660e0c9ade0982b7b80364baff2fc5cbcf971904ea4dcaca5fa1e33",
-    "docs/specs/README.md": "e59fdffd199f84b4e942d226524aafd02df19e81ff4a40f8ad8579c0b8621c42",
+    "docs/specs/README.md": "dbd7810fdf1ce19280b1c4887bd03b1ffdf6bc5fef792f5058f453d1d9d48824",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

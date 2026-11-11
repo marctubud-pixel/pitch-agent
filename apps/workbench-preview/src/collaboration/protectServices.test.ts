@@ -180,3 +180,19 @@ describe('identity-scoped assistant storage', () => {
     team.destroy();
   });
 });
+
+ it('forwards frozen original selections through manage guard and reads upload policy without writing', async () => {
+   const f = setup();
+   const calls: unknown[] = [];
+   const policy = {available: true, accept: 'application/pdf', maxBytes: 1024, maxCount: 1, hint: '仅PDF'} satisfies import('../domain/proposal').BrandResourceUploadPolicy;
+   const proposals = {...f.api.proposals, ensureBrandResourceStorage: async (resources?: import('../domain/brandResources').BrandResourceUpload[]) => {calls.push(resources);}, getBrandResourceUploadPolicy: async () => policy};
+   const api = protectServices({...f.raw, proposals}, f.team);
+   const resources: import('../domain/brandResources').BrandResourceUpload[] = [];
+   try {
+     expect(await api.proposals.getBrandResourceUploadPolicy?.()).toEqual(policy); expect(calls).toHaveLength(0);
+     await api.proposals.ensureBrandResourceStorage(resources); expect(calls).toEqual([resources]); expect(calls[0]).toBe(resources);
+     f.team.selectActor('human-guest');
+     expect(await api.proposals.getBrandResourceUploadPolicy?.()).toEqual(policy);
+     await expect(api.proposals.ensureBrandResourceStorage(resources)).rejects.toMatchObject({kind: 'forbidden'}); expect(calls).toHaveLength(1);
+   } finally {f.team.destroy();}
+ });

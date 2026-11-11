@@ -12,7 +12,7 @@ import type {CreateProjectInput} from '../../domain/models';
 import {createServices} from '../index';
 
 const loadNative = createRequire(import.meta.url);
-const module: unknown = loadNative(fileURLToPath(new URL('../../../../../tools/workbench/brief-server.mjs', import.meta.url)));
+const module: unknown = loadNative(process.env.PITCH_INTAKE_TEST_SERVER ?? fileURLToPath(new URL('../../../../../tools/workbench/brief-server.mjs', import.meta.url)));
 if (!module || typeof module !== 'object' || !('createBriefServer' in module) || typeof module.createBriefServer !== 'function') throw new Error('Actual brief server missing');
 const createBriefServer = module.createBriefServer;
 const cleanups: Array<() => Promise<void>> = [];
@@ -67,7 +67,7 @@ describe('current frontend against actual restricted HTTP handler and SQLite', (
     const proposals = new HttpProposalService(service), p = await proposals.getProposal(created.data.id);
     expect(p).toMatchObject({type: 'packaging', presentationLocalTime: '2026-12-01T10:30', mode: 'assisted', checkpoints: ['strategy', 'delivery'], cover: null, research: null, decisions: [], revision: 0});
     expect(p.stages.content_review.status).toBe('not_started');
-    await expect(proposals.ensureBrandResourceStorage()).rejects.toMatchObject({kind: 'unavailable'});
+    await expect(proposals.ensureBrandResourceStorage()).resolves.toBeUndefined();
     await expect(service.generateResearch(created.data.id,{commandId:'disabled-research',expectedRevision:created.revision})).rejects.toMatchObject({kind: 'not_eligible'});
   });
   it('keeps draft business version, hidden fields and provenance while native heads stay immutable', async () => {

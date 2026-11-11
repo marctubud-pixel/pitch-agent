@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.5.1",
+  "baselineVersion": "1.6.0",
   "date": "2026-11-11",
-  "status": "六线既有能力对账与接线导航纠正；旧成果按原范围继承，新协议差异定向适配",
+  "status": "当前HTTP与前端PDF原件子路径已接；研究读者/采集及完整七阶段继续目标模式",
   "workflow": [
     "brief",
     "research",
@@ -160,7 +160,7 @@
       "kind": "page",
       "title": "新建提案",
       "path": "docs/pages/new.md",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -188,7 +188,7 @@
       "kind": "page",
       "title": "简报与任务",
       "path": "docs/pages/brief.md",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -300,7 +300,7 @@
       "kind": "page",
       "title": "资料库",
       "path": "docs/pages/library.md",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -526,7 +526,7 @@
       "kind": "contract",
       "title": "开发启动与工程入口",
       "path": "docs/development/README.md",
-      "version": "1.3.1",
+      "version": "1.3.2",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -535,7 +535,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -544,7 +544,7 @@
       "kind": "contract",
       "title": "配置与服务边界",
       "path": "docs/development/configuration.md",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -553,7 +553,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -580,7 +580,7 @@
       "kind": "contract",
       "title": "工作台操作说明",
       "path": "docs/usage/README.md",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -589,7 +589,7 @@
       "kind": "contract",
       "title": "Pitch Agent后续调整顺序",
       "path": "docs/development/remaining-work.md",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
@@ -601,7 +601,7 @@
       "kind": "contract",
       "title": "本地简报HTTP合同与联调",
       "path": "docs/development/http-brief.md",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
@@ -633,6 +633,19 @@
         "contract.workflow",
         "contract.handoff",
         "method.research"
+      ]
+    },
+    {
+      "id": "contract.brief-originals",
+      "kind": "contract",
+      "title": "当前项目PDF原件保存与恢复",
+      "path": "docs/development/brief-originals.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.http-brief",
+        "contract.workflow",
+        "contract.handoff"
       ]
     }
   ],

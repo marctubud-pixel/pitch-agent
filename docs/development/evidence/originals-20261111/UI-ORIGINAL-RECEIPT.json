@@ -1,0 +1,19 @@
+{
+  "id": "project-366c7ce701cb1b9b40e8ef25a36fed603b67052d8d4f2c80492d28b6db6d5271",
+  "url": "http://127.0.0.1:4424/#/p/project-366c7ce701cb1b9b40e8ef25a36fed603b67052d8d4f2c80492d28b6db6d5271/proposal/brief",
+  "sameBody": true,
+  "originalSha256": "5b7bc3fc471b7c44fce7867b81da84a8ea3a06d74d2167d62b7d73a9f99f3767",
+  "originalByteLength": 1811,
+  "documentCount": 1,
+  "jobCount": 1,
+  "attemptCount": 0,
+  "confirmations": 0,
+  "geometry": {
+    "width": 910,
+    "scrollWidth": 910,
+    "scrollY": 0,
+    "topbar": 0
+  },
+  "errors": [],
+  "scope": "真实Chrome/当前HTTP/新SQLite；同体恢复继承PARTIAL原请求证据，完成只读下载和UI，未再创建或上传，无解析/模型或正式批准"
+}

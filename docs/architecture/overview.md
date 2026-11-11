@@ -1,3 +1,7 @@
+# 当前PDF原件接入 · 2026-11-11
+
+当前应用通过brief-server/brief-intake-service复用旧intake-runtime与intake-document-store，保存PDF原字节及同项目操作，前端按完整卡与原件身份读取/恢复/下载；不启动旧队列、解析或模型。模块合同见[PDF原件](../development/brief-originals.md)，默认旧模块地图继续保留原时点身份。
+
 # 七阶段运行协议与研究接入 · 2026-11-11
 
 新项目proposal-seven-v1从原生域和SQLite保存协议身份，旧记录保持旧STAGES。研究任务绑定固定r7方法SHA和实际prompt回执，受限服务仅处理指定研究，不恢复旧job；HTTP研究原件按实际正文SHA读取。默认执行关闭，r7读者回环缺失时正向交接及放行拒绝。模块职责与缺口见[接续](../development/seven-stage-research.md)。

@@ -3,11 +3,12 @@ import { Download, FileText, Upload, X } from 'lucide-react';
 import { useProposals } from '../app/services';
 import { useTeam } from '../collaboration/context';
 import { BRAND_RESOURCE_ACCEPT, BRAND_RESOURCE_LIMITS, brandResourceSize, validateBrandUploads, type BrandResourceUpload } from '../domain/brandResources';
-import type { Proposal } from '../domain/proposal';
+import type { Proposal, BrandResourceUploadPolicy } from '../domain/proposal';
 import { useT } from '../i18n';
 
-export function BrandResourceUploadCard({ uploads, onChange, disabled }: {
+export function BrandResourceUploadCard({ uploads, onChange, disabled, policy }: {
   uploads: BrandResourceUpload[];
+  policy?: BrandResourceUploadPolicy;
   onChange: (uploads: BrandResourceUpload[]) => void;
   disabled: boolean;
 }) {
@@ -16,7 +17,7 @@ export function BrandResourceUploadCard({ uploads, onChange, disabled }: {
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [notes, setNotes] = useState<Set<string>>(new Set());
-  const locked = disabled || !can({ kind: 'manage' });
+  const locked = disabled || policy?.available === false || !can({ kind: 'manage' });
   const append = (files: File[]) => {
     if (locked || !files.length) return;
     const additions = files.map((file) => ({
@@ -26,6 +27,7 @@ export function BrandResourceUploadCard({ uploads, onChange, disabled }: {
     try {
       const next = [...uploads, ...additions];
       validateBrandUploads(next);
+      if (policy?.available && (next.length > policy.maxCount || additions.some(({resource}) => resource.size > policy.maxBytes || !resource.fileName.toLowerCase().endsWith('.pdf') || !['', 'application/pdf'].includes(resource.mediaType)))) throw new Error(policy.hint);
       onChange(next);
       setError(null);
     } catch (failure) { setError(failure instanceof Error ? failure.message : t('brand.invalid')); }
@@ -37,19 +39,19 @@ export function BrandResourceUploadCard({ uploads, onChange, disabled }: {
       <div className="brand-upload__head">
         <div>
           <h2 id="brand-upload-title" className="card__title">{t('brand.title')}</h2>
-          <p className="small muted">{t('brand.hint')}</p>
+          <p className="small muted">{policy ? policy.available ? policy.hint : policy.reason : t('brand.hint')}</p>
         </div>
         <button type="button" className="btn btn--secondary btn--sm" disabled={locked} onClick={() => { if (!locked) input.current?.click(); }}>
           <Upload size={15} aria-hidden="true" />{t('brand.upload')}
         </button>
-        <input ref={input} type="file" multiple accept={BRAND_RESOURCE_ACCEPT} className="sr-only" data-testid="brand-resource-input"
+        <input ref={input} type="file" multiple accept={policy?.available ? policy.accept : policy ? undefined : BRAND_RESOURCE_ACCEPT} className="sr-only" data-testid="brand-resource-input"
           aria-label={t('brand.upload')} disabled={locked}
           onChange={(event) => { if (!locked) append(Array.from(event.currentTarget.files ?? [])); event.currentTarget.value = ''; }} />
       </div>
-      <details className="brand-upload__requirements">
+      {!policy && <details className="brand-upload__requirements">
         <summary>{t('brand.requirements')}</summary>
         <p className="small muted brand-upload__limits">{t('brand.limits')}</p>
-      </details>
+      </details>}
       {uploads.length > 0 && <>
         <ul className="brand-files" data-testid="brand-resources-list">
           {uploads.map(({ resource }) => (
@@ -104,7 +106,7 @@ export function BrandResourceList({ proposal }: { proposal: Proposal }) {
   return (
     <section className="brand-resources" aria-label={t('brand.title')} data-testid="brand-resources-readonly">
       <h2 className="pw-h3">{t('brand.title')}</h2>
-      <p className="small muted">{t('brand.referenceHint')}</p>
+      <p className="small muted">{service.backing === 'connected' ? '保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。' : t('brand.referenceHint')}</p>
       <ul className="brand-files" data-testid="brand-resources-list">
         {resources.map((resource) => <li key={resource.id} className="brand-files__row" data-testid="brand-resource-row">
           <FileText size={18} aria-hidden="true" />

@@ -9,7 +9,7 @@ import { useCommand } from '../app/commands';
 import { useServiceQuery } from '../app/query';
 import { Link, projectPath, useNavigationBlocker, useRouter } from '../app/router';
 import { useAssistant, useService, useServiceContext } from '../app/services';
-import type { CheckpointStage, CreateProposalInput, ProductionMode, Proposal, ProposalType } from '../domain/proposal';
+import type { CheckpointStage, CreateProposalInput, ProductionMode, Proposal, ProposalType, BrandResourceUploadPolicy } from '../domain/proposal';
 import { isPresentationLocalTime } from '../domain/presentationTime';
 import { ServiceError, toServiceError } from '../domain/service';
 import { ModeFields } from './stages/ModeFields';
@@ -68,6 +68,13 @@ export function NewProjectView() {
   const [pmode, setPmode] = useState<ProductionMode>('assisted');
   const [checkpoints, setCheckpoints] = useState<CheckpointStage[]>(['strategy', 'themes', 'visual', 'delivery']);
   const { proposals } = useServiceContext();
+  const [brandPolicy, setBrandPolicy] = useState<BrandResourceUploadPolicy | undefined>(() => proposals.getBrandResourceUploadPolicy ? {available: false, reason: '正在核对资料存储能力…'} : undefined);
+  useEffect(() => {
+    let active = true;
+    if (proposals.getBrandResourceUploadPolicy) void proposals.getBrandResourceUploadPolicy().then(policy => {if (active) setBrandPolicy(policy);}).catch(() => {if (active) setBrandPolicy({available: false, reason: '无法核对资料存储能力，请重试。'});});
+    else setBrandPolicy(undefined);
+    return () => {active = false;};
+  }, [proposals]);
   const [nameError, setNameError] = useState<string | null>(null);
   const [presentationLocalTime, setPresentationLocalTime] = useState('');
   const [timeError, setTimeError] = useState<string | null>(null);
@@ -163,7 +170,7 @@ export function NewProjectView() {
         let saved = savedCreationRef.current;
         if (!saved) {
           validateBrandUploads(frozenUploads);
-          if (frozenUploads.length) await proposals.ensureBrandResourceStorage();
+          if (frozenUploads.length) await proposals.ensureBrandResourceStorage(frozenUploads);
           let receipt: MutationResult<Project>;
           try {
             receipt = await service.createProject(input, meta);
@@ -293,7 +300,7 @@ export function NewProjectView() {
             </p>
           )}
 
-          <BrandResourceUploadCard uploads={brandUploads} disabled={editsLocked} onChange={(next) => {
+          <BrandResourceUploadCard policy={brandPolicy} uploads={brandUploads} disabled={editsLocked} onChange={(next) => {
             if (!editsLocked && can({ kind: 'manage' })) { setBrandUploads(next); command.reset(); }
           }} />
 

@@ -1,3 +1,5 @@
+import {registeredOriginals} from './intakeProjection';
+import {sameBrandResources} from '../../domain/brandResources';
 import type {Proposal, ProposalService, ProposalSummary, StageId, StageState, CheckpointStage} from '../../domain/proposal';
 import {ACTIVE_STAGES} from '../../domain/proposal';
 import {ServiceError} from '../../domain/service';
@@ -7,7 +9,7 @@ import {readBrief} from './briefEnvelope';
 import type {Snapshot} from './dto';
 import type {HttpWorkbenchService} from './HttpWorkbenchService';
 
-const unavailable = (): Promise<never> => Promise.reject(new ServiceError('unavailable', '本轮仅接通简报读写，后续执行、协作写入和品牌原件保存尚未接入。'));
+const unavailable = (): Promise<never> => Promise.reject(new ServiceError('unavailable', '此操作尚未接入当前本地服务。'));
 function proposal(p: Snapshot): Proposal {
   const project = mapProject(p), card = currentCard(p), brief = mapBrief(p, card), envelope = readBrief(card.brief);
   if (!isProposalType(brief.proposalType)) throw new ServiceError('unavailable', '历史任务卡未记录提案类型，不能自动补成已确认类型。');
@@ -26,6 +28,7 @@ function proposal(p: Snapshot): Proposal {
     task: {assignment: brief.background, output: brief.deliverables.join('\n'), occasion: null, scope: brief.constraints,
       inputs: mapAttachments(p).filter(item => brief.attachmentIds.includes(item.id)).map(item => ({id: item.id, kind: 'text', title: item.fileName ?? '简报原文', note: item.text})),
       unknowns: brief.openQuestions.map((topic, index) => ({id: `${card.id}:unknown:${index}`, topic, why: '任务卡保留的待确认事项。'}))},
+    brandResources: registeredOriginals(p).flatMap(d => d.resource ? [d.resource] : []),
     research: null, strategy: null, themes: null, visual: null, contentReview: null, layout: null, delivery: null,
     decisions: [], contributions: [], reviews: [], handoffs: [], tasks: [],
     versions: briefVersions(p).map(item => ({id: item.id, stage: 'brief', label: `简报 v${item.version}`, version: item.version, inputs: [], at: item.updatedAt, state: item.id === p.activeTaskCardId ? 'current' : 'superseded', impact: null})),
@@ -41,15 +44,16 @@ function summary(p: Proposal): ProposalSummary {
 export class HttpProposalService implements ProposalService {
   readonly backing = 'connected';
   constructor(private readonly workbench: HttpWorkbenchService) {}
-  ensureBrandResourceStorage = unavailable;
-  stageBrandResources = unavailable;
-  getBrandResourceFile = unavailable;
+  getBrandResourceUploadPolicy = () => this.workbench.originalUploadPolicy();
+  ensureBrandResourceStorage: ProposalService['ensureBrandResourceStorage'] = resources => this.workbench.ensureOriginalStorage(resources);
+  stageBrandResources: ProposalService['stageBrandResources'] = input => this.workbench.saveBrandResources(input.workbenchId, input.resources);
+  getBrandResourceFile: ProposalService['getBrandResourceFile'] = (id, resourceId) => this.workbench.readBrandResource(id, resourceId);
   listProposals = async () => (await this.workbench.snapshots()).map(proposal).map(summary);
   getProposal = async (id: string) => proposal(await this.workbench.snapshot(id));
   findByWorkbenchId = async (id: string) => this.getProposal(id);
   createProposal: ProposalService['createProposal'] = async input => {
     const current = await this.getProposal(input.workbenchId);
-    if (current.name !== input.name || current.client !== input.client || current.type !== input.type || current.mode !== input.mode || JSON.stringify(current.checkpoints) !== JSON.stringify(input.checkpoints) || current.presentationLocalTime !== input.presentationLocalTime || input.brandResources?.length) throw new ServiceError('conflict', '已保存的项目设置不符，请核对创建回执；未生成模拟提案。');
+    if (current.name !== input.name || current.client !== input.client || current.type !== input.type || current.mode !== input.mode || JSON.stringify(current.checkpoints) !== JSON.stringify(input.checkpoints) || current.presentationLocalTime !== input.presentationLocalTime || !sameBrandResources(current.brandResources, input.brandResources)) throw new ServiceError('conflict', '已保存的项目设置不符，请核对创建回执；未生成模拟提案。');
     return current;
   };
   setMode = unavailable;

@@ -22,14 +22,14 @@ export interface Services {
   workbench: WorkbenchService;
   intake: BriefIntakeService;
   assistant: AssistantService;
-  /** Proposal projection; HTTP mode currently supports Brief snapshots only. */
+  /** Proposal projection; HTTP capabilities describe the connected stage scope. */
   proposals: ProposalService;
 }
 
 /**
  * The single place that decides which services the app uses.
  *
- * Set VITE_WORKBENCH_API_URL to switch to the restricted Brief HTTP adapters.
+ * Set VITE_WORKBENCH_API_URL to switch to the restricted local HTTP adapters.
  * Without it, the app runs entirely in the browser: mock project data, real local text
  * extraction with simulated mapping for the bundled samples, and a simulated WorkBot.
  */
