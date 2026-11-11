@@ -1,0 +1,23 @@
+# 独立 Standards / 正确性审查
+
+固定范围：`44c495b14677cc8e16b77957fe060a483a4d3f84...006b689634dd914d9c00e74610729d005b00a77e`；diff 非空，log 仅一个 reader feature 提交。审查者未参与作者或此前 review。
+
+## 文档硬违规
+
+**P2 — 同任务卡内的历史修订与旧问题计划被恢复为普通成功。** `apps/workbench-preview/src/services/http/HttpWorkbenchService.ts:318,328` 新增回执分支只比较任务卡 ID。实际反例：A→B 修订成功但丢响应；另一窗口同卡生成 C；刷新重放原修订 body，实际当前 C 与原 job 输出 B 不同，`retry()` 却 resolve 项目 ID、清日志且无历史提示。另一反例：Q1 登记丢响应，同卡登记 Q2，重放 Q1 也普通成功。违反 `docs/development/research-reader.md`「原登记或任务已进入历史时，先核实际原回执，再清除已知结果的未决状态，并显示历史提示及原内容；不把旧稿当当前稿成功」，亦违反 `docs/specs/handoff.md` 新旧身份分别核对规则。应将修订真实输出及当前最新计划纳入历史判断；错回执仍须 unknown 保留。
+
+两例均以实际 native HTTP 处理器、新临时 SQLite 和合成磁盘 provider 复现，断言期待历史 conflict 实得 resolve。临时探针 `/tmp/reader_probe.test.ts`、配置 `/tmp/reader_probe.config.mjs`；未修改提交证据。
+
+## 判断性 smell
+
+未发现足以单独阻挡本轮的 Fowler smell。未以既有 project/executor 文件体积、适配层存在或裸 hash 字段本身推断缺陷；原件验证、纯状态与运行层职责具有实际安全边界。
+
+## 实际验证与边界
+
+定向 backend 33/33（loop、state、typed correction、HTTP）；owner handoff 单独升级 loopback 权限后 4/4；前端 reader HTTP/projection、history、权限 21/21。最初把含 listen 的 handoff 放在沙箱运行触发 Node 原生断言，已单独升级复跑成功，不归为产品失败。未重跑全历史；未使用旧 run、DB、服务、真实模型、外部通知、部署或在线 PPT。未执行浏览器 UI；全文/同版/原件损坏/方法与人工守卫以源码及上述合同测试核对。七阶段总目标、PDF 解析、采集及策略后续不因此完成。
+
+本报告记录固定提交审查结论；后续受父任务明确授权的定点修复另在接续消息列明，不改变以上反例身份。
+
+## 授权定点修复回执
+
+父任务随后明确授权修复上述同一根因。仅修改 `HttpWorkbenchService.ts` 与新增 `researchRevisionHistory.test.ts`：已成功修订按唯一实际输出及原卡输入核身份，再比较当前研究；未成功任务按原目标判历史；问题登记按同卡最新计划判历史。错误 job 回执继续 unknown 保留原 body，已知历史走既有清日志与历史提示路径。新真实 native/SQLite 集成测试先 2/2 红、修后相关五文件 23/23；`npm run typecheck`、定点 `git diff --check` 通过。未改规范、纳管清单、其他源码或 Git 状态；待父任务补清单并组织修后独立复核。

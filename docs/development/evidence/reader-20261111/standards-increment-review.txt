@@ -1,0 +1,107 @@
+# 独立 Standards / 正确性复核：研究读者首读运行
+
+审查者：goal_first_standards_review。日期：2026-11-11。基线：`44c495b1`，分支 `codex/research-reader-20261111` 未提交候选。本文只审当前 root 的预登记、真实 prose 首读、保存、HTTP 原件读取及 unknown 原调用恢复；隔离候选的 recheck、研究资格、交接及后续生产不在通过范围内。
+
+## 初审结论：待修 P2
+
+### P2：原问题登记的同命令重放会随当前任务卡重新合成，导致已落盘结果无法对账
+
+位置：`tools/workbench/research-service.mjs:42-45`（初审文件 SHA256 `62c1727216a693a673d805b4e779f23dd935fde1de39963e6e80c515fc905562`）。
+
+`registerQuestions` 在识别历史 command 前先检查当前研究输入，并用当前 `activeTaskCardId` 和实际方法重新组成 domain command。若登记成功但返回丢失，另一个窗口已修订并确认新卡，客户端拿完全相同的原请求重放时，重建的 payload 已变，store 返回 `COMMAND_ID_REUSED`。原登记只有一条，没有重复写入，但用户无法通过原命令核对未知结果；若新卡尚未确认，当前输入检查还会先拒绝重放。应先比较原请求与已处理命令保存的冻结请求，同请求返回原登记身份；新登记才使用当前卡与方法。历史回执不应被当作当前版采用。
+
+独立临时 SQLite 反例（无供应商、无网络、运行后清理）：创建七阶段项目 → 确认 `p:scope:1` → `registerQuestions`（commandId `questions`、expectedRevision 1）→ 修订并确认 `card2` → 以原请求重放。实际输出：
+
+```json
+{"first":{"registrationId":"questions-05033dd62d6597eb69afe5910e929ce8f0e29b786b671c4ba4336a1ceea19e63"},"replay":{"code":"COMMAND_ID_REUSED","message":"Command ID belongs to another payload"},"registrations":1}
+```
+
+根作者已确认修复方向；保留本失败证据，修后追加复核。
+
+## 已核边界与证据
+
+- 按根/工具 AGENTS、CONTRIBUTING、现行规范入口、七阶段运行合同、受限 HTTP/原件/变更边界审查。code-review smell baseline 仅作提示；没有以格式、目录或抽象偏好代替功能问题。
+- 已核首读 packet 从实际正文原字节及完整 prose 投影形成，源 SHA、任务卡、方法、预登记、seat 与生产者冻结计划绑定；不把摘要或元数据当作实际看稿证据。
+- 已核实际 producer 与 reader 请求重建、实际 native input/output、规范化文件及注册报告/eligibility 一致性校验；报告 GET 调用原件核验，而不是只返回数据库标记。
+- 已核 reader start 与 complete 的作者 lineage/上下文隔离，原生线程复用拒绝，seat 去重；dispatch 后失败保留 unknown，自动 retry 关闭；read-only reconcile 不配置供应商、不重新 dispatch。
+- `registered()` 尚未对当前实际方法实时比较，属于根已知且已派修的问题；没有把这一点算作新发现，也未签现有方法变更防护充分。当前首读不证明 r7 全回环通过，`reader_loop` 与后续资格仍为 false。
+- 独立运行 `node --test tools/workbench/research-reader-loop.test.mjs tools/workbench/research-reader-state.test.mjs tools/workbench/research-method.test.mjs`：27 通过，0 失败。
+- 独立运行 `node --test --test-name-pattern='preregistered|question plan' tools/workbench/research-reader-service.test.mjs`：3 通过，0 失败。覆盖真实本地文件/SQLite、实际合成 provider 首读、完整保存/重开/同请求 replay、晚登记拒绝、两 seat 及 unknown retry 禁止。
+
+未由本复核运行：service 中会 listen 的 native HTTP 恢复测试、真实外部模型、浏览器/UI、旧 run/DB、全套测试。根作者的 HTTP 通过报告不冒称独立运行。本轮不改任何源码或业务数据。
+
+## 初审工作副本身份
+
+路径均在 `tools/workbench/`；WIP 后续变化需增量复核。
+
+```text
+b2fabbd64249514841a57a5da7077bff81cc6b378f2a7b78e3d387ee45eb1b84  brief-server.mjs
+b60b3b75cf76dfff2b6ebaa235dfac69b368f6c43a76d980481a9a64e9aa785f  executor.mjs
+eecbc89b71afdafc7e7ac57f68c4da6210018ad4658b5f3ff67c23a838ba0ac6  ordinary-model-project.mjs
+b3281a31c0f3ecbd599185182ba931326c8249a9d13b1e6b18e7c37d20f077dc  project.mjs
+dfa5e1b58e317df68fad584d11d339d873f756eb7f033d51eec8d31c9aa77dea  research-method.mjs
+62c1727216a693a673d805b4e779f23dd935fde1de39963e6e80c515fc905562  research-service.mjs
+73f7bdaf6a9fba15d1ec83284a4c858e213c9f3fdb3272002f6a97208b75cca8  stage-original.mjs
+47eca672d14a1e14b64a024b91cc13e7ecc0c3bea7bacd524678a76833fb326e  research-reader-loop.mjs
+6160ff372b3ab425df2817e5c3f60bf94e8a79399b88b63ab1286a47a30bb6cd  research-reader-loop.test.mjs
+8cc47f12ac09a0580d1dc3779d73a9ea6e7320fa399a6f8edd9208d158564b8d  research-reader-state.mjs
+90b879a2c77b42d0ec31ec33f8d9dac6127af1d1494d9bb27b631341a342e6a3  research-reader-state.test.mjs
+82c0d9d214ca5ed6b33c17cdd2deba2657dabf046a141b287abfbddfca396794  research-reader-original.mjs
+b6bee9c9c495a15e8486d2d0801bab818dcc16d13c4a027356620d77ff3ab61c  research-reader-service.test.mjs
+b26779e7604f705bdcd7980469d170be0f55c2877f9c7ff2acf19a406a7cf82d  research-reader-http.test.mjs
+```
+
+## 登记 replay P2 修复复核：关闭
+
+增量检查 `registerQuestions` 先读取已处理命令保存的原 `request`，逐字段深比较后返回原登记身份，再对新命令执行当前输入守卫。未把历史登记改为当前登记。`readReport` 的同体历史 job 回读也先按冻结 request 核对，不要求重新配置供应商，不重派 queued/unknown job；新调用仍受能力及当前输入守卫。
+
+独立重跑原临时 SQLite 反例，并追加新卡未确认状态及同 command 改 body 反例，输出如下（执行后临时目录已清理）：
+
+```json
+{"first":{"registrationId":"questions-05033dd62d6597eb69afe5910e929ce8f0e29b786b671c4ba4336a1ceea19e63"},"unconfirmedReplay":{"registrationId":"questions-05033dd62d6597eb69afe5910e929ce8f0e29b786b671c4ba4336a1ceea19e63"},"confirmedReplay":{"registrationId":"questions-05033dd62d6597eb69afe5910e929ce8f0e29b786b671c4ba4336a1ceea19e63"},"changedBody":"COMMAND_ID_REUSED","registrations":1,"currentCard":"card2"}
+```
+
+独立运行 `node --test --test-name-pattern='preregistered|question plan|default local' tools/workbench/research-reader-service.test.mjs tools/workbench/research-reader-http.test.mjs`：4 项通过，0 失败。增量覆盖 HTTP 跨卡未确认状态原 body replay、异 body 冲突，以及 reader 已落盘结果在无模型/新卡未确认时同体回读、0 新调用、原件 proof.current=false。HTTP 为事件注入，不 listen；native HTTP 恢复用例仍不冒称本复核执行。
+
+修复后身份：
+
+```text
+8e739c52a66aea7aacf29e076e9233e61d6c602e96c97d4c3071caa687a9efea  research-service.mjs
+126ee492507ccedc9c6194c172202150491e70c0fd1484c5d42f33557bf4e05d  research-reader-service.test.mjs
+306b0cd4c9a70364c7f63a5fcd308534ca517632200c309360d9d9aae5940511  research-reader-http.test.mjs
+```
+
+本次独立新发现的 P2 已关闭，增量未发现新问题。此前列明的当前方法实时比较仍待作者更新 state 后复核；隔离 recheck 候选尚未采用。本结论不签方法变更守卫、r7 资格、完整里程碑或 UI 通过。
+
+## 修订 recheck / typed correction 增量复核：范围内 PASS
+
+2026-11-11 21:44 CST 独立复核当前已采用增量；前文待修状态保留为历史，本节更新相应结论。
+
+已核：`registered()` 对实际 `researchMethodIdentity()` 深比较，当前方法变化不再沿用旧登记；历史原报告保留冻结方法。typed `research_reader` correction 由实际保存报告生成 findings/保留约束，进入既有 `enqueueRevision`，原件核对复用真实 reader 原件适配器。`revisionProductionReceipt`、`correctionHandlingContext` 和研究 producer 原件请求均加入同一冻结 method + question registration 重建，没有放宽原 packet hash。
+
+已核 recheck 必须消费同计划、同 seat 最新原报告，修订祖先与源 SHA 对上，原问题逐一有新版正文定位的处置，不能用再次 first_read 隐藏旧未决项；新独立调用解析后再保存。原件验证递归读取上一轮报告/native 原件和规范化字节，覆盖登记、卡、生产、原文、完整 prose 投影、实际 reader input/output、处置与 recheck 的绑定。understandingComplete 仍只代表理解检查；事实充分性、消费者验证及人类批准继续 false，既有业务准入继续拒绝放行。
+
+独立验证：
+
+- `node --test tools/workbench/research-reader-loop.test.mjs tools/workbench/research-reader-state.test.mjs tools/workbench/reader-correction.test.mjs`：32 项通过（16 pure、13 state、3 实际本地 SQLite/file/synthetic provider correction）。包括 negative 首读→既有 revision enqueue→真实新版生产→处置→独立 recheck→原件验证、理解 coverage=true 但 canRelease=false。
+- 独立附加反例：在自有临时副本测试中完成上述实际链，再将旧首读 `payloadRef` 原件改为 `{}`；对当前 recheck 执行 `verifyResearchReaderOriginal(...,{current:true})` 被 `RESEARCH_READER_ORIGINAL_CHANGED` 拒绝。1 项通过；原文件复原、临时文件与 SQLite 清理，未改源码。
+- 读取 TypeScript/type-system Skill 及模块规则后，定点复核前端恢复与权限：原请求持久化/同体检查、历史回执提示、read-only reader GET、register/edit_research 与 start/reconcile/workflow 权限映射、journal 按实际 path 解析，不以伪 kind 绕过守卫。`npm --prefix apps/workbench-preview run test -- src/services/http/researchReaderHttp.test.ts src/services/http/researchReaderProjection.test.ts src/collaboration/protectServices.test.ts`：3 文件 15 项通过。首次使用 workspace 参数因本仓库没有 npm workspaces 未执行测试，已改用既有 prefix 入口。
+
+增量未发现新的可证明问题，原 replay P2 维持关闭，原已知当前方法实时校验缺口也已复核关闭。本节 PASS 仅涵盖上述已采用的首读→修订→独立 recheck、typed correction、原件链及前端权限/恢复窄范围。未采用的纯资格/owner 绑定不在范围；未运行浏览器/UI、外部模型或旧 run，未独立运行 native HTTP listen 测试，也不将根或其他审核者报告冒称本人的测试。本结论不签 r7 全资格、正式研究放行或完整里程碑。
+
+本次关键源码 SHA256（`tools/workbench/`）：
+
+```text
+85f320f09d389e1fddc9330433c4ac4508c6ec9d31cc0a272f643912954342b3  research-reader-state.mjs
+b4db21ae5eb5f5df14d17ea7fb6feabafe43f3c0da1418f69d176cd7aed9ecf9  research-reader-state.test.mjs
+021382cc080bd07d67a86581eb0de9f8e76cc30880959eb9c4a0e57095213e7a  research-reader-original.mjs
+7ebb3659ad8a5d4938aee74f30784694564c87c4b8abfa2d6881f2856e723216  reader-correction.test.mjs
+15cc4ecfb62812c0fa7da87c1933618d7328ac91454a3a27211558a6ada45179  project.mjs
+1b38712baf0d1338b75a56e160c0608987aa8cd398fcd15bad9842df78ff501a  correction.mjs
+3a170068af6f893e5fa99f2d3f29d22c98240380b74dfdfbd266869b056fb1cc  review-original.mjs
+4423c2cd1938db554bfdbb4f74068a7e8280c53568b198ab97d8c28c3d707361  executor.mjs
+b87204f9edc14256ee78afc03d819f458c56f23472c662d9382dc2c3aaec056f  research-service.mjs
+73f7bdaf6a9fba15d1ec83284a4c858e213c9f3fdb3272002f6a97208b75cca8  stage-original.mjs
+```
+
+前端定点集合 SHA256：`8554a1ac1a5c7df6d2423d7e5d150dcf7f7d7659344b2f3d99c256f5618caed2`，算法为对有序 `{path,text}` 数组 JSON 的 SHA256；路径依次为 `app/BriefRecoveryPanel.tsx`、`collaboration/protectServices.ts`、`services/http/HttpWorkbenchService.ts`、`services/http/briefRecovery.ts`、`services/http/researchReaderProjection.ts`、`proposal/ResearchReaderPanel.tsx`，均相对 `apps/workbench-preview/src/`。

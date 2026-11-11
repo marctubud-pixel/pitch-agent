@@ -1,3 +1,4 @@
+import {ResearchReaderPanel} from '../../proposal/ResearchReaderPanel';
 import {useServiceContext} from '../../app/services';
 import {R7ResearchView} from '../../proposal/research-method/R7ResearchView';
 import { selectionKeys } from '../../ui/selectionKeys';
@@ -110,6 +111,7 @@ export function ResearchStage({ proposal: p }: { proposal: Proposal }) {
   return (
     <div className="pw-research">
       <EvidenceBack />
+      {connected && <ResearchReaderPanel projectId={pid}/>}
       {lookup === 'loading' && (
         <p className="pw-evstate" role="status">
           <LoaderCircle size={16} aria-hidden="true" className="spin" /> {t('pw.ev.loading', { label })}

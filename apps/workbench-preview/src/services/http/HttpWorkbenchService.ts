@@ -1,3 +1,5 @@
+import {readerState,readerReport,readerExcerpts} from './researchReaderProjection';
+import type {ResearchReaderService} from '../../domain/researchReader';
 import type {BrandResourceUploadPolicy} from '../../domain/proposal';
 import {BRAND_RESOURCE_LIMITS, brandResourceSize} from '../../domain/brandResources';
 import {originalCapability, validateOriginalUploads, originalHash, originalBase64, registeredOriginals} from './intakeProjection';
@@ -22,12 +24,14 @@ export interface HttpServiceOptions {
   recovery?: {actorKey: () => string; storage: () => Storage; authorize: (kind: PendingWriteKind) => void};
   getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
 }
+const READER_HISTORY_MESSAGE='原提交已保存为历史，请核对当前简报后重新登记或读取。';
+const sameRequest=(a:unknown,b:unknown)=>{const canonical=(v:unknown)=>JSON.stringify(v,(_key,item:unknown)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(object(item)).sort(([x],[y])=>x<y?-1:x>y?1:0)):item);return canonical(a)===canonical(b);};
 const notConnected = (_operation: string): Promise<never> => Promise.reject(new ServiceError('unavailable', '本轮简报入口尚未接通此能力。'));
 export async function mapHttpError(response: Response | null, _cause?: unknown): Promise<ServiceError> {
   if (!response) return new ServiceError('network', '无法连接简报服务，请检查本地服务。', {retryable: true});
   let message = `服务请求失败（${response.status}）。`, code = '';
   try { const body = object(await response.json()), error = body.error ? object(body.error) : body; code = text(error.code); } catch { /* Non-JSON error. */ }
-  const messages: Record<string, string> = {RESEARCH_R7_READER_REQUIRED:'独立读者回环尚未完成，研究交接与正式放行仍待核。',SEVEN_STAGE_ROUTE_REQUIRED:'当前阶段尚未接入此执行入口。',RESEARCH_EXECUTION_UNAVAILABLE: '研究执行未配置或仍处于暂停状态，本次未启动。', WORKFLOW_VERSION_REQUIRED: '旧项目保持原运行身份，不能直接采用新阶段规则。', REVISION_CONFLICT: '项目已更新，请保留当前草稿并核对新版本。', COMMAND_ID_REUSED: '同一命令标识已用于其他内容，未覆盖原记录。', NOT_FOUND: '未找到此项目或修订。', COMMAND_FORBIDDEN: '当前简报入口不允许此操作。', INVALID_REQUEST: '请求内容不符合简报合同，未保存。', CROSS_ORIGIN: '请求来源未获本地简报服务允许。'};
+  const messages: Record<string, string> = {RESEARCH_QUESTIONS_NOT_PREREGISTERED:'当前研究稿未使用预登记问题，请重新生成研究稿。', RESEARCH_QUESTIONS_REQUIRED:'请先登记当前简报的研究问题。', RESEARCH_READER_UNCONFIGURED:'独立读者尚未配置，本次未调用。', READER_OUTCOME_UNSETTLED:'该读者已有待核或已保存结果，请核对原记录。', RESEARCH_READER_ORIGINAL_CHANGED:'读者报告原件核对失败，请保留文件与原始记录。', RESEARCH_R7_READER_REQUIRED:'独立读者回环尚未完成，研究交接与正式放行仍待核。',SEVEN_STAGE_ROUTE_REQUIRED:'当前阶段尚未接入此执行入口。',RESEARCH_EXECUTION_UNAVAILABLE: '研究执行未配置或仍处于暂停状态，本次未启动。', WORKFLOW_VERSION_REQUIRED: '旧项目保持原运行身份，不能直接采用新阶段规则。', REVISION_CONFLICT: '项目已更新，请保留当前草稿并核对新版本。', COMMAND_ID_REUSED: '同一命令标识已用于其他内容，未覆盖原记录。', NOT_FOUND: '未找到此项目或修订。', COMMAND_FORBIDDEN: '当前简报入口不允许此操作。', INVALID_REQUEST: '请求内容不符合简报合同，未保存。', CROSS_ORIGIN: '请求来源未获本地简报服务允许。'};
   if (messages[code]) message = messages[code];
   if (code === 'RESEARCH_EXECUTION_UNAVAILABLE') return new ServiceError('unavailable', message);
   if (code === 'COMMAND_ID_REUSED') return new ServiceError('idempotency_mismatch', message);
@@ -79,9 +83,12 @@ export class HttpWorkbenchService implements WorkbenchService {
             if (!card || (body.kind === 'revise-task-card' && card.brief !== body.brief) || (body.kind === 'confirm-task-card' && !p.confirmations.some(item => item.taskCardId === card.id))) throw new ServiceError('response_lost', '核对响应未绑定原任务卡，原提交仍保留。', {outcomeUnknown: true, retryable: true});
             if (p.activeTaskCardId !== card.id) throw new ServiceError('conflict', '原提交已记入历史，当前简报已有新稿。请查看保留内容与当前任务卡，再结束此记录。', {conflict: {expectedRevision: Number(body.expectedRevision), currentRevision: p.revision, changedBy: p.audit.at(-1)?.actorId ?? null, changeSummary: '原任务卡已被新稿替代。'}});
           }
+          let historicalReader=false;
           if (pending.kind === 'upload_original') await this.verifyOriginalReceipt(p, object(result.value), body);
-          else if (!['create_project','save_brief','confirm_brief'].includes(pending.kind)) this.verifyResearchReceipt(p, object(object(result.value).receipt), body, pending.path);
-          journal.clear(pending.commandId); this.emit(); return p.id;
+          else if (!['create_project','save_brief','confirm_brief'].includes(pending.kind)) historicalReader=this.verifyResearchReceipt(p, object(object(result.value).receipt), body, pending.path);
+          journal.clear(pending.commandId); this.emit();
+          if(historicalReader)throw new ServiceError('conflict',READER_HISTORY_MESSAGE);
+          return p.id;
         },
         acknowledge: () => { if (this.writing) return; const pending = journal.getPending(); if (pending) {recovery?.authorize(pending.kind); journal.clear(pending.commandId);} this.emit(); },
       };
@@ -284,24 +291,75 @@ export class HttpWorkbenchService implements WorkbenchService {
     if (!target || !Array.isArray(target.inputVersionIds) || !target.inputVersionIds.includes(p.activeTaskCardId) || p.stages.find(s => s.stage === 'research')?.status === 'stale') throw new ServiceError('not_eligible', '当前简报尚无有效研究产物，历史稿不能代替当前输入。');
     return target;
   }
+  readonly researchReader: ResearchReaderService = {
+    revise: (id,artifactId,meta) => this.readerMutation(id,'research-revisions',{artifactId},meta),
+    dispose: (id,input,meta) => this.readerMutation(id,'research-reader-dispositions',input,meta),
+    excerpts: async (id,artifactId) => {const p=await this.snapshot(id),artifact=p.artifacts.find(a=>a.id===artifactId&&a.stage==='research');if(!artifact)throw new ServiceError('not_found','没有该研究原稿。');return readerExcerpts(await this.contentLoader(id)(artifactId),artifact);},
+    get: async id => readerState(await this.snapshot(id),this.nativeCapability),
+    report: async (id,reportId) => {const state=readerState(await this.snapshot(id),this.nativeCapability),expected=state.reports.find(r=>r.id===reportId);if(!expected)throw new ServiceError('not_found','没有该项目的独立读者报告。');return readerReport((await this.request('GET',`/projects/${encodeURIComponent(id)}/research-reader-reports/${encodeURIComponent(reportId)}`)).value,expected);},
+    register: (id,input,meta) => this.readerMutation(id,'research-questions',input,meta),
+    start: (id,input,meta) => this.readerMutation(id,'research-readers',input,meta),
+    reconcile: (id,jobId,meta) => this.readerMutation(id,'research-reader-reconciliations',{jobId},meta),
+  };
+  private async readerMutation(id:string,resource:string,fields:Record<string,unknown>,meta:CommandMeta) {
+    const before=await this.snapshot(id,meta.expectedRevision);
+    const {p,receipt}=await this.researchMutation(id,resource,fields,meta,before);
+    const data=readerState(p,this.nativeCapability);this.completed(meta.commandId);
+    return {data,revision:p.revision,commandId:meta.commandId,replayed:receipt.replayed===true};
+  }
   private verifyResearchReceipt(p: Snapshot, receipt: Record<string, unknown>, body: Record<string, unknown>, path: string) {
     if (receipt.commandId !== body.commandId || typeof receipt.replayed !== 'boolean') throw new ServiceError('response_lost', '研究提交回执不完整，原请求仍保留。', {outcomeUnknown: true, retryable: true});
+    if(path.endsWith('/research-questions')||path.endsWith('/research-readers')||path.endsWith('/research-reader-reconciliations')||path.endsWith('/research-revisions')||path.endsWith('/research-reader-dispositions')){
+      let command:Record<string,unknown>;
+      try{const raw=p.processedCommands[text(body.commandId)];if(typeof raw!=='string')throw Error('Missing command');command=object(JSON.parse(raw));}catch{throw new ServiceError('response_lost','原提交命令缺失，核对记录仍保留。',{outcomeUnknown:true,retryable:true});}
+      if(path.endsWith('/research-revisions')){
+        const job=p.jobs.find(j=>j.id===receipt.jobId&&j.stage==='research'),task=job?object(job.task):null;
+        if(!job||!task||command.kind!=='request-stage'||command.jobId!==job.id||!sameRequest(task.revisionRequest,body)||!sameRequest(object(command.task).revisionRequest,body))throw new ServiceError('response_lost','修订回执未绑定原稿与原请求，记录仍保留。',{outcomeUnknown:true,retryable:true});
+        const currentArtifactId=p.stages.find(s=>s.stage==='research')?.activeArtifactId;
+        if(job.status==='succeeded'){
+          if(!Array.isArray(job.outputVersionIds)||job.outputVersionIds.length!==1)throw new ServiceError('response_lost','修订回执缺少唯一实际产物，原请求仍保留。',{outcomeUnknown:true,retryable:true});
+          const outputVersionId=job.outputVersionIds[0];
+          const output=p.artifacts.find(a=>a.id===outputVersionId&&a.stage==='research'&&Array.isArray(a.inputVersionIds)&&a.inputVersionIds.includes(task.taskCardId));
+          if(!output)throw new ServiceError('response_lost','修订产物未绑定原任务卡，原请求仍保留。',{outcomeUnknown:true,retryable:true});
+          return task.taskCardId!==p.activeTaskCardId||output.id!==currentArtifactId;
+        }
+        return task.taskCardId!==p.activeTaskCardId||body.artifactId!==currentArtifactId;
+      }
+      if(path.endsWith('/research-reader-dispositions')){
+        const record=(p.readerDispositions??[]).find(d=>d.id===receipt.dispositionId),plan=record?(p.readerPlans??[]).find(r=>r.id===record.registrationId):null;
+        if(!record||!plan||command.kind!=='record-research-reader-dispositions'||command.dispositionId!==record.id||!sameRequest(command.request,body)||record.artifactId!==body.artifactId||record.previousReportId!==body.previousReportId||!sameRequest(record.dispositions,body.dispositions))throw new ServiceError('response_lost','逐项处理回执未绑定原问题与新稿依据，记录仍保留。',{outcomeUnknown:true,retryable:true});
+        return plan.taskCardId!==p.activeTaskCardId||p.stages.find(s=>s.stage==='research')?.activeArtifactId!==record.artifactId;
+      }
+      if(path.endsWith('/research-questions')){
+        const plan=(p.readerPlans??[]).find(r=>r.id===receipt.registrationId);
+        if(command.kind!=='register-research-questions'||!sameRequest(command.request,body)||!plan||command.registrationId!==plan.id||command.taskCardId!==plan.taskCardId||!sameRequest(plan.questions,body.questions)||plan.readerCount!==body.readerCount||!p.cards.some(c=>c.id===plan.taskCardId))throw new ServiceError('response_lost','问题登记回执未绑定原始问题，提交仍保留。',{outcomeUnknown:true,retryable:true});
+        return plan.taskCardId!==p.activeTaskCardId||(p.readerPlans??[]).filter(r=>r.taskCardId===plan.taskCardId).at(-1)?.id!==plan.id;
+      }
+      const job=p.jobs.find(j=>j.id===receipt.jobId&&j.purpose==='research_reader'),task=job?object(job.task):null;
+      const start=path.endsWith('/research-readers');
+      if(!job||!task||(start&&(command.kind!=='request-research-reader'||command.jobId!==job.id||job.targetArtifactId!==body.artifactId||job.registrationId!==body.registrationId||job.readerSeat!==body.seat||!sameRequest(task.request,body)||!sameRequest(object(command.task).request,body)))||(!start&&(command.kind!=='recover-research-reader'||command.jobId!==job.id||job.id!==body.jobId||!sameRequest(command.recoveryRequest,body))))throw new ServiceError('response_lost','读者回执未绑定原始任务，提交仍保留。',{outcomeUnknown:true,retryable:true});
+      const artifact=p.artifacts.find(a=>a.id===job.targetArtifactId),plan=(p.readerPlans??[]).find(r=>r.id===job.registrationId);
+      if(!artifact||!plan)throw new ServiceError('response_lost','读者原始输入身份缺失，核对记录仍保留。',{outcomeUnknown:true,retryable:true});
+      return plan.taskCardId!==p.activeTaskCardId||!Array.isArray(artifact.inputVersionIds)||!artifact.inputVersionIds.includes(p.activeTaskCardId)||p.stages.find(s=>s.stage==='research')?.activeArtifactId!==artifact.id;
+    }
     if (path.endsWith('/sources') && !p.sourceEntries.some(e => e.id === receipt.sourceId && e.taskCardId === p.activeTaskCardId)) throw new ServiceError('conflict', '原来源属于历史简报，请核对当前任务卡。');
     if (typeof body.artifactId === 'string' && (p.stages.find(s => s.stage === 'research')?.activeArtifactId !== body.artifactId || !p.artifacts.some(a => a.id === body.artifactId && Array.isArray(a.inputVersionIds) && a.inputVersionIds.includes(p.activeTaskCardId)))) throw new ServiceError('conflict', '原操作属于历史研究稿，当前产物已有变化。');
     if (path.endsWith('/research-jobs') && !p.jobs.some(j => j.id === receipt.jobId && j.stage === 'research' && Array.isArray(j.inputVersionIds) && j.inputVersionIds.includes(p.activeTaskCardId))) throw new ServiceError('response_lost', '研究请求没有对应原生任务，请保留原命令核对。', {outcomeUnknown: true, retryable: true});
     if ((path.endsWith('/research-verification') || path.endsWith('/research-readiness')) && !p.jobs.some(j => j.id === receipt.jobId && j.stage === 'research' && j.targetArtifactId === body.artifactId)) throw new ServiceError('response_lost', '核验回执未绑定原生研究任务，原提交仍保留。', {outcomeUnknown: true, retryable: true});
     if (path.endsWith('/research-handoffs') && typeof receipt.handoffId !== 'string') throw new ServiceError('response_lost', '交接声明回执缺少原生身份，原提交仍保留。', {outcomeUnknown: true, retryable: true});
     if (path.endsWith('/research-release') && !p.releases.some(r => r.artifactId === body.artifactId && r.policyVersion === body.policyVersion)) throw new ServiceError('response_lost', '放行回执缺少同版原生记录，原提交仍保留。', {outcomeUnknown: true, retryable: true});
+    return false;
   }
   private async researchMutation(id: string, resource: string, fields: Record<string, unknown>, meta: CommandMeta, before: Snapshot) {
     if (before.workflowVersion !== 'proposal-seven-v1') throw new ServiceError('unavailable', '旧项目不自动升级为七阶段研究。');
-    if (resource !== 'sources' && resource !== 'research-release' && !(resource === 'research-handoffs' && object(fields.input).decision === 'returned') && !this.researchExecutionEnabled) throw new ServiceError('unavailable', '研究执行未配置或仍处于暂停状态，本次未发送。');
+    if (resource !== 'sources' && resource !== 'research-questions' && resource !== 'research-reader-dispositions' && resource !== 'research-reader-reconciliations' && resource !== 'research-release' && !(resource === 'research-handoffs' && object(fields.input).decision === 'returned') && !this.researchExecutionEnabled) throw new ServiceError('unavailable', '研究执行未配置或仍处于暂停状态，本次未发送。');
     const path = `/projects/${encodeURIComponent(id)}/${resource}`, body = {...fields, commandId: meta.commandId, expectedRevision: meta.expectedRevision};
     const value = (await this.write(path, body, resource)).value;
     let p: Snapshot, receipt: Record<string, unknown>;
     try {p = parseSnapshot(value); receipt = object(object(value).receipt); if (p.id !== id) throw new Error('Wrong project');}
     catch {throw new ServiceError('response_lost', '研究写入响应不完整，请保留原命令核对。', {outcomeUnknown: true, retryable: true});}
-    this.verifyResearchReceipt(p, receipt, body, path);
+    const historicalReader=this.verifyResearchReceipt(p, receipt, body, path);
+    if(historicalReader){this.completed(meta.commandId);throw new ServiceError('conflict',READER_HISTORY_MESSAGE);}
     if (p.activeTaskCardId !== before.activeTaskCardId) throw new ServiceError('conflict', '提交时的简报已被新稿替代，请核对保留内容。');
     return {p, receipt, value};
   }

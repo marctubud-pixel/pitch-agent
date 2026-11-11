@@ -10,7 +10,7 @@ import {feedbackHash,validateRevisionInput} from './human-feedback.mjs';
 export const CORRECTION_PROTOCOL='typed-revision-v2';
 export const CORRECTION_REVIEW_PROTOCOL='correction-handling-v1';
 export const LATEST_CORRECTION_REVIEW_PROTOCOL='correction-handling-v2';
-export const CORRECTION_KINDS=Object.freeze(['verification','readiness','coverage_challenge','handoff','feedback_review','creative_panel','correction_review','owner_edge','reference']);
+export const CORRECTION_KINDS=Object.freeze(['research_reader','verification','readiness','coverage_challenge','handoff','feedback_review','creative_panel','correction_review','owner_edge','reference']);
 const text={type:'string',minLength:1,maxLength:20000};
 const en=values=>({type:'string',enum:values});
 const arr=(items,minItems=0,maxItems=10000)=>({type:'array',items,minItems,maxItems});
@@ -131,6 +131,12 @@ const referenceCorrection=fixed(({source,data,action,preserve})=>{
  for(const field of ['decision','understanding','copyUnderstanding','permittedUses','prohibitedInferences','retainedRestrictions','comparisons','adjudications'])if(Object.hasOwn(data,field))preserve(`/${field}`,data[field]);
 });
 export const EXTRACTION_REGISTRY=Object.freeze({
+ 'research_reader:research-reader-loop-v1':fixed(({each,action,preserve})=>{
+  each('issues',action);
+  each('answers',(path,item)=>(item.status==='answered'?preserve:action)(path,item));
+  each('rechecks',(path,item)=>(item.status==='resolved'?preserve:action)(path,item));
+  each('retellings',preserve);each('connections',preserve);each('limitations',preserve);
+ }),
  'coverage_challenge:research-semantic-challenge-v1':fixed(({data,each,action,preserve})=>{each('relations',(path,item)=>(['supported','not_applicable'].includes(item.outcome)?preserve:action)(path,item));each('limitations',preserve);preserve('/basisHash',data.basisHash);}),
  'reference:reference-dossier-v1':referenceCorrection,'reference:reference-pixel-review-v1':referenceCorrection,
  'owner_edge:owner-edge-v1':fixed(({source,data,action,preserve,each})=>{

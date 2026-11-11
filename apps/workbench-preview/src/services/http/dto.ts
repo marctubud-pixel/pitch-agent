@@ -28,6 +28,8 @@ export interface Snapshot {
   textReports: { verification: Record<string, unknown>[]; readiness: Record<string, unknown>[]; handoff: Record<string, unknown>[]; correction: Record<string, unknown>[] };
   readinessResolutions: Record<string, unknown>[];
   stageAssessments: Record<string, { body: string; currentId: string | null }>;
+  readerDispositions?: Record<string, unknown>[];
+  readerPlans?: Record<string, unknown>[]; readerReports?: Record<string, unknown>[];
   jobs: Record<string, unknown>[]; artifacts: Record<string, unknown>[];
   audit: Array<{ commandId: string; kind: string; actorId: string; revision: number; at: string }>;
   processedCommands: Record<string, unknown>;
@@ -49,6 +51,8 @@ export function parseSnapshot(value: unknown): Snapshot {
     readinessResolutions: records(p.readinessResolutions),
     stageAssessments: Object.fromEntries(records(view.stages).filter((stage) => stage.researchAssessment !== undefined).map((stage) => [text(stage.stage), { body: JSON.stringify(stage.researchAssessment), currentId: stage.researchAssessment && object(stage.researchAssessment).current === true ? text(object(stage.researchAssessment).assessmentId) || null : null }])),
     intakeDocuments: records(p.intakeDocuments), intakeOperations: records(p.intakeOperations),
+    readerDispositions: records(p.researchReaderDispositions),
+    readerPlans: records(p.researchQuestionRegistrations), readerReports: records(p.researchReaderReports),
     jobs: records(p.jobs), artifacts: records(p.artifacts),
     audit: records(p.audit).map((a) => ({ commandId: text(a.commandId), kind: text(a.kind), actorId: text(a.actorId), revision: integer(a.revision), at: text(a.at) })),
     processedCommands: object(p.processedCommands), complete: view.complete === true,

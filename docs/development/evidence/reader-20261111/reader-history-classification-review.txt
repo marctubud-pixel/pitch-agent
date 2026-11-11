@@ -1,0 +1,85 @@
+# 同卡旧回执分类独立复审
+
+2026-11-11。相对006b6896的未提交两文件窄修已独立核查，**没有发现分类代码的新可操作缺陷**。旧修订B被当前C取代、同卡旧问题Q1被Q2取代均按已知历史处理；错job回执仍unknown并保留原请求。当前链定向保护测试通过。本轮发现的既有UI内容保留限制现已窄修并完成独立浏览器复验；修前通用提示与修后完整raw body证据分开保留，详见末节。
+
+## 依据与范围
+
+读取现行规范入口与HTTP恢复合同 `docs/development/http-brief.md` 1.2.0、seven-stage-research 1.1.0及项目固定 `skills/ui-review/SKILL.md`、20原则/verification。源码读取沿用typescript-best-practices/type-system-discipline；只读比较 `git diff 006b6896 -- apps/workbench-preview/src/services/http/HttpWorkbenchService.ts apps/workbench-preview/src/services/http/researchRevisionHistory.test.ts`。未修改source/git/docs规范，报告与独立证据仅写scratch。
+
+合同要求：真正未知保留原命令/body；已知历史不当成当前成功，不更换当前head；已知分类后清journal并保留历史提示。服务端旧项目、真实模型、R1/R2、旧run/DB与业务审批不在本轮操作范围。
+
+### 代码核查
+
+- succeeded修订先绑定原command、job及两份revisionRequest；要求唯一outputVersionId，实际research产物存在并绑定原taskCardId，再比较实际输出与当前研究head。缺唯一输出或错误输入绑定保持outcomeUnknown。
+- 非succeeded修订按taskCard与原请求artifact是否仍当前分类，不凭同卡推断当前成功。
+- 问题登记在原命令/内容/计划绑定通过后，额外检查同taskCard最新readerPlan是否仍原计划，修复同卡Q1→Q2漏洞。
+- 历史分支使用已有conflict流程且outcomeUnknown=false，清journal；错回执抛unknown前不清。未变其他写入/映射与当前head。
+
+## 实际测试与隔离
+
+1. 在apps/workbench-preview执行 `npm run test -- src/services/http/researchRevisionHistory.test.ts`：2/2通过。
+2. 结合现有当前链保护：`npm run test -- src/services/http/researchReaderHttp.test.ts src/services/http/researchRevisionHistory.test.ts`：2文件、6/6通过。没有把这些测试称为整套构建或全部七阶段通过。
+3. 为浏览器采集真实受限HTTP处理器数据，独立复制两项测试到[fixture采集脚本](../history-independent-fixture.test.ts)，只新增响应/未决body记录，不改source；[专用Vitest配置](../history-independent-vitest.config.mjs)。以绝对PITCH_READER_TEST_SERVER指向当前tools服务运行：2/2通过。新mkdtemp SQLite、显式本地合成provider、server.emit request，不监听4182，不读取旧DB/扫描旧job；cleanup关闭并删除本轮tmp运行目录。数据分别保存在[修订fixture](../history-independent-revision-fixture.json)、[计划fixture](../history-independent-questions-fixture.json)。
+
+## 真实浏览器范围与结果
+
+执行[浏览器脚本](../history-independent-browser.mjs)：现有Playwright＋系统Google Chrome headless、新临时profile/context，4430加载当前React页面和当前service；**全部/api/v1请求均路由截获**，只回放上述新隔离数据；任何不匹配原path和精确body的POST都abort。未请求4190真实接口、未访问R1/R2项目、未改服务或重做旧业务。
+
+[浏览器原始回执](../history-independent-browser.json)：修订夹具2次POST（先错job，再原body正确已知重放），计划夹具1次POST；均仅浏览器路由fulfill，**真实后端POST0**。所有模拟POST与原journal body字节一致，页面错误0、意外请求0，当前stage与readerPlan快照保持原样。夹具首页故意返回空项目列表，截图中的0项目属于隔离上下文，不代表用户真实目录。
+
+- 错修订回执：[1280浅色unknown](../history-independent-revision-unknown-1280-light.png)、[910深色unknown](../history-independent-revision-unknown-910-dark.png)。真实alert显示“修订回执未绑定原稿与原请求，记录仍保留”；sessionStorage原body精确一致，刷新后仍能用原命令核对。
+- 正确同body重放：[1280浅色历史](../history-independent-revision-history-1280-light.png)、[910深色历史](../history-independent-revision-history-910-dark.png)。显示“原提交已核对”“原提交已保存为历史”，journal清除；没有被显示为当前修订成功，当前head仍C。
+- 旧问题计划：[1280浅色历史](../history-independent-questions-history-1280-light.png)、[910深色历史](../history-independent-questions-history-910-dark.png)。Q1实际问题仍可展开，原body重放分类历史并清journal，快照仍Q2，不重登记Q1。
+- 1280×1000浅色、910×1000深色，DPR1、中文、默认缩放，字体稳定后回页首截图；各状态scrollWidth与viewport宽相同。核对按钮可键盘Enter执行，历史details可展开；对pre实际选中文本并Meta+C，浏览器clipboard读回与可见保留文本精确相同。
+
+### 工具/夹具接续原样披露
+
+初次浏览器在计划案例等待历史提示超时：[失败记录](../history-independent-browser-failure.json)。原因是采集脚本中GET快照仍Q1，却Q2写入响应才是最新head；这导致夹具错误地把Q1重放成当前成功。改为从Q2 POST响应取最新原生快照后重新执行，全流程通过。此为夹具条件错误，不算应用回归或旧修复已失效；失败证据保留。修订案例在该次已通过，但只以最终完整回执报结果。
+
+## 一项既有UI限制（非本次两文件回归）
+
+**历史P3／最终已修复并验证：** 修订类恢复面板的“查看原提交内容”目前只显示通用句“已保留原始版本和当时请求。核对不会改用当前稿件替代原输入。”，没有展示原artifactId/commandId/expectedRevision或raw body。unknown期间raw body仍在sessionStorage且已测保持精确，但已知历史后journal按合同清除，历史提示没有可复制的原raw body；复制测试通过的是通用提示。计划案例可复制实际Q1正文，同样不是完整raw JSON。
+
+影响：若验收要求用户在已知历史提示中查阅/复制原请求身份或完整body，此项尚不满足；不能从“可复制提示”推断“原body可复制”。建议在清journal前把原请求身份/原文带入历史只读详情（可保留通俗摘要），无需保留未决锁或影响新提交。此项只读报告给开发统筹，未擅改BriefRecoveryPanel；它在006b6896已存在，不是此次分类代码新增的问题。
+
+## 20原则处置
+
+|编号|状态|实际范围|
+|---|---|---|
+|01气质|已满足|恢复卡沿用原btn/卡片/主题|
+|02灰度|无法验证|未做灰度|
+|03层级|已满足（P3修后）|unknown/历史区分清楚；完整原请求在折叠详情内，修前限制见历史段落|
+|04焦点竞争|已满足|核对/结束与历史查看/关闭区分|
+|05标签|已满足|提示标题与按钮语义可辨|
+|06操作层级|已满足|核对执行原body；未执行结束/关闭/导航|
+|07间距|已满足|两种视口无重叠发现|
+|08宽度|已满足|各状态无横向滚动|
+|09归属|已满足|恢复信息集中在页首卡片|
+|10桌面边界|已满足|1280浅色/910深色覆盖|
+|11行长|已满足（夹具内容）|原问题正常换行；极长body未测|
+|12混排|已满足|中文标题/提示/按钮可辨|
+|13色阶|无法验证|未枚举所有状态|
+|14对比度|无法验证|未完整计算，不签WCAG|
+|15非颜色状态|已满足|unknown有错误原句，历史有明确文字|
+|16局部边界|已满足|原卡片与原按钮边界保留|
+|17叠字|不适用|无图片叠字|
+|18素材|不适用|恢复内容无新位图|
+|19焦点/复制|已满足（已见路径）|Enter核对；pre实际可选可复制，完整raw body限制见上|
+|20状态|已满足（P3修后）|unknown/历史转换及journal行为保持；历史修订原请求明细现完整|
+
+本轮未改UI或Skill规则。分类窄修得到真实执行与浏览器回放支持；复验范围不包括真实TCP丢响应、实际4190同体重放、完整r7链、付费/真实模型、权限/加载/其他错误和所有畸形回执组合。不签研究充分、消费者效果、人类批准或reader_loop业务完成。
+
+
+## 原请求详情P3窄修后的真实UI复验
+
+root仅调整BriefRecoveryPanel.tsx的preserved分支：read_research/revise_research/reconcile_reader在既有折叠pre保留pending.label、原pending.body逐字内容与核对说明；没有新增按钮、自动调用或改journal策略。只读比较相对006b6896的该文件diff，确认已有问题登记正文分支与其余行为未变。原“只有通用句”的截图、原始回执和P3观察全部保留，不能称修前已满足raw body复制。
+
+独立执行[修后浏览器脚本](../history-independent-body-after-browser.mjs)，沿用同一新隔离fixture、当前4430前端、独立临时Chrome和全API路由截获，不请求4190、R1/R2或真实模型。[修后回执](../history-independent-body-after.json)显示：
+
+- 错job修订回执依旧unknown，原body与journal逐字不变，刷新后仍按同一body核对。
+- 已知历史后journal仍清除，当前head/readerPlan不变；修订2次与计划1次模拟POST均与原body精确一致，真实后端POST0、意外请求0、页面错误0。
+- [1280浅色历史详情](../history-independent-body-after-revision-history-1280-light.png)、[910深色历史详情](../history-independent-body-after-revision-history-910-dark.png)明确保留原artifactId、commandId=revise、expectedRevision=10及整份原JSON。actual rawBodyVisible=true。
+- 实际在pre中仅选取原body连续范围，Meta+C后浏览器clipboard读回，**copiedRawBody与初始pending.body逐字相等（rawBodyCopyExact=true）**，没有pretty print、重排字段或混入提示说明。可见自动换行不改变复制出的原字符串。
+- 修后unknown与历史共6个页面状态均scrollWidth=viewport（1280/910），窄深色长ID能换行，无横向溢出。原问题Q1仍可复制实际问题正文，分支未受影响。
+
+本P3现为**已修复并验证**；当前限定范围没有未解决UI发现。20原则表的03/20已改为修后“已满足”，其他原则证据与未验限制保持。read_research/reconcile_reader分支共用同一代码，但本次浏览器只实际测试revise_research与既有问题登记；不外推全部命令类型、极长body、完整无障碍或生产恢复。历史提示保留在当前页面内存，刷新后已知journal不会恢复，未新增跨刷新已知历史持久化承诺。

@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {resolve} from 'node:path';
 import {openStore} from './store.mjs';
 import {layoutPublicProject} from './layout-boundary.mjs';
-import {DomainError, projectView, researchWorkflowView} from './project.mjs';
+import {DomainError, projectView} from './project.mjs';
 
 const MAX_BODY_BYTES = 128 * 1024;
 const commandFields = {'revise-task-card': ['taskCardId', 'brief'], 'confirm-task-card': ['taskCardId']};
@@ -22,6 +22,33 @@ function fields(body, allowed) {
 function string(body, key, required = true) {
   if (body[key] === undefined && !required) return;
   if (typeof body[key] !== 'string' || !body[key].trim() || body[key].length > 60000) invalid(`${key} must be a nonempty string of at most 60000 characters`);
+}
+function readerBody(resource, body) {
+  if (resource === '/research-questions') {
+    if (![1, 2].includes(body.readerCount) || !Array.isArray(body.questions) || !body.questions.length || body.questions.length > 100) invalid('One or two readers and bounded questions required');
+    for (const question of body.questions) {
+      fields(question, ['id', 'question', 'critical']);string(question, 'id');string(question, 'question');
+      if (typeof question.critical !== 'boolean') invalid('Question critical must be boolean');
+    }
+  }
+  if (['/research-revisions', '/research-readers', '/research-reader-dispositions'].includes(resource)) string(body, 'artifactId');
+  if (resource === '/research-readers') {
+    string(body, 'registrationId');
+    if (![0, 1].includes(body.seat)) invalid('A preregistered reader seat is required');
+    for (const key of ['previousReportId', 'dispositionId']) if (Object.hasOwn(body, key)) string(body, key);
+    if (Object.hasOwn(body, 'previousReportId') !== Object.hasOwn(body, 'dispositionId')) invalid('Recheck needs its original report and saved dispositions');
+  }
+  if (resource === '/research-reader-reconciliations') string(body, 'jobId');
+  if (resource === '/research-reader-dispositions') {
+    string(body, 'previousReportId');
+    if (!Array.isArray(body.dispositions) || body.dispositions.length > 100) invalid('Bounded reader dispositions required');
+    for (const disposition of body.dispositions) {
+      fields(disposition, ['issueId', 'action', 'response', 'locations']);
+      for (const key of ['issueId', 'action', 'response']) string(disposition, key);
+      if (!Array.isArray(disposition.locations) || !disposition.locations.length || disposition.locations.length > 100) invalid('Located revised report evidence required');
+      for (const location of disposition.locations) {fields(location, ['location', 'quote']);string(location, 'location');string(location, 'quote');}
+    }
+  }
 }
 async function jsonBody(req, maxBytes = MAX_BODY_BYTES) {
   if (!/^application\/json(?:\s*;.*)?$/i.test(req.headers['content-type'] ?? '')) throw new HttpError(415, 'JSON_REQUIRED', 'Use application/json');
@@ -60,8 +87,8 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
     research = createResearchService({rootDir: resolve(`${dbPath}.research`), ...researchOptions, store});
     intake = createBriefIntakeService({store, rootDir: resolve(`${dbPath}.originals`)});
   } catch(error) {store.close();throw error;}
-  const result = project => {
-    const native = projectView(project), rw = project.workflow ? researchWorkflowView(project, researchOptions) : null;
+  const result = async project => {
+    const native = projectView(project), rw = project.workflow ? await research.workflowSnapshot(project) : null;
     return {project: layoutPublicProject(project), view: {...native, proposalWorkflow: workflowView(project,{researchWorkflow:rw}), researchWorkflow:rw}};
   };
   const requests = new Set();
@@ -88,10 +115,11 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
         res.setHeader('Vary', 'Origin');
       }
-      const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/(?:commands|sources|research-workflow|research-jobs|research-verification|research-readiness|research-handoffs|research-release)|\/artifacts\/([A-Za-z0-9:._%-]+)\/content)?$/.exec(url.pathname);
+      const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/(?:commands|sources|research-workflow|research-jobs|research-verification|research-readiness|research-handoffs|research-release|research-questions|research-readers|research-reader-reconciliations|research-reader-dispositions|research-revisions)|\/artifacts\/([A-Za-z0-9:._%-]+)\/content)?$/.exec(url.pathname);
       const documentMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/documents(?:\/([A-Za-z0-9-]+)\/original)?$/.exec(url.pathname);
+      const readerMatch=/^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/research-reader-reports\/([A-Za-z0-9-]+)$/.exec(url.pathname);
       const resource = projectMatch?.[2];
-      const methods = documentMatch ? documentMatch[2] ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
+      const methods = readerMatch ? ['GET'] : documentMatch ? documentMatch[2] ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
       if (!methods.length) throw new HttpError(404, 'NOT_FOUND', 'Route not found');
       const revision = url.searchParams.get('revision');
       const targetMethod = req.method === 'OPTIONS' ? req.headers['access-control-request-method'] : req.method;
@@ -106,6 +134,7 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
       if (url.pathname === '/api/v1/capabilities') {
         response(res, 200, {apiVersion: 'v1', surface: research.capability().executionAllowed ? 'research-v1' : 'brief-v1', workflowVersion:WORKFLOW_VERSION, executionAvailable: research.capability().executionAllowed, research:research.capability(), originals:intake.capability(), commands: Object.keys(commandFields)}); return;
       }
+      if(readerMatch){response(res,200,await research.readerReport(readerMatch[1],readerMatch[2]));return;}
       if (documentMatch) {
         const id = documentMatch[1];
         if (req.method === 'GET' && !documentMatch[2]) {response(res,200,await intake.list(id));return;}
@@ -120,7 +149,7 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
         const bytes=Buffer.from(body.base64,'base64');
         if(bytes.toString('base64')!==body.base64)invalid('Canonical base64 required');
         const {base64,...request}=body, receipt=await intake.upload(id,request,bytes);
-        response(res,200,{...result(store.read(id)),document:receipt.document,receipt:{documentId:receipt.documentId,commandId:body.commandId,replayed:receipt.receipt.replayed}});return;
+        response(res,200,{...(await result(store.read(id))),document:receipt.document,receipt:{documentId:receipt.documentId,commandId:body.commandId,replayed:receipt.receipt.replayed}});return;
       }
       if (url.pathname === '/api/v1/projects' && req.method === 'GET') {
         response(res, 200, {projects: store.list().map(({id}) => { const p = store.read(id); return {id, name: p.name, revision: p.revision}; })}); return;
@@ -134,34 +163,35 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
         if (body.commandId === '__proto__') invalid('Reserved commandId');
         const id = body.commandId ? `project-${createHash('sha256').update(body.commandId).digest('hex')}` : randomUUID();
         const input = {id, name: body.name.trim(), brief: body.brief, mode: body.mode ?? 'assisted', humanGates: body.humanGates ?? [], authorizedThrough: 'research', workflowVersion:WORKFLOW_VERSION};
-        try { response(res, 201, result(store.create(input, humanContext()))); }
+        try { response(res, 201, await result(store.create(input, humanContext()))); }
         catch (error) {
           if (error.code !== 'PROJECT_EXISTS' || !body.commandId) throw error;
           const initial = store.read(id, 0), policy = initial.policies[0];
           if (initial.name !== input.name || initial.taskCards[0].brief !== input.brief || policy.mode !== input.mode || policy.authorizedThrough !== input.authorizedThrough || JSON.stringify(policy.humanGates) !== JSON.stringify([...new Set(input.humanGates)])) throw new HttpError(409, 'COMMAND_ID_REUSED', 'Creation command ID belongs to another payload');
-          response(res, 200, result(store.read(id)));
+          response(res, 200, await result(store.read(id)));
         }
         return;
       }
-      if (!projectMatch[2]) { response(res, 200, result(store.read(projectMatch[1], revision === null ? undefined : Number(revision)))); return; }
+      if (!projectMatch[2]) { response(res, 200, await result(store.read(projectMatch[1], revision === null ? undefined : Number(revision)))); return; }
       if (resource !== '/commands') {
         const id = projectMatch[1], p = store.read(id); requireResearchWorkflow(p);
-        if (resource === '/research-workflow') {response(res,200,{workflow:research.workflow(id), capability:research.capability()}); return;}
+        if (resource === '/research-workflow') {response(res,200,{workflow:await research.workflowSnapshot(p), capability:research.capability()}); return;}
         if (projectMatch[3]) {response(res,200,await research.content(id,decodeURIComponent(projectMatch[3])));return;}
         const body = await jsonBody(req), common = ['commandId','expectedRevision'];
-        const extra = {'/sources':['input'], '/research-jobs':['sourceEntryIds'], '/research-verification':['artifactId'], '/research-readiness':['artifactId'], '/research-handoffs':['artifactId','contentHash','basisHash','input'], '/research-release':['artifactId','contentHash','basisHash','policyVersion']}[resource];
+        const extra = {'/sources':['input'], '/research-jobs':['sourceEntryIds'], '/research-verification':['artifactId'], '/research-readiness':['artifactId'], '/research-handoffs':['artifactId','contentHash','basisHash','input'], '/research-release':['artifactId','contentHash','basisHash','policyVersion'], '/research-revisions':['artifactId'], '/research-questions':['questions','readerCount'], '/research-readers':['artifactId','registrationId','seat','previousReportId','dispositionId'], '/research-reader-reconciliations':['jobId'], '/research-reader-dispositions':['artifactId','previousReportId','dispositions']}[resource];
         fields(body,[...common,...extra]); string(body,'commandId');
         if (body.commandId==='__proto__' || !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision<0) invalid('Valid command ID and revision required');
+        readerBody(resource,body);
         let receipt, replayed=Object.hasOwn(p.processedCommands,body.commandId);
         if(resource==='/sources') {
           const after=store.command(id,{kind:'register-research-source',source:body.input,...Object.fromEntries(common.map(k=>[k,body[k]]))},humanContext());
           const source=after.sourceEntries.find(x=>x.id===`source-${createHash('sha256').update(JSON.stringify([id,body.commandId])).digest('hex')}`);
           receipt={sourceId:source.id};
         } else {
-          const method={'/research-jobs':'generate','/research-verification':'verify','/research-readiness':'assess','/research-handoffs':'handoff','/research-release':'release'}[resource];
+          const method={'/research-jobs':'generate','/research-verification':'verify','/research-readiness':'assess','/research-handoffs':'handoff','/research-release':'release','/research-revisions':'revise','/research-questions':'registerQuestions','/research-readers':'readReport','/research-reader-reconciliations':'reconcileReader','/research-reader-dispositions':'disposeReader'}[resource];
           receipt=await research[method](id,body,humanContext());
         }
-        response(res,200,{...result(store.read(id)),receipt:{...receipt,commandId:body.commandId,replayed}});return;
+        response(res,200,{...(await result(store.read(id))),receipt:{...receipt,commandId:body.commandId,replayed}});return;
       }
       const body = await jsonBody(req);
       if (!body || typeof body.kind !== 'string' || !Object.hasOwn(commandFields, body.kind)) throw new HttpError(403, 'COMMAND_FORBIDDEN', 'Only Brief revisions and confirmations are supported');
@@ -170,7 +200,7 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions}
       if (body.commandId === '__proto__' || !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0) invalid('Valid command ID and nonnegative revision required');
       const replayed = Object.hasOwn(store.read(projectMatch[1]).processedCommands, body.commandId);
       const project = store.command(projectMatch[1], body, humanContext());
-      response(res, 200, {...result(project), receipt: {commandId: body.commandId, replayed}});
+      response(res, 200, {...(await result(project)), receipt: {commandId: body.commandId, replayed}});
     } catch (error) {
       const status = error.status ?? (error.code==='SOURCE_ENTRY_INVALID' ? 422 : error instanceof DomainError ? error.code === 'NOT_FOUND' ? 404 : ['REVISION_CONFLICT', 'COMMAND_ID_REUSED', 'PROJECT_EXISTS'].includes(error.code) ? 409 : 422 : 500);
       response(res, status, {error: {code: status === 500 ? 'INTERNAL_ERROR' : error.code, message: status === 500 ? 'Brief service could not complete the request' : error.message}});

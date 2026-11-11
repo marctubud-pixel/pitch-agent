@@ -1,0 +1,56 @@
+# Reader 历史 unknown 恢复独立复核
+
+日期：2026-11-11。比较基线：`006b689634dd914d9c00e74610729d005b00a77e`，对象为未提交的 `executor.mjs`、`research-reader-state.mjs`、`research-reader-service.test.mjs` 历史恢复修复。未复核其他同事编辑的 service/frontend；未修改产品源码、旧夹具或 Git。按主执行者后续明确授权新增独立回归 `tools/workbench/reader-acquired-history.test.mjs`。
+
+结论：**复核途中发现并实证 1 项 P2，主执行者已修复；最终复验范围内无未解决 P1/P2。** 该结论仅覆盖历史读者原结果核回，不覆盖另一项 queued 任务重放修复。
+
+## 发现与修复
+
+新增原件预检最初调用 `verifyResearchOriginal(p, artifact)`。该 helper 会调用 `acquisition.verifyProducer` 且默认 `historical=false`，引入当前卡/当前采集配置校验。对手工来源的历史恢复测试通过，对已有真实 sealed acquisition 的研究稿却仍阻断历史核回。
+
+独立反例使用新 SQLite、现成采集夹具的注入式合成搜索/采集响应，以及 127.0.0.1 合成 reader HTTP：预登记 → 采集封存 → 实际研究生产 → reader 在 manifest-synced 后丢返回 → 换任务卡 → 无 provider/采集配置核回。旧 helper 对照实测输出：
+
+```text
+RECOVERY_FAILED INVALID_RESEARCH_CHART_DATA Full confirmed task card and exact decision hashes required
+RESULT awaiting_reconciliation readerReports 0 newCalls 0
+```
+
+主执行者将 `executor.mjs:664` 改用 `verifyResearchDataOriginal(p, artifact, {executionRoot:root})`。该函数核冻结生产输入、实际输出、源数据及原采集，采集核验显式使用 `historical:true`。相同独立反例输出：
+
+```text
+RECOVERED
+RESULT succeeded readerReports 1 newCalls 0
+HISTORICAL_CURRENT false
+```
+
+旧 helper 对照仅存在于 `/tmp/reader-executor-previous-check.mjs`，未改仓库产品源码。独立脚本 `/tmp/reader-acquired-historical-before-review.mjs`、`/tmp/reader-acquired-historical-review.mjs` 及改为七阶段的临时夹具只用于前后实证；稳定回归使用仓库现成夹具并另建七阶段项目，无需修改旧夹具。
+
+## 绑定与权限检查
+
+- historical 仅由核回路径显式启用。默认 `registered` / `researchReaderTarget` 继续检查当前卡、当前计划、当前稿、固定方法与最新复查，不能用历史票生成当前覆盖或交接证明。
+- 历史目标取 job 冻结 registrationId；核原任务卡完整 hash、登记 hash、实际 producer 所消费的完整登记与方法、生产请求晚于预登记，以及原稿 inputVersionIds。
+- packet 必须匹配原卡、原登记、原方法、原稿 hash、完整正文投影和席位范围；重建 packet 后逐字段相等，不能重哈希后跨稿冒用。
+- reducer 只接受 awaiting_reconciliation 的已派发原 attempt；原 receipt 除规范化 wrapper 外须精确相等，raw reply、输入 hash、上下文独立性仍校验。HTTP locator 原输入/原结果通过 restoreOrdinaryJob 与 reopenOrdinaryCompletion 读取核实，不派发替代调用。
+- 复查历史允许历史次序不再是当前最新，但仍绑定同登记、同席位、原 report/hash、逐项 disposition、真实新旧稿祖先；前序报告实际原件递归核验保持。
+- 新回归验证坏研究原件时任务保持 unknown、0 报告；修复原件后同一请求成功，只产生 1 报告和 1 attempt，原模型与采集调用数不增加，历史 proof.current=false，current:true 验证拒绝，canRelease 仍 false。
+
+## 实际验证与限制
+
+最终执行：
+
+```sh
+node --test tools/workbench/research-reader-service.test.mjs tools/workbench/research-reader-state.test.mjs tools/workbench/research-reader-loop.test.mjs tools/workbench/reader-acquired-history.test.mjs
+```
+
+**37/37 通过**。覆盖协议、状态、上下文/席位独立性、原回执核回、换卡/换问题计划、坏原件阻断及采集历史恢复。两个新增换卡/换计划 service 用例另定向复验 2/2；新增独立采集历史用例单跑 1/1。
+
+首次沙箱内运行遇 Node `InternalCallbackScope::Close` 的 async_id 原生断言；独立采集脚本也收到 loopback listen EPERM。后经权限审查允许，以相同新临时 SQLite、本机合成 HTTP 范围复跑通过，不将沙箱/Node原生崩溃记为产品缺陷。无旧数据库、旧 run、外部网络模型或费用；没有执行全历史测试、浏览器或真实消费者研究。未验证固定方法文件实际升级后的跨版本原件迁移，也不将合成报告当作业务/人工批准。
+
+最终受审文件 SHA256：
+
+```text
+executor.mjs 387c83c7cf95585bd9446dd0e7531078f8a479b157043cc254db316cdfb32bb9
+research-reader-state.mjs 0333fa3143e84bca1163349fe35e0283da915506220489bf9375e78bd591ebef
+research-reader-service.test.mjs efa33c9997235c78d32bfef62d37f0f4314f8bd1f8721aa6e4dad7e7d6fbada9
+reader-acquired-history.test.mjs f955ae34969af8998567e9ce4a7be89a5d5313cde9f980e9f12c1f5097efed07
+```

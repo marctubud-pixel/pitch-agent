@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.2.2。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.3.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -57,3 +57,10 @@ flowchart LR
 ## PDF原件bridge
 
 brief-server复用brief-intake-service→旧intake-runtime/intake-document-store保存原字节与intakeOperations，沿用同一project store；只新增受限documents路由，无schedule/recover。上传附带PDF解析queued零attempt job，前端仅按真实bridge登记关系窄投影；卡原始身份、客户端选择ID、服务器文档ID与字节SHA分别核。HTTP/Mock资料位置说明分开，见[原件合同](../development/brief-originals.md)。
+
+
+## 读者回环和实际文件资格
+
+`research-reader-loop`承载盲读packet/输出，`research-reader-state`承载预登记、席位、修订处置和当前证明；两者是纯域，不证明磁盘原件。既有executor/ordinary HTTP保存真实调用，`research-reader-original`核生产/读者原文及递归修订链，`research-reader-workflow`核本版预定席位的实际文件。brief-server的异步快照及正向交接/放行均经过原件核对。
+
+读者报告通过correction adapter进入旧typed修订引擎，不新增第二修订器。readerEvidence及hash进入声明basis与owner原packet，原事实/充分性/semantic/人工/授权分别保留。HTTP恢复只核同一已保存调用，已核历史结果与真正unknown分开。详细字段见[读者合同](../development/research-reader.md)。

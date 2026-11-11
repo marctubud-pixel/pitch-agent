@@ -1,3 +1,11 @@
+# 目标模式：研究独立读者与交接接线 · 2026-11-11
+
+完整七阶段本地静态闭环目标保持active。PDF原件经[PR #4](https://github.com/marctubud-pixel/pitch-agent/pull/4)双CI通过合并44c495b1；本轮在新分支接r7问题预登记、独立正文阅读、旧typed引擎实际修订、逐项处理、独立复查和原件核对。研究声明basis及owner原始packet绑定全部同版席位和原报告，原事实/readiness/semantic/人类与授权条件保留。默认不执行模型，不开放旧复杂策略。
+
+实际新SQLite与仅本机合成HTTP已完成正向研究交接及明确工程操作员节点，坏读者文件阻止放行，研究放行仍拒越权启动策略。当前Chrome负例完成来源/生成/首读、实际新版、回应原文选段及丢响应同体恢复、独立复查；缺证仍未解决、0release。scope和最终复核见[本轮核验](../docs/development/research-reader-verification-20261111.md)及[运行合同](../docs/development/research-reader.md)。R1夹具坏source被原守卫拦为unknown，记录留存，不改成成功。
+
+读者包最终整套检查退出0：738前端/1既有跳过、78核心、26域、22Brief HTTP、80研究合同，类型构建通过。固定006b6896两轴3项P2及复验发现的历史采集P2/详情P3均已修并独立复验；原失败报告保留，实际范围见本轮核验。规范1.7.1；Git与CI按实际回执登记。自动采集/PDF解析、简洁策略至Deck/终审和包装/KV全链仍待接；旧run、原数据库、付费/真实模型、生产账号、通知、云部署及在线编辑暂停项不恢复。以下为原时间顺序记录，不据历史缺口覆盖最新状态。
+
 # 目标模式：PDF原件子路径 · 2026-11-11
 
 完整七阶段本地静态闭环目标保持active。已复用旧intake接当前HTTP和前端PDF原件保存/投影/原字节下载，支持确认前上传、实际cap预检、同体刷新恢复，见[合同](../docs/development/brief-originals.md)与[实际核验](../docs/development/brief-originals-verification-20261111.md)。真实Chrome新隔离项目原件1811B下载SHA一致，丢响应刷新同body，0模型/解析attempt/确认，1280浅色及910深色、独立只读UI复验通过；仅修发现的重复能力说明，不重画页面。

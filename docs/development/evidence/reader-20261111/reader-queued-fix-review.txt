@@ -1,0 +1,16 @@
+# queued 修复独立复核
+
+范围：另一实现者 `tools/workbench/research-service.mjs` 相对 `006b6896` 的未提交差异（新增 resumeQueued 与 reader/revision 重放接入），及 `reader-queued-recovery.test.mjs`。按 `docs/development/research-reader.md` 1.0.1 核对；不复核本人前端修复，不改源码、规范、清单或 Git。
+
+**结论：未发现可证明 P1/P2，定向通过。**
+
+- `research-service.mjs:38–51` 仅 queued 且 attempts 为空可续行；冻结角色绑定必须与实际配置相等。reader 重用 current target 守卫；revision 另核当前卡/稿、固定方法与完整问题登记。实际 execute 仍经过原件、输入、typed 修订及原生 start-job claim，未增加恢复扫描或通用 retry。
+- 两个重放分支先调用原 enqueue 进行原 body 相等校验，再指定单一 job 执行。unknown、成功及已存在 attempt 直接返回原身份；未见重派路径。新测试不是只看返回值，核实际 provider 次数、原 job/attempt 和 SQLite 重开。
+
+## 独立实跑
+
+1. 新增队列测试 **20/20**：原 SQLite 重开后同 body reader/revision 各执行一次；缺能力、关闭执行、缺角色、换 binding、错 body、旧卡、换问题计划均零新增调用；unknown 不重发，历史成功在无执行配置时仍可核回。
+2. 自建 `/tmp/reader_queued_independent.test.mjs` **8/8**：同卡产生新稿后旧队列拒绝；两个并发同 body 重放仅一个实际调用/attempt；新增无关 source 引起 revision 变化仍允许原合法 queued 任务执行；临时新 SQLite 注入旧 frozen method identity 后两种任务均零调用。方法反例是受控临时快照身份损坏，未改实际 Skill 文件。
+3. 将 service 单文件还原为 `006b6896` 的 `/tmp` 隔离副本，独立正例的 reader/revision 均失败（provider 次数未增加，任务仍 queued）；当前修复同例通过，证明测到了原停滞缺陷。
+
+未发现新守卫误阻本轮真实 typed queued 修订；无关 revision 变化可续行，旧稿/旧方法不可执行符合合同。没有以报错或通过数量推断真实研究质量。未验真实供应商、付费执行、旧业务数据、浏览器、跨进程竞态及整条七阶段；全部测试使用新临时 SQLite/本机合成磁盘 provider，无网络 listen、部署、通知或在线 PPT。

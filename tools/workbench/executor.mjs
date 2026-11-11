@@ -1,3 +1,8 @@
+import {verifyCurrentResearchReaders} from './research-reader-workflow.mjs';
+import {verifyResearchReaderOriginal} from './research-reader-original.mjs';
+import {readManagedLayoutBytes} from './managed-layout-bytes.mjs';
+import {buildResearchReaderPacket,buildResearchReaderRequest,projectResearchReaderReport,validateResearchReaderOutput} from './research-reader-loop.mjs';
+import {researchQuestionRegistration,researchReaderTarget,researchReaderReport,researchReaderEvidence} from './research-reader-state.mjs';
 import {assertWorkflowStage} from './seven-stage-workflow.mjs';
 import {researchMethodIdentity, applyResearchMethod} from './research-method.mjs';
 import {buildSplitPlan} from './research-readiness-split.mjs';
@@ -9,7 +14,7 @@ import {evidenceEnrichmentPlan} from './project.mjs';
 import {reviewContextReport} from './project.mjs';
 import {semanticChallengeInput,semanticChallengeCurrent} from './project.mjs';
 import {buildSemanticRequest,validateSemanticOutput} from './research-semantic-review.mjs';
-import {reopenOrdinaryCompletion} from './ordinary-model-project.mjs';
+import {reopenOrdinaryCompletion,restoreOrdinaryJob} from './ordinary-model-project.mjs';
 import {verifyOrdinaryProject} from './ordinary-model-project.mjs';
 import {invokeOrdinary,reopenOrdinary,isOrdinaryHttp,ordinarySuccessfulStatus,ordinaryHasContext} from './ordinary-model.mjs';
 import {createResearchAcquisitionRuntime} from './research-acquisition-runtime.mjs';
@@ -233,8 +238,10 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       const loaded=await readArtifactContent(p,a.id,root),taskCard=p.taskCards.find(c=>c.id===p.activeTaskCardId),side=request.input.side==='research_owner'?'producer':'consumer';
       const author=p.jobs.find(j=>(!j.purpose||j.purpose==='stage')&&j.outputVersionIds?.includes(a.id)),binding=side==='producer'?author?.binding:bindings.strategy??(request.input.decision==='returned'?{providerId:'unconfigured',model:'unconfigured',role:'strategy-lead'}:null);
       if(!binding||request.input.decision!=='returned'&&providers[binding.providerId]?.model!==binding.model)throw new DomainError('PROVIDER_MISSING','Actual owner provider unavailable');
+      if(p.workflow&&request.input.decision!=='returned')await verifyCurrentResearchReaders(p,{executionRoot:root,artifactId:a.id});
+      const readerEvidence=p.workflow&&request.input.decision!=='returned'?researchReaderEvidence(p,a.id):null;
       const researchProducer=p.jobs.find(j=>j.outputVersionIds?.includes(a.id));
-      const frozenInput={...(researchProducer?.task?.researchDataBasis?{researchDataBasis:structuredClone(researchProducer.task.researchDataBasis)}:{}),handoffProtocolVersion:DECLARATION_HANDOFF_PROTOCOL,artifactId:a.id,contentHash:a.contentHash,contentText:loaded.contentText,content:loaded.content,taskCard,taskCardConfirmed:p.confirmations.some(c=>c.taskCardId===taskCard.id),sourceRecords:a.technicalReceipts?.sourceCatalogue?.records??[],visualCatalogue:a.technicalReceipts?.visualCatalogue??[],side,targetStage:'strategy',ownerBinding:binding,verificationReports:p.verifications.filter(r=>r.artifactId===a.id).map(r=>r.rawReport),readinessReports:p.readinessReports.filter(r=>r.artifactId===a.id).map(r=>r.rawReport),assessment:validatedResearchAssessment(p,a.id),effectiveHandlingBlocked:researchHandlingBlocked(p,a.id),...(p.verifications.some(r=>r.artifactId===a.id&&evidenceProtocolCapabilities(r.rawReport.protocolVersion).catalogueState)?{catalogueState:projectCatalogueState(p,a)}:{})};
+      const frozenInput={...(readerEvidence?{readerEvidence}:{}),...(researchProducer?.task?.researchDataBasis?{researchDataBasis:structuredClone(researchProducer.task.researchDataBasis)}:{}),handoffProtocolVersion:DECLARATION_HANDOFF_PROTOCOL,artifactId:a.id,contentHash:a.contentHash,contentText:loaded.contentText,content:loaded.content,taskCard,taskCardConfirmed:p.confirmations.some(c=>c.taskCardId===taskCard.id),sourceRecords:a.technicalReceipts?.sourceCatalogue?.records??[],visualCatalogue:a.technicalReceipts?.visualCatalogue??[],side,targetStage:'strategy',ownerBinding:binding,verificationReports:p.verifications.filter(r=>r.artifactId===a.id).map(r=>r.rawReport),readinessReports:p.readinessReports.filter(r=>r.artifactId===a.id).map(r=>r.rawReport),assessment:validatedResearchAssessment(p,a.id),effectiveHandlingBlocked:researchHandlingBlocked(p,a.id),...(p.verifications.some(r=>r.artifactId===a.id&&evidenceProtocolCapabilities(r.rawReport.protocolVersion).catalogueState)?{catalogueState:projectCatalogueState(p,a)}:{})};
       store.command(projectId,{kind:'record-research-handoff',request:structuredClone(request),binding:structuredClone(binding),frozenInput,commandId:request.commandId,expectedRevision:request.expectedRevision},humanDecision);
       p=store.read(projectId);const declaration=p.researchHandoffDeclarations.find(d=>d.commandId===request.commandId);
       return {handoffId:declaration.id,jobId:p.jobs.find(j=>j.task?.handoffInput?.operatorDeclaration?.id===declaration.id)?.id??null,replayed:false,revision:p.revision};
@@ -247,6 +254,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       if(p.revision!==request.expectedRevision)throw new DomainError('REVISION_CONFLICT','Project changed');
       await readArtifactContent(p,request.artifactId,root);
       const research=p.artifacts.find(a=>a.id===request.artifactId);if(hasResearchData(p,research))await verifyResearchOriginal(p,research);
+      if(p.workflow)await verifyCurrentResearchReaders(p,{executionRoot:root,artifactId:request.artifactId});
       store.command(projectId,{kind:'release-research',request:structuredClone(request),commandId:request.commandId,expectedRevision:request.expectedRevision},humanDecision);
       const next=store.read(projectId),release=next.releases.find(r=>r.commandId===request.commandId);return {releaseId:release.id,artifactId:release.artifactId,replayed:false,revision:next.revision};
     },
@@ -399,7 +407,8 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       const taskCard=project.taskCards?.find(card=>card.id===project.activeTaskCardId);
       const upstreamReviewConstraints=upstreamConstraints(project,stage);
       const acceptedCopyEdge=stage==='copy'&&(revisionInput||correctionInput)?(project.ownerEdges??[]).filter(e=>e.commit&&e.envelope.source.artifactId===project.activeByStage.strategy).at(-1):null;
-      const command={kind:'request-stage',stage,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,...(acceptedCopyEdge?{ownerEdgeId:acceptedCopyEdge.id,ownerEnvelopeHash:acceptedCopyEdge.envelope.envelopeHash}:{}),...(stage==='research'?{...(project.workflow?.version==='proposal-seven-v1'?{researchMethod:researchMethodIdentity()}:{}),researchContractVersion:RESEARCH_DATA_VERSION,researchDataBasis:researchDataBasis({taskCard,confirmations:project.confirmations.filter(c=>c.taskCardId===taskCard.id),sourceRecords,...(ancestralAcquisition?{acquisition:ancestralAcquisition}:{})})}:{}),...(stage==='copy'?{copyContractVersion:COPY_CONTRACT_VERSION}:{}),...(stage==='strategy'?{strategyContractVersion:STRATEGY_CONTRACT_VERSION,strategyBasis:strategyBasisFor(project,binding,{sourceRecords,visualCatalogue})}:{}),sourceRecords,visualCatalogue,upstreamReviewConstraints,...(revisionInput?{revisionInput:structuredClone(revisionInput)}:{}),...(correctionInput?{correctionInput:structuredClone(correctionInput)}:{}),...(revisionRequest?{revisionRequest:structuredClone(revisionRequest)}:{}),...(researchRevision?{researchRevision:structuredClone(researchRevision)}:{}),...(revisionInputArtifacts?{revisionInputArtifacts:structuredClone(revisionInputArtifacts)}:{}),...(taskCard?{taskCardId:taskCard.id,brief:taskCard.brief}:{}),...(request?{request}:{})}};
+      const questionRegistration=stage==='research'&&project.workflow?researchQuestionRegistration(project):null;
+      const command={kind:'request-stage',stage,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,...(providers[binding.providerId]?.testOnly===true?{execution:{testOnly:true,scope:'synthetic-local-engineering'}}:{}),...(acceptedCopyEdge?{ownerEdgeId:acceptedCopyEdge.id,ownerEnvelopeHash:acceptedCopyEdge.envelope.envelopeHash}:{}),...(stage==='research'?{...(project.workflow?.version==='proposal-seven-v1'?{researchMethod:researchMethodIdentity(),...(questionRegistration?{researchQuestionRegistration:structuredClone(questionRegistration),researchQuestionRegistrationId:questionRegistration.id,researchQuestionRegistrationHash:questionRegistration.registrationHash}:{})}:{}),researchContractVersion:RESEARCH_DATA_VERSION,researchDataBasis:researchDataBasis({taskCard,confirmations:project.confirmations.filter(c=>c.taskCardId===taskCard.id),sourceRecords,...(ancestralAcquisition?{acquisition:ancestralAcquisition}:{})})}:{}),...(stage==='copy'?{copyContractVersion:COPY_CONTRACT_VERSION}:{}),...(stage==='strategy'?{strategyContractVersion:STRATEGY_CONTRACT_VERSION,strategyBasis:strategyBasisFor(project,binding,{sourceRecords,visualCatalogue})}:{}),sourceRecords,visualCatalogue,upstreamReviewConstraints,...(revisionInput?{revisionInput:structuredClone(revisionInput)}:{}),...(correctionInput?{correctionInput:structuredClone(correctionInput)}:{}),...(revisionRequest?{revisionRequest:structuredClone(revisionRequest)}:{}),...(researchRevision?{researchRevision:structuredClone(researchRevision)}:{}),...(revisionInputArtifacts?{revisionInputArtifacts:structuredClone(revisionInputArtifacts)}:{}),...(taskCard?{taskCardId:taskCard.id,brief:taskCard.brief}:{}),...(request?{request}:{})}};
       if(request)store.command(projectId,{...command,commandId,expectedRevision},{...context,now:new Date().toISOString()});
       else send(projectId,command,context);
       return jobId;
@@ -602,6 +611,70 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       store.command(projectId,{kind:'request-verification',artifactId,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,verificationInput,request},commandId:commandId??randomUUID(),expectedRevision:expectedRevision??project.revision},context);
       return jobId;
     },
+    async enqueueResearchReader(projectId,artifactId,{registrationId,seat=0,previousReportId,dispositionId,commandId,expectedRevision}={}) {
+      await verifyOrdinaryProject(store.read(projectId),{executionRoot:root});
+      const p=store.read(projectId),request={artifactId,registrationId,seat,...(previousReportId?{previousReportId}:{}),...(dispositionId?{dispositionId}:{}),commandId,expectedRevision};
+      const jobId=`reader-${hash(JSON.stringify([projectId,commandId]))}`,existing=p.jobs.find(j=>j.id===jobId);
+      if(existing){if(existing.purpose!=='research_reader'||!isDeepStrictEqual(existing.task.request,request))throw new DomainError('COMMAND_ID_REUSED','Reader request identity changed');return jobId;}
+      const registration=researchQuestionRegistration(p);
+      if(!registration||registration.id!==registrationId)throw new DomainError('RESEARCH_QUESTIONS_REQUIRED','Use the current preregistered question plan');
+      await verifyAcquiredAncestry(p,[artifactId]);
+      const loaded=await readArtifactContent(p,artifactId,root),a=p.artifacts.find(a=>a.id===artifactId),card=p.taskCards.find(c=>c.id===p.activeTaskCardId);
+      let previous=null;
+      if(previousReportId||dispositionId){
+        if(!previousReportId||!dispositionId)throw new DomainError('READER_RECHECK_REQUIRED','Recheck needs both original report and saved dispositions');
+        const old=researchReaderReport(p,previousReportId),disposition=(p.researchReaderDispositions??[]).find(d=>d.id===dispositionId);
+        if(!disposition)throw new DomainError('STALE_READER_DISPOSITION','Saved reader dispositions required');
+        await verifyResearchReaderOriginal(p,old.report,{executionRoot:root});
+        previous={packet:old.packet,rawReport:old.report.rawReport,dispositions:disposition.dispositions};
+      }
+      const readerInput=buildResearchReaderPacket({taskCard:{id:card.id,purpose:card.brief},artifactId,contentHash:a.contentHash,contentText:loaded.contentText,method:registration.method,questionRegistration:{id:registration.id,taskCardId:registration.taskCardId,questions:registration.questions},visibleReport:projectResearchReaderReport(loaded.contentText),phase:previous?'recheck':'first_read',previous});
+      const binding=bindings.reader;
+      if(!binding||providers[binding.providerId]?.model!==binding.model)throw new DomainError('RESEARCH_READER_UNCONFIGURED','Configure the independent reader before enqueueing');
+      store.command(projectId,{kind:'request-research-reader',artifactId,registrationId,seat,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,...(providers[binding.providerId]?.testOnly===true?{execution:{testOnly:true,scope:'synthetic-local-engineering'}}:{}),readerInput,readerContentText:loaded.contentText,...(previousReportId?{readerPreviousReportId:previousReportId,readerDispositionId:dispositionId}:{}),request},commandId,expectedRevision},{actorType:'agent',actorId:'proposal-director',runId:randomUUID(),contextId:randomUUID()});
+      return jobId;
+    },
+    async recordResearchReaderDispositions(projectId,request,requester) {
+      await verifyOrdinaryProject(store.read(projectId),{executionRoot:root});
+      const p=store.read(projectId);
+      if(Object.hasOwn(p.processedCommands,request.commandId)){
+        const prior=JSON.parse(p.processedCommands[request.commandId]);
+        if(prior.kind!=='record-research-reader-dispositions'||!isDeepStrictEqual(prior.request,request))throw new DomainError('COMMAND_ID_REUSED','Reader disposition request changed');
+        return {dispositionId:prior.dispositionId};
+      }
+      const old=researchReaderReport(p,request.previousReportId);await verifyResearchReaderOriginal(p,old.report,{executionRoot:root});
+      const current=p.artifacts.find(a=>a.id===request.artifactId);
+      if(!current)throw new DomainError('NOT_FOUND','Revised research required');
+      const loaded=await readArtifactContent(p,current.id,root);await verifyResearchOriginal(p,current);
+      const registration=researchQuestionRegistration(p),card=p.taskCards.find(c=>c.id===p.activeTaskCardId);
+      if(!registration)throw new DomainError('RESEARCH_QUESTIONS_REQUIRED','Current question plan required');
+      try{buildResearchReaderPacket({taskCard:{id:card.id,purpose:card.brief},artifactId:current.id,contentHash:current.contentHash,contentText:loaded.contentText,method:registration.method,questionRegistration:{id:registration.id,taskCardId:registration.taskCardId,questions:registration.questions},visibleReport:projectResearchReaderReport(loaded.contentText),phase:'recheck',previous:{packet:old.packet,rawReport:old.report.rawReport,dispositions:request.dispositions}});}catch(error){throw new DomainError('INVALID_READER_DISPOSITION',error.message);}
+
+      const dispositionId=`reader-dispositions-${hash(JSON.stringify([projectId,request.commandId]))}`;
+      store.command(projectId,{kind:'record-research-reader-dispositions',artifactId:request.artifactId,previousReportId:request.previousReportId,dispositionId,dispositions:request.dispositions,request:structuredClone(request),requester:structuredClone(requester),commandId:request.commandId,expectedRevision:request.expectedRevision},{actorType:'agent',actorId:'research-owner-disposition-recorder',runId:randomUUID(),contextId:randomUUID(),now:new Date().toISOString()});
+      return {dispositionId};
+    },
+    async reconcileResearchReader(projectId,jobId,{commandId,expectedRevision}={}) {
+      let p=store.read(projectId),job=p.jobs.find(j=>j.id===jobId),attempt=job?.attempts.at(-1);
+      if(job?.purpose!=='research_reader')throw new DomainError('RESEARCH_READER_REQUIRED','Reader job required');
+      const recoveryRequest={jobId,commandId,expectedRevision};
+      if(Object.hasOwn(p.processedCommands,commandId)){const prior=JSON.parse(p.processedCommands[commandId]);if(prior.kind!=='recover-research-reader'||!isDeepStrictEqual(prior.recoveryRequest,recoveryRequest))throw new DomainError('COMMAND_ID_REUSED','Reader recovery request changed');await verifyOrdinaryProject(p,{executionRoot:root});return job;}
+      if(p.revision!==expectedRevision)throw new DomainError('REVISION_CONFLICT','Project changed before reader reconciliation');
+      const artifact=researchReaderTarget(p,job,{historical:true});
+      await verifyResearchDataOriginal(p,artifact,{executionRoot:root});
+      const loaded=await readArtifactContent(p,artifact.id,root);
+      if(loaded.contentText!==job.task.readerContentText)throw new DomainError('INVALID_READER_SOURCE','Saved reader source bytes changed');
+      if(job.task.readerPreviousReportId)await verifyResearchReaderOriginal(p,researchReaderReport(p,job.task.readerPreviousReportId).report,{executionRoot:root});
+      if(job.status!=='awaiting_reconciliation'||!attempt?.httpAttemptLocator)throw new DomainError('READER_RECOVERY_REQUIRED','Reconcile an original saved HTTP attempt; never dispatch a replacement');
+      const receipt=await restoreOrdinaryJob(store,root,projectId,jobId,{imageStore});
+      p=store.read(projectId);job=p.jobs.find(j=>j.id===jobId);attempt=job.attempts.at(-1);
+      const parsed=JSON.parse(receipt.responseText),report=validateResearchReaderOutput(parsed,job.task.readerInput),raw=JSON.stringify(report,null,2),file=join(root,attempt.id,'research-reader.json');
+      try{await writeFile(file,raw,{flag:'wx'});}catch(error){if(error.code!=='EEXIST')throw error;if(!(await readManagedLayoutBytes(root,file,1024*1024)).equals(Buffer.from(raw)))throw new DomainError('INVALID_READER_REPORT','Saved normalized reader result changed');}
+      const completion={...receipt,validatedOutputPath:file,validatedOutputHash:hash(raw)};
+      await reopenOrdinaryCompletion(p,job,attempt,{executionRoot:root,receipt:completion,wrappers:[[file,raw]]});
+      store.command(projectId,{kind:'recover-research-reader',jobId,attemptId:attempt.id,reportId:`reader-report-${attempt.id}`,rawReport:parsed,payloadRef:file,contentHash:hash(raw),executionReceipt:completion,recoveryRequest,commandId,expectedRevision:p.revision}, {...attempt.executor,now:new Date().toISOString()});
+      return store.read(projectId).jobs.find(j=>j.id===jobId);
+    },
     async enqueueSemanticChallenge(projectId,artifactId,{commandId,expectedRevision}={}) {
       store.requireSemanticLease(semanticLease);
       await verifyOrdinaryProject(store.read(projectId),{executionRoot:root});
@@ -657,6 +730,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       const producerReport=side==='consumer'?(project.handoffReports??[]).filter(r=>r.artifactId===artifactId&&r.side==='producer'&&r.decision==='accept').at(-1)?.rawReport:null;
       const handoffInput={...(producerJob?.task?.researchDataBasis?{researchDataBasis:structuredClone(producerJob.task.researchDataBasis)}:{}),...(project.verifications.some(r=>r.artifactId===artifactId&&evidenceProtocolCapabilities(r.rawReport.protocolVersion).catalogueState)?{catalogueState:projectCatalogueState(project,artifact)}:{}),artifactId,contentHash:artifact.contentHash,contentText:loaded.contentText,content:loaded.content,taskCard,taskCardConfirmed:project.confirmations.some(c=>c.taskCardId===taskCard.id),sourceRecords:artifact.technicalReceipts?.sourceCatalogue?.records??[],visualCatalogue:artifact.technicalReceipts?.visualCatalogue??[],side,targetStage:'strategy',ownerBinding:binding,verificationReports:project.verifications.filter(r=>r.artifactId===artifactId).map(r=>r.rawReport),readinessReports:(project.readinessReports??[]).filter(r=>r.artifactId===artifactId).map(r=>r.rawReport),producerReport};
       if(protocolVersion===APPLICABILITY_HANDOFF_PROTOCOL)Object.assign(handoffInput,{handoffProtocolVersion:APPLICABILITY_HANDOFF_PROTOCOL,assessment:validatedResearchAssessment(project,artifactId),effectiveHandlingBlocked:researchHandlingBlocked(project,artifactId)});
+      if(project.workflow){await verifyCurrentResearchReaders(project,{executionRoot:root,artifactId});handoffInput.readerEvidence=researchReaderEvidence(project,artifactId);}
       buildResearchHandoffRequest(handoffInput);
       const context={actorId:'proposal-director',actorType:'agent',runId:randomUUID(),contextId:randomUUID()};
       store.command(projectId,{kind:'request-handoff',artifactId,side,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,handoffInput,request},commandId:commandId??randomUUID(),expectedRevision:expectedRevision??project.revision},context);
@@ -667,6 +741,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       if(!isReference)await verifyOrdinaryProject(admission,{executionRoot:root});
       const project=isReference?admission:store.read(projectId),job=project.jobs.find(item=>item.id===jobId);
       if(!job)throw new Error('Job not found');
+      if(job.purpose==='research_reader'&&retry)throw new DomainError('RESEARCH_READER_RETRY_CLOSED','Reconcile the saved reader attempt; never retry an unknown call');
       if(ACQUISITION_PURPOSES.includes(job.purpose))return acquisition.execute(projectId,jobId,{retry});
       if(job.task?.researchDataBasis?.acquisition){try{await acquisition.verifyProducer(projectId,job.task.researchDataBasis.acquisition);}catch(error){if(job.status!=='queued')throw error;send(projectId,{kind:'block-queued-job',jobId,error:{code:error.code??'ACQUISITION_ORIGINAL_INVALID',message:error.message}},{actorType:'agent',actorId:'research-acquisition-original-admission',runId:randomUUID(),contextId:randomUUID()});return store.read(projectId).jobs.find(j=>j.id===jobId);}}
       if(INTAKE_PURPOSES.includes(job.purpose))return intake.execute(projectId,jobId,{retry});
@@ -698,6 +773,8 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         if(job.stage==='strategy'&&(!job.purpose||job.purpose==='stage')&&usesResearchOperatorWorkflow(project))checkContinuation(project,{artifactId:project.activeByStage.research,policyVersion:project.policies.at(-1).version},job.binding);
         if(job.edgeId||job.task.ownerEdgeId){const edge=project.ownerEdges.find(e=>e.id===(job.edgeId??job.task.ownerEdgeId));ownerRuntimeBinding(edge);await ownerSourceContents(project,edge.envelope.source.artifactId);}
         if(job.purpose==='coverage_challenge'){store.requireSemanticLease(semanticLease);semanticChallengeCurrent(store.read(projectId),job);}
+        if(job.purpose==='research_reader')researchReaderTarget(store.read(projectId),job);
+        if(job.purpose==='handoff'&&project.workflow)await verifyCurrentResearchReaders(store.read(projectId),{executionRoot:root,artifactId:job.targetArtifactId});
         await verifyRegistered(store.read(projectId),job);
         const failureWitness=await diagnosticWitness(store.read(projectId),job);
         send(projectId,{kind:retry?'retry-job':'start-job',jobId,attemptId,...(failureWitness?{failureWitness}:{})},context);
@@ -724,7 +801,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         if(provider.model!==job.binding.model)throw Object.assign(new Error('Provider configuration does not match frozen model binding'),{code:'MODEL_BINDING_MISMATCH',status:'blocked'});
         const brief=job.task.brief??project.taskCards.find(card=>card.id===project.activeTaskCardId).brief;
         const isOwner=job.purpose==='owner_acceptance',isCreative=job.purpose==='creative_review',isCaseIdentity=job.purpose==='case_identity',isFeedbackReview=job.purpose==='feedback_review',isCorrectionReview=job.purpose==='correction_review';
-        const isSemantic=job.purpose==='coverage_challenge',isObservationReview=job.purpose==='observation_review',isObservation=job.purpose==='observation',isVerification=job.purpose==='verification',isReadiness=job.purpose==='readiness',isHandoff=job.purpose==='handoff';
+        const isReader=job.purpose==='research_reader',isSemantic=job.purpose==='coverage_challenge',isObservationReview=job.purpose==='observation_review',isObservation=job.purpose==='observation',isVerification=job.purpose==='verification',isReadiness=job.purpose==='readiness',isHandoff=job.purpose==='handoff';
         const inputArtifacts=await inputs(project,job);
         if(job.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION)send(projectId,{kind:'freeze-strategy-inputs',jobId,attemptId,inputArtifacts},context);
         if((job.task.revisionInput||job.task.correctionInput)&&!isDeepStrictEqual(inputArtifacts,job.task.revisionInputArtifacts))throw new Error('Frozen revision upstream content changed');
@@ -739,13 +816,14 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         if(isObservation||isObservationReview)for(const image of (isObservationReview?job.task.observationReviewInput:job.task.observationInput).images)images.push((await imageStore.read({projectId,imageId:image.imageId,expectedHash:image.sha256})).descriptor);
         if(isFeedbackReview||isCorrectionReview||job.task.revisionInput||job.task.correctionInput)for(const image of (isCorrectionReview?job.task.correctionReviewInput.correctionInput:isFeedbackReview?job.task.feedbackReviewInput.revisionInput:job.task.correctionInput??job.task.revisionInput).materials)images.push((await imageStore.read({projectId,imageId:image.imageId,expectedHash:image.sha256})).descriptor);
         if(isCreative&&!isDeepStrictEqual(inputArtifacts[0]?.content,project.creativePanels.find(p=>p.id===job.panelId)?.packet.content))throw new DomainError('INVALID_CREATIVE_PANEL','Frozen creative target bytes changed');
-        let request=isSemantic?buildSemanticRequest(job.task.semanticInput):isOwner?buildOwnerRequest(job.task.ownerInput):isCorrectionReview?buildCorrectionReviewRequest(job.task.correctionReviewInput):isCreative?buildCreativeRequest(job.task.creativeInput):isFeedbackReview?buildFeedbackReviewRequest(job.task.feedbackReviewInput):isCaseIdentity?buildCaseIdentityRequest(job.task.caseIdentityInput):isObservationReview?buildImageObservationReviewRequest(job.task.observationReviewInput):isObservation?buildImageObservationRequest({images}):isHandoff?buildResearchHandoffRequest(job.task.handoffInput):isReadiness?buildResearchReadinessRequest(job.task.readinessInput):isVerification?buildEvidenceReviewRequest(job.task.verificationInput):buildStageRequest({stage:job.stage,brief,inputArtifacts,sourceRecords,visualCatalogue:job.task.visualCatalogue??[],revisionInput:job.task.revisionInput,correctionInput:job.task.correctionInput,copyContractVersion:job.task.copyContractVersion,strategyContractVersion:job.task.strategyContractVersion,strategyBasis:job.task.strategyBasis,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis,researchRevision:job.task.researchRevision});
-        if (job.stage==='research' && (!job.purpose || job.purpose==='stage') && job.task.researchMethod) request=applyResearchMethod(request,job.task.researchMethod);
+        let request=isReader?buildResearchReaderRequest(job.task.readerInput):isSemantic?buildSemanticRequest(job.task.semanticInput):isOwner?buildOwnerRequest(job.task.ownerInput):isCorrectionReview?buildCorrectionReviewRequest(job.task.correctionReviewInput):isCreative?buildCreativeRequest(job.task.creativeInput):isFeedbackReview?buildFeedbackReviewRequest(job.task.feedbackReviewInput):isCaseIdentity?buildCaseIdentityRequest(job.task.caseIdentityInput):isObservationReview?buildImageObservationReviewRequest(job.task.observationReviewInput):isObservation?buildImageObservationRequest({images}):isHandoff?buildResearchHandoffRequest(job.task.handoffInput):isReadiness?buildResearchReadinessRequest(job.task.readinessInput):isVerification?buildEvidenceReviewRequest(job.task.verificationInput):buildStageRequest({stage:job.stage,brief,inputArtifacts,sourceRecords,visualCatalogue:job.task.visualCatalogue??[],revisionInput:job.task.revisionInput,correctionInput:job.task.correctionInput,copyContractVersion:job.task.copyContractVersion,strategyContractVersion:job.task.strategyContractVersion,strategyBasis:job.task.strategyBasis,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis,researchRevision:job.task.researchRevision});
+        if (job.stage==='research' && (!job.purpose || job.purpose==='stage') && job.task.researchMethod) request=applyResearchMethod(request,job.task.researchMethod,job.task.researchQuestionRegistration);
         await mkdir(root,{recursive:true});
         const folder=join(root,attemptId);await mkdir(folder);
         const packet={projectId,jobId,attemptId,inputVersionIds:job.inputVersionIds,sourceRecords,...request};
         await writeFile(join(folder,'packet.json'),JSON.stringify(packet,null,2),{flag:'wx'});
         if(isCreative||isOwner)send(projectId,{kind:isOwner?'mark-owner-dispatched':'mark-creative-dispatched',jobId,attemptId},context);
+        if(isReader)send(projectId,{kind:'mark-research-reader-dispatched',jobId,attemptId},context);
         if(isSemantic){store.requireSemanticLease(semanticLease);send(projectId,{kind:'claim-coverage-dispatch',jobId,attemptId},context);dispatched=true;store.requireSemanticLease(semanticLease);}
         dispatched=true;
         const result=await invokeOrdinary({executionRoot:root,provider,binding:job.binding,attemptId,request,images,runtimePacketBytes:Buffer.from(JSON.stringify(packet,null,2)),persistLocator:locator=>send(projectId,{kind:'anchor-model-http-attempt',jobId,attemptId,locator},context)});
@@ -757,7 +835,15 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         if(result.responseText!==undefined&&result.parsedOutput!==undefined&&!isDeepStrictEqual(JSON.parse(result.responseText),result.parsedOutput))throw new Error('Provider parsed output differs from saved response');
         const parsed=result.parsedOutput??JSON.parse(result.responseText);
         if(isHandoff||isReadiness||isVerification||job.stage==='research'||job.stage==='strategy'&&(!job.purpose||job.purpose==='stage')){const latest=store.read(projectId);await inputs(latest,job);if(job.stage==='strategy'&&(!job.purpose||job.purpose==='stage')&&usesResearchOperatorWorkflow(latest))checkContinuation(latest,{artifactId:latest.activeByStage.research,policyVersion:latest.policies.at(-1).version},job.binding);}
+        if(isHandoff&&project.workflow)await verifyCurrentResearchReaders(store.read(projectId),{executionRoot:root,artifactId:job.targetArtifactId});
         if(isOwner||job.task.ownerEdgeId){const latest=store.read(projectId),edge=latest.ownerEdges.find(e=>e.id===(job.edgeId??job.task.ownerEdgeId));ownerRuntimeBinding(edge);await ownerSourceContents(latest,edge.envelope.source.artifactId);}
+        if(isReader){
+          researchReaderTarget(store.read(projectId),job);
+          const report=validateResearchReaderOutput(parsed,job.task.readerInput),raw=JSON.stringify(report,null,2),file=join(folder,'research-reader.json');
+          await writeFile(file,raw,{flag:'wx'});receipt={...receipt,validatedOutputPath:file,validatedOutputHash:hash(raw)};await freshCompletion(receipt,file,raw);
+          send(projectId,{kind:'complete-research-reader',jobId,attemptId,reportId:randomUUID(),rawReport:parsed,payloadRef:file,contentHash:hash(raw),executionReceipt:receipt},context);
+          return store.read(projectId).jobs.find(j=>j.id===jobId);
+        }
         if(isSemantic){
           const report=validateSemanticOutput(parsed,job.task.semanticInput),raw=JSON.stringify(report,null,2),file=join(folder,'coverage-challenge.json');
           await writeFile(file,raw,{flag:'wx'});receipt={...receipt,validatedOutputPath:file,validatedOutputHash:hash(raw)};await freshCompletion(receipt,file,raw);
@@ -850,7 +936,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         send(projectId,{kind:'complete-stage',jobId,attemptId,artifactId:randomUUID(),payloadRef:file,contentHash:hash(raw),claims:output.claims,...(job.task.correctionInput?{revisionResponses:output.revisionResponses}:{}),...(job.task.revisionInput?{feedbackResponses:output.feedbackResponses}:{}),technicalReceipts:{sourceCatalogue:{version:1,records:sourceRecords},visualCatalogue:job.task.visualCatalogue??[]},executionReceipt:receipt},context);
       } catch(error) {
         if(error.receipt)receipt=enrich(error.receipt);
-        send(projectId,{kind:'finish-job-error',jobId,attemptId,status:['creative_review','owner_acceptance','coverage_challenge'].includes(job.purpose)&&dispatched?'awaiting_reconciliation':['blocked','awaiting_reconciliation'].includes(error.status)?error.status:dispatched?'awaiting_reconciliation':'failed',error:{code:error.code??'EXECUTION_FAILED',message:error.message},...(['creative_review','owner_acceptance','coverage_challenge'].includes(job.purpose)?{dispatchStarted:dispatched}:{}),...(receipt?{receipt}:{})},context);
+        send(projectId,{kind:'finish-job-error',jobId,attemptId,status:['creative_review','owner_acceptance','coverage_challenge','research_reader'].includes(job.purpose)&&dispatched?'awaiting_reconciliation':['blocked','awaiting_reconciliation'].includes(error.status)?error.status:dispatched?'awaiting_reconciliation':'failed',error:{code:error.code??'EXECUTION_FAILED',message:error.message},...(['creative_review','owner_acceptance','coverage_challenge','research_reader'].includes(job.purpose)?{dispatchStarted:dispatched}:{}),...(receipt?{receipt}:{})},context);
       }
       return store.read(projectId).jobs.find(item=>item.id===jobId);
     },

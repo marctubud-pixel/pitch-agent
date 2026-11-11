@@ -1998,12 +1998,12 @@
       "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
     },
     "apps/workbench-preview/src/domain/service.ts": {
-      "sha256": "5975b07fb48d14642ba009abba6b1564a23814f50858666917a4a99229531c4c",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "59c57c8a878dde72f90f715016096cad23509a204f386725e95377621ae5490d",
+      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "sha256": "5bb5d557e2da8b19f2f3d93d4e0e81ce7521f74d48ce3f2a08072ace457e8349",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "febe15dc18cc2ec679078d432890e6d919bfaab38e1ddc128684c8948f26ee8a",
+      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准；独立复审修正同卡旧修订实际输出/旧问题计划历史回执分类，已知历史与unknown分别保留"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
@@ -2014,8 +2014,8 @@
       "sha256": "5af8ad8684f2e4a8a3956b6429fda5a9c6047d54defcdf9801ea2625aa88fbad"
     },
     "apps/workbench-preview/src/collaboration/protectServices.ts": {
-      "sha256": "9c4002960d69ab0912d8a1bc716c8e67fd5f6f0f69c50a988498db880263ded9",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "63ed6a0bedc98012fe48a47ce46539679ae4020d82042d8c56096444423b9561",
+      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/domain/models.ts": {
       "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
@@ -2038,8 +2038,8 @@
       "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
     },
     "apps/workbench-preview/src/collaboration/types.ts": {
-      "sha256": "0cfbed63f8e8ac0b435456a52d0126a6b99a1e6b0d4fa747370e8c7ac4d71acd",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "90e7f4125999577dc50cb8a2a6f5a16a0bd9c6bd95e16f3cbac328233d9e355b",
+      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/i18n/messages/zh-CN.ts": {
       "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
@@ -2066,12 +2066,12 @@
       "sha256": "5f7e44c96f3f782c656ca4397c4871bca5bc3e9a22416809f076349d8e8ee902"
     },
     "apps/workbench-preview/src/views/stages/ResearchStage.tsx": {
-      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
-      "sha256": "89f56d1bbfd61b292bd4b3f5fb5f719c4a9cfddbdcaf45c41fea7799ee5b501e"
+      "sha256": "a174c7a8f765dca1d16dc7ef817757ab0056c82d6dd3cbfdbe74e8c4af8266f2",
+      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/collaboration/protectServices.test.ts": {
-      "sha256": "d6e6c762505b15ae6f85afae0d4a89f0898917bdddc6f80860823b659c5e2843",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "82da007f936e72b6cb79ff18104f1cd8f7025e24a0eef93543be47bfa8bc554a",
+      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/proposal/BrandResources.tsx": {
       "sha256": "d38e98eb0a5fb56210a882cf44f173c4a9581e9bbd8648c55f68a4c1875cbddb",

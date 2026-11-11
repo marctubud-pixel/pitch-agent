@@ -1,0 +1,90 @@
+{
+  "scope": "Browser exact route replay; all API intercepted, no 4190 traffic or R1/R2 access",
+  "cases": [
+    {
+      "type": "revision",
+      "posts": [
+        "{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}",
+        "{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}"
+      ],
+      "errors": [],
+      "unexpected": [],
+      "states": [
+        {
+          "name": "history-independent-body-after-revision-unknown-1280-light",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n上次按读者问题修订研究待核对\n\n原请求已保存在当前浏览器会话中。请先核对结果，再继续提交。\n\n查看保留的提交内容\n按读者问题修订研究\n\n原请求（仅供核对）：\n{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}\n\n核对沿用此请求中的原稿、任务和版本，不改用当前稿件。\n核对原提交\n已核对，结束此记录\n\n修订回执未绑定原稿与原请求，记录仍保留。\n\n11月11日星期三\n\n我的提案\n\n0 个项目\n\n还没有项目\n\n从简报开始一个提案。\n\n新建提案\n问问 工作助手\n: 打开 工作助手 助手",
+          "journal": "{\"kind\":\"revise_research\",\"path\":\"/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799/research-revisions\",\"body\":\"{\\\"artifactId\\\":\\\"ac4107b0-c65f-42c2-b536-18fe8c05295e\\\",\\\"commandId\\\":\\\"revise\\\",\\\"expectedRevision\\\":10}\",\"commandId\":\"revise\",\"label\":\"按读者问题修订研究\"}"
+        },
+        {
+          "name": "history-independent-body-after-revision-unknown-910-dark",
+          "width": 910,
+          "scrollWidth": 910,
+          "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n上次按读者问题修订研究待核对\n\n原请求已保存在当前浏览器会话中。请先核对结果，再继续提交。\n\n查看保留的提交内容\n按读者问题修订研究\n\n原请求（仅供核对）：\n{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}\n\n核对沿用此请求中的原稿、任务和版本，不改用当前稿件。\n核对原提交\n已核对，结束此记录\n\n修订回执未绑定原稿与原请求，记录仍保留。\n\n11月11日星期三\n\n我的提案\n\n0 个项目\n\n还没有项目\n\n从简报开始一个提案。\n\n新建提案\n问问 工作助手\n: 打开 工作助手 助手",
+          "journal": "{\"kind\":\"revise_research\",\"path\":\"/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799/research-revisions\",\"body\":\"{\\\"artifactId\\\":\\\"ac4107b0-c65f-42c2-b536-18fe8c05295e\\\",\\\"commandId\\\":\\\"revise\\\",\\\"expectedRevision\\\":10}\",\"commandId\":\"revise\",\"label\":\"按读者问题修订研究\"}"
+        },
+        {
+          "name": "history-independent-body-after-revision-history-1280-light",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n原提交已核对\n\n原提交已保存为历史，请核对当前简报后重新登记或读取。\n\n查看原提交内容\n按读者问题修订研究\n\n原请求（仅供核对）：\n{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}\n\n核对沿用此请求中的原稿、任务和版本，不改用当前稿件。\n查看当前研究\n关闭提示\n\n11月11日星期三\n\n我的提案\n\n0 个项目\n\n还没有项目\n\n从简报开始一个提案。\n\n新建提案\n问问 工作助手\n: 打开 工作助手 助手",
+          "journal": null
+        },
+        {
+          "name": "history-independent-body-after-revision-history-910-dark",
+          "width": 910,
+          "scrollWidth": 910,
+          "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n原提交已核对\n\n原提交已保存为历史，请核对当前简报后重新登记或读取。\n\n查看原提交内容\n按读者问题修订研究\n\n原请求（仅供核对）：\n{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}\n\n核对沿用此请求中的原稿、任务和版本，不改用当前稿件。\n查看当前研究\n关闭提示\n\n11月11日星期三\n\n我的提案\n\n0 个项目\n\n还没有项目\n\n从简报开始一个提案。\n\n新建提案\n问问 工作助手\n: 打开 工作助手 助手",
+          "journal": null
+        }
+      ],
+      "originalBody": "{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}",
+      "unknownBodyUnchanged": true,
+      "copy": "按读者问题修订研究\n\n原请求（仅供核对）：\n{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}\n\n核对沿用此请求中的原稿、任务和版本，不改用当前稿件。",
+      "preservedVisible": "按读者问题修订研究\n\n原请求（仅供核对）：\n{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}\n\n核对沿用此请求中的原稿、任务和版本，不改用当前稿件。",
+      "copyMatchesPreserved": true,
+      "rawBodyVisible": true,
+      "copiedRawBody": "{\"artifactId\":\"ac4107b0-c65f-42c2-b536-18fe8c05295e\",\"commandId\":\"revise\",\"expectedRevision\":10}",
+      "rawBodyCopyExact": true,
+      "journalCleared": true,
+      "sameBodies": true,
+      "headUnchanged": true,
+      "planUnchanged": true,
+      "snapshotSha256": "864676351892129004c65c279043eebeb14668802dbcee4c45b559e1d13140e2"
+    },
+    {
+      "type": "questions",
+      "posts": [
+        "{\"questions\":[{\"id\":\"q1\",\"question\":\"原问题是什么？\",\"critical\":true}],\"readerCount\":1,\"commandId\":\"old-questions\",\"expectedRevision\":1}"
+      ],
+      "errors": [],
+      "unexpected": [],
+      "states": [
+        {
+          "name": "history-independent-body-after-questions-history-1280-light",
+          "width": 1280,
+          "scrollWidth": 1280,
+          "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报服务\n原提交已核对\n\n原提交已保存为历史，请核对当前简报后重新登记或读取。\n\n查看原提交内容\n研究问题：\n原问题是什么？\n\n核对将保留原问题、读者数量和提交时的版本。\n查看当前研究\n关闭提示\n\n11月11日星期三\n\n我的提案\n\n0 个项目\n\n还没有项目\n\n从简报开始一个提案。\n\n新建提案\n问问 工作助手\n: 打开 工作助手 助手",
+          "journal": null
+        },
+        {
+          "name": "history-independent-body-after-questions-history-910-dark",
+          "width": 910,
+          "scrollWidth": 910,
+          "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报服务\n原提交已核对\n\n原提交已保存为历史，请核对当前简报后重新登记或读取。\n\n查看原提交内容\n研究问题：\n原问题是什么？\n\n核对将保留原问题、读者数量和提交时的版本。\n查看当前研究\n关闭提示\n\n11月11日星期三\n\n我的提案\n\n0 个项目\n\n还没有项目\n\n从简报开始一个提案。\n\n新建提案\n问问 工作助手\n: 打开 工作助手 助手",
+          "journal": null
+        }
+      ],
+      "originalBody": "{\"questions\":[{\"id\":\"q1\",\"question\":\"原问题是什么？\",\"critical\":true}],\"readerCount\":1,\"commandId\":\"old-questions\",\"expectedRevision\":1}",
+      "copy": "研究问题：\n原问题是什么？\n\n核对将保留原问题、读者数量和提交时的版本。",
+      "preservedVisible": "研究问题：\n原问题是什么？\n\n核对将保留原问题、读者数量和提交时的版本。",
+      "copyMatchesPreserved": true,
+      "journalCleared": true,
+      "sameBodies": true,
+      "headUnchanged": true,
+      "planUnchanged": true,
+      "snapshotSha256": "97d629a4586165d1364f86fa84e9f3ee47282472e14c17a6c9fa6d742c3f49dc"
+    }
+  ]
+}

@@ -1,3 +1,7 @@
+import {researchReaderEvidence,validateStoredResearchReader} from './research-reader-state.mjs';
+import {buildResearchReaderRequest,validateResearchReaderOutput} from './research-reader-loop.mjs';
+import {RESEARCH_READER_COMMANDS,reduceResearchReaderCommand,researchReaderTarget,researchQuestionRegistration} from './research-reader-state.mjs';
+export {researchReaderTarget,researchQuestionRegistration} from './research-reader-state.mjs';
 import {createWorkflow, assertWorkflowStage, requireResearchWorkflow} from './seven-stage-workflow.mjs';
 import {researchMethodIdentity, applyResearchMethod} from './research-method.mjs';
 import {layoutCommandWitness,layoutWitnessMatches} from './layout-command-witness.mjs';
@@ -212,6 +216,7 @@ function stageFeedback(p, stage) {
   return (p.humanFeedback ?? []).filter(item => item.stage === stage && item.taskCardId === p.activeTaskCardId);
 }
 const correctionAdapters = Object.freeze({
+  research_reader:{collection:'researchReaderReports',outputFilename:'research-reader.json',input:'readerInput',build:buildResearchReaderRequest,validate:validateResearchReaderOutput},
   coverage_challenge:{collection:'coverageChallenges',outputFilename:'coverage-challenge.json',input:'semanticInput',build:buildSemanticRequest,validate:validateSemanticOutput},
   verification: {collection:'verifications', outputFilename:'verification.json', input:'verificationInput', build:buildEvidenceReviewRequest, validate:validateEvidenceReviewOutput},
   readiness: {collection:'readinessReports', outputFilename:'readiness.json', input:'readinessInput', build:buildResearchReadinessRequest, validate:validateResearchReadinessOutput},
@@ -225,6 +230,7 @@ export function validateStoredReview(p,kind,report) { return validateStoredRevie
 function validateStoredReviewWithin(evaluation, p,kind,report) {
   const adapter=Object.hasOwn(correctionAdapters,kind)?correctionAdapters[kind]:null;
   requireValue(adapter,'UNSUPPORTED_CORRECTION_SOURCE','Imported/manual review has no supported immutable execution adapter');
+  if(kind==='research_reader')validateStoredResearchReader(p,report);
   const a=artifact(p,report.artifactId);
   requireValue(a,'INVALID_CORRECTION_SOURCE','Registered correction parent required');
   const job=p.jobs.find(j=>j.id===report.jobId),attempt=job?.attempts.find(t=>t.id===report.attemptId),input=job?.task?.[adapter.input];
@@ -412,7 +418,7 @@ function researchProductionReceipt(p,job,attempt,receipt){
  requireResearchBasis(p,job);
  const inputArtifacts=job.task.revisionInputArtifacts??[];
  let request=buildStageRequest({stage:'research',brief:job.task.brief,inputArtifacts,sourceRecords:job.task.sourceRecords??[],visualCatalogue:job.task.visualCatalogue??[],revisionInput:job.task.revisionInput,correctionInput:job.task.correctionInput,researchRevision:job.task.researchRevision,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis});
- if(job.task.researchMethod)request=applyResearchMethod(request,job.task.researchMethod);
+ if(job.task.researchMethod)request=applyResearchMethod(request,job.task.researchMethod,job.task.researchQuestionRegistration);
  const materials=(job.task.correctionInput??job.task.revisionInput)?.materials;
  requireValue(receipt.inputPacketHash===hash(JSON.stringify({runId:attempt.id,model:job.binding.model,...request,...(materials?.length?{images:materials}:{})}))&&receipt.runId===attempt.id&&receipt.requestedModel===job.binding.model&&receipt.model===job.binding.model&&ordinarySuccessfulStatus(receipt)&&ordinaryHasContext(receipt)&&['signal','reason','error'].every(k=>receipt[k]==null),'INVALID_EXECUTION_RECEIPT','Exact original numerical research invocation required');
  let parsed;try{parsed=JSON.parse(receipt.responseText);}catch{fail('INVALID_EXECUTION_RECEIPT','Original research response required');}
@@ -509,9 +515,10 @@ function revisionProductionReceipt(p, job, attempt, receipt) {
   const input = job.task.correctionInput??job.task.revisionInput;
   requireEvidenceProjection(input,job.task.sourceRecords??[],job.task.visualCatalogue??[]);
   if(['correction-evidence-v2','correction-evidence-v3'].includes(input.evidence?.version)){requireRegisteredCorrectionSelection(job,input);currentVisualCatalogue(p,job.task.visualCatalogue??[]);currentCaseSources(p,job.task.sourceRecords??[]);}
-  const request = buildStageRequest({stage: job.stage, brief: job.task.brief,
+  let request = buildStageRequest({stage: job.stage, brief: job.task.brief,
     inputArtifacts: job.task.revisionInputArtifacts ?? [], sourceRecords: job.task.sourceRecords ?? [],
     visualCatalogue: job.task.visualCatalogue ?? [], ...(job.task.correctionInput?{correctionInput:input}:{revisionInput:input}), copyContractVersion: job.task.copyContractVersion,strategyContractVersion:job.task.strategyContractVersion,strategyBasis:job.task.strategyBasis,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis,researchRevision:job.task.researchRevision});
+  if(job.stage==='research'&&job.task.researchMethod)request=applyResearchMethod(request,job.task.researchMethod,job.task.researchQuestionRegistration);
   const packet = JSON.stringify({runId: attempt.id, model: job.binding.model, prompt: request.prompt, outputSchema: request.outputSchema,
     ...(input.materials.length ? {images: input.materials} : {})});
   requireValue(receipt.runId === attempt.id && receipt.requestedModel === job.binding.model && ordinarySuccessfulStatus(receipt)
@@ -543,7 +550,8 @@ export function correctionHandlingContext(p,artifactId){
   const attempt=producer.attempts.find(t=>isDeepStrictEqual(t.receipt,a.executionReceipt));
   requireValue(attempt&&sameExecutor(attempt.executor,a.author),'INVALID_CORRECTION','Original successful producer attempt required');
   revisionProductionReceipt(p,producer,attempt,a.executionReceipt);
-  const request=buildStageRequest({stage:producer.stage,brief:producer.task.brief,inputArtifacts:producer.task.revisionInputArtifacts??[],sourceRecords:producer.task.sourceRecords??[],visualCatalogue:producer.task.visualCatalogue??[],correctionInput:input,copyContractVersion:producer.task.copyContractVersion,strategyContractVersion:producer.task.strategyContractVersion,strategyBasis:producer.task.strategyBasis,researchContractVersion:producer.task.researchContractVersion,researchDataBasis:producer.task.researchDataBasis,researchRevision:producer.task.researchRevision});
+  let request=buildStageRequest({stage:producer.stage,brief:producer.task.brief,inputArtifacts:producer.task.revisionInputArtifacts??[],sourceRecords:producer.task.sourceRecords??[],visualCatalogue:producer.task.visualCatalogue??[],correctionInput:input,copyContractVersion:producer.task.copyContractVersion,strategyContractVersion:producer.task.strategyContractVersion,strategyBasis:producer.task.strategyBasis,researchContractVersion:producer.task.researchContractVersion,researchDataBasis:producer.task.researchDataBasis,researchRevision:producer.task.researchRevision});
+  if(producer.stage==='research'&&producer.task.researchMethod)request=applyResearchMethod(request,producer.task.researchMethod,producer.task.researchQuestionRegistration);
   const producerInputPacket=JSON.stringify({runId:attempt.id,model:producer.binding.model,prompt:request.prompt,outputSchema:request.outputSchema,...(input.materials.length?{images:input.materials}:{})});
   const taskCard=input.taskCardSnapshot,upstreamArtifacts=structuredClone(producer.task.revisionInputArtifacts??[]);
   requireValue(taskCard&&taskCard.id===input.taskCardId&&taskCard.brief===producer.task.brief&&isDeepStrictEqual(taskCard,p.taskCards.find(c=>c.id===input.taskCardId)),'INVALID_CORRECTION','Original task snapshot required');
@@ -940,6 +948,7 @@ function readinessTargetWithin(evaluation, p, job) {
 }
 function handoffTargetWithin(evaluation, p, job) {
   const input = job.task.handoffInput;
+  if(p.workflow)requireValue(isDeepStrictEqual(input.readerEvidence,requiredReaderEvidence(p,job.targetArtifactId)),'INVALID_READER_EVIDENCE','Handoff must consume all exact current reader originals');
   requireValue(job.status==='succeeded'||!usesResearchOperatorWorkflow(p)||input.handoffProtocolVersion===DECLARATION_HANDOFF_PROTOCOL,'OPERATOR_HANDOFF_ROUTE_REQUIRED','Operator workflow cannot dispatch a legacy unbound owner request');
   const a = readinessTargetWithin(evaluation, p, {...job, task: {...job.task, readinessInput: input}});
   requireValue(a.provenance === 'provider_execution' && input.side === job.side && input.targetStage === 'strategy'
@@ -1012,10 +1021,12 @@ function requireResearchHandoffWithin(evaluation, p, a, {requirePair=true}={}) {
   if(requirePair)requireValue(accepted.has('producer') && accepted.has('consumer'), 'HANDOFF_REQUIRED', 'Research requires real producer and strategy owner acceptance');
 }
 export function usesResearchOperatorWorkflow(p) { return (p.researchHandoffDeclarations??[]).length>0; }
+function requiredReaderEvidence(p,id){try{return researchReaderEvidence(p,id);}catch(error){fail(error.code??'RESEARCH_R7_READER_REQUIRED',error.message);}}
+function readerBasisHash(p,id){try{return requiredReaderEvidence(p,id).evidenceHash;}catch(error){return 'unavailable:'+hash(JSON.stringify({reason:error.code??'RESEARCH_R7_READER_REQUIRED',method:researchMethodIdentity(),registrations:p.researchQuestionRegistrations??[],reports:p.researchReaderReports??[],readerJobs:p.jobs.filter(j=>j.purpose==='research_reader').map(j=>({id:j.id,status:j.status,input:j.task.readerInput?.packetHash,attempts:j.attempts,outputVersionIds:j.outputVersionIds??[]}))}));}}
 function researchOperatorBasisWithin(evaluation, p, a) {
   requireValue(a?.stage==='research'&&a.provenance==='provider_execution'&&freshWithin(evaluation, p,a.id),'STALE_ARTIFACT','Current provider research required');
   const assessment=validatedResearchAssessmentWithin(evaluation, p,a.id),producer=p.jobs.find(j=>(!j.purpose||j.purpose==='stage')&&j.outputVersionIds?.includes(a.id));
-  return {artifactId:a.id,contentHash:a.contentHash,taskCardId:p.activeTaskCardId,policyVersion:currentPolicy(p).version,assessmentId:assessment.id,
+  return {...(p.workflow?{readerEvidenceHash:readerBasisHash(p,a.id)}:{}),artifactId:a.id,contentHash:a.contentHash,taskCardId:p.activeTaskCardId,policyVersion:currentPolicy(p).version,assessmentId:assessment.id,
     assessmentHash:assessment.reportHash,producerBinding:producer.binding,evidenceHash:hash(JSON.stringify({taskCard:p.taskCards.find(t=>t.id===p.activeTaskCardId),policy:currentPolicy(p),sources:a.technicalReceipts,verifications:p.verifications.filter(r=>r.artifactId===a.id),readiness:p.readinessReports.filter(r=>r.artifactId===a.id)}))};
 }
 function currentResearchDeclarationsWithin(evaluation, p,a) {
@@ -1061,8 +1072,8 @@ function researchOwnerPending(p,a) { return p.jobs.some(j=>j.purpose==='handoff'
 export function researchWorkflowView(p,{bindings={},providers={}}={}) {
  const current=researchWorkflowViewWithin(new WeakMap(), p, {bindings, providers});
  if(!p.workflow)return current;
- const reason='固定r7独立读者回环尚未接入，不能签研究交接或正式放行。';
- return {...current,checks:[...current.checks,{id:'reader_loop',label:'独立读者回环',passed:false,detail:reason,fix:null}],canDeliver:{allowed:false,reason},canAccept:{allowed:false,reason},canRelease:{allowed:false,reason},eligible:false,summary:reason};
+ let reader;try{const evidence=requiredReaderEvidence(p,p.activeByStage.research);reader={id:'reader_loop',label:'独立读者回环',passed:true,detail:'当前同版预定读者报告已完成理解检查；原件需运行层另核。',fix:null,evidenceHash:evidence.evidenceHash};}catch(error){reader={id:'reader_loop',label:'独立读者回环',passed:false,detail:error.code??'RESEARCH_R7_READER_REQUIRED',fix:null};}
+ return {...current,checks:[...current.checks,reader]};
 }
 function researchWorkflowViewWithin(evaluation, p,{bindings={},providers={}}={}) {
   const a=artifact(p,p.activeByStage.research),check=(id,run)=>{try{run();return {id,label:id,passed:true,detail:'Current backend validation passed',fix:null};}catch(e){return {id,label:id,passed:false,detail:e.code??'RESEARCH_REQUIRED',fix:null};}};
@@ -1204,7 +1215,8 @@ function copyContractMetadata(job, output, contentHash) {
   if (job.stage !== 'copy') return {};
   return {copyContract: {version: job.task?.copyContractVersion ?? 'copy-message-v1', status: job.task?.copyContractVersion === COPY_CONTRACT_VERSION && output ? 'complete' : 'missing_required_parts', contentHash}};
 }
-function requireSourceDeliveryPrerequisitesWithin(evaluation, p, a, {skipResearchHumanGate=false}={}) {
+function requireSourceDeliveryPrerequisitesWithin(evaluation, p, a, {skipResearchHumanGate=false,skipReader=false}={}) {
+  if(p.workflow&&a.stage==='research'&&!skipReader)requiredReaderEvidence(p,a.id);
   if(a.stage==='research'&&hasResearchData(p,a)){try{requireResearchOriginal(p,a);}catch(error){fail(error.code??'INVALID_RESEARCH_ORIGINAL',error.message);}}
   requireValue(!['layout','final_review'].includes(a.stage),'LAYOUT_FINAL_AUTHORITY_UNAVAILABLE','Dedicated native layout and final delivery authority are not implemented');
   if(a.stage==='content_review'){try{requireCompleteContent(p,a,(p, contents, options) => contentSourceEnvelopeWithin(evaluation, p, contents, options));return;}catch(e){fail(e.code??'CONTENT_AUTHORITY_REQUIRED',e.message);}}
@@ -1449,12 +1461,13 @@ export function applyCommand(project, command, context) {
   if(FINAL_AUTHORITY_COMMANDS.includes(c.kind)){try{reduceFinalAuthority(p,c,context);}catch(e){fail(e.code??'FINAL_AUTHORITY_INVALID',e.message);}}
   if(ACQUISITION_COMMANDS.includes(c.kind)){try{reduceAcquisition(p,c,context);}catch(e){fail(e.code??'ACQUISITION_INVALID',e.message);}}
   if(INTAKE_COMMANDS.includes(c.kind)){try{reduceIntake(p,c,context);}catch(e){fail(e.code??'INTAKE_INVALID',e.message);}}
+  if(RESEARCH_READER_COMMANDS.includes(c.kind)){try{reduceResearchReaderCommand(p,c,context,{target:(p,id)=>targetWithin(new WeakMap(),p,id),independent:independentVerifier,running:runningAttempt,receipt:verificationReceipt,methodIdentity:researchMethodIdentity});}catch(error){fail(error.code??'INVALID_RESEARCH_READER',error.message);}}
   switch (c.kind) {
     case 'record-research-handoff': {
-      requireValue(!p.workflow||c.request?.input?.decision==='returned','RESEARCH_R7_READER_REQUIRED','Current r7 reader-loop proof required before positive handoff');
+      if(p.workflow&&c.request?.input?.decision!=='returned')requiredReaderEvidence(p,c.request?.artifactId);
       human(context);const a=targetWithin(new WeakMap(), p,c.request.artifactId);validateResearchDeclarationInput(c.request.input);
       requireValue(c.request.contentHash===a.contentHash,'STALE_ARTIFACT','Observed research bytes changed');
-      requireSourceDeliveryPrerequisitesWithin(new WeakMap(), p,a,{skipResearchHumanGate:true});
+      requireSourceDeliveryPrerequisitesWithin(new WeakMap(), p,a,{skipResearchHumanGate:true,skipReader:c.request.input.decision==='returned'});
       requireValue(!researchOwnerPending(p,a),'HANDOFF_PENDING','Resolve existing or unknown owner work first');
       const state=currentResearchDeclarationsWithin(new WeakMap(), p,a),input=c.request.input;
       requireValue(c.request.basisHash===state.basisHash,'STALE_RESEARCH_DECLARATION','Observed evidence basis changed');
@@ -1481,7 +1494,7 @@ export function applyCommand(project, command, context) {
       break;
     }
     case 'release-research': {
-      requireValue(!p.workflow,'RESEARCH_R7_READER_REQUIRED','Current r7 reader-loop proof required before release');
+      if(p.workflow)requiredReaderEvidence(p,c.request?.artifactId);
       human(context);const a=targetWithin(new WeakMap(), p,c.request.artifactId);
       requireValue(a.contentHash===c.request.contentHash&&currentPolicy(p).version===c.request.policyVersion,'STALE_ARTIFACT','Observed research or policy changed');
       requireSourceDeliveryPrerequisitesWithin(new WeakMap(), p,a,{skipResearchHumanGate:true});requireResearchHandoffWithin(new WeakMap(), p,a);const state=requireResearchOperatorPairWithin(new WeakMap(), p,a);
@@ -1902,6 +1915,7 @@ export function applyCommand(project, command, context) {
       job.status = 'succeeded'; job.outputVersionIds = [c.reportId]; break;
     }
     case 'request-stage': {
+      if(c.stage==='research'&&c.task?.researchQuestionRegistration){const r=researchQuestionRegistration(p);requireValue(r&&isDeepStrictEqual(c.task.researchQuestionRegistration,r)&&c.task.researchQuestionRegistrationId===r.id&&c.task.researchQuestionRegistrationHash===r.registrationHash,'RESEARCH_QUESTIONS_CHANGED','Producer must freeze actual current question registration');}
       if(p.workflow){requireResearchWorkflow(p);assertWorkflowStage(p,c.stage);if(c.stage==='research')requireValue(isDeepStrictEqual(c.task?.researchMethod,researchMethodIdentity()),'RESEARCH_METHOD_REQUIRED','Current fixed research method required');}
       requireValue(!['layout','final_review'].includes(c.stage),'LAYOUT_EXECUTION_UNAVAILABLE','Project layout and final stages require the dedicated unavailable runtime');
       requireValue(Object.hasOwn(STAGES, c.stage) && nonempty(c.jobId) && !p.jobs.some(j => j.id === c.jobId), 'INVALID_JOB', 'Unique job and known stage required');
@@ -2139,6 +2153,7 @@ export function applyCommand(project, command, context) {
       else if (job.purpose === 'correction_review') { correctionReviewTargetWithin(new WeakMap(), p,job); independentVerifier(p,targetWithin(new WeakMap(), p,job.targetArtifactId),context); }
       else if (job.purpose === 'feedback_review') { feedbackReviewTargetWithin(new WeakMap(), p, job); independentVerifier(p, targetWithin(new WeakMap(), p, job.targetArtifactId), context); }
       else if (job.purpose === 'verification') independentVerifier(p, verificationTargetWithin(new WeakMap(), p, job), context);
+      else if(job.purpose==='research_reader'){requireValue(c.kind==='start-job'&&!job.attempts.length,'UNSAFE_RETRY','Reader attempts cannot automatically retry');independentVerifier(p,researchReaderTarget(p,job),context);requireValue(!p.jobs.some(j=>j.id!==job.id&&j.purpose==='research_reader'&&j.attempts.some(t=>intersectsLineage(t.executor,context))),'READER_CONTEXT_REUSED','Fresh independent reader context required');}
       else if (job.purpose === 'coverage_challenge') {requireValue(c.kind==='start-job'&&!job.attempts.length,'UNSAFE_RETRY','Semantic attempts cannot automatically retry');independentVerifier(p,semanticChallengeCurrent(p,job),context);}
       else if (job.purpose === 'readiness') independentVerifier(p, readinessTargetWithin(new WeakMap(), p, job), context);
       else if (job.purpose === 'reference') {
@@ -2157,7 +2172,7 @@ export function applyCommand(project, command, context) {
         })), 'SELF_REVIEW', 'Observation executor cannot author or review research');
       if(job.task?.correctionInput)requireValue(job.task.correctionInput.sources.filter(source=>source.kind!=='human').every(source=>!intersectsLineage(source.executionIdentity,context)),
         'SELF_REVIEW','Correction producer must be independent from consumed reviewer actors, runs and contexts');
-      job.attempts.push({id: c.attemptId, executor: structuredClone(context), status: 'running', ...(['creative_review','owner_acceptance','reference','coverage_challenge'].includes(job.purpose)?{dispatchStarted:false}:{}), startedAt: context.now ?? null});
+      job.attempts.push({id: c.attemptId, executor: structuredClone(context), status: 'running', ...(['creative_review','owner_acceptance','reference','coverage_challenge','research_reader'].includes(job.purpose)?{dispatchStarted:false}:{}), startedAt: context.now ?? null});
       job.attemptId = c.attemptId; job.status = 'running'; delete job.error;
       break;
     }
@@ -2166,7 +2181,7 @@ export function applyCommand(project, command, context) {
       const job = p.jobs.find(j => j.id === c.jobId);
       requireValue(!(SKETCH_PURPOSES.includes(job?.purpose)||FINAL_VISUAL_PURPOSES.includes(job?.purpose))||c.kind==='mark-interrupted','SKETCH_ALREADY_CLAIMED','Sketch failures require their dedicated transition');
       const attempt = runningAttempt(job, c, context);
-      if(['creative_review','owner_acceptance','reference','coverage_challenge'].includes(job.purpose)&&c.kind==='finish-job-error')requireValue(typeof c.dispatchStarted==='boolean'&&c.dispatchStarted===attempt.dispatchStarted,'INVALID_ATTEMPT','Persisted dispatch state must match runtime failure');
+      if(['creative_review','owner_acceptance','reference','coverage_challenge','research_reader'].includes(job.purpose)&&c.kind==='finish-job-error')requireValue(typeof c.dispatchStarted==='boolean'&&c.dispatchStarted===attempt.dispatchStarted,'INVALID_ATTEMPT','Persisted dispatch state must match runtime failure');
       const recovery=context.recoveredBy,owner=attempt.executor;
       const undispatchedReference=c.kind==='mark-interrupted'&&job.purpose==='reference'&&attempt.dispatchStarted===false&&!attempt.receipt&&!attempt.referenceResult&&c.receipt==null
         &&recovery?.ownerState==='dead'&&recovery.host===owner.executorHost&&recovery.ownerHost===owner.executorHost&&recovery.ownerPid===owner.executorPid&&recovery.attemptId===attempt.id
@@ -2177,7 +2192,7 @@ export function applyCommand(project, command, context) {
         &&recovery?.ownerState==='dead'&&recovery.host===owner.executorHost&&recovery.ownerHost===owner.executorHost&&recovery.ownerPid===owner.executorPid&&recovery.attemptId===attempt.id
         &&Number.isSafeInteger(recovery.pid)&&recovery.pid>0&&Number.isSafeInteger(owner.executorPid)&&owner.executorPid>0;
       const status = c.kind === 'mark-interrupted' ? undispatchedReference||undispatchedAcquisition?'blocked':'awaiting_reconciliation' : c.status;
-      if(['creative_review','owner_acceptance','reference','coverage_challenge'].includes(job.purpose)&&attempt.dispatchStarted===true)requireValue(status==='awaiting_reconciliation','UNSAFE_RETRY','A dispatched unsuccessful creative call requires reconciliation');
+      if(['creative_review','owner_acceptance','reference','coverage_challenge','research_reader'].includes(job.purpose)&&attempt.dispatchStarted===true)requireValue(status==='awaiting_reconciliation','UNSAFE_RETRY','A dispatched unsuccessful creative call requires reconciliation');
       requireValue(['failed', 'blocked', 'awaiting_reconciliation'].includes(status), 'INVALID_JOB_STATUS', 'Unknown failure state');
       const error = c.kind === 'mark-interrupted' ? undispatchedReference?{code:'INTERRUPTED_BEFORE_DISPATCH',message:'Stopped local owner did not dispatch; explicit retry required'}:{code: 'INTERRUPTED', message: 'Execution interrupted; outcome requires reconciliation'} : c.error;
       if(undispatchedReference)attempt.interruptionRecovery=structuredClone(recovery);
@@ -2347,7 +2362,7 @@ export function applyCommand(project, command, context) {
       if(usesResearchOperatorWorkflow(p)&&a.stage==='research'&&a.provenance==='provider_execution')requireResearchOperatorReleaseWithin(new WeakMap(), p,a);
       if(a.stage!=='strategy'||a.provenance!=='provider_execution'||!p.releases.some(r=>r.artifactId===a.id&&r.policyVersion===currentPolicy(p).version))p.releases.push({artifactId: a.id, policyVersion: currentPolicy(p).version, actorId: context.actorId}); break;
     }
-    default: if(!INTAKE_COMMANDS.includes(c.kind)&&!ACQUISITION_COMMANDS.includes(c.kind))fail('UNKNOWN_COMMAND', 'Unknown command kind');
+    default: if(!RESEARCH_READER_COMMANDS.includes(c.kind)&&!INTAKE_COMMANDS.includes(c.kind)&&!ACQUISITION_COMMANDS.includes(c.kind))fail('UNKNOWN_COMMAND', 'Unknown command kind');
   }
   try{enforceFinalCallCeiling(p);}catch(e){fail(e.code??'FINAL_AUTHORITY_INVALID',e.message);}
   p.revision++;

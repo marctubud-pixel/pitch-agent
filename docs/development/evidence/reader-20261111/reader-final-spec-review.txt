@@ -1,0 +1,11 @@
+# Reader 工作包独立 Spec 审查
+
+固定基线：`44c495b14677cc8e16b77957fe060a483a4d3f84`。固定待审提交：`006b689634dd914d9c00e74610729d005b00a77e`。三点 diff 非空，范围只有该 feature 提交。审查者未参与实现，未修改源码、规范或提交证据。
+
+结论：发现 2 项 P2 恢复缺口；未发现要求外范围膨胀。建议修复后复核。
+
+1. **[P2] 已保存的未知读者结果过期后无法恢复为历史。** `tools/workbench/executor.mjs:663` 在读保存 locator 之前强制 `researchReaderTarget`，恢复 reducer 同样要求当前目标。新临时 SQLite + 本机合成 HTTP 在 `manifest-synced` 后丢返回，任务为 awaiting_reconciliation；随后改任务卡，无 provider 核原结果得到 `RESEARCH_QUESTIONS_REQUIRED`，0 新调用。原生结果完整存在，却不能生成历史报告或结束 unknown，UI 又只列当前卡/稿的读者任务。违反 `docs/development/research-reader.md:54`“原登记或任务已进入历史时，先核实际原回执，再清除已知结果的未决状态，并显示历史提示及原内容”。应允许原身份历史核对，同时保持 current=false、无放行资格，不能直接绕过当前守卫。
+
+2. **[P2] 入队落库、执行前重启会让同体恢复永久停在 queued。** `tools/workbench/research-service.mjs:60–62` 的既有任务分支只返回 jobId，不执行仍未派发的 queued 任务；revision 的 `80–81` 同形。独立测试用实际 enqueueResearchReader 后关闭/重开 SQLite，再向配置完整的服务重放同 body：仍 queued、0 新调用。默认不扫描旧 job，页面有 job 即隐藏开始按钮，因此无法接续此席位。违背总规格用户故事 9 的重启恢复与 reader 合同第 54 行。应仅对原请求、当前合法且未 dispatch 的 queued 任务显式续执行，保留 unknown 禁重发。
+
+验证：现成定向测试 42/42 通过（loop/state/真实 revision 与 disposition/reader service/HTTP/双 owner 原 packet 与工程放行），另 2 个独立反例复现上述结果。脚本：`/tmp/reader-spec-historical-recovery.mjs`、`/tmp/reader-spec-queued-replay.mjs`。不复跑全历史检查；没有旧 DB/run、外部模型或费用。未做新增浏览器操作；独立 UI 回执仅作为其声明范围证据。未验真实模型质量、消费者效能、客户批准及本工作包外后续生产；模拟报告不代表业务批准。
