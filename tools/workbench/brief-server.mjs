@@ -84,7 +84,7 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions,
   const store = openStore(dbPath);
   let research, intake;
   try {
-    research = createResearchService({rootDir: resolve(`${dbPath}.research`), ...researchOptions, store});
+    research = createResearchService({rootDir: resolve(`${dbPath}.research`), ...researchOptions, originalsRoot:resolve(`${dbPath}.originals`), store});
     intake = createBriefIntakeService({store, rootDir: resolve(`${dbPath}.originals`), intakeConfiguration});
   } catch(error) {store.close();throw error;}
   const result = async project => {
@@ -124,9 +124,10 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions,
       }
       const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/(?:commands|sources|research-workflow|research-jobs|research-verification|research-readiness|research-handoffs|research-release|research-questions|research-readers|research-reader-reconciliations|research-reader-dispositions|research-revisions)|\/artifacts\/([A-Za-z0-9:._%-]+)\/content)?$/.exec(url.pathname);
       const documentMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/documents(?:\/([A-Za-z0-9-]+)\/(original|extraction))?$/.exec(url.pathname);
+      const acquisitionMatch=/^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/research-acquisition(?:\/(start|step|reconcile))?$/.exec(url.pathname);
       const readerMatch=/^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/research-reader-reports\/([A-Za-z0-9-]+)$/.exec(url.pathname);
       const resource = projectMatch?.[2];
-      const methods = readerMatch ? ['GET'] : documentMatch ? documentMatch[3] === 'original' ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
+      const methods = acquisitionMatch ? [acquisitionMatch[2]?'POST':'GET'] : readerMatch ? ['GET'] : documentMatch ? documentMatch[3] === 'original' ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
       if (!methods.length) throw new HttpError(404, 'NOT_FOUND', 'Route not found');
       const revision = url.searchParams.get('revision');
       const targetMethod = req.method === 'OPTIONS' ? req.headers['access-control-request-method'] : req.method;
@@ -141,6 +142,16 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions,
       if (url.pathname === '/api/v1/capabilities') {
         await intake.extractionCapability();
         response(res, 200, {apiVersion: 'v1', surface: research.capability().executionAllowed ? 'research-v1' : 'brief-v1', workflowVersion:WORKFLOW_VERSION, executionAvailable: research.capability().executionAllowed, research:research.capability(), originals:intake.capability(), commands: Object.keys(commandFields)}); return;
+      }
+      if(acquisitionMatch){
+        const id=acquisitionMatch[1],operation=acquisitionMatch[2];let payload;
+        if(!operation)payload=await research.acquisitionStatus(id);
+        else {
+          const body=await jsonBody(req),common=['commandId','expectedRevision','taskCardId','taskCardHash'],extra={start:['sourceEntryIds','materialIds'],step:['generationId','jobIds'],reconcile:['generationId','jobId']}[operation];
+          fields(body,[...common,...extra]);payload=await research[{start:'acquisitionStart',step:'acquisitionStep',reconcile:'acquisitionReconcile'}[operation]](id,body,humanContext());
+        }
+        const p=store.read(id);if(p.revision!==payload.revision)throw new HttpError(409,'REVISION_CONFLICT','Project changed during acquisition response');const snapshot=await result(p);if(store.read(id).revision!==p.revision)throw new HttpError(409,'REVISION_CONFLICT','Project changed during acquisition response');
+        response(res,200,{...snapshot,...payload});return;
       }
       if(readerMatch){response(res,200,await research.readerReport(readerMatch[1],readerMatch[2]));return;}
       if (documentMatch) {

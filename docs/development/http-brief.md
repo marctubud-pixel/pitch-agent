@@ -1,10 +1,10 @@
 # 本地简报HTTP合同与联调
 
-规范版本：1.3.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
+规范版本：1.4.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
 
 ## 启动与数据
 
-先执行根`npm run setup:frontend`。在两个终端分别运行：
+先执行根`npm run setup:frontend`和`npm run setup:workbench`。在两个终端分别运行：
 
 ```sh
 npm run dev:brief
@@ -19,7 +19,7 @@ npm run dev:http
 
 `brief-server.mjs`复用业务域和SQLite存储，单独提供`/api/v1/capabilities`、项目列表／单项及历史修订读取、新建项目、`revise-task-card`和`confirm-task-card`。请求字段白名单、普通Brief请求128 KiB上限、loopback Host和明确来源共同限制本地入口；PDF上传按专用原件合同预算。默认不创建执行器或供应商，不恢复、派发或推进任何已有job；显式研究配置仅允许当前请求指定的研究任务；写入旧完整服务前必须另行验收，不能以其通用入口代替本服务。
 
-前端先验证受支持的brief-v1默认模式或显式research-v1能力才写入，实际握手前显示未接通。项目、概览、任务卡及七阶段状态从同一后端快照投影；没有封面就显示空态，没有研究或创意产物就保持未开始。确认简报会使导航指向研究，但不创建研究任务。当前七阶段项目允许已接研究记录及严格绑定bridge的本地PDF job（默认queued零尝试，显式解析后按真实attempt及原件身份投影）；其他旧生产链仍拒绝映射，避免把旧执行显示为当前七阶段。
+前端先验证受支持的brief-v1默认模式或显式research-v1能力才写入，实际握手前显示未接通。项目、概览、任务卡及七阶段状态从同一后端快照投影；没有封面就显示空态，没有研究或创意产物就保持未开始。确认简报会使导航指向研究，但不创建研究任务。当前七阶段项目允许已接研究记录及严格绑定bridge的本地PDF job（默认queued零尝试，显式解析后按真实attempt及原件身份投影）；采集任务仅按技术账本、原generation与固定任务集合窄投影；其他旧生产链仍拒绝映射，避免把旧执行显示为当前七阶段。
 
 旧项目继续保留无workflow的历史身份，新建项目使用proposal-seven-v1，研究原件及来源接入范围见上述接续。此为单机开发服务，原生记录作者固定`local-operator`，不是前端所选人类或Agent身份，也不是生产账号鉴权。前端本地游客权限仍生效，服务端多用户授权另行实现。助手、协作写入、模式更新和后续生产动作明确未接入。Brief文本提取沿用本地实际解析能力。
 
@@ -55,3 +55,7 @@ Brief附件目前只保存原文和元数据，`fileAvailable: false`，不提�
 ## 指定原件的本地解析
 
 可选`intakeConfiguration`或CLI`--pdf-python ABS_PATH`独立于研究开关，默认关闭。GET/POST `documents/:documentId/extraction`沿普通128KiB与原Host/Origin/白名单；先实际probe再公布cap。原claim、同体恢复、同修订文件与project、状态及未接管running限制见[解析合同](brief-extraction.md)。只允许对应bridge的本地PDF任务，不解封intake_taskcard或旧队列。
+
+## 自动采集接口
+
+GET `projects/:id/research-acquisition`及POST其`start`、`step`、`reconcile`子路径复用既有四分支与执行器。接口继续限制普通128KiB、字段白名单、方法、Host、Origin及query。每步明确1至4个原job，技术账本冻结原body、卡和问题计划；重放不能改选后来队列。原始回执、两层未知、共根PDF资格及历史生产者未支持范围见[采集运行合同](research-acquisition.md)。默认读取和确认不启动采集。

@@ -1,3 +1,4 @@
+import {ResearchAcquisitionPanel} from '../proposal/ResearchAcquisitionPanel';
 import { useTeam } from '../collaboration/context';
 import { PermissionFields } from '../collaboration/TeamTools';
 import { useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
@@ -69,6 +70,7 @@ function Research({ data }: { data: ResearchWorkspace }) {
   const claimId = params.get('claim');
   const claim = claims.find((c) => c.id === claimId) ?? null;
   const { command, exec } = useWorkflowCommand();
+  const acquisition = useService().researchAcquisition;
   const capabilities = useServiceQuery('research-capability',s=>s.getCapabilities());
   const unavailable = capabilities.data?.research && !capabilities.data.research.configured;
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -85,7 +87,7 @@ function Research({ data }: { data: ResearchWorkspace }) {
           title={t('res.noneState')}
           action={
             <div className="stack-sm">
-              <Action permission={{ kind: 'workflow' }}
+              {acquisition ? <ResearchAcquisitionPanel projectId={project.id}/> : <Action permission={{ kind: 'workflow' }}
                 label={t('wf.generate_research')}
                 variant="primary"
                 icon={<Play size={16} aria-hidden="true" />}
@@ -93,7 +95,7 @@ function Research({ data }: { data: ResearchWorkspace }) {
                 disabled={!briefConfirmed || generating || Boolean(unavailable)}
                 reason={unavailable ? capabilities.data?.research?.reason : generating ? t('res.generating') : t('res.confirmFirst')}
                 pending={command.pending}
-              />
+              />}
               <CommandFeedback command={command} />
             </div>
           }

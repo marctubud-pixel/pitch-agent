@@ -1,15 +1,16 @@
 # 开发、运行与使用
 
-规范版本：1.5.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
+规范版本：1.6.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
 
 ## 本地启动
 
-要求Node 24.13.0及Python 3.11或更新版本。Node版本由根`.node-version`固定；Python默认检查仅用标准库。npm依赖以应用的package-lock.json锁定，默认安装禁用依赖安装脚本；该方式已在独立检出验证。
+要求Node 24.13.0及Python 3.11或更新版本。Node版本由根`.node-version`固定；Python默认检查仅用标准库。npm依赖以应用的package-lock.json锁定，默认安装禁用依赖安装脚本；该方式已在独立检出验证。业务工具依赖另由tools/workbench的pnpm-lock.yaml固定，`setup:workbench`使用声明的pnpm 11.25.0安装，不启动业务。
 
 ```sh
 git clone git@github.com:marctubud-pixel/pitch-agent.git
 cd pitch-agent
 npm run setup:frontend
+npm run setup:workbench
 npm run dev
 ```
 
@@ -49,11 +50,11 @@ npm run check
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集和后续生产仍未完成；默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，后续生产仍未完成；默认不执行模型。
 
 ## PDF原件输入
 
-沿用当前两个开发命令，新建已可保存和下载PDF品牌原件；按实际能力限制格式/大小，默认不执行解析或模型；显式本地解析另见[解析合同](brief-extraction.md)。合同与真实UI证据见[PDF原件保存](brief-originals.md)。旧intake复用已接此子路径，研究读者已接；采集及后续生产仍继续目标工作包。
+沿用当前两个开发命令，新建已可保存和下载PDF品牌原件；按实际能力限制格式/大小，默认不执行解析或模型；显式本地解析另见[解析合同](brief-extraction.md)。合同与真实UI证据见[PDF原件保存](brief-originals.md)。旧intake复用已接此子路径，研究读者已接；采集按[运行合同](research-acquisition.md)接线，后续生产继续目标工作包。
 
 
 ## 研究独立读者工作包

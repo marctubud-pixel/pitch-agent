@@ -207,3 +207,13 @@ it('protects optional independent-reader commands and passes the actual operator
  await expect(protectedReader.register('luma',input,meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.start('luma',{artifactId:'a',registrationId:'r',seat:0},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.reconcile('luma','job',meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.revise('luma','artifact',meta)).rejects.toMatchObject({kind:'forbidden'});await expect(protectedReader.dispose('luma',{artifactId:'new',previousReportId:'old',dispositions:[]},meta)).rejects.toMatchObject({kind:'forbidden'});expect(calls).toEqual([]);
  team.selectActor('human-owner');await expect(protectedReader.register('luma',input,meta)).rejects.toThrow('reached test boundary');expect(calls[0][2]).toMatchObject({actor:{id:'human-owner'}});team.destroy();
 });
+it('protects optional acquisition start, fixed step and reconcile as workflow commands',async()=>{
+ const {raw,team}=setup(),calls:unknown[][]=[];
+ const stop=async(...args:unknown[]):Promise<never>=>{calls.push(args);throw Error('reached acquisition boundary');};
+ const acquisition={get:stop,start:stop,step:stop,reconcile:stop} satisfies import('../domain/researchAcquisition').ResearchAcquisitionService;
+ const api=protectServices({...raw,workbench:Object.assign(raw.workbench,{researchAcquisition:acquisition})},team).workbench.researchAcquisition;if(!api)throw Error('Missing optional acquisition');
+ try{team.selectActor('human-guest');const target={taskCardId:'card',taskCardHash:'hash'};
+ await expect(api.start('p',{...target,sourceEntryIds:[],materialIds:[]},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(api.step('p',{...target,generationId:'g',jobIds:['job']},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(api.reconcile('p',{...target,generationId:'g',jobId:'job'},meta)).rejects.toMatchObject({kind:'forbidden'});expect(calls).toEqual([]);
+ team.selectActor('human-owner');await expect(api.step('p',{...target,generationId:'g',jobIds:['job']},meta)).rejects.toThrow('reached acquisition boundary');expect(calls[0][2]).toMatchObject({actor:{id:'human-owner'}});
+ }finally{team.destroy();}
+});

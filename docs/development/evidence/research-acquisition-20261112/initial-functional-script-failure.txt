@@ -1,0 +1,1 @@
+真实Chrome已完成PDF选择、start返回截断、reload同body恢复、三个step、四分支封口和r7生产。sameBodyStarts两条及相等断言已通过。最终原生回读project.jobs实际7，脚本错误预期6，故exit1；实际另有intake_extract一个job。不能把此整份脚本签通过。原script与project-after.json保留；后续只读复验将分别核6个采集/研究job与1个PDF job。原过程未重跑，未重签研究放行。

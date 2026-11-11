@@ -1,3 +1,4 @@
+import {requireAcquisitionHttpJob} from './research-acquisition.mjs';
 import {researchReaderEvidence,validateStoredResearchReader} from './research-reader-state.mjs';
 import {buildResearchReaderRequest,validateResearchReaderOutput} from './research-reader-loop.mjs';
 import {RESEARCH_READER_COMMANDS,reduceResearchReaderCommand,researchReaderTarget,researchQuestionRegistration} from './research-reader-state.mjs';
@@ -2128,6 +2129,7 @@ export function applyCommand(project, command, context) {
     case 'start-job':
     case 'retry-job': {
       const job = p.jobs.find(j => j.id === c.jobId);
+      if(c.acquisitionHttpRequestId)requireAcquisitionHttpJob(p,c.acquisitionHttpRequestId,job);
       requireValue(job?.purpose!==LAYOUT_PURPOSE&&!['layout','final_review'].includes(job?.stage),'LAYOUT_EXECUTION_UNAVAILABLE','Dedicated native executor is not implemented; generic dispatch cannot replace it');
       requireValue(job && (c.kind === 'start-job' ? job.status === 'queued' : ['failed', 'blocked'].includes(job.status)), 'INVALID_JOB', 'Job is not eligible for this transition');
       requireValue(!['research_acquisition_plan','research_acquisition_branch'].includes(job.purpose),'UNSAFE_RETRY','Acquisition requires its dedicated non-repeating executor');

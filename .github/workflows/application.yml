@@ -24,6 +24,8 @@ jobs:
           package-manager-cache: false
       - name: Install locked preview dependencies
         run: npm run setup:frontend
+      - name: Install locked workbench dependencies
+        run: npm run setup:workbench
       - name: Install explicit local PDF test runtime
         run: |
           python3 -m venv .scratch/pdf-test-runtime
@@ -34,6 +36,6 @@ jobs:
       - name: Typecheck and test current application
         run: npm run typecheck && npm run test:frontend
       - name: Test portable domain and storage boundaries
-        run: npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:dependency
+        run: npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:dependency
       - name: Build current application
         run: npm run build

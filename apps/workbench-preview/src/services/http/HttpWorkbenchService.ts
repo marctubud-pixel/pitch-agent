@@ -1,3 +1,5 @@
+import type {ResearchAcquisitionService} from '../../domain/researchAcquisition';
+import {acquisitionState,acquisitionReceipt} from './researchAcquisitionProjection';
 import type {OriginalDocumentsService} from '../../domain/originalDocuments';
 import {originalDocumentState,extractionReceipt} from './originalDocumentsProjection';
 import {readerState,readerReport,readerExcerpts} from './researchReaderProjection';
@@ -86,7 +88,8 @@ export class HttpWorkbenchService implements WorkbenchService {
             if (p.activeTaskCardId !== card.id) throw new ServiceError('conflict', '原提交已记入历史，当前简报已有新稿。请查看保留内容与当前任务卡，再结束此记录。', {conflict: {expectedRevision: Number(body.expectedRevision), currentRevision: p.revision, changedBy: p.audit.at(-1)?.actorId ?? null, changeSummary: '原任务卡已被新稿替代。'}});
           }
           let historicalReader=false;
-          if(pending.kind==='extract_original'){extractionReceipt(p,result.value,body);const state=await originalDocumentState(result.value,p,text(body.documentId),this.nativeCapability.originals);historicalReader=!state.current;}
+          if(['start_acquisition','step_acquisition','reconcile_acquisition'].includes(pending.kind)){historicalReader=acquisitionReceipt(result.value,p,body,pending.path);await acquisitionState(result.value,p);}
+          else if(pending.kind==='extract_original'){extractionReceipt(p,result.value,body);const state=await originalDocumentState(result.value,p,text(body.documentId),this.nativeCapability.originals);historicalReader=!state.current;}
           else if (pending.kind === 'upload_original') await this.verifyOriginalReceipt(p, object(result.value), body);
           else if (!['create_project','save_brief','confirm_brief'].includes(pending.kind)) historicalReader=this.verifyResearchReceipt(p, object(object(result.value).receipt), body, pending.path);
           journal.clear(pending.commandId); this.emit();
@@ -312,6 +315,36 @@ export class HttpWorkbenchService implements WorkbenchService {
     const target = p.artifacts.find(a => a.id === p.stages.find(s => s.stage === 'research')?.activeArtifactId && a.stage === 'research');
     if (!target || !Array.isArray(target.inputVersionIds) || !target.inputVersionIds.includes(p.activeTaskCardId) || p.stages.find(s => s.stage === 'research')?.status === 'stale') throw new ServiceError('not_eligible', '当前简报尚无有效研究产物，历史稿不能代替当前输入。');
     return target;
+  }
+  readonly researchAcquisition: ResearchAcquisitionService = {
+    get: async id => {
+      await this.connect();
+      const value=(await this.request('GET',`/projects/${encodeURIComponent(id)}/research-acquisition`)).value,p=parseSnapshot(value);
+      if(p.id!==id)throw new ServiceError('validation','采集项目身份不一致。');
+      const state=await acquisitionState(value,p);
+      for(const material of state.materials){
+        if(registeredOriginals(p).find(d=>d.id===material.id)?.taskCardId!==p.activeTaskCardId)continue;
+        if(!state.materialsRootShared){material.reason='当前研究执行与PDF原件存储未配置共用根，不能选入；可继续自动搜索或选入已登记来源。';continue;}
+        try{const loaded=await this.originalDocuments.get(id,material.id);material.eligible=loaded.current&&Boolean(loaded.result&&['text_extracted','partial'].includes(loaded.result.status)&&loaded.result.pages.some(page=>page.text.trim()));material.reason=material.eligible?loaded.result?.status==='partial'?'当前卡原件已核；仅部分页面有抽取文本，空白或扫描页未覆盖；不代表事实核验或采用':'当前卡原件与抽取文本已核对；不代表事实核验或人类采用':loaded.result?`解析状态：${loaded.result.status}，暂无可选入文本`:'尚无已核解析文本';}
+        catch{material.reason='原件或抽取结果核对失败，不能选入';}
+      }
+      return state;
+    },
+    start:(id,input,meta)=>this.acquisitionMutation(id,'start',input,meta),
+    step:(id,input,meta)=>this.acquisitionMutation(id,'step',input,meta),
+    reconcile:(id,input,meta)=>this.acquisitionMutation(id,'reconcile',input,meta),
+  };
+  private async acquisitionMutation(id:string,operation:'start'|'step'|'reconcile',input:object,meta:CommandMeta){
+    await this.connect();
+    const path=`/projects/${encodeURIComponent(id)}/research-acquisition/${operation}`,body={commandId:meta.commandId,expectedRevision:meta.expectedRevision,...input};
+    const result=await this.write(path,body,'研究自动采集');
+    try{
+      const p=parseSnapshot(result.value);if(p.id!==id)throw new Error('Wrong project');
+      const historical=acquisitionReceipt(result.value,p,body,path),data=await acquisitionState(result.value,p);
+      this.completed(meta.commandId);
+      if(historical)throw new ServiceError('conflict','原采集结果已核对为历史，未继续派发。请核对当前简报及问题计划。');
+      return {data,revision:p.revision,commandId:meta.commandId,replayed:object(object(result.value).receipt).replayed===true};
+    }catch(error){if(error instanceof ServiceError&&(error.outcomeUnknown||error.kind==='conflict'))throw error;throw new ServiceError('response_lost','采集回执未完整绑定原请求，请保留提交核对。',{outcomeUnknown:true,retryable:true});}
   }
   readonly researchReader: ResearchReaderService = {
     revise: (id,artifactId,meta) => this.readerMutation(id,'research-revisions',{artifactId},meta),

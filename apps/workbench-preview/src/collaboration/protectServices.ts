@@ -24,6 +24,7 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const uploadPolicy = raw.proposals.getBrandResourceUploadPolicy?.bind(raw.proposals);
   const recovery = service.briefRecovery;
   const reader = service.researchReader;
+  const acquisition = service.researchAcquisition;
   const originals = service.originalDocuments;
   const recoveryAction = (): TeamAction => {
     const pending = recovery?.getPending();
@@ -38,6 +39,12 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const workbench: WorkbenchService = {
     get environment() { return service.environment; },
     briefRecovery,
+    researchAcquisition: acquisition ? {
+      get:id=>acquisition.get(id),
+      start:(id,input,meta)=>store.run({kind:'workflow'},actor=>acquisition.start(id,input,{...meta,actor})),
+      step:(id,input,meta)=>store.run({kind:'workflow'},actor=>acquisition.step(id,input,{...meta,actor})),
+      reconcile:(id,input,meta)=>store.run({kind:'workflow'},actor=>acquisition.reconcile(id,input,{...meta,actor})),
+    }:undefined,
     originalDocuments: originals ? {
       get:(id,resourceId)=>originals.get(id,resourceId),
       extract:(id,input,meta)=>store.run({kind:'manage'},actor=>originals.extract(id,input,{...meta,actor})),

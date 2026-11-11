@@ -1,0 +1,68 @@
+{
+  "scope": "Read-only current actual Chrome verification of original R1; zero business reruns. Initial exact start replay assertions passed before final fixture expected-total error; initial script/failures preserved.",
+  "url": "http://127.0.0.1:4434/#/p/project-43c14c6259ae07d1eeec1a0b6f6f795a1dca67beb1a8b1aaa4cc3acdef9134ae/proposal/research",
+  "postCount": 0,
+  "errors": [],
+  "measurements": {
+    "width": 1280,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "fonts": "loaded",
+    "lang": "zh-CN"
+  },
+  "jobs": [
+    {
+      "id": "intake-f299148f1e92ba3888f1828c8a86d4d924f712f25133e18f4ae6d95d4a4c7327",
+      "purpose": "intake_document",
+      "stage": "intake",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "acquisition-8942e02e4c845e8b0582aa5237a10f1f8da622927c24c1322a12434ab7eaddf3:plan",
+      "purpose": "research_acquisition_plan",
+      "stage": "research",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "acquisition-8942e02e4c845e8b0582aa5237a10f1f8da622927c24c1322a12434ab7eaddf3:professional_reports",
+      "purpose": "research_acquisition_branch",
+      "stage": "research",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "acquisition-8942e02e4c845e8b0582aa5237a10f1f8da622927c24c1322a12434ab7eaddf3:brand_product",
+      "purpose": "research_acquisition_branch",
+      "stage": "research",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "acquisition-8942e02e4c845e8b0582aa5237a10f1f8da622927c24c1322a12434ab7eaddf3:same_purpose_competitors",
+      "purpose": "research_acquisition_branch",
+      "stage": "research",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "acquisition-8942e02e4c845e8b0582aa5237a10f1f8da622927c24c1322a12434ab7eaddf3:users_scenes",
+      "purpose": "research_acquisition_branch",
+      "stage": "research",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "job-c0d55147f55998a24f2d1e3f97dcba4fe632c366448dfc8f8cefe91c0a5519d7",
+      "purpose": null,
+      "stage": "research",
+      "status": "succeeded",
+      "attempts": 1
+    }
+  ],
+  "acquisitionJobs": 6,
+  "pdfJobs": 1,
+  "artifacts": 1,
+  "releases": 0
+}
