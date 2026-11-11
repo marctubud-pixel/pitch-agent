@@ -4,7 +4,7 @@
 
 用户于 2026-10-21 指定采用 mattpocock/skills 作为后续开发的方法库。技能已安装在 `/Users/marc/.codex/skills/`，版本和完整目录见 `docs/agents/skills-installation.json`。这是固定版本安装，更新需显式执行，不自动跟随上游。
 
-- 先读当前开发依据 `多线调研工作台_开发说明_v0.3.md`，结合现有实现核实状态；已达成的共识沿用，不重复盘问。
+- 先读 `docs/specs/README.md` 中的现行规范，再结合实际实现核实状态；总体范围或历史决定需要追溯时按需读 `多线调研工作台_开发说明_v0.3.md`，已达成的共识沿用，不重复盘问。
 - 需求与边界讨论默认使用 `grill-with-docs`（`grilling` + `domain-modeling`），每轮只讨论前置条件已明确的问题，给出建议，保持简洁。事实自行查证，产品取舍由用户决定。
 - 跨阶段且不确定性大的规划使用 `wayfinder`；明确的小任务直接推进，无需套完整流程。
 - 形成规格使用 `to-spec`，拆分可验收任务使用 `to-tickets`；实现按任务选择 `implement` / `implement-spec`，测试、审查与复盘按需使用 `tdd`、`code-review`、`retro`。调用前读取相应 SKILL.md 及必要引用。

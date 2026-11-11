@@ -112,6 +112,9 @@
     "skills/visual-development-lead/scripts/check-stage.mjs",
     "skills/visual-development-lead/tests/check-stage.test.mjs",
     "status/backlog.md",
-    "status/current.md"
+    "status/current.md",
+    "多线调研工作台_开发说明_v0.2.md",
+    "多线调研工作台_开发说明_v0.3.md",
+    "调研工作台_MVP规格_v0.1.md"
   ]
 }
