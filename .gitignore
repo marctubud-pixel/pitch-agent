@@ -1,0 +1,66 @@
+# Generated acceptance data is preserved on disk, outside source snapshots.
+.DS_Store
+**/.DS_Store
+/.scratch/
+/.audit/
+/output/
+/tmp/
+*.log
+**/node_modules/
+**/dist/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+.scratch/cleanup-20261102/archives/
+.scratch/end-to-end-local-20261102/copy-target-admission/tools/workbench/native-*/
+.data/local-complete-acceptance-20261102/
+.scratch/cleanup-20261103/blobs/
+
+# Runtime data and reproducible dependencies stay on disk, outside new Git snapshots.
+/.data/
+/.pnpm-store/
+/apps/**/node_modules/
+/sites/**/node_modules/
+.scratch/**/node_modules/
+.scratch/cleanup-*/archives/
+.scratch/cleanup-*/blobs/
+.scratch/**/*.sqlite
+.scratch/**/*.sqlite-wal
+.scratch/**/*.sqlite-shm
+.scratch/**/*.db
+.scratch/**/*.db-wal
+.scratch/**/*.db-shm
+/output/**/*.png
+/output/**/*.jpg
+/output/**/*.jpeg
+/output/**/*.webp
+/output/**/*.pdf
+/output/**/*.pptx
+/output/**/*.mp4
+/output/**/*.ttf
+/output/**/*.otf
+/output/**/*.woff2
+/tmp/**/*.png
+/tmp/**/*.jpg
+/tmp/**/*.jpeg
+/tmp/**/*.webp
+/tmp/**/*.pdf
+/tmp/**/*.pptx
+/tmp/**/*.mp4
+/tmp/**/*.ttf
+/tmp/**/*.otf
+/tmp/**/*.woff2
+
+# Keep authored code, formal fixtures, manifests and review evidence available.
+
+# Verified recoverable archives of retired local test copies.
+/.scratch/space-cleanup-user-20261103/archives/
+/.scratch/space-cleanup-20261103-second/archives/
+
+# Read-only extracted provenance copies; keep them outside automatic source snapshots.
+/.scratch/end-to-end-local-20261102/content-presentation-gap-20261103/*-trusted-source-from-cold-backup.json
+
+/.scratch/end-to-end-local-20261102/native-content-recovery-design-20261103/m6-original-prepared-ledger.json
