@@ -1,0 +1,264 @@
+{
+  "sourceRecords": [
+    {
+      "id": "old.source:1",
+      "url": "https://example.test/legacy",
+      "text": "Synthetic historical package is blue.",
+      "scopeRelation": "background",
+      "verification": "captured"
+    }
+  ],
+  "taskCard": {
+    "id": "historical-card",
+    "brief": "Explore supplied packaging, without audience promises.",
+    "createdBy": "historical-human",
+    "fields": {
+      "old": "retained full historical input"
+    }
+  },
+  "rawProduction": {
+    "outputKind": "research_findings",
+    "status": "complete",
+    "title": "Historical synthetic research",
+    "summary": "Captured source-relative observation.",
+    "sections": [
+      {
+        "heading": "Color",
+        "body": "Synthetic historical package is blue.",
+        "evidenceIds": [
+          "old.source:1"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "text": "Synthetic historical package is blue.",
+        "kind": "fact",
+        "evidenceRefs": [
+          "old.source:1"
+        ],
+        "limitations": [
+          "Captured text only."
+        ]
+      }
+    ],
+    "gaps": [],
+    "evidenceClassifications": [
+      {
+        "sourceId": "old.source:1",
+        "scopeRelation": "background",
+        "reason": "Background only."
+      }
+    ]
+  },
+  "requestHash": "adb6521c12dc415c2385e523b738129a497c96ff5295da2f66589ac931de6841",
+  "schemaHash": "ac531f5238d218482132b77da1b3b4a4c0b3be637ff794d2bee503925e6c56f5",
+  "promptHash": "118d7fb99fa8b0d01a880cdb8d89344ffb11144f4c0dcf5ed9836fc37dfd51cd",
+  "normalizedHash": "114f601ad04cd0fefd69266da3d3920d56f3cfa35b7331f56674a9dd07f01b72",
+  "reviews": [
+    {
+      "input": {
+        "artifactId": "historical-research",
+        "contentHash": "114f601ad04cd0fefd69266da3d3920d56f3cfa35b7331f56674a9dd07f01b72",
+        "content": {
+          "outputKind": "research_findings",
+          "status": "complete",
+          "title": "Historical synthetic research",
+          "summary": "Captured source-relative observation.",
+          "sections": [
+            {
+              "heading": "Color",
+              "body": "Synthetic historical package is blue.",
+              "evidenceIds": [
+                "old.source:1"
+              ]
+            }
+          ],
+          "claims": [
+            {
+              "text": "Synthetic historical package is blue.",
+              "kind": "fact",
+              "evidenceRefs": [
+                "old.source:1"
+              ],
+              "limitations": [
+                "Captured text only."
+              ],
+              "verification": "pending"
+            }
+          ],
+          "gaps": [],
+          "evidenceClassifications": [
+            {
+              "sourceId": "old.source:1",
+              "scopeRelation": "background",
+              "reason": "Background only.",
+              "suppliedScopeRelation": "background",
+              "sourceVerification": "captured"
+            }
+          ]
+        },
+        "taskCard": {
+          "id": "historical-card",
+          "brief": "Explore supplied packaging, without audience promises.",
+          "createdBy": "historical-human",
+          "fields": {
+            "old": "retained full historical input"
+          }
+        },
+        "taskCardConfirmed": true,
+        "sourceRecords": [
+          {
+            "id": "old.source:1",
+            "url": "https://example.test/legacy",
+            "text": "Synthetic historical package is blue.",
+            "scopeRelation": "background",
+            "verification": "captured"
+          }
+        ]
+      },
+      "raw": {
+        "protocolVersion": "excerpt-support-v2",
+        "artifactId": "historical-research",
+        "contentHash": "114f601ad04cd0fefd69266da3d3920d56f3cfa35b7331f56674a9dd07f01b72",
+        "contentObjectHash": "e6bf848d724ec3ee0a5842a6e02247cd0765685d74f256874325979f999df0e7",
+        "taskCardId": "historical-card",
+        "taskCardHash": "8252668dc44aeb3678ec45a751ed5e49e17db1de2159914845bdf8815eaf9b3a",
+        "claimManifestHash": "9f12c3c9ff2c6d17cba8de1ae18cdae1b004294b74dda9df76397e692c196a27",
+        "sourceManifestHash": "5743801e2916a98c2b890f3a52d18555733abd3bd2b3f84f8569de1c77923f9a",
+        "checkedFactMeaning": "source_relative_excerpt_support_not_website_truth",
+        "results": [
+          {
+            "claimKey": "07f5d77b259cf3998ff07cc4daee38b7f507a5159902ef4f7488352f371c7105",
+            "outcome": "supported_excerpt",
+            "rationale": "Original supplied source.",
+            "citations": [
+              {
+                "sourceId": "old.source:1",
+                "textHash": "8f760e429de978ef85559619ce07411e99c86c0df8bd44716f707d2eb5be24af",
+                "quote": "Synthetic historical package is blue."
+              }
+            ],
+            "requirementRefs": [],
+            "limitations": []
+          }
+        ],
+        "wholeTextScan": {
+          "status": "complete",
+          "creativeClaimKeys": [],
+          "omissions": [],
+          "mismatchedCreative": []
+        },
+        "limitations": []
+      },
+      "requestHash": "c4834b2878b6d7bf69866111c3489ae7cd27e59bcc5256852c96ea03636fd925",
+      "schemaHash": "d6fa2eebe60343e19d266195c5edbf1e9878e4e6f23a2fecaad49da9dd91357b",
+      "promptHash": "a30cfae2dc6ef3ac5c1380b558a6f67f7d91141d0fe8ffcf269d3cfafa0010c3",
+      "normalizedHash": "f6a7e37dbd5075b041f3fd90e317c69203774f121cf64968d6bb5d7bc82e5275"
+    },
+    {
+      "input": {
+        "artifactId": "historical-research",
+        "contentHash": "114f601ad04cd0fefd69266da3d3920d56f3cfa35b7331f56674a9dd07f01b72",
+        "content": {
+          "outputKind": "research_findings",
+          "status": "complete",
+          "title": "Historical synthetic research",
+          "summary": "Captured source-relative observation.",
+          "sections": [
+            {
+              "heading": "Color",
+              "body": "Synthetic historical package is blue.",
+              "evidenceIds": [
+                "old.source:1"
+              ]
+            }
+          ],
+          "claims": [
+            {
+              "text": "Synthetic historical package is blue.",
+              "kind": "fact",
+              "evidenceRefs": [
+                "old.source:1"
+              ],
+              "limitations": [
+                "Captured text only."
+              ],
+              "verification": "pending"
+            }
+          ],
+          "gaps": [],
+          "evidenceClassifications": [
+            {
+              "sourceId": "old.source:1",
+              "scopeRelation": "background",
+              "reason": "Background only.",
+              "suppliedScopeRelation": "background",
+              "sourceVerification": "captured"
+            }
+          ]
+        },
+        "taskCard": {
+          "id": "historical-card",
+          "brief": "Explore supplied packaging, without audience promises.",
+          "createdBy": "historical-human",
+          "fields": {
+            "old": "retained full historical input"
+          }
+        },
+        "taskCardConfirmed": true,
+        "sourceRecords": [
+          {
+            "id": "old.source:1",
+            "url": "https://example.test/legacy",
+            "text": "Synthetic historical package is blue.",
+            "scopeRelation": "background",
+            "verification": "captured"
+          }
+        ],
+        "reviewProtocolVersion": "excerpt-support-v3",
+        "catalogueState": []
+      },
+      "raw": {
+        "protocolVersion": "excerpt-support-v3",
+        "artifactId": "historical-research",
+        "contentHash": "114f601ad04cd0fefd69266da3d3920d56f3cfa35b7331f56674a9dd07f01b72",
+        "contentObjectHash": "e6bf848d724ec3ee0a5842a6e02247cd0765685d74f256874325979f999df0e7",
+        "taskCardId": "historical-card",
+        "taskCardHash": "8252668dc44aeb3678ec45a751ed5e49e17db1de2159914845bdf8815eaf9b3a",
+        "claimManifestHash": "9f12c3c9ff2c6d17cba8de1ae18cdae1b004294b74dda9df76397e692c196a27",
+        "sourceManifestHash": "5743801e2916a98c2b890f3a52d18555733abd3bd2b3f84f8569de1c77923f9a",
+        "checkedFactMeaning": "source_relative_excerpt_support_not_website_truth",
+        "catalogueStateHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "results": [
+          {
+            "claimKey": "07f5d77b259cf3998ff07cc4daee38b7f507a5159902ef4f7488352f371c7105",
+            "outcome": "supported_excerpt",
+            "rationale": "Original supplied source.",
+            "citations": [
+              {
+                "sourceId": "old.source:1",
+                "textHash": "8f760e429de978ef85559619ce07411e99c86c0df8bd44716f707d2eb5be24af",
+                "quote": "Synthetic historical package is blue."
+              }
+            ],
+            "requirementRefs": [],
+            "limitations": []
+          }
+        ],
+        "wholeTextScan": {
+          "status": "complete",
+          "creativeClaimKeys": [],
+          "omissions": [],
+          "mismatchedCreative": [],
+          "operationalAssertions": []
+        },
+        "limitations": []
+      },
+      "requestHash": "b5ca136debd3b9ace5e51337472881868517e1eec373e365ea82bcab11681644",
+      "schemaHash": "b05b28eb41b11a3750545514b1ddf86ede9c11369a011741db58537786e7ce4e",
+      "promptHash": "0dc514b4ba1b97c57b02c127dcf13cb14c689d734866cd8a14853369616fef8e",
+      "normalizedHash": "f0edc63cd6c1838643812a04872b119c6060e74426b6f1444bc6d048e9447c2e"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "draftId": "qingyu-copy-reviewed-r1",
+  "files": {
+    "draft.json": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+    "draft.md": "400c760444552b0b4c93c1f92d900eff4c1fb9d524011a8a805724c20ddeb82e"
+  },
+  "firstReadPackets": {
+    "copy": {
+      "path": ".scratch/qingyu-copy-full-20261110/packets/r1/first-copy.md",
+      "sha256": "c17cd1b3a9dc0f7b517b6cf2cb963fceab6cffdc215db4deb251289e2ecc75f2",
+      "order": [
+        "n7",
+        "k4",
+        "v2"
+      ]
+    },
+    "brand": {
+      "path": ".scratch/qingyu-copy-full-20261110/packets/r1/first-brand.md",
+      "sha256": "15fb0475efbff8207cd2f124fcee1cb6aff2ef762244c09d4c6b8eed526122f4",
+      "order": [
+        "k4",
+        "v2",
+        "n7"
+      ]
+    },
+    "user": {
+      "path": ".scratch/qingyu-copy-full-20261110/packets/r1/first-user.md",
+      "sha256": "13ff05859a69e5defe32a7f6bedda21b98069fa01a6ad1788cfbd62ca91e8866",
+      "order": [
+        "v2",
+        "n7",
+        "k4"
+      ]
+    },
+    "comms": {
+      "path": ".scratch/qingyu-copy-full-20261110/packets/r1/first-comms.md",
+      "sha256": "9466202f4ac01bfff6b7159c5ba24da66f56048c0da33ce5202bae344ea8677b",
+      "order": [
+        "n7",
+        "v2",
+        "k4"
+      ]
+    }
+  }
+}

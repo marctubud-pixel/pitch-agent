@@ -1,0 +1,37 @@
+{
+  "skillVersion": "1.0.0",
+  "task": {
+    "id": "visual-intake-qingyu-20261110-01",
+    "scopeVersion": "reference-intake-only-v1",
+    "inputVersion": "qingyu-packaging-references-20261110-v1+qingyu-copy-full-r2-20261110+r2",
+    "requiresNode": false,
+    "creatorIds": [
+      "/root/visual_reference_intake"
+    ]
+  },
+  "currentInput": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CURRENT-INPUT.json",
+    "sha256": "c9a1889e797f21e3f2c8321222671a55e61192bb72552259a4cc1e0f75206247"
+  },
+  "authorization": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/AUTHORIZATION.json",
+    "sha256": "ac55aa210f69ac0b735dc37f8760249497d0eaf23543311a548f641398c99ab0"
+  },
+  "stage": "reference_intake",
+  "action": "record",
+  "nextStage": "reference_intake",
+  "revisionsUsed": 0,
+  "budgetSpent": "unknown",
+  "budgetUnit": "unknown",
+  "object": {
+    "id": "visual-intake-qingyu-20261110-01-intake",
+    "version": "v1",
+    "kind": "intake",
+    "task": "核对既有六张包装参考的原图、来源记录和借鉴边界，封存候选与缺口；不作视觉评分或选优。",
+    "file": {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+      "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+    }
+  },
+  "reviews": []
+}

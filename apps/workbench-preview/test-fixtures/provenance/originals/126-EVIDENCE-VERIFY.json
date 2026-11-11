@@ -1,0 +1,134 @@
+{
+  "verifiedAt": "2026-11-10T12:23:22Z",
+  "method": [
+    "SHA-256按实际原件字节计算",
+    "Pillow只读解码全部六图并核尺寸",
+    "逐图tools.view_image实际观察；非图像评分",
+    "REQUEST、editorial与copy当前r2定点字段交叉核对"
+  ],
+  "manifest": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST.json",
+    "sha256": "8bf6da565da5a14b8efcd53b0d7580e499f1d5aaef257607eaf258b7687fd22d"
+  },
+  "manifestFilesAllMatched": true,
+  "request": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+    "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+  },
+  "copy": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+    "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+  },
+  "research": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-copy-full-20261110/inputs/research-r4.json",
+    "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+  },
+  "editorial": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-packaging-references-20261110/references-editorial.json",
+    "sha256": "0d44eaf83ced56b6d9bc517bbf4b629d24adae2696fa1bacbf4d38f6238d3b14"
+  },
+  "currentCopyDirectionsMatchRequest": true,
+  "images": [
+    {
+      "id": "two-name-rangcha",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+        "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a"
+      },
+      "dimensions": [
+        168,
+        428
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "decoded": true,
+      "requestHashMatched": true,
+      "editorialHashAndDimensionsMatched": true
+    },
+    {
+      "id": "two-name-chun",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-moli.png",
+        "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+      },
+      "dimensions": [
+        2267,
+        2267
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "decoded": true,
+      "requestHashMatched": true,
+      "editorialHashAndDimensionsMatched": true
+    },
+    {
+      "id": "trip-longjing",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+        "sha256": "df27729ed779264c5a18f81505220225f524f012470b16cb2c8ffc93c9fa91a4"
+      },
+      "dimensions": [
+        600,
+        642
+      ],
+      "format": "PNG",
+      "mode": "P",
+      "decoded": true,
+      "requestHashMatched": true,
+      "editorialHashAndDimensionsMatched": true
+    },
+    {
+      "id": "trip-changbai",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+        "sha256": "e734eefeb5199d0d8ff46f8f20702a16e9a6a5e867fea0cf6a15504a4c24a222"
+      },
+      "dimensions": [
+        600,
+        642
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "decoded": true,
+      "requestHashMatched": true,
+      "editorialHashAndDimensionsMatched": true
+    },
+    {
+      "id": "memory-coke",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+        "sha256": "828c6b208afe9eace44289592df186ff8f6b9a69d52817412f37834d1b9eddc7"
+      },
+      "dimensions": [
+        3840,
+        2560
+      ],
+      "format": "JPEG",
+      "mode": "RGB",
+      "decoded": true,
+      "requestHashMatched": true,
+      "editorialHashAndDimensionsMatched": true
+    },
+    {
+      "id": "memory-rabbit",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+        "sha256": "1eef17132f995f2fd6199906eeb35f3d30544c328957f1ba5d19c1504450b9e0"
+      },
+      "dimensions": [
+        600,
+        642
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "decoded": true,
+      "requestHashMatched": true,
+      "editorialHashAndDimensionsMatched": true
+    }
+  ],
+  "limitations": [
+    "本检查不核远端来源或许可",
+    "check-stage的intake分支只核候选清单等结构；图像真实性核对由本只读ledger另记",
+    "非审美评分或视觉业务全链测试"
+  ]
+}

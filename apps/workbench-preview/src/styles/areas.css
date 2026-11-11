@@ -1,0 +1,738 @@
+/*
+ * Library, Process & history and Delivery (src/views/project/*Area.tsx), restyled from the
+ * supplied references: Patria's big-number tiles in the header, the Floe / Moov folders for the
+ * tabs (folder tabs on one sheet), the Atomix spines for the agent levels, the Atacama rows for
+ * records, and the blue corporate deck's cobalt closing page for Delivery.
+ */
+
+.area {
+  --area-r: 32px;
+  font-family: var(--font-grotesk);
+}
+
+/* ---------------------------------------------------------------- header */
+
+.area-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.area-head__text {
+  display: grid;
+  gap: 10px;
+}
+
+.area-head__title {
+  margin: 0;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+.area-head__lede {
+  margin: 0;
+  max-width: 56ch;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.area-stats {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.area-stat {
+  display: grid;
+  align-content: space-between;
+  gap: 14px;
+  width: 150px;
+  min-height: 132px;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  border-radius: 26px;
+  background: var(--card);
+  color: var(--folder-ink, var(--ink));
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+a.area-stat:hover {
+  transform: translateY(-3px);
+}
+
+a.area-stat:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.area-stats li[data-tone='lime'] .area-stat { background: var(--lime); color: var(--lime-ink); }
+.area-stats li[data-tone='lilac'] .area-stat { background: var(--bx-lilac, #c9bdf6); color: var(--bx-lilac-ink, #1e1838); }
+.area-stats li[data-tone='peach'] .area-stat { background: var(--warm); color: var(--warm-ink); }
+.area-stats li[data-tone='dark'] .area-stat { background: #141815; color: #eef1ec; }
+
+.area-stat__n {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.area-stat__label {
+  /* Two lines reserved, so labels start at the same height whether they wrap or not. */
+  min-height: 2.6em;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+/* ---------------------------------------------------------------- folder tabs */
+
+.area-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+}
+
+.area-tabs button {
+  position: relative;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 18px 18px 0 0;
+  background: color-mix(in srgb, var(--card) 45%, transparent);
+  color: var(--ink-2);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.area-tabs button:hover {
+  background: color-mix(in srgb, var(--card) 75%, transparent);
+  color: var(--ink-strong);
+}
+
+.area-tabs button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+/* The current tab joins the sheet, with small fillets where they meet. */
+.area-tabs button[aria-current='page'] {
+  background: var(--card);
+  color: var(--ink-strong);
+  font-weight: 600;
+}
+
+.area-tabs button[aria-current='page']::before,
+.area-tabs button[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+
+.area-tabs button[aria-current='page']::before {
+  left: -14px;
+  background: radial-gradient(circle at 0 0, transparent 13.5px, var(--card) 14px);
+}
+
+.area-tabs button[aria-current='page']::after {
+  right: -14px;
+  background: radial-gradient(circle at 100% 0, transparent 13.5px, var(--card) 14px);
+}
+
+.area-sheet {
+  display: grid;
+  gap: 28px;
+  padding: 28px 30px 32px;
+  border-radius: var(--area-r);
+  background: var(--card);
+}
+
+.area-sheet > * {
+  min-width: 0;
+}
+
+.area-sheet .pw-h3 {
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Inside the sheet, cards sit on the page colour so they read against the white. */
+.area-sheet .bf-input,
+.area-sheet .pw-records > li,
+.area-sheet .pw-files li {
+  background: var(--sunken);
+}
+
+/* ---------------------------------------------------------------- library */
+
+.area-sheet .bf-input {
+  padding: 10px 10px 16px;
+  border-radius: 24px;
+}
+
+.area-sheet .bf-input > :not(.bf-input__thumb) {
+  margin-inline: 6px;
+}
+
+.area-sheet .pw-mat {
+  display: grid;
+  gap: 32px;
+}
+
+.lib-quote {
+  display: grid;
+  place-items: center;
+  background: var(--bx-lilac, #c9bdf6);
+  color: var(--bx-lilac-ink, #1e1838);
+}
+
+.area-sheet .pw-cases {
+  display: grid;
+  gap: 32px;
+}
+
+.area-sheet .pw-wall {
+  padding: 0;
+  background: none;
+}
+
+.area-sheet .pw-wall__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+}
+
+/* A wall of prints, each at its own proportions: rows of equal height, widths from each ratio. */
+.lib-wall {
+  --wall-h: 250px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each print grows in proportion to its own ratio, so a row fills the width at one shared height. */
+.lib-wall li {
+  flex: var(--r) 1 calc(var(--wall-h) * var(--r));
+  min-width: 0;
+  max-width: min(100%, calc(var(--wall-h) * var(--r) * 1.3));
+}
+
+/* Phones: two to a row at one width, so a lone last print never comes out bigger than the rest. */
+
+.lib-print {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.lib-print .art-frame {
+  border-radius: 14px;
+  background: var(--sunken);
+}
+
+.lib-print figcaption {
+  display: grid;
+  gap: 2px;
+  font-size: 0.8125rem;
+}
+
+/* ---------------------------------------------------------------- process */
+
+.area-sheet .pw-sh {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+
+/* Agent levels as tall coloured columns, numbered like the spines */
+.area-sheet .pw-org {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.area-sheet .pw-org > li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 300px;
+  padding: 18px 18px 20px;
+  border: 0;
+  border-radius: 26px;
+  background: var(--sunken);
+}
+
+.area-sheet .pw-org > li[data-level='director'] { background: #141815; color: #eef1ec; }
+.area-sheet .pw-org > li[data-level='lead'] { background: var(--lime); color: var(--lime-ink); }
+.area-sheet .pw-org > li[data-level='specialist'] { background: var(--sunken); }
+.area-sheet .pw-org > li[data-level='evaluator'] { background: var(--bx-lilac, #c9bdf6); color: var(--bx-lilac-ink, #1e1838); }
+.area-sheet .pw-org > li[data-level='adversary'] { background: var(--warm); color: var(--warm-ink); }
+
+.area-sheet .pw-org > li .muted {
+  color: inherit;
+  opacity: 0.75;
+}
+
+.pw-org__n {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.area-sheet .pw-org__names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding: 0;
+  list-style: none;
+}
+
+.area-sheet .pw-org__names li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #ffffff 45%, transparent);
+  font-size: 0.8125rem;
+}
+
+.area-sheet .pw-org > li[data-level='director'] .pw-org__names li {
+  background: rgb(255 255 255 / 0.12);
+}
+
+/* Records: rows with the subject first and the score as a big number */
+.area-sheet .pw-records > li {
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: 22px;
+}
+
+.area-sheet .pw-records__subject {
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.area-sheet .pw-records__score {
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.area-sheet .pw-records__score small {
+  margin-left: 2px;
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+
+/* Decisions as a dashed timeline */
+.pw-records--timeline {
+  position: relative;
+  gap: 14px;
+  padding-left: 26px !important;
+  border-left: 2px dashed var(--rule-strong);
+  margin-left: 6px !important;
+}
+
+.pw-records--timeline > li {
+  position: relative;
+}
+
+.pw-records--timeline > li::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: -34px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink-strong);
+  box-shadow: 0 0 0 4px var(--card);
+}
+
+.pw-records--timeline > li[data-kind='chosen_despite_review']::before { background: var(--warm); }
+.pw-records--timeline > li[data-kind='revision_requested']::before { background: var(--tone-butter); }
+
+.area-sheet .pw-records li[data-kind='chosen_despite_review'] {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--warm) 22%, var(--sunken));
+}
+
+.area-sheet .pw-table-wrap {
+  border-radius: 20px;
+  background: var(--sunken);
+}
+
+/* ---------------------------------------------------------------- delivery */
+
+.dc-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 28px;
+  margin-bottom: 26px;
+  padding: 36px 36px 34px;
+  border-radius: var(--area-r);
+  background: #3b45d6;
+  color: #ffffff;
+}
+
+.dc-hero__text {
+  display: grid;
+  gap: 14px;
+}
+
+.dc-hero__title {
+  margin: 0;
+  max-width: 18ch;
+  font-size: clamp(2.25rem, 4.8vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.dc-hero__lede {
+  margin: 0;
+  max-width: 52ch;
+  line-height: 1.45;
+  color: rgb(255 255 255 / 0.84);
+}
+
+.dc-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.dc-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 24px 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lime);
+  color: var(--lime-ink);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dc-hero__cta:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.dc-hero__cta:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.dc-hero__cta:focus-visible,
+.dc-hero__state--link:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.dc-hero__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  min-height: 54px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dc-hero__state--link:hover {
+  background: rgb(255 255 255 / 0.22);
+}
+
+.dc-hero__error {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.dc-hero__stats {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dc-hero__stats li {
+  display: grid;
+  align-content: space-between;
+  gap: 12px;
+  width: 128px;
+  min-height: 120px;
+  box-sizing: border-box;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 0.12);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+.dc-hero__stats li > span:last-child {
+  min-height: 2.6em;
+}
+
+.dc-hero__stats li[data-open] {
+  background: var(--warm);
+  color: var(--warm-ink);
+}
+
+.dc-hero__n {
+  font-size: 2.75rem;
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.dc-styles {
+  display: grid;
+  gap: 16px;
+  margin-top: 34px;
+}
+
+.dc-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dc-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  padding: 12px 12px 16px;
+  border-radius: 26px;
+  background: var(--card);
+}
+
+.dc-card[data-chosen] {
+  box-shadow: 0 0 0 2.5px var(--ink-strong);
+}
+
+.dc-card__slide {
+  display: block;
+  overflow: hidden;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.dc-card__slide .slide {
+  width: 100%;
+}
+
+.dc-card__body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 0 6px;
+}
+
+.dc-card__body p {
+  margin: 0;
+}
+
+.dc-card__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.dc-card > .btn {
+  justify-self: start;
+  margin-left: 6px;
+}
+
+.dc-edit {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dc-edit > div {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.dc-edit ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.dc-edit p {
+  margin: 0;
+}
+
+.pw-dc .dl-limits {
+  margin-top: 18px;
+}
+
+/* ---------------------------------------------------------------- responsive */
+
+@media (max-width: 1100px) {
+  .area-sheet .pw-org {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .dc-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .area-head,
+  .dc-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .area-stats,
+  .dc-hero__stats {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.area-stat {
+    transition: none;
+  }
+}
+
+.area-folder[data-first] .area-sheet {
+  border-top-left-radius: 0;
+}
+
+.area-folder[data-first] .area-tabs button:first-child::before {
+  display: none;
+}
+
+/* The stage filter as a pill, like the other filters */
+.area-sheet .pw-filter {
+  margin-bottom: 18px;
+}
+
+.area-sheet .pw-filter select {
+  width: auto;
+  min-height: 40px;
+  padding: 0 38px 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--sunken);
+  font-weight: 500;
+}
+
+/* Overview: a print still under review says so on the shelf */
+.ov-card__state {
+  align-self: flex-start;
+  margin-top: -4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--warm);
+  color: var(--warm-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .ov-card--text {
+    height: auto;
+    min-height: 0;
+    padding-bottom: 60px;
+  }
+}
+
+/* Dark mode: keep the pale insets readable on the coloured tiles */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ov-ideas__list a {
+    background: rgb(255 255 255 / 0.08);
+  }
+  :root:not([data-theme='light']) .ov-ideas__list a:hover {
+    background: rgb(255 255 255 / 0.14);
+  }
+  :root:not([data-theme='light']) .ov-ideas__meta,
+  :root:not([data-theme='light']) .ov-ideas__status {
+    opacity: 0.88;
+  }
+}
+
+:root[data-theme='dark'] .ov-ideas__list a {
+  background: rgb(255 255 255 / 0.08);
+}
+
+:root[data-theme='dark'] .ov-ideas__meta,
+:root[data-theme='dark'] .ov-ideas__status {
+  opacity: 0.88;
+}
+
+.ov-progress .pw-backed {
+  border-color: color-mix(in srgb, var(--lime-ink) 45%, transparent);
+  color: var(--lime-ink);
+}
+
+/* Dark mode: lift the kind tag's colour so it reads on near-black. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .pw-kindtag {
+    color: color-mix(in srgb, var(--k) 45%, #ffffff);
+    border-color: color-mix(in srgb, var(--k) 55%, #ffffff);
+  }
+}
+:root[data-theme='dark'] .pw-kindtag {
+  color: color-mix(in srgb, var(--k) 45%, #ffffff);
+  border-color: color-mix(in srgb, var(--k) 55%, #ffffff);
+}
+
+.area-footnote {
+  margin-top: 22px;
+}

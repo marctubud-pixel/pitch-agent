@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "role": "copy",
+      "calibration": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration.json",
+        "sha256": "af57b93239e533ad191f46a52b7df408bb42cecfddd1a65075bf4d0653fc4d8c"
+      },
+      "scale": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration-scale.json",
+        "sha256": "86f98124d83e18230a061d302bca5e02c53a73474495deb7641a281d64a61d4f"
+      },
+      "status": "aligned-internal-anchors",
+      "scope": "事实/品牌语义/同组差异与4/5质量尺度；不是人类审美、偏好或效果校准"
+    },
+    {
+      "role": "brand",
+      "calibration": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/calibration.json",
+        "sha256": "0e895717e2141d50448d0c8ed90e28ef1566ce26e1b0a9c16650ead41ef3eb95"
+      },
+      "scale": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/calibration-scale.json",
+        "sha256": "d9bdab85a1e2035e975a31f41667656ef6dfee8a88db056f4dca83c537933060"
+      },
+      "status": "aligned-internal-anchors",
+      "scope": "事实/品牌语义/同组差异与4/5质量尺度；不是人类审美、偏好或效果校准"
+    },
+    {
+      "role": "user",
+      "calibration": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/calibration.json",
+        "sha256": "45e6d746e1aee2e60482b7e71d0e0c03a3bf221368a7a10e75fe39bddf3f77b1"
+      },
+      "scale": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/calibration-scale.json",
+        "sha256": "8efd3fbc6d88dcf3ba89260a4e1b99d9991e3babac40ac930032fbfa0ba71fef"
+      },
+      "status": "aligned-internal-anchors",
+      "scope": "事实/品牌语义/同组差异与4/5质量尺度；不是人类审美、偏好或效果校准"
+    },
+    {
+      "role": "comms",
+      "calibration": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/calibration.json",
+        "sha256": "a6bfc5550cc59b27d423ab511d0610c7b81b5f25b969cd7ad591800ba2d440c7"
+      },
+      "scale": {
+        "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/calibration-scale.json",
+        "sha256": "9b63e398f3281881720d178308953d9d72a3dde802ef613fb32a27bdde21f336"
+      },
+      "status": "aligned-internal-anchors",
+      "scope": "事实/品牌语义/同组差异与4/5质量尺度；不是人类审美、偏好或效果校准"
+    }
+  ],
+  "projectScoresStartedAfterScaleAlignment": true,
+  "scope": "本轮四岗位内部文字概念尺度，不声称外部评分可靠性"
+}

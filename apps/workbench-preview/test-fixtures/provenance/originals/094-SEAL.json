@@ -1,0 +1,17 @@
+{
+  "roundId": "r2",
+  "draftId": "qingyu-copy-reviewed-r2",
+  "draftSha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+  "files": {
+    "packets/r2/first-copy.md": "2fb4025fb84b85e29288f3be130bc6191830899cffb94b7b5608a77f2072f3bf",
+    "packets/r2/first-brand.md": "aa089e0e433afe44d5822bf45859671a65cdca215d085ef291ca26c14f0ed423",
+    "packets/r2/first-user.md": "91b6fc838e0147e1a2223f0a7de5f33128a17dc6948fe24d91d22569e62e2434",
+    "packets/r2/first-comms.md": "9f361761a32c293dacd8015a2cc88dc21dbf68bb20cccbf8f51354f6de12ba79",
+    "packets/r2/FACTS.md": "2b4cda986d14436cc033e27b40a771d73ccdeb0af959f41ffeb5762e93c0d184",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/draft.md": "aa2b371644c101a8da1938655723c17728953c8c2946573659c51b5a76d45dd9",
+    "v2/RESPONSE.json": "1943ed32123471d74e9614b6f15431032fbc964c0933d66422041700ca26a504",
+    "v2/RESPONSE.md": "6b3bcccfdb707846d032a415a9c633b478e1fcd302e39bfb28724f4cd5dfd682"
+  },
+  "scope": "本地文字概念封存，不是质量或消费者批准"
+}

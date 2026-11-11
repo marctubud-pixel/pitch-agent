@@ -1,0 +1,63 @@
+{
+  "schema_version": "paired-counter-review-v1",
+  "run_id": "qingyu-copy-full-20261110",
+  "report_id": "r1-copy-independent-first",
+  "stage": "slogan",
+  "role": "copy-counter",
+  "candidate_version": "qingyu-copy-reviewed-r1",
+  "phase": "independent_risks_before_score",
+  "input_hashes": {
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v1/draft.json": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+    "v1/SEAL.json": "89b6bdbb7bf730a86f9e73bd533f917086934c67ac944adb5e4a85a2c72daae4"
+  },
+  "independence": {
+    "read_score": false,
+    "read_other_critics": false,
+    "read_root_recommendation": false,
+    "scope": "只核对本文案岗位的主张成立、同组机制差异、中文表达与节奏、主副文协作；未进行评分。"
+  },
+  "independent_risks": [],
+  "observations": [
+    {
+      "item_id": "n7",
+      "evidence": [
+        "青屿做茶，水也有名有姓。",
+        "虎跑泉水，在这瓶无糖茶的配方里。"
+      ],
+      "finding": "主文以原料拟人化提出名字，副文报出虎跑泉水并说明配方身份。两句完成介绍原料的动作，未见主副文之间的实质断裂。"
+    },
+    {
+      "item_id": "k4",
+      "evidence": [
+        "今天的茶歇，去趟虎跑。",
+        "工位上拧开青屿无糖茶，瓶里就有虎跑泉水。"
+      ],
+      "finding": "主文作出短途邀约，副文以工位、开瓶及瓶内泉水将邀约解释为原地茶歇。主文单独有出游读法，但本次要求同读的副文已处理该歧义，不据此重复报阻断。"
+    },
+    {
+      "item_id": "v2",
+      "evidence": [
+        "谢你搭把手。这瓶茶，我请。",
+        "特意挑了青屿无糖茶，里面用到了虎跑泉水。"
+      ],
+      "finding": "主文给出答谢和请茶动作，副文沿送茶人的口吻点名所选品牌及配方细节。该细节是否足以打动真实收茶人未知，但文字已交代选择理由，不能将未做消费验证直接算作文案不成立。"
+    },
+    {
+      "item_id": "set",
+      "evidence": [
+        "水也有名有姓",
+        "去趟虎跑",
+        "谢你搭把手。这瓶茶，我请。"
+      ],
+      "finding": "三案分别完成原料点名、茶歇的想象出发、对他人的答谢。共享泉水事实不抹平动作、说话者及情境的区别。副文互换后部分仍通顺，但会分别削弱报名字、工位揭底、特意挑选的协作；本轮不以绝对不可互换作为通过条件。"
+    }
+  ],
+  "limits": [
+    "0新增风险仅表示本次独立文案核对未找到可由指定文本证成、且当前必须改稿的问题，不是完整四岗位通过或真实效果背书。",
+    "未验证水源凭据、成品配方、真实消费者理解或送茶行为；均不在当前虚构文字概念评审的签发范围。",
+    "具体茶种未提供，本轮不代填；正式包装须另行落实茶种与无糖信息层级。",
+    "未看对应评分，尚未开展具体肯定主张的查证及覆盖映射。"
+  ]
+}

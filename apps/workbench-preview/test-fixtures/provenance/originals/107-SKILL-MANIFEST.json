@@ -1,0 +1,17 @@
+{
+  "name": "visual-development-lead",
+  "version": "1.0.0",
+  "files": {
+    "SKILL.md": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464",
+    "references/kv.md": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
+    "references/packaging.md": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a",
+    "references/records.md": "6cb5d794a79eb68961ae8372e9931aa39ce821cdf9553afe4030ee1d141354dd",
+    "references/stage-review.md": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528",
+    "scripts/check-stage.mjs": "8186a2c46497f38c46edd46789c352f33957d6d2affcc356b48f321e7051fb5f",
+    "tests/check-stage.test.mjs": "c6b5c3e17ec939bd9d2fba70a75239c1ec0de50661e2b4e00539ec06f2ca011f"
+  },
+  "scope": "project_skill_candidate",
+  "sourcePath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead",
+  "targetPath": "skills/visual-development-lead",
+  "automaticBusinessRuntimeConnected": false
+}

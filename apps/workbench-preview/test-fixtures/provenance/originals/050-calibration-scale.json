@@ -1,0 +1,23 @@
+{
+  "reviewer_role": "comms",
+  "actual_model": "gpt-6.1-sol",
+  "input_path": ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION-ADDENDUM.md",
+  "input_sha256": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc",
+  "understands_4_5_distinction": true,
+  "quality_scale": {
+    "4": "达到本阶段给定基准，可有非关键优化。",
+    "5": "有具体对照并优于基准，必须交代超过之处与取舍。"
+  },
+  "neutral_control_quality_scores": {
+    "fact_match": 4,
+    "direct_comprehension": 4,
+    "evidenced_brand_product_semantic_link": 4
+  },
+  "reasons": [
+    "文字的两项信息完全符合给定资料，达到中性事实表达基准。",
+    "品牌产品与已确认工艺及配料有实际对应，不仅是出现品牌字。",
+    "无高于该基准的对照，不应从完全正确推导质量5分。"
+  ],
+  "prior_record_limitation": "原答卷三项5分表达事实匹配、直接理解与直接关联的满足强度，不是本轮统一内部质量尺度。正式评审须按补充尺度判断，其中性基准均为4分。原答卷保留。",
+  "limits": "虚构控制题只校核内部尺度理解，不能证明与真实人类审美一致，也不支持情绪或传播效果加分。"
+}

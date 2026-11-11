@@ -1,0 +1,64 @@
+{
+  "reviewer_role": "comms",
+  "actual_model": "gpt-6.1-sol",
+  "phase": "calibration_only",
+  "input_read": ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION.md",
+  "scale": "1=未满足该项边界；5=充分满足该项边界。分数只针对指定维度。",
+  "controls": [
+    {
+      "id": 1,
+      "judgment": "文字与给定资料一致，读者可直接理解品牌、产品和两个已确认信息。",
+      "scores": {
+        "fact_match": 5,
+        "direct_comprehension": 5,
+        "brand_product_semantic_link": 5
+      },
+      "status": "pass_within_scope",
+      "evidence": [
+        "冷泡12小时与资料一致。",
+        "配料三项与资料一致。",
+        "松涧冷泡茶直接连接品牌名与产品类别。"
+      ],
+      "limits": [
+        "这只能说明事实匹配、信息直达及命名上的语义关联。",
+        "不能据此认定情绪感染、效果表达、品牌独特性或市场表现优异。"
+      ]
+    },
+    {
+      "id": 2,
+      "judgment": "“喝三天，改善睡眠”含有明确时限与健康改善承诺，现有资料不能支持，当前版本硬退。",
+      "scores": {
+        "claim_support": 1
+      },
+      "status": "hard_reject_current_claim",
+      "evidence": [
+        "资料只确认冷泡12小时和配料三项。",
+        "没有健康或试验资料支持三天改善睡眠。"
+      ],
+      "other_dimensions": "仍可独立评价语言是否清楚、品牌产品是否容易辨认等维度；清楚易懂不能抵消无依据承诺，也不能把整条文案的所有维度一律记为1。",
+      "limits": [
+        "硬退针对这项未经支持的承诺及含该承诺的当前版本。",
+        "不能由此推断产品实际有或没有改善睡眠作用。"
+      ]
+    },
+    {
+      "id": 3,
+      "judgment": "两句只在语序与措辞上变化，尚未构成两个分开的创意方向。",
+      "scores": {
+        "within_group_direction_differentiation": 1
+      },
+      "status": "insufficient_direction_separation",
+      "evidence": [
+        "共同主张都是清凉一口帮助忙碌暂歇。",
+        "共同情绪机制都是从忙碌切换到暂停或放松。",
+        "“按暂停”与“停一停”表达同一动作隐喻。"
+      ],
+      "brand_swap_judgment": "可换品牌不足以单独判死刑。它可提示品牌绑定弱，需结合任务要求、产品依据及品牌资产评价；不能替代对同组主张与情绪机制的具体比较。",
+      "limits": [
+        "只评价这两条之间的方向差异。",
+        "没有证据评价市场绝对独创、真实消费者区分或品牌传播表现。"
+      ]
+    }
+  ],
+  "calibration_limit": "本记录是虚构控制材料的内部边界校准，不是青屿研究，不是质量实测，不能证明模型评分等同人类审美或真实消费者判断。"
+}

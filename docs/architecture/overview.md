@@ -1,3 +1,15 @@
+# 岗位组织与页面治理 · 2026-11-11
+
+业务分工与开发分工统一见[Agent组织总览](../agents/README.md)，逐页责任、保留结构及实际入口见[页面索引](../pages/README.md)。比稿Agent统筹业务，开发统筹组织实现，工作台UI负责人维护共同基线，独立UI审核者复验。排版内部页面由排版负责人负责；[整案终审](../specs/final-review.md)与内容、代码、UI及人类决定分开留证。
+
+这是本轮明确的岗位与交接规范，当前仍由开发会话人工编排。通用生产服务与真实Agent调度没有因此接通。以下案例实现与历史记录保持原身份。
+
+# 青屿终审记录绑定 · 2026-11-11
+
+[本轮终审](../../output/qingyu-final-review-20261111/README.md)新增独立预览qingyu-final-review模块，保存真实独立裁定适配数据。record解析只读字段、五职责和23页；bind核整包记录、动态layout输入SHA、23页备注末行inputIdentity、ID/标题/Unicode正文及17份编译/渲染/上游源SHA，输出not_recorded/current/historical/stale。整包inputSha不与layout context hash混用，旧票不得套新输入。
+
+QingyuLayoutPreview复用原读取、resolver、同Deck及epoch/abort准备，返回{deck,review}；下载仍消费deck。FinalReviewSummary展示结论、7建议及页码/owner/action，长依据、原句和原票索引折叠。正式状态和数据库不写，不新增业务API。当前4417；旧静态及旧serve保持。完整模型原票、质疑与裁定在本轮scratch，业务诊断不等于UI或生产批准。以下历史实现保留。
+
 > 规范归属与版本现由[规范基线](../specs/README.md)统一登记；本页用于定位实际实现，不将工具存在当作业务已接通。
 
 # 终审阅读模式 · 2026-11-11

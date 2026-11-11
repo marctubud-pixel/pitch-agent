@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.0.1",
+  "baselineVersion": "1.2.0",
   "date": "2026-11-11",
-  "status": "首次规范整理；既有决定沿用，本次新增工程治理待审阅",
+  "status": "按用户授权建立应用与Agent仓库工程；实际提交、推送和运行分别留证",
   "workflow": [
     "brief",
     "research",
@@ -18,7 +18,7 @@
       "kind": "agent",
       "title": "比稿 Agent",
       "path": "docs/agents/proposal-director.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"
@@ -105,10 +105,11 @@
       "kind": "agent",
       "title": "终审与交付负责人",
       "path": "docs/agents/final-review-owner.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
-        "contract.handoff"
+        "contract.handoff",
+        "contract.final-review"
       ],
       "stage": "delivery"
     },
@@ -117,11 +118,12 @@
       "kind": "agent",
       "title": "独立业务评审者",
       "path": "docs/agents/independent-reviewer.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",
-        "method.review"
+        "method.review",
+        "contract.final-review"
       ],
       "stage": "按阶段适用"
     },
@@ -130,7 +132,7 @@
       "kind": "agent",
       "title": "开发 UI 审核者",
       "path": "docs/agents/ui-review-owner.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "method.ui",
@@ -143,10 +145,11 @@
       "kind": "page",
       "title": "首页",
       "path": "docs/pages/home.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": [
-        "agent.ui-review-owner",
+        "agent.proposal-director",
+        "agent.workbench-ui-owner",
         "contract.ui"
       ],
       "confirmedScope": "已确认要求汇编；本次整理待核对",
@@ -269,7 +272,7 @@
       "kind": "page",
       "title": "终审与交付",
       "path": "docs/pages/delivery.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": [
         "agent.final-review-owner",
@@ -397,7 +400,7 @@
       "kind": "contract",
       "title": "版本与阶段交接",
       "path": "docs/specs/handoff.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -406,7 +409,7 @@
       "kind": "contract",
       "title": "中文桌面UI基线",
       "path": "docs/specs/ui-system.md",
-      "version": "1.0.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "dependsOn": [
         "method.ui"
@@ -426,7 +429,7 @@
       "kind": "contract",
       "title": "变更与PR规则",
       "path": "docs/specs/change-control.md",
-      "version": "1.0.1",
+      "version": "1.0.3",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -435,7 +438,7 @@
       "kind": "contract",
       "title": "已确认决定与待定范围",
       "path": "docs/specs/decisions.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -448,6 +451,138 @@
       "sourceVersion": "v2（试行协议，按岗位适用范围）",
       "lifecycle": "current",
       "dependsOn": []
+    },
+    {
+      "id": "agent.development-lead",
+      "kind": "agent",
+      "title": "开发统筹Agent",
+      "path": "docs/agents/development-lead.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff",
+        "contract.change"
+      ],
+      "stage": "开发协作"
+    },
+    {
+      "id": "agent.workbench-ui-owner",
+      "kind": "agent",
+      "title": "工作台UI负责人",
+      "path": "docs/agents/workbench-ui-owner.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.ui",
+        "method.ui"
+      ],
+      "stage": "开发协作"
+    },
+    {
+      "id": "contract.organization",
+      "kind": "contract",
+      "title": "Agent组织与职责总览",
+      "path": "docs/agents/README.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ]
+    },
+    {
+      "id": "contract.pages",
+      "kind": "contract",
+      "title": "页面基线与责任索引",
+      "path": "docs/pages/README.md",
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.workbench-ui-owner",
+        "contract.ui"
+      ]
+    },
+    {
+      "id": "contract.final-review",
+      "kind": "contract",
+      "title": "排版后终审协议",
+      "path": "docs/specs/final-review.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ]
+    },
+    {
+      "id": "contract.repository",
+      "kind": "contract",
+      "title": "Git纳管范围与源码边界",
+      "path": "docs/specs/repository-scope.md",
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.development",
+      "kind": "contract",
+      "title": "开发启动与工程入口",
+      "path": "docs/development/README.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.runtime",
+      "kind": "contract",
+      "title": "应用与Agent运行架构",
+      "path": "docs/architecture/runtime.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.configuration",
+      "kind": "contract",
+      "title": "配置与服务边界",
+      "path": "docs/development/configuration.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.testing",
+      "kind": "contract",
+      "title": "验证范围与已知失败",
+      "path": "docs/development/testing.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.git",
+      "kind": "contract",
+      "title": "Git与PR及版本恢复",
+      "path": "docs/development/git-and-recovery.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.resources",
+      "kind": "contract",
+      "title": "源码资源及导入身份",
+      "path": "docs/development/resources.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
+      "id": "contract.usage",
+      "kind": "contract",
+      "title": "工作台操作说明",
+      "path": "docs/usage/README.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": []
     }
   ],
   "entryDocuments": [
@@ -456,6 +591,10 @@
     "docs/agents/issue-tracker.md",
     "docs/agents/triage-labels.md",
     "docs/agents/domain.md",
-    "docs/storage-retention.md"
+    "docs/storage-retention.md",
+    "docs/specs/README.md",
+    "CONTRIBUTING.md",
+    "apps/workbench-preview/AGENTS.md",
+    "tools/AGENTS.md"
   ]
 }

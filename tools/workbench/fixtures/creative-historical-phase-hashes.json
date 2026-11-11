@@ -1,0 +1,432 @@
+[
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "score_first_read",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "505dab1c63af47a7cebc2d11f592e03b19757f5e4fee89162547cceac83bc12e",
+    "schemaHash": "04c796c2bc4b0a1d84acde45b157ca67949a973b9b7db20489b59cbb8415bd00"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "score",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "9d7c355ed6fb7b3d80e2d31c143030d0145a0a253ccfe21a34bf5d3b1e07946e",
+    "schemaHash": "2c3cd1b77fb14c3806cde61150e64d03fdd645a10d4b710ddb02cbcb66c7a7d1"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "opposition_first_read",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "4b3f59f917df8626e09f0d80962c3c2f616dd5d4a2562520c5a9c162fbc6306c",
+    "schemaHash": "363e754f776eff1ce41b3845d62ae5f56aa0ae72c3a3c94de7e08861f617c48f"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "opposition",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "689144d53f813497074236d574280f136254bdf9a27e5f6d5a0b9bca8410438f",
+    "schemaHash": "9a659d0553af50127191ef7c8913667f673139b88f31993e2f7dec0d0ac1f226"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "director",
+      "role": "director",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "0f02d93a99c5e9234ecfc398c63b8a37dfa5e0d50388dcd73c9fa297542939eb",
+    "schemaHash": "97e805cd7eaf6693613efac35b37cf48ace5dedc9eabc2f8eb6230ab3343d382"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "score_first_read",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌",
+          "supportingCopy": "把时间留给相聚。"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "237a87bd721d383f87ebba091f9b140c25e5399cc42577810fcb8713189209b0",
+    "schemaHash": "f23691c66a801e0283881a92a1bc937c16e603a7a1f908a1975dc236b5c8b11a"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "score",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌",
+          "supportingCopy": "把时间留给相聚。"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "026ee01d08679149d70573e8b506cba49fbc1c70f2e25ad9c0d8b21f9286163b",
+    "schemaHash": "0ecafc366900793b3fac0b1a26f251313f3e9bc935d23fceaf272c5b1c32d06f"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "opposition_first_read",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌",
+          "supportingCopy": "把时间留给相聚。"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "b54b6a510577d81d7395ce376345fd1324f85060df8b81473986ca1feb878e6a",
+    "schemaHash": "3404431270c8f24184c2ad4af3462ab40de44bc1eaf8692b254b438651b69b72"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "opposition",
+      "role": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌",
+          "supportingCopy": "把时间留给相聚。"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "585f0fc0a2787eafa68064025ae36bca2cb4a26f317aaf7235b1e66c8d6a6616",
+    "schemaHash": "4887a8c0bef427b877745edadc97e5b235296291ade13d8bde299fea2983a9b6"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "copy",
+      "phase": "director",
+      "role": "director",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达",
+          "slogan": "得闲，坐一桌",
+          "supportingCopy": "把时间留给相聚。"
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "02197fdebc544997f2a1ca2390fd5f4e987102a24d5dd2b431ce88f9e395534d",
+    "schemaHash": "f903bd166df4ca6a1172273e61d3e8226ddec7bce780b1d2d34864384277c8fb"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "strategy",
+      "phase": "score_first_read",
+      "role": "strategy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "Strategy",
+          "sections": [],
+          "claims": []
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "3d81402dbd09ce410286bee8747b1ab4473c69bf0dcb463f9d696057b84fd8bc",
+    "schemaHash": "14d2042356819e542a7f3f422dbe075f1c4d56a7d629d77164364de5b5133c0e"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "strategy",
+      "phase": "score",
+      "role": "strategy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "Strategy",
+          "sections": [],
+          "claims": []
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "764842066386be7ab7fd5a0596308dee47bf8b1fee2a692c78a6232ae42d1176",
+    "schemaHash": "0f70abc274c944f9a77195344204ff1a092bbba5aefe53cbac904ccd35834367"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "strategy",
+      "phase": "opposition_first_read",
+      "role": "strategy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "Strategy",
+          "sections": [],
+          "claims": []
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "ab7fa7d733017e91a695e31457b6d72a195c07aeaaf30aa733ad86c32fcb5500",
+    "schemaHash": "279dcca54920eaada96d386e884d73acd1116eab7628c21b81f14f1110518ce0"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "strategy",
+      "phase": "opposition",
+      "role": "strategy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "Strategy",
+          "sections": [],
+          "claims": []
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "93432a72cf422b53833d42b4ec01a951bc75e92a58ccf502f7515e16795da1a1",
+    "schemaHash": "861cfb6e44f773c5f99375686c5571de50147b46e7a56881d4045161abe4e658"
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-panel-v1",
+      "panelId": "frozen-panel",
+      "panelPacketHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "strategy",
+      "phase": "director",
+      "role": "director",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "Strategy",
+          "sections": [],
+          "claims": []
+        }
+      ],
+      "dimensions": [
+        "clarity"
+      ],
+      "firstRead": {},
+      "pairedScore": {
+        "items": [],
+        "groupComparisons": []
+      },
+      "reports": []
+    },
+    "promptHash": "2d73c7b3796e3ac0bb3a39049552929b0950b38067846be6b0ca5229270315e8",
+    "schemaHash": "97e805cd7eaf6693613efac35b37cf48ace5dedc9eabc2f8eb6230ab3343d382"
+  }
+]

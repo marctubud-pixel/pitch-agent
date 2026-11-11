@@ -1,0 +1,11 @@
+import {readNativeManifestFile} from './native-manifest.mjs';
+import {parseArgs} from 'node:util';
+import {loadInput} from './input.mjs';
+import {preflightNativeNumericFonts} from './native-charts/chart-export-binding.mjs';
+const names=['deck','out','ledger','brand','assets','layout','validation','chart-evidence','fc-scan','fc-match'];
+const {values}=parseArgs({options:Object.fromEntries(names.map(name=>[name,{type:'string'}]))});
+if(names.some(name=>!values[name]))throw new Error('NUMERIC_FONT_ARGUMENTS');
+const input=await loadInput({ledger:values.ledger,brand:values.brand,assets:values.assets});
+const manifest=readNativeManifestFile(values.layout).manifest;
+const plan=Object.fromEntries(['numericCompositionVersion','style','width','height','slides','decisions','placements','contentBinding','authority'].map(key=>[key,manifest[key]]));
+console.log(JSON.stringify(preflightNativeNumericFonts(values.deck,input,plan,values.layout,values['chart-evidence'],values)));

@@ -1,0 +1,458 @@
+{
+  "schemaVersion": 1,
+  "id": "qingyu-content-review-director-r1-20261110",
+  "reviewer": {
+    "role": "比稿 Agent",
+    "task": "/root/content_review_director",
+    "independentOfContentOwner": true,
+    "independentOfUpstreamCreation": true
+  },
+  "createdAt": "2026-11-10T15:50:41.361008+00:00",
+  "ownerReview": {
+    "path": ".scratch/content-review-page-20261110/content-owner/REVIEW.json",
+    "sha256": "c99c071da079b9783672c8c0eb02e3b9a76f40236aba33647d37d2f9029281e6",
+    "id": "qingyu-content-review-owner-r1-20261110"
+  },
+  "status": "reviewed-with-open-items",
+  "summary": {
+    "title": "整案主线可衔接，三项仍待处理",
+    "text": "研究、用水策略与三个文案方向之间的关系清楚，视觉已有不同结构转译。包装与传播文案的落位、产品依据、目标人群与真实触点仍需处理。可展示带条件的整案建议稿，尚未批准正式内容冻结。",
+    "openIssueCount": 3,
+    "changedUpstreamCount": 0,
+    "contentFreezeGranted": false
+  },
+  "issueDecisions": [
+    {
+      "issueId": "QY-CR-01",
+      "decision": "accepted-with-narrowing",
+      "displayTitle": "包装与传播文案的落位分工待明确",
+      "status": "open",
+      "statusLabel": "待衔接",
+      "owner": "视觉负责人",
+      "collaborators": [
+        "文案负责人"
+      ],
+      "reason": "六件实际PNG未承载原审完整主副文属实，当前视觉页图外CopyBasis已完整显示原文。原R2文案又分别有瓶侧、电商短句、茶歇提醒与随茶留言触点，因此不能把“全套主副文完整印在瓶身”设为统一门槛。双信息场、水流窗口与寄语卡已有部分转译。尚待明确的是品牌、品类、用水身份与创意语句在本次交付触点中各放在哪里，以及必要信息能否按实际观看条件同读。",
+      "nextStep": "文案与视觉负责人先确定包装正侧面、商品图及其他获授权触点的信息分工，再提交能核对品牌和用水身份的实际稿件。允许保留主张的缩写或触点适配，改稿后复核必要信息与创意机制，不机械搬入全部原句。",
+      "evidenceRefs": [
+        "qingyu-themes/reviewed-copy.json / rounds.r2.draft.directions.extensions",
+        "qingyu-themes/reviewed-copy.json / rounds.r2.draft.directions.risk",
+        "QingyuVisualPreview.tsx / CopyBasis and DirectionLayout",
+        "n7-main",
+        "n7-mockups",
+        "k4-main",
+        "k4-mockups",
+        "v2-main",
+        "v2-mockups"
+      ],
+      "notAClaim": "未做真人读图，未证明读者一定混淆，也未认定缺少工位人物画面本身就是错误。"
+    },
+    {
+      "issueId": "QY-CR-02",
+      "decision": "accepted-with-scope",
+      "displayTitle": "茶种与用水依据仍待补齐",
+      "status": "open",
+      "statusLabel": "待补资料",
+      "owner": "调研负责人",
+      "collaborators": [
+        "人类比稿负责人",
+        "策略负责人",
+        "文案负责人",
+        "视觉负责人"
+      ],
+      "reason": "原任务约束明确茶种与配料，当前实际图只有“无糖茶”及“标签示意”；具体茶种、风味、完整配料和水源使用凭据仍缺。配方使用虎跑泉水是用户设定，不因本轮审读升级成已核实事实或独家、更好喝、健康、溢价优势。产品资料由调研负责人归集、人类比稿负责人补充；策略负责人负责其对方向及主张的影响，不能用策略润色代替产品凭据。",
+      "nextStep": "补入具体茶种、风味、配料及虎跑泉使用凭据和实际适用范围。资料未到前保留设定与待补标记，可以继续看带条件的设计建议，不填造茶种、比例或产品优势。补齐后复核受影响的策略、文案与包装信息。",
+      "evidenceRefs": [
+        "qingyuFixture.ts / constraints and openQuestions",
+        "R4-G-PRODUCT",
+        "qingyu-strategy/summary.ts / captions",
+        "qingyu-themes/reviewed-copy.json / unresolved and limits",
+        "six-PNG-labels"
+      ],
+      "notAClaim": "本项不进行包装法规、印前生产或水质功效认定。"
+    },
+    {
+      "issueId": "QY-CR-03",
+      "decision": "accepted-with-scope",
+      "displayTitle": "目标人群与真实触点仍待核验",
+      "status": "open",
+      "statusLabel": "待补研究",
+      "owner": "调研负责人",
+      "collaborators": [
+        "视觉负责人"
+      ],
+      "reason": "已存R4明确缺少当前目标办公者与无糖茶的直接交叉画像、审美、同期渠道价格与实际寻找理解测试。现有历史样本及工作情景参照可支持信息任务和有条件创意讨论，不能升级为目标人群偏好、注意、记忆或购买结论。缺测试也不能被扩大为禁止任何草案展示。",
+      "nextStep": "继续按既有研究待补规则定向补查关键本地依据。当前先保留目标反应为假设；获授权后分别在货架、冷柜或商品缩略图条件下核包装可读性。未运行的真人或效果测试保持未验证。",
+      "evidenceRefs": [
+        "R4-G-TARGET",
+        "R4-G-PRICE",
+        "R4-G-EFFECT",
+        "R4-F-PEOPLE",
+        "R4-F-CHANNEL",
+        "qingyu-themes/reviewed-copy.json / audienceHypothesis"
+      ],
+      "notAClaim": "本轮没有补研究、测试真实用户或用模型票据替代真实效果。"
+    }
+  ],
+  "handoffSummary": {
+    "status": "conditional",
+    "text": "任务、研究、策略与文案可在已说明的前提内连贯阅读；文案到视觉已有部分转译，需明确触点落位并复核实际稿件。",
+    "links": [
+      {
+        "id": "QY-DIR-LINK-01",
+        "from": "brief",
+        "to": "research",
+        "status": "conditional",
+        "label": "任务一致，范围待补",
+        "text": "研究围绕中国无糖茶包装的市场、目标人群、竞争表达及产品条件展开。原任务卡仍未确认；后续策略、文案与视觉属于获授权的本地预览，不倒写研究释放。"
+      },
+      {
+        "id": "QY-DIR-LINK-02",
+        "from": "research",
+        "to": "strategy",
+        "status": "conditional",
+        "label": "主线可承接",
+        "text": "先看懂茶的历史信息诉求，连接到基本信息清楚、具体讲产品选择。虎跑泉用水是研究之后新增的用户设定，策略已保留来源凭据与接受度待补。"
+      },
+      {
+        "id": "QY-DIR-LINK-03",
+        "from": "strategy",
+        "to": "themes",
+        "status": "conditional",
+        "label": "三方向各有侧重",
+        "text": "同一用水特点分别展开为认识品牌与用料、工位茶歇、共同旧游。三者保持事实前提和人群反应假设，未新增健康或品质优势。"
+      },
+      {
+        "id": "QY-DIR-LINK-04",
+        "from": "themes",
+        "to": "visual",
+        "status": "needs-handoff",
+        "label": "已有转译，落位待明确",
+        "text": "双信息场、水流窗口与寄语卡对应三个方向。实际图片与图外文案需形成明确触点分工，再核品牌、用水身份及创意理解，不要求每张包装图都印出全部原句。"
+      }
+    ]
+  },
+  "narrativeDecision": {
+    "decision": "usable-with-wording-corrections",
+    "label": "建议整理稿",
+    "adopted": false,
+    "reason": "五段没有新增选定方向或产品功效，但研究段需带监测时期与范围，创意段写明拟实现的作用，视觉段按触点分工表达。以下为比稿Agent建议措辞，不改写内容审阅原记录或上游稿。",
+    "sections": [
+      {
+        "id": "task",
+        "stage": "brief",
+        "title": "任务",
+        "text": "青屿要为500毫升无糖茶建立包装表达，面向便利店与电商中的25至34岁城市办公者。目标单瓶价为6至8元，青色与山形是既有资产约束。这些属于虚构任务条件，不是上市或人群验证结论。",
+        "sourceRefs": [
+          "BRIEF",
+          "D-SPEC",
+          "D-CHANNEL",
+          "D-ASSET",
+          "P-TARGET"
+        ]
+      },
+      {
+        "id": "research",
+        "stage": "research",
+        "title": "研究",
+        "text": "已存R4记录的2026年第三季度线下监测显示，无糖即饮茶销额同比增长；相关监测机构另报告头部集中提高，但集中度口径仍有未核项。2023年历史样本希望包装讲清口味、风味与无糖；所选竞品已有茶种、原料、冷萃和现泡等解释。这些资料支持信息任务，不代表全市场销量、青屿目标人群的审美或购买反应。",
+        "sourceRefs": [
+          "R4-F-MARKET",
+          "R4-F-PEOPLE",
+          "R4-F-LANDSCAPE",
+          "R4-F-PACKAGING"
+        ]
+      },
+      {
+        "id": "strategy",
+        "stage": "strategy",
+        "title": "策略",
+        "text": "研究后补充的产品设定是配方使用虎跑泉水。策略因此提出，在茶与无糖信息清楚的基础上，把这一用水选择讲具体，让它与青屿建立联系。水源凭据、茶种风味及用户接受度尚待补齐。",
+        "sourceRefs": [
+          "qingyu-strategy-owner-summary-20261110-v1",
+          "U-PRODUCT-01",
+          "QY-CR-02"
+        ]
+      },
+      {
+        "id": "creative",
+        "stage": "themes",
+        "title": "创意",
+        "text": "两张名片拟分别介绍品牌与用料，一口到虎跑把工位茶歇写成想象中的短途，看见虎跑想起你连接共同旧游与捎茶。现有文字概念建议优先讨论两张名片，其代价是主副文需要配合阅读，尚未形成用户选定或包装效果结论。",
+        "sourceRefs": [
+          "qingyu-copy-full-r2-20261110 / r2",
+          "qingyu-copy-full-r2-20261110 / recommendation"
+        ]
+      },
+      {
+        "id": "visual",
+        "stage": "visual",
+        "title": "视觉与待办",
+        "text": "三组试稿用双信息场、水流窗口和寄语卡分别转译方向，保留青色、山形、无糖与泉名。下一步先明确包装和传播文案的触点分工，再核对实际稿件中的品牌与用水身份；产品资料、目标人群和触点效果的缺口继续保留。修改复核后，再据实际范围决定能否冻结内容。",
+        "sourceRefs": [
+          "n7-main",
+          "n7-mockups",
+          "k4-main",
+          "k4-mockups",
+          "v2-main",
+          "v2-mockups",
+          "QY-CR-01",
+          "QY-CR-02",
+          "QY-CR-03"
+        ]
+      }
+    ]
+  },
+  "scope": {
+    "kind": "local-preview-coordination-review",
+    "projectId": "qingyu",
+    "proposalId": "qingyu-pack",
+    "formalStageApproval": false,
+    "visualApproval": false,
+    "contentFreezeGranted": false,
+    "sourceMutation": false,
+    "issueClosureGranted": false,
+    "consumerResearch": false,
+    "customerApproval": false,
+    "browserRenderingReviewed": false,
+    "externalSourcesReopened": false
+  },
+  "readRecord": [
+    {
+      "path": ".scratch/content-review-page-20261110/content-owner/REVIEW.md",
+      "sha256": "98fffd0a1a1acb4bc5a6f70ab00e9528e8a147d91124adf0a942cb281d012d9c",
+      "inspected": "完整读取原审问题、限定和建议叙事"
+    },
+    {
+      "path": ".scratch/content-review-page-20261110/content-owner/REVIEW.json",
+      "sha256": "c99c071da079b9783672c8c0eb02e3b9a76f40236aba33647d37d2f9029281e6",
+      "inspected": "读取依据、逐图观察、原文案、连接、问题与叙事"
+    },
+    {
+      "path": "docs/workflows/提案工作流_现行规则.md",
+      "sha256": "935472e4acf032b397bdf0bd846deb8e7cf05eff76509f653b793c8b7a8bf9da",
+      "inspected": "读取本轮职责、阶段方法和边界"
+    },
+    {
+      "path": "docs/agents/content-review-owner.md",
+      "sha256": "32b7b93999a084a8738519f439f5cd714dbed365b402fd5f6630c1287a167af6",
+      "inspected": "读取输入、问题处理、叙事及冻结边界"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/cases/qingyuFixture.ts",
+      "sha256": "e80503d5f9a59c11cf097371b0eeda1bcfc1d1be86586c9c754314c0250a0c82",
+      "inspected": "核原任务卡、约束与原生未确认状态"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content-r4.json",
+      "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+      "inspected": "结构化核读市场事实、主要findings及四项gaps，不重开外部原件"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/summary.ts",
+      "sha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6",
+      "inspected": "完整核读三板块、caption与notes"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+      "inspected": "核R2三方向主副文、扩展触点、人群假设、风险和原推荐范围"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/QingyuVisualPreview.tsx",
+      "sha256": "0639007452363f0929fcc83208b5f9510d17d012325e43a75262b4041139a087",
+      "inspected": "核CopyBasis、当前稿和样机渲染结构"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/concept-images.ts",
+      "sha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e",
+      "inspected": "核三方向图像注册与描述"
+    },
+    {
+      "path": "output/qingyu-copy-full-20261110/README.md",
+      "sha256": "a80dc764325086a41c28c47244c285a267420b1e35e2b522a05884cba022a0f9",
+      "inspected": "核原评范围、未决项与独立性限定"
+    },
+    {
+      "path": "output/qingyu-visual-ui-fill-20261110/README.md",
+      "sha256": "a5e98bcf7ee1c56f6d3c24087fc0b880d78b855b897968ee9b09aec364fd99ce",
+      "inspected": "核试稿生成次序与非正式生产身份"
+    }
+  ],
+  "images": [
+    {
+      "id": "n7-main",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-main.png",
+      "sha256": "e96feea741445faa82ad9e3e0cc28e83e41602217862fcfadd8cbca809e68ee2",
+      "inspection": "本Agent使用view_image实际查看PNG；观察范围为可见文字、结构和对应原稿，不做审美评分"
+    },
+    {
+      "id": "n7-mockups",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-mockups.png",
+      "sha256": "7610c424e2c19ebac85d998dab65b92553c132b6c32056847704c117c6274d81",
+      "inspection": "本Agent使用view_image实际查看PNG；观察范围为可见文字、结构和对应原稿，不做审美评分"
+    },
+    {
+      "id": "k4-main",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-main.png",
+      "sha256": "34663a7a942f9b22ad0db633376fc761a79e584699b2889d55654971defa96e3",
+      "inspection": "本Agent使用view_image实际查看PNG；观察范围为可见文字、结构和对应原稿，不做审美评分"
+    },
+    {
+      "id": "k4-mockups",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-mockups.png",
+      "sha256": "56af786e41de206678035b4c88c6585a71345c60c6928a962adbb5e620810a9b",
+      "inspection": "本Agent使用view_image实际查看PNG；观察范围为可见文字、结构和对应原稿，不做审美评分"
+    },
+    {
+      "id": "v2-main",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-main.png",
+      "sha256": "8e410bc79dfe3297674f7f104eaa8698d89c93784e8620f69a001c1b47047964",
+      "inspection": "本Agent使用view_image实际查看PNG；观察范围为可见文字、结构和对应原稿，不做审美评分"
+    },
+    {
+      "id": "v2-mockups",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-mockups.png",
+      "sha256": "abebab73c0e3b3fef26c10eaecb724bb830966bfd7529f0275e55b44192086ca",
+      "inspection": "本Agent使用view_image实际查看PNG；观察范围为可见文字、结构和对应原稿，不做审美评分"
+    }
+  ],
+  "ownerReadRecordRecheck": {
+    "checkedCount": 21,
+    "allMatch": true,
+    "items": [
+      {
+        "path": ".scratch/content-review-page-20261110/GROUNDING.md",
+        "ownerSha256": "4c36baadf759edffa2b7b0cd19e232208a5a93fea9ab28faf495733905459831",
+        "actualSha256": "4c36baadf759edffa2b7b0cd19e232208a5a93fea9ab28faf495733905459831",
+        "matches": true
+      },
+      {
+        "path": "docs/workflows/提案工作流_现行规则.md",
+        "ownerSha256": "935472e4acf032b397bdf0bd846deb8e7cf05eff76509f653b793c8b7a8bf9da",
+        "actualSha256": "935472e4acf032b397bdf0bd846deb8e7cf05eff76509f653b793c8b7a8bf9da",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/cases/qingyuFixture.ts",
+        "ownerSha256": "e80503d5f9a59c11cf097371b0eeda1bcfc1d1be86586c9c754314c0250a0c82",
+        "actualSha256": "e80503d5f9a59c11cf097371b0eeda1bcfc1d1be86586c9c754314c0250a0c82",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content-r4.json",
+        "ownerSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+        "actualSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/summary.ts",
+        "ownerSha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6",
+        "actualSha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/intersection-page.ts",
+        "ownerSha256": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37",
+        "actualSha256": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+        "ownerSha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+        "actualSha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/preview.ts",
+        "ownerSha256": "74f2bedea78c9b891bbaf3dee8a64e352608fd1609cd7cee75ad9ef885d7cbfa",
+        "actualSha256": "74f2bedea78c9b891bbaf3dee8a64e352608fd1609cd7cee75ad9ef885d7cbfa",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/concept-images.ts",
+        "ownerSha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e",
+        "actualSha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/QingyuVisualPreview.tsx",
+        "ownerSha256": "0639007452363f0929fcc83208b5f9510d17d012325e43a75262b4041139a087",
+        "actualSha256": "0639007452363f0929fcc83208b5f9510d17d012325e43a75262b4041139a087",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/workflow-record.ts",
+        "ownerSha256": "fe7a1920fe24081e2154b9a5f302a4dd91493d6e2db9f425db7ebde9330bf332",
+        "actualSha256": "fe7a1920fe24081e2154b9a5f302a4dd91493d6e2db9f425db7ebde9330bf332",
+        "matches": true
+      },
+      {
+        "path": "output/qingyu-research-r4-20261109/README.md",
+        "ownerSha256": "253553c91297bc52d49ae8fa92b31a47418360309e652a99aa1e92027c609cd2",
+        "actualSha256": "253553c91297bc52d49ae8fa92b31a47418360309e652a99aa1e92027c609cd2",
+        "matches": true
+      },
+      {
+        "path": "output/strategy-owner-simple-20261110/README.md",
+        "ownerSha256": "bb0f4d536de31a386fcc05b5c5cd12fde204cdee8acce43ddcb118fbe0729dc1",
+        "actualSha256": "bb0f4d536de31a386fcc05b5c5cd12fde204cdee8acce43ddcb118fbe0729dc1",
+        "matches": true
+      },
+      {
+        "path": "output/qingyu-copy-full-20261110/README.md",
+        "ownerSha256": "a80dc764325086a41c28c47244c285a267420b1e35e2b522a05884cba022a0f9",
+        "actualSha256": "a80dc764325086a41c28c47244c285a267420b1e35e2b522a05884cba022a0f9",
+        "matches": true
+      },
+      {
+        "path": "output/qingyu-visual-ui-fill-20261110/README.md",
+        "ownerSha256": "a5e98bcf7ee1c56f6d3c24087fc0b880d78b855b897968ee9b09aec364fd99ce",
+        "actualSha256": "a5e98bcf7ee1c56f6d3c24087fc0b880d78b855b897968ee9b09aec364fd99ce",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-main.png",
+        "ownerSha256": "e96feea741445faa82ad9e3e0cc28e83e41602217862fcfadd8cbca809e68ee2",
+        "actualSha256": "e96feea741445faa82ad9e3e0cc28e83e41602217862fcfadd8cbca809e68ee2",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-mockups.png",
+        "ownerSha256": "7610c424e2c19ebac85d998dab65b92553c132b6c32056847704c117c6274d81",
+        "actualSha256": "7610c424e2c19ebac85d998dab65b92553c132b6c32056847704c117c6274d81",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-main.png",
+        "ownerSha256": "34663a7a942f9b22ad0db633376fc761a79e584699b2889d55654971defa96e3",
+        "actualSha256": "34663a7a942f9b22ad0db633376fc761a79e584699b2889d55654971defa96e3",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-mockups.png",
+        "ownerSha256": "56af786e41de206678035b4c88c6585a71345c60c6928a962adbb5e620810a9b",
+        "actualSha256": "56af786e41de206678035b4c88c6585a71345c60c6928a962adbb5e620810a9b",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-main.png",
+        "ownerSha256": "8e410bc79dfe3297674f7f104eaa8698d89c93784e8620f69a001c1b47047964",
+        "actualSha256": "8e410bc79dfe3297674f7f104eaa8698d89c93784e8620f69a001c1b47047964",
+        "matches": true
+      },
+      {
+        "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-mockups.png",
+        "ownerSha256": "abebab73c0e3b3fef26c10eaecb724bb830966bfd7529f0275e55b44192086ca",
+        "actualSha256": "abebab73c0e3b3fef26c10eaecb724bb830966bfd7529f0275e55b44192086ca",
+        "matches": true
+      }
+    ]
+  },
+  "limits": [
+    "未重新打开外部研究报告原件，事实范围按已存R4核对。",
+    "未查看九件草图、其他竞品原图、浏览器实际界面或真实货架/冷柜/电商条件。",
+    "未重跑研究或修改图文；三项仍开放，无人工决策或正式生产批准。",
+    "本轮属于独立统筹复核，不宣称匿名盲审、真实客户或消费者研究。"
+  ]
+}

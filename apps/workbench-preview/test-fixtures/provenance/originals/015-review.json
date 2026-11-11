@@ -1,0 +1,220 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "copy",
+  "model_id": "gpt-6.1-sol",
+  "packet_version": "r2",
+  "report_id": "qingyu-r2-counter-copy-review",
+  "candidate_version": "qingyu-copy-reviewed-r2",
+  "draft_sha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+  "score_report_id": "r2-copy",
+  "first_read_path": "critics/r2-copy/first.json",
+  "first_read_sha256": "9cc0557162b8f494dd3e673793cf33231896342ab9bc806389c46a50b7542090",
+  "paired_score_path": "reviews/r2-copy/score.json",
+  "paired_score_sha256": "6b72253d3c8dfea2a01cf221bced9071c2fb5eadaffaa68ca6ab7fa343e24e3b",
+  "input_hashes": {
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50",
+    "critics/r2-copy/first.json": "9cc0557162b8f494dd3e673793cf33231896342ab9bc806389c46a50b7542090",
+    "reviews/r2-copy/score.json": "6b72253d3c8dfea2a01cf221bced9071c2fb5eadaffaa68ca6ab7fa343e24e3b"
+  },
+  "retained_claims": [
+    {
+      "claim_id": "r2-copy-n7-p1",
+      "candidate_id": "n7",
+      "stage": "slogan",
+      "scope": "完整主副文、当前同组三案、本地文字概念",
+      "evidence": [
+        "一瓶无糖茶，两张名片。",
+        "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+      ],
+      "reason": "两项身份分别在同一副文中明确，第二项用“这瓶茶”回指主文的“一瓶无糖茶”。肯定的是配对结构，不需要将名片推为真实附卡，也没有把泉水当第二个茶品牌。",
+      "limits": "保留完整组合的文字结论，不保留任何真实品牌识别率或记忆效果推论。"
+    },
+    {
+      "claim_id": "r2-copy-k4-p1",
+      "candidate_id": "k4",
+      "stage": "slogan",
+      "scope": "完整主副文、当前同组三案、本地文字概念",
+      "evidence": [
+        "鼠标放一放，去趟虎跑。",
+        "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+      ],
+      "reason": "“去趟”提出到达预期，“工位上”限制实际地点，“喝一口就算到了”明确以想象完成到达。邀请与抵达之间有具体的句内回扣，足以支持“开头的邀请在末尾有回音”。",
+      "limits": "原score关于匿名首读的记录作为该岗自述保留，本对抗未获准读取对应first-read.json，不能独立认证其原始记录；本项保留的直接依据是当前文本。未据此肯定读者一定觉得有趣或行动。"
+    },
+    {
+      "claim_id": "r2-copy-v2-p1",
+      "candidate_id": "v2",
+      "stage": "slogan",
+      "scope": "共享虎跑旧游的单次虚构对话、当前同组三案、本地文字概念",
+      "evidence": [
+        "上回你带我去虎跑，这回换我给你带茶。",
+        "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+      ],
+      "reason": "主文把虎跑放入两人的共同经历，副文将泉水名放进这一瓶产品，再用“看见这名字”交代联想触发。配方地名确实参与送茶人的选择，不只是与叙事无关的产品署名。",
+      "limits": "“这名字”前有青屿和虎跑两处名称，原score已记指代风险；主文旧游使虎跑成为有据所指，不因此推断每位读者都无犹豫。"
+    }
+  ],
+  "challenges": [],
+  "new_valid_blocker_count": 0,
+  "coverage": [
+    {
+      "first_ref": "COPY-R2-W01",
+      "candidate_id": "n7",
+      "coverage_status": "underlying_dependency_covered",
+      "score_refs": [
+        "r2-copy-n7-i1",
+        "n7.scores.line_collaboration",
+        "n7.limits"
+      ],
+      "first_evidence": "一瓶无糖茶，两张名片。",
+      "score_evidence": "“两张名片”单看并不知道是谁的名片，首读短暂预期两个品牌。",
+      "assessment": "双方都指出主文单独出现时身份尚未明示，副文需要同读。首包猜测附卡，score记录预期两个品牌，表现不同但依赖相同。附卡未经观察，不另计新增有效问题。",
+      "new_valid_blocker": false,
+      "stage": "slogan"
+    },
+    {
+      "first_ref": "COPY-R2-W02",
+      "candidate_id": "k4",
+      "coverage_status": "covered",
+      "score_refs": [
+        "r2-copy-k4-i1",
+        "k4.scores.line_collaboration",
+        "k4.limits"
+      ],
+      "first_evidence": [
+        "鼠标放一放，去趟虎跑。",
+        "工位上拧开青屿无糖茶。"
+      ],
+      "score_evidence": "“去趟虎跑”也可被理解为实际出游，工位和抵达都在副文。",
+      "assessment": "实际出游歧义及副文接近性的依赖已有准确覆盖。不能以同一依赖重复新增阻断。",
+      "new_valid_blocker": false,
+      "stage": "slogan"
+    },
+    {
+      "first_ref": "COPY-R2-W03",
+      "candidate_id": "v2",
+      "coverage_status": "covered_by_scope",
+      "score_refs": [
+        "v2.scores.proposition",
+        "v2.limits",
+        "score.limits"
+      ],
+      "first_evidence": [
+        "给曾一起去过虎跑的人捎瓶茶。",
+        "如果两个人有过这段经历"
+      ],
+      "score_evidence": "适用于共享虎跑旧游的虚构对话。人物关系、经历普遍性及真实送礼意愿无依据。",
+      "assessment": "score未把特定共同经历变成普遍洞察，范围与首包一致。它是适用条件，不是分数遗漏。",
+      "new_valid_blocker": false,
+      "stage": "slogan"
+    },
+    {
+      "first_ref": "observations.k4.鼠标放一放",
+      "candidate_id": "k4",
+      "coverage_status": "not_explicitly_covered_but_unproven",
+      "score_refs": [
+        "k4.scores.chinese_rhythm"
+      ],
+      "first_evidence": "鼠标放一放，去趟虎跑。",
+      "score_evidence": "“放一放／去趟”听得出招呼人的语气。",
+      "assessment": "score未另记“挪放鼠标”的可能读法。当前句式也可直接理解为暂时停用鼠标；首包没有证据证明挪放是占主导或持续到副文后的误读。它仍是个人可想象的首读风险，不能升级为中文不成立或新增有效阻断。",
+      "new_valid_blocker": false,
+      "stage": "slogan"
+    },
+    {
+      "first_ref": "mechanism_checks",
+      "candidate_id": "set",
+      "coverage_status": "covered",
+      "score_refs": [
+        "n7.scores.mechanism_difference",
+        "k4.scores.mechanism_difference",
+        "v2.scores.mechanism_difference",
+        "pairwise",
+        "set_reason"
+      ],
+      "first_evidence": [
+        "两张名片",
+        "喝一口就算到了",
+        "看见这名字，就想起你"
+      ],
+      "score_evidence": "三案交给读者的分别是一对身份、一次可照做的茶歇、一句给特定对象的捎茶口信。",
+      "assessment": "score区分身份配对、即时想象抵达、对人回忆，且明确承认v2主文配k4副文可形成重游新意。没有用“换句完全不通”制造机制差异。",
+      "new_valid_blocker": false,
+      "stage": "slogan"
+    },
+    {
+      "first_ref": "factual_scope_check",
+      "candidate_id": "set",
+      "coverage_status": "covered_by_scope",
+      "score_refs": [
+        "n7.limits",
+        "k4.limits",
+        "v2.limits",
+        "score.limits"
+      ],
+      "first_evidence": [
+        "这瓶茶用到的水",
+        "茶里用到了虎跑泉水",
+        "这瓶青屿无糖茶用到了虎跑泉水"
+      ],
+      "score_evidence": "当前用水前提取自虚构产品任务，未证具体茶种、用水比例与来源凭据，未验证版面、记忆、消费者感受及购买。",
+      "assessment": "本岗分数限文字判断，没有给正式水源或购买效果背书；当前原句也未新增全量、独家或效果声称。",
+      "new_valid_blocker": false,
+      "stage": "slogan"
+    }
+  ],
+  "scale_audit": [
+    {
+      "candidate_id": "n7",
+      "dimensions_checked": [
+        "主张成立",
+        "同组创意机制差异",
+        "中文表达与节奏",
+        "主副文协作"
+      ],
+      "assessment": "四个4分均有当前句子支持，并以同读范围为限。score同时记载“泉水／用到的水”稍钝及身份初猜，不是用无缺点承诺支撑4分。未发现足以要求低于阶段达标线的新增文字证据。",
+      "score_changed": false
+    },
+    {
+      "candidate_id": "k4",
+      "dimensions_checked": [
+        "主张成立",
+        "同组创意机制差异",
+        "中文表达与节奏",
+        "主副文协作"
+      ],
+      "assessment": "前三个4分落在可执行的暂歇动作、原地想象机制及招呼语气。协作5分引用“去趟”经“就算到了”被重新解释，并与n7报身份相比说明多出的转折，符合5分须说明优于基准具体之处的格式。该理由证明结构上的增加，不证明真实理解率或趣味。没有文本反证足以提出调分异议。",
+      "score_changed": false
+    },
+    {
+      "candidate_id": "v2",
+      "dimensions_checked": [
+        "主张成立",
+        "同组创意机制差异",
+        "中文表达与节奏",
+        "主副文协作"
+      ],
+      "assessment": "四个4分均限单次旧游捎茶对话。score已保留完整品名像瓶签及“这名字”指代瞬间犹豫，未因末句补全而宣称全段毫无口语阻力。主文与末句能支持现有叙事因果，未发现必须低于4的遗漏。",
+      "score_changed": false
+    }
+  ],
+  "claim_coverage_check": {
+    "source_positive_claim_count": 3,
+    "retained_count": 3,
+    "challenged_count": 0,
+    "all_positive_claim_ids_covered_exactly_once": true
+  },
+  "limits": [
+    "只增加读取对应文案岗score.json，没有读取其他岗、总监、旧稿或作者回应。score内引用的旧稿状态未作历史核验。",
+    "本对抗的first.json是有任务与机制说明的独立漏项包，不冒充评分岗匿名首读。",
+    "未读取score引用的校准材料及评分岗first-read原件，不能独立认证其首读流程或隐含基准；这里只按已给REVIEW-PROTOCOL核对分数理由是否有当前文字支持。",
+    "没有对真实消费者理解、接受、记忆、行动或购买作结论。未核对正式水源凭据、茶种或合规。",
+    "0新增阻断不替代任何岗位裁判，也不构成总监推荐。没有修改首包、分数或稿件。"
+  ],
+  "result": "三条positive claims均在声明范围内保留。没有有据challenge，没有新增有效阻断。"
+}

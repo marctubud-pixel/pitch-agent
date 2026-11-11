@@ -1,0 +1,476 @@
+{
+  "schemaVersion": 1,
+  "id": "qingyu-content-review-owner-r1-20261110",
+  "reviewer": {
+    "role": "内容审阅负责人 Agent",
+    "task": "/root/content_review_owner",
+    "independentOfUpstreamCreation": true
+  },
+  "scope": {
+    "kind": "local-preview-content-review",
+    "projectId": "qingyu",
+    "proposalId": "qingyu-pack",
+    "formalStageApproval": false,
+    "customerApproval": false,
+    "consumerResearch": false,
+    "sourceMutation": false,
+    "externalSourcesReopened": false,
+    "browserRenderingReviewed": false
+  },
+  "summary": {
+    "title": "主线可复述，包装图文与关键依据待补",
+    "text": "当前整案能从研究接到用水策略及三个文案方向；实际包装稿尚需落实主副文，产品与目标人群依据仍有缺口。",
+    "status": "reviewed-with-open-items",
+    "openIssueCount": 3,
+    "changedUpstreamCount": 0,
+    "contentFreezeGranted": false
+  },
+  "basis": {
+    "researchReportId": "qingyu-packaging-public-report-r4-20261109",
+    "researchGenerationRevision": "r6-20261109",
+    "researchStatus": "研究待补",
+    "researchSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+    "strategyDraftId": "qingyu-strategy-owner-summary-20261110-v1",
+    "strategySummarySha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6",
+    "copyBundleId": "qingyu-copy-full-r2-20261110",
+    "copyRoundId": "r2",
+    "copySha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+    "visualImplementationSha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e",
+    "briefVersion": 1,
+    "briefConfirmed": false
+  },
+  "readRecord": [
+    {
+      "path": ".scratch/content-review-page-20261110/GROUNDING.md",
+      "sha256": "4c36baadf759edffa2b7b0cd19e232208a5a93fea9ab28faf495733905459831",
+      "inspected": "完整接续范围"
+    },
+    {
+      "path": "docs/workflows/提案工作流_现行规则.md",
+      "sha256": "935472e4acf032b397bdf0bd846deb8e7cf05eff76509f653b793c8b7a8bf9da",
+      "inspected": "最新统一职责与复用要求"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/cases/qingyuFixture.ts",
+      "sha256": "e80503d5f9a59c11cf097371b0eeda1bcfc1d1be86586c9c754314c0250a0c82",
+      "inspected": "原任务卡、题设限制、未确认状态与研究待补"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content-r4.json",
+      "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+      "inspected": "结构化读取facts、findings、gaps、chapters；重点核市场、人群、竞品、产品及最终综合的相关项"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/summary.ts",
+      "sha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6",
+      "inspected": "三板块完整正文、caption、notes及稿件身份"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/intersection-page.ts",
+      "sha256": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37",
+      "inspected": "三环节点、关系示意限制及与原稿文字一致性"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+      "inspected": "完整JSON解析，重点核当前R2三方向原句、风险、策略关系与总监建议和待补"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/preview.ts",
+      "sha256": "74f2bedea78c9b891bbaf3dee8a64e352608fd1609cd7cee75ad9ef885d7cbfa",
+      "inspected": "前90行的当前封存文案解析、策略稿与研究版本关系"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/concept-images.ts",
+      "sha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e",
+      "inspected": "三方向主图、草图、样机实际注册及适用输入"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/QingyuVisualPreview.tsx",
+      "sha256": "0639007452363f0929fcc83208b5f9510d17d012325e43a75262b4041139a087",
+      "inspected": "CopyBasis、当前稿与三视角样机部分；确认图外已有完整主副文"
+    },
+    {
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/workflow-record.ts",
+      "sha256": "fe7a1920fe24081e2154b9a5f302a4dd91493d6e2db9f425db7ebde9330bf332",
+      "inspected": "接续输入摘要与manifest身份"
+    },
+    {
+      "path": "output/qingyu-research-r4-20261109/README.md",
+      "sha256": "253553c91297bc52d49ae8fa92b31a47418360309e652a99aa1e92027c609cd2",
+      "inspected": "本轮产物与适用边界"
+    },
+    {
+      "path": "output/strategy-owner-simple-20261110/README.md",
+      "sha256": "bb0f4d536de31a386fcc05b5c5cd12fde204cdee8acce43ddcb118fbe0729dc1",
+      "inspected": "最新简化策略规则与未接能力"
+    },
+    {
+      "path": "output/qingyu-copy-full-20261110/README.md",
+      "sha256": "a80dc764325086a41c28c47244c285a267420b1e35e2b522a05884cba022a0f9",
+      "inspected": "原审范围、历史改稿和独立性限制"
+    },
+    {
+      "path": "output/qingyu-visual-ui-fill-20261110/README.md",
+      "sha256": "a5e98bcf7ee1c56f6d3c24087fc0b880d78b855b897968ee9b09aec364fd99ce",
+      "inspected": "15件图片生成身份、实际UI检查及非正式生产回环范围"
+    }
+  ],
+  "images": [
+    {
+      "id": "n7-main",
+      "directionId": "n7",
+      "directionName": "两张名片",
+      "view": "main",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-main.png",
+      "sha256": "e96feea741445faa82ad9e3e0cc28e83e41602217862fcfadd8cbca809e68ee2",
+      "inspection": "view_image 实际打开原PNG",
+      "observation": "正面有大小错位的两块信息场，大块为品牌与无糖，小块为泉名；没有已审主副文或明确用水身份句。",
+      "visibleText": [
+        "青屿",
+        "无糖茶",
+        "虎跑泉水",
+        "500ml"
+      ],
+      "relatedIssueIds": [
+        "QY-CR-01",
+        "QY-CR-02"
+      ]
+    },
+    {
+      "id": "n7-mockups",
+      "directionId": "n7",
+      "directionName": "两张名片",
+      "view": "mockups",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-mockups.png",
+      "sha256": "7610c424e2c19ebac85d998dab65b92553c132b6c32056847704c117c6274d81",
+      "inspection": "view_image 实际打开原PNG",
+      "observation": "正侧面保留两块信息场，背面为“标签示意”；未见完整主副文。",
+      "visibleText": [
+        "青屿",
+        "无糖茶",
+        "虎跑泉水",
+        "500ml",
+        "标签示意"
+      ],
+      "relatedIssueIds": [
+        "QY-CR-01",
+        "QY-CR-02"
+      ]
+    },
+    {
+      "id": "k4-main",
+      "directionId": "k4",
+      "directionName": "一口到虎跑",
+      "view": "main",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-main.png",
+      "sha256": "34663a7a942f9b22ad0db633376fc761a79e584699b2889d55654971defa96e3",
+      "inspection": "view_image 实际打开原PNG",
+      "observation": "水流状透明窗口与山线构成地理线索；图内未呈现工位、放下鼠标或喝一口抵达的主副文。",
+      "visibleText": [
+        "青屿",
+        "无糖茶",
+        "虎跑泉水",
+        "500ml"
+      ],
+      "relatedIssueIds": [
+        "QY-CR-01",
+        "QY-CR-02"
+      ]
+    },
+    {
+      "id": "k4-mockups",
+      "directionId": "k4",
+      "directionName": "一口到虎跑",
+      "view": "mockups",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-mockups.png",
+      "sha256": "56af786e41de206678035b4c88c6585a71345c60c6928a962adbb5e620810a9b",
+      "inspection": "view_image 实际打开原PNG",
+      "observation": "正侧面延续透明窗口，背面为“标签示意”；图内未见已审工位茶歇主副文。",
+      "visibleText": [
+        "青屿",
+        "无糖茶",
+        "虎跑泉水",
+        "500ml",
+        "标签示意"
+      ],
+      "relatedIssueIds": [
+        "QY-CR-01",
+        "QY-CR-02"
+      ]
+    },
+    {
+      "id": "v2-main",
+      "directionId": "v2",
+      "directionName": "看见虎跑，想起你",
+      "view": "main",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-main.png",
+      "sha256": "8e410bc79dfe3297674f7f104eaa8698d89c93784e8620f69a001c1b47047964",
+      "inspection": "view_image 实际打开原PNG",
+      "observation": "邮戳与寄语卡给出关系线索，卡上是方向名，未呈现共同旧游的主文与用水解释副文。",
+      "visibleText": [
+        "青屿",
+        "无糖茶",
+        "虎跑泉水",
+        "看见虎跑，想起你",
+        "500ml"
+      ],
+      "relatedIssueIds": [
+        "QY-CR-01",
+        "QY-CR-02"
+      ]
+    },
+    {
+      "id": "v2-mockups",
+      "directionId": "v2",
+      "directionName": "看见虎跑，想起你",
+      "view": "mockups",
+      "path": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-mockups.png",
+      "sha256": "abebab73c0e3b3fef26c10eaecb724bb830966bfd7529f0275e55b44192086ca",
+      "inspection": "view_image 实际打开原PNG",
+      "observation": "正面寄语卡、侧面局部寄语、背面“标签示意”；未见共同旧游与用水解释的完整主副文。",
+      "visibleText": [
+        "青屿",
+        "无糖茶",
+        "虎跑泉水",
+        "看见虎跑，想起你",
+        "500ml",
+        "标签示意"
+      ],
+      "relatedIssueIds": [
+        "QY-CR-01",
+        "QY-CR-02"
+      ]
+    }
+  ],
+  "reviewedCopy": [
+    {
+      "directionId": "n7",
+      "name": "两张名片",
+      "slogan": "一瓶无糖茶，两张名片。",
+      "subline": "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "strategyLink": "沿用无糖品类与配方用水两项信息，把青屿和虎跑泉水各自的身份说清。",
+      "risk": "主文单独出现时，名片可能让人想到随瓶附卡。两行相隔多远仍能看懂，留待打样。"
+    },
+    {
+      "directionId": "k4",
+      "name": "一口到虎跑",
+      "slogan": "鼠标放一放，去趟虎跑。",
+      "subline": "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "strategyLink": "这次茶歇能叫“去虎跑”，依据是青屿无糖茶的配方用到了虎跑泉水。",
+      "risk": "单看“去趟虎跑”仍可能像约人出门。两句同读时的理解和实际版面待核。"
+    },
+    {
+      "directionId": "v2",
+      "name": "看见虎跑，想起你",
+      "slogan": "上回你带我去虎跑，这回换我给你带茶。",
+      "subline": "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "strategyLink": "青屿用到了虎跑泉水，因此可以让这个地名成为一次具体的捎茶理由。",
+      "risk": "适用对象窄，需要两人有共同经历；随茶留言能否被听成自然对话，仍需核验。"
+    }
+  ],
+  "connections": [
+    {
+      "id": "QY-LINK-01",
+      "from": "research",
+      "to": "strategy",
+      "status": "conditional",
+      "label": "可承接，保留依据限定",
+      "text": "从看懂茶的历史信息诉求及竞品产品解释，接到保留基础信息、讲具体产品选择；虎跑泉为后补用户设定，不是研究发现的偏好。",
+      "sourceRefs": [
+        "R4P18",
+        "R4P19",
+        "R4P20",
+        "R4-F-LANDSCAPE",
+        "qingyu-strategy-owner-summary-20261110-v1"
+      ]
+    },
+    {
+      "id": "QY-LINK-02",
+      "from": "strategy",
+      "to": "themes",
+      "status": "conditional",
+      "label": "可承接，人群反应为假设",
+      "text": "同一用水设定展开为认识身份、工位茶歇、共同旧游三种具体机制；没有声称真实偏好或购买结果。",
+      "sourceRefs": [
+        "qingyu-strategy-owner-summary-20261110-v1",
+        "qingyu-copy-full-r2-20261110 / r2"
+      ]
+    },
+    {
+      "id": "QY-LINK-03",
+      "from": "themes",
+      "to": "visual",
+      "status": "needs-handoff",
+      "label": "部分承接，图文待衔接",
+      "text": "双信息场、水流窗口和寄语卡呼应方向，但图片本体未落实完整主副文，不能据图外解释判定包装图文通过。",
+      "sourceRefs": [
+        "QY-CR-01"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "QY-CR-01",
+      "title": "包装稿尚未落实已审主副文",
+      "category": "text-image-handoff",
+      "status": "open",
+      "statusLabel": "待衔接",
+      "owner": "视觉负责人",
+      "collaborators": [
+        "文案负责人"
+      ],
+      "location": "视觉开发 / 三个方向主图及三视角样机",
+      "evidenceRefs": [
+        "n7-main",
+        "n7-mockups",
+        "k4-main",
+        "k4-mockups",
+        "v2-main",
+        "v2-mockups",
+        "qingyu-themes/reviewed-copy.json / rounds.r2.draft.directions",
+        "QingyuVisualPreview.tsx / CopyBasis"
+      ],
+      "observation": "图片右侧HTML已有完整主副文，但包装图像本体与样机未承载对应完整语义。两张名片只有品牌与泉名，一口到虎跑没有工位茶歇主副文，看见虎跑想起你只用方向名而缺共同旧游与用水解释。",
+      "impact": "图外说明能帮助读懂当前页，不能据此证明独立包装已兑现文案机制或解释了泉水与茶的关系。",
+      "suggestion": "由视觉负责人明确主副文在正面、侧面或对应交付触点的位置，与文案负责人核对实际新稿；缩写保留产品事实、品牌归属与方向机制。",
+      "resolutionEvidence": null,
+      "upstreamModified": false,
+      "priority": "内容冻结前核对"
+    },
+    {
+      "id": "QY-CR-02",
+      "title": "茶种与用水事实仍待补齐",
+      "category": "product-evidence",
+      "status": "open",
+      "statusLabel": "待补资料",
+      "owner": "策略负责人",
+      "collaborators": [
+        "调研负责人",
+        "视觉负责人"
+      ],
+      "inputRequestedFrom": "人类比稿负责人提供品牌产品资料",
+      "location": "研究R4 / 本品事实；策略 / 产品具体资源；视觉 / 包装标注",
+      "evidenceRefs": [
+        "R4-G-PRODUCT",
+        "D-INFO",
+        "U-PRODUCT-01",
+        "qingyu-strategy/summary.ts / 第二及第三图版限定",
+        "n7-main",
+        "n7-mockups",
+        "k4-main",
+        "k4-mockups",
+        "v2-main",
+        "v2-mockups"
+      ],
+      "observation": "虎跑泉用水来自用户设定，正式使用凭据与比例未提供；具体茶种、配料与风味未补。六件图仅写无糖茶，背面为标签示意。",
+      "impact": "无法核对茶种风味信息是否满足“先看懂茶”，用水设定也不能推导为独家、口感、健康或溢价优势。",
+      "suggestion": "保留用户设定与未知项，收集产品资料后更新依据及包装文字，再复核受影响内容。本项不进行包装法规或印前审查。",
+      "resolutionEvidence": null,
+      "upstreamModified": false,
+      "priority": "关键产品依据"
+    },
+    {
+      "id": "QY-CR-03",
+      "title": "目标人群与真实触点仍待验证",
+      "category": "research-evidence",
+      "status": "open",
+      "statusLabel": "待补研究",
+      "owner": "调研负责人",
+      "collaborators": [
+        "视觉负责人"
+      ],
+      "location": "研究R4 / 人群、同期价格与实际寻找理解缺口；文案 / 人群假设",
+      "evidenceRefs": [
+        "R4-G-TARGET",
+        "R4-G-PRICE",
+        "R4-G-EFFECT",
+        "R4-F-PEOPLE",
+        "R4-F-CHANNEL",
+        "qingyu-themes/reviewed-copy.json / rounds.r2.draft.directions.audienceHypothesis"
+      ],
+      "observation": "历史信息诉求与工作情景资料不是当前目标人群直接交叉调查，同期同款渠道价格和真实货架、电商缩略图寻找理解未核齐。",
+      "impact": "不能把三方向的理解、休息或分享假设写成目标人群偏好、注意、记忆或购买效果。",
+      "suggestion": "按既有研究待补规则定向补查，保留当前可支持结论及其样本限定；实际包装可读性按对应触点另验。",
+      "resolutionEvidence": null,
+      "upstreamModified": false,
+      "priority": "保留研究待补"
+    }
+  ],
+  "narrative": {
+    "status": "suggested-reading-draft",
+    "label": "建议整理稿",
+    "adopted": false,
+    "sections": [
+      {
+        "id": "task",
+        "stage": "brief",
+        "title": "任务",
+        "text": "青屿要为500毫升无糖茶建立包装表达，面向便利店与电商中的25至34岁城市办公者。目标单瓶价为6至8元，青色与山形是既有资产约束。这些属于虚构任务条件，不是上市或人群验证结论。",
+        "sourceRefs": [
+          "BRIEF",
+          "D-SPEC",
+          "D-CHANNEL",
+          "D-ASSET",
+          "P-TARGET"
+        ]
+      },
+      {
+        "id": "research",
+        "stage": "research",
+        "title": "研究",
+        "text": "公开监测资料支持无糖茶零售金额仍在增长，也报告头部集中提高。历史调查显示，买茶的人希望包装讲清口味、风味与无糖；竞品已有茶种、原料、冷萃和现泡等解释。资料支持信息任务，不直接证明青屿目标人群的审美和购买反应。",
+        "sourceRefs": [
+          "R4-F-MARKET",
+          "R4-F-PEOPLE",
+          "R4-F-LANDSCAPE",
+          "R4-F-PACKAGING"
+        ]
+      },
+      {
+        "id": "strategy",
+        "stage": "strategy",
+        "title": "策略",
+        "text": "研究后补充的产品设定是配方使用虎跑泉水。策略因此提出，在茶与无糖信息清楚的基础上，把这一用水选择讲具体，让它与青屿建立联系。水源凭据、茶种风味及用户接受度尚待补齐。",
+        "sourceRefs": [
+          "qingyu-strategy-owner-summary-20261110-v1",
+          "U-PRODUCT-01",
+          "QY-CR-02"
+        ]
+      },
+      {
+        "id": "creative",
+        "stage": "themes",
+        "title": "创意",
+        "text": "两张名片让人分别认识品牌与用料，一口到虎跑把一次工位茶歇想象成短途，看见虎跑想起你连接共同旧游与捎茶。现有文字概念建议优先讨论两张名片，其代价是主副文需要同读，尚未形成用户选定或包装效果结论。",
+        "sourceRefs": [
+          "qingyu-copy-full-r2-20261110 / r2",
+          "qingyu-copy-full-r2-20261110 / recommendation"
+        ]
+      },
+      {
+        "id": "visual",
+        "stage": "visual",
+        "title": "视觉与待办",
+        "text": "三组试稿用双信息场、水流窗口和寄语卡分别转译方向，保留青色、山形、无糖与泉名。下一步要把已审话语落实到实际包装、补齐产品资料并保留目标人群和触点验证缺口。完成受影响内容的修改复核后，再据实际范围决定能否冻结内容。",
+        "sourceRefs": [
+          "n7-main",
+          "n7-mockups",
+          "k4-main",
+          "k4-mockups",
+          "v2-main",
+          "v2-mockups",
+          "QY-CR-01",
+          "QY-CR-02",
+          "QY-CR-03"
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "本次只审本地预览及已保存的研究资料，不重新核验外部报告原件。",
+    "六件主图和样机已实际看图；九张构图草图、其他竞品原图、浏览器实际渲染及真实使用触点不在本轮检查范围。",
+    "三项主问题均未关闭，上游原稿和正式任务、研究、文案及视觉状态保持原值。",
+    "没有进行包装法规、印前可生产性或真实用户效果审查。"
+  ]
+}

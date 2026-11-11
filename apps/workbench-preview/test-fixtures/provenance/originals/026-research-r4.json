@@ -1,0 +1,2521 @@
+{
+  "schemaVersion": 4,
+  "id": "qingyu-packaging-public-report-r4-20261109",
+  "binding": {
+    "briefVersion": 1,
+    "storedArtifactId": "art-qingyu-research-v1"
+  },
+  "origin": {
+    "skillRevision": "r6-20261109",
+    "adoptionSha256": "281df7c52c66590fe0d2b2018ebc9fae040f38945e4129503d71a9dac9145026",
+    "branchReceiptPaths": [
+      ".scratch/qingyu-research-r4-20261109/research/people/SKILL-USE.json",
+      ".scratch/qingyu-research-r4-20261109/research/competition/SKILL-USE.json"
+    ]
+  },
+  "title": "青屿无糖茶包装研究",
+  "subtitle": "基于公开资料的任务相关研究 · 修订4；旧R2/R3及其原采集身份保持独立",
+  "asOf": "2026-11-09",
+  "status": "研究待补",
+  "lead": "题设：中国市场 · 25至34岁城市办公者 · 500毫升 · 目标6至8元",
+  "scopeNote": "青屿为虚构案例。公开事实、题设与研究推论分别保留；本轮未做消费者访问或包装效果测试。目标直接画像、同期渠道价及本品资料仍待补。",
+  "sources": [
+    {
+      "id": "BRIEF",
+      "title": "青屿任务卡第1版（本地虚构工程案例）",
+      "publisher": "提案工作台本地题设",
+      "url": null,
+      "published": null,
+      "dataPeriod": "简报第1版",
+      "market": "中国大陆",
+      "population": "题设25至34岁成年城市办公者",
+      "method": "既有fixture与保存的任务卡绑定，不是研究样本",
+      "access": "本轮只读核对既有任务卡源码；无业务写入",
+      "locator": "src/services/cases/qingyuFixture.ts；qingyuBrief",
+      "limits": "没有真实上市、客户委托、配方或目标消费者验证"
+    },
+    {
+      "id": "M-S03",
+      "title": "数据首发丨2026Q3线下零售速报",
+      "publisher": "马上赢情报站（原机构澎湃号发布）",
+      "url": "https://m.thepaper.cn/newsDetail_forward_34234619",
+      "published": "2026-10-12",
+      "dataPeriod": "2026Q3与2025Q3",
+      "market": "中国大陆",
+      "population": "县级以上城市传统线下监测；非消费者面板",
+      "method": "马上赢品牌CT；销售额同比图MSY150均衡模型；新品图全量门店模型",
+      "access": "本轮实际核读原文及原图；留存于research分支",
+      "locator": "正文第11行方法、第65行销额、第75行新品；原图标题及右上模型脚注",
+      "limits": "门店N/权重未公开；不含乡镇村、电商及全部新兴渠道"
+    },
+    {
+      "id": "M-S04",
+      "title": "2026旺季观察丨饮料：承压之下，即饮茶仍是“不太亮”的亮点",
+      "publisher": "马上赢情报站（正文第一人称，原机构澎湃号发布）",
+      "url": "https://www.thepaper.cn/newsDetail_forward_34113612",
+      "published": "2026-09-21",
+      "dataPeriod": "旺季为每年5–8月；价格图2023-09至2026-08或2024-09至2026-08",
+      "market": "中国大陆",
+      "population": "县级以上城市传统线下监测；非消费者面板",
+      "method": "马上赢品牌CT；所用四张原图均标MSY150均衡模型",
+      "access": "本轮实际核读原文及原图；留存于research分支",
+      "locator": "第24–25行范围，第51–54行结构，第91–94行集中度，第129–135行价格",
+      "limits": "门店N/权重未公开；不含乡镇村、电商及全部新兴渠道"
+    },
+    {
+      "id": "EO23",
+      "title": "2023中国无糖茶饮行业白皮书",
+      "publisher": "亿欧智库",
+      "url": "https://finance.sina.com.cn/wm/2023-11-07/doc-imztumwq2393524.shtml",
+      "published": "2023（本次复读的新浪转载日期2023-11-07；不等于原报告首发日）",
+      "dataPeriod": "图题称2023年近半年；确切调查起止未公开",
+      "market": "中国大陆",
+      "population": "报告中的无糖茶饮调研样本，含深度/潜力/低频接触者；不能确认招募全为实际购买者",
+      "method": "原图仅写亿欧调研；抽样、招募、权重、访问渠道未公开",
+      "access": "R3原采集：qy_r3_people，原HTML及16张内嵌原报告图；R4重开新浪正文，并实际可视重读原报告p11–13（本地page10–12）",
+      "locator": "原报告p11包装、p12年龄/购买组、p13动机；R3 raw/eo-reprint-page10–12.jpg",
+      "limits": "历史截面；不能代表2026全国买家；各 subgroup n 未公开；系列页含燃茶品牌导向叙述，原报告p14某产品口感评价另列元气森林用户N=951，未纳入本次品牌排名结论；年龄档左图25–30、右图26–30不一致，不可据此重算25–34"
+    },
+    {
+      "id": "C-S01",
+      "title": "让茶竹香乌龙茶饮料无糖",
+      "publisher": "让茶（北京）饮料有限公司／FBIF品牌投稿",
+      "url": "https://www.foodtalks.cn/fbifwowfoodawards/gallery/wowfood/detail/5891",
+      "published": null,
+      "dataPeriod": "上市2023-12；投稿日未知",
+      "market": "中国大陆；不适用对象另列",
+      "population": "公开产品/品牌材料，非消费者样本",
+      "method": "原始品牌公开材料；读取范围见access",
+      "access": "本轮实际在线正文核读",
+      "locator": "理念L20–24；规格/价格L49–55；渠道L65–67",
+      "limits": "品牌自述，不是本轮消费者测量；旧价与官网肩贴版未确认同版"
+    },
+    {
+      "id": "C-S02",
+      "title": "让茶产品列表及竹香乌龙详情的公开站点脚本",
+      "publisher": "让茶官方",
+      "url": "https://www.rangcha.com/product/list/rangcha",
+      "published": null,
+      "dataPeriod": "读取日网站公开版本；发布日期及现售版关系未知",
+      "market": "中国大陆",
+      "population": "本报告只采用品牌公开物料及设计、规格自述，非本轮消费者测量",
+      "method": "公开HTML与其实际引用的公开JS产品列表/详情，未登录、未调用私有接口",
+      "access": "本轮实际核读原文及原图；留存于research分支",
+      "locator": "rangcha-list.js 500zhuxiangwulongcha.png；rangcha-detail.js 500zhuxiangwulongchadetails.png及对应竹香乌龙茶段",
+      "limits": "非当前货架实拍或实际成交证明；发布日期未知保持未知；品牌声称的测试未核招募或原始结果，不作本报告消费者证据"
+    },
+    {
+      "id": "C-S03",
+      "title": "伊刻活泉现泡茶",
+      "publisher": "内蒙古伊利实业集团股份有限公司／FBIF品牌投稿",
+      "url": "https://www.foodtalks.cn/fbifwowfoodawards/gallery/wowfood/detail/5563",
+      "published": null,
+      "dataPeriod": "上市2023-06；投稿日未知",
+      "market": "中国大陆；不适用对象另列",
+      "population": "公开产品/品牌材料，非消费者样本",
+      "method": "原始品牌公开材料；读取范围见access",
+      "access": "本轮实际在线正文核读",
+      "locator": "理念L16–28；规格/价格L46–52；渠道L62–64",
+      "limits": "系列条目价不等于逐味型现价；风味/注意/销量效果自述不作独立效果证据"
+    },
+    {
+      "id": "C-S04",
+      "title": "淳茶舍",
+      "publisher": "可口可乐中国",
+      "url": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+      "published": null,
+      "dataPeriod": "本轮读取网站版本；图片文件名2025不作独立发布日期",
+      "market": "中国大陆；不适用对象另列",
+      "population": "公开产品/品牌材料，非消费者样本",
+      "method": "原始品牌公开材料；读取范围见access",
+      "access": "本轮实际在线正文核读及原件查看",
+      "locator": "品牌简介L21–23；茉莉L29–33；铁观音L50–54",
+      "limits": "口感/工艺为品牌主张；具体款当前价格及现售版未知"
+    },
+    {
+      "id": "IP26",
+      "title": "包装饮料消费的“场景革命”与“价值锚点”",
+      "publisher": "益普索 Ipsos（原作者）；东方财富（公开PDF镜像承载）",
+      "url": "https://pdf.dfcfw.com/pdf/H3_AP202601281818514060_1.pdf?1769636563000.pdf=",
+      "published": "2026-01公开镜像；原机构准确首发日未核实",
+      "dataPeriod": "图页署“2026益普索定量调研”；具体访问日期未公开",
+      "market": "中国报告语境；样本城市、地区配额未披露",
+      "population": "包装即饮饮料场景被访者，工作时段与工作间歇子组；不是无糖茶专样本，也未给25–34交叉表",
+      "method": "报告署定量调研；总体N、子组n、招募、问卷题干和加权未披露",
+      "access": "R2已登记PS04；R4实际重开30页原作者PDF，读取p4、10–14及页脚；公开镜像，不冒充原机构托管",
+      "locator": "PDF与印刷页码一致：p4场景划分、p10工作间歇、p13工作时段、p14选品因素",
+      "limits": "各比例仅描述报告对应场景子组；场景类别不可直接当个人类型；期待不等于购买/饮用份额；无糖茶期待者未单列画像；原文提神/健康话术不作为功效证据；报告含AI场景图，不计研究证据"
+    },
+    {
+      "id": "C4-S01",
+      "title": "夏日消费观察｜攻入3元价格带 无糖茶热战终端",
+      "publisher": "北京商报孔文燮报道；经济观察网转载",
+      "url": "https://www.eeo.com.cn/2024/0627/669151.shtml",
+      "published": "2024-06-27",
+      "dataPeriod": "原稿2024-06-24；转载2024-06-27；采价为报道前近日，具体日未知",
+      "market": "中国大陆；不适用对象另列",
+      "population": "北京有限门店及线上渠道历史走访，不是全国价格样本",
+      "method": "记者历史门店走访及线上官方渠道价格转述；本轮重读存件",
+      "access": "本轮重读本地历史原始正文存件；线上原稿/转载403；搜索索引摘录复核价格段",
+      "locator": "价格战厮杀；产品密集上新",
+      "limits": "有限北京走访与线上官方渠道，非全国现价；门店/资格/运费多未明；同源转载非独立研究"
+    },
+    {
+      "id": "C4-S04",
+      "title": "乌龙上茶",
+      "publisher": "东鹏饮料／FBIF品牌投稿；设计团队靳刘高",
+      "url": "https://www.foodtalks.cn/fbifwowfoodawards/gallery/wowpackaging/detail/4544",
+      "published": null,
+      "dataPeriod": "2023作品历史身份沿用R2/R3；网页发布日期未知",
+      "market": "中国大陆；不适用对象另列",
+      "population": "公开产品/品牌材料，非消费者样本",
+      "method": "原始品牌公开材料；读取范围见access",
+      "access": "本轮实际在线正文核读及旧原图查看",
+      "locator": "设计L52–57；工艺L66–72",
+      "limits": "公开意图与可见观察分开；销量和复购自述不作包装因果"
+    },
+    {
+      "id": "C4-S06",
+      "title": "东方树叶官网产品页索引",
+      "publisher": "农夫山泉",
+      "url": "https://www.nongfuspring.com/mobile/goods/detail-all.html?id=1&pid=2",
+      "published": null,
+      "dataPeriod": "读取日索引；具体产品发布日未知",
+      "market": "中国大陆；不适用对象另列",
+      "population": "公开产品/品牌材料，非消费者样本",
+      "method": "原始品牌公开材料；读取范围见access",
+      "access": "只获官方页面搜索索引摘录；open正文为JS占位，未宣称完整正文核读",
+      "locator": "索引乌龙/青柑普洱/菊花普洱等产品段",
+      "limits": "仅支持系列/茶种表述的有限核对；不支持当前配方细节、价格或瓶贴观察"
+    },
+    {
+      "id": "C4-S08",
+      "title": "China Business",
+      "publisher": "Suntory官网",
+      "url": "https://www.suntory.com/business/china/?ke=hd",
+      "published": null,
+      "dataPeriod": "发布日期未知；叙事含1995–2015历史",
+      "market": "中国大陆；不适用对象另列",
+      "population": "公开产品/品牌材料，非消费者样本",
+      "method": "原始品牌公开材料；读取范围见access",
+      "access": "本轮实际在线正文核读",
+      "locator": "L97–104中国软饮业务段",
+      "limits": "仅确认中国乌龙业务；页面含历史叙事，不作2026销量/产品配方证明"
+    }
+  ],
+  "facts": [
+    {
+      "id": "M-GROW",
+      "text": "无糖即饮茶销售额同比增长",
+      "sourceIds": [
+        "M-S03"
+      ],
+      "locator": "原图M-G01无糖即饮茶柱、MSY150脚注",
+      "scope": "2026Q3较2025Q3；MSY150均衡模型",
+      "limits": "不是销量或购买人数；不含电商与乡镇村",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 12.16,
+        "unit": "%",
+        "basis": "2026年第三季度较2025年第三季度"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "M-SHARE-2024",
+      "text": "无糖即饮茶占即饮茶销售额",
+      "sourceIds": [
+        "M-S04"
+      ],
+      "locator": "原图M-G02无糖部分",
+      "scope": "2024年5–8月；MSY150均衡模型",
+      "limits": "份额不是绝对规模或人口渗透率",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 28.2,
+        "unit": "%",
+        "basis": "当年5–8月即饮茶销售额"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "M-SHARE-2025",
+      "text": "无糖即饮茶占即饮茶销售额",
+      "sourceIds": [
+        "M-S04"
+      ],
+      "locator": "原图M-G02无糖部分",
+      "scope": "2025年5–8月；MSY150均衡模型",
+      "limits": "份额不是绝对规模或人口渗透率",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 32.8,
+        "unit": "%",
+        "basis": "当年5–8月即饮茶销售额"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "M-SHARE-2026",
+      "text": "无糖即饮茶占即饮茶销售额",
+      "sourceIds": [
+        "M-S04"
+      ],
+      "locator": "原图M-G02无糖部分",
+      "scope": "2026年5–8月；MSY150均衡模型",
+      "limits": "份额不是绝对规模或人口渗透率",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 38.4,
+        "unit": "%",
+        "basis": "当年5–8月即饮茶销售额"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "M-NEW-2025",
+      "text": "监测无糖即饮茶新品",
+      "sourceIds": [
+        "M-S03"
+      ],
+      "locator": "原图M-G06无糖即饮茶一行",
+      "scope": "2025Q3；全量门店模型",
+      "limits": "新品判定阈值未公开；不是总SKU或需求人数",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 51,
+        "unit": "款",
+        "basis": "该季度监测新品数量"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "M-NEW-2026",
+      "text": "监测无糖即饮茶新品",
+      "sourceIds": [
+        "M-S03"
+      ],
+      "locator": "原图M-G06无糖即饮茶一行",
+      "scope": "2026Q3；全量门店模型",
+      "limits": "新品判定阈值未公开；不是总SKU或需求人数",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 11,
+        "unit": "款",
+        "basis": "该季度监测新品数量"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "M-CONCENTRATION",
+      "text": "机构报告头部集中提高，但未写清按金额还是数量；原图总题与分组的CR口径还有不一致。",
+      "sourceIds": [
+        "M-S04"
+      ],
+      "locator": "原图M-G03与正文集中度段",
+      "scope": "各年5–8月，MSY150监测",
+      "limits": "不使用无说明市场份额饼图，不冒称东方树叶单品牌份额",
+      "evidenceType": "published-report",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-RANG-OBS",
+      "text": "竹香乌龙为主要大字，竹叶与名称对应；白盖、方棱瓶与纵向浅色标签形成结构。",
+      "sourceIds": [
+        "C-S02"
+      ],
+      "locator": "C-A01原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-RANG-HIERARCHY",
+      "text": "茶种与竹香大字优先；品牌及人物肩贴在上方。",
+      "sourceIds": [
+        "C-S02"
+      ],
+      "locator": "C-A01原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-RANG-DIFFERENCE",
+      "text": "竹叶、茶汤、白标与竖排字；官网小图不支持微字阅读。",
+      "sourceIds": [
+        "C-S02"
+      ],
+      "locator": "C-A01原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-INIKIN-OBS",
+      "text": "现泡茶大字领先，茉莉花茶与0糖在下级；大白盖、绿颈环、茉莉花和绿山层可见。",
+      "sourceIds": [
+        "C-S03"
+      ],
+      "locator": "C-A02原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-INIKIN-HIERARCHY",
+      "text": "现泡茶先说结构／做法，茶种与0糖其次。",
+      "sourceIds": [
+        "C-S03"
+      ],
+      "locator": "C-A02原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-INIKIN-DIFFERENCE",
+      "text": "品牌介绍茶水分离结构，结合大白盖参与现泡叙事；差别不只来自瓶贴。",
+      "sourceIds": [
+        "C-S03"
+      ],
+      "locator": "C-A02原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "brand-self-description",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-CHUN-MOLI-OBS",
+      "text": "白色竖标包含冷萃与茉莉花茶，红无糖块独立突出；蓝盖、青绿叶与白花可见。",
+      "sourceIds": [
+        "C-S04"
+      ],
+      "locator": "C-A03原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-CHUN-MOLI-HIERARCHY",
+      "text": "冷萃与茶种同列，红无糖块单独强调。",
+      "sourceIds": [
+        "C-S04"
+      ],
+      "locator": "C-A03原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-CHUN-MOLI-DIFFERENCE",
+      "text": "与乌龙款共用标志与版式，以蓝盖、青绿叶、茶种字区分。",
+      "sourceIds": [
+        "C-S04"
+      ],
+      "locator": "C-A03原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-CHUN-WULONG-OBS",
+      "text": "白色竖标包含冷萃与乌龙茶，红无糖块位置相同；橙盖、橙叶与茶种字区分味型。",
+      "sourceIds": [
+        "C-S04"
+      ],
+      "locator": "C-A04原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-CHUN-WULONG-HIERARCHY",
+      "text": "与茉莉款同一信息结构，改茶种文字与对应颜色。",
+      "sourceIds": [
+        "C-S04"
+      ],
+      "locator": "C-A04原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-CHUN-WULONG-DIFFERENCE",
+      "text": "仅这两款可作同品牌系列对照，不能扩成全品牌规则。",
+      "sourceIds": [
+        "C-S04"
+      ],
+      "locator": "C-A04原图；assets.json实际SHA/尺寸",
+      "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+      "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+      "evidenceType": "visual-observation",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-RANG-REASON",
+      "text": "品牌历史投稿称高山、竹香，并借茶罐与屏风作设计灵感。",
+      "sourceIds": [
+        "C-S01"
+      ],
+      "locator": "FBIF理念及设计参考图",
+      "scope": "历史品牌投稿，上市2023年12月",
+      "limits": "这是品牌自述；旧投稿与当前肩贴版未核同版",
+      "evidenceType": "brand-self-description",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-INIKIN-REASON",
+      "text": "品牌将茶水分离锁鲜盖、拧盖混合解释为现泡体验。",
+      "sourceIds": [
+        "C-S03"
+      ],
+      "locator": "FBIF理念及三状态宣传图",
+      "scope": "历史品牌投稿，上市2023年6月",
+      "limits": "不是本轮试泡或独立风味验证",
+      "evidenceType": "brand-self-description",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "C-CHUN-REASON",
+      "text": "官网分别以冷萃、茉莉银毫与铁观音乌龙原料说明产品。",
+      "sourceIds": [
+        "C-S04"
+      ],
+      "locator": "官网不同选择及产品描述",
+      "scope": "读取日公开页面；发布日未知",
+      "limits": "工艺与口感为品牌主张，未经本轮检测",
+      "evidenceType": "brand-self-description",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "D-CHANNEL",
+      "text": "设计面向便利店货架与电商商品图，不是同一接触尺寸与购物过程。",
+      "sourceIds": [
+        "BRIEF"
+      ],
+      "locator": "qingyuBrief.background/constraints/objectives",
+      "scope": "青屿任务卡第1版",
+      "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+      "evidenceType": "brief-condition",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "D-SPEC",
+      "text": "题设为500ml无糖即饮茶、单瓶6至8元目标价；不是当前成交价。",
+      "sourceIds": [
+        "BRIEF"
+      ],
+      "locator": "qingyuBrief.background/constraints/objectives",
+      "scope": "青屿任务卡第1版",
+      "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+      "evidenceType": "brief-condition",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "D-ASSET",
+      "text": "保留青色与山形线条；这两项是已有资产限制，未验证识别度或审美效果。",
+      "sourceIds": [
+        "BRIEF"
+      ],
+      "locator": "qingyuBrief.background/constraints/objectives",
+      "scope": "青屿任务卡第1版",
+      "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+      "evidenceType": "brief-condition",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "D-INFO",
+      "text": "任务卡要求清晰标明茶种与配料，不把无糖推导为健康功效。",
+      "sourceIds": [
+        "BRIEF"
+      ],
+      "locator": "qingyuBrief.background/constraints/objectives",
+      "scope": "青屿任务卡第1版",
+      "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+      "evidenceType": "brief-condition",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "P-AGE",
+      "text": "2023年样本中，30岁及以下占70.8%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p12；本地eo-reprint-page11.jpg",
+      "scope": "亿欧2023｜中国无糖茶历史调研样本N=1200",
+      "limits": "非2026全国买家；招募与分组n未知，不能计算25至34岁份额",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 70.8,
+        "unit": "%",
+        "basis": "报告所述样本"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "P-TARGET",
+      "text": "25至34岁城市办公者是青屿题设范围，职业、收入与统一生活方式尚未得到调研验证。",
+      "sourceIds": [
+        "BRIEF"
+      ],
+      "locator": "qingyuBrief.audience及openQuestions",
+      "scope": "青屿简报第1版",
+      "limits": "不生成虚构姓名、收入、作息或消费人格",
+      "evidenceType": "brief-condition",
+      "quantity": null,
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P01",
+      "text": "工作时段子组：白领人群占91%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p13（0基P12）",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "不能反推“91%的白领喝无糖茶”；工作时长未说明按日/周等完整题干。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 91,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P02",
+      "text": "工作时段子组：工作超过8小时占55%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p13（0基P12）",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "不能反推“91%的白领喝无糖茶”；工作时长未说明按日/周等完整题干。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 55,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P03",
+      "text": "工作间歇子组：在下午为60%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p10（0基P9）",
+      "scope": "2026包装饮料报告的“工作间歇”子组，n未披露",
+      "limits": "报告未公开场景归类题干及子组n；不能拼成同一人的固定一日旅程。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 60,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作间歇”子组，n未披露"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P04",
+      "text": "工作间歇子组：和同事一起为40%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p10（0基P9）",
+      "scope": "2026包装饮料报告的“工作间歇”子组，n未披露",
+      "limits": "报告未公开场景归类题干及子组n；不能拼成同一人的固定一日旅程。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 40,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作间歇”子组，n未披露"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P05",
+      "text": "工作时段子组期待饮用有糖即饮茶：47%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p13“期待饮用”",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "期待而非实购；题型/允许选项数未披露，不能作互斥构成比或市场份额。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 47,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P06",
+      "text": "工作时段子组期待饮用无糖即饮茶：46%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p13“期待饮用”",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "期待而非实购；题型/允许选项数未披露，不能作互斥构成比或市场份额。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 46,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P07",
+      "text": "工作时段子组期待饮用即饮咖啡：39%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p13“期待饮用”",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "期待而非实购；题型/允许选项数未披露，不能作互斥构成比或市场份额。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 39,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P08",
+      "text": "工作时段子组购买包装即饮饮料时，Top3考虑因素选中口味/风味：59%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p14“Top 3考虑因素”",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "选中比例不是权重；自报考虑不是产品功效，也不是包装偏好。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 59,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P09",
+      "text": "工作时段子组购买包装即饮饮料时，Top3考虑因素选中口感/质地：41%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p14“Top 3考虑因素”",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "选中比例不是权重；自报考虑不是产品功效，也不是包装偏好。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 41,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P10",
+      "text": "工作时段子组购买包装即饮饮料时，Top3考虑因素选中健康功效：30%。",
+      "sourceIds": [
+        "IP26"
+      ],
+      "locator": "PDF p14“Top 3考虑因素”",
+      "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+      "limits": "选中比例不是权重；自报考虑不是产品功效，也不是包装偏好。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 30,
+        "unit": "%",
+        "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P13",
+      "text": "近半年新用户选择无糖茶饮的动机：无糖、对身体无负担 60.4%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p13右上新用户Top3",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开；新用户子组n未知",
+      "limits": "是消费者动机/认知，不是安全或提神功效证明；历史样本不能代表当前目标。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 60.4,
+        "unit": "%",
+        "basis": "2023报告近半年新用户；子组n未知"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P14",
+      "text": "近半年新用户选择无糖茶饮的动机：无添加、少添加更安全 48%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p13右上新用户Top3",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开；新用户子组n未知",
+      "limits": "是消费者动机/认知，不是安全或提神功效证明；历史样本不能代表当前目标。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 48,
+        "unit": "%",
+        "basis": "2023报告近半年新用户；子组n未知"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P15",
+      "text": "近半年新用户选择无糖茶饮的动机：茶饮料能让我清醒一下、恢复精神 44.1%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p13右上新用户Top3",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开；新用户子组n未知",
+      "limits": "是消费者动机/认知，不是安全或提神功效证明；历史样本不能代表当前目标。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 44.1,
+        "unit": "%",
+        "basis": "2023报告近半年新用户；子组n未知"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P16",
+      "text": "整体样本购买无糖茶饮动机：比水多一点滋味，能让我喝更多水 34.4%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p13左栏",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+      "limits": "和新用户为不同分母；不能用本组值直接比较新用户比例；不能称完整JTBD事件。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 34.4,
+        "unit": "%",
+        "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P17",
+      "text": "整体样本购买无糖茶饮动机：想喝茶，但懒得/不方便自己泡茶 30.2%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p13左栏",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+      "limits": "和新用户为不同分母；不能用本组值直接比较新用户比例；不能称完整JTBD事件。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 30.2,
+        "unit": "%",
+        "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P18",
+      "text": "无糖茶包装诉求：能明确了解茶的口味 68.8%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p11右栏",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+      "limits": "历史样本自报；三个信息诉求可能重叠，不是审美风格/货架注意/实际购买效果。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 68.8,
+        "unit": "%",
+        "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P19",
+      "text": "无糖茶包装诉求：有明确产品风味特征 61.5%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p11右栏",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+      "limits": "历史样本自报；三个信息诉求可能重叠，不是审美风格/货架注意/实际购买效果。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 61.5,
+        "unit": "%",
+        "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "R4P20",
+      "text": "无糖茶包装诉求：有明确的无糖标识 54.4%。",
+      "sourceIds": [
+        "EO23"
+      ],
+      "locator": "原报告p11右栏",
+      "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+      "limits": "历史样本自报；三个信息诉求可能重叠，不是审美风格/货架注意/实际购买效果。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 54.4,
+        "unit": "%",
+        "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-M01-SPEC",
+      "text": "乌龙茶 · 500毫升",
+      "locator": "本地原始存件price-survey-2024.txt L64／价格战厮杀首段东方树叶句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "历史乌龙报价与菊花普洱原图分SKU；官网仅实读索引；菊花普洱容量500ml来自原图颈标，与乌龙价分开",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M01-PRICE",
+      "text": "原价4.8元；两瓶促销8.4元，须买两瓶",
+      "locator": "本地原始存件price-survey-2024.txt L64／价格战厮杀首段东方树叶句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "历史乌龙报价与菊花普洱原图分SKU；官网仅实读索引",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M01-REASON",
+      "text": "官网索引并列纯茶和复合茶，茶种是产品线索",
+      "locator": "对应source.locator；只采用access实际读取范围",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "历史乌龙报价与菊花普洱原图分SKU；官网仅实读索引",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S06"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M02-SPEC",
+      "text": "无糖乌龙茶500毫升；低糖款不纳入本图",
+      "locator": "本地原始存件price-survey-2024.txt L64／三得利500ml首句；桂花扩展见产品密集上新",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "三得利无糖与低糖在原文并列，本图仅无糖；无对应清图，不编码瓶贴",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M02-PRICE",
+      "text": "2024原价5元；海淀门店促销3.5元",
+      "locator": "本地原始存件price-survey-2024.txt L64／三得利500ml首句；桂花扩展见产品密集上新",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "三得利无糖与低糖在原文并列，本图仅无糖；无对应清图，不编码瓶贴",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M02-REASON",
+      "text": "常规无糖乌龙；报道另列桂花乌龙等扩展",
+      "locator": "对应source.locator；只采用access实际读取范围",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "三得利无糖与低糖在原文并列，本图仅无糖；无对应清图，不编码瓶贴",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01",
+        "C4-S08"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M03-SPEC",
+      "text": "乌龙上茶555毫升，比青屿题设多55毫升",
+      "locator": "本地原始存件price-survey-2024.txt L67／555ml东鹏乌龙上茶句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "555ml；具体门店未逐款列出；旧场景合成不能确认现售版",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M03-PRICE",
+      "text": "2024原价5元；报道门店促销3.5元",
+      "locator": "本地原始存件price-survey-2024.txt L67／555ml东鹏乌龙上茶句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "555ml；具体门店未逐款列出；旧场景合成不能确认现售版",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M03-REASON",
+      "text": "品牌以茶种优先、原叶与茶杯结构讲产品",
+      "locator": "对应source.locator；只采用access实际读取范围",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "555ml；具体门店未逐款列出；旧场景合成不能确认现售版",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S04"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M04-SPEC",
+      "text": "冷萃无糖茶500毫升，历史报价未列味型",
+      "locator": "本地原始存件price-survey-2024.txt L66／维他500ml、建议价与15瓶报价句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "2024历史建议价与整箱促销并列；34.9÷15约2.33元；不代表单瓶成交；官方报告仅索引",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M04-PRICE",
+      "text": "建议7.8元；线上整箱15瓶促销34.9元",
+      "locator": "本地原始存件price-survey-2024.txt L66／维他500ml、建议价与15瓶报价句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "2024历史建议价与整箱促销并列；34.9÷15约2.33元；不代表单瓶成交；官方报告仅索引",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M04-REASON",
+      "text": "产品以冷萃无糖命名，具体茶种味型未明",
+      "locator": "对应source.locator；只采用access实际读取范围",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "2024历史建议价与整箱促销并列；34.9÷15约2.33元；不代表单瓶成交；官方报告仅索引",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M05-SPEC",
+      "text": "冷萃系列480毫升；茉莉与乌龙用于细读",
+      "locator": "本地原始存件price-survey-2024.txt L64／淳茶舍480ml系列建议与零售句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "2024系列价不能绑定官网现图具体味型；线上低价装数与资格未知",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M05-PRICE",
+      "text": "系列建议6元；门店4.8、线上低至4.25",
+      "locator": "本地原始存件price-survey-2024.txt L64／淳茶舍480ml系列建议与零售句",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "2024系列价不能绑定官网现图具体味型；线上低价装数与资格未知",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M05-REASON",
+      "text": "官网以冷萃及茶原料解释产品，回甘为自述",
+      "locator": "对应source.locator；只采用access实际读取范围",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "2024系列价不能绑定官网现图具体味型；线上低价装数与资格未知",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C-S04"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M06-SPEC",
+      "text": "竹香乌龙500毫升；旧投稿与官网版分开",
+      "locator": "FBIF5891：产品规格L49–51／产品单价L53–55／上市L42–44",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "官网图168×428，仅大字/轮廓；6元历史投稿版与人物肩贴版未确认同版",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M06-PRICE",
+      "text": "投稿单价6元；上市2023-12，投稿日未知",
+      "locator": "FBIF5891：产品规格L49–51／产品单价L53–55／上市L42–44",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "官网图168×428，仅大字/轮廓；6元历史投稿版与人物肩贴版未确认同版",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M06-REASON",
+      "text": "旧投稿以高山原料、竹香和茶器灵感沟通",
+      "locator": "对应source.locator；只采用access实际读取范围",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "官网图168×428，仅大字/轮廓；6元历史投稿版与人物肩贴版未确认同版",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C-S01"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M07-SPEC",
+      "text": "现泡茶系列455毫升；茉莉款用于细读",
+      "locator": "FBIF5563：产品规格L46–48／产品单价L50–52／理念L16–28",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "系列条目价未逐款核对；不当茉莉现价；结构/口感主张不是本轮试泡或效果测量",
+      "evidenceType": "published-report",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C-S03"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M07-PRICE",
+      "text": "系列投稿6元；上市2023-06，投稿日未知",
+      "locator": "FBIF5563：产品规格L46–48／产品单价L50–52／理念L16–28",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "系列条目价未逐款核对；不当茉莉现价；结构/口感主张不是本轮试泡或效果测量",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C-S03"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-M07-REASON",
+      "text": "品牌以分离盖和拧盖混合解释现泡体验",
+      "locator": "对应source.locator；只采用access实际读取范围",
+      "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+      "limits": "系列条目价未逐款核对；不当茉莉现价；结构/口感主张不是本轮试泡或效果测量",
+      "evidenceType": "brand-self-description",
+      "derivedFrom": [],
+      "sourceIds": [
+        "C-S03"
+      ],
+      "quantity": null
+    },
+    {
+      "id": "C4-P01",
+      "text": "三得利 无糖乌龙茶，500毫升；1瓶5元，记者所称原价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P01",
+      "scope": "2024-06报道前近日；具体日未知；北京海淀多家超市；specific-sku",
+      "limits": "优惠资格、运费、会员门槛未知；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 5,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；记者所称原价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P02",
+      "text": "三得利 无糖乌龙茶，500毫升；1瓶3.5元，历史门店促销标价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P02",
+      "scope": "2024-06报道前近日；具体日未知；北京海淀多家超市；specific-sku",
+      "limits": "优惠资格、运费、会员门槛未知；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 3.5,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；历史门店促销标价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P03",
+      "text": "东方树叶 乌龙茶，500毫升；1瓶4.8元，记者所称原价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P03",
+      "scope": "2024-06报道前近日；具体日未知；北京海淀多家超市；specific-sku",
+      "limits": "优惠资格、运费、会员门槛未知；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 4.8,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；记者所称原价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P04",
+      "text": "东方树叶 乌龙茶，500毫升；2瓶8.4元，历史两瓶促销。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P04",
+      "scope": "2024-06报道前近日；具体日未知；北京海淀多家超市；specific-sku",
+      "limits": "须两瓶；每瓶4.2元为8.4÷2，非单瓶4.2元直接标价；其他门槛未知；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 8.4,
+        "unit": "元/组",
+        "basis": "2024-06报道前近日；具体日未知；历史两瓶促销"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P05",
+      "text": "东鹏 乌龙上茶，555毫升；1瓶5元，记者所称原价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P05",
+      "scope": "2024-06报道前近日；具体日未知；走访门店未逐款说明；specific-sku",
+      "limits": "555ml比青屿500ml多55ml；现售版及与旧图同版未证实；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 5,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；记者所称原价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P06",
+      "text": "东鹏 乌龙上茶，555毫升；1瓶3.5元，历史门店促销标价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P06",
+      "scope": "2024-06报道前近日；具体日未知；走访门店未逐款说明；specific-sku",
+      "limits": "555ml；门槛及与旧图同版未证实；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 3.5,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；历史门店促销标价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P07",
+      "text": "淳茶舍 冷萃无糖系列，味型未指明，480毫升；1瓶6元，记者转述建议零售价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P07",
+      "scope": "2024-06报道前近日；具体日未知；品牌建议价，非指定门店；series-unspecified-flavor",
+      "limits": "系列价；不能绑定现有官网茉莉或乌龙具体款现图；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 6,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；记者转述建议零售价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P08",
+      "text": "淳茶舍 冷萃无糖系列，味型未指明，480毫升；1瓶4.8元，记者报道门店促销。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P08",
+      "scope": "2024-06报道前近日；具体日未知；走访门店未逐款说明；series-unspecified-flavor",
+      "limits": "优惠资格、运费、会员门槛未知；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 4.8,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；记者报道门店促销"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P09",
+      "text": "淳茶舍 冷萃无糖系列，味型未指明，480毫升；原文每瓶低至4.25元，记者转述每瓶低至价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P09",
+      "scope": "2024-06报道前近日；具体日未知；线上官方渠道，平台未知；series-unspecified-flavor",
+      "limits": "原文仅给每瓶低至4.25元；整箱数量、满减及资格未知；原值是每瓶，不补造装数；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 4.25,
+        "unit": "元/瓶（原文低至价）",
+        "basis": "2024-06报道前近日；具体日未知；记者转述每瓶低至价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P10",
+      "text": "维他 冷萃无糖茶，味型未指明，500毫升；1瓶7.8元，记者转述建议零售价。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P10",
+      "scope": "2024-06报道前近日；具体日未知；品牌建议价，非指定门店；series-unspecified-flavor",
+      "limits": "优惠资格、运费、会员门槛未知；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 7.8,
+        "unit": "元/瓶",
+        "basis": "2024-06报道前近日；具体日未知；记者转述建议零售价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P11",
+      "text": "维他 冷萃无糖茶，味型未指明，500毫升；15瓶34.9元，历史整箱促销。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P11",
+      "scope": "2024-06报道前近日；具体日未知；线上官方渠道，平台未知；series-unspecified-flavor",
+      "limits": "15瓶装；34.9÷15≈2.3267元/瓶，原文写2.32属原报道近似值；不改造为单瓶标价；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 34.9,
+        "unit": "元/组",
+        "basis": "2024-06报道前近日；具体日未知；历史整箱促销"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P12",
+      "text": "让茶 竹香乌龙，500毫升；1瓶6元，品牌投稿产品单价。",
+      "sourceIds": [
+        "C-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P12",
+      "scope": "上市2023-12；投稿日期及具体报价日未知；品牌列全国电商/便利店/自贩机，非采价门店；specific-sku",
+      "limits": "历史投稿；当前官网肩贴版是否同版未知，不绑定现图；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 6,
+        "unit": "元/瓶",
+        "basis": "上市2023-12；投稿日期及具体报价日未知；品牌投稿产品单价"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P13",
+      "text": "让茶 全系列无糖茶，味型未指明，500毫升；15瓶65元，历史整箱促销。",
+      "sourceIds": [
+        "C4-S01"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P13",
+      "scope": "2024-06报道前近日；具体日未知；线上官方渠道，平台未知；series-unspecified-flavor",
+      "limits": "全系列15瓶报价，不证明竹香乌龙特定款也适用；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 65,
+        "unit": "元/组",
+        "basis": "2024-06报道前近日；具体日未知；历史整箱促销"
+      },
+      "derivedFrom": []
+    },
+    {
+      "id": "C4-P14",
+      "text": "伊刻活泉 现泡茶系列，味型同价未明，455毫升；1瓶6元，品牌投稿产品单价。",
+      "sourceIds": [
+        "C-S03"
+      ],
+      "locator": "research/competition/sources-facts.json C4-P14",
+      "scope": "上市2023-06；投稿日期及具体报价日未知；品牌列电商/便利店等，非采价门店；series-unspecified-flavor",
+      "limits": "系列条目价；图示茉莉款未逐款核价；455ml；不是2026现价，不绑定当前原图。",
+      "evidenceType": "published-report",
+      "quantity": {
+        "value": 6,
+        "unit": "元/瓶",
+        "basis": "上市2023-06；投稿日期及具体报价日未知；品牌投稿产品单价"
+      },
+      "derivedFrom": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "R4-F-MARKET",
+      "title": "线下销额继续增长，无糖的金额权重提高",
+      "text": "零售金额和同季品类结构均支持无糖茶仍有增长。马上赢同时报告头部集中提高，不能把品类增长直接理解为新品牌更容易进入。",
+      "factIds": [
+        "M-GROW",
+        "M-SHARE-2024",
+        "M-SHARE-2025",
+        "M-SHARE-2026",
+        "M-NEW-2025",
+        "M-NEW-2026",
+        "M-CONCENTRATION"
+      ],
+      "sourceIds": [
+        "M-S03",
+        "M-S04"
+      ],
+      "scope": "马上赢县级以上城市传统线下监测；销额同比与各年5至8月结构分别阅读",
+      "limits": "不是销量、人数或出货增长；集中度定义存在未核项，仅保留机构归属的定性方向。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-PEOPLE",
+      "title": "工作选饮料重味道，无糖茶包装需讲清茶味",
+      "text": "工作相关饮料研究中，口味与口感是重要选择因素；无糖茶历史调查还呈现补味、便捷饮茶和看懂风味的需要。两类证据共同指向茶味预期这一信息任务。",
+      "factIds": [
+        "R4P01",
+        "R4P02",
+        "R4P08",
+        "R4P09",
+        "R4P16",
+        "R4P17",
+        "R4P18",
+        "R4P19",
+        "R4P20"
+      ],
+      "sourceIds": [
+        "EO23",
+        "IP26"
+      ],
+      "scope": "2026包装饮料工作时段参照与2023无糖茶信息调查分别使用",
+      "limits": "不是25至34岁办公者交叉画像，未证明青屿的偏好、理解或购买效果。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-PROFILE",
+      "title": "持续工作与茶歇，不是同一种接触情景",
+      "text": "工作时段子组以白领为主，且有长时工作者；工作间歇则常在下午，也可能与同事一起。两组用来解释接触条件差异，不拼成一个人的生活故事。",
+      "factIds": [
+        "R4P01",
+        "R4P02",
+        "R4P03",
+        "R4P04"
+      ],
+      "sourceIds": [
+        "IP26"
+      ],
+      "scope": "益普索2026包装饮料两个场景子组",
+      "limits": "样本量、年龄交叉与招募未披露；不能外推全体无糖茶买家。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-CHOICE",
+      "title": "补味与省去泡茶",
+      "text": "历史样本的饮用需要包括比水多一点滋味、想喝茶却不便自泡；不能据此选定审美。",
+      "factIds": [
+        "R4P16",
+        "R4P17",
+        "R4P18",
+        "R4P19"
+      ],
+      "sourceIds": [
+        "EO23"
+      ],
+      "scope": "2023无糖茶历史样本",
+      "limits": "不是2026目标人群规模或偏好排序；不能选定配色和风格。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-ALTERNATIVES",
+      "title": "工作饮料的替代选择不只无糖茶",
+      "text": "工作时段报告同时列有糖即饮茶、无糖即饮茶与即饮咖啡的期待选择。期待不等于购买，不能将这些比例当份额或据微小差距判断优劣。",
+      "factIds": [
+        "R4P05",
+        "R4P06",
+        "R4P07"
+      ],
+      "sourceIds": [
+        "IP26"
+      ],
+      "scope": "2026包装饮料工作时段子组",
+      "limits": "n未披露、非无糖茶专样本；本轮未估算替代率。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-LANDSCAPE",
+      "title": "相近历史金额，已有不同茶味理由与购买条件",
+      "text": "七品牌范围保留了常规乌龙、冷萃、原料与竹香、现泡结构等不同解释。目标金额附近既有不同容量，也有建议价和促销条件，价格数字相近仍需逐项判断是否可比。",
+      "factIds": [
+        "C4-M01-PRICE",
+        "C4-M01-REASON",
+        "C4-M02-PRICE",
+        "C4-M02-REASON",
+        "C4-M03-PRICE",
+        "C4-M03-REASON",
+        "C4-M04-PRICE",
+        "C4-M04-REASON",
+        "C4-M05-PRICE",
+        "C4-M05-REASON",
+        "C4-M06-PRICE",
+        "C4-M06-REASON",
+        "C4-M07-PRICE",
+        "C4-M07-REASON",
+        "D-SPEC"
+      ],
+      "sourceIds": [
+        "BRIEF",
+        "C-S01",
+        "C-S03",
+        "C-S04",
+        "C4-S01",
+        "C4-S04",
+        "C4-S06",
+        "C4-S08"
+      ],
+      "scope": "七品牌目的抽样；2024媒体报价与历史品牌投稿分开；非2026现价普查",
+      "limits": "不推断价格带份额、产品优劣、收入或审美。系列旧价不绑定当前具体单品图。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-GROUP-TEA",
+      "title": "茶种直述",
+      "text": "东方树叶 / 三得利 / 东鹏",
+      "factIds": [
+        "C4-M01-REASON",
+        "C4-M02-REASON",
+        "C4-M03-REASON"
+      ],
+      "sourceIds": [
+        "C4-S01",
+        "C4-S04",
+        "C4-S06",
+        "C4-S08"
+      ],
+      "scope": "七品牌公开产品表达的定性分组；非全市场或份额统计",
+      "limits": "类别可重叠，只按本次代表产品的解释重点组织；非消费者心智测量。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-GROUP-COLD",
+      "title": "冷萃工艺",
+      "text": "维他 / 淳茶舍",
+      "factIds": [
+        "C4-M04-REASON",
+        "C4-M05-REASON"
+      ],
+      "sourceIds": [
+        "C-S04",
+        "C4-S01"
+      ],
+      "scope": "七品牌公开产品表达的定性分组；非全市场或份额统计",
+      "limits": "类别可重叠，只按本次代表产品的解释重点组织；非消费者心智测量。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-GROUP-AROMA",
+      "title": "原料与竹香",
+      "text": "让茶",
+      "factIds": [
+        "C4-M06-REASON"
+      ],
+      "sourceIds": [
+        "C-S01"
+      ],
+      "scope": "七品牌公开产品表达的定性分组；非全市场或份额统计",
+      "limits": "类别可重叠，只按本次代表产品的解释重点组织；非消费者心智测量。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-GROUP-FRESH",
+      "title": "现泡结构",
+      "text": "伊刻活泉",
+      "factIds": [
+        "C4-M07-REASON"
+      ],
+      "sourceIds": [
+        "C-S03"
+      ],
+      "scope": "七品牌公开产品表达的定性分组；非全市场或份额统计",
+      "limits": "类别可重叠，只按本次代表产品的解释重点组织；非消费者心智测量。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-PACKAGING",
+      "title": "茶与无糖是共用线索，主导信息各有分工",
+      "text": "让茶突出竹香乌龙，伊刻以现泡茶和瓶盖结构解释产品，淳茶舍并列冷萃与茶种。淳茶舍两款又以盖色、叶色与茶种字区分口味，说明系列统一与味型差异可以并存。",
+      "factIds": [
+        "C-RANG-HIERARCHY",
+        "C-INIKIN-HIERARCHY",
+        "C-INIKIN-DIFFERENCE",
+        "C-CHUN-MOLI-HIERARCHY",
+        "C-CHUN-MOLI-DIFFERENCE",
+        "C-CHUN-WULONG-DIFFERENCE"
+      ],
+      "sourceIds": [
+        "C-S02",
+        "C-S03",
+        "C-S04"
+      ],
+      "scope": "四件原图、三品牌的可见表达比较",
+      "limits": "不是全市场趋势；未测是否被看见、看懂或喜欢。让茶仅支持大字与轮廓。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-PRODUCT",
+      "title": "规格和资产已定，真实产品理由还需补齐",
+      "text": "题设面向25至34岁城市办公者，容量、目标价、渠道与资产已定。真实茶种、配方、工艺和口感仍待资料支持；任务设定不能当作已验证画像。",
+      "factIds": [
+        "D-CHANNEL",
+        "D-SPEC",
+        "D-ASSET",
+        "D-INFO",
+        "P-TARGET"
+      ],
+      "sourceIds": [
+        "BRIEF"
+      ],
+      "scope": "虚构青屿任务卡第1版",
+      "limits": "题设不是上市、成交、功效或审美测量。",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-SPEC",
+      "title": "价格须与规格和购买条件一起比较",
+      "text": "现有历史参照的容量与报价性质不同，单瓶金额不能独自确定青屿的竞争位置。",
+      "factIds": [
+        "D-SPEC",
+        "C4-M03-SPEC",
+        "C4-M04-PRICE",
+        "C4-M07-SPEC"
+      ],
+      "sourceIds": [
+        "BRIEF",
+        "C-S03",
+        "C4-S01"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-CHANNEL",
+      "title": "货架与商品缩略图分别检验理解",
+      "text": "实际可见性和读懂程度需回到对应接触条件验证，本轮场景图只帮助理解任务。",
+      "factIds": [
+        "D-CHANNEL",
+        "R4P18",
+        "R4P19"
+      ],
+      "sourceIds": [
+        "BRIEF",
+        "EO23"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-ASSET",
+      "title": "保留资产，识别与偏好仍需另核",
+      "text": "青色与山形是约束；竞品也使用植物和山形线索，是否独特、是否被目标人群喜欢尚无测量。",
+      "factIds": [
+        "D-ASSET",
+        "C-RANG-OBS",
+        "C-INIKIN-OBS"
+      ],
+      "sourceIds": [
+        "BRIEF",
+        "C-S02",
+        "C-S03"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-PROOF",
+      "title": "先有真实产品信息，才能解释差别",
+      "text": "茶种、配料及可证明的风味信息是后续表达依据，未知内容保持待补。",
+      "factIds": [
+        "D-INFO",
+        "C-RANG-REASON",
+        "C-INIKIN-REASON",
+        "C-CHUN-REASON"
+      ],
+      "sourceIds": [
+        "BRIEF",
+        "C-S01",
+        "C-S03",
+        "C-S04"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-L-MARKET",
+      "title": "品类有零售增长",
+      "text": "增长来自监测销额与品类结构，不等于新品牌胜出。",
+      "factIds": [
+        "M-GROW",
+        "M-SHARE-2026"
+      ],
+      "sourceIds": [
+        "M-S03",
+        "M-S04"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-L-PEOPLE",
+      "title": "茶味需要被理解",
+      "text": "工作相关选择因素与无糖茶信息诉求形成有条件连接。",
+      "factIds": [
+        "R4P08",
+        "R4P18",
+        "R4P19"
+      ],
+      "sourceIds": [
+        "EO23",
+        "IP26"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-L-COMPETITION",
+      "title": "竞争已有不同解释",
+      "text": "茶种、原料、冷萃与现泡并存，不能仅凭无糖作差异。",
+      "factIds": [
+        "C-RANG-REASON",
+        "C-INIKIN-REASON",
+        "C-CHUN-REASON",
+        "C4-M05-PRICE",
+        "C4-M06-PRICE",
+        "C4-M07-PRICE"
+      ],
+      "sourceIds": [
+        "C-S01",
+        "C-S03",
+        "C-S04",
+        "C4-S01"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-L-PRODUCT",
+      "title": "本品理由尚缺事实",
+      "text": "已给规格、目标价和资产，真实茶味与配方未提供。",
+      "factIds": [
+        "D-CHANNEL",
+        "D-SPEC",
+        "D-ASSET",
+        "D-INFO"
+      ],
+      "sourceIds": [
+        "BRIEF"
+      ],
+      "scope": "本轮任务相关研究综合",
+      "limits": "不表示消费者效果、客户批准或已选策略",
+      "kind": "synthesis"
+    },
+    {
+      "id": "R4-F-FINAL",
+      "title": "竞争已有多种茶味解释，青屿的真实差别仍待明确",
+      "text": "增长市场中，竞品已有茶种、冷萃与现泡等解释。结合消费者想看懂风味的需要，青屿有一个待回答的问题：怎样讲清本品可证明的差别？\n现有题设不足以回答；需补产品事实，定位与视觉方向留给策略。",
+      "factIds": [
+        "M-GROW",
+        "M-SHARE-2026",
+        "R4P08",
+        "R4P18",
+        "R4P19",
+        "C-RANG-HIERARCHY",
+        "C-INIKIN-HIERARCHY",
+        "C-CHUN-MOLI-HIERARCHY",
+        "D-CHANNEL",
+        "D-SPEC",
+        "D-ASSET",
+        "D-INFO"
+      ],
+      "sourceIds": [
+        "BRIEF",
+        "C-S02",
+        "C-S03",
+        "C-S04",
+        "EO23",
+        "IP26",
+        "M-S03",
+        "M-S04"
+      ],
+      "scope": "跨维条件性综合，不是实测因果或购买障碍",
+      "limits": "缺当前目标群体直接画像/审美、同期同款价、本品资料及实际选择效果，研究待补。",
+      "kind": "synthesis"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "R4-G-PRODUCT",
+      "title": "本品事实",
+      "text": "具体茶种、配方、工艺、口感、背标、实物瓶型和资产源文件待提供。",
+      "consequence": "不能确定青屿的产品差别与可写主张。"
+    },
+    {
+      "id": "R4-G-TARGET",
+      "title": "目标人群与审美",
+      "text": "未取得当前中国25至34岁办公者与无糖茶的直接交叉画像、审美和真实选择事件。",
+      "consequence": "保留品类与工作情景参照，不补成目标人群统一偏好。"
+    },
+    {
+      "id": "R4-G-PRICE",
+      "title": "同期渠道价格",
+      "text": "代表价格为历史报道与品牌投稿，当前同款同渠道价格及部分包装版次未核齐。",
+      "consequence": "不构成2026现价排名或目标价接受度。"
+    },
+    {
+      "id": "R4-G-EFFECT",
+      "title": "实际寻找与理解",
+      "text": "未开展冷柜、货架或商品缩略图的目标用户测试。",
+      "consequence": "可见表达不是已测注意、理解、偏好或购买效果。"
+    }
+  ],
+  "media": [
+    {
+      "id": "C-A01",
+      "path": "/research-case/qingyu-r3-20261109/rangcha-detail.png",
+      "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a",
+      "mime": "image/png",
+      "width": 168,
+      "height": 428,
+      "title": "让茶 · 竹香乌龙茶",
+      "sku": "竹香乌龙茶",
+      "capacity": "500ml",
+      "sourceId": "C-S02",
+      "sourceUrl": "https://rangcha-oss.oss-cn-beijing.aliyuncs.com/v3_website/product/500zhuxiangwulongchadetails.png",
+      "identity": "官网透明底单品图；分辨率受限，只读大字和轮廓",
+      "alt": "让茶竹香乌龙茶包装原图，500ml",
+      "limits": "不能证明消费者偏好或购买效果，也不能确认实物印刷与现售版本。原图仅168×428，不读微字；历史6元投稿与本版未确认同版。",
+      "role": "original-product"
+    },
+    {
+      "id": "C-A02",
+      "path": "/research-case/qingyu-r3-20261109/inikin-02.jpg",
+      "sha256": "6e2c2e5c16220de458d040b9287802d149d0dc0a62a79910c71dd134c2391324",
+      "mime": "image/jpeg",
+      "width": 1920,
+      "height": 1080,
+      "title": "伊刻活泉 · 现泡茉莉花茶",
+      "sku": "现泡茉莉花茶",
+      "capacity": "455ml",
+      "sourceId": "C-S03",
+      "sourceUrl": "https://static.foodtalks.cn/cms/entry/form/7c509f8c34697d5947e9cdf1a5e3c412f795.jpg",
+      "identity": "品牌投稿灰白底单品展示；含奖项标识，非货架实拍",
+      "alt": "伊刻活泉现泡茉莉花茶包装原图，455ml",
+      "limits": "不能证明消费者偏好、购买或风味效果。原件为带奖项标识的单瓶展示，非货架实拍；系列投稿价未逐味型核实。",
+      "role": "original-product"
+    },
+    {
+      "id": "C-A03",
+      "path": "/research-case/qingyu-r3-20261109/chun-moli.png",
+      "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b",
+      "mime": "image/png",
+      "width": 2267,
+      "height": 2267,
+      "title": "淳茶舍 · 冷萃茉莉花茶",
+      "sku": "冷萃茉莉花茶",
+      "capacity": "480ml",
+      "sourceId": "C-S04",
+      "sourceUrl": "https://www.coca-cola.com/content/dam/onexp/cn/zh/2025productupdate/molihuacha_250102.png",
+      "identity": "官方透明底单品图；非货架实拍",
+      "alt": "淳茶舍冷萃茉莉花茶包装原图，480ml",
+      "limits": "不能证明消费者偏好、实际效果、印刷与现售身份。原图保留图案仅供参考；具体款现价未知。",
+      "role": "original-product"
+    },
+    {
+      "id": "C-A04",
+      "path": "/research-case/qingyu-r3-20261109/chun-wulong.png",
+      "sha256": "ba10aeb0fa05a5b03a98feb2c815a21b447f19874ad1dc8ee9f1e430db3b9622",
+      "mime": "image/png",
+      "width": 2267,
+      "height": 2267,
+      "title": "淳茶舍 · 冷萃乌龙茶",
+      "sku": "冷萃乌龙茶",
+      "capacity": "480ml",
+      "sourceId": "C-S04",
+      "sourceUrl": "https://www.coca-cola.com/content/dam/onexp/cn/zh/2025productupdate/wulongcha_250102.png",
+      "identity": "官方透明底单品图；非货架实拍",
+      "alt": "淳茶舍冷萃乌龙茶包装原图，480ml",
+      "limits": "不能证明消费者偏好、实际效果、印刷与现售身份。原图保留图案仅供参考；具体款现价未知。",
+      "role": "original-product"
+    },
+    {
+      "id": "R4-SCENE",
+      "path": "/research-case/qingyu-boards-20261109/cooler-choice-illustration.png",
+      "sha256": "75ca946b2e78a5aaa363c9e0638a0e5bf420db5fd27a13cc8b17570e7798835c",
+      "mime": "image/png",
+      "width": 1536,
+      "height": 1024,
+      "title": "便利店冷柜选购情景",
+      "sourceId": "BRIEF",
+      "sourceUrl": null,
+      "identity": "AI生成情景示意 · 非实拍、非研究样本",
+      "alt": "生成示意，一位办公者在便利店冷柜前查看瓶装茶；仅解释题设接触环境",
+      "limits": "人物、冷柜和商品为生成示意，不作为消费者、品牌或货架观察证据。",
+      "role": "generated-scenario",
+      "generationReceipt": ".scratch/qingyu-visual-boards-20261109/SCENE-ASSET.json"
+    }
+  ],
+  "chapters": [
+    {
+      "id": "market",
+      "title": "行业与市场",
+      "details": {
+        "factIds": [
+          "M-GROW",
+          "M-SHARE-2024",
+          "M-SHARE-2025",
+          "M-SHARE-2026",
+          "M-NEW-2025",
+          "M-NEW-2026",
+          "M-CONCENTRATION"
+        ],
+        "findingIds": [],
+        "gapIds": []
+      },
+      "boards": [
+        {
+          "id": "R4-B01",
+          "kind": "market",
+          "title": "行业与市场",
+          "conclusionId": "R4-F-MARKET",
+          "scope": "马上赢 · 中国县级以上城市传统线下监测；同比与同季结构为两个窗口",
+          "caveat": "销额不是销量或人数；集中度仅保留机构归属的定性方向。",
+          "gapIds": [],
+          "heroFactId": "M-GROW",
+          "charts": [
+            {
+              "id": "R4-C01",
+              "title": "无糖茶占即饮茶销售额的比例",
+              "kind": "line",
+              "unit": "%",
+              "rows": [
+                {
+                  "label": "2024年5至8月",
+                  "factId": "M-SHARE-2024"
+                },
+                {
+                  "label": "2025年5至8月",
+                  "factId": "M-SHARE-2025"
+                },
+                {
+                  "label": "2026年5至8月",
+                  "factId": "M-SHARE-2026"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "people",
+      "title": "人群与包装作用",
+      "details": {
+        "factIds": [
+          "R4P01",
+          "R4P02",
+          "R4P03",
+          "R4P04",
+          "R4P05",
+          "R4P06",
+          "R4P07",
+          "R4P08",
+          "R4P09",
+          "R4P10",
+          "R4P13",
+          "R4P14",
+          "R4P15",
+          "R4P16",
+          "R4P17",
+          "R4P18",
+          "R4P19",
+          "R4P20",
+          "P-AGE"
+        ],
+        "findingIds": [
+          "R4-F-PROFILE",
+          "R4-F-ALTERNATIVES"
+        ],
+        "gapIds": []
+      },
+      "boards": [
+        {
+          "id": "R4-B02",
+          "kind": "people",
+          "title": "人群与选择情景",
+          "conclusionId": "R4-F-PEOPLE",
+          "scope": "画像参照：益普索2026包装饮料工作场景；信息诉求：亿欧2023无糖茶N=1200",
+          "caveat": "两类样本分别使用，均非当前25至34岁办公者交叉调查；图为生成示意。",
+          "gapIds": [],
+          "sceneId": "R4-SCENE",
+          "groups": [
+            {
+              "label": "品类样本 · 2023无糖茶",
+              "evidence": {
+                "factIds": [
+                  "P-AGE"
+                ],
+                "findingIds": []
+              }
+            },
+            {
+              "label": "情景参照 · 2026包装饮料",
+              "evidence": {
+                "factIds": [
+                  "R4P01"
+                ],
+                "findingIds": []
+              }
+            },
+            {
+              "label": "与包装有关的饮用需要",
+              "evidence": {
+                "factIds": [],
+                "findingIds": [
+                  "R4-F-CHOICE"
+                ]
+              }
+            }
+          ],
+          "chart": {
+            "id": "R4-C02",
+            "title": "无糖茶包装需要讲清什么",
+            "kind": "bar",
+            "unit": "%",
+            "rows": [
+              {
+                "label": "了解茶的口味",
+                "factId": "R4P18"
+              },
+              {
+                "label": "明确风味特征",
+                "factId": "R4P19"
+              },
+              {
+                "label": "明确无糖标识",
+                "factId": "R4P20"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "competition",
+      "title": "竞品与包装",
+      "details": {
+        "factIds": [
+          "C4-M01-SPEC",
+          "C4-M01-PRICE",
+          "C4-M01-REASON",
+          "C4-M02-SPEC",
+          "C4-M02-PRICE",
+          "C4-M02-REASON",
+          "C4-M03-SPEC",
+          "C4-M03-PRICE",
+          "C4-M03-REASON",
+          "C4-M04-SPEC",
+          "C4-M04-PRICE",
+          "C4-M04-REASON",
+          "C4-M05-SPEC",
+          "C4-M05-PRICE",
+          "C4-M05-REASON",
+          "C4-M06-SPEC",
+          "C4-M06-PRICE",
+          "C4-M06-REASON",
+          "C4-M07-SPEC",
+          "C4-M07-PRICE",
+          "C4-M07-REASON",
+          "C-RANG-OBS",
+          "C-RANG-HIERARCHY",
+          "C-RANG-DIFFERENCE",
+          "C-INIKIN-OBS",
+          "C-INIKIN-HIERARCHY",
+          "C-INIKIN-DIFFERENCE",
+          "C-CHUN-MOLI-OBS",
+          "C-CHUN-MOLI-HIERARCHY",
+          "C-CHUN-MOLI-DIFFERENCE",
+          "C-CHUN-WULONG-OBS",
+          "C-CHUN-WULONG-HIERARCHY",
+          "C-CHUN-WULONG-DIFFERENCE",
+          "C-RANG-REASON",
+          "C-INIKIN-REASON",
+          "C-CHUN-REASON",
+          "C4-P01",
+          "C4-P02",
+          "C4-P03",
+          "C4-P04",
+          "C4-P05",
+          "C4-P06",
+          "C4-P07",
+          "C4-P08",
+          "C4-P09",
+          "C4-P10",
+          "C4-P11",
+          "C4-P12",
+          "C4-P13",
+          "C4-P14"
+        ],
+        "findingIds": [],
+        "gapIds": []
+      },
+      "boards": [
+        {
+          "id": "R4-B03",
+          "kind": "landscape",
+          "title": "竞品整体比较",
+          "conclusionId": "R4-F-LANDSCAPE",
+          "scope": "选取茶种、冷萃、原料与现泡四类表达的七品牌；目的抽样，不代表市场全貌",
+          "caveat": "媒体价为2024年6月；投稿另列上市时间。原价、建议价与促销分开，非2026现价，不绑定下方原图。",
+          "gapIds": [],
+          "groupFindingIds": [
+            "R4-GROUP-TEA",
+            "R4-GROUP-COLD",
+            "R4-GROUP-AROMA",
+            "R4-GROUP-FRESH"
+          ],
+          "columns": [
+            "代表产品与规格",
+            "历史价格条件",
+            "公开产品理由"
+          ],
+          "rows": [
+            {
+              "label": "东方树叶",
+              "cells": [
+                {
+                  "factIds": [
+                    "C4-M01-SPEC"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M01-PRICE"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M01-REASON"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "label": "三得利",
+              "cells": [
+                {
+                  "factIds": [
+                    "C4-M02-SPEC"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M02-PRICE"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M02-REASON"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "label": "东鹏",
+              "cells": [
+                {
+                  "factIds": [
+                    "C4-M03-SPEC"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M03-PRICE"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M03-REASON"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "label": "维他",
+              "cells": [
+                {
+                  "factIds": [
+                    "C4-M04-SPEC"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M04-PRICE"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M04-REASON"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "label": "淳茶舍",
+              "cells": [
+                {
+                  "factIds": [
+                    "C4-M05-SPEC"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M05-PRICE"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M05-REASON"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "label": "让茶",
+              "cells": [
+                {
+                  "factIds": [
+                    "C4-M06-SPEC"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M06-PRICE"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M06-REASON"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "label": "伊刻活泉",
+              "cells": [
+                {
+                  "factIds": [
+                    "C4-M07-SPEC"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M07-PRICE"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C4-M07-REASON"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "R4-B04",
+          "kind": "packaging",
+          "title": "清晰包装与信息分工",
+          "conclusionId": "R4-F-PACKAGING",
+          "scope": "三品牌四件官方原物料；同尺度比较信息任务，非同配方评测",
+          "caveat": "让茶原件仅168×428；只读大字与轮廓。四图身份不同，均非本轮货架实拍。",
+          "gapIds": [],
+          "columns": [
+            "主要信息",
+            "系列与结构差异"
+          ],
+          "samples": [
+            {
+              "mediaId": "C-A01",
+              "cells": [
+                {
+                  "factIds": [
+                    "C-RANG-HIERARCHY"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C-RANG-DIFFERENCE"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "mediaId": "C-A02",
+              "cells": [
+                {
+                  "factIds": [
+                    "C-INIKIN-HIERARCHY"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C-INIKIN-OBS"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "mediaId": "C-A03",
+              "cells": [
+                {
+                  "factIds": [
+                    "C-CHUN-MOLI-HIERARCHY"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C-CHUN-MOLI-DIFFERENCE"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            },
+            {
+              "mediaId": "C-A04",
+              "cells": [
+                {
+                  "factIds": [
+                    "C-CHUN-WULONG-HIERARCHY"
+                  ],
+                  "findingIds": []
+                },
+                {
+                  "factIds": [
+                    "C-CHUN-WULONG-DIFFERENCE"
+                  ],
+                  "findingIds": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "product",
+      "title": "产品与品牌",
+      "details": {
+        "factIds": [
+          "D-CHANNEL",
+          "D-SPEC",
+          "D-ASSET",
+          "D-INFO"
+        ],
+        "findingIds": [],
+        "gapIds": []
+      },
+      "boards": [
+        {
+          "id": "R4-B05",
+          "kind": "conditions",
+          "title": "本品条件与研究约束",
+          "conclusionId": "R4-F-PRODUCT",
+          "scope": "青屿任务卡第1版 · 本地虚构题设",
+          "caveat": "规格、目标价和资产是任务条件，不是成交、功效或偏好证据。",
+          "gapIds": [],
+          "items": [
+            {
+              "label": "规格与目标价",
+              "briefFactIds": [
+                "D-SPEC"
+              ],
+              "assessmentFindingIds": [
+                "R4-F-SPEC"
+              ]
+            },
+            {
+              "label": "接触渠道",
+              "briefFactIds": [
+                "D-CHANNEL"
+              ],
+              "assessmentFindingIds": [
+                "R4-F-CHANNEL"
+              ]
+            },
+            {
+              "label": "保留资产",
+              "briefFactIds": [
+                "D-ASSET"
+              ],
+              "assessmentFindingIds": [
+                "R4-F-ASSET"
+              ]
+            },
+            {
+              "label": "信息依据",
+              "briefFactIds": [
+                "D-INFO"
+              ],
+              "assessmentFindingIds": [
+                "R4-F-PROOF"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conclusion",
+      "title": "研究结论",
+      "details": {
+        "factIds": [],
+        "findingIds": [],
+        "gapIds": [
+          "R4-G-PRODUCT",
+          "R4-G-TARGET",
+          "R4-G-PRICE",
+          "R4-G-EFFECT"
+        ]
+      },
+      "boards": [
+        {
+          "id": "R4-B06",
+          "kind": "synthesis",
+          "title": "研究结论",
+          "conclusionId": "R4-F-FINAL",
+          "scope": "定性关系综合；四维证据共同限定下一阶段的问题",
+          "caveat": "研究判断有前提，尚未选择定位、主张或视觉风格，也未证明购买效果。",
+          "gapIds": [],
+          "links": [
+            {
+              "dimension": "market",
+              "findingId": "R4-L-MARKET"
+            },
+            {
+              "dimension": "people",
+              "findingId": "R4-L-PEOPLE"
+            },
+            {
+              "dimension": "competition",
+              "findingId": "R4-L-COMPETITION"
+            },
+            {
+              "dimension": "product",
+              "findingId": "R4-L-PRODUCT"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

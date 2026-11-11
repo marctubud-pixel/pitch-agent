@@ -1,0 +1,74 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "comms",
+  "model_id": "gpt-6.1-terra",
+  "packet_version": "r2",
+  "report_id": "qingyu-copy-full-20261110-r2-comms-counter-independent",
+  "draft_sha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+  "score_report_id": "qingyu-copy-full-20261110-r2-comms-score-independent",
+  "first_read_path": "critics/r2-comms/first.json",
+  "first_read_sha256": "95ef5be8f718cc20c7e5f86bc145a792adb05b7b33e4916a0a84ae98f4bda1c6",
+  "paired_score_path": "reviews/r2-comms/score.json",
+  "paired_score_sha256": "d139e4b319fb4983836d7b2b601135cc70e517603c992ab9b5bf024d0825b875",
+  "challenges": [],
+  "retained_claims": [
+    {
+      "claim_id": "r2-comms-n7-p1",
+      "reason": "副文明确将“青屿”称为茶的牌子，将“虎跑泉水”称为茶用到的水；在两句同读范围内，两者角色可分别复述。"
+    },
+    {
+      "claim_id": "r2-comms-n7-p2",
+      "reason": "主文“两张名片”与副文两次“是”构成逐项介绍，和k4原地抵达、v2捎茶叙旧的结构可区分。"
+    },
+    {
+      "claim_id": "r2-comms-k4-p1",
+      "reason": "“鼠标放一放”“工位上拧开”及“喝一口就算到了”在合读时提供动作和想象抵达，理解这一文字机制不需要补出景色。"
+    },
+    {
+      "claim_id": "r2-comms-k4-p2",
+      "reason": "副文“茶里用到了虎跑泉水”提供“去趟虎跑”的可指认产品关联；这只说明文字关联，不证明传播效果。"
+    },
+    {
+      "claim_id": "r2-comms-v2-p1",
+      "reason": "主文共同去过“虎跑”，副文“虎跑泉水。看见这名字，就想起你”把地点和带茶缘由连起来；成立范围是有共同经历的虚构对话。"
+    },
+    {
+      "claim_id": "r2-comms-v2-p2",
+      "reason": "“你带我去虎跑”和“我给你带茶”明确过去和当下的说话双方，能复述交换关系；并不证明实际读者记忆。"
+    }
+  ],
+  "coverage": [
+    {
+      "first_risk_id": "C1",
+      "status": "covered",
+      "score_evidence": "n7 limits明确品牌名和泉名均在副文、主文独立归属能力有限；n7-i1另记录名片单读歧义。",
+      "assessment": "首读的单独摘录会丢失身份的风险已有覆盖，非新增阻断。"
+    },
+    {
+      "first_risk_id": "C2",
+      "status": "covered",
+      "score_evidence": "k4-i1指出主文单看可能像真的离开电脑，需“工位上拧开”与“就算到了”揭晓；limits记录主文单独无法指认品牌。",
+      "assessment": "事实关联和揭晓依赖合读已有覆盖，非新增阻断。"
+    },
+    {
+      "first_risk_id": "C3",
+      "status": "covered",
+      "score_evidence": "v2-i1记录“这名字”指代歧义并说明合读主要落向虎跑；limits记录共同旧游的适用范围及主文单独无法指认青屿。",
+      "assessment": "指代、适用范围和单独摘录的品牌缺失已有覆盖，非新增阻断。"
+    },
+    {
+      "first_risk_id": "set_observation",
+      "status": "covered",
+      "score_evidence": "三案各自limits均指出主文独立品牌归属限制；pairwise逐对描述身份、抵达、旧游三种机制。",
+      "assessment": "整组观察已有覆盖，不能把未知实际表现当成当前阻断。"
+    }
+  ],
+  "limits": [
+    "本对抗按同一1至5文字概念尺度核查，不修改原分数或决策。",
+    "三案复述与记忆仅为文字潜力判断，实际读者、版面、记忆和分享效果未验证。",
+    "仅核对本岗评分，不代表其他岗位、客户或总监结论。",
+    "评分报告披露其读取的回应文件内含其他角色回应及导演条目；本对抗未读取该文件，无法独立验证暴露是否影响其评分。"
+  ]
+}

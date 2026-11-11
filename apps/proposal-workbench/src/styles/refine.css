@@ -1,0 +1,1210 @@
+/*
+ * Distillation pass. Loaded after palette.css. One idea per block:
+ * - one saturated block per page at most (Klein blue, for "where are we");
+ * - orange only as a signal, never as a fill behind big type;
+ * - hairlines instead of boxes inside boxes;
+ * - one headline per view; everything else steps down a clear scale.
+ */
+
+/* ---------------------------------------------------------------- type scale */
+
+:root {
+  --t-display: clamp(2.25rem, 4.4vw, 3.5rem);
+  --t-h1: clamp(1.875rem, 3.2vw, 2.625rem);
+  --t-h2: clamp(1.375rem, 2vw, 1.75rem);
+  --t-h3: 1.125rem;
+  --t-body: 0.9375rem;
+  --t-small: 0.8125rem;
+  --t-label: 0.6875rem;
+}
+
+/* ---------------------------------------------------------------- home */
+
+/* "3 need you" is a signal, not a sticker: orange type, no pill. */
+.hl,
+.hl--calm {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+}
+.hl {
+  color: var(--o-600);
+}
+.hl--calm {
+  color: var(--klein);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .hl { color: var(--warm); }
+  :root:not([data-theme='light']) .hl--calm { color: var(--b-300); }
+}
+:root[data-theme='dark'] .hl { color: var(--warm); }
+:root[data-theme='dark'] .hl--calm { color: var(--b-300); }
+
+/* The folder on the desk commits to Klein blue; its front flap is plain paper. */
+.open-folder,
+.open-folder[data-tone] {
+  --strong: var(--klein);
+}
+.open-folder__tab {
+  color: #ffffff;
+}
+.open-folder__front {
+  background: var(--card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 -12px 30px -22px rgb(0 12 46 / 0.55);
+}
+.open-folder__sheets {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* ---------------------------------------------------------------- overview */
+
+/* Facts as a quiet definition list with hairlines, not three boxes with chips inside. */
+.ov-facts {
+  gap: 0;
+  border-top: 1px solid var(--rule);
+}
+.ov-facts > div {
+  padding: 14px 18px 4px 0;
+  border-radius: 0;
+  background: none;
+}
+.ov-facts > div + div {
+  padding-left: 18px;
+  border-left: 1px solid var(--rule);
+}
+.ov-facts dt {
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  opacity: 1;
+  color: var(--ink-3);
+}
+.ov-chips {
+  display: grid;
+  gap: 4px;
+}
+.ov-chips li {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: var(--t-body);
+  line-height: 1.4;
+}
+.ov-chips li::before {
+  content: '—';
+  margin-right: 6px;
+  color: var(--ink-3);
+}
+
+/* Progress: the one blue block. Stage cells are glass on blue, not eight black slabs. */
+.ov-progress__stage {
+  font-size: var(--t-h1);
+}
+.ov-track li[data-status='done'] a {
+  background: rgb(255 255 255 / 0.14);
+  color: #ffffff;
+}
+.ov-track li[data-status='in_progress'] a {
+  background: rgb(255 255 255 / 0.22);
+  color: #ffffff;
+}
+.ov-track li[data-status='not_started'] a {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
+  color: rgb(255 255 255 / 0.8);
+  opacity: 1;
+}
+.ov-track li[data-current] a {
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+/* Needs confirmation: a white sheet; the count carries the orange. */
+.ov-confirm.bx-tile--dark {
+  background: var(--card);
+  color: var(--folder-ink);
+  box-shadow: none;
+}
+.ov-confirm .bx-big__n {
+  color: var(--o-600);
+}
+.ov-confirm .bx-list li {
+  border-radius: 0;
+  padding: 14px 0;
+  background: none;
+  border-top: 1px solid var(--rule);
+}
+.ov-confirm .bx-list li:first-child {
+  border-top: 0;
+  padding-top: 4px;
+}
+.ov-confirm .bx-list__icon {
+  background: var(--sunken);
+  color: var(--ink-2);
+}
+.ov-confirm .pw-backed {
+  color: var(--ink-3);
+  border-color: var(--rule-strong);
+}
+.ov-confirm .bx-next__pill {
+  border-color: var(--rule);
+}
+.ov-confirm .bx-go {
+  background: var(--klein);
+  color: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ov-confirm .bx-big__n { color: var(--warm); }
+}
+:root[data-theme='dark'] .ov-confirm .bx-big__n { color: var(--warm); }
+
+/* Produced so far: whole cards are links; the per-card blue dots go. */
+.ov-card__orb {
+  display: none;
+}
+.ov-card--text {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.ov-card--text:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1.5px var(--klein);
+}
+.ov-card--text {
+  height: auto;
+  min-height: 0;
+}
+
+/* Ideas sits on white like its neighbours. */
+.ov-ideas.bx-tile--lilac {
+  background: var(--card);
+  color: var(--folder-ink);
+}
+.ov-ideas__list a {
+  background: var(--sunken);
+}
+
+/* ---------------------------------------------------------------- top bar */
+
+/* Demo mode is a label, not an alarm: neutral outline, a small orange dot. */
+.demo-pill {
+  border-color: var(--rule-strong);
+  background: transparent;
+  color: var(--ink-2);
+}
+.demo-pill > svg {
+  color: var(--o-600);
+}
+
+/* Text outputs in one row share a height. */
+.ov-shelf--text .ov-card {
+  height: 100%;
+}
+
+/* ---------------------------------------------------------------- project header */
+
+/* The header drops its tinted band: a hairline under the tabs is enough. The client tab keeps
+   the folder motif in a pale Klein tint for every project. */
+.pw-head,
+.pw-head[data-tone] {
+  --strong: var(--b-100);
+  background: var(--canvas);
+  box-shadow: inset 0 -1px 0 var(--rule);
+}
+.pw-head__tab {
+  color: var(--klein);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) :is(.pw-head, .pw-head[data-tone]) { --strong: var(--b-850); }
+  :root:not([data-theme='light']) .pw-head__tab { color: var(--b-200); }
+}
+:root[data-theme='dark'] :is(.pw-head, .pw-head[data-tone]) { --strong: var(--b-850); }
+:root[data-theme='dark'] .pw-head__tab { color: var(--b-200); }
+
+/* ---------------------------------------------------------------- brief */
+
+/* One blue tile in the bento (the output); the occasion is plain paper. */
+.bf-tile--lilac {
+  background: var(--sunken);
+  color: var(--folder-ink);
+}
+/* Unknowns: a white sheet whose number carries the signal. */
+.bf-unknowns__count {
+  background: var(--card);
+  color: var(--folder-ink);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.bf-unknowns__n {
+  color: var(--o-600);
+}
+.bf-unknowns__kicker {
+  color: var(--ink-3);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .bf-unknowns__n { color: var(--warm); }
+}
+:root[data-theme='dark'] .bf-unknowns__n { color: var(--warm); }
+
+/* ---------------------------------------------------------------- research */
+
+/* The summary reads as a statement, set left like the rest of the page. */
+.rs-hero__panel {
+  justify-content: flex-end;
+  text-align: left;
+}
+.rs-hero__summary,
+.rs-hero__summary[data-long] {
+  font-size: var(--t-h2);
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+/* Without a picture the summary takes the row and the legend sits under it on paper. */
+.rs-hero[data-nopic] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.rs-hero[data-nopic] .rs-hero__panel {
+  min-height: 0;
+}
+.rs-hero[data-nopic] .rs-hero__pic {
+  min-height: 0;
+  overflow: visible;
+  background: none;
+}
+.rs-hero[data-nopic] .rs-hero__kinds {
+  position: static;
+}
+.rs-hero[data-nopic] .rs-kind {
+  border-color: var(--rule);
+  background: var(--card);
+  color: var(--ink-2);
+  backdrop-filter: none;
+}
+.rs-hero[data-nopic] .rs-kind__dot {
+  border-color: var(--klein);
+}
+
+/* Section links: compact, quiet, left-set; no slab picked out in colour. */
+.rs-strip a,
+.rs-strip li:nth-child(3) a {
+  place-items: center start;
+  min-height: 56px;
+  padding: 0 22px;
+  background: var(--card);
+  color: var(--ink-strong);
+  font-size: var(--t-h3);
+  text-align: left;
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.rs-strip a:hover {
+  box-shadow: inset 0 0 0 1.5px var(--klein);
+}
+.rs-strip__pic {
+  display: none;
+}
+.rs-strip li[data-pic] .rs-strip__label {
+  color: inherit;
+  text-shadow: none;
+}
+.rs-hero__shape {
+  text-align: left;
+}
+.rs-hero[data-nopic] .rs-hero__panel {
+  justify-content: flex-start;
+}
+
+/* ---------------------------------------------------------------- strategy */
+
+/* Three circles in one blue: where they overlap the blue deepens, which is the point. */
+.pw-venn__c[data-c='category'],
+.pw-venn__c[data-c='brand'],
+.pw-venn__c[data-c='audience'] {
+  --vc: var(--klein);
+}
+.pw-venn__c {
+  border-width: 1.5px;
+  background: color-mix(in srgb, var(--vc) 7%, transparent);
+}
+.pw-venn__c[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--vc) 22%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .pw-venn__c { --vc: var(--b-400); }
+}
+:root[data-theme='dark'] .pw-venn__c { --vc: var(--b-400); }
+
+/* Highlighted phrases: Klein type on its palest tint, not white on a solid slab. */
+.st-insight mark,
+.dl-rec mark,
+.tx-rec mark,
+.tx-rec__title mark {
+  background: var(--b-100);
+  color: var(--klein);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) :is(.st-insight, .dl-rec, .tx-rec, .tx-rec__title) mark { background: var(--b-850); color: var(--b-200); }
+}
+:root[data-theme='dark'] :is(.st-insight, .dl-rec, .tx-rec, .tx-rec__title) mark { background: var(--b-850); color: var(--b-200); }
+
+.st-question {
+  font-weight: 560;
+}
+
+/* Lens pills on the dark cards: white glass. */
+.st-card__pill,
+.st-card[data-c='audience'] .st-card__pill {
+  background: rgb(255 255 255 / 0.16);
+  color: #ffffff;
+}
+.st-card__pill[aria-pressed='true'] {
+  background: #ffffff;
+  color: var(--klein);
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------- visual development */
+
+/* The selected branch is Klein like every other "current" thing; the direction keeps its mark. */
+.pw-visual .pw-branch[aria-selected='true'] {
+  background: var(--klein);
+  color: #ffffff;
+}
+/* Sketch folder: Klein tint, the same folder language as the home cabinet. */
+.vd-folder,
+.vd-folder__tab {
+  background: var(--b-100);
+}
+.vd-folder__tab {
+  color: var(--klein);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) :is(.vd-folder, .vd-folder__tab) { background: var(--b-850); }
+  :root:not([data-theme='light']) .vd-folder__tab { color: var(--b-200); }
+}
+:root[data-theme='dark'] :is(.vd-folder, .vd-folder__tab) { background: var(--b-850); }
+:root[data-theme='dark'] .vd-folder__tab { color: var(--b-200); }
+
+/* Notes that only inform are neutral; orange stays for what waits on you. */
+.pw-limits {
+  border-color: var(--rule);
+  background: var(--sunken);
+  color: var(--ink-2);
+}
+.pw-limits > svg {
+  color: var(--ink-3);
+}
+
+/* ---------------------------------------------------------------- delivery */
+
+.dc-hero {
+  background: var(--klein);
+}
+/* On a Klein ground the main action is white with Klein type. */
+.dc-hero__cta {
+  background: #ffffff;
+  color: var(--klein);
+}
+.dl-limits {
+  background: var(--card);
+  color: var(--folder-ink);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.dl-limits__list li {
+  padding: 12px 0;
+  border-radius: 0;
+  background: none;
+  border-top: 1px solid var(--rule);
+}
+.dl-limits__list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* ---------------------------------------------------------------- layout */
+
+/* "Built from" is provenance, not a call to action: a pale tint, Klein type. */
+.pw-style__ref {
+  background: var(--b-50);
+  color: var(--klein);
+  box-shadow: inset 0 0 0 1px var(--b-100);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .pw-style__ref { background: var(--b-875); color: var(--b-200); box-shadow: none; }
+}
+:root[data-theme='dark'] .pw-style__ref { background: var(--b-875); color: var(--b-200); box-shadow: none; }
+
+/* ================================================================ second pass: type and noise */
+
+/* Headline weights follow one rule: 500 for every headline, 600 only for small labels. */
+:is(.bf-title, .st-question, .tx-stack, .ov-problem__title, .area-head__title, .dc-hero__title, .open-folder__name, .dash-hero__title, .pw-h1) {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+/* One display size for page-level titles; statement headlines one step down. */
+:is(.area-head__title, .dc-hero__title) {
+  font-size: var(--t-display);
+  line-height: 1;
+}
+:is(.bf-title, .st-question, .tx-stack, .ov-problem__title) {
+  font-size: var(--t-h1);
+  line-height: 1.06;
+}
+.pw-h1 {
+  font-size: var(--t-h1);
+}
+
+/* Kickers: small capitals, no brackets, one grey. */
+.bx-bracket::before,
+.bx-bracket::after {
+  content: none;
+}
+.bx-bracket,
+.pw-kicker {
+  font-size: var(--t-label);
+  letter-spacing: 0.1em;
+  opacity: 1;
+  color: var(--ink-3);
+}
+:is(.bx-tile--lime, .bx-tile--dark, .dc-hero, .ov-progress) :is(.bx-bracket, .pw-kicker) {
+  color: rgb(255 255 255 / 0.72);
+}
+
+/* Honesty labels (working / prototype) stay on every claim, but as quiet marginalia:
+   a dot and small type, no outline competing with real status. */
+.pw-backed {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+.pw-backed[data-backing='connected'] {
+  color: var(--klein);
+}
+.ov-progress .pw-backed,
+.bx-tile--dark .pw-backed {
+  color: rgb(255 255 255 / 0.75);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .pw-backed[data-backing='connected'] { color: var(--b-300); }
+}
+:root[data-theme='dark'] .pw-backed[data-backing='connected'] { color: var(--b-300); }
+
+/* ================================================================ review round 1: colour */
+
+/* Off-scale periwinkles that survived */
+.rv-tile[data-outcome='revised'],
+.rv-rows li[data-outcome='revised'] .rv-rows__icon,
+.rv-tile[data-outcome='pass'],
+.rv-tile[data-outcome='fixed'],
+.rv-rows li[data-outcome='fixed'] .rv-rows__icon {
+  background: var(--b-100);
+  color: var(--b-950);
+}
+.rs-chart__tiles li {
+  background: var(--b-200);
+  color: var(--b-950);
+}
+.dl-cta {
+  background: var(--klein);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) :is(.rv-tile[data-outcome='pass'], .rv-rows li[data-outcome='revised'] .rv-rows__icon, .rv-rows li[data-outcome='fixed'] .rv-rows__icon) {
+    background: var(--b-850);
+    color: var(--b-100);
+  }
+}
+:root[data-theme='dark'] :is(.rv-tile[data-outcome='pass'], .rv-rows li[data-outcome='revised'] .rv-rows__icon, .rv-rows li[data-outcome='fixed'] .rv-rows__icon) {
+  background: var(--b-850);
+  color: var(--b-100);
+}
+
+/* Stage spines: "waiting" never loses its orange to "current"; current is marked by width and a
+   Klein band instead. A checkpoint hand on a finished stage turns neutral. */
+.sp-spines li[data-current][data-status='waiting_for_you'] {
+  background: var(--sp-waiting);
+  box-shadow: inset 0 6px 0 var(--klein);
+}
+.sp-spines li[data-status='waiting_for_you'],
+.sp-spines li[data-status='waiting_for_you'] .sp-spine {
+  color: var(--o-ink);
+}
+.sp-spines li[data-status='done'] .sp-spine__cp {
+  background: var(--n-ink-3);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .sp-hero { --sp-waiting: var(--o-400); }
+  :root:not([data-theme='light']) .pw-tab__count { color: var(--o-ink); }
+}
+:root[data-theme='dark'] .sp-hero { --sp-waiting: var(--o-400); }
+:root[data-theme='dark'] .pw-tab__count { color: var(--o-ink); }
+
+/* Orange type on its pale wash needs the deeper orange to pass AA. */
+:is(.pw-status, .pw-tag)[data-tone='attention'],
+:is(.pw-status, .pw-tag)[data-tone='warn'],
+:is(.pw-status, .pw-tag)[data-tone='bad'] {
+  color: var(--o-700);
+}
+.pw-kindtag[data-kind='inspiration'] {
+  --k: var(--b-500);
+}
+.cab-folder__next {
+  color: var(--n-ink);
+}
+
+/* Fewer saturated blocks: Process agent cards are paper except the director. */
+.area-sheet .pw-org > li[data-level='adversary'],
+.area-sheet .pw-org > li[data-level='evaluator'] {
+  background: var(--b-100);
+  color: var(--b-950);
+}
+
+/* Dark-mode slabs that stayed light */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .sheet--next { background: var(--n-sunken); color: var(--n-ink); }
+  :root:not([data-theme='light']) .pw-checkpoint { background: var(--n-card); }
+  :root:not([data-theme='light']) .area-sheet .pw-org > li:is([data-level='adversary'], [data-level='evaluator']) { background: var(--b-850); color: var(--b-100); }
+}
+:root[data-theme='dark'] .sheet--next { background: var(--n-sunken); color: var(--n-ink); }
+:root[data-theme='dark'] .pw-checkpoint { background: var(--n-card); }
+:root[data-theme='dark'] .area-sheet .pw-org > li:is([data-level='adversary'], [data-level='evaluator']) { background: var(--b-850); color: var(--b-100); }
+
+/* Demo label stays neutral at every width. */
+.demo-pill,
+.env-pill {
+  border-color: var(--rule-strong);
+  background: var(--surface);
+  color: var(--ink-2);
+}
+
+/* A past "chosen despite review" is history, not a live signal. */
+.ov-timeline li[data-kind='chosen_despite_review']::before,
+.pw-records--timeline > li[data-kind='chosen_despite_review']::before {
+  background: var(--b-400);
+}
+
+/* ================================================================ review round 1: layout */
+
+/* Overview: the problem is the headline; the stage name steps down one level. */
+.ov-progress__stage {
+  font-size: var(--t-h2);
+}
+
+/* Stage rail: shorter, and "waiting" is a pale orange with orange type instead of a solid slab. */
+.sp-hero {
+  min-height: 316px;
+}
+.sp-hero,
+:root:not([data-theme='light']) .sp-hero {
+  --sp-waiting: var(--o-100);
+}
+.sp-spines li[data-status='waiting_for_you'],
+.sp-spines li[data-status='waiting_for_you'] .sp-spine {
+  color: var(--o-700);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .sp-hero { --sp-waiting: var(--o-400); }
+  :root:not([data-theme='light']) .sp-spines li[data-status='waiting_for_you'] :is(.sp-spine, .sp-spine *) { color: var(--o-ink); }
+}
+:root[data-theme='dark'] .sp-hero { --sp-waiting: var(--o-400); }
+:root[data-theme='dark'] .sp-spines li[data-status='waiting_for_you'] :is(.sp-spine, .sp-spine *) { color: var(--o-ink); }
+
+/* Themes / Strategy: statements on the shared scale */
+.tx-rec__title {
+  font-size: var(--t-h1);
+  font-weight: 500;
+}
+.st-insight {
+  font-size: var(--t-h2);
+  font-weight: 500;
+}
+
+/* The decision panel: white, with the orange as its edge. */
+.pw-checkpoint {
+  background: var(--card);
+  border-width: 1.5px;
+  border-color: var(--o-500);
+}
+
+/* Library / Process / Delivery heads: the tab already names the page. */
+.area-head__title {
+  font-size: var(--t-h1);
+}
+.area-stats li[data-tone='lilac'] .area-stat,
+.area-stats li[data-tone='peach'] .area-stat {
+  background: var(--card);
+  color: var(--folder-ink);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+/* Agents: the director in Klein, everyone else on paper. */
+.area-sheet .pw-org > li[data-level='director'] {
+  background: var(--klein);
+  color: #ffffff;
+}
+.area-sheet .pw-org > li:is([data-level='lead'], [data-level='specialist'], [data-level='evaluator'], [data-level='adversary']) {
+  background: var(--sunken);
+  color: var(--folder-ink);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .area-sheet .pw-org > li:is([data-level='lead'], [data-level='specialist'], [data-level='evaluator'], [data-level='adversary']) { background: var(--n-sunken); color: var(--n-ink); }
+}
+:root[data-theme='dark'] .area-sheet .pw-org > li:is([data-level='lead'], [data-level='specialist'], [data-level='evaluator'], [data-level='adversary']) { background: var(--n-sunken); color: var(--n-ink); }
+
+/* Library material: no card around the thumbnail; one level of box only. */
+.area-sheet .bf-input {
+  padding: 0;
+  background: none;
+}
+.area-sheet .bf-input > :not(.bf-input__thumb) {
+  margin-inline: 2px;
+}
+.area-sheet .bf-input__thumb {
+  background: var(--sunken);
+}
+
+/* Field provenance ("Accepted") as quiet text, not a pill on every card. */
+.bf-fields .origin {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 500;
+}
+
+/* Visual: section heads set left like every other section. */
+.vd-search {
+  justify-items: start;
+  text-align: left;
+  background: var(--card);
+}
+
+/* WorkBot: suggestions wrap instead of running off the edge; the empty state sits at the top. */
+.workbot__suggest {
+  flex-wrap: wrap;
+  overflow: visible;
+  mask-image: none;
+  padding-right: 2px;
+}
+.workbot__empty {
+  margin-top: 0;
+  align-self: start;
+}
+
+/* Radii: two steps only for tiles (24) and insets (14). */
+:is(.bx-tile, .rs-section, .area-sheet, .sp-hero, .bf-sheet, .st-sheet, .vd-search, .tx-rec, .dc-hero, .dl-limits, .rs-hero__panel, .rs-hero__pic) {
+  border-radius: 24px;
+}
+
+@media (max-width: 480px) {
+  /* Home: only the next step travels to a phone. */
+  .open-folder__sheets {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .open-folder__sheets > .sheet:not(.sheet--next) {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .ov-facts > div + div {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .ov-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ov-facts > div {
+    border-top: 1px solid var(--rule);
+  }
+  .ov-card {
+    min-height: 0;
+  }
+}
+
+/* ================================================================ review round 2 */
+
+/* ---- colour ---- */
+
+/* Orange type uses the theme's own warn tone (deep in light, light in dark) so both pass AA. */
+:is(.pw-status, .pw-tag)[data-tone='attention'],
+:is(.pw-status, .pw-tag)[data-tone='warn'],
+:is(.pw-status, .pw-tag)[data-tone='bad'] {
+  color: var(--warn);
+}
+
+/* Klein carries meaning: the active tab, the primary action and data are blue; black steps back. */
+.pw-tab[aria-current='page'] {
+  border-color: var(--klein);
+  background: var(--klein);
+  color: #ffffff;
+}
+.btn--primary {
+  background: var(--klein);
+  color: #ffffff;
+}
+.btn--primary:hover {
+  background: var(--b-800);
+}
+.pw-scores__bar i {
+  background: var(--klein);
+}
+.pw-scores__bar i[data-low] {
+  background: var(--b-300);
+}
+.pw-scores__avg:not([data-pass]) {
+  color: var(--ink-3);
+}
+.rs-bars__bar {
+  background: var(--b-200);
+}
+.rs-bars li[data-hl] .rs-bars__bar {
+  background: var(--klein);
+}
+.rs-bars li[data-hl] .rs-bars__v {
+  background: var(--klein);
+  color: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) :is(.pw-tab[aria-current='page'], .btn--primary) { background: var(--b-500); border-color: var(--b-500); }
+  :root:not([data-theme='light']) :is(.pw-scores__bar i, .rs-bars li[data-hl] .rs-bars__bar) { background: var(--b-400); }
+  :root:not([data-theme='light']) .rs-bars__bar { background: var(--b-850); }
+}
+:root[data-theme='dark'] :is(.pw-tab[aria-current='page'], .btn--primary) { background: var(--b-500); border-color: var(--b-500); }
+:root[data-theme='dark'] :is(.pw-scores__bar i, .rs-bars li[data-hl] .rs-bars__bar) { background: var(--b-400); }
+:root[data-theme='dark'] .rs-bars__bar { background: var(--b-850); }
+
+/* The one thing on Delivery that needs a person is orange. */
+.dc-hero__state--link {
+  background: var(--o-500);
+  color: var(--o-ink);
+}
+.dc-hero__state--link:hover {
+  background: #ff8f42;
+}
+
+/* Section links lost their pictures; their scrim goes too. */
+.rs-strip li[data-pic] a::after {
+  content: none;
+}
+
+/* Review tiles: emphasis follows the count. Pass is pale Klein, revised/fixed paper, open paper
+   with an orange edge only when something is actually open. */
+.rv-tile[data-outcome='revised'],
+.rv-tile[data-outcome='fixed'],
+.rv-tile[data-outcome='open'] {
+  background: var(--card);
+  color: var(--folder-ink);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.rv-tile[data-outcome='open']:not([data-zero]) {
+  background: var(--o-100);
+  color: var(--o-ink);
+  box-shadow: inset 0 0 0 1.5px var(--o-500);
+}
+.rv-tile__label::before,
+.rv-tile__label::after {
+  content: none;
+}
+.rv-rows__tag[data-outcome='pass'] {
+  border-color: transparent;
+  background: none;
+  color: var(--klein);
+  padding-inline: 0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) :is(.rv-tile[data-outcome='revised'], .rv-tile[data-outcome='fixed'], .rv-tile[data-outcome='open']) { background: var(--n-card); color: var(--n-ink); }
+  :root:not([data-theme='light']) .rv-tile[data-outcome='open']:not([data-zero]) { background: var(--o-900); color: var(--o-200); }
+  :root:not([data-theme='light']) .area-stats li[data-tone='lilac'] .area-stat { background: var(--n-card); color: var(--n-ink); }
+  :root:not([data-theme='light']) .area-sheet .pw-org__names li { background: rgb(255 255 255 / 0.08); }
+  :root:not([data-theme='light']) .bx-list li[data-tone='info'] .bx-list__icon { background: var(--b-850); color: var(--b-100); }
+  :root:not([data-theme='light']) .rv-rows__tag[data-outcome='pass'] { color: var(--b-300); }
+  /* Waiting reads the same in both modes: a wash with orange type. */
+  :root:not([data-theme='light']) .sp-hero { --sp-waiting: var(--warn-wash); }
+  :root:not([data-theme='light']) .sp-spines li[data-status='waiting_for_you'] :is(.sp-spine, .sp-spine *) { color: var(--warn); }
+}
+:root[data-theme='dark'] :is(.rv-tile[data-outcome='revised'], .rv-tile[data-outcome='fixed'], .rv-tile[data-outcome='open']) { background: var(--n-card); color: var(--n-ink); }
+:root[data-theme='dark'] .rv-tile[data-outcome='open']:not([data-zero]) { background: var(--o-900); color: var(--o-200); }
+:root[data-theme='dark'] .area-stats li[data-tone='lilac'] .area-stat { background: var(--n-card); color: var(--n-ink); }
+:root[data-theme='dark'] .area-sheet .pw-org__names li { background: rgb(255 255 255 / 0.08); }
+:root[data-theme='dark'] .bx-list li[data-tone='info'] .bx-list__icon { background: var(--b-850); color: var(--b-100); }
+:root[data-theme='dark'] .rv-rows__tag[data-outcome='pass'] { color: var(--b-300); }
+:root[data-theme='dark'] .sp-hero { --sp-waiting: var(--warn-wash); }
+:root[data-theme='dark'] .sp-spines li[data-status='waiting_for_you'] :is(.sp-spine, .sp-spine *) { color: var(--warn); }
+
+/* Disabled send: a calm tint, not Klein at half strength. */
+.workbot .btn--primary[aria-disabled='true'] {
+  background: var(--b-100);
+  color: var(--b-400);
+  opacity: 1;
+}
+.demo-pill > svg {
+  color: var(--ink-3);
+}
+
+/* ---- type and hierarchy ---- */
+
+/* One 42px title per view (the stage or area title, or the Overview problem); statements inside
+   a stage step down to h2. */
+:is(.bf-title, .st-question, .tx-rec__title, .vd-search__seeking, .tx-card__name) {
+  font-size: var(--t-h2);
+  line-height: 1.12;
+}
+.rs-section__title {
+  font-size: var(--t-h2);
+  text-align: left;
+}
+.pw-checkpoint h2 {
+  font-size: var(--t-h2);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+/* Section heads: one style everywhere; card titles one step below. */
+.pw-sh h2,
+h2.pw-h3 {
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+:is(.st-card__title, .pw-branch__name, .vd-ref__title) {
+  font-size: var(--t-body);
+  font-weight: 600;
+}
+/* Numerals: display for a single hero count, h1 for tile rows; all light. */
+.bx-big__n {
+  font-size: var(--t-display);
+}
+.bx-big__label,
+.bx-next__text {
+  font-size: var(--t-h3);
+}
+:is(.rv-tile__n, .area-stat__n, .dc-hero__n, .pw-org__n) {
+  font-size: var(--t-h1);
+}
+.bf-unknowns__n {
+  font-weight: 300;
+}
+.pw-lede {
+  font-size: var(--t-h3);
+}
+.pw-head__name {
+  font-size: var(--t-h2);
+  line-height: 1.12;
+}
+.brand__name {
+  font-size: var(--t-h3);
+}
+:is(.ov-stat__label, .rs-kind__hint, .pw-ev__chip, .ov-ideas__meta, .tx-card__why, .ov-made__count) {
+  font-size: var(--t-small);
+}
+
+/* ---- noise ---- */
+
+/* Material kinds as plain label text */
+.bf-chip {
+  padding: 0;
+  background: none;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+}
+/* "Built from" as one inline line */
+.pw-style__ref {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink-2);
+}
+.pw-style__ref .pw-label {
+  color: var(--ink-3);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .pw-style__ref { background: none; color: var(--n-ink-2); }
+}
+:root[data-theme='dark'] .pw-style__ref { background: none; color: var(--n-ink-2); }
+/* Highlighted phrases: Klein type only */
+.st-insight mark,
+.dl-rec mark,
+.tx-rec mark,
+.tx-rec__title mark,
+:root:not([data-theme='light']) :is(.st-insight, .dl-rec, .tx-rec, .tx-rec__title) mark {
+  padding: 0;
+  background: none;
+  color: var(--klein);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) :is(.st-insight, .dl-rec, .tx-rec, .tx-rec__title) mark { color: var(--b-300); }
+}
+:root[data-theme='dark'] :is(.st-insight, .dl-rec, .tx-rec, .tx-rec__title) mark { background: none; color: var(--b-300); }
+
+/* ---- redundancy ---- */
+
+/* Themes: the three cards already name the directions. */
+.tx-stack {
+  display: none;
+}
+/* Research: with two sections or fewer, the jump links repeat what is right below. */
+.rs-strip:not(:has(li:nth-child(3))) {
+  display: none;
+}
+/* Delivery: the cover slide below says the line; the hero keeps kicker, counts and actions. */
+.dc-hero__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.dc-hero__lede {
+  font-size: var(--t-h2);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  max-width: 28ch;
+}
+/* Brief: the client is already in the page header. */
+.bf-sheet__label {
+  display: none;
+}
+
+/* ---- space and rhythm ---- */
+
+.ov {
+  gap: 24px;
+}
+.bf-inputs {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.vd-search > * {
+  justify-self: start;
+  text-align: left;
+}
+/* An empty "work in progress" tile takes less of the row. */
+.ov-row:has(.ov-active .ov-muted) {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.7fr) minmax(0, 1.3fr);
+}
+.area-stats li[data-tone='lime'] .area-stat {
+  background: var(--card);
+  color: var(--folder-ink);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+/* ---- phones ---- */
+
+@media (max-width: 640px) {
+  .pw-head__id {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .pw-head__tab {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ov-shelf--text .ov-card {
+    height: auto;
+  }
+  .ov-row:has(.ov-active .ov-muted) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ================================================================ review round 3 */
+
+/* Dark: the chart's lead tile and plain tiles, at equal specificity to the dark scope */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .rs-chart__tiles li { background: var(--b-850); color: var(--b-100); }
+  :root:not([data-theme='light']) .rs-chart__tiles li[data-alt] { background: var(--b-500); color: #ffffff; }
+  /* Primary actions: hover and disabled keep working under the dark blue */
+  :root:not([data-theme='light']) .btn--primary:hover { background: var(--b-400); border-color: var(--b-400); }
+  :root:not([data-theme='light']) .btn--primary[aria-disabled='true'] { background: var(--b-875); border-color: var(--b-875); color: var(--b-400); }
+  /* Small round actions use the same dark-mode blue as tabs and buttons */
+  :root:not([data-theme='light']) :is(.bx-go, .btn-orb, .ov-card__orb, .dl-cta__orb, .rs-card__orb, .bf-input__go) { background: var(--b-500); color: #ffffff; }
+  /* Strategy conclusion: not a white slab at night */
+  :root:not([data-theme='light']) .st-conclusion { background: var(--b-925); color: var(--n-ink); box-shadow: inset 0 0 0 1px var(--rule-strong); }
+}
+:root[data-theme='dark'] .rs-chart__tiles li { background: var(--b-850); color: var(--b-100); }
+:root[data-theme='dark'] .rs-chart__tiles li[data-alt] { background: var(--b-500); color: #ffffff; }
+:root[data-theme='dark'] .btn--primary:hover { background: var(--b-400); border-color: var(--b-400); }
+:root[data-theme='dark'] .btn--primary[aria-disabled='true'] { background: var(--b-875); border-color: var(--b-875); color: var(--b-400); }
+:root[data-theme='dark'] :is(.bx-go, .btn-orb, .ov-card__orb, .dl-cta__orb, .rs-card__orb, .bf-input__go) { background: var(--b-500); color: #ffffff; }
+:root[data-theme='dark'] .st-conclusion { background: var(--b-925); color: var(--n-ink); box-shadow: inset 0 0 0 1px var(--rule-strong); }
+
+/* The chart's lead tile in light */
+.rs-chart__tiles li[data-alt] {
+  background: var(--klein);
+  color: #ffffff;
+}
+
+/* Focus is always visible: white rings on Klein */
+:is(.ov-track a, .sp-spines li[data-current] .sp-spine, .bx-tile--lime a, .rs-hero__panel a, .dc-hero a, .dc-hero button, .open-folder__back a):focus-visible {
+  outline-color: #ffffff;
+}
+
+/* Home: "New proposal" in Klein, its orb white glass so it isn't blue on blue */
+.dash-hero .btn--primary {
+  background: var(--klein);
+  color: #ffffff;
+}
+.dash-hero .btn--primary .btn-orb {
+  background: rgb(255 255 255 / 0.18);
+  color: #ffffff;
+}
+.rs-card[data-first] .rs-card__orb {
+  color: #ffffff;
+}
+
+/* Process: resolved challenges are history, so their outcome tags are neutral */
+.pw-challenge .pw-tag[data-tone] {
+  background: var(--neutral-wash);
+  color: var(--ink-2);
+  border-color: transparent;
+}
+
+.dc-hero__state--link:hover {
+  background: var(--o-400);
+}
+
+/* Selected states: Klein fill is navigation; every other "selected" is a white chip with a rule. */
+.drawer-label[aria-pressed='true'],
+.intake-tab[aria-selected='true'],
+.scope-switch__opt[aria-checked='true'] {
+  background: var(--card);
+  color: var(--ink);
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.drawer-label[aria-pressed='true'] > span:last-child {
+  background: var(--sunken);
+  color: var(--ink);
+}
+
+/* ---- layout ---- */
+
+/* Themes: the copy direction becomes the lede above the three cards. */
+.tx-hero {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+.tx-intro {
+  padding: 0;
+  max-width: 68ch;
+}
+/* Library section heads join the shared style; the material grid starts at the heading edge. */
+.area-sheet h2.pw-h3,
+.area-sheet .pw-h3 {
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.area-sheet .bf-inputs {
+  padding: 0;
+}
+/* Visual: package views fill the row. */
+.pw-views {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+/* Overview: the empty in-progress tile sizes to its title. */
+.ov-row:has(.ov-active .ov-muted) {
+  grid-template-columns: minmax(0, 1.2fr) minmax(15rem, max-content) minmax(0, 1.3fr);
+}
+@media (max-width: 760px) {
+  .ov-card--text {
+    padding-bottom: 20px;
+  }
+}
+@media (max-width: 640px) {
+  .ov-shelf li[data-kind='visual'] {
+    flex: 1 1 calc(50% - 7px);
+    max-width: calc(50% - 7px);
+  }
+  .ov-track a {
+    align-items: center;
+  }
+  .ov-row:has(.ov-active .ov-muted) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Decorative arrows that looked like links */
+.bf-lead__arrow,
+.st-sheet__arrow {
+  display: none;
+}
+/* Research: the summary is the only h2; section titles are section heads. */
+.rs-section__title {
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.rs-hero__shape {
+  margin-inline: 0;
+  align-self: flex-start;
+}
+/* Visual: step 2 sets left too. */
+.vd-refs__title,
+.vd-search :is(h2, h3, p) {
+  justify-self: start;
+  text-align: left;
+}
+/* Score cards: the average breathes below the bars. */
+.pw-scores__avg {
+  margin-top: 10px;
+}
+/* Review tags: all plain text, coloured by outcome. */
+.rv-rows__tag {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+@media (min-width: 641px) {
+  .dc-hero__stats li {
+    min-width: 7.5rem;
+  }
+}
+/* Library thumbnails: a wider, lower box so a full-width row doesn't tower */
+.area-sheet .bf-input__thumb {
+  aspect-ratio: 16 / 10;
+}
+
+/* ---- Colour mode switch: system / light / dark ---- */
+:root[data-theme='light'] { color-scheme: light; }
+
+.theme-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+}
+.theme-switch__opt {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.theme-switch__opt:hover { color: var(--ink); }
+.theme-switch__opt[aria-pressed='true'] {
+  background: var(--klein, #002fa7);
+  color: #fff;
+}
+.theme-switch__opt:focus-visible {
+  outline: 2px solid var(--focus, var(--ink));
+  outline-offset: 1px;
+}
+@media (max-width: 640px) {
+  .theme-switch__opt { width: 26px; height: 26px; }
+}
+
+/* Phones: make room for the colour switch in the top bar. */
+@media (max-width: 640px) {
+  .topbar__tools { gap: 6px; flex: 0 1 auto; }
+  .lang-pill { padding-inline: 8px; }
+  .lang-pill__code { display: none; }
+  .demo-pill { min-width: 0; max-width: 100%; }
+  .demo-pill { white-space: normal; line-height: 1.15; border-radius: 16px; font-size: 0.6875rem; text-align: left; }
+}

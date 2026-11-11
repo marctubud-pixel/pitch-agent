@@ -1,0 +1,68 @@
+{
+  "state": "completed",
+  "scope": "one authorized navigation and storage-management round",
+  "recordedAtUtc": "2026-11-02T21:57:01.656440+00:00",
+  "sourcePreset": "/Users/marc/Documents/Codex/2026-11-03/new-chat/outputs/research-agent-directory-preset/README.md",
+  "migratedPaths": [],
+  "newProductModules": [],
+  "createdNavigationFiles": [
+    "README.md",
+    "docs/architecture/overview.md",
+    "docs/architecture/agent-map.md",
+    "docs/architecture/context-map.md",
+    "docs/integrations/index.md",
+    "docs/resources-index.md",
+    "projects/README.md",
+    "docs/storage-retention.md",
+    "status/current.md",
+    "status/roadmap.md",
+    "status/changelog.md"
+  ],
+  "activePathsHeld": [
+    {
+      "case": "m6",
+      "workRoot": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/acceptance-to-copy-ut8sXJ/reference-case-sev3NT",
+      "pid": 37150,
+      "statusObserved": "running",
+      "actionsTotal": 26,
+      "lastRevision": 1289,
+      "keepInPlace": [
+        "projects.sqlite",
+        "projects.sqlite-wal",
+        "projects.sqlite-shm",
+        "stage-owner.lock",
+        "all original manifests, assets, receipts, prior versions and results"
+      ]
+    },
+    {
+      "case": "dexian",
+      "workRoot": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/acceptance-to-copy-tnZ4vI/reference-case-HnznAH",
+      "pid": 99271,
+      "statusObserved": "running",
+      "actionsTotal": 27,
+      "lastRevision": 1292,
+      "keepInPlace": [
+        "projects.sqlite",
+        "projects.sqlite-wal",
+        "projects.sqlite-shm",
+        "stage-owner.lock",
+        "all original manifests, assets, receipts, prior versions and results"
+      ]
+    }
+  ],
+  "cleanupEvidenceReused": ".scratch/cleanup-20261103-small-duplicates/SUMMARY.json",
+  "newDeletedFiles": 22,
+  "originalGoalComplete": false,
+  "completedAtUtc": "2026-11-02T22:05:43.274218+00:00",
+  "newRemovedAllocatedBytes": 12738560,
+  "freeAfterBytesObserved": 6924562432,
+  "reusedCleanupUniquePaths": 6985,
+  "allReusedContentHashesPreserved": true,
+  "validation": {
+    "localLinks": 172,
+    "gitIgnoreCases": 11,
+    "failures": 0
+  },
+  "productAcceptanceComplete": false,
+  "cleanupRecord": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/cleanup-20261103-final-cache/RESULT.json"
+}

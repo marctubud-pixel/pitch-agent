@@ -1,0 +1,13 @@
+{
+  "role": "r2-brand",
+  "understands_4_5_distinction": true,
+  "neutral_benchmark_scores": {
+    "fact_match": 4,
+    "direct_comprehension": 4,
+    "brand_product_semantic_link": 4
+  },
+  "reason": "准确、清楚、与产品有据相连恰为给定中性基准。完全正确描述事实支持强度，不是超越质量基准。",
+  "requirements_for_5": "必须给出实际对照，明确哪项文字表现超过该阶段基准，并说明取舍。",
+  "prior_answer_limitation": "本轮无先前答卷；本答卷把事实支持状态与内部质量分分开记录，不把支持强度映射为5分。",
+  "limitation": "仅为内部尺度对齐，不证明模型评分等同真实人类审美。"
+}

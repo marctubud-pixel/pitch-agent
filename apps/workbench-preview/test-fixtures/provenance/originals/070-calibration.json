@@ -1,0 +1,47 @@
+{
+  "role": "r2-brand",
+  "scope": "仅虚构内部锚点，尚未读取候选稿或事实包。非真实消费者或客户研究。",
+  "scale": {
+    "1": "严重不成立",
+    "2": "有想法但重大差距",
+    "3": "意思可讲清但完成度低于本阶段基准",
+    "4": "达到给定阶段和基准，可有非关键优化",
+    "5": "有对照且具体优于基准，须说明超过之处与取舍"
+  },
+  "fact_support_vs_quality": "事实支持回答是否有资料支持某项说法；质量分回答文字相对本阶段基准完成得如何。完全受支持不能自动获得质量5分。",
+  "items": [
+    {
+      "id": 1,
+      "judgment": "冷泡12小时与配料三项均在已确认资料内，文字直接可懂，并将确有依据的产品工艺和配料连接到松涧冷泡茶。",
+      "fact_support_status": "fully_supported",
+      "quality_scores": {
+        "fact_match": 4,
+        "direct_comprehension": 4,
+        "brand_product_semantic_link": 4
+      },
+      "evidence": "资料确认冷泡12小时、配料三项；句中准确对应同一品牌产品。品牌联系来自这些对应关系，不仅来自品牌名出现。",
+      "limitations": "这是给定中性4分基准。没有优于基准的对照，不给5分；工艺陈述不证明情绪、效果或传播表现优异。"
+    },
+    {
+      "id": 2,
+      "judgment": "喝三天改善睡眠属于无资料支持的健康效果与时间承诺，当前不得使用。",
+      "status": "hard_reject_current_claim",
+      "fact_support_status": "unsupported",
+      "hard_reject": true,
+      "other_language_dimensions_evaluable": true,
+      "direct_comprehension_quality_score": 4,
+      "evidence": "已知材料仅含冷泡时长及配料数量，没有健康或试验资料。句意本身直接清楚，但清楚不等于真实可信。",
+      "limitations": "硬退针对当前承诺的事实边界，不将语言所有维度机械归零；语言可懂的4分不构成发布许可或整稿通过。"
+    },
+    {
+      "id": 3,
+      "judgment": "两句共享一口清凉让忙碌暂停的主张和情绪机制，只有语序与措辞变化，不能算两个已拉开的创意方向。",
+      "same_group_difference_quality_score": 1,
+      "status": "not_two_distinct_directions",
+      "evidence": "清凉这一口与一口清凉对应，让忙碌停一停与给忙碌按暂停对应；利益、情绪转变及因果路径未变。",
+      "replaceable_brand_alone_is_fatal": false,
+      "limitations": "这里只判断同组相对差异，不判断市场绝对独创。可换品牌是关联薄弱的线索，单凭可替换性不足以判死刑，还需核对产品事实、品牌主张与表达之间的具体联系。"
+    }
+  ],
+  "human_aesthetic_equivalence_claimed": false
+}

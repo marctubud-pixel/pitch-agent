@@ -1,0 +1,162 @@
+{
+  "schema_version": "2",
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "copy",
+  "model_id": "gpt-6.1-sol",
+  "packet_version": "r2-first",
+  "candidate_version": "qingyu-copy-reviewed-r2",
+  "input_hashes": {
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50"
+  },
+  "report_id": "qingyu-r2-counter-copy-first",
+  "independence": {
+    "read_only_inputs": [
+      "inputs/SOURCE-BRIEF.md",
+      "inputs/REVIEW-PROTOCOL.md",
+      "v2/draft.json",
+      "v2/SEAL.json"
+    ],
+    "did_not_read": [
+      "任何岗位评分",
+      "旧稿",
+      "作者回应",
+      "总监材料"
+    ],
+    "reading_scope": "这是已见主张与机制的独立漏项检查，不是匿名主副文盲读，不替代评分岗的first_read。",
+    "scoring_performed": false,
+    "recommendation_performed": false,
+    "draft_modified": false
+  },
+  "seal_check": {
+    "draft_sha_matches": true,
+    "seal_draft_id_matches": true
+  },
+  "independent_findings": [],
+  "new_blocker_count": 0,
+  "observations": [
+    {
+      "candidate_id": "n7",
+      "dimension": "主张及主副文协作",
+      "evidence": [
+        "一瓶无糖茶，两张名片。",
+        "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+      ],
+      "finding": "主文留下“两张名片”这一待解对象，副文以相同句式逐一填入名字和身份。青屿和虎跑泉水的身份不需要借方向说明才能配对。名片是比喻，正文没有承诺附赠卡片。",
+      "limit": "仅能判断同读时文字结构闭合，不能证明消费者会记住两种身份。"
+    },
+    {
+      "candidate_id": "k4",
+      "dimension": "中文表达及主副文协作",
+      "evidence": [
+        "鼠标放一放，去趟虎跑。",
+        "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+      ],
+      "finding": "主文发出离开工作动作的邀请，副文先把地点拉回工位，再用用水事实和“就算”完成想象抵达。“就算”使抵达保留玩笑性质，没有把喝茶写成真实到访或功能效果。",
+      "limit": "“鼠标放一放”可按暂时停用理解，但部分读者也可能先理解为挪放鼠标；这是未做首读测试的语言风险，不据此判定不自然或不达标。"
+    },
+    {
+      "candidate_id": "v2",
+      "dimension": "中文表达及主副文协作",
+      "evidence": [
+        "上回你带我去虎跑，这回换我给你带茶。",
+        "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+      ],
+      "finding": "“上回／这回”“你带我／我给你带”形成可追踪的互换关系。副文明确这次带茶源于认出配方中的地名，补足动作缘由；“你”在主文已经引入，没有凭空出现。",
+      "limit": "它是一段有共同到访经历的虚构对话，只能签发该前提内的文字闭合，不能推成目标人群共有经历或赠茶动机。"
+    }
+  ],
+  "mechanism_checks": [
+    {
+      "pair": [
+        "n7",
+        "k4"
+      ],
+      "evidence": [
+        "先递两张“名片”，再分别报名字和身份，一张认品牌，一张认用料。",
+        "先让手停下来，再用工位上的一口茶完成想象中的短途。"
+      ],
+      "finding": "n7让读者完成身份配对，k4让读者完成原地出发与抵达。两者共享原料依据，但读者要完成的理解动作不同。互换仍有产品信息可读，不足以消除这一区别。"
+    },
+    {
+      "pair": [
+        "n7",
+        "v2"
+      ],
+      "evidence": [
+        "一瓶无糖茶，两张名片。",
+        "上回你带我去虎跑，这回换我给你带茶。"
+      ],
+      "finding": "n7报出两种产品身份，v2则用两个人的历史交往解释本次捎茶。n7副文放到v2主文下仍能使人推知同名关联，却没有保留“看见名字而想起对方”的当下触发。该差别是叙事因果及对象关系，不只是语气。"
+    },
+    {
+      "pair": [
+        "k4",
+        "v2"
+      ],
+      "evidence": [
+        "喝一口就算到了。",
+        "看见这名字，就想起你。"
+      ],
+      "finding": "k4的完成动作是喝茶后的想象抵达，v2的完成动作是看见地名后的认人和捎茶。v2主文搭k4副文仍可形成邀人重游的玩笑，因此不能说换句后完全不通；但原来的选茶缘由会被改为共饮或重游。",
+      "limit": "可以证明文本机制不同，不能证明三案在货架或传播环境中同样容易被区分。"
+    }
+  ],
+  "independent_risks": [
+    {
+      "id": "COPY-R2-W01",
+      "candidate_id": "n7",
+      "classification": "已明示的呈现依赖，非新增文字阻断",
+      "blocking": false,
+      "evidence": "一瓶无糖茶，两张名片。",
+      "risk": "孤立出现时可能被读为随瓶附卡，必须依靠副文把比喻解释为品牌和用料的身份。",
+      "consequence": "如果实际包装把副文移出同一阅读单元，主文的承诺对象可能改变。",
+      "current_assessment": "完整同读版本已有逐一解释；实际布局尚未制作，不能把假设的分离当作当前缺陷。"
+    },
+    {
+      "id": "COPY-R2-W02",
+      "candidate_id": "k4",
+      "classification": "已明示的呈现依赖，非新增文字阻断",
+      "blocking": false,
+      "evidence": [
+        "鼠标放一放，去趟虎跑。",
+        "工位上拧开青屿无糖茶。"
+      ],
+      "risk": "主文自身是一句出游邀请；原地喝茶的规则在副文中才建立。",
+      "consequence": "若媒介仅刊主文，虎跑可变成真实目的地而非产品中的泉水线索。",
+      "current_assessment": "本次交付包含副文且已交代工位及喝一口，不能因主文独立时的歧义否决当前组合。"
+    },
+    {
+      "id": "COPY-R2-W03",
+      "candidate_id": "v2",
+      "classification": "已限定的情景前提，非新增文字阻断",
+      "blocking": false,
+      "evidence": [
+        "给曾一起去过虎跑的人捎瓶茶。",
+        "如果两个人有过这段经历"
+      ],
+      "risk": "旧游与带茶的互答关系成立于共同到访前提，不能自动扩大到没有这段经历的办公者。",
+      "consequence": "若后续把它当作所有目标办公者的共同情绪或普遍购买理由，会超出本轮依据。",
+      "current_assessment": "现稿已将其限定为单次虚构对话，范围窄本身不是事实错误或机制不成立。"
+    }
+  ],
+  "factual_scope_check": {
+    "evidence": [
+      "虎跑泉水，是这瓶茶用到的水。",
+      "茶里用到了虎跑泉水",
+      "这瓶青屿无糖茶用到了虎跑泉水。"
+    ],
+    "finding": "三案均将虎跑泉水放在配方用料层面，未写独家、全部用水、龙井产地、口感更好、健康或价格优越性。“去趟虎跑”由“就算到了”限制为虚构想象，“上回”由单次虚构对话限定。",
+    "limit": "产品设定来自本地虚构前提。未核对真实水源、比例、供应凭据或正式包装合规，具体茶种仍待补；不能因此替正式产品签发事实结论。"
+  },
+  "limits": [
+    "未浏览外部市场或开展真人研究。本轮事实范围仅对照SOURCE-BRIEF。",
+    "未读取任何评分，所以目前不判断这些点是否被评分岗覆盖，也不判断评分高低。",
+    "未据个人句式偏好、适用人群较窄或真实效果未知新增硬问题。",
+    "没有新增有效阻断不是三案通过或推荐结论；下一包只核验本职评分的具体肯定及覆盖关系。"
+  ],
+  "next_state": "first sealed; wait for corresponding copy scoring second packet"
+}

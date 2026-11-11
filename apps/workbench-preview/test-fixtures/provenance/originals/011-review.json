@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "brand",
+  "model_id": "gpt-6.1-terra",
+  "packet_version": "r2",
+  "report_id": "qingyu-copy-full-20261110-r2-brand-counter-independent",
+  "candidate_version": "qingyu-copy-reviewed-r2",
+  "draft_sha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+  "score_report_id": "qingyu-copy-full-20261110-r2-brand-score-independent",
+  "first_read_path": "critics/r2-brand/first.json",
+  "first_read_sha256": "04b0e3f65b9151b8e8a4acddfa82bb5bfc36d26edf549dec713e68601064a732",
+  "paired_score_path": "reviews/r2-brand/score.json",
+  "paired_score_sha256": "e02813b28f3aaef97e87960a705860612f860aa7fb907339f48b9f975c0d9295",
+  "retained_claims": [
+    {"claim_id": "r2-brand-n7-P1", "reason": "主文说‘一瓶无糖茶’，副文分别说‘青屿，是茶的牌子’和‘虎跑泉水，是这瓶茶用到的水’。两句同呈时，品牌和用水身份及其同瓶关系有直接文字依据；这不证明水源比例。"},
+    {"claim_id": "r2-brand-k4-P1", "reason": "‘工位上拧开青屿无糖茶’与‘茶里用到了虎跑泉水，喝一口就算到了’给出产品和想象抵达之间的明确桥梁。该肯定限于完整主副文的文字关系，不证明实际出行或受众效果。"},
+    {"claim_id": "r2-brand-v2-P1", "reason": "‘上回你带我去虎跑’与‘这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你’以同一地名衔接旧游和带茶缘由，文字未诉诸品质更优；共同经历是虚构前提。"}
+  ],
+  "challenges": [],
+  "coverage": [
+    {"first_risk_id": "brand-r2-01", "status": "partially_covered", "score_reference": "n7 的 brand.copy.fact_boundary 理由及 limits", "assessment": "评分明确认为‘用到的水’没有声称全部用水，并记录用水比例与真实凭据未核验；但未单列这句身份介绍可能给部分读者形成唯一水源印象的风险。原评分对明示主张和事实缺口已有覆盖，独立首轮补充的是可能的阅读印象，仍属轻微非阻断，不作为新增有效阻断，也不足以证明本阶段的4分不成立。", "suggested_action": "正式呈现时结合完整配料和版面核对；可选用‘配方里用到了虎跑泉水’以降低该歧义。"},
+    {"topic": "k4/v2 主文单独使用", "status": "covered", "score_reference": "r2-brand-k4-I1、r2-brand-v2-I1", "assessment": "原评分已把品牌与品类依赖副文记录为非阻断同呈条件；单独投放不属于当前同呈结论。"},
+    {"topic": "真实效果及产品凭据", "status": "covered", "score_reference": "各案 limits 和 unresolved", "assessment": "原评分已区分虚构情景与实际受众、用水比例、供应和凭据；未知不等于已发生的事实越界。"}
+  ],
+  "limits": [
+    "本次逐项核对了该品牌评分内全部三个 positive_claims，均保留一次，没有新增阻断或调整分数。",
+    "判断限于虚构产品设定和主副文完整同呈的文字概念，不证明真实来源、配方比例、版面阅读、消费者偏好或传播效果。",
+    "未查看其他岗位或总监结论；首轮记录、原评分及稿件均未修改。"
+  ]
+}

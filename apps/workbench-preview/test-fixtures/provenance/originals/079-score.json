@@ -1,0 +1,152 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "comms",
+  "model_id": "gpt-6.1-sol",
+  "packet_version": "r2",
+  "report_id": "qingyu-copy-full-20261110-r2-comms-score-independent",
+  "draft_id": "qingyu-copy-reviewed-r2",
+  "draft_sha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+  "seal_verified": true,
+  "input_hashes": {
+    "packets/r2/SCORE-INSTRUCTIONS.md": "d984dcfbd88420cc6ced1608897b4d8b6632947d7ab6d063c3cd5862fcd1d787",
+    "packets/r2/FACTS.md": "2b4cda986d14436cc033e27b40a771d73ccdeb0af959f41ffeb5762e93c0d184",
+    "packets/r2/first-comms.md": "9f361761a32c293dacd8015a2cc88dc21dbf68bb20cccbf8f51354f6de12ba79",
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50",
+    "v2/RESPONSE.json": "1943ed32123471d74e9614b6f15431032fbc964c0933d66422041700ca26a504",
+    "reviews/r1-comms/score.json": "cf37a028bb932055e3e29851e1f40f8793efde03958abf411f6fae921bd5c8d5",
+    "reviews/r2-comms/first-read.json": "ff826f8891310bbbeec5d02f9974237d35bdeb30593b388be63306e5404bc3e0",
+    "reviews/r2-comms/first-read.md": "7afd3ffb02a14754c589417268b8017f080b655d8d0aa89f833b1b6d08e4db5a",
+    "inputs/CALIBRATION.md": "9daea2e3cca39b478107cf7a5137a7553e9fb46594baaf66e43c4c90b8edf870",
+    "inputs/CALIBRATION-ADDENDUM.md": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc"
+  },
+  "first_read": {
+    "json": "reviews/r2-comms/first-read.json",
+    "json_sha256": "ff826f8891310bbbeec5d02f9974237d35bdeb30593b388be63306e5404bc3e0",
+    "markdown": "reviews/r2-comms/first-read.md",
+    "markdown_sha256": "7afd3ffb02a14754c589417268b8017f080b655d8d0aa89f833b1b6d08e4db5a",
+    "unchanged": true,
+    "reconciliation": "匿名首读已读出三案分别是共同经历与往来、工位想象出游、品牌与用水身份介绍。核验资料后确认三案的用到了均在本地产品设定范围，没有增加首读未得到的核心机制。作者的假设不记为受众事实。"
+  },
+  "scale": "4表示达到本地包装文字概念阶段基准。未发现足以签发5分的具体对照优势，本报告无5分。事实支持与质量分分开。",
+  "fact_check": {
+    "status": "consistent_with_local_product_premise",
+    "evidence": "三案均用到了虎跑泉水并称青屿无糖茶，未声称全部用水、独家、特定茶种、口感更好或健康作用。",
+    "limits": "仅核验与SOURCE-BRIEF中的虚构产品前提一致，非来源凭据审核。具体茶种、用水比例和供应凭据仍未知。"
+  },
+  "items": [
+    {
+      "id": "n7",
+      "scores": [
+        {"dimension_id": "comms_direction_distinction", "group": "direction", "dimension": "同组三案辨识", "score": 4, "status": "scored", "required": true, "evidence": "“一瓶无糖茶，两张名片”由“青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水”逐一报身份。相对k4的放鼠标与抵达、v2的旧游与想起对方，本案读者得到的是两个名称的分工。换入v2副文会多出无来由的你，换入k4副文则两张名片没有逐一报出身份。原副文的结构承担本案特定任务。", "comparison_scope": "same_set", "comparison_ids": ["k4", "v2"]},
+        {"dimension_id": "comms_memory_cue", "group": "direction", "dimension": "核心记忆线索潜力", "score": 4, "status": "scored", "required": true, "evidence": "“两张名片”给青屿和虎跑泉水设置两个可复述的位置，副文重复“是”并区分牌子与水。记忆线索能带回两个名字各是什么。相对另两案，线索偏身份而非动作或关系，达到文字概念基准；未证明实际记忆。", "comparison_scope": "same_set", "comparison_ids": ["k4", "v2"]},
+        {"dimension_id": "comms_concise_restatement", "group": "copy", "dimension": "简洁复述", "score": 4, "status": "scored", "required": true, "evidence": "可简述为青屿是这瓶无糖茶的品牌，虎跑泉水是它用到的水。匿名首读已得到这一理解。相对另两案，不必复述故事或想象过程，但保留了两个名称的角色。", "comparison_scope": "same_set", "comparison_ids": ["k4", "v2"]},
+        {"dimension_id": "comms_information_roles", "group": "copy", "dimension": "主文副文的信息分工", "score": 4, "status": "scored", "required": true, "evidence": "主文“一瓶无糖茶，两张名片”提出一个瓶子上的双身份框架，副文分别回答哪两个名字、各是什么。相对另两案的场景揭晓或情感起因，本案以逐项解答完成协作。主文单读的实物卡歧义由当前副文消解。", "comparison_scope": "same_set", "comparison_ids": ["k4", "v2"]}
+      ],
+      "positive_claims": [
+        {"id": "r2-comms-n7-p1", "claim": "两个名称的角色可以分开复述，品牌与用料没有被当成两个茶品牌。", "evidence": "“青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。”匿名首读也读出这一分工。"},
+        {"id": "r2-comms-n7-p2", "claim": "双名片的主文由副文两次点名完成，形成区别于场景和人际故事的组织方法。", "evidence": "“两张名片”对应“青屿，是……”和“虎跑泉水，是……”。"}
+      ],
+      "issues": [
+        {"id": "r2-comms-n7-i1", "evidence": "“两张名片”单看可能被理解成真实附卡或两个人，当前副文才将其落到品牌与水的身份。", "severity": "minor", "blocking": false, "stage": "slogan", "suggested_action": "保留当前主副文的共同阅读关系；打样时核验是否误读为附送卡片。当前合读已经清楚，不据未做的版面测试判文字硬退。"}
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "仅通过传播岗位四项本地文字概念评审，不含最终包装呈现与实际传播效果。",
+      "limits": ["品牌名和泉名均在副文，主文独立归属能力有限。", "名片比喻的实际理解、品牌记忆和传播表现未做人群测试。", "不评价市场绝对独创或来源独家性。"]
+    },
+    {
+      "id": "k4",
+      "scores": [
+        {"dimension_id": "comms_direction_distinction", "group": "direction", "dimension": "同组三案辨识", "score": 4, "status": "scored", "required": true, "evidence": "“鼠标放一放，去趟虎跑”接“工位上拧开”及“喝一口就算到了”，建立停手、开瓶、想象抵达。n7的两项身份说明和v2的想起某人都不能补上这一原地抵达揭晓，区别不只在口吻。", "comparison_scope": "same_set", "comparison_ids": ["n7", "v2"]},
+        {"dimension_id": "comms_memory_cue", "group": "direction", "dimension": "核心记忆线索潜力", "score": 4, "status": "scored", "required": true, "evidence": "“去趟虎跑”与“喝一口就算到了”形成可复述的邀约和回应，中间用“青屿无糖茶”及“虎跑泉水”把目的地接到产品。相对另两案，线索是眼前工作动作到想象目的地；有文字潜力，未证明目的地或品牌的实际记忆率。", "comparison_scope": "same_set", "comparison_ids": ["n7", "v2"]},
+        {"dimension_id": "comms_concise_restatement", "group": "copy", "dimension": "简洁复述", "score": 4, "status": "scored", "required": true, "evidence": "可简述为先放下鼠标，在工位喝一口用了虎跑泉水的青屿无糖茶，就当去了一趟虎跑。匿名首读已经得到这一读法。相对n7多一个想象动作，相对v2无需交代共同经历，仍可一句话讲清。", "comparison_scope": "same_set", "comparison_ids": ["n7", "v2"]},
+        {"dimension_id": "comms_information_roles", "group": "copy", "dimension": "主文副文的信息分工", "score": 4, "status": "scored", "required": true, "evidence": "主文“鼠标放一放”设定当下动作，“去趟虎跑”提出目的地；副文给工位、开瓶、用水依据并用“就算到了”结尾。相对另两案，副文承担怎样原地完成去的解释，不是通用产品尾注。", "comparison_scope": "same_set", "comparison_ids": ["n7", "v2"]}
+      ],
+      "positive_claims": [
+        {"id": "r2-comms-k4-p1", "claim": "工位出游的玩笑由明确动作串起，不必先补出具体虎跑风景才能讲清。", "evidence": "“鼠标放一放”“工位上拧开”“喝一口就算到了”在匿名首读中读作工作中的想象出游。"},
+        {"id": "r2-comms-k4-p2", "claim": "目的地在副文有可指认的产品依据。", "evidence": "“去趟虎跑”对应“青屿无糖茶”及“茶里用到了虎跑泉水”。"}
+      ],
+      "issues": [
+        {"id": "r2-comms-k4-i1", "evidence": "“鼠标放一放，去趟虎跑”单看仍可像真的离开电脑出游，读到“工位上拧开”与“就算到了”才确定为想象。", "severity": "minor", "blocking": false, "stage": "slogan", "suggested_action": "保持两句的连续阅读关系，后续打样核验主文与揭晓是否能一同读到；合读文字已完成解释。"}
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "仅通过传播岗位四项本地文字概念评审，不含工位行为采用、茶歇效果或真实传播效果。",
+      "limits": ["主文单独出现时品牌不可指认。", "虎跑熟悉度、对目的地的兴趣和实际版式未知，不等于当前文字自动失败。", "想象抵达不是出行事实或产品功效。"]
+    },
+    {
+      "id": "v2",
+      "scores": [
+        {"dimension_id": "comms_direction_distinction", "group": "direction", "dimension": "同组三案辨识", "score": 4, "status": "scored", "required": true, "evidence": "“上回你带我去虎跑，这回换我给你带茶”写共同旧游与当下往来，“看见这名字，就想起你”交代捎茶起因。n7说明两个名字身份，k4在工位想象抵达，都没有这个特定你我关系。换上中性身份副文仍可推知为何选茶，但明确的见名想人时刻消失；反向换入v2副文则出现无铺垫的你。区别达到同组基准。", "comparison_scope": "same_set", "comparison_ids": ["n7", "k4"]},
+        {"dimension_id": "comms_memory_cue", "group": "direction", "dimension": "核心记忆线索潜力", "score": 4, "status": "scored", "required": true, "evidence": "主文的“虎跑”既是两人旧游地点，副文的“虎跑泉水”又是这瓶青屿的用水；“你带我”与“我给你带”让往来可复述。相对R1泛用请茶记忆，本轮实际句子有可回到用水的具体地名线索；相对n7和k4，它承接特定关系，未证明实际品牌记忆。", "comparison_scope": "same_set", "comparison_ids": ["n7", "k4"]},
+        {"dimension_id": "comms_concise_restatement", "group": "copy", "dimension": "简洁复述", "score": 4, "status": "scored", "required": true, "evidence": "可简述为看到青屿用了虎跑泉水，想起曾带自己去虎跑的人，于是给对方带瓶茶。匿名首读已读出旧游、带茶与见名想人。比n7需要保留更多情节，但关系明确，一句仍能讲清。", "comparison_scope": "same_set", "comparison_ids": ["n7", "k4"]},
+        {"dimension_id": "comms_information_roles", "group": "copy", "dimension": "主文副文的信息分工", "score": 4, "status": "scored", "required": true, "evidence": "主文交代过去谁带谁、现在谁给谁带茶，副文先说“这瓶青屿无糖茶用到了虎跑泉水”，再用“看见这名字，就想起你”连接产品与挑茶时刻。相对n7逐项解释和k4原地抵达，它承担为什么此时给这个人带这一瓶的缘由。", "comparison_scope": "same_set", "comparison_ids": ["n7", "k4"]}
+      ],
+      "positive_claims": [
+        {"id": "r2-comms-v2-p1", "claim": "产品用水名称在故事中成为捎茶理由，超出了泛用的我请你喝茶。", "evidence": "“上回你带我去虎跑”与“虎跑泉水。看见这名字，就想起你”共用地点线索，首读也得到共同回忆。"},
+        {"id": "r2-comms-v2-p2", "claim": "两次带形成可复述的人际往来，读者能分清谁对谁说话。", "evidence": "“你带我去虎跑”与“我给你带茶”有明确的你我对调。"}
+      ],
+      "issues": [
+        {"id": "r2-comms-v2-i1", "evidence": "“这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你”同段有青屿和虎跑两个名字，“这名字”存在短暂指代歧义。主文已点出共同去过虎跑，合读时主要落向虎跑。", "severity": "minor", "blocking": false, "stage": "slogan", "suggested_action": "后续呈现保留主文虎跑与副文虎跑泉水的清楚衔接；若打样仍使指代摇摆，再定点明确指代。当前主副文合读未阻断核心复述。"}
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "仅通过传播岗位四项本地文字概念评审，按一次有共同旧游经历的虚构对话理解。",
+      "limits": ["适用关系较窄，不能把共同去过虎跑推为办公人群的普遍经历。", "主文单独无法指认青屿，品牌归属依赖副文。", "故事自然度、真实偏好、记忆与分享均未实测。"]
+    }
+  ],
+  "previous_issues": [
+    {"id": "r2-comms-prev-n7-i1", "previous_issue_id": "n7-i1", "item_id": "n7", "status": "closed", "evidence": "旧问题是n7与v2换副文后主要只换口吻。新版n7以“两张名片”要求“青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水”双身份对应；v2副文的“就想起你”不能完成这一中性的逐项介绍，还新增无铺垫的你。即使仍能猜出产品和用水，身份介绍与人际回忆已可辨。", "limits": "关闭的是同组辨识阻断，不表示主文名片歧义或版式已验证。"},
+    {"id": "r2-comms-prev-k4-i1", "previous_issue_id": "k4-i1", "item_id": "k4", "status": "retained", "evidence": "新版“鼠标放一放，去趟虎跑”仍像出门邀约，副文“工位上拧开”与“喝一口就算到了”完成揭晓。匿名首读仍先注意到真实出游的可能。", "blocking": false, "current_issue_id": "r2-comms-k4-i1", "limits": "保留为非阻断的共同呈现要求，实际版面验证尚未进行。"},
+    {"id": "r2-comms-prev-v2-i1", "previous_issue_id": "v2-i1", "item_id": "v2", "status": "closed", "evidence": "新版不再只说“特意挑了”，而以“上回你带我去虎跑”建立来历，再由“看见这名字，就想起你”给出捎茶起因。换n7副文后虽可推知原因，却失去被明确说出的见名想人；n7接v2副文则没有这个你的来历。两案机制有具体差别。", "limits": "不要求换句后语法不通，也不把两案共享用水事实判为同一机制。"},
+    {"id": "r2-comms-prev-v2-i2", "previous_issue_id": "v2-i2", "item_id": "v2", "status": "closed", "evidence": "旧问题是“这瓶茶，我请”的记忆泛用、虎跑只是追加信息。新版主文先写共同去过的“虎跑”，副文明确这瓶“青屿无糖茶用到了虎跑泉水”，并说见名想你。记忆线索已能从人物往来回到具体用水名字。", "limits": "签发的是文字记忆线索潜力，不是实际品牌记忆提升。"}
+  ],
+  "pairwise": [
+    {
+      "ids": ["n7", "k4"],
+      "distinctive_reading": "n7让读者认清两个名称的身份，k4让眼前的工位停顿变成想象抵达。",
+      "swap_results": [
+        {"main_from": "n7", "sub_from": "k4", "retained": "青屿无糖茶与虎跑泉水仍明确，可猜两个名称就是两张名片。", "lost": "没有分别报牌子与水的身份，“喝一口就算到了”也没有前文目的地邀约，双身份问答被工位动作替代。"},
+        {"main_from": "k4", "sub_from": "n7", "retained": "知道品牌和用水，能推知虎跑为何与茶有关。", "lost": "工位、拧开、喝一口算抵达的揭晓消失，只剩停鼠标与身份说明，原地出游没有完成。"}
+      ],
+      "decision": "pass_within_pair",
+      "reason": "具体损失是身份逐项对应与原地抵达，不依赖换后读不通。"
+    },
+    {
+      "ids": ["n7", "v2"],
+      "distinctive_reading": "n7给陌生名称分身份，v2借熟悉地名给特定人带茶。",
+      "swap_results": [
+        {"main_from": "n7", "sub_from": "v2", "retained": "产品、品牌、用水仍可读出，两个名字仍可对应两张名片。", "lost": "没有逐项报身份，“看见这名字，就想起你”新增没有来历的你。中性介绍忽然变成私人留言。"},
+        {"main_from": "v2", "sub_from": "n7", "retained": "共享虎跑地点仍足以推测为何带这种茶，旧游与往来并未完全消失。", "lost": "说到品牌和水身份即结束，没有明确说出选茶人见名想起对方的那一刻，私人留言转成产品说明。"}
+      ],
+      "decision": "pass_within_pair",
+      "reason": "新版这对有身份介绍与见名想人的实质差别。反向换句仍能猜出缘由，不把它夸大成完全断裂，也不否定实际读得到的两种收获。"
+    },
+    {
+      "ids": ["k4", "v2"],
+      "distinctive_reading": "k4从当下工作动作出发，v2从共同过去出发。前者得到原地喝茶的玩笑，后者得到对特定人的捎茶口信。",
+      "swap_results": [
+        {"main_from": "k4", "sub_from": "v2", "retained": "虎跑目的地与虎跑泉水仍相连，也能另读成邀熟人出游。", "lost": "工位与喝一口算抵达不再出现，转入没有旧游铺垫的想起你，原地出游未揭晓。"},
+        {"main_from": "v2", "sub_from": "k4", "retained": "仍可读成给旧游伙伴带茶并邀他在工位重游，品牌、用水与去虎跑均存在。", "lost": "不再明说看见名字想起对方的起因，收尾变为喝茶抵达的玩笑。人际关系仍在，但收获转到另一个动作。"}
+      ],
+      "decision": "pass_within_pair",
+      "reason": "两者虽都提去虎跑，时间关系、说话对象与副文完成的动作不同。允许混合版仍有可读的故事，不因此抹平两案机制。"
+    }
+  ],
+  "brand_swap_diagnostic": "换为另一个同样确实使用虎跑泉水的茶品牌，多数句子仍可成立。这说明尚非品牌专属资产，不单独构成当前文字概念否决；未假设实际存在该竞品或来源独家性。",
+  "set_decision": "pass",
+  "set_reason": "三案均在本岗四项达到4分。身份介绍、工位想象抵达、旧游见名想人的机制既能从实际句子辨认，也已在封存首读中出现。三对换句保留了共享事实，同时各有可指认的信息或动作损失。本岗未发现当前阻断或硬退。通过只在传播岗位文字概念范围，非客户批准或整组最终推荐。",
+  "limits": [
+    "没有真实消费者、客户或传播测试，全部分数为内部模型文字概念尺度。",
+    "没有计时注意、品牌记忆、分享或购买测量，不声称效果已发生。",
+    "未做视觉版式，主文独立出现的归属和歧义须在呈现阶段核验。",
+    "比较范围仅本组三案，不评市场绝对独创，不给最终推荐。"
+  ],
+  "review_independence": "未参与创作。未打开其他角色评分、对抗或导演报告。按指令读取的v2/RESPONSE.json自身内嵌其他角色回应和sourceRole=director条目，该暴露如实披露；未将其判断或addressed_in_draft当作关闭依据。以上关闭与评分均引用实际主副文、封存首读和仅本岗R1旧问题。",
+  "first_read_preservation": "本轮仅新增score.json和score.md，未覆盖匿名首读。"
+}

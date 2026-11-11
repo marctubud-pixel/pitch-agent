@@ -1,0 +1,341 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "user",
+  "model_id": "gpt-6.1-terra",
+  "packet_version": "r2",
+  "report_id": "qingyu-r2-user-score",
+  "input_hashes": {
+    "packets/r2/SCORE-INSTRUCTIONS.md": "d984dcfbd88420cc6ced1608897b4d8b6632947d7ab6d063c3cd5862fcd1d787",
+    "packets/r2/FACTS.md": "2b4cda986d14436cc033e27b40a771d73ccdeb0af959f41ffeb5762e93c0d184",
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50",
+    "v2/RESPONSE.json": "1943ed32123471d74e9614b6f15431032fbc964c0933d66422041700ca26a504",
+    "reviews/r1-user/score.json": "d21926577e94a3fb14c019f2144f0edd26659f1be76ce86ea97113ebd553063b",
+    "reviews/r2-user/first-read.json": "a1f7c80be779435190d5e568abf72148b2d41861ddc06aee3ca5a20732818d4c",
+    "packets/r2/first-user.md": "91b6fc838e0147e1a2223f0a7de5f33128a17dc6948fe24d91d22569e62e2434"
+  },
+  "first_read": {
+    "path": "reviews/r2-user/first-read.json",
+    "sha256": "a1f7c80be779435190d5e568abf72148b2d41861ddc06aee3ca5a20732818d4c",
+    "change_after_fact_check": "首读的身份、共同经历与原地抵达理解保持；核验后知道茶种、水源凭据和真实接受度未确认。"
+  },
+  "items": [
+    {
+      "id": "n7",
+      "scores": [
+        {
+          "dimension_id": "selection_context",
+          "group": "direction",
+          "dimension": "与设定选择情景的关联",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘一瓶无糖茶’与选茶直接相关；副文‘青屿，是茶的牌子’和用水身份为比较产品提供可读信息。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "benefit_emotion",
+          "group": "direction",
+          "dimension": "利益或情绪的具体可理解性",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘两张名片’和副文逐项识别牌子及用水，读者得到明确产品信息；不推断购买收益。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "direct_understanding",
+          "group": "copy",
+          "dimension": "直接理解",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水’直接交代两者身份；主文独读有待副文解释。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "credible_language",
+          "group": "copy",
+          "dimension": "语言可信与不费解",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘两张名片’是比喻，副文逐一落到品牌与用水，合读可理解，不需要假定泉水知名。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "u2-n7-p1",
+          "claim": "用两项身份帮助读者区分品牌与用水。",
+          "evidence": "‘青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。’"
+        }
+      ],
+      "issues": [
+        {
+          "id": "u2-n7-i1",
+          "evidence": "‘两张名片’单独出现时可能被读成随瓶附卡，副文才解释比喻。",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "suggested_action": "打样时核验主副文是否能被一起看到。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "设定的城市办公者选茶文字概念，模拟阅读判断",
+      "limits": "非真实消费者测试；偏好、记忆与购买效果未知，茶种和水源凭据待补。"
+    },
+    {
+      "id": "k4",
+      "scores": [
+        {
+          "dimension_id": "selection_context",
+          "group": "direction",
+          "dimension": "与设定选择情景的关联",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘鼠标放一放’及‘工位上拧开青屿无糖茶’贴近设定中的城市办公者，实际购买场景与习惯未知。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "benefit_emotion",
+          "group": "direction",
+          "dimension": "利益或情绪的具体可理解性",
+          "score": 3,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘去趟虎跑’与‘喝一口就算到了’交代停手喝茶和想象抵达，但对不熟悉虎跑的人，抵达那里为何让停顿更有意思仍不具体。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "direct_understanding",
+          "group": "copy",
+          "dimension": "直接理解",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘工位上拧开’、‘茶里用到了虎跑泉水，喝一口就算到了’合读能理解为原地喝茶的比喻。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "credible_language",
+          "group": "copy",
+          "dimension": "语言可信与不费解",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘去趟虎跑’单读可能像实际出行，副文的工位和‘就算到了’让比喻成立，但解释仍依赖合读。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "u2-k4-p1",
+          "claim": "放下鼠标、开瓶和喝一口构成可复述的短暂停顿。",
+          "evidence": "‘鼠标放一放’；‘工位上拧开青屿无糖茶’；‘喝一口就算到了’"
+        }
+      ],
+      "issues": [
+        {
+          "id": "u2-k4-i1",
+          "evidence": "‘去趟虎跑’和‘喝一口就算到了’解释了动作，未给不认识虎跑的读者一个具体可感的抵达意义。",
+          "severity": "major",
+          "blocking": true,
+          "stage": "slogan",
+          "suggested_action": "在不虚构产地或功效的前提下，让停顿或目的地的感受更具体。"
+        },
+        {
+          "id": "u2-k4-i2",
+          "evidence": "‘去趟虎跑’单读仍可理解为真实出行，工位与比喻解释都在副文。",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "suggested_action": "打样核验主副文共同可见及单读误解。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "revise",
+      "scope": "设定的城市办公者选茶文字概念，模拟阅读判断",
+      "limits": "非真实消费者测试；偏好、记忆与购买效果未知，茶种和水源凭据待补。"
+    },
+    {
+      "id": "v2",
+      "scores": [
+        {
+          "dimension_id": "selection_context",
+          "group": "direction",
+          "dimension": "与设定选择情景的关联",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘这回换我给你带茶’提供选茶捎给特定对象的具体情景，属于可能的选购用途；是否普遍发生未知。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "benefit_emotion",
+          "group": "direction",
+          "dimension": "利益或情绪的具体可理解性",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘上回你带我去虎跑’与‘看见这名字，就想起你’使共同经历触发惦念和捎茶的情绪可复述，适用对象较窄。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "direct_understanding",
+          "group": "copy",
+          "dimension": "直接理解",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "主文交代过去同行与现在带茶，副文给出青屿、无糖茶和虎跑泉水，合读可理解。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "credible_language",
+          "group": "copy",
+          "dimension": "语言可信与不费解",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "‘看见这名字’指向虎跑或虎跑泉水略有歧义，但两者共享地名，结合前句不妨碍理解缘由。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "u2-v2-p1",
+          "claim": "共同地点让看到泉水名字与想起对方、带茶构成具体因果。",
+          "evidence": "‘上回你带我去虎跑’；‘看见这名字，就想起你。’"
+        }
+      ],
+      "issues": [
+        {
+          "id": "u2-v2-i1",
+          "evidence": "‘看见这名字’可能指虎跑或虎跑泉水；‘上回你带我去虎跑’限定故事对象。",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "suggested_action": "版面或后续测试中核验代指，保留特定故事，不推断大众偏好。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "设定的城市办公者选茶文字概念，模拟阅读判断",
+      "limits": "非真实消费者测试；偏好、记忆与购买效果未知，茶种和水源凭据待补。"
+    }
+  ],
+  "previous_issues": [
+    {
+      "issue_id": "u-n7-i1",
+      "status": "closed",
+      "evidence": "新版删去“有名有姓”，改为“虎跑泉水，是这瓶茶用到的水”，不再依赖名气解释身份；是否认识泉名仍待真实测试。"
+    },
+    {
+      "issue_id": "u-k4-i1",
+      "status": "retained",
+      "evidence": "“鼠标放一放”及“喝一口就算到了”补足动作，仍未具体说明陌生读者为何向往这个去处。"
+    },
+    {
+      "issue_id": "u-k4-i2",
+      "status": "retained",
+      "evidence": "“去趟虎跑”单读仍可被当作实际出行，“工位上拧开”及“就算到了”在副文才揭晓。"
+    },
+    {
+      "issue_id": "u-v2-i1",
+      "status": "closed",
+      "evidence": "“上回你带我去虎跑”与“看见这名字，就想起你”给这次选茶捎人的虚构情境以具体缘由；不宣称普遍送茶需求。"
+    },
+    {
+      "issue_id": "u-v2-i2",
+      "status": "closed",
+      "evidence": "删去“特意挑了”；“上回你带我去虎跑”和“看见这名字，就想起你”说明熟悉地点与选择的联系，不依赖名泉声望。"
+    }
+  ],
+  "pairwise": [
+    {
+      "ids": [
+        "n7",
+        "k4"
+      ],
+      "comparison": "n7的“两张名片”逐项辨别牌子与用水；k4的“鼠标放一放”与“喝一口就算到了”提供停顿动作。",
+      "retained": "互换后仍能读到青屿及虎跑泉水。",
+      "lost": "n7换k4副文，两个名字的身份需自行归纳；k4换n7副文，工位喝一口即抵达的揭晓消失。"
+    },
+    {
+      "ids": [
+        "n7",
+        "v2"
+      ],
+      "comparison": "n7以“青屿，是茶的牌子”介绍身份；v2以“上回你带我去虎跑”建立个人关系。",
+      "retained": "互换后仍可识别产品与泉水；v2主配n7副也可猜到地点与带茶有关。",
+      "lost": "n7换v2副文多出未交代的“你”；v2换n7副文少了“看见这名字，就想起你”的具体触发。"
+    },
+    {
+      "ids": [
+        "k4",
+        "v2"
+      ],
+      "comparison": "k4的“喝一口就算到了”是自己原地想象抵达；v2的“看见这名字，就想起你”是因共同经历想起他人。",
+      "retained": "互换后都保留虎跑及泉水关系；v2主配k4副仍可想象一起喝茶。",
+      "lost": "k4换v2副文没有原地抵达的揭晓；v2换k4副文失去看见名字想起对方的时刻。"
+    }
+  ],
+  "set_decision": "revise",
+  "set_reason": "三案分别以身份辨认、原地抵达、共同经历触发捎茶形成不同机制；k4情绪利益具体可理解性为3，需修改，不能由其余分数抵消。",
+  "limits": "内部模拟评估，不是消费者研究、客户批准或传播效果测试。"
+}

@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="868" viewBox="0 0 1440 868" role="img" aria-labelledby="title description">
+  <title id="title">青屿包装工作样</title>
+  <desc id="description">一张青色山线连上桌沿的瓶标及同款两张电商图，茶种与配料留有工作标签。</desc>
+  <defs>
+    <style>
+      text{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;fill:#153e40}
+      .label{font-size:17px;fill:#3c6261;font-weight:600}
+      .note{font-size:16px;fill:#466563}
+      .edge{fill:none;stroke:#20605f;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+      .thin{fill:none;stroke:#3d7570;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+    <g id="open-bottle" fill="#e4f1e9" stroke="#20605f" stroke-width="2.4" stroke-linejoin="round">
+      <path d="M7 0h10v3h-1v5c0 3 7 6 7 12v25q0 4-4 4H5q-4 0-4-4V20c0-6 7-9 7-12V3H7z"/>
+      <path d="M1 23h22v17H1z" fill="#9bcac1"/>
+      <path d="m3 35 4-4 3 2 4-5 5 7h3" fill="none" stroke-width="1.2"/>
+      <ellipse cx="12" cy="1" rx="5" ry="1.5" fill="#20605f"/>
+      <path d="M31 40h16v8H31z" fill="#87bdb2"/>
+      <ellipse cx="39" cy="40" rx="8" ry="2.2" fill="#a8d0c3"/>
+      <path d="M35 42v5m4-5v5m4-5v5" stroke-width="1"/>
+    </g>
+    <g id="bottle-body">
+      <path d="M38 17h25v9c0 8 15 17 16 28v115q0 8-8 8H30q-8 0-8-8V54c1-11 16-20 16-28z" fill="#e0eee5" stroke="#3a6c66" stroke-width="1.6"/>
+      <path d="M23 61h55v79H23z" fill="#b6dbd0"/>
+      <text x="50" y="82" text-anchor="middle" font-size="15" font-weight="700">青屿</text>
+      <text x="50" y="94" text-anchor="middle" font-size="7.5">无糖即饮茶</text>
+      <text x="29" y="102" font-size="4.5">借个桌角，</text>
+      <text x="29" y="108" font-size="4.5">开瓶喝茶。</text>
+      <path d="m23 123 11-8 7 4 9-9 10 10h17" class="thin"/>
+      <path d="m50 120 15 5 12-5" class="thin"/>
+      <text x="50" y="135" text-anchor="middle" font-size="5.5">茶种待核 · 工作样</text>
+    </g>
+    <g id="front-bottle">
+      <use href="#bottle-body"/>
+      <path d="M35 6h31v11H35z" fill="#87bdb2" stroke="#3a6c66" stroke-width="1.5"/>
+    </g>
+    <g id="window-bottle">
+      <use href="#bottle-body"/>
+      <ellipse cx="50.5" cy="17" rx="12.5" ry="2.6" fill="#3a6c66"/>
+      <path d="M87 161h25v13H87z" fill="#87bdb2" stroke="#3a6c66" stroke-width="1.5"/>
+      <ellipse cx="99.5" cy="161" rx="12.5" ry="3.2" fill="#a8d0c3" stroke="#3a6c66" stroke-width="1.5"/>
+      <path d="M92 164v8m7-8v8m7-8v8" stroke="#3a6c66" stroke-width="1.2"/>
+    </g>
+  </defs>
+  <rect width="1440" height="868" fill="#f6f7f0"/>
+  <text x="48" y="64" font-size="34" font-weight="700">青屿 · 包装工作样</text>
+  <text x="1390" y="59" text-anchor="end" class="note">茶种与配料待核　｜　平面示意 · 未定稿</text>
+  <path d="M48 89h1344" stroke="#bed2c9"/>
+  <text x="48" y="133" font-size="22" font-weight="700">便利店 · 瓶标展开</text>
+  <text x="823" y="133" font-size="22" font-weight="700">手机 · 同一款商品</text>
+  <g transform="translate(48 163)">
+    <rect width="334" height="574" rx="5" fill="#bdded2" stroke="#70a59a"/>
+    <text x="28" y="75" font-size="61" font-family="STSong,Songti SC,serif" font-weight="700">青屿</text>
+    <text x="31" y="115" font-size="26" font-weight="650">无糖即饮茶</text>
+    <text x="28" y="207" font-size="39" font-weight="650">借个桌角，</text>
+    <text x="28" y="258" font-size="39" font-weight="650">开瓶喝茶。</text>
+    <path d="M0 390 31 370 61 380 109 333 130 345 162 307 219 376 286 399 334 379v12l-48 20-78-27" class="edge"/>
+    <path d="m42 387 28-8 38-35 14 8m21-23 17-13 22 25" class="thin"/>
+    <path d="M225 377l27-13m34 35 1 41" class="thin"/>
+    <use href="#open-bottle" transform="translate(243 335) scale(.87)"/>
+    <rect x="28" y="466" width="243" height="43" rx="2" fill="#edf3e8" stroke="#719e93"/>
+    <text x="41" y="494" font-size="21" font-weight="600">茶种待核 · 工作样</text>
+    <text x="29" y="548" font-size="19">500 mL</text>
+  </g>
+  <g transform="translate(396 163)">
+    <rect width="91" height="574" rx="4" fill="#a8d0c3" stroke="#70a59a"/>
+    <text x="16" y="270" font-size="20" font-weight="600">配料</text>
+    <text x="16" y="300" font-size="18">见背面</text>
+    <path d="M18 323h47m-7-6 7 6-7 6" class="edge"/>
+  </g>
+  <g transform="translate(501 163)">
+    <rect width="276" height="574" rx="5" fill="#edf2e6" stroke="#90afa3"/>
+    <text x="24" y="67" font-size="34" font-weight="700">青屿</text>
+    <text x="24" y="103" font-size="24">无糖即饮茶</text>
+    <path d="M24 158h228" stroke="#9db8aa"/>
+    <text x="24" y="209" font-size="27" font-weight="650">配料表</text>
+    <rect x="24" y="233" width="228" height="51" rx="2" fill="#f6f6ec" stroke="#90afa3"/>
+    <text x="34" y="265" font-size="17">完整配料待核 · 工作样</text>
+    <text x="24" y="548" font-size="19">500 mL</text>
+  </g>
+  <text x="48" y="772" class="label">正面</text>
+  <text x="396" y="772" class="label">侧面</text>
+  <text x="501" y="772" class="label">背面</text>
+  <path d="M799 165v617" stroke="#c3d3c8"/>
+  <g transform="translate(823 163)">
+    <rect width="568" height="195" rx="7" fill="#fff" stroke="#b8ccc1"/>
+    <rect x="14" y="15" width="162" height="165" rx="3" fill="#d6e8dc"/>
+    <path d="m14 145 37-31 27 19 22-26 31 39 45-8m-83 13 37 7 46-13" class="thin"/>
+    <use href="#front-bottle" transform="translate(52 19) scale(.87)"/>
+    <text x="198" y="45" font-size="25" font-weight="700">青屿 无糖即饮茶</text>
+    <text x="198" y="83" font-size="24" font-weight="650">借个桌角，开瓶喝茶。</text>
+    <text x="199" y="117" font-size="21">500 mL</text>
+    <rect x="198" y="135" width="211" height="36" rx="2" fill="#f2f3e9" stroke="#a5bdaf"/>
+    <text x="211" y="160" font-size="18">茶种待核 · 工作样</text>
+  </g>
+  <text x="823" y="389" class="label">列表缩略图与商品标题</text>
+  <g transform="translate(823 421)">
+    <rect width="568" height="316" rx="6" fill="#d9ebe0" stroke="#90afa3"/>
+    <text x="27" y="63" font-size="38" font-weight="650">借个窗台，</text>
+    <text x="27" y="111" font-size="38" font-weight="650">开瓶喝茶。</text>
+    <path d="M0 234 56 209 85 219 131 188 157 197 203 157 246 207 282 188 313 220h241V24h-95v196" class="edge"/>
+    <path d="M319 222h233l-14 12H305l14-12zm186-196v119h46m-105 77v-86" class="thin"/>
+    <use href="#window-bottle" transform="translate(317 67) scale(.86)"/>
+    <text x="27" y="282" font-size="21">青屿 无糖即饮茶 · 500 mL</text>
+  </g>
+  <text x="823" y="772" class="label">商品第二张图</text>
+  <text x="823" y="819" class="note">查看配料图　　配料表 ｜ 完整配料待核 · 工作样</text>
+</svg>

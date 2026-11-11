@@ -1,0 +1,1393 @@
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/README.md /home/claude/proposal-workbench/README.md
+--- before/README.md	2026-10-31 02:38:12.000000000 +0800
++++ /home/claude/proposal-workbench/README.md	2026-11-03 06:38:16.092669683 +0800
+@@ -55,7 +55,7 @@
+ 
+ ### Working modes and checkpoints
+ 
+-A proposal runs in **Automatic** mode (agents produce, review and hand over within the brief) or **Assisted** mode with checkpoints you choose (strategy, copy & themes, visual development, content review, final delivery). At a checkpoint nothing continues until a person decides: *Approve and continue*, or *Ask for a revision* with a comment. Silence is never approval, and WorkBot cannot decide. Choosing a direction against reviewer advice is recorded as *chosen despite review*, separately from *passed review*. A preference never turns an unsupported fact into evidence: research stays unreleased until the working evidence checks pass.
++A proposal runs in **Automatic** mode (agents produce, review and hand over within the brief) or **Assisted** mode with checkpoints you choose (strategy, copy & themes, visual development, content review, final delivery). At a checkpoint nothing continues until a person decides: *Approve {stage} and continue*, or *Ask for a revision* with a comment. Both apply to the whole stage, not to one direction. Silence is never approval, and WorkBot cannot decide. Choosing a direction against reviewer advice is recorded as *chosen despite review*, separately from *passed review*. A preference never turns an unsupported fact into evidence: research stays unreleased until the working evidence checks pass.
+ 
+ ## What to try
+ 
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/scripts/e2e.mjs /home/claude/proposal-workbench/scripts/e2e.mjs
+--- before/scripts/e2e.mjs	2026-10-29 00:39:48.000000000 +0800
++++ /home/claude/proposal-workbench/scripts/e2e.mjs	2026-11-03 06:24:06.014855128 +0800
+@@ -373,7 +373,7 @@
+   expect(await cp.getByRole('button', { name: 'Ask for a revision' }).isDisabled(), 'revision needs a comment');
+   await cp.getByText('Say what should change first.').waitFor();
+   await cp.getByLabel('Your comment').fill('C is right: keep the printed knot as a graphic.');
+-  await cp.getByRole('button', { name: 'Approve and continue' }).click();
++  await cp.getByRole('button', { name: 'Approve Visual development and continue' }).click();
+   await toast('You approved Visual development');
+   await cp.waitFor({ state: 'detached' });
+   await go('/p/plumtide');
+@@ -391,10 +391,10 @@
+   const box = page.locator('.pw-contrib');
+   await box.getByRole('button', { name: 'Add an idea' }).click();
+   await box.getByRole('radio', { name: 'Line' }).click();
+-  expect(await box.getByRole('button', { name: 'Add to this stage' }).isDisabled(), 'an empty idea cannot be added');
++  expect(await box.getByRole('button', { name: 'Add to Copy & themes' }).isDisabled(), 'an empty idea cannot be added');
+   await box.getByLabel('Your line').fill('Cold looks good on you.');
+-  await box.getByRole('button', { name: 'Add to this stage' }).click();
+-  await toast('Added. The agents will take it into account.');
++  await box.getByRole('button', { name: 'Add to Copy & themes' }).click();
++  await toast('Added to Copy & themes. The agents will take it into account.');
+   await box.getByText('Cold looks good on you.').waitFor();
+   await box.locator('.pw-contrib__list li', { hasText: 'Cold looks good on you.' }).getByText(/· New$/).waitFor();
+   await rail().locator('a', { hasText: 'Copy & themes' }).waitFor();
+@@ -1007,6 +1007,81 @@
+   await page.getByRole('link', { name: 'Fix the evidence issues' }).waitFor();
+ });
+ 
++await step('F01: an unsent idea stays with its own project and stage, and is added where the form says', async () => {
++  await go('/p/northline/proposal/visual');
++  const box = page.locator('.pw-contrib');
++  await box.getByRole('button', { name: 'Add an idea' }).click();
++  await box.getByRole('radio', { name: 'Reference' }).click();
++  await box.getByLabel(/What is the reference/).fill('Frost on a wool sleeve');
++  await box.getByLabel('What should be borrowed from it?').fill('the macro scale');
++  expect(/Visual development/.test(await box.locator('.pw-contrib__dest').innerText()), 'the form names its destination');
++  await rail().locator('a', { hasText: 'Strategy' }).click();
++  await page.waitForFunction(() => location.hash.includes('/proposal/strategy'));
++  expect((await page.locator('.pw-contrib textarea').count()) === 0, 'the Visual draft does not appear in Strategy');
++  await page.locator('.pw-contrib__elsewhere').getByRole('link', { name: 'Visual development' }).waitFor();
++  await go('/p/plumtide/proposal/visual');
++  expect((await page.locator('.pw-contrib textarea').count()) === 0, 'drafts do not leak between projects');
++  await go('/p/northline/proposal/visual');
++  expect((await box.getByLabel(/What is the reference/).inputValue()) === 'Frost on a wool sleeve', 'the draft text is restored');
++  expect((await box.getByLabel('What should be borrowed from it?').inputValue()) === 'the macro scale', 'the borrowing note is restored');
++  await box.getByRole('button', { name: 'Add to Visual development' }).click();
++  await toast('Added to Visual development');
++  await box.locator('.pw-contrib__list li', { hasText: 'Frost on a wool sleeve' }).waitFor();
++  await go('/p/northline/proposal/strategy');
++  expect(!(await page.locator('.pw-contrib').innerText()).includes('Frost on a wool sleeve'), 'the idea is not listed under Strategy');
++});
++
++await step('F02: a strategy evidence chip opens that claim, and leads back to the same step', async () => {
++  await go('/p/northline/proposal/strategy');
++  await page.locator('.pw-ev__chip', { hasText: 'Interviews' }).first().click();
++  const drawer = checksDrawer();
++  await drawer.locator('.claim-quote').waitFor();
++  await drawer.getByText(/SUPPORTING EXCERPTS|Supporting excerpts/).waitFor();
++  await drawer.getByRole('link', { name: 'Back to the reasoning' }).click();
++  await page.waitForFunction(() => location.hash.includes('/proposal/strategy') && location.hash.includes('focus=arg-1'));
++  await page.waitForFunction(() => { const r = document.querySelector('[data-focus="arg-1"]')?.getBoundingClientRect(); return !!r && r.top >= 0 && r.top < innerHeight; });
++  await go('/p/northline/proposal/research?claim=not-a-claim&ev=Ghost');
++  await page.locator('.pw-evstate[data-tone="warn"]', { hasText: 'Ghost' }).waitFor();
++  expect((await page.locator('dialog.pw-drawer[open]').count()) === 0, 'a missing claim is reported, not opened');
++});
++
++await step('F03: the pending action opens the waiting direction and the panel names what is decided', async () => {
++  await go('/p/plumtide');
++  await page.locator('.ov-confirm a', { hasText: 'Visual development is waiting for your decision' }).click();
++  await page.locator('.pw-branch[aria-selected="true"]', { hasText: 'Pass it on' }).waitFor();
++  const cp = page.locator('.pw-checkpoint');
++  await cp.getByText('The whole Visual development stage').waitFor();
++  await cp.getByText(/Direction C · Pass it on/).waitFor();
++  await cp.getByText(/refined artwork v1/).waitFor();
++  await page.locator('.pw-branch', { hasText: 'Ink orchard' }).click();
++  await page.waitForTimeout(1500);
++  await page.locator('.pw-branch[aria-selected="true"]', { hasText: 'Ink orchard' }).waitFor();
++  await cp.getByRole('button', { name: 'View the pending work' }).click();
++  await page.locator('.pw-branch[aria-selected="true"]', { hasText: 'Pass it on' }).waitFor();
++  await page.locator('.pw-pendingnote').waitFor();
++  expect((await page.locator('.pw-checkpoint').count()) === 1, 'viewing the work does not decide anything');
++});
++
++await step('F04: each packaging view opens larger at its own proportions; Escape returns focus', async () => {
++  await go('/p/plumtide/proposal/visual?dir=A');
++  const views = page.locator('.pw-view');
++  const n = await views.count();
++  expect(n >= 4, `expected the packaging views, found ${n}`);
++  for (let i = 0; i < n; i++) {
++    const v = views.nth(i);
++    const small = await v.locator('.art-frame').boundingBox();
++    await v.focus();
++    await page.keyboard.press('Enter');
++    const dlg = page.locator('dialog.modal[open]');
++    await dlg.locator('.pw-viewbig .art-frame').waitFor();
++    const big = await dlg.locator('.pw-viewbig .art-frame').boundingBox();
++    expect(big.width * big.height > small.width * small.height * 2, `view ${i + 1} is visibly larger`);
++    await page.keyboard.press('Escape');
++    await dlg.waitFor({ state: 'detached' }).catch(() => {});
++    expect(await v.evaluate((el) => el === document.activeElement), `focus returns to view ${i + 1}`);
++  }
++});
++
+ await step('Colour mode follows the system by default, can be pinned light or dark, and is remembered', async () => {
+   await go('/');
+   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/i18n/messages/en.ts /home/claude/proposal-workbench/src/i18n/messages/en.ts
+--- before/src/i18n/messages/en.ts	2026-10-29 00:28:51.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/en.ts	2026-11-03 06:14:00.119092162 +0800
+@@ -1099,6 +1099,39 @@
+   "pw.contrib.send": "Add to this stage",
+   "pw.contrib.sent": "Added. The agents will take it into account.",
+   "pw.contrib.note": "Your input is a suggestion for the agents. Facts still need evidence: a preference cannot make an unsupported claim true.",
++  "pw.contrib.destLabel": "Adds to",
++  "pw.contrib.sendTo": "Add to {stage}",
++  "pw.contrib.sentTo": "Added to {stage}. The agents will take it into account.",
++  "pw.contrib.discard": "Discard draft",
++  "pw.contrib.elsewhere": "Unsent idea drafts in other stages:",
++  "pw.ev.from": "Opened from {stage}",
++  "pw.ev.back": "Back to the reasoning",
++  "pw.ev.loading": "Finding the evidence for “{label}”…",
++  "pw.ev.error": "The research could not be loaded, so the evidence for “{label}” cannot be shown yet.",
++  "pw.ev.missing": "“{label}” is not in the current research. It may have been removed or replaced after the strategy was written.",
++  "pw.ev.openChecks": "Open reviews & checks",
++  "pw.cp.scopeLabel": "What you are deciding",
++  "pw.cp.scopeStage": "The whole {stage} stage",
++  "pw.cp.scopeNote": "Approving completes the stage and the agents move on; asking for a revision sends the whole stage back. It is not a decision on one direction alone.",
++  "pw.cp.stageVersion": "stage version v{v}",
++  "pw.cp.pendingLabel": "Waiting for review",
++  "pw.cp.direction": "Direction {id} · {name}",
++  "pw.cp.artwork": "refined artwork v{v}",
++  "pw.cp.changes": "Changes:",
++  "pw.cp.changesFirst": "first refined version, so there is no earlier version to compare.",
++  "pw.cp.changesNotRecorded": "changes since v{prev} are not recorded separately; compare the versions in the work below.",
++  "pw.cp.issues": "Still open:",
++  "pw.cp.noIssues": "no open issues recorded.",
++  "pw.cp.unmet": "requirement not met: {text}",
++  "pw.cp.below": "average {avg}, below the threshold of 4",
++  "pw.cp.view": "View the pending work",
++  "pw.cp.noWorkData": "The data does not say which artwork is waiting. Look through the directions below before deciding.",
++  "pw.cp.stageWork": "The work of {stage}, shown below.",
++  "pw.cp.approveStage": "Approve {stage} and continue",
++  "pw.vis.pendingHere": "This is the version waiting for your decision (refined artwork v{v}).",
++  "pw.vis.toDecision": "Go to the decision",
++  "pw.vis.viewOpen": "Open {label} larger",
++  "pw.vis.viewOf": "View {n} of {count}, at its own proportions.",
+   "pw.brief.assignment": "The assignment",
+   "pw.brief.noAssignment": "No assignment written yet.",
+   "pw.brief.output": "Intended output",
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/i18n/messages/es.ts /home/claude/proposal-workbench/src/i18n/messages/es.ts
+--- before/src/i18n/messages/es.ts	2026-10-29 00:28:51.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/es.ts	2026-11-03 06:14:00.130031847 +0800
+@@ -1082,6 +1082,39 @@
+   "pw.contrib.send": "Añadir a esta etapa",
+   "pw.contrib.sent": "Añadido. Los agentes lo tendrán en cuenta.",
+   "pw.contrib.note": "Tu aporte es una sugerencia para los agentes. Los hechos siguen necesitando evidencia: una preferencia no vuelve cierta una afirmación sin respaldo.",
++  "pw.contrib.destLabel": "Se añade a",
++  "pw.contrib.sendTo": "Añadir a {stage}",
++  "pw.contrib.sentTo": "Añadido a {stage}. Los agentes lo tendrán en cuenta.",
++  "pw.contrib.discard": "Descartar borrador",
++  "pw.contrib.elsewhere": "Borradores de ideas sin enviar en otras etapas:",
++  "pw.ev.from": "Abierto desde {stage}",
++  "pw.ev.back": "Volver al razonamiento",
++  "pw.ev.loading": "Buscando la evidencia de «{label}»…",
++  "pw.ev.error": "No se pudo cargar la investigación, así que aún no se puede mostrar la evidencia de «{label}».",
++  "pw.ev.missing": "«{label}» no está en la investigación actual. Puede haberse eliminado o sustituido después de escribir la estrategia.",
++  "pw.ev.openChecks": "Abrir revisiones y controles",
++  "pw.cp.scopeLabel": "Lo que decides",
++  "pw.cp.scopeStage": "Toda la etapa {stage}",
++  "pw.cp.scopeNote": "Aprobar completa la etapa y los agentes continúan; pedir una revisión devuelve toda la etapa. No es una decisión sobre una sola dirección.",
++  "pw.cp.stageVersion": "versión de la etapa v{v}",
++  "pw.cp.pendingLabel": "Pendiente de revisión",
++  "pw.cp.direction": "Dirección {id} · {name}",
++  "pw.cp.artwork": "arte refinado v{v}",
++  "pw.cp.changes": "Cambios:",
++  "pw.cp.changesFirst": "primera versión refinada, así que no hay una versión anterior para comparar.",
++  "pw.cp.changesNotRecorded": "los cambios desde la v{prev} no se registran por separado; compara las versiones en el trabajo de abajo.",
++  "pw.cp.issues": "Aún abierto:",
++  "pw.cp.noIssues": "no hay problemas abiertos registrados.",
++  "pw.cp.unmet": "requisito no cumplido: {text}",
++  "pw.cp.below": "media {avg}, por debajo del umbral de 4",
++  "pw.cp.view": "Ver el trabajo pendiente",
++  "pw.cp.noWorkData": "Los datos no indican qué arte está pendiente. Revisa las direcciones de abajo antes de decidir.",
++  "pw.cp.stageWork": "El trabajo de {stage}, más abajo.",
++  "pw.cp.approveStage": "Aprobar {stage} y continuar",
++  "pw.vis.pendingHere": "Esta es la versión que espera tu decisión (arte refinado v{v}).",
++  "pw.vis.toDecision": "Ir a la decisión",
++  "pw.vis.viewOpen": "Ampliar {label}",
++  "pw.vis.viewOf": "Vista {n} de {count}, en sus proporciones originales.",
+   "pw.brief.assignment": "El encargo",
+   "pw.brief.noAssignment": "Aún no hay encargo redactado.",
+   "pw.brief.output": "Resultado esperado",
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/i18n/messages/fr.ts /home/claude/proposal-workbench/src/i18n/messages/fr.ts
+--- before/src/i18n/messages/fr.ts	2026-10-29 00:28:51.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/fr.ts	2026-11-03 06:14:00.127167791 +0800
+@@ -1082,6 +1082,39 @@
+   "pw.contrib.send": "Ajouter à cette étape",
+   "pw.contrib.sent": "Ajouté. Les agents en tiendront compte.",
+   "pw.contrib.note": "Votre apport est une suggestion pour les agents. Les faits restent à prouver : une préférence ne rend pas vraie une affirmation non étayée.",
++  "pw.contrib.destLabel": "Ajouté à",
++  "pw.contrib.sendTo": "Ajouter à {stage}",
++  "pw.contrib.sentTo": "Ajouté à {stage}. Les agents en tiendront compte.",
++  "pw.contrib.discard": "Abandonner le brouillon",
++  "pw.contrib.elsewhere": "Brouillons d’idées non envoyés dans d’autres étapes :",
++  "pw.ev.from": "Ouvert depuis {stage}",
++  "pw.ev.back": "Revenir au raisonnement",
++  "pw.ev.loading": "Recherche de la preuve « {label} »…",
++  "pw.ev.error": "La recherche n’a pas pu être chargée : la preuve « {label} » ne peut pas encore être affichée.",
++  "pw.ev.missing": "« {label} » ne figure pas dans la recherche actuelle. Elle a peut-être été retirée ou remplacée après la rédaction de la stratégie.",
++  "pw.ev.openChecks": "Ouvrir revues et contrôles",
++  "pw.cp.scopeLabel": "Ce que vous décidez",
++  "pw.cp.scopeStage": "L’étape {stage} dans son ensemble",
++  "pw.cp.scopeNote": "Approuver termine l’étape et les agents poursuivent ; demander une révision renvoie toute l’étape. Ce n’est pas une décision sur une seule piste.",
++  "pw.cp.stageVersion": "version de l’étape v{v}",
++  "pw.cp.pendingLabel": "En attente d’examen",
++  "pw.cp.direction": "Piste {id} · {name}",
++  "pw.cp.artwork": "visuel affiné v{v}",
++  "pw.cp.changes": "Changements :",
++  "pw.cp.changesFirst": "première version affinée : aucune version antérieure à comparer.",
++  "pw.cp.changesNotRecorded": "les changements depuis la v{prev} ne sont pas consignés à part ; comparez les versions dans le travail ci-dessous.",
++  "pw.cp.issues": "Encore ouvert :",
++  "pw.cp.noIssues": "aucun point ouvert consigné.",
++  "pw.cp.unmet": "exigence non remplie : {text}",
++  "pw.cp.below": "moyenne {avg}, sous le seuil de 4",
++  "pw.cp.view": "Voir le travail en attente",
++  "pw.cp.noWorkData": "Les données n’indiquent pas quel visuel attend. Parcourez les pistes ci-dessous avant de décider.",
++  "pw.cp.stageWork": "Le travail de l’étape {stage}, ci-dessous.",
++  "pw.cp.approveStage": "Approuver {stage} et continuer",
++  "pw.vis.pendingHere": "C’est la version qui attend votre décision (visuel affiné v{v}).",
++  "pw.vis.toDecision": "Aller à la décision",
++  "pw.vis.viewOpen": "Agrandir {label}",
++  "pw.vis.viewOf": "Vue {n} sur {count}, à ses proportions d’origine.",
+   "pw.brief.assignment": "La mission",
+   "pw.brief.noAssignment": "Aucune mission rédigée pour l’instant.",
+   "pw.brief.output": "Livrable attendu",
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/i18n/messages/ja.ts /home/claude/proposal-workbench/src/i18n/messages/ja.ts
+--- before/src/i18n/messages/ja.ts	2026-10-29 00:28:51.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/ja.ts	2026-11-03 06:14:00.123078735 +0800
+@@ -1082,6 +1082,39 @@
+   "pw.contrib.send": "このステージに追加",
+   "pw.contrib.sent": "追加しました。エージェントが考慮します。",
+   "pw.contrib.note": "入力はエージェントへの提案です。事実には引き続き根拠が必要で、好みによって裏付けのない主張が真になることはありません。",
++  "pw.contrib.destLabel": "追加先",
++  "pw.contrib.sendTo": "{stage}に追加",
++  "pw.contrib.sentTo": "{stage}に追加しました。エージェントが考慮に入れます。",
++  "pw.contrib.discard": "下書きを破棄",
++  "pw.contrib.elsewhere": "他のステージに未送信のアイデア下書きがあります：",
++  "pw.ev.from": "{stage}から開きました",
++  "pw.ev.back": "推論に戻る",
++  "pw.ev.loading": "「{label}」の根拠を探しています…",
++  "pw.ev.error": "リサーチを読み込めなかったため、「{label}」の根拠をまだ表示できません。",
++  "pw.ev.missing": "「{label}」は現在のリサーチにありません。戦略作成後に削除または置き換えられた可能性があります。",
++  "pw.ev.openChecks": "レビューとチェックを開く",
++  "pw.cp.scopeLabel": "決定する対象",
++  "pw.cp.scopeStage": "{stage}ステージ全体",
++  "pw.cp.scopeNote": "承認するとステージが完了し、エージェントが次に進みます。修正を依頼するとステージ全体が差し戻されます。1つの方向だけについての決定ではありません。",
++  "pw.cp.stageVersion": "ステージ版 v{v}",
++  "pw.cp.pendingLabel": "レビュー待ち",
++  "pw.cp.direction": "方向 {id} · {name}",
++  "pw.cp.artwork": "仕上げビジュアル v{v}",
++  "pw.cp.changes": "変更点：",
++  "pw.cp.changesFirst": "最初の仕上げ版のため、比較できる以前の版はありません。",
++  "pw.cp.changesNotRecorded": "v{prev}からの変更は個別に記録されていません。下の作品で版を比較してください。",
++  "pw.cp.issues": "未解決：",
++  "pw.cp.noIssues": "記録された未解決の問題はありません。",
++  "pw.cp.unmet": "未達の要件：{text}",
++  "pw.cp.below": "平均 {avg}（基準 4 未満）",
++  "pw.cp.view": "保留中の作品を見る",
++  "pw.cp.noWorkData": "どの作品が待機中かはデータに記録されていません。決定前に下の方向を確認してください。",
++  "pw.cp.stageWork": "{stage}の成果は下にあります。",
++  "pw.cp.approveStage": "{stage}を承認して続行",
++  "pw.vis.pendingHere": "これがあなたの決定を待っている版です（仕上げビジュアル v{v}）。",
++  "pw.vis.toDecision": "決定へ移動",
++  "pw.vis.viewOpen": "{label}を拡大表示",
++  "pw.vis.viewOf": "{count}点中{n}点目、元の比率で表示。",
+   "pw.brief.assignment": "課題",
+   "pw.brief.noAssignment": "課題はまだ書かれていません。",
+   "pw.brief.output": "求める成果物",
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/i18n/messages/ko.ts /home/claude/proposal-workbench/src/i18n/messages/ko.ts
+--- before/src/i18n/messages/ko.ts	2026-10-29 00:28:51.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/ko.ts	2026-11-03 06:14:00.125042227 +0800
+@@ -1082,6 +1082,39 @@
+   "pw.contrib.send": "이 단계에 추가",
+   "pw.contrib.sent": "추가했습니다. 에이전트가 반영을 검토합니다.",
+   "pw.contrib.note": "입력은 에이전트에 대한 제안입니다. 사실에는 여전히 근거가 필요하며, 선호가 근거 없는 주장을 사실로 만들지 않습니다.",
++  "pw.contrib.destLabel": "추가 위치",
++  "pw.contrib.sendTo": "{stage}에 추가",
++  "pw.contrib.sentTo": "{stage}에 추가했습니다. 에이전트가 반영합니다.",
++  "pw.contrib.discard": "초안 삭제",
++  "pw.contrib.elsewhere": "다른 단계에 보내지 않은 아이디어 초안이 있습니다:",
++  "pw.ev.from": "{stage}에서 열었습니다",
++  "pw.ev.back": "논리로 돌아가기",
++  "pw.ev.loading": "“{label}”의 근거를 찾는 중…",
++  "pw.ev.error": "리서치를 불러오지 못해 “{label}”의 근거를 아직 표시할 수 없습니다.",
++  "pw.ev.missing": "현재 리서치에 “{label}”이(가) 없습니다. 전략 작성 후 삭제되었거나 교체되었을 수 있습니다.",
++  "pw.ev.openChecks": "검토 및 확인 열기",
++  "pw.cp.scopeLabel": "결정하는 대상",
++  "pw.cp.scopeStage": "{stage} 단계 전체",
++  "pw.cp.scopeNote": "승인하면 단계가 완료되고 에이전트가 다음으로 넘어갑니다. 수정을 요청하면 단계 전체가 되돌아갑니다. 한 방향만에 대한 결정이 아닙니다.",
++  "pw.cp.stageVersion": "단계 버전 v{v}",
++  "pw.cp.pendingLabel": "검토 대기",
++  "pw.cp.direction": "방향 {id} · {name}",
++  "pw.cp.artwork": "정교화된 아트워크 v{v}",
++  "pw.cp.changes": "변경 사항:",
++  "pw.cp.changesFirst": "첫 정교화 버전이라 비교할 이전 버전이 없습니다.",
++  "pw.cp.changesNotRecorded": "v{prev} 이후 변경 사항은 따로 기록되지 않았습니다. 아래 작업에서 버전을 비교하세요.",
++  "pw.cp.issues": "남은 문제:",
++  "pw.cp.noIssues": "기록된 미해결 문제가 없습니다.",
++  "pw.cp.unmet": "충족되지 않은 요건: {text}",
++  "pw.cp.below": "평균 {avg}, 기준 4 미만",
++  "pw.cp.view": "대기 중인 작업 보기",
++  "pw.cp.noWorkData": "어떤 작품이 대기 중인지 데이터에 나와 있지 않습니다. 결정하기 전에 아래 방향을 살펴보세요.",
++  "pw.cp.stageWork": "{stage}의 작업은 아래에 있습니다.",
++  "pw.cp.approveStage": "{stage} 승인 후 계속",
++  "pw.vis.pendingHere": "결정을 기다리는 버전입니다(정교화된 아트워크 v{v}).",
++  "pw.vis.toDecision": "결정으로 이동",
++  "pw.vis.viewOpen": "{label} 크게 보기",
++  "pw.vis.viewOf": "{count}개 중 {n}번째 보기, 원래 비율로 표시.",
+   "pw.brief.assignment": "과제",
+   "pw.brief.noAssignment": "아직 과제가 작성되지 않았습니다.",
+   "pw.brief.output": "기대 산출물",
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/i18n/messages/zh-CN.ts /home/claude/proposal-workbench/src/i18n/messages/zh-CN.ts
+--- before/src/i18n/messages/zh-CN.ts	2026-10-29 00:28:51.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/zh-CN.ts	2026-11-03 06:14:00.121073837 +0800
+@@ -1082,6 +1082,39 @@
+   "pw.contrib.send": "添加到此阶段",
+   "pw.contrib.sent": "已添加，智能体会加以考虑。",
+   "pw.contrib.note": "你的输入是给智能体的建议。事实仍需证据：个人偏好不能让无依据的说法成立。",
++  "pw.contrib.destLabel": "添加到",
++  "pw.contrib.sendTo": "添加到{stage}",
++  "pw.contrib.sentTo": "已添加到{stage}。智能体会参考它。",
++  "pw.contrib.discard": "放弃草稿",
++  "pw.contrib.elsewhere": "其他阶段还有未提交的想法草稿：",
++  "pw.ev.from": "从{stage}打开",
++  "pw.ev.back": "回到推理",
++  "pw.ev.loading": "正在查找“{label}”的证据…",
++  "pw.ev.error": "研究内容未能加载，暂时无法显示“{label}”的证据。",
++  "pw.ev.missing": "当前研究中没有“{label}”。它可能在策略写成后被删除或替换。",
++  "pw.ev.openChecks": "打开评审与检查",
++  "pw.cp.scopeLabel": "你要决定的内容",
++  "pw.cp.scopeStage": "整个{stage}阶段",
++  "pw.cp.scopeNote": "批准会完成该阶段并让智能体继续；要求修改会把整个阶段退回。这不是只针对某一个方向的决定。",
++  "pw.cp.stageVersion": "阶段版本 v{v}",
++  "pw.cp.pendingLabel": "等待评审",
++  "pw.cp.direction": "方向 {id} · {name}",
++  "pw.cp.artwork": "精修视觉 v{v}",
++  "pw.cp.changes": "改动：",
++  "pw.cp.changesFirst": "这是第一个精修版本，没有可比较的早期版本。",
++  "pw.cp.changesNotRecorded": "自 v{prev} 以来的改动没有单独记录；请在下方作品中比较各版本。",
++  "pw.cp.issues": "仍待解决：",
++  "pw.cp.noIssues": "没有记录待解决问题。",
++  "pw.cp.unmet": "未满足要求：{text}",
++  "pw.cp.below": "平均分 {avg}，低于阈值 4",
++  "pw.cp.view": "查看待审作品",
++  "pw.cp.noWorkData": "数据中没有说明哪件作品在等待。决定前请查看下方各方向。",
++  "pw.cp.stageWork": "{stage}的成果，见下方。",
++  "pw.cp.approveStage": "批准{stage}并继续",
++  "pw.vis.pendingHere": "这是等待你决定的版本（精修视觉 v{v}）。",
++  "pw.vis.toDecision": "前往决定",
++  "pw.vis.viewOpen": "放大查看{label}",
++  "pw.vis.viewOf": "第 {n} 个视图，共 {count} 个，按原始比例显示。",
+   "pw.brief.assignment": "任务",
+   "pw.brief.noAssignment": "尚未填写任务。",
+   "pw.brief.output": "预期产出",
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/proposal/EvidenceBack.tsx /home/claude/proposal-workbench/src/proposal/EvidenceBack.tsx
+--- before/src/proposal/EvidenceBack.tsx	1970-01-01 08:00:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/EvidenceBack.tsx	2026-11-03 06:20:50.927616367 +0800
+@@ -0,0 +1,26 @@
++import { ArrowLeft } from 'lucide-react';
++import { Link, projectPath, useRouter } from '../app/router';
++import { STAGES, type StageId } from '../domain/proposal';
++import { useT } from '../i18n';
++
++/**
++ * "Opened from Strategy · Back to the reasoning": shown wherever evidence opened from another
++ * stage is on screen (the research page, the checks drawer, the claim panel), so the person can
++ * return to the exact statement the evidence supports. Reads `back` and `at` from the link.
++ */
++export function EvidenceBack() {
++  const t = useT();
++  const { params, route } = useRouter();
++  const raw = params.get('back');
++  const back = STAGES.includes(raw as StageId) ? (raw as StageId) : null;
++  if (!back || route.name !== 'project') return null;
++  const at = params.get('at');
++  return (
++    <p className="pw-evback">
++      <span className="small muted">{t('pw.ev.from', { stage: t(`pw.stage.${back}`) })}</span>
++      <Link className="btn btn--secondary btn--sm" to={projectPath(route.projectId, 'proposal', { stage: back, ...(at ? { focus: at } : {}) })}>
++        <ArrowLeft size={14} aria-hidden="true" /> {t('pw.ev.back')}
++      </Link>
++    </p>
++  );
++}
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/proposal/drafts.test.ts /home/claude/proposal-workbench/src/proposal/drafts.test.ts
+--- before/src/proposal/drafts.test.ts	1970-01-01 08:00:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/drafts.test.ts	2026-11-03 06:28:11.232923424 +0800
+@@ -0,0 +1,28 @@
++import { beforeEach, describe, expect, it } from 'vitest';
++import { draftKey, pendingDrafts, readDraft, resetDrafts, writeDraft } from './drafts';
++
++describe('idea drafts', () => {
++  beforeEach(() => resetDrafts());
++
++  it('keeps one draft per project and stage', () => {
++    writeDraft(draftKey('p1', 'visual'), { open: true, kind: 'reference', text: 'Frost', borrow: 'scale' });
++    expect(readDraft(draftKey('p1', 'strategy')).text).toBe('');
++    expect(readDraft(draftKey('p2', 'visual')).text).toBe('');
++    expect(readDraft(draftKey('p1', 'visual'))).toEqual({ open: true, kind: 'reference', text: 'Frost', borrow: 'scale' });
++  });
++
++  it('lists the stages of one project that hold unsent text', () => {
++    writeDraft(draftKey('p1', 'visual'), { open: true, kind: 'comment', text: 'a', borrow: '' });
++    writeDraft(draftKey('p1', 'themes'), { open: true, kind: 'comment', text: '', borrow: '' });
++    writeDraft(draftKey('p2', 'strategy'), { open: true, kind: 'comment', text: 'b', borrow: '' });
++    expect(pendingDrafts('p1')).toEqual(['visual']);
++  });
++
++  it('forgets a draft only when it is cleared', () => {
++    const k = draftKey('p1', 'visual');
++    writeDraft(k, { open: true, kind: 'comment', text: 'keep me', borrow: '' });
++    expect(readDraft(k).text).toBe('keep me');
++    writeDraft(k, null);
++    expect(readDraft(k).text).toBe('');
++  });
++});
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/proposal/drafts.ts /home/claude/proposal-workbench/src/proposal/drafts.ts
+--- before/src/proposal/drafts.ts	1970-01-01 08:00:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/drafts.ts	2026-11-03 06:10:01.123745512 +0800
+@@ -0,0 +1,81 @@
++import { useCallback, useSyncExternalStore } from 'react';
++import type { Contribution, StageId } from '../domain/proposal';
++
++/**
++ * Unsent "Add an idea" drafts, one per project and stage, so a half-written idea stays with the
++ * stage it was started on. Kept for the browser session only (sessionStorage, with an in-memory
++ * fallback when storage is blocked). Nothing is sent to the backend until the person submits.
++ */
++export interface IdeaDraft {
++  open: boolean;
++  kind: Contribution['kind'];
++  text: string;
++  borrow: string;
++}
++
++export const EMPTY_DRAFT: IdeaDraft = { open: false, kind: 'comment', text: '', borrow: '' };
++
++const STORAGE_KEY = 'pw.ideaDrafts';
++let drafts: Record<string, IdeaDraft> | null = null;
++const listeners = new Set<() => void>();
++
++export const draftKey = (proposalId: string, stage: StageId) => `${proposalId}::${stage}`;
++
++function load(): Record<string, IdeaDraft> {
++  if (drafts) return drafts;
++  try {
++    const raw = sessionStorage.getItem(STORAGE_KEY);
++    drafts = raw ? (JSON.parse(raw) as Record<string, IdeaDraft>) : {};
++  } catch {
++    drafts = {};
++  }
++  return drafts;
++}
++
++function save() {
++  try {
++    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(drafts ?? {}));
++  } catch {
++    /* storage blocked or full: the draft still lives in memory for this visit */
++  }
++}
++
++export function readDraft(key: string): IdeaDraft {
++  return load()[key] ?? EMPTY_DRAFT;
++}
++
++export function writeDraft(key: string, next: IdeaDraft | null) {
++  const all = { ...load() };
++  if (!next || (!next.open && !next.text && !next.borrow)) delete all[key];
++  else all[key] = next;
++  drafts = all;
++  save();
++  listeners.forEach((l) => l());
++}
++
++/** Drafts with text in them, for one proposal (stages other than the one on screen included). */
++export function pendingDrafts(proposalId: string): StageId[] {
++  return Object.entries(load())
++    .filter(([k, d]) => k.startsWith(`${proposalId}::`) && d.text.trim())
++    .map(([k]) => k.split('::')[1] as StageId);
++}
++
++/** Test helper: forget every draft. */
++export function resetDrafts() {
++  drafts = {};
++  save();
++  listeners.forEach((l) => l());
++}
++
++const subscribe = (l: () => void) => {
++  listeners.add(l);
++  return () => listeners.delete(l);
++};
++
++/** The draft for one project and stage, with an updater and a way to discard it. */
++export function useIdeaDraft(key: string) {
++  const draft = useSyncExternalStore(subscribe, () => readDraft(key));
++  const update = useCallback((patch: Partial<IdeaDraft>) => writeDraft(key, { ...readDraft(key), ...patch }), [key]);
++  const clear = useCallback(() => writeDraft(key, null), [key]);
++  return [draft, update, clear] as const;
++}
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/proposal/pending.test.ts /home/claude/proposal-workbench/src/proposal/pending.test.ts
+--- before/src/proposal/pending.test.ts	1970-01-01 08:00:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/pending.test.ts	2026-11-03 06:28:11.230808260 +0800
+@@ -0,0 +1,38 @@
++import { describe, expect, it } from 'vitest';
++import { MockWorkbenchService } from '../services/mock/MockWorkbenchService';
++import { memoryStore } from '../services/mock/storage';
++import { MockProposalService } from '../services/proposal/MockProposalService';
++import { pendingVisuals } from './pending';
++
++async function plumtide() {
++  const store = memoryStore();
++  const workbench = new MockWorkbenchService({ store, latency: { read: 0, write: 0 }, autoTick: false });
++  const proposals = new MockProposalService(workbench, store, { latency: 0, agentDelay: 0 });
++  return { proposals, p: (await proposals.findByWorkbenchId('plumtide'))! };
++}
++
++describe('pendingVisuals', () => {
++  it('names the direction and artwork version that wait for review, not the first accepted one', async () => {
++    const { p } = await plumtide();
++    const pending = pendingVisuals(p);
++    expect(pending.map((x) => x.directionId)).toEqual(['C']);
++    expect(pending[0].direction?.name).toBe('Pass it on');
++    expect(pending[0].refined.version).toBe(1);
++    expect(pending[0].previous).toBeNull();
++  });
++
++  it('reports only issues recorded in the data, and keeps a partly upheld challenge open', async () => {
++    const { p } = await plumtide();
++    const [c] = pendingVisuals(p);
++    expect(c.openIssues).toEqual([expect.objectContaining({ kind: 'challenge', outcome: 'partly_upheld' })]);
++  });
++
++  it('approving the stage is stage-wide: the decision is recorded against the stage, not a direction', async () => {
++    const { proposals, p } = await plumtide();
++    const after = await proposals.decide(p.id, 'visual', { kind: 'approve', comment: '' });
++    expect(after.stages.visual.status).toBe('done');
++    const d = after.decisions[after.decisions.length - 1];
++    expect(d.stage).toBe('visual');
++    expect(Object.keys(d)).not.toContain('directionId');
++  });
++});
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/proposal/pending.ts /home/claude/proposal-workbench/src/proposal/pending.ts
+--- before/src/proposal/pending.ts	1970-01-01 08:00:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/pending.ts	2026-11-03 06:12:22.351753907 +0800
+@@ -0,0 +1,42 @@
++import type { Direction, DirectionId, Proposal, RefinedVisual, VisualBranch } from '../domain/proposal';
++
++/** The branch's current refined visual: the newest one that is neither superseded nor unstarted. */
++export function latestRefined(b: VisualBranch): RefinedVisual | null {
++  const live = b.refined.filter((r) => r.status !== 'superseded' && r.status !== 'not_started');
++  return live[live.length - 1] ?? b.refined[b.refined.length - 1] ?? null;
++}
++
++/** A piece of visual work that is waiting for the person, as far as the data says. */
++export interface PendingVisual {
++  directionId: DirectionId;
++  direction: Direction | null;
++  refined: RefinedVisual;
++  /** The version before this one, when there is one. */
++  previous: RefinedVisual | null;
++  /** Open points recorded against this version. Empty means none recorded, not "checked and fine". */
++  openIssues: Array<{ kind: 'requirement'; text: string; note: string } | { kind: 'below'; avg: number } | { kind: 'challenge'; text: string; resolution: string; outcome: 'upheld' | 'partly_upheld' }>;
++}
++
++const avgOf = (r: RefinedVisual) => (r.scores.length ? Math.round((r.scores.reduce((s, x) => s + x.score, 0) / r.scores.length) * 10) / 10 : null);
++
++/** Directions whose current refined visual is awaiting review, in branch order. */
++export function pendingVisuals(p: Proposal): PendingVisual[] {
++  const v = p.visual;
++  if (!v) return [];
++  const dirs = p.themes?.directions ?? [];
++  const out: PendingVisual[] = [];
++  for (const b of v.branches) {
++    const refined = latestRefined(b);
++    if (!refined || refined.status !== 'awaiting_review') continue;
++    const i = b.refined.indexOf(refined);
++    const previous = i > 0 ? b.refined[i - 1] : null;
++    const openIssues: PendingVisual['openIssues'] = [];
++    for (const r of refined.requirements) if (!r.met) openIssues.push({ kind: 'requirement', text: r.text, note: r.note });
++    const avg = avgOf(refined);
++    if (avg !== null && avg < 4) openIssues.push({ kind: 'below', avg });
++    const c = refined.challenge;
++    if (c && c.outcome !== 'rejected') openIssues.push({ kind: 'challenge', text: c.challenge, resolution: c.resolution, outcome: c.outcome });
++    out.push({ directionId: b.directionId, direction: dirs.find((d) => d.id === b.directionId) ?? null, refined, previous, openIssues });
++  }
++  return out;
++}
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/proposal/ui.tsx /home/claude/proposal-workbench/src/proposal/ui.tsx
+--- before/src/proposal/ui.tsx	2026-10-25 05:56:41.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/ui.tsx	2026-11-03 06:13:13.042167929 +0800
+@@ -85,9 +85,15 @@
+ }
+ 
+ /** Links an evidence reference to where it lives: a research claim, a case, a chart or the brief. */
+-export function EvidenceChips({ refs, projectId }: { refs: EvidenceRef[]; projectId: string }) {
++/**
++ * Evidence chips under a statement. Each opens the evidence itself (a claim in the research checks,
++ * a case on the research board). `from` names the statement the chip sits under, so the evidence
++ * view can offer a way back to that exact place in the reasoning.
++ */
++export function EvidenceChips({ refs, projectId, from }: { refs: EvidenceRef[]; projectId: string; from?: { stage: StageId; at: string } }) {
+   const t = useT();
+   if (!refs.length) return null;
++  const back: Record<string, string> = from ? { back: from.stage, at: from.at } : {};
+   return (
+     <span className="pw-ev">
+       <span className="sr-only">{t('pw.evidence')}: </span>
+@@ -96,8 +102,8 @@
+           r.kind === 'brief'
+             ? projectPath(projectId, 'proposal', { stage: 'brief' })
+             : r.kind === 'claim'
+-              ? projectPath(projectId, 'proposal', { stage: 'research', claim: r.ref })
+-              : projectPath(projectId, 'proposal', { stage: 'research', focus: r.ref });
++              ? projectPath(projectId, 'proposal', { stage: 'research', claim: r.ref, ev: r.label, ...back })
++              : projectPath(projectId, 'proposal', { stage: 'research', focus: r.ref, ...back });
+         return (
+           <Link key={`${r.ref}-${i}`} to={to} className="pw-ev__chip" data-kind={r.kind} title={t(`pw.evKind.${r.kind}`)}>
+             <BookOpen size={11} aria-hidden="true" />
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/styles/refine.css /home/claude/proposal-workbench/src/styles/refine.css
+--- before/src/styles/refine.css	2026-10-29 00:36:30.000000000 +0800
++++ /home/claude/proposal-workbench/src/styles/refine.css	2026-11-03 06:34:31.007406060 +0800
+@@ -1208,3 +1208,117 @@
+   .demo-pill { min-width: 0; max-width: 100%; }
+   .demo-pill { white-space: normal; line-height: 1.15; border-radius: 16px; font-size: 0.6875rem; text-align: left; }
+ }
++
++/* ---- F01: an idea draft names where it will go ---- */
++.pw-contrib__dest {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: baseline;
++  gap: 6px;
++  margin: 0 0 10px;
++  font-size: var(--t-small);
++  color: var(--ink);
++}
++.pw-contrib__elsewhere { margin: 4px 0 10px; }
++
++/* ---- F02: evidence opened from the reasoning ---- */
++.pw-evback {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  justify-content: space-between;
++  gap: 8px 12px;
++  margin: 0 0 12px;
++  padding: 8px 8px 8px 14px;
++  border: 1px solid var(--rule);
++  border-radius: 999px;
++  background: var(--surface);
++}
++.pw-drawer__body > .pw-evback { margin: 0 0 14px; }
++.pw-evstate {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 8px 10px;
++  margin: 0 0 12px;
++  padding: 12px 14px;
++  border-radius: 14px;
++  background: var(--info-wash);
++  color: var(--ink);
++  font-size: var(--t-small);
++}
++.pw-evstate[data-tone='warn'] { background: var(--warn-wash); }
++.pw-evstate[data-tone='warn'] > svg { color: var(--warn); }
++.rs-rows tr[data-hl] > td { background: var(--accent-wash); }
++.rs-rows tr[data-hl] > td:first-child { box-shadow: inset 3px 0 0 var(--klein); }
++[data-focus^='arg-']:focus,
++[data-focus^='opp-']:focus,
++[data-focus^='circle-']:focus { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 16px; }
++
++/* ---- F03: what the decision is about ---- */
++.pw-cp-target {
++  display: grid;
++  gap: 10px;
++  margin: 4px 0 14px;
++  padding: 12px 0;
++  border-block: 1px solid var(--rule);
++}
++.pw-cp-target > div {
++  display: grid;
++  grid-template-columns: minmax(9rem, 11rem) 1fr;
++  gap: 4px 16px;
++  align-items: baseline;
++}
++.pw-cp-target dd {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: baseline;
++  gap: 4px 6px;
++  margin: 0;
++  font-size: var(--t-body);
++}
++.pw-cp-target dd > .small { flex-basis: 100%; }
++.pw-cp-target dd > .btn { margin-top: 4px; }
++.pw-cp-target__note { flex-basis: 100%; }
++@media (max-width: 640px) {
++  .pw-cp-target > div { grid-template-columns: 1fr; }
++}
++.pw-pendingnote {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 8px 10px;
++  margin: 0 0 12px;
++  padding: 10px 12px 10px 14px;
++  border-radius: 14px;
++  background: var(--pw-attn-wash);
++  color: var(--ink);
++  font-size: var(--t-small);
++}
++.pw-pendingnote > svg { color: var(--pw-attn); }
++.pw-pendingnote > span { flex: 1 1 14rem; }
++
++/* ---- F04: packaging views open whole and large ---- */
++.pw-view__label { display: inline-flex; align-items: center; gap: 4px; }
++.pw-viewbig {
++  display: grid;
++  justify-items: center;
++  gap: 10px;
++  margin: 0;
++}
++.pw-viewbig .art-frame {
++  width: min(100%, calc((100dvh - 190px) * var(--r)));
++  height: auto;
++}
++
++/* Scroll targets land below the sticky top bar, so their headings stay visible. */
++.pw-stage [data-focus],
++#vis-refined,
++#stage-work {
++  scroll-margin-top: calc(var(--topbar, 56px) + 16px);
++}
++/* Long stage names in the decision panel wrap instead of widening it on phones. */
++@media (max-width: 640px) {
++  .pw-checkpoint .cluster .btn { white-space: normal; text-align: left; }
++}
++.pw-cp-target > div > * { min-width: 0; overflow-wrap: anywhere; }
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/views/ResearchView.tsx /home/claude/proposal-workbench/src/views/ResearchView.tsx
+--- before/src/views/ResearchView.tsx	2026-10-25 00:36:36.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/ResearchView.tsx	2026-11-03 06:20:56.877642394 +0800
+@@ -10,6 +10,7 @@
+ import { Inspector, restoreFocus } from '../ui/Inspector';
+ import { Action, CommandFeedback, PageHeader, QueryView, SelectInput, SimTag, Skeleton, StatePanel, TextArea, Time } from '../ui/kit';
+ import { StatusBadge, statusInfo } from '../ui/status';
++import { EvidenceBack } from '../proposal/EvidenceBack';
+ import { ArtifactDocument, ClaimDetail, ClaimLegend, ReviewReport } from './shared';
+ import { useWorkflowCommand } from './useWorkflowCommand';
+ 
+@@ -332,6 +333,7 @@
+ 
+       {claim && (
+         <Inspector title={t('res.claimEvidence')} eyebrow={t('res.versionLabel', { v: artifact.version })} onClose={closeClaim}>
++          <EvidenceBack />
+           <ClaimDetail claim={claim} sources={sources} findings={findingsFor(claim.id)}>
+             {stale ? <p className="small muted">{t('res.staleReadOnly')}</p> : <AttachSource data={data} claimId={claim.id} />}
+           </ClaimDetail>
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/views/project/ProposalArea.tsx /home/claude/proposal-workbench/src/views/project/ProposalArea.tsx
+--- before/src/views/project/ProposalArea.tsx	2026-10-25 23:26:46.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/project/ProposalArea.tsx	2026-11-03 06:13:13.059099808 +0800
+@@ -3,11 +3,13 @@
+  * reviews are summarised in one line and the detail lives in Process & History.
+  */
+ import { useEffect, useState } from 'react';
+-import { ArrowLeft, ArrowRight, Hand, MessageSquarePlus } from 'lucide-react';
++import { ArrowDown, ArrowLeft, ArrowRight, Hand, MessageSquarePlus } from 'lucide-react';
+ import { useProposalAction } from '../../app/proposalQuery';
+ import { Link, projectPath, useRouter } from '../../app/router';
+ import { STAGES, type Contribution, type Proposal, type StageId } from '../../domain/proposal';
+ import { useT } from '../../i18n';
++import { draftKey, pendingDrafts, readDraft, useIdeaDraft } from '../../proposal/drafts';
++import { pendingVisuals } from '../../proposal/pending';
+ import { Backed, STAGE_ICON, STATUS_ICON, StatusPill } from '../../proposal/ui';
+ import { Action, Time } from '../../ui/kit';
+ import { BriefStage } from '../stages/BriefStage';
+@@ -65,7 +67,7 @@
+               <div className="pw-stage__title">
+                 <p className="pw-kicker">
+                   {t('pw.stageOf', { n: i + 1 })} · {state.lead}
+-                  {state.version > 1 && ` · v${state.version}`}
++                  {state.version > 1 && ` · ${t('pw.cp.stageVersion', { v: state.version })}`}
+                 </p>
+                 <h1 className="pw-h1" id="stage-title" tabIndex={-1}>
+                   {t(`pw.stage.${stage}`)}
+@@ -140,7 +142,7 @@
+ 
+         {state.status === 'waiting_for_you' && <CheckpointPanel proposal={p} stage={stage} />}
+ 
+-        <div className="pw-stage__body">
++        <div className="pw-stage__body" id="stage-work">
+           {stage === 'brief' && <BriefStage proposal={p} />}
+           {stage === 'research' && <ResearchStage proposal={p} />}
+           {stage === 'strategy' && <StrategyStage proposal={p} />}
+@@ -151,7 +153,7 @@
+           {stage === 'delivery' && <DeliveryStage proposal={p} />}
+         </div>
+ 
+-        <Contributions proposal={p} stage={stage} />
++        <Contributions key={`${p.id}::${stage}`} proposal={p} stage={stage} />
+ 
+         <nav className="pw-stage__pager" aria-label={t('pw.stagePager')}>
+           {prev ? (
+@@ -200,18 +202,39 @@
+   }, [focus, stage]);
+ }
+ 
+-/** A stage paused for a person in assisted mode. Nothing moves on without an explicit decision. */
++/**
++ * A stage paused for a person in assisted mode. Nothing moves on without an explicit decision.
++ *
++ * The decision is about the whole stage (the service's `decide` takes a stage, not a direction or
++ * an artwork): approving completes the stage and lets the agents move on; asking for a revision
++ * sends the stage back. The panel says so, and names the work that is actually waiting, so the
++ * person knows what they are looking at before they decide.
++ */
+ function CheckpointPanel({ proposal: p, stage }: { proposal: Proposal; stage: StageId }) {
+   const t = useT();
+   const { run, pending, error } = useProposalAction();
+-  const { setParams } = useRouter();
++  const { params, setParams } = useRouter();
+   const [comment, setComment] = useState('');
++  const state = p.stages[stage];
++  const stageName = t(`pw.stage.${stage}`);
++  const waitingWork = stage === 'visual' ? pendingVisuals(p) : [];
+   // Once decided the panel goes away: focus moves to the stage title, and the link target is cleared.
+   const decided = (ok: boolean) => {
+     if (!ok) return;
+     setParams({ focus: null });
+     requestAnimationFrame(() => document.getElementById('stage-title')?.focus());
+   };
++  const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
++  // Shows the waiting work without deciding anything: selects its direction and scrolls to it.
++  const viewWork = (dir: string | null) => {
++    if (dir && params.get('dir') !== dir) setParams({ dir });
++    requestAnimationFrame(() =>
++      requestAnimationFrame(() => {
++        const el = document.getElementById(dir ? 'vis-refined' : 'stage-work');
++        el?.scrollIntoView({ block: 'start', behavior: reduce() ? 'auto' : 'smooth' });
++      }),
++    );
++  };
+   return (
+     <section className="pw-checkpoint" aria-labelledby="cp-title" data-focus="decision" tabIndex={-1}>
+       <div className="pw-checkpoint__head">
+@@ -222,16 +245,75 @@
+         </div>
+         <Backed as="prototype" />
+       </div>
++
++      <dl className="pw-cp-target">
++        <div>
++          <dt className="pw-label">{t('pw.cp.scopeLabel')}</dt>
++          <dd>
++            {t('pw.cp.scopeStage', { stage: stageName })} <span className="muted">· {t('pw.cp.stageVersion', { v: state.version })}</span>
++            <span className="small muted pw-cp-target__note">{t('pw.cp.scopeNote')}</span>
++          </dd>
++        </div>
++        {waitingWork.map((w) => (
++          <div key={w.directionId} className="pw-cp-target__work">
++            <dt className="pw-label">{t('pw.cp.pendingLabel')}</dt>
++            <dd>
++              <strong>
++                {t('pw.cp.direction', { id: w.directionId, name: w.direction?.name ?? '' })}
++              </strong>{' '}
++              · {t('pw.cp.artwork', { v: w.refined.version })}
++              <span className="small">
++                <span className="pw-label">{t('pw.cp.changes')}</span> {w.previous ? t('pw.cp.changesNotRecorded', { prev: w.previous.version }) : t('pw.cp.changesFirst')}
++              </span>
++              <span className="small">
++                <span className="pw-label">{t('pw.cp.issues')}</span>{' '}
++                {w.openIssues.length === 0
++                  ? t('pw.cp.noIssues')
++                  : w.openIssues
++                      .map((x) =>
++                        x.kind === 'requirement'
++                          ? t('pw.cp.unmet', { text: x.text })
++                          : x.kind === 'below'
++                            ? t('pw.cp.below', { avg: x.avg.toFixed(1) })
++                            : `${t(`pw.challenge.${x.outcome}`)}: ${x.text}`,
++                      )
++                      .join(' · ')}
++              </span>
++              <button type="button" className="btn btn--secondary btn--sm" onClick={() => viewWork(w.directionId)}>
++                {t('pw.cp.view')} <ArrowDown size={14} aria-hidden="true" />
++              </button>
++            </dd>
++          </div>
++        ))}
++        {stage === 'visual' && waitingWork.length === 0 && (
++          <div>
++            <dt className="pw-label">{t('pw.cp.pendingLabel')}</dt>
++            <dd className="muted">{t('pw.cp.noWorkData')}</dd>
++          </div>
++        )}
++        {stage !== 'visual' && (
++          <div>
++            <dt className="pw-label">{t('pw.cp.pendingLabel')}</dt>
++            <dd>
++              <span className="muted">{t('pw.cp.stageWork', { stage: stageName })}</span>{' '}
++              <button type="button" className="btn btn--secondary btn--sm" onClick={() => viewWork(null)}>
++                {t('pw.cp.view')} <ArrowDown size={14} aria-hidden="true" />
++              </button>
++            </dd>
++          </div>
++        )}
++      </dl>
++
+       <label htmlFor="cp-comment" className="field__label">
+         {t('pw.cp.comment')}
+       </label>
+       <textarea id="cp-comment" className="pw-textarea" rows={2} value={comment} onChange={(e) => setComment(e.target.value)} placeholder={t('pw.cp.placeholder')} />
+       <div className="cluster">
+         <Action
+-          label={t('pw.cp.approve')}
++          label={t('pw.cp.approveStage', { stage: stageName })}
+           variant="primary"
+           pending={pending === 'approve'}
+-          onClick={() => void run('approve', (s) => s.decide(p.id, stage, { kind: 'approve', comment }), t('pw.cp.approved', { stage: t(`pw.stage.${stage}`) })).then(decided)}
++          onClick={() => void run('approve', (s) => s.decide(p.id, stage, { kind: 'approve', comment }), t('pw.cp.approved', { stage: stageName })).then(decided)}
+         />
+         <Action
+           label={t('pw.cp.revise')}
+@@ -253,21 +335,27 @@
+ 
+ const KINDS: Contribution['kind'][] = ['comment', 'slogan', 'reference', 'theme'];
+ 
+-/** People can add ideas at any stage: a comment, a line, a reference and what to borrow from it. */
++/**
++ * People can add ideas at any stage: a comment, a line, a reference and what to borrow from it.
++ * An unsent idea is a draft of this project and this stage: it stays here when the person moves
++ * to another stage, comes back when they return, and is only ever submitted to the stage named
++ * in the form.
++ */
+ function Contributions({ proposal: p, stage }: { proposal: Proposal; stage: StageId }) {
+   const t = useT();
+   const { run, pending, error } = useProposalAction();
+-  const [open, setOpen] = useState(false);
+-  const [kind, setKind] = useState<Contribution['kind']>('comment');
+-  const [text, setText] = useState('');
+-  const [borrow, setBorrow] = useState('');
++  // The destination is fixed for this form: the component is keyed by project and stage.
++  const [target] = useState(() => ({ proposalId: p.id, stage }));
++  const [draft, update, clear] = useIdeaDraft(draftKey(target.proposalId, target.stage));
++  const { open, kind, text, borrow } = draft;
++  const elsewhere = pendingDrafts(p.id).filter((s) => s !== stage);
+   const mine = p.contributions.filter((c) => c.stage === stage);
+   // "Add an idea" links open the form straight away and put the cursor in it.
+   const { params } = useRouter();
+   const wantsForm = params.get('focus') === 'add-idea';
+   useEffect(() => {
+-    if (wantsForm) setOpen(true);
+-  }, [wantsForm, stage]);
++    if (wantsForm && !readDraft(draftKey(target.proposalId, target.stage)).open) update({ open: true });
++  }, [wantsForm, target, update]);
+   // Focus once the form exists, and after the app's own move to the page heading (one frame
+   // after navigation), so the cursor really ends up in the box.
+   useEffect(() => {
+@@ -281,6 +369,7 @@
+     });
+     return () => cancelAnimationFrame(id);
+   }, [wantsForm, open, stage]);
++  const stageName = t(`pw.stage.${target.stage}`);
+   return (
+     <section className="pw-contrib" aria-labelledby={`contrib-${stage}`} data-focus="ideas" tabIndex={-1}>
+       <div className="pw-sh">
+@@ -288,11 +377,24 @@
+           {t('pw.contrib.title')}
+         </h2>
+         {!open && (
+-          <button type="button" className="btn btn--secondary btn--sm" onClick={() => setOpen(true)}>
++          <button type="button" className="btn btn--secondary btn--sm" onClick={() => update({ open: true })}>
+             <MessageSquarePlus size={14} aria-hidden="true" /> {t('pw.contrib.add')}
+           </button>
+         )}
+       </div>
++      {elsewhere.length > 0 && (
++        <p className="small muted pw-contrib__elsewhere">
++          {t('pw.contrib.elsewhere')}{' '}
++          {elsewhere.map((s, n) => (
++            <span key={s}>
++              {n > 0 && ' · '}
++              <Link className="text-link" to={projectPath(p.workbenchId, 'proposal', { stage: s, focus: 'ideas' })}>
++                {t(`pw.stage.${s}`)}
++              </Link>
++            </span>
++          ))}
++        </p>
++      )}
+       {mine.length > 0 && (
+         <ul className="pw-contrib__list">
+           {mine.map((c) => (
+@@ -316,20 +418,21 @@
+       {open && (
+         <form
+           className="pw-contrib__form"
++          aria-describedby={`ct-dest-${stage}`}
+           onSubmit={(e) => {
+             e.preventDefault();
+-            void run('contrib', (s) => s.contribute(p.id, stage, { kind, text, borrow: kind === 'reference' ? borrow : null }), t('pw.contrib.sent')).then((ok) => {
+-              if (ok) {
+-                setText('');
+-                setBorrow('');
+-                setOpen(false);
+-              }
++            const { proposalId, stage: to } = target;
++            void run('contrib', (s) => s.contribute(proposalId, to, { kind, text, borrow: kind === 'reference' ? borrow : null }), t('pw.contrib.sentTo', { stage: stageName })).then((ok) => {
++              if (ok) clear();
+             });
+           }}
+         >
++          <p className="pw-contrib__dest" id={`ct-dest-${stage}`}>
++            <span className="pw-label">{t('pw.contrib.destLabel')}</span> {stageName} · {p.name}
++          </p>
+           <div className="pw-seg" role="radiogroup" aria-label={t('pw.contrib.kindLabel')}>
+             {KINDS.map((k) => (
+-              <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => setKind(k)}>
++              <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => update({ kind: k })}>
+                 {t(`pw.contrib.kind.${k}`)}
+               </button>
+             ))}
+@@ -337,19 +440,19 @@
+           <label className="field__label" htmlFor={`ct-${stage}`}>
+             {t(`pw.contrib.textLabel.${kind}`)}
+           </label>
+-          <textarea id={`ct-${stage}`} className="pw-textarea" rows={2} value={text} onChange={(e) => setText(e.target.value)} />
++          <textarea id={`ct-${stage}`} className="pw-textarea" rows={2} value={text} onChange={(e) => update({ text: e.target.value })} />
+           {kind === 'reference' && (
+             <>
+               <label className="field__label" htmlFor={`cb-${stage}`}>
+                 {t('pw.contrib.borrowLabel')}
+               </label>
+-              <input id={`cb-${stage}`} className="pw-input" value={borrow} onChange={(e) => setBorrow(e.target.value)} placeholder={t('pw.contrib.borrowPh')} />
++              <input id={`cb-${stage}`} className="pw-input" value={borrow} onChange={(e) => update({ borrow: e.target.value })} placeholder={t('pw.contrib.borrowPh')} />
+             </>
+           )}
+           <div className="cluster">
+-            <Action label={t('pw.contrib.send')} type="submit" variant="primary" pending={pending === 'contrib'} disabled={!text.trim()} reason={null} />
+-            <button type="button" className="btn btn--ghost" onClick={() => setOpen(false)}>
+-              {t('common.cancel')}
++            <Action label={t('pw.contrib.sendTo', { stage: stageName })} type="submit" variant="primary" pending={pending === 'contrib'} disabled={!text.trim()} reason={null} />
++            <button type="button" className="btn btn--ghost" onClick={clear}>
++              {text.trim() ? t('pw.contrib.discard') : t('common.cancel')}
+             </button>
+           </div>
+           <p className="small muted">{t('pw.contrib.note')}</p>
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/views/stages/ResearchStage.tsx /home/claude/proposal-workbench/src/views/stages/ResearchStage.tsx
+--- before/src/views/stages/ResearchStage.tsx	2026-10-25 23:26:33.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/ResearchStage.tsx	2026-11-03 06:34:31.007776783 +0800
+@@ -12,11 +12,12 @@
+  *   bold black bars with their values.
+  */
+ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+-import { ArrowRight, ArrowUpRight, BarChart3, ChevronRight, ClipboardCheck, ShieldCheck } from 'lucide-react';
++import { ArrowRight, ArrowUpRight, BarChart3, ChevronRight, CircleAlert, ClipboardCheck, LoaderCircle, ShieldCheck } from 'lucide-react';
+ import { useServiceQuery } from '../../app/query';
+ import { useRouter } from '../../app/router';
+ import type { Claim, ResearchWorkspace, SupportStatus } from '../../domain/models';
+ import type { CaseItem, ChartSpec, MaterialKind, Proposal, ResearchBoard, ResearchSection } from '../../domain/proposal';
++import { EvidenceBack } from '../../proposal/EvidenceBack';
+ import { useT } from '../../i18n';
+ import { Drawer } from '../../proposal/Drawer';
+ import { Backed } from '../../proposal/ui';
+@@ -40,6 +41,8 @@
+   const checks = params.get('checks') as ChecksTab | null;
+   const claimParam = params.get('claim');
+   const focus = params.get('focus');
++  // Arriving from a piece of evidence elsewhere (a strategy chip): what it was called there.
++  const evLabel = params.get('ev');
+   const open = Boolean(checks) || Boolean(claimParam && !p.research);
+   const [tab, setTab] = useState<ChecksTab>(checks ?? 'research');
+   useEffect(() => {
+@@ -60,10 +63,51 @@
+   const data = ws.data;
+   const claims = data?.claims ?? [];
+   const board = useMemo(() => p.research ?? (data ? boardFromClaims(data, t) : null), [p.research, data, t]);
+-  const highlight = claimParam ? claimFor(claims, claimParam) : null;
++  const hlParam = params.get('hl');
++  const highlight = claimParam ? claimFor(claims, claimParam) : hlParam ? claimFor(claims, hlParam) : null;
++  // A claim link names the claim as the strategy knows it ("c1"). Once the research has loaded,
++  // resolve it to the live claim and open it in the checks drawer, where its support status,
++  // limitations and source excerpts are shown. Until then the person is told it is being found;
++  // a loading page is never reported as missing evidence.
++  const lookup: 'none' | 'loading' | 'error' | 'missing' | 'found' = !claimParam ? 'none' : ws.status === 'loading' ? 'loading' : ws.status === 'error' ? 'error' : highlight ? 'found' : 'missing';
++  useEffect(() => {
++    if (lookup !== 'found' || !highlight) return;
++    if (checks === 'research' && claimParam === highlight.id) return;
++    setParams({ checks: 'research', claim: highlight.id });
++  }, [lookup, highlight, checks, claimParam, setParams]);
++  const label = evLabel ?? claimParam ?? '';
++  // When the evidence cannot be shown, bring the explanation into view instead of leaving the
++  // person wherever the previous page was scrolled.
++  useEffect(() => {
++    if (lookup !== 'missing' && lookup !== 'error') return;
++    const id = requestAnimationFrame(() => document.querySelector('.pw-evstate')?.scrollIntoView({ block: 'center' }));
++    return () => cancelAnimationFrame(id);
++  }, [lookup]);
+ 
+   return (
+     <div className="pw-research">
++      <EvidenceBack />
++      {lookup === 'loading' && (
++        <p className="pw-evstate" role="status">
++          <LoaderCircle size={16} aria-hidden="true" className="spin" /> {t('pw.ev.loading', { label })}
++        </p>
++      )}
++      {lookup === 'error' && (
++        <p className="pw-evstate" data-tone="warn" role="alert">
++          <CircleAlert size={16} aria-hidden="true" /> {t('pw.ev.error', { label })}{' '}
++          <button type="button" className="btn btn--secondary btn--sm" onClick={() => ws.refetch()}>
++            {t('common.tryAgain')}
++          </button>
++        </p>
++      )}
++      {lookup === 'missing' && (
++        <p className="pw-evstate" data-tone="warn" role="alert" style={{ scrollMarginTop: 80 }}>
++          <CircleAlert size={16} aria-hidden="true" /> {t('pw.ev.missing', { label })}{' '}
++          <button type="button" className="btn btn--secondary btn--sm" onClick={() => setParams({ checks: 'research', claim: null })}>
++            {t('pw.ev.openChecks')}
++          </button>
++        </p>
++      )}
+       <ChecksBar data={data ?? null} onOpen={(which) => setParams({ checks: which })} />
+ 
+       {!board ? (
+@@ -101,7 +145,19 @@
+ 
+       <Drawer
+         open={open}
+-        onClose={() => setParams({ checks: null, claim: null, tab: null })}
++        onClose={() => {
++          // Keep the claim marked on the board and land on its row, so the person keeps their place.
++          const row = highlight?.id;
++          setParams({ checks: null, claim: null, tab: null, ...(row ? { hl: row } : {}) });
++          if (row)
++            requestAnimationFrame(() =>
++              requestAnimationFrame(() => {
++                const btn = document.querySelector<HTMLElement>(`[data-claim-trigger="${CSS.escape(row)}"]`);
++                btn?.closest('tr')?.scrollIntoView({ block: 'center' });
++                btn?.focus({ preventScroll: true });
++              }),
++            );
++        }}
+         title={t('pw.res.checksTitle')}
+         actions={
+           <div className="pw-seg pw-seg--sm" role="tablist" aria-label={t('pw.res.checksTitle')}>
+@@ -113,6 +169,8 @@
+           </div>
+         }
+       >
++        {/* With a claim open, the claim panel carries the way back (it covers this on phones). */}
++        {!claimParam && <EvidenceBack />}
+         <Embedded>{tab === 'handoff' ? <HandoffView projectId={pid} /> : <ResearchView projectId={pid} />}</Embedded>
+       </Drawer>
+     </div>
+@@ -254,7 +312,7 @@
+                       </span>
+                     )}
+                     {c ? (
+-                      <button type="button" className="rs-arrow" onClick={() => onClaim(c)} aria-label={t('pw.res.openClaim', { text: f.text.slice(0, 60) })}>
++                      <button type="button" className="rs-arrow" data-claim-trigger={c.id} onClick={() => onClaim(c)} aria-label={t('pw.res.openClaim', { text: f.text.slice(0, 60) })}>
+                         <ArrowRight size={16} aria-hidden="true" />
+                       </button>
+                     ) : (
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/views/stages/StrategyStage.tsx /home/claude/proposal-workbench/src/views/stages/StrategyStage.tsx
+--- before/src/views/stages/StrategyStage.tsx	2026-10-25 23:04:59.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/StrategyStage.tsx	2026-11-03 06:11:07.406373842 +0800
+@@ -10,7 +10,7 @@
+  */
+ import { useState, type CSSProperties } from 'react';
+ import { ArrowDown, ArrowUpRight, Check, CornerDownRight } from 'lucide-react';
+-import { Link, projectPath } from '../../app/router';
++import { Link, projectPath, useRouter } from '../../app/router';
+ import type { ArtSpec, Proposal } from '../../domain/proposal';
+ import { useT } from '../../i18n';
+ import { DirectionMark, EvidenceChips, SectionHead } from '../../proposal/ui';
+@@ -30,7 +30,13 @@
+   const t = useT();
+   const pid = p.workbenchId;
+   const s = p.strategy;
+-  const [active, setActive] = useState<Circle | 'center'>('center');
++  // Coming back from a piece of evidence (`?focus=circle-brand`) reopens the circle it came from.
++  const { params } = useRouter();
++  const back = params.get('focus');
++  const [active, setActive] = useState<Circle | 'center'>(() => {
++    const c = back?.startsWith('circle-') ? (back.slice(7) as Circle) : null;
++    return c && (CIRCLES as readonly string[]).includes(c) ? c : 'center';
++  });
+   if (!s) return <StageEmpty proposal={p} stage="strategy" />;
+   const dirs = p.themes?.directions ?? [];
+   return (
+@@ -72,7 +78,7 @@
+       <section className="pw-venn-wrap st-meet" aria-labelledby="venn">
+         <SectionHead id="venn" title={t('pw.str.where')} />
+         <div className="pw-venn-grid">
+-          <div className="pw-venn__detail" aria-live="polite">
++          <div className="pw-venn__detail" aria-live="polite" data-focus={active === 'center' ? undefined : `circle-${active}`} tabIndex={-1}>
+             {active === 'center' ? (
+               <>
+                 <p className="pw-label">{t('pw.str.intersection')}</p>
+@@ -90,7 +96,7 @@
+                   {s.circles[active].points.map((pt) => (
+                     <li key={pt.text}>
+                       <p>{pt.text}</p>
+-                      <EvidenceChips refs={pt.evidence} projectId={pid} />
++                      <EvidenceChips refs={pt.evidence} projectId={pid} from={{ stage: 'strategy', at: `circle-${active}` }} />
+                     </li>
+                   ))}
+                 </ul>
+@@ -114,12 +120,12 @@
+         <SectionHead id="argument" title={t('pw.str.argument')} />
+         <ol className="pw-argument st-steps">
+           {s.argument.map((a, i) => (
+-            <li key={a.step}>
++            <li key={a.step} data-focus={`arg-${i + 1}`} tabIndex={-1}>
+               <span className="pw-argument__n">{i + 1}</span>
+               <div>
+                 <p className="pw-argument__step">{a.step}</p>
+                 <p className="small">{a.detail}</p>
+-                <EvidenceChips refs={a.evidence} projectId={pid} />
++                <EvidenceChips refs={a.evidence} projectId={pid} from={{ stage: 'strategy', at: `arg-${i + 1}` }} />
+               </div>
+             </li>
+           ))}
+@@ -143,13 +149,13 @@
+           {s.opportunities.map((o) => {
+             const d = dirs.find((x) => x.id === o.leadsTo);
+             return (
+-              <li key={o.id} className="pw-opp st-opp" style={d ? ({ '--dir': d.color } as CSSProperties) : undefined}>
++              <li key={o.id} className="pw-opp st-opp" data-focus={`opp-${o.id}`} tabIndex={-1} style={d ? ({ '--dir': d.color } as CSSProperties) : undefined}>
+                 <p className="pw-h3">{o.title}</p>
+                 <p>{o.idea}</p>
+                 <p className="small">
+                   <span className="pw-label">{t('pw.str.because')}</span> {o.because}
+                 </p>
+-                <EvidenceChips refs={o.evidence} projectId={pid} />
++                <EvidenceChips refs={o.evidence} projectId={pid} from={{ stage: 'strategy', at: `opp-${o.id}` }} />
+                 {d && (
+                   <Link className="pw-opp__leads" to={projectPath(pid, 'proposal', { stage: 'themes' })}>
+                     <DirectionMark id={d.id} color={d.color} /> {t('pw.str.leadsTo', { name: d.name })}
+diff -ruN -x node_modules -x dist -x dist-single -x docs -x '*.tsbuildinfo' -x .vite before/src/views/stages/VisualStage.tsx /home/claude/proposal-workbench/src/views/stages/VisualStage.tsx
+--- before/src/views/stages/VisualStage.tsx	2026-10-25 21:03:52.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/VisualStage.tsx	2026-11-03 06:12:49.253603633 +0800
+@@ -11,13 +11,15 @@
+  * colour; the refined visual large, with its scores on a white card beside it.
+  */
+ import { useState, type CSSProperties } from 'react';
+-import { ArrowLeftRight, Check, ChevronDown, CircleAlert, Sparkles, X } from 'lucide-react';
++import { ArrowLeftRight, ArrowUp, Check, ChevronDown, CircleAlert, Hand, Maximize2, Sparkles, X } from 'lucide-react';
+ import { useRouter } from '../../app/router';
+ import type { DirectionId, Proposal, RefinedVisual, VisualBranch } from '../../domain/proposal';
+ import { useT } from '../../i18n';
+ import { average, ChallengeCard, DirectionMark, More, Scores, SectionHead } from '../../proposal/ui';
+ import { ArtFrame, naturalRatio } from '../../ui/art/ArtFrame';
+ import { inkOn } from '../../proposal/color';
++import { latestRefined, pendingVisuals } from '../../proposal/pending';
++import { Modal } from '../../ui/Modal';
+ import { StageEmpty } from './StageEmpty';
+ 
+ const STEPS = ['search', 'references', 'sketches', 'refined'] as const;
+@@ -29,7 +31,12 @@
+   if (!v) return <StageEmpty proposal={p} stage="visual" />;
+   const dirs = p.themes?.directions ?? [];
+   const requested = params.get('dir') as DirectionId | null;
+-  const current = v.branches.find((b) => b.directionId === requested) ?? v.branches[0];
++  // With no direction chosen in the link, a stage that waits for the person opens on the work
++  // that is actually waiting. A direction the person picks goes into the URL and is kept.
++  const waiting = p.stages.visual.status === 'waiting_for_you';
++  const pending = waiting ? pendingVisuals(p) : [];
++  const current = v.branches.find((b) => b.directionId === requested) ?? v.branches.find((b) => b.directionId === pending[0]?.directionId) ?? v.branches[0];
++  const pendingHere = pending.some((x) => x.directionId === current.directionId);
+   const dir = dirs.find((d) => d.id === current.directionId);
+ 
+   return (
+@@ -85,7 +92,7 @@
+             </li>
+           ))}
+         </ol>
+-        <Branch key={current.directionId} branch={current} dirColor={dir?.color} />
++        <Branch key={current.directionId} branch={current} dirColor={dir?.color} dirName={dir?.name} pendingHere={pendingHere} />
+       </div>
+ 
+       <section aria-labelledby="similarity">
+@@ -126,18 +133,16 @@
+   );
+ }
+ 
+-export function latestRefined(b: VisualBranch): RefinedVisual | null {
+-  const live = b.refined.filter((r) => r.status !== 'superseded' && r.status !== 'not_started');
+-  return live[live.length - 1] ?? b.refined[b.refined.length - 1] ?? null;
+-}
++export { latestRefined };
+ 
+-function Branch({ branch: b, dirColor }: { branch: VisualBranch; dirColor?: string }) {
++function Branch({ branch: b, dirColor, dirName, pendingHere }: { branch: VisualBranch; dirColor?: string; dirName?: string; pendingHere: boolean }) {
+   const t = useT();
+   const [picked, setPicked] = useState<string | null>(null);
+   const ref = b.references.find((r) => r.id === picked) ?? b.references.find((r) => r.verdict === 'selected') ?? b.references[0] ?? null;
+   const refined = latestRefined(b);
+   const earlier = b.refined.filter((r) => r !== refined);
+   const [big, setBig] = useState<number | null>(null);
++  const bigView = big !== null ? b.views[big] : null;
+   return (
+     <div className="pw-branch-body">
+       <section id="vis-search" className="vd-search" aria-labelledby="vs-search">
+@@ -216,6 +221,23 @@
+ 
+       <section id="vis-refined" aria-labelledby="vs-refined">
+         <SectionHead id="vs-refined" kicker={`4 · ${t('pw.vis.step.refined')}`} title={refined ? t('pw.vis.refinedTitle', { v: refined.version }) : t('pw.vis.noRefined')} />
++        {refined && pendingHere && refined.status === 'awaiting_review' && (
++          <p className="pw-pendingnote">
++            <Hand size={16} aria-hidden="true" />
++            <span>{t('pw.vis.pendingHere', { v: refined.version })}</span>
++            <button
++              type="button"
++              className="btn btn--secondary btn--sm"
++              onClick={() => {
++                const panel = document.querySelector<HTMLElement>('[data-focus="decision"]');
++                panel?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
++                panel?.focus({ preventScroll: true });
++              }}
++            >
++              <ArrowUp size={14} aria-hidden="true" /> {t('pw.vis.toDecision')}
++            </button>
++          </p>
++        )}
+         {refined && (
+           <div className="pw-refined" data-status={refined.status}>
+             <figure className="pw-refined__art">
+@@ -267,13 +289,24 @@
+           <ul className="pw-views">
+             {b.views.map((x, i) => (
+               <li key={x.label}>
+-                <button type="button" className="pw-view" aria-pressed={big === i} onClick={() => setBig(big === i ? null : i)}>
++                <button type="button" className="pw-view" aria-haspopup="dialog" aria-label={t('pw.vis.viewOpen', { label: x.label })} onClick={() => setBig(i)}>
+                   <ArtFrame spec={x.art} title={x.label} ratio={[3, 4]} />
+-                  <span className="small">{x.label}</span>
++                  <span className="small pw-view__label">
++                    {x.label} <Maximize2 size={12} aria-hidden="true" />
++                  </span>
+                 </button>
+               </li>
+             ))}
+           </ul>
++          {/* The view whole and large, at its own proportions. Escape or the close button returns focus to the view. */}
++          <Modal open={bigView !== null} onClose={() => setBig(null)} size="lg" title={bigView ? `${bigView.label} · ${b.directionId}${dirName ? ` · ${dirName}` : ''}` : ''}>
++            {bigView && (
++              <figure className="pw-viewbig">
++                <ArtFrame spec={bigView.art} title={bigView.label} />
++                <figcaption className="small muted">{t('pw.vis.viewOf', { n: (big ?? 0) + 1, count: b.views.length })}</figcaption>
++              </figure>
++            )}
++          </Modal>
+         </section>
+       )}
+ 
+--- before/docs/DESIGN-SPEC.md	2026-10-31 02:34:00.000000000 +0800
++++ /home/claude/proposal-workbench/docs/DESIGN-SPEC.md	2026-11-03 06:34:47.113332629 +0800
+@@ -128,7 +128,7 @@
+ | ArtFrame | `src/ui/art/ArtFrame.tsx`, `frames.css` | Presents a poster/pack/mockup complete on a pale mat at its own ratio (9:16, 3:4, 16:9, 4:3). Never crop. A short row of posters leaves empty space on the right; this is intended. |
+ | Mockups fold | Visual stage | "Mockups · 2" row with a thumbnail strip and a Show/Hide button; folded by default (`aria-expanded=false`). |
+ | Score bars | `ReviewRows.tsx`, Themes/Visual | Label, Klein bar on a pale track, number at right; scores below threshold use the pale blue, never orange. |
+-| Checkpoint card | stage pages | When a stage waits, a bordered orange card: "This stage is waiting for your decision", optional comment field, **Approve and continue** (solid blue) and **Ask for a revision** (quiet, disabled until a comment is written). Copy line: "Nothing continues without your decision, and WorkBot cannot decide for you." |
++| Checkpoint card | stage pages | When a stage waits, a bordered orange card: "This stage is waiting for your decision"; a hairline-separated block saying what is decided (the whole stage, with its stage version) and, on Visual development, which direction and artwork version wait for review, recorded changes and open issues, and a "View the pending work" button; an optional comment field; **Approve {stage} and continue** (solid blue) and **Ask for a revision** (quiet, disabled until a comment is written). Copy line: "Nothing continues without your decision, and WorkBot cannot decide for you." |
+ | Idea box | stage pages | Dashed-border panel "Your ideas for this stage" with an Add an idea button. |
+ | Previous/Next | stage pages | Two small white cards at the bottom corners. |
+ | WorkBot | `src/workbot/` | Character with idle motions (looks left/right, small hand movements) and an "Ask WorkBot" bubble that appears only occasionally. Chat panel on the right, styled in the same blue/neutral scheme; header is a Klein bar with the SIMULATED label. |

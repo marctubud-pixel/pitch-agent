@@ -1,0 +1,798 @@
+{
+  "id": "qingyu-final-review-20261111-r1",
+  "inputSha256": "885306aaaa032cb678825c2b18791018d3e78467b550113192a9b2ac0396286d",
+  "layoutInputSha256": "60671242499ecf5cbcd80e91a18d5a4e72ad5c3cf1984929817a6083ca8238a6",
+  "reviewedAt": "2026-11-11",
+  "scope": "青屿当前23页演练稿 · 本地独立Agent审读",
+  "executionStatus": "completed",
+  "conclusion": "diagnostic_completed",
+  "summary": "已完成23页演练稿终审。未发现新增硬性阻断，提出7项优化建议；已知范围和未验证项继续保留。本轮未签正式业务或审美通过。",
+  "humanApproval": false,
+  "sourceHashes": {
+    "src/proposal/qingyu-layout/assemble.ts": "ef9358eb705ae2d9ba68bb6160900c9fffa64e29b1c032749840f51df41d87fe",
+    "src/proposal/qingyu-layout/preview.ts": "00b0cbae293b320fce11418f7402c6759f9dc830c49115f0fb29714a8a23c087",
+    "src/proposal/qingyu-layout/manifest.json": "63becf989ae345da7715d73a777881390f85c319760b8a86441706f4e1724d3b",
+    "src/proposal/qingyu-strategy/summary.ts": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6",
+    "src/proposal/qingyu-strategy/intersection-page.ts": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37",
+    "src/proposal/qingyu-report/report-r4.ts": "cd9136ea28f97480a7ff04d86d4ae8a6257863fc94853b4c3516dd958e8ab454",
+    "src/proposal/qingyu-report/content-r2.json": "6a09986e67c970e8f803c3b6d6b20a5657c47cbfbbc4156a2efba2d3aab452b2",
+    "src/proposal/qingyu-report/content-r3.json": "3a0e0ec05e3a11ed6b1f4ca7a2446aa230ca639611f1a9fd6e4cc5003bba8653",
+    "src/proposal/qingyu-themes/reviewed-copy.json": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+    "src/proposal/qingyu-visual/concept-images.ts": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e",
+    "src/proposal/deck-studio/engine.ts": "5647a9447a64b496949bdf836a16593a320dcc2349266eac057e756f6e611115",
+    "src/proposal/deck-studio/Viewer.tsx": "21daa3b6009398b54f06504363b4f355b622f54106dbcd9b75258c056161f793",
+    "src/proposal/deck-studio/templates.ts": "12185d61e09ef5c61fcac90b5fad47d4a5603247d6d78094ffbeb68d996501b4",
+    "src/proposal/deck-studio/research.ts": "d2dfc039a33dbf0b6df9444c30eedeed14cd8ce102233081dcbfb8206cc7b178",
+    "src/proposal/deck-studio/chart-layout.ts": "2f248b6c4e67883584e93c6e96a772749783dc627ffa981e1481d913f2faebff",
+    "src/proposal/deck-studio/export.ts": "f61a73969faac88a6f814228bc5bd89d1c994214e2b51641299cec39f15fa1cd",
+    "src/proposal/deck-studio/vendor/deck-engine.js": "5dadbc9a151246a511e7ee6cd47bbd369ca34d93d91cfd145b56c76229005d78"
+  },
+  "expectedPages": [
+    {
+      "id": "qy-layout-cover",
+      "title": "青屿 · 包装提案",
+      "text": [
+        "青屿 · 演练排版预览",
+        "提案与任务",
+        "青屿 · 包装提案",
+        "无糖茶包装方向演练 · 排版预览",
+        "本地排版稿 · 待人工终审",
+        "01"
+      ]
+    },
+    {
+      "id": "qy-layout-task",
+      "title": "任务与边界",
+      "text": [
+        "提案与任务",
+        "任务与边界",
+        "01",
+        "任务",
+        "中国大陆虚构品牌青屿的包装设计研究。无糖即饮茶饮料，500ml单瓶，零售价目标6至8元；使用场景为便利店与电商商品图。全部为工程演练题设，不是已上市产品或真实客户任务。",
+        "02",
+        "人群与渠道",
+        "25至34岁成年城市办公人群",
+        "03",
+        "目标",
+        "理解货架选择、信息识别与审美参照，为包装策略提供研究输入",
+        "04",
+        "规格与资产",
+        "清晰标明茶种及配料；保留青色与山形线条；不把无糖推导为健康功效；消费者偏好与实际效果需来源支持",
+        "青屿 · 演练排版预览",
+        "02"
+      ]
+    },
+    {
+      "id": "R4-B01",
+      "title": "线下无糖茶销额继续增长",
+      "text": [
+        "无糖茶占即饮茶销售额的比例（%）",
+        "当年5–8月即饮茶销售额",
+        "0",
+        "10",
+        "20",
+        "30",
+        "40",
+        "2024年5至8月",
+        "2025年5至8月",
+        "2026年5至8月",
+        "28.2%",
+        "32.8%",
+        "38.4%",
+        "行业与市场",
+        "线下无糖茶销额继续增长",
+        "12.16%",
+        "无糖即饮茶销售额同比增长",
+        "2026年第三季度较2025年第三季度。马上赢监测中国县级以上城市传统线下渠道；销额不等于销量或人数。机构同时报告头部集中度提高。",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "03"
+      ]
+    },
+    {
+      "id": "R4-B02",
+      "title": "工作时段与茶歇，接触条件不同",
+      "text": [
+        "人群与包装作用 · AI生成情境示意，非实拍、非研究样本",
+        "工作时段与茶歇，接触条件不同",
+        "持续工作与短暂茶歇，是两组不同的情景参照。不能拼成一个目标消费者的画像。",
+        "工作时段",
+        "白领人群占91%。工作超过8小时占55%。",
+        "工作间歇",
+        "在下午为60%。和同事一起为40%。",
+        "样本范围",
+        "益普索2026包装饮料子组；子组人数与年龄交叉未公开。",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "04"
+      ]
+    },
+    {
+      "id": "R4-C02",
+      "title": "茶味与无糖标识，是历史样本的信息诉求",
+      "text": [
+        "人群与包装作用 · 亿欧2023年调研，总样本1,200人，题目有效分母未公开",
+        "茶味与无糖标识，是历史样本的信息诉求",
+        "无糖茶包装需要讲清什么（%）",
+        "2023年无糖茶样本自报，独立选项不相加；不代表购买效果。",
+        "0",
+        "25",
+        "50",
+        "75",
+        "100",
+        "了解茶的口味",
+        "明确风味特征",
+        "明确无糖标识",
+        "68.8%",
+        "61.5%",
+        "54.4%",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "05"
+      ]
+    },
+    {
+      "id": "R4-B03",
+      "title": "七个品牌，用四种理由讲茶味",
+      "text": [
+        "竞品与包装 · 公开表达分组，非市场份额",
+        "七个品牌，用四种理由讲茶味",
+        "01",
+        "茶种直述",
+        "东方树叶 / 三得利 / 东鹏",
+        "02",
+        "冷萃工艺",
+        "维他 / 淳茶舍",
+        "03",
+        "原料与竹香",
+        "让茶",
+        "04",
+        "现泡结构",
+        "伊刻活泉",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "06"
+      ]
+    },
+    {
+      "id": "03-prices",
+      "title": "十二条历史报价，按购买条件比较",
+      "text": [
+        "竞品与包装 · 修订2历史快照，非当前价格排名",
+        "十二条历史报价，按购买条件比较",
+        "历史单瓶参照价（元／瓶）",
+        "题设 6–8元 · 不是支付意愿",
+        "0",
+        "2",
+        "4",
+        "6",
+        "8",
+        "10",
+        "媒体原价／建议价",
+        "东鹏乌龙上茶",
+        "555ml",
+        "5",
+        "三得利乌龙茶无糖",
+        "500ml",
+        "5",
+        "淳茶舍冷萃无糖茶系列（味型未明）",
+        "480ml",
+        "6",
+        "燃茶茉莉花茶",
+        "500ml",
+        "6.5",
+        "维他冷萃无糖茶（味型未明）",
+        "500ml",
+        "7.8",
+        "果子熟了×汲赏明前龙井",
+        "500ml · 2025年4月限量",
+        "8",
+        "品牌投稿历史价",
+        "让茶竹香乌龙",
+        "500ml",
+        "6",
+        "伊刻活泉现泡茶系列",
+        "455ml · 味型同价未核",
+        "6",
+        "历史促销",
+        "维他冷萃无糖茶（味型未明）",
+        "500ml · 15瓶／34.9元",
+        "2.33",
+        "三得利乌龙茶无糖",
+        "500ml",
+        "3.5",
+        "东鹏乌龙上茶",
+        "555ml",
+        "3.5",
+        "东方树叶乌龙茶",
+        "500ml · 2瓶／8.4元",
+        "4.2",
+        "东方树叶菊花普洱500ml：价格未知，不画点。　限量款、促销资格及整箱条件见明细。",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "07"
+      ]
+    },
+    {
+      "id": "R4-B04",
+      "title": "四件原包装，茶种与品牌如何分工",
+      "text": [
+        "竞品与包装",
+        "四件原包装，茶种与品牌如何分工",
+        "让茶 · 竹香乌龙茶",
+        "茶种与竹香大字优先；品牌及人物肩贴在上方。",
+        "伊刻活泉 · 现泡茉莉花茶",
+        "现泡茶先说结构／做法，茶种与0糖其次。",
+        "淳茶舍 · 冷萃茉莉花茶",
+        "冷萃与茶种同列，红无糖块单独强调。",
+        "淳茶舍 · 冷萃乌龙茶",
+        "与茉莉款同一信息结构，改茶种文字与对应颜色。",
+        "四件原物料来自三品牌。看得见的设计差异，不等于已测消费者偏好。",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "08"
+      ]
+    },
+    {
+      "id": "R4-B05",
+      "title": "规格与资产有题设，产品理由待补",
+      "text": [
+        "产品与品牌",
+        "规格与资产有题设，产品理由待补",
+        "01",
+        "规格与目标价",
+        "题设为500ml无糖即饮茶、单瓶6至8元目标价；不是当前成交价。价格须与规格和购买条件一起比较。",
+        "02",
+        "接触渠道",
+        "设计面向便利店货架与电商商品图，不是同一接触尺寸与购物过程。货架与商品缩略图分别检验理解。",
+        "03",
+        "保留资产",
+        "保留青色与山形线条；这两项是已有资产限制，未验证识别度或审美效果。保留资产，识别与偏好仍需另核。",
+        "04",
+        "信息依据",
+        "任务卡要求清晰标明茶种与配料，不把无糖推导为健康功效。先有真实产品信息，才能解释差别。",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "09"
+      ]
+    },
+    {
+      "id": "R4-B06",
+      "title": "青屿能说清哪一种可证明的差别？",
+      "text": [
+        "研究结论 · 定位与视觉方向留给策略",
+        "青屿能说清哪一种可证明的差别？",
+        "01",
+        "品类有零售增长",
+        "增长来自监测销额与品类结构，不等于新品牌胜出。",
+        "02",
+        "茶味需要被理解",
+        "工作相关选择因素与无糖茶信息诉求形成有条件连接。",
+        "03",
+        "竞争已有不同解释",
+        "茶种、原料、冷萃与现泡并存，不能仅凭无糖作差异。",
+        "04",
+        "本品理由尚缺事实",
+        "已给规格、目标价和资产，真实茶味与配方未提供。",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "10"
+      ]
+    },
+    {
+      "id": "gaps",
+      "title": "回答之前，先补四类依据",
+      "text": [
+        "研究结论 · 研究待补",
+        "回答之前，先补四类依据",
+        "01",
+        "本品事实",
+        "具体茶种、配方、工艺、口感、背标、实物瓶型和资产源文件待提供。",
+        "02",
+        "目标人群与审美",
+        "未取得当前中国25至34岁办公者与无糖茶的直接交叉画像、审美和真实选择事件。",
+        "03",
+        "同期渠道价格",
+        "代表价格为历史报道与品牌投稿，当前同款同渠道价格及部分包装版次未核齐。",
+        "04",
+        "实际寻找与理解",
+        "未开展冷柜、货架或商品缩略图的目标用户测试。",
+        "青屿包装研究 · 研究待补 · 任务卡第1版",
+        "11"
+      ]
+    },
+    {
+      "id": "qingyu-owner-research",
+      "title": "茶味信息要清楚，产品特点要具体",
+      "text": [
+        "01 · 研究结论",
+        "茶味信息要清楚，产品特点要具体",
+        "01",
+        "人群 · 先看懂茶",
+        "历史样本希望明确口味 68.8%、风味特征 61.5%、无糖标识 54.4%。",
+        "02",
+        "竞品 · 已有多种解释",
+        "七品牌样本从茶种、香气、冷泡和现泡等角度解释产品。",
+        "03",
+        "启示 · 再说明产品特点",
+        "一般茶味难以构成具体区别。先让人看懂在选什么茶，再说明青屿的产品特点。",
+        "青屿",
+        "12"
+      ]
+    },
+    {
+      "id": "qingyu-owner-intersection",
+      "title": "从熟悉的茶，聚焦到具体的用水选择",
+      "text": [
+        "02 · 方向交叉点",
+        "从熟悉的茶，聚焦到具体的用水选择",
+        "研究 · 理解入口",
+        "茶味、无糖等基础信息，是理解产品的入口。",
+        "产品 · 具体资源",
+        "茶种与口感接近市售产品；配方使用虎跑泉水。",
+        "用户 · 任务人群",
+        "便利店、电商选茶的25至34岁城市办公者；是否在意泉水尚待验证。",
+        "交叉点 · 保持清楚，讲明用水",
+        "基础信息清楚，把虎跑泉用水作为青屿可进一步讲清的产品特点。",
+        "三环为分析关系示意，不表示统计比例或已验证的人群重合。",
+        "青屿",
+        "13"
+      ]
+    },
+    {
+      "id": "qingyu-owner-focus",
+      "title": "放大虎跑泉用水，让青屿的产品选择更具体",
+      "text": [
+        "03 · 策略发力点",
+        "“",
+        "放大虎跑泉用水让青屿的产品选择更具体",
+        "以具体水源与茶的关系建立产品识别，让这一选择与青屿建立联系。茶种与无糖信息保持清楚，泉水成为进一步了解产品的线索。",
+        "青屿",
+        "14"
+      ]
+    },
+    {
+      "id": "qy-n7-main",
+      "title": "两张名片",
+      "text": [
+        "文案与视觉",
+        "两张名片",
+        "一瓶无糖茶，两张名片。",
+        "副文",
+        "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+        "15",
+        "AI生成试稿；图外为封存原文。图内未完整落字，标签与效果待验证。"
+      ]
+    },
+    {
+      "id": "qy-n7-mockups",
+      "title": "两张名片 · 正侧背模拟样机",
+      "text": [
+        "文案与视觉",
+        "两张名片 · 正侧背模拟样机",
+        "AI生成设计试稿 · 背面为标签示意两块名片式信息场，先认青屿，再读虎跑泉用水。青色与山形贯穿两块信息，保留透明瓶身的轻盈感。",
+        "青屿 · 生成设计试稿",
+        "16"
+      ]
+    },
+    {
+      "id": "qy-k4-main",
+      "title": "一口到虎跑",
+      "text": [
+        "文案与视觉",
+        "一口到虎跑",
+        "鼠标放一放，去趟虎跑。",
+        "副文",
+        "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+        "17",
+        "AI生成试稿；图外为封存原文。图内未完整落字，标签与效果待验证。"
+      ]
+    },
+    {
+      "id": "qy-k4-mockups",
+      "title": "一口到虎跑 · 正侧背模拟样机",
+      "text": [
+        "文案与视觉",
+        "一口到虎跑 · 正侧背模拟样机",
+        "AI生成设计试稿 · 背面为标签示意纵向窗口组织水流与山线，形成从泉到瓶的阅读动线。青色与透明留白共同表达地理线索，不补写茶种或工艺。",
+        "青屿 · 生成设计试稿",
+        "18"
+      ]
+    },
+    {
+      "id": "qy-v2-main",
+      "title": "看见虎跑，想起你",
+      "text": [
+        "文案与视觉",
+        "看见虎跑，想起你",
+        "上回你带我去虎跑，这回换我给你带茶。",
+        "副文",
+        "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+        "19",
+        "AI生成试稿；图外为封存原文。图内未完整落字，标签与效果待验证。"
+      ]
+    },
+    {
+      "id": "qy-v2-mockups",
+      "title": "看见虎跑，想起你 · 正侧背模拟样机",
+      "text": [
+        "文案与视觉",
+        "看见虎跑，想起你 · 正侧背模拟样机",
+        "AI生成设计试稿 · 背面为标签示意寄语卡与寄件人叙事形成分享入口，连接看到虎跑与想到某个人。山形作为寄语中的地点记号，青色保持青屿的品牌识别。",
+        "青屿 · 生成设计试稿",
+        "20"
+      ]
+    },
+    {
+      "id": "qy-layout-compare",
+      "title": "三方向对照",
+      "text": [
+        "比较与取舍",
+        "三方向对照",
+        "两张名片",
+        "把品牌与用水信息做成两张名片，各自清楚，也彼此呼应。",
+        "一口到虎跑",
+        "以泉水地理为线索，让一道纵向水流窗口引出虎跑山线。",
+        "看见虎跑，想起你",
+        "把日常分享变成一张寄语卡，让瓶身留下寄件人的心意。",
+        "当前R2三方向 · 生成设计试稿 · 人群与触点效果未验证",
+        "青屿 · 演练排版预览",
+        "21"
+      ]
+    },
+    {
+      "id": "qy-layout-recommendation",
+      "title": "原推荐与取舍 · 两张名片",
+      "text": [
+        "比较与取舍",
+        "原推荐与取舍 · 两张名片",
+        "01",
+        "原推荐理由 1",
+        "“青屿，是茶的牌子”先报品牌，“虎跑泉水”紧接着说明这瓶茶用到了什么水。",
+        "02",
+        "原推荐理由 2",
+        "两张名片都能在瓶上找到答案。把这句话放在货架或电商页，无须读者先熟悉虎跑。",
+        "03",
+        "取舍 1",
+        "“两张名片”单读可能让人想到附卡，需与副文同读。它着重帮人认清产品，工位茶歇和赠茶留言各有更具体的使用场景。",
+        "04",
+        "推荐范围",
+        "仅为本地包装文字概念优先，不表示用户选案或实图效果通过。",
+        "青屿 · 演练排版预览",
+        "22"
+      ]
+    },
+    {
+      "id": "qy-layout-scope",
+      "title": "资料说明与适用范围",
+      "text": [
+        "资料与限制",
+        "资料说明与适用范围",
+        "01",
+        "研究与价格",
+        "研究待补。2023历史样本与2026饮料情景分开使用；R2为历史报价，不是2026现价或支付意愿。",
+        "02",
+        "产品设定",
+        "配方使用虎跑泉水为用户演练设定；茶种、完整配料、用水比例与来源凭据仍待核。",
+        "03",
+        "图像与推荐",
+        "六张图为生成试稿；图外封存文案不代表已印在瓶身。推荐仅为文字概念优先，视觉与读图效果待验证。",
+        "04",
+        "资料记录",
+        "完整来源、报价条件、封存原文、输入身份与适用限制保留在逐页备注。",
+        "青屿 · 演练排版预览",
+        "23"
+      ]
+    }
+  ],
+  "roleSummaries": [
+    {
+      "role": "content",
+      "summary": "任务与封存文案核对未证新增硬事实冲突；冷泡／冷萃统一为建议，P22收窄表达。原始研究真实性仍未独立重核。",
+      "primary": "reviews/content-primary/REPORT.json",
+      "blind": "reviews/content-blind/REPORT.json",
+      "challenge": "challenges/content/REPORT.json"
+    },
+    {
+      "role": "visual",
+      "summary": "完整专业原票覆盖23页及六原图；未报错配、裁切或漏页硬伤；连续列表与19页断行为建议。裁定者仅引用原票，不自称看图。",
+      "primary": "reviews/visual-primary/REPORT.json",
+      "blind": "reviews/visual-blind/REPORT.json",
+      "challenge": "challenges/visual/REPORT.json"
+    },
+    {
+      "role": "brand",
+      "summary": "品牌、用水及方向归属未证新增硬冲突；第21页共同旧游条件纳入合并建议；“保持品牌识别”仅作已知效果范围的措辞改善。",
+      "primary": "reviews/brand-primary/REPORT.json",
+      "blind": "reviews/brand-blind/REPORT.json",
+      "challenge": "challenges/brand/REPORT.json"
+    },
+    {
+      "role": "user",
+      "summary": "两路模型能复述整稿与三案，非真人证据；P13就地标注、P21同口径及P7辅助为建议，不推断普遍误读。",
+      "primary": "reviews/user-primary/REPORT.json",
+      "blind": "reviews/user-blind/REPORT.json",
+      "challenge": "challenges/user/REPORT.json"
+    },
+    {
+      "role": "communication",
+      "summary": "第22页名称在瓶上有像素依据，完整身份解释与渠道理解仍未知；must_fix降为局部推荐语气建议；第21页回补工位机制。",
+      "primary": "reviews/communication-primary/REPORT.json",
+      "blind": "reviews/communication-blind/REPORT.json",
+      "challenge": "challenges/communication/REPORT.json"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F01",
+      "kind": "advisory",
+      "pages": [
+        22
+      ],
+      "quote": "两张名片都能在瓶上找到答案。把这句话放在货架或电商页，无须读者先熟悉虎跑。",
+      "evidence": "完整像素补核Q1确认青屿与虎跑泉水确在两块瓶标上，故“都在瓶上”具有名称对应的事实基础；未印完整副文不等于图像完全不能说明关系。第22页也明确仅推荐文字概念，不能认定已承诺或测得渠道理解通过。保留收窄建议：主副文同读说明两项身份；实际瓶面及触点理解待核。“无须”改意图语气。撤销must_fix定级，不撤销局部措辞问题。",
+      "action": "改为“主副文同读时分别说明品牌与用水；意在降低首次接触名称的解释门槛。瓶身承载及货架、电商理解仍待核验。”保留原推荐及文字概念范围，不要求此轮补齐标签。",
+      "owner": "比稿负责人／文案负责人"
+    },
+    {
+      "id": "F02",
+      "kind": "advisory",
+      "pages": [
+        6,
+        8,
+        12
+      ],
+      "quote": "七品牌样本从茶种、香气、冷泡和现泡等角度解释产品。",
+      "evidence": "第6/8页及来源登记用冷萃，第12页用冷泡，换名可核；没有证明真实工艺虚假或新增产品类别。统一来源术语足够，must_fix收窄为advisory。",
+      "action": "将本处冷泡统一为来源原称冷萃，同步策略原文及页面；不扩写工艺事实。",
+      "owner": "策略负责人／排版负责人"
+    },
+    {
+      "id": "F03",
+      "kind": "advisory",
+      "pages": [
+        21
+      ],
+      "quote": "以泉水地理为线索，让一道纵向水流窗口引出虎跑山线。／把日常分享变成一张寄语卡",
+      "evidence": "第21页B只归纳水流窗口，遗漏封存稿的工位停顿与原地抵达；C泛称日常分享，遗漏共同去过虎跑条件。合并为一项同口径归纳建议。三案并未错配，也未证实真实用户混淆。",
+      "action": "统一三案为表达任务＋图形支持；B补回工位停顿、原地喝茶即抵达，C保留共同去过虎跑的赠茶条件。只归纳既有封存稿，不改选案。",
+      "owner": "文案负责人／比稿负责人"
+    },
+    {
+      "id": "F04",
+      "kind": "advisory",
+      "pages": [
+        13
+      ],
+      "quote": "茶种与口感接近市售产品；配方使用虎跑泉水。",
+      "evidence": "补核Q2确认用户补充设定标注实际存在于白色幻灯片外的黑色界面说明栏；产品圈内无就地身份提示。不存在未经授权产品事实新增的证据。将短注移入产品圈是成立的局部呈现建议；不要求重开研究，不断言实际受众已误读。",
+      "action": "可在产品圈标题邻近加“用户补充演练设定”。现有界面说明继续保留；不将该建议说成事实未经授权。",
+      "owner": "策略负责人／排版负责人"
+    },
+    {
+      "id": "F05",
+      "kind": "advisory",
+      "pages": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "quote": "连续四页编号横线列表",
+      "evidence": "两份完整视觉原票及其首读一致描述9至12页同构列表，传播原票亦有对应文本重复诊断。承接专业原票认可节奏建议；不据此删掉阶段职责或必要限制，不外推受众记忆下降。",
+      "action": "保留页序、阶段职责及限制，将第12页突出一条承接结论与两组支撑，减少同义复述；修改后实际连看9至14页。",
+      "owner": "排版负责人"
+    },
+    {
+      "id": "F06",
+      "kind": "advisory",
+      "pages": [
+        19
+      ],
+      "quote": "上回你带我去虎跑，这回换我给／你带茶。",
+      "evidence": "两份完整视觉原票及首读均定位第19页给／你带茶断行，明确没有漏字裁切。认可按逗号换行的可选改进，不认定理解阻断；本裁定者未亲看像素。",
+      "action": "保持封存原文，优先逗号后换行；实际截图确认主副文和试稿说明均完整。",
+      "owner": "排版负责人"
+    },
+    {
+      "id": "F07",
+      "kind": "advisory",
+      "pages": [
+        7
+      ],
+      "quote": "十二条历史报价，按购买条件比较",
+      "evidence": "补核Q3确认未画逐行引导、横向距离较长，但十二行对应齐、文字可辨、未裁切。可选淡引导成立；驳回已串行、普遍难读或实际眼动成本已测的扩展断言。",
+      "action": "可加极淡分行辅助或收近数值；不得改数字与购买条件。当前对行正确、可辨无裁切；改善非硬退，真实串行概率仍未知。",
+      "owner": "排版负责人"
+    }
+  ],
+  "knownScope": [
+    "虚构品牌、500ml／6至8元／25至34岁办公者／渠道及青色山形均为题设；虎跑泉用水为用户后补演练设定，非真实产品凭据。",
+    "研究待补、外部原始报告与完整七品牌依据未全部重核；不重建新增研究阻断。",
+    "茶种、完整配料、用水比例凭据、真实瓶型及原VI未齐；六图为AI生成试稿，标签与封存文案未完整落位。",
+    "附卡联想、用水名称的瓶面独立理解及实际效果未知；既有风险继续随稿。",
+    "第20页“青色保持青屿的品牌识别”可改“沿用青色与山形品牌线索”，为已知未验识别效果范围的措辞改善，不计新增问题。",
+    "原推荐仅文字概念优先，非用户选案或人类／客户批准。"
+  ],
+  "unverified": [
+    "本任务模型校准、正式业务和审美合格性。",
+    "真实消费者理解、记忆、偏好、分享、购买与货架／商品缩略图效果；P7串行或实际眼动成本。",
+    "第13页茶种与口感接近市售产品的原始用户补设原句；现存任务与策略说明不能重建缺失原始消息。",
+    "外部研究原始报告与第4页91／55／60／40逐项分母、四件竞品原件微字、七品牌完整依据。",
+    "逐页notes共23条的技术存在已核，但第23页所称完整来源及可访问性的逐项语义完整性未被该技术计数证明。",
+    "PowerPoint原生渲染、其他设备投屏、印刷实物、在线编辑保存恢复、生产后台及三风格四交接。"
+  ],
+  "recordReferences": [
+    {
+      "label": "content · primary 原票",
+      "path": "reviews/content-primary/REPORT.json",
+      "sha256": "39d616d003661d6b610eef0638fe9cc20a62fff91725c58acf69f92cb179d70f"
+    },
+    {
+      "label": "content · primary 首读",
+      "path": "reviews/content-primary/FIRST-READ.json",
+      "sha256": "a6e609b8e38d3f08e2066dc7441180e437177bc95f28b499e7e6c53f06806c13"
+    },
+    {
+      "label": "content · blind 原票",
+      "path": "reviews/content-blind/REPORT.json",
+      "sha256": "df24c380b3f7e52fd9c9db9ec79dd3980bde7a9112e3b926433567f3283af291"
+    },
+    {
+      "label": "content · blind 首读",
+      "path": "reviews/content-blind/FIRST-READ.json",
+      "sha256": "500636eed5cf8c9c10df98f37ab06d4cf4f8ab11648191b68aeb3509d3f315a1"
+    },
+    {
+      "label": "visual · primary 原票",
+      "path": "reviews/visual-primary/REPORT.json",
+      "sha256": "f18feb939aaac074c30b1a785eb78af63cf39f90a9273871142a993f42c23770"
+    },
+    {
+      "label": "visual · primary 首读",
+      "path": "reviews/visual-primary/FIRST-READ.json",
+      "sha256": "42e6b48b46792dc905ecebd3ece788884684b542aa2bd3e3c293b047d1de3f0d"
+    },
+    {
+      "label": "visual · blind 原票",
+      "path": "reviews/visual-blind/REPORT.json",
+      "sha256": "fd163436ffef86f09a276844ed66846f56428360e3fe1a416d30696391843753"
+    },
+    {
+      "label": "visual · blind 首读",
+      "path": "reviews/visual-blind/FIRST-READ.json",
+      "sha256": "3aa6cdfb7b49c68a6633f31ed098d17d789a9d385904dfa59bd91a33424d3be7"
+    },
+    {
+      "label": "brand · primary 原票",
+      "path": "reviews/brand-primary/REPORT.json",
+      "sha256": "c59ab29ecd480e57d5cb132237bba00525df4cf9ee711bcdcb571da4545505ed"
+    },
+    {
+      "label": "brand · primary 首读",
+      "path": "reviews/brand-primary/FIRST-READ.json",
+      "sha256": "4342472afcd7ff544fe73ff6e3fb0ca0b812cd3b49fc9774a4d01e55fb10599f"
+    },
+    {
+      "label": "brand · blind 原票",
+      "path": "reviews/brand-blind/REPORT.json",
+      "sha256": "1022c38defdeccbff4437b0d28bf3dcdecb479388a34ea257dc73b4e0a74f04d"
+    },
+    {
+      "label": "brand · blind 首读",
+      "path": "reviews/brand-blind/FIRST-READ.json",
+      "sha256": "b138be91e8c0cf57806b6b76428a33c6a207a9b068d11cfad590144d5ba64ca0"
+    },
+    {
+      "label": "user · primary 原票",
+      "path": "reviews/user-primary/REPORT.json",
+      "sha256": "ba6cc6a25e8ac49ec1512624ecac3c1f8d5e95a19a2532cd96cb3bdc663f4275"
+    },
+    {
+      "label": "user · primary 首读",
+      "path": "reviews/user-primary/FIRST-READ.json",
+      "sha256": "4f5dbc693cd88b4ee81b50e461467873d7dcf66de8a079603c873f27070e9e7b"
+    },
+    {
+      "label": "user · blind 原票",
+      "path": "reviews/user-blind/REPORT.json",
+      "sha256": "60801d85ea89d166c52ba4dca2b44c5a35139cbfe9ea68e099d2d41b95f0aee7"
+    },
+    {
+      "label": "user · blind 首读",
+      "path": "reviews/user-blind/FIRST-READ.json",
+      "sha256": "8b7e981a3e5e8d4463e7a9a76a561fa3dbbcb5000a2eb351242bb17cd1866337"
+    },
+    {
+      "label": "communication · primary 原票",
+      "path": "reviews/communication-primary/REPORT.json",
+      "sha256": "addc92153a4f7cf9d8df21ba59979e131156fab9d3a3e1584bf234a4a78163f2"
+    },
+    {
+      "label": "communication · primary 首读",
+      "path": "reviews/communication-primary/FIRST-READ.json",
+      "sha256": "805afb76a1caafbfab9555652c68ae6811d2614701cbbd1fb8d5b0cf3cde01e8"
+    },
+    {
+      "label": "communication · blind 原票",
+      "path": "reviews/communication-blind/REPORT.json",
+      "sha256": "2e629ae84aabe12c8fffffe1bc97caa63f1df25b9b2d2fe2d357e311141fd0cf"
+    },
+    {
+      "label": "communication · blind 首读",
+      "path": "reviews/communication-blind/FIRST-READ.json",
+      "sha256": "747bf3d6b667de5bf0d498c292a0c3972f4cd7cb41549de840e0ee21b2e374cc"
+    },
+    {
+      "label": "content · 对应质疑",
+      "path": "challenges/content/REPORT.json",
+      "sha256": "b36dc8871cf162a94d4ce163fb1b6d202e28cda0dede7b62819fcf1abb234248"
+    },
+    {
+      "label": "content · 质疑前独立检查",
+      "path": "challenges/content/INDEPENDENT-CHECK.json",
+      "sha256": "387dbcb40d1c7390a491833c9871ff84dcd7af3568b9377824ac0ad3ec4a7ba5"
+    },
+    {
+      "label": "visual · 对应质疑",
+      "path": "challenges/visual/REPORT.json",
+      "sha256": "aebafb879e6d84529ef3bbc32cef88b1b53dd521adbb7ea9329ecec915f9ee32"
+    },
+    {
+      "label": "visual · 质疑前独立检查",
+      "path": "challenges/visual/INDEPENDENT-CHECK.json",
+      "sha256": "356b73d5858cc37b197dfd95e60bb9f49988ab5e6ec4eba626d1fbb0bfd520ca"
+    },
+    {
+      "label": "brand · 对应质疑",
+      "path": "challenges/brand/REPORT.json",
+      "sha256": "69d0af1938d06c349e05e94765dcec0547b2f84b995791569a4fd385a654eb3c"
+    },
+    {
+      "label": "brand · 质疑前独立检查",
+      "path": "challenges/brand/INDEPENDENT-CHECK.json",
+      "sha256": "30cdedced2a9f4d3440a5517f66b1f0f8f6cf9a74d189ec99a97f4c739746bdf"
+    },
+    {
+      "label": "user · 对应质疑",
+      "path": "challenges/user/REPORT.json",
+      "sha256": "0606eaba9ae149643cf2fb02ac93556bf65b6872f3cb81d7cfc8475beebf1b02"
+    },
+    {
+      "label": "user · 质疑前独立检查",
+      "path": "challenges/user/INDEPENDENT-CHECK.json",
+      "sha256": "610a92ab639bc1d5493ec78af3713f091e5d5c564415fa9a5a4cd8b42045d18b"
+    },
+    {
+      "label": "communication · 对应质疑",
+      "path": "challenges/communication/REPORT.json",
+      "sha256": "c8d87dad3a298553354174343a1e92d8c9347cb00c302549523d4e8b4b4222b0"
+    },
+    {
+      "label": "communication · 质疑前独立检查",
+      "path": "challenges/communication/INDEPENDENT-CHECK.json",
+      "sha256": "d4e36eddd021cf42f400239ae435dfca2b0e7c0bed2b35a0287c89c10b7087c2"
+    },
+    {
+      "label": "独立像素补核",
+      "path": "supplement/pixel-facts/REPORT.json",
+      "sha256": "b1d2a11756d6cf358d827660dece3a9a3fa17e30ccaf1312ee959ffca1ef7809"
+    },
+    {
+      "label": "独立最终裁定",
+      "path": "adjudication/FINAL.json",
+      "sha256": "17ae309b3aace655b338f3736d1b65ce54462030d4d66c11296558eeeb2b145c"
+    },
+    {
+      "label": "冻结审读输入",
+      "path": "packet/INPUT.json",
+      "sha256": "f06cbdaef0c615669821d8252bc3e4c4286e7e36782b1ff967b0435e56458d1a"
+    },
+    {
+      "label": "本轮实际导出核对",
+      "path": "EXPORT-CHECK.json",
+      "sha256": "d4159c266d88404f4f24357844613ad0e32057011a48500b4e11730d052c1b4e"
+    },
+    {
+      "label": "逐页备注的排版输入身份",
+      "path": "LAYOUT-INPUT-BINDING.json",
+      "sha256": "ac3f50d01a13dcbebd108fda4155bf98b3304a808714da69f5fea4ea67987325"
+    }
+  ],
+  "exportCheck": {
+    "summary": "本轮已实际下载PPTX并核对23页、3个原生图表与3份工作簿、23页备注和策略3个原生椭圆；原生文字与原图字节保留。PowerPoint原生渲染和在线编辑保存未验。",
+    "artifactSha256": "a21fb618ce3082e996f01041d81d1eda39ea8cd5175a95141af4fb50ce1c897b"
+  }
+}

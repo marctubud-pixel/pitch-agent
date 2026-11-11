@@ -1,0 +1,737 @@
+[
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/CALIBRATION-ADOPTION.json",
+    "file": "test-fixtures/provenance/originals/000-CALIBRATION-ADOPTION.json",
+    "sha256": "bb82ad24f5812cff16bcc634feb3c9ba0d8cdbf18a6a614e4f0938804cfbe844"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/SEALED-SOURCES-VERIFIED.json",
+    "file": "test-fixtures/provenance/originals/001-SEALED-SOURCES-VERIFIED.json",
+    "sha256": "31e7f84c5a586e361b85c05f0575c9c2e8d37f42f445063d3b9e13aa6466bbf5"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-brand/first.json",
+    "file": "test-fixtures/provenance/originals/002-first.json",
+    "sha256": "e4df955bbd8c448847586ca266ac49348585b437cf6011d15cf0675fc148598f"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-brand/review.json",
+    "file": "test-fixtures/provenance/originals/003-review.json",
+    "sha256": "cb32200d674bd8a70a2dd5eb5de7cdd969e71a353d5a95de114376957c2d31f0"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-comms/first.json",
+    "file": "test-fixtures/provenance/originals/004-first.json",
+    "sha256": "22f79caa77cd14d12c4d685fe1832a897332707313b475e27f81537767b87c60"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-comms/review.json",
+    "file": "test-fixtures/provenance/originals/005-review.json",
+    "sha256": "7a63478df3957360dff18e65459254dfaf9118d07f1922a157f738870bfc6563"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-copy/first.json",
+    "file": "test-fixtures/provenance/originals/006-first.json",
+    "sha256": "5c7669b11953f64e747a7729c944fd6696d317c16453572010cd8e2c21e835ef"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-copy/review.json",
+    "file": "test-fixtures/provenance/originals/007-review.json",
+    "sha256": "4b85198a38790a91b84625acb1d6a9f6c8704210df063f714e1cbf0c38752f34"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-user/first.json",
+    "file": "test-fixtures/provenance/originals/008-first.json",
+    "sha256": "c781e74cc45f38d6fbe1350219bd80008fdec76e9eab8fbb713bd47a69489636"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r1-user/review.json",
+    "file": "test-fixtures/provenance/originals/009-review.json",
+    "sha256": "b87f9163803e1bd48d622cb42d7b53bea935af40367a2197b1cedba5354a3b42"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-brand/first.json",
+    "file": "test-fixtures/provenance/originals/010-first.json",
+    "sha256": "04b0e3f65b9151b8e8a4acddfa82bb5bfc36d26edf549dec713e68601064a732"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-brand/review.json",
+    "file": "test-fixtures/provenance/originals/011-review.json",
+    "sha256": "521489478ab7f1ddb49a8cb0187432968d951953f576a1da2fee9127a07b20af"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-comms/first.json",
+    "file": "test-fixtures/provenance/originals/012-first.json",
+    "sha256": "95ef5be8f718cc20c7e5f86bc145a792adb05b7b33e4916a0a84ae98f4bda1c6"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-comms/review.json",
+    "file": "test-fixtures/provenance/originals/013-review.json",
+    "sha256": "50ffd06df279ec673c728066fe13d3832816b5468e853efde6aefe71bb81290a"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-copy/first.json",
+    "file": "test-fixtures/provenance/originals/014-first.json",
+    "sha256": "9cc0557162b8f494dd3e673793cf33231896342ab9bc806389c46a50b7542090"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-copy/review.json",
+    "file": "test-fixtures/provenance/originals/015-review.json",
+    "sha256": "612805a8c572f71f4e82516f3c2f95e34d7263db31dc131c70a34bf273c8c583"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-user/first.json",
+    "file": "test-fixtures/provenance/originals/016-first.json",
+    "sha256": "83454d7dc0970f1d383fb322ff848f4c2f3a49af6ee03f7fec001c211f46aef6"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/critics/r2-user/review.json",
+    "file": "test-fixtures/provenance/originals/017-review.json",
+    "sha256": "741af89897aa990e4fa5d25ad82684d68d573fc6833602fea63c128c7734cc97"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/directors/r1/decision.json",
+    "file": "test-fixtures/provenance/originals/018-decision.json",
+    "sha256": "07ac301aa8c7448e57a4284ac5081762d8e947c2f079b59ef97981bb1b466526"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/directors/r2/decision.json",
+    "file": "test-fixtures/provenance/originals/019-decision.json",
+    "sha256": "1cca49fd87df38004bd199d6d9d6ebaaafc88dbe236c8488020165050ac55bcc"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION-ADDENDUM.md",
+    "file": "test-fixtures/provenance/originals/020-CALIBRATION-ADDENDUM.md",
+    "sha256": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION.md",
+    "file": "test-fixtures/provenance/originals/021-CALIBRATION.md",
+    "sha256": "9daea2e3cca39b478107cf7a5137a7553e9fb46594baaf66e43c4c90b8edf870"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/REVIEW-PROTOCOL.md",
+    "file": "test-fixtures/provenance/originals/022-REVIEW-PROTOCOL.md",
+    "sha256": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/SOURCE-BRIEF.md",
+    "file": "test-fixtures/provenance/originals/023-SOURCE-BRIEF.md",
+    "sha256": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/original-copy.ts",
+    "file": "test-fixtures/provenance/originals/024-original-copy.ts",
+    "sha256": "094ede3a7d687aba61f501c496001d6eb00636b8d58a01122855b7e251a155dc"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/product-and-sources.json",
+    "file": "test-fixtures/provenance/originals/025-product-and-sources.json",
+    "sha256": "e20f98ee8b728c7a033b3ca9c0aa026399d321142a0576299008082b7d4feafd"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/research-r4.json",
+    "file": "test-fixtures/provenance/originals/026-research-r4.json",
+    "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/inputs/strategy-summary.ts",
+    "file": "test-fixtures/provenance/originals/027-strategy-summary.ts",
+    "sha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r1/FACTS.md",
+    "file": "test-fixtures/provenance/originals/028-FACTS.md",
+    "sha256": "639c1661800b52f646fe33fcadba7709c9e26940e1d8652aa49b273355159048"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r1/first-brand.md",
+    "file": "test-fixtures/provenance/originals/029-first-brand.md",
+    "sha256": "15fb0475efbff8207cd2f124fcee1cb6aff2ef762244c09d4c6b8eed526122f4"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r1/first-comms.md",
+    "file": "test-fixtures/provenance/originals/030-first-comms.md",
+    "sha256": "9466202f4ac01bfff6b7159c5ba24da66f56048c0da33ce5202bae344ea8677b"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r1/first-copy.md",
+    "file": "test-fixtures/provenance/originals/031-first-copy.md",
+    "sha256": "c17cd1b3a9dc0f7b517b6cf2cb963fceab6cffdc215db4deb251289e2ecc75f2"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r1/first-user.md",
+    "file": "test-fixtures/provenance/originals/032-first-user.md",
+    "sha256": "13ff05859a69e5defe32a7f6bedda21b98069fa01a6ad1788cfbd62ca91e8866"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r2/FACTS.md",
+    "file": "test-fixtures/provenance/originals/033-FACTS.md",
+    "sha256": "2b4cda986d14436cc033e27b40a771d73ccdeb0af959f41ffeb5762e93c0d184"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r2/SCORE-INSTRUCTIONS.md",
+    "file": "test-fixtures/provenance/originals/034-SCORE-INSTRUCTIONS.md",
+    "sha256": "d984dcfbd88420cc6ced1608897b4d8b6632947d7ab6d063c3cd5862fcd1d787"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r2/first-brand.md",
+    "file": "test-fixtures/provenance/originals/035-first-brand.md",
+    "sha256": "aa089e0e433afe44d5822bf45859671a65cdca215d085ef291ca26c14f0ed423"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r2/first-comms.md",
+    "file": "test-fixtures/provenance/originals/036-first-comms.md",
+    "sha256": "9f361761a32c293dacd8015a2cc88dc21dbf68bb20cccbf8f51354f6de12ba79"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r2/first-copy.md",
+    "file": "test-fixtures/provenance/originals/037-first-copy.md",
+    "sha256": "2fb4025fb84b85e29288f3be130bc6191830899cffb94b7b5608a77f2072f3bf"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/packets/r2/first-user.md",
+    "file": "test-fixtures/provenance/originals/038-first-user.md",
+    "sha256": "91b6fc838e0147e1a2223f0a7de5f33128a17dc6948fe24d91d22569e62e2434"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/presentation/bundle.json",
+    "file": "test-fixtures/provenance/originals/039-bundle.json",
+    "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/r1-FIRST-READ-SEAL-partial.json",
+    "file": "test-fixtures/provenance/originals/040-r1-FIRST-READ-SEAL-partial.json",
+    "sha256": "2595f4a906ab49151fdd9c55e50e8d098d8c6a16dfd5739f7b8b427af8403c43"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/r1-FIRST-READ-SEAL.json",
+    "file": "test-fixtures/provenance/originals/041-r1-FIRST-READ-SEAL.json",
+    "sha256": "196aadd2611817b66893195f63bbd3039c4bab25958aedc36d84aacb178401cb"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/r1-PAIRED-SEAL.json",
+    "file": "test-fixtures/provenance/originals/042-r1-PAIRED-SEAL.json",
+    "sha256": "d47ae7cb8c9c6a8865e3edb06ea85e2a70fa3513f8aa92275eb7c465651a0a6f"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/r2-FIRST-READ-SEAL.json",
+    "file": "test-fixtures/provenance/originals/043-r2-FIRST-READ-SEAL.json",
+    "sha256": "b9d9247c504d65fdbba325980ec29ec8b723b2ddc3736be65ab9538b20015610"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/calibration-scale.json",
+    "file": "test-fixtures/provenance/originals/044-calibration-scale.json",
+    "sha256": "d9bdab85a1e2035e975a31f41667656ef6dfee8a88db056f4dca83c537933060"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/calibration-scale.md",
+    "file": "test-fixtures/provenance/originals/045-calibration-scale.md",
+    "sha256": "f155f7c2c4bf810dc87624a17663cf5954bb95bbc811d980b51249e37a935385"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/calibration.json",
+    "file": "test-fixtures/provenance/originals/046-calibration.json",
+    "sha256": "0e895717e2141d50448d0c8ed90e28ef1566ce26e1b0a9c16650ead41ef3eb95"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/calibration.md",
+    "file": "test-fixtures/provenance/originals/047-calibration.md",
+    "sha256": "a5751d56938226add2c49d627d73f5a9a0e1710291ef65b8401617ee1a2feb69"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/first-read.json",
+    "file": "test-fixtures/provenance/originals/048-first-read.json",
+    "sha256": "e9360178024bc198387bff63db403e5317beda6c08f72df7d50f3a598576230d"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-brand/score.json",
+    "file": "test-fixtures/provenance/originals/049-score.json",
+    "sha256": "abf92720bd3f603e46227976196f1a9b83c6d91f7def0ef16feeefd492d1a4f2"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/calibration-scale.json",
+    "file": "test-fixtures/provenance/originals/050-calibration-scale.json",
+    "sha256": "9b63e398f3281881720d178308953d9d72a3dde802ef613fb32a27bdde21f336"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/calibration-scale.md",
+    "file": "test-fixtures/provenance/originals/051-calibration-scale.md",
+    "sha256": "0c68f04059f0a2a53646907be439aa5943884d2322d159e4e9fe3273e82ef984"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/calibration.json",
+    "file": "test-fixtures/provenance/originals/052-calibration.json",
+    "sha256": "a6bfc5550cc59b27d423ab511d0610c7b81b5f25b969cd7ad591800ba2d440c7"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/calibration.md",
+    "file": "test-fixtures/provenance/originals/053-calibration.md",
+    "sha256": "b8beb650d564b8a9ff5f2b79db77566ec7005d7010b22af27bf2ee2f016b4057"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/first-read.json",
+    "file": "test-fixtures/provenance/originals/054-first-read.json",
+    "sha256": "ad70474ed1b5ae36595b66350005dfff1b117400684c4e005158c74380cf4e5b"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-comms/score.json",
+    "file": "test-fixtures/provenance/originals/055-score.json",
+    "sha256": "cf37a028bb932055e3e29851e1f40f8793efde03958abf411f6fae921bd5c8d5"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration-scale.json",
+    "file": "test-fixtures/provenance/originals/056-calibration-scale.json",
+    "sha256": "86f98124d83e18230a061d302bca5e02c53a73474495deb7641a281d64a61d4f"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration-scale.md",
+    "file": "test-fixtures/provenance/originals/057-calibration-scale.md",
+    "sha256": "38833cc4d6c362f3ef2e31c392ca744d1fd91baf6028472b39ec587108423b21"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration.json",
+    "file": "test-fixtures/provenance/originals/058-calibration.json",
+    "sha256": "af57b93239e533ad191f46a52b7df408bb42cecfddd1a65075bf4d0653fc4d8c"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration.md",
+    "file": "test-fixtures/provenance/originals/059-calibration.md",
+    "sha256": "9c4c9e791516b746fe60202c3c5df6f36d758a92336cffe96cb118f06613eed8"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/first-read.json",
+    "file": "test-fixtures/provenance/originals/060-first-read.json",
+    "sha256": "4f83932b74045b11e53c21476ee3f3680dfe036893aab7b8bec93e0edf1b0c03"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/score.json",
+    "file": "test-fixtures/provenance/originals/061-score.json",
+    "sha256": "2c4d12f468730f20f5f5b4d30076a478ca8bcf7b1677fc05f8f685ebad593c23"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/calibration-scale.json",
+    "file": "test-fixtures/provenance/originals/062-calibration-scale.json",
+    "sha256": "8efd3fbc6d88dcf3ba89260a4e1b99d9991e3babac40ac930032fbfa0ba71fef"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/calibration-scale.md",
+    "file": "test-fixtures/provenance/originals/063-calibration-scale.md",
+    "sha256": "96fec554b1e2c6ed3c50eccecc94649abd307cf6dd78a79bb93028c3de4a98c6"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/calibration.json",
+    "file": "test-fixtures/provenance/originals/064-calibration.json",
+    "sha256": "45e6d746e1aee2e60482b7e71d0e0c03a3bf221368a7a10e75fe39bddf3f77b1"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/calibration.md",
+    "file": "test-fixtures/provenance/originals/065-calibration.md",
+    "sha256": "dd36f4f4911770bd6263da0c968615a6d7753bcc2716ce13df579b1be4141a4a"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/first-read.json",
+    "file": "test-fixtures/provenance/originals/066-first-read.json",
+    "sha256": "0345385988f960114f8f1a21d82e6207a299a0058407aaaf0decdd8f1a2d20ed"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r1-user/score.json",
+    "file": "test-fixtures/provenance/originals/067-score.json",
+    "sha256": "d21926577e94a3fb14c019f2144f0edd26659f1be76ce86ea97113ebd553063b"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-brand/calibration-scale.json",
+    "file": "test-fixtures/provenance/originals/068-calibration-scale.json",
+    "sha256": "84568fe2c7d6b169d7a6b59ae8e00df0169f17320bcbde045dedb20adfabc2ea"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-brand/calibration-scale.md",
+    "file": "test-fixtures/provenance/originals/069-calibration-scale.md",
+    "sha256": "b56fbba70db46dfcf8cfd0baa90303b42a7d4010adb72d4aa08124a5a8f94415"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-brand/calibration.json",
+    "file": "test-fixtures/provenance/originals/070-calibration.json",
+    "sha256": "4f8baa023214d4563c81c7a7b39579dc9aa3b3a9f0cbbd291374f6dc38262830"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-brand/calibration.md",
+    "file": "test-fixtures/provenance/originals/071-calibration.md",
+    "sha256": "0989062faa9d036116406078f322aa37802fbe44392304666aa41a457c7e907d"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-brand/first-read.json",
+    "file": "test-fixtures/provenance/originals/072-first-read.json",
+    "sha256": "8bb14f463d4e859afb88d6bab0ebc3bc792102e419592c79725526e7dd708546"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-brand/score.json",
+    "file": "test-fixtures/provenance/originals/073-score.json",
+    "sha256": "e02813b28f3aaef97e87960a705860612f860aa7fb907339f48b9f975c0d9295"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-comms/calibration-scale.json",
+    "file": "test-fixtures/provenance/originals/074-calibration-scale.json",
+    "sha256": "addbcc2913b7e19e559f086aac34256bc2dd61ecd6883f4d24ebe3aa518f9896"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-comms/calibration-scale.md",
+    "file": "test-fixtures/provenance/originals/075-calibration-scale.md",
+    "sha256": "ad533664410582f6893f7c20c7ac29f0687ac6add148557a5f4daa321702072e"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-comms/calibration.json",
+    "file": "test-fixtures/provenance/originals/076-calibration.json",
+    "sha256": "fc3693423a2a50f264892cf269bf2474838d6ec662c14626f1006b4e6a4d88d9"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-comms/calibration.md",
+    "file": "test-fixtures/provenance/originals/077-calibration.md",
+    "sha256": "0f8340f02006c1f15e33b8823701e857e731eeec75f3fea4fa70f22bea35a6f9"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-comms/first-read.json",
+    "file": "test-fixtures/provenance/originals/078-first-read.json",
+    "sha256": "ff826f8891310bbbeec5d02f9974237d35bdeb30593b388be63306e5404bc3e0"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-comms/score.json",
+    "file": "test-fixtures/provenance/originals/079-score.json",
+    "sha256": "d139e4b319fb4983836d7b2b601135cc70e517603c992ab9b5bf024d0825b875"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-copy/calibration.json",
+    "file": "test-fixtures/provenance/originals/080-calibration.json",
+    "sha256": "3e439eddfc9de553cedae4ee6ce78e492cbd34c14eb1d0d039df876617acab8f"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-copy/calibration.md",
+    "file": "test-fixtures/provenance/originals/081-calibration.md",
+    "sha256": "b69287bc67c09d79dceceb9324d9373c84761f80e27b783cd71e2fb9d87c85c4"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-copy/first-read.json",
+    "file": "test-fixtures/provenance/originals/082-first-read.json",
+    "sha256": "01137e5b18f93a090283a15e82596355c6034397f0dd0698487cd49a2a129068"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-copy/score.json",
+    "file": "test-fixtures/provenance/originals/083-score.json",
+    "sha256": "6b72253d3c8dfea2a01cf221bced9071c2fb5eadaffaa68ca6ab7fa343e24e3b"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-user/CLARIFICATION.json",
+    "file": "test-fixtures/provenance/originals/084-CLARIFICATION.json",
+    "sha256": "8f49e40c6dee1b5cecfda63ac0d8fa774fb0aad5c584fd2c105b9fe4ac106c0d"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-user/calibration-scale.json",
+    "file": "test-fixtures/provenance/originals/085-calibration-scale.json",
+    "sha256": "11a7868e0bad7a6d3e20c4711493c5262971e0a8b704235f94449272535cb090"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-user/calibration-scale.md",
+    "file": "test-fixtures/provenance/originals/086-calibration-scale.md",
+    "sha256": "b3c82d5ffffd0ee38a3c9f0a5c8f28eb0ac886a64f8dad23d7b1a8ad4c404b66"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-user/calibration.json",
+    "file": "test-fixtures/provenance/originals/087-calibration.json",
+    "sha256": "9f722e41bbf327d7bfacdb4697c0ad64f84bddb78b39a31775323ab66c1d05d1"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-user/calibration.md",
+    "file": "test-fixtures/provenance/originals/088-calibration.md",
+    "sha256": "a4f8e7d00329a391d5f70797558a9068ce46087182397c4272243940366f8a42"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-user/first-read.json",
+    "file": "test-fixtures/provenance/originals/089-first-read.json",
+    "sha256": "a1f7c80be779435190d5e568abf72148b2d41861ddc06aee3ca5a20732818d4c"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/reviews/r2-user/score.json",
+    "file": "test-fixtures/provenance/originals/090-score.json",
+    "sha256": "4fdd019f6176811fe0cb8679fad5a1cca94325ebc578a97c34197e597fdb7667"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/v1/SEAL.json",
+    "file": "test-fixtures/provenance/originals/091-SEAL.json",
+    "sha256": "89b6bdbb7bf730a86f9e73bd533f917086934c67ac944adb5e4a85a2c72daae4"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/v1/draft.json",
+    "file": "test-fixtures/provenance/originals/092-draft.json",
+    "sha256": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/v2/RESPONSE.json",
+    "file": "test-fixtures/provenance/originals/093-RESPONSE.json",
+    "sha256": "1943ed32123471d74e9614b6f15431032fbc964c0933d66422041700ca26a504"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/v2/SEAL.json",
+    "file": "test-fixtures/provenance/originals/094-SEAL.json",
+    "sha256": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50"
+  },
+  {
+    "originalPath": ".scratch/qingyu-copy-full-20261110/v2/draft.json",
+    "file": "test-fixtures/provenance/originals/095-draft.json",
+    "sha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93"
+  },
+  {
+    "originalPath": ".scratch/qingyu-visual-boards-20261109/SCENE-ASSET.json",
+    "file": "test-fixtures/provenance/originals/096-SCENE-ASSET.json",
+    "sha256": "d422035c2cc9936df638aead2696de11a5da401c1ed040606f9e9ef18d02d695"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+    "file": "test-fixtures/provenance/originals/097-changbai-snow.png",
+    "sha256": "e734eefeb5199d0d8ff46f8f20702a16e9a6a5e867fea0cf6a15504a4c24a222"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+    "file": "test-fixtures/provenance/originals/098-coke-share-02.jpg",
+    "sha256": "828c6b208afe9eace44289592df186ff8f6b9a69d52817412f37834d1b9eddc7"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+    "file": "test-fixtures/provenance/originals/099-nongfu-rabbit.png",
+    "sha256": "1eef17132f995f2fd6199906eeb35f3d30544c328957f1ba5d19c1504450b9e0"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+    "file": "test-fixtures/provenance/originals/100-oriental-longjing.png",
+    "sha256": "df27729ed779264c5a18f81505220225f524f012470b16cb2c8ffc93c9fa91a4"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-moli.png",
+    "file": "test-fixtures/provenance/originals/101-chun-moli.png",
+    "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+    "file": "test-fixtures/provenance/originals/102-rangcha-detail.png",
+    "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+    "file": "test-fixtures/provenance/originals/103-reviewed-copy.json",
+    "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-copy-full-20261110/inputs/research-r4.json",
+    "file": "test-fixtures/provenance/originals/104-research-r4.json",
+    "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-packaging-references-20261110/references-editorial.json",
+    "file": "test-fixtures/provenance/originals/105-references-editorial.json",
+    "sha256": "0d44eaf83ced56b6d9bc517bbf4b629d24adae2696fa1bacbf4d38f6238d3b14"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST-FINAL.json",
+    "file": "test-fixtures/provenance/originals/106-SKILL-MANIFEST-FINAL.json",
+    "sha256": "2c197d5a8a8d7716700a1ef11fafd5388158a39e4d5354d8b257c47fd8fe3e00"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST.json",
+    "file": "test-fixtures/provenance/originals/107-SKILL-MANIFEST.json",
+    "sha256": "8bf6da565da5a14b8efcd53b0d7580e499f1d5aaef257607eaf258b7687fd22d"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+    "file": "test-fixtures/provenance/originals/108-REQUEST.json",
+    "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/AUTHORIZATION.json",
+    "file": "test-fixtures/provenance/originals/109-AUTHORIZATION.json",
+    "sha256": "3ea4f3eecd1d197e19a12729eb778c59d0b0fcae150c794cce0235f30e2f8ab6"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/CANDIDATES-AND-GAPS.json",
+    "file": "test-fixtures/provenance/originals/110-CANDIDATES-AND-GAPS.json",
+    "sha256": "b3b8083d8948b7df7427899d2b00ace44f0e80e62405bc63202e52e963ad51db"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/CHECK-RESULT.json",
+    "file": "test-fixtures/provenance/originals/111-CHECK-RESULT.json",
+    "sha256": "f2a597a6c18422f469d111fb0b1a4ab3c1d3a01a92047192c337cbf61beac666"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/CHECK-STDERR.txt",
+    "file": "test-fixtures/provenance/originals/112-CHECK-STDERR.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/CHECK-STDOUT.json",
+    "file": "test-fixtures/provenance/originals/113-CHECK-STDOUT.json",
+    "sha256": "074e0bfcd88dad3776c04e9706686bb3d181bd4a3875b54dd33ac565adaef0a0"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/CURRENT-INPUT.json",
+    "file": "test-fixtures/provenance/originals/114-CURRENT-INPUT.json",
+    "sha256": "2d76ea76b249795dd24832b8fed1e2685a101d3946c90820a821c7d56a7bbe48"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/EVIDENCE-VERIFY.json",
+    "file": "test-fixtures/provenance/originals/115-EVIDENCE-VERIFY.json",
+    "sha256": "65e96db7dce38576781ad75e52c7e02f8528edda610768cdc5c2bf3fad05b690"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/INVOCATION.json",
+    "file": "test-fixtures/provenance/originals/116-INVOCATION.json",
+    "sha256": "7cf5a8bf7a95c942051505b7c6df1d866c58e5cd175e2299e45a174facab2413"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/PAGE-PACKET.json",
+    "file": "test-fixtures/provenance/originals/117-PAGE-PACKET.json",
+    "sha256": "8e1fce71cf4162925755e307f3183f6de39a246acd2b9a53ffc09ce550e672c6"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/WORK-PACKAGE.json",
+    "file": "test-fixtures/provenance/originals/118-WORK-PACKAGE.json",
+    "sha256": "b4d537f41df25f9a70d88c79965247d256d3a669e396e096eadfc7cdfe976621"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/build-intake-record.py",
+    "file": "test-fixtures/provenance/originals/119-build-intake-record.py",
+    "sha256": "b2dc5d65cc102e56624afcceb8e41ca6d3076bb67008dd843fa0cac288ce40fa"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/AUTHORIZATION.json",
+    "file": "test-fixtures/provenance/originals/120-AUTHORIZATION.json",
+    "sha256": "ac55aa210f69ac0b735dc37f8760249497d0eaf23543311a548f641398c99ab0"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+    "file": "test-fixtures/provenance/originals/121-CANDIDATES-AND-GAPS.json",
+    "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CHECK-RESULT.json",
+    "file": "test-fixtures/provenance/originals/122-CHECK-RESULT.json",
+    "sha256": "d190dd3a4848871a9a79cf2b3e8e2054e22d3afeee1693e187b4ad1b134ff131"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CHECK-STDERR.txt",
+    "file": "test-fixtures/provenance/originals/123-CHECK-STDERR.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CHECK-STDOUT.json",
+    "file": "test-fixtures/provenance/originals/124-CHECK-STDOUT.json",
+    "sha256": "074e0bfcd88dad3776c04e9706686bb3d181bd4a3875b54dd33ac565adaef0a0"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CURRENT-INPUT.json",
+    "file": "test-fixtures/provenance/originals/125-CURRENT-INPUT.json",
+    "sha256": "c9a1889e797f21e3f2c8321222671a55e61192bb72552259a4cc1e0f75206247"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/EVIDENCE-VERIFY.json",
+    "file": "test-fixtures/provenance/originals/126-EVIDENCE-VERIFY.json",
+    "sha256": "37ad9b6256f5f5f06df3b4ab45ade6b087d12e381141c2caa30ce73ee1cba219"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/INVOCATION.json",
+    "file": "test-fixtures/provenance/originals/127-INVOCATION.json",
+    "sha256": "f1554f240ecb7470b48754d69414d4ea34b1747bf4c0d4aa6162df97b51501ca"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/NORM-REVISION.json",
+    "file": "test-fixtures/provenance/originals/128-NORM-REVISION.json",
+    "sha256": "f1a4607c7c20ffe7c25a26a0f7d6a17ae42309b543f3c754be6e4f67f3796b4c"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/PAGE-PACKET.json",
+    "file": "test-fixtures/provenance/originals/129-PAGE-PACKET.json",
+    "sha256": "dbf2f8380154ac89919a32441112e74780b49b5e426a7d895891d69b2069955b"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/SOURCE-CLOSURE-CHECK.json",
+    "file": "test-fixtures/provenance/originals/130-SOURCE-CLOSURE-CHECK.json",
+    "sha256": "e945f0e6b5225da4d774daf6515f25d8f4a414664ae401146d225edfa03de949"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/WORK-PACKAGE.json",
+    "file": "test-fixtures/provenance/originals/131-WORK-PACKAGE.json",
+    "sha256": "de8c85e840615ac18667ebcb27768699ac6c71bbd7df7e77d293496419c19bc3"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/build-intake-record.py",
+    "file": "test-fixtures/provenance/originals/132-build-intake-record.py",
+    "sha256": "8a6719ab627adc584e1d109c523df2c13e55cc4ec7eb791cf7b0a7520bdc3a84"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/SKILL.md",
+    "file": "test-fixtures/provenance/originals/133-SKILL.md",
+    "sha256": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/kv.md",
+    "file": "test-fixtures/provenance/originals/134-kv.md",
+    "sha256": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/packaging.md",
+    "file": "test-fixtures/provenance/originals/135-packaging.md",
+    "sha256": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/records.md",
+    "file": "test-fixtures/provenance/originals/136-records.md",
+    "sha256": "6cb5d794a79eb68961ae8372e9931aa39ce821cdf9553afe4030ee1d141354dd"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/stage-review.md",
+    "file": "test-fixtures/provenance/originals/137-stage-review.md",
+    "sha256": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/scripts/check-stage.mjs",
+    "file": "test-fixtures/provenance/originals/138-check-stage.mjs",
+    "sha256": "8186a2c46497f38c46edd46789c352f33957d6d2affcc356b48f321e7051fb5f"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/tests/check-stage.test.mjs",
+    "file": "test-fixtures/provenance/originals/139-check-stage.test.mjs",
+    "sha256": "c6b5c3e17ec939bd9d2fba70a75239c1ec0de50661e2b4e00539ec06f2ca011f"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/SKILL.md",
+    "file": "test-fixtures/provenance/originals/140-SKILL.md",
+    "sha256": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/kv.md",
+    "file": "test-fixtures/provenance/originals/141-kv.md",
+    "sha256": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/packaging.md",
+    "file": "test-fixtures/provenance/originals/142-packaging.md",
+    "sha256": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/records.md",
+    "file": "test-fixtures/provenance/originals/143-records.md",
+    "sha256": "ee707e90ca10e8ebac767d926091a43c787396d9bb719d8105b9a4fcc7eab155"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/stage-review.md",
+    "file": "test-fixtures/provenance/originals/144-stage-review.md",
+    "sha256": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/scripts/check-stage.mjs",
+    "file": "test-fixtures/provenance/originals/145-check-stage.mjs",
+    "sha256": "e989e82288e1ee4b8b873ec409c061a734e0881cce37ffb9b0597e54ad796dd4"
+  },
+  {
+    "originalPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/tests/check-stage.test.mjs",
+    "file": "test-fixtures/provenance/originals/146-check-stage.test.mjs",
+    "sha256": "d3e8fa7e48ac35ddaf0d2c585681c224bd6e14230fc133bb32fefe9fdbd93adc"
+  }
+]

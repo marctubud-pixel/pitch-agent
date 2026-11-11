@@ -1,0 +1,361 @@
+{
+  "draftId": "qingyu-copy-reviewed-r2",
+  "respondsTo": "qingyu-copy-reviewed-r1",
+  "entries": [
+    {
+      "sourceRole": "copy",
+      "issueId": "n7-i1",
+      "itemId": "n7",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "青屿做茶，水也有名有姓。 虎跑泉水，在这瓶无糖茶的配方里。",
+      "newQuote": "一瓶无糖茶，两张名片。 青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "action": "删去“有名有姓”，两张名片由下一句逐项介绍。",
+      "reason": "主文独读仍可能被当成实物卡，须等版面验证。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "n7-I1",
+      "itemId": "n7",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "青屿做茶，水也有名有姓。 虎跑泉水，在这瓶无糖茶的配方里。",
+      "newQuote": "一瓶无糖茶，两张名片。 青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "action": "将两者分别写成品牌与配方用料。",
+      "reason": "保留在身份层面；来源凭据须由产品方核实。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-n7-i1",
+      "itemId": "n7",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "青屿做茶，水也有名有姓。 虎跑泉水，在这瓶无糖茶的配方里。",
+      "newQuote": "一瓶无糖茶，两张名片。 青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "action": "陌生名字旁边直接写它的身份。",
+      "reason": "是否认识泉名、会如何读，仍需真人核验。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "copy",
+      "issueId": "k4-i1",
+      "itemId": "k4",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "今天的茶歇，去趟虎跑。 工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "鼠标放一放，去趟虎跑。 工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "增加放下鼠标与喝一口抵达的前后动作。",
+      "reason": "主文单读仍可能被理解为下班出游。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "k4-I1",
+      "itemId": "k4",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "今天的茶歇，去趟虎跑。 工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "鼠标放一放，去趟虎跑。 工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "副文保留青屿和无糖品类。",
+      "reason": "如果拆开呈现，读者能否对上品牌仍需打样。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-k4-i2",
+      "itemId": "k4",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "今天的茶歇，去趟虎跑。 工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "鼠标放一放，去趟虎跑。 工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "在“去趟虎跑”前加放下鼠标，副文落到工位。",
+      "reason": "独读“去趟”仍有实际出行的可能。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "k4-i1",
+      "itemId": "k4",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "今天的茶歇，去趟虎跑。 工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "鼠标放一放，去趟虎跑。 工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "留住旅游邀请的读法，让“喝一口就算到了”揭晓。",
+      "reason": "实际版面能否让两句同读仍待核。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "k4-I2",
+      "itemId": "k4",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "把“瓶里就有”改成“茶里用到了”。",
+      "reason": "具体用水比例、供应凭据未核实。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "v2-I1",
+      "itemId": "v2",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "改用有共同出游经历的人捎茶，副文点明品牌。",
+      "reason": "主文仍不能单独指认品牌，场景接受度未知。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "copy",
+      "issueId": "v2-i1",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "把搭手答谢改成回忆，两次“带”承接同一个人的口信。",
+      "reason": "副文读到产品名后，仍能接回“我”看见名字时想到的“你”。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "copy",
+      "issueId": "v2-i2",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "给说话者一个认得虎跑、此刻愿意提它的来由。",
+      "reason": "两人去过那里，名字才会触发这次捎茶。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-k4-i1",
+      "itemId": "k4",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "今天的茶歇，去趟虎跑。 工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "鼠标放一放，去趟虎跑。 工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "写手放开鼠标、工位开瓶、喝一口算抵达。",
+      "reason": "不熟地名也能复述这一小段停顿，地名的来历由用水交代。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-v2-i1",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "将选茶经过落在这一次重遇熟悉地名的瞬间。",
+      "reason": "捎给谁、为何想到他，两句各给一半依据。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-v2-i2",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "删去“特意”，直接让挑茶人说“看见这名字，就想起你”。",
+      "reason": "认得地名源于两人去过，理由无需靠名泉声望。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "n7-i1",
+      "itemId": "n7",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "青屿做茶，水也有名有姓。 虎跑泉水，在这瓶无糖茶的配方里。",
+      "newQuote": "一瓶无糖茶，两张名片。 青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "action": "将泛指水报名改成“一瓶无糖茶，两张名片”，副文为两个名字各报身份。",
+      "reason": "只报水名能猜到两者关系，却少了牌子与用料的一一对应。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "v2-i1",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "旧游与捎茶用两次“带”串起，副文让见名想到对方成为捎茶动作的起因。",
+      "reason": "换成中性尾注，仍能猜到有心带茶，认出同名泉水的时刻只剩读者自行补足。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "v2-i2",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "把虎跑直接写入两人过去的经历，再由青屿所用的水唤回那一刻。",
+      "reason": "复述这次捎茶时有地名和用水两条文字线索，实际记忆仍未知。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "SET-BRAND-I1",
+      "itemId": "set",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "n7让读者叫出原料名，k4让读者给自己的茶歇选个去处。把n7的副文接在“去趟虎跑”后面，只剩配方说明，工位和开瓶动作消失。",
+      "newQuote": "n7主＋k4副仍交代产品和泉水，用开瓶、抵达接“两张名片”，读者得自己给两个名字分配身份。k4主＋n7副仍能解释为什么要去虎跑，但只剩放下鼠标和两项身份，缺少在工位喝一口就算到了的揭晓。",
+      "action": "按三对六向分别接句，记录保留的产品事实和不同的损失。",
+      "reason": "机制差异落在身份对应、茶歇抵达与想起某人，换句仍通顺之处如实说明。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "user-counter",
+      "clarificationId": "cu-r1-k4-scope",
+      "itemId": "k4",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "今天的茶歇，去趟虎跑。 工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "鼠标放一放，去趟虎跑。 工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "把茶歇动作写到“喝一口就算到了”。",
+      "reason": "“去”的作用可以由放下鼠标和工位开瓶读出，向往与否留待调研。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "user-counter",
+      "clarificationId": "cu-r1-v2-scope",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "保留给特定对象带茶的场景，用地点重逢替换泛化答谢。",
+      "reason": "允许虚构一次捎茶，不据此推论大众偏好。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "brand-counter",
+      "clarificationId": "coverage.scope_clarifications",
+      "itemId": "set",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "n7让读者叫出原料名，k4让读者给自己的茶歇选个去处。把n7的副文接在“去趟虎跑”后面，只剩配方说明，工位和开瓶动作消失。",
+      "newQuote": "n7主＋k4副仍交代产品和泉水，用开瓶、抵达接“两张名片”，读者得自己给两个名字分配身份。k4主＋n7副仍能解释为什么要去虎跑，但只剩放下鼠标和两项身份，缺少在工位喝一口就算到了的揭晓。",
+      "action": "逐向保留换句后仍能读通之处。",
+      "reason": "两案交换后仍能推知泉水来源；差异要看余下的身份、动作和关系。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "comms-counter",
+      "clarificationId": "pairwise_check:n7/v2",
+      "itemId": "set",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "n7是做茶者介绍原料，v2是送茶者介绍自己的选择。换成“特意挑了青屿”，前一句的品牌像是在挑自己的产品。换成“在配方里”，送茶人特意挑选这瓶的口吻消失。",
+      "newQuote": "n7主＋v2副仍能辨认茶与水，“看见这名字，就想起你”却突然多了一个来历不明的“你”，两张名片不再逐一递出。v2主＋n7副仍可顺着同一个虎跑猜到为什么带茶，但到介绍品牌和用料就结束，听不到送茶人认出名字时想到了谁。",
+      "action": "记录反向替换后仍能猜到选茶理由。",
+      "reason": "原稿确有挑茶动作；新版交换时主要少了认出名字、想起对方的瞬间。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "copy-counter",
+      "clarificationId": "coverage.scope_observation_mapping:v2",
+      "itemId": "v2",
+      "r1Disposition": "accepted_now",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "把原先已暗示的“特意挑了”换成一句有来历的对人留言。",
+      "reason": "原稿的问题是读完不知道为何值得提水，不是否定它写过选择动作。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "comms-counter",
+      "clarificationId": "coverage:n7",
+      "itemId": "n7",
+      "r1Disposition": "accepted_later",
+      "oldQuote": "青屿做茶，水也有名有姓。 虎跑泉水，在这瓶无糖茶的配方里。",
+      "newQuote": "一瓶无糖茶，两张名片。 青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "action": "让副文给两张名片署名。",
+      "reason": "单看主文仍看不到青屿及泉名，留待呈现时核验。",
+      "status": "仍待核验"
+    },
+    {
+      "sourceRole": "director",
+      "sourcePointer": "directors/r1/decision.json#/revisionBrief/0",
+      "itemId": "n7",
+      "originalProblem": "本案独立可懂，放回整组，另外两条副文也能替它报名。",
+      "oldQuote": "青屿做茶，水也有名有姓。 虎跑泉水，在这瓶无糖茶的配方里。",
+      "newQuote": "一瓶无糖茶，两张名片。 青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "action": "把单一报名题改成两张名片，各自说清身份。",
+      "reason": "普通用水尾注仍含泉名，不能逐一递出两张名片。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "director",
+      "sourcePointer": "directors/r1/decision.json#/revisionBrief/1",
+      "itemId": "k4",
+      "originalProblem": "地点双关清楚，茶歇意义还倚赖地名自带吸引力。",
+      "oldQuote": "今天的茶歇，去趟虎跑。 工位上拧开青屿无糖茶，瓶里就有虎跑泉水。",
+      "newQuote": "鼠标放一放，去趟虎跑。 工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "action": "把目的地玩笑收在具体的一口茶上。",
+      "reason": "不认识虎跑也看得见放下鼠标、开瓶和喝茶的先后。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "director",
+      "sourcePointer": "directors/r1/decision.json#/revisionBrief/2",
+      "itemId": "v2",
+      "originalProblem": "“我请”说清为何请茶；配方尾注未说清为何这一瓶适合出现在这次对话。",
+      "oldQuote": "谢你搭把手。这瓶茶，我请。 特意挑了青屿无糖茶，里面用到了虎跑泉水。",
+      "newQuote": "上回你带我去虎跑，这回换我给你带茶。 这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "action": "改写送茶缘由和两句口信。",
+      "reason": "青屿用到的泉水与两人的旧游重名，让送茶人有理由在此刻提起它。",
+      "status": "addressed_in_draft"
+    },
+    {
+      "sourceRole": "director",
+      "sourcePointer": "directors/r1/decision.json#/setDifferenceRequirements",
+      "itemId": "set",
+      "oldQuote": "三案必须都能讲清同一个配方事实，个别换句后依然通顺。逐对检验的是报出名字、原地出发、挑茶答谢这三个动作各自能否由两句共同完成。",
+      "newQuote": "三案都要留下青屿和虎跑泉水的关系。换句后仍能推知品牌、用料或送茶缘由的情形照实保留。比较的是两张名片能否对上身份、原地的短途有没有抵达、带茶的人为何此刻想起对方。",
+      "action": "三对六向逐一换句，在差异说明中写明换过之后仍可推断什么。",
+      "reason": "每对都查身份怎样对应、工位短途如何抵达、谁在何时想起谁；句子通顺可保留。",
+      "status": "addressed_in_draft"
+    }
+  ],
+  "swapReadings": [
+    {
+      "mainFrom": "n7",
+      "subFrom": "k4",
+      "main": "一瓶无糖茶，两张名片。",
+      "sub": "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+    },
+    {
+      "mainFrom": "k4",
+      "subFrom": "n7",
+      "main": "鼠标放一放，去趟虎跑。",
+      "sub": "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+    },
+    {
+      "mainFrom": "n7",
+      "subFrom": "v2",
+      "main": "一瓶无糖茶，两张名片。",
+      "sub": "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+    },
+    {
+      "mainFrom": "v2",
+      "subFrom": "n7",
+      "main": "上回你带我去虎跑，这回换我给你带茶。",
+      "sub": "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+    },
+    {
+      "mainFrom": "k4",
+      "subFrom": "v2",
+      "main": "鼠标放一放，去趟虎跑。",
+      "sub": "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+    },
+    {
+      "mainFrom": "v2",
+      "subFrom": "k4",
+      "main": "上回你带我去虎跑，这回换我给你带茶。",
+      "sub": "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+    }
+  ],
+  "setDifference": {
+    "n7_k4": "n7主＋k4副仍交代产品和泉水，用开瓶、抵达接“两张名片”，读者得自己给两个名字分配身份。k4主＋n7副仍能解释为什么要去虎跑，但只剩放下鼠标和两项身份，缺少在工位喝一口就算到了的揭晓。",
+    "n7_v2": "n7主＋v2副仍能辨认茶与水，“看见这名字，就想起你”却突然多了一个来历不明的“你”，两张名片不再逐一递出。v2主＋n7副仍可顺着同一个虎跑猜到为什么带茶，但到介绍品牌和用料就结束，听不到送茶人认出名字时想到了谁。",
+    "k4_v2": "k4主＋v2副留下目的地和同名泉水，但到“想起你”便转向回忆，原地喝一口如何算到了没有着落。v2主＋k4副仍可读成为旧游捎茶，甚至邀对方同饮；“喝一口就算到了”变成邀人重游的玩笑，少了选茶时看见名字就想起对方的一刻。",
+    "swapTest": "三案都要留下青屿和虎跑泉水的关系。换句后仍能推知品牌、用料或送茶缘由的情形照实保留。比较的是两张名片能否对上身份、原地的短途有没有抵达、带茶的人为何此刻想起对方。"
+  },
+  "limits": [
+    "本地虚构产品以“配方使用虎跑泉水”和无糖即饮茶品类为前提。茶种未定，正式呈现需与无糖信息一同明确。用水比例和来源凭据待补。茶歇及旧游均为虚构情景，未核验实际版面、受众接受、记忆或购买。",
+    "改稿回应只记录创作者实际写下的变化。是否达到概念阶段要求由下一轮独立评审及总监裁决。"
+  ]
+}

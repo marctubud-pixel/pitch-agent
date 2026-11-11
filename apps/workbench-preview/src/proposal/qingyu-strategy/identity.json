@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 3,
+  "kind": "reviewed-strategy-direction",
+  "draftId": "qingyu-strategy-r3-v2",
+  "scopeId": "simulated-positioning-and-direction-validation",
+  "scope": "三方独立AI模拟复核；仅为定位建设与优先验证方向，未进行消费者实测或正式业务释放",
+  "strategy": {
+    "skillId": "design-strategy-lead",
+    "skillRevision": "r3-20261110",
+    "skillPath": ".scratch/design-strategy-skill-20261109/r3/design-strategy-lead/SKILL.md",
+    "skillSha256": "c9c8bd02a052291012cf9db0fc2b8532749d6e592b50a00fa8844c0545dbbb36"
+  },
+  "research": {
+    "id": "qingyu-packaging-public-report-r4-20261109",
+    "skillRevision": "r6-20261109",
+    "contentSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+    "adoptionSha256": "281df7c52c66590fe0d2b2018ebc9fae040f38945e4129503d71a9dac9145026"
+  },
+  "artifacts": {
+    "draft-r3.json": {
+      "path": ".scratch/qingyu-strategy-r3-20261110/candidate/src/proposal/qingyu-strategy/draft-r3.json",
+      "sha256": "e20f98ee8b728c7a033b3ca9c0aa026399d321142a0576299008082b7d4feafd"
+    },
+    "strategy.md": {
+      "path": ".scratch/qingyu-strategy-r3-20261110/v2/strategy.md",
+      "sha256": "80fdb0c9b2e7b5d00f89f40297db116627eed03029354db00b5cf2a598f25c30"
+    },
+    "claims.json": {
+      "path": ".scratch/qingyu-strategy-r3-20261110/v2/claims.json",
+      "sha256": "83ea30ed16efac3b3962cd1a5b41e738ee6f8e65c0fe94427c4afd3b3910c414"
+    },
+    "directions.md": {
+      "path": ".scratch/qingyu-strategy-r3-20261110/v2/directions.md",
+      "sha256": "4fcac56a381744c9d76eab10715030c9c99a647c64aed48738949120ac974354"
+    }
+  },
+  "methodFiles": [
+    {
+      "path": ".scratch/design-strategy-skill-20261109/r3/design-strategy-lead/SKILL.md",
+      "sha256": "c9c8bd02a052291012cf9db0fc2b8532749d6e592b50a00fa8844c0545dbbb36"
+    },
+    {
+      "path": ".scratch/design-strategy-skill-20261109/r3/design-strategy-lead/agents/openai.yaml",
+      "sha256": "0013bff13e3166f7944bbf4fbec67d434d17c89a044f2e607ea1904b369dd1de"
+    },
+    {
+      "path": ".scratch/design-strategy-skill-20261109/r3/design-strategy-lead/references/reasoning.md",
+      "sha256": "dca4cc6aafffd412581dadbb07f49ee522da387cfce786f69f609a1002ac3a23"
+    },
+    {
+      "path": ".scratch/design-strategy-skill-20261109/r3/design-strategy-lead/references/review.md",
+      "sha256": "3362083d2c2f2e9294099e82c3de019a7af9312952f1ec2402cad8d5e1654bf2"
+    }
+  ],
+  "inputs": [
+    {
+      "path": ".scratch/qingyu-strategy-r3-20261110/inputs/PRODUCT-SUPPLEMENT.md",
+      "sha256": "d2a70e94b9b088fff5a9296c9d654c329ff2123dee8efa2cbb8c0951a78cc194"
+    },
+    {
+      "path": ".scratch/qingyu-strategy-r3-20261110/inputs/SUPPLEMENTAL-SOURCES.md",
+      "sha256": "6c6b6c2e8795f3f339cccb9179a5e1e2ee2571634ab898d921bfa8f4b452d589"
+    },
+    {
+      "path": ".scratch/qingyu-strategy-r3-20261110/evidence/FACTS.md",
+      "sha256": "885f7badeb4b1f99158bcdc26c48dae0c47a069e860b21e2043fcb43f6b778f2"
+    },
+    {
+      "path": ".scratch/qingyu-strategy-r3-20261110/evidence/claims.json",
+      "sha256": "8359e98fe2b9b72daaab07ca09657d80ddaf475876da849cd6598fff7f16f25f"
+    }
+  ],
+  "reviews": [
+    {
+      "roleKind": "brand",
+      "label": "品牌方视角",
+      "verdict": "方向成立，可交接",
+      "scope": "仅为品牌方角色对最终v2全文的同版复核，沿用封存首读。虚构设定下可交接优先验证02的包装认知建设任务；不是已经验证02优于01、实际采用或扩大投入的批准，不释放购买优势、价格理由或长期真实供水承诺，也不是其他角色或负责人汇总结论。",
+      "positiveReasons": [
+        "两路事实、品牌、茶种、价格与接触阶段相同，且都披露水源，比较额外解释能否增加准确自发的品牌用水归属，收益指标对应02目标。",
+        "增益、持平、反向和无法区分各有不同取舍；持平撤销额外强调的优先理由，反向改回01，无法区分则不扩大02投入。",
+        "当前推荐可理解为优先验证的定位方向；认知增益与购买作用分别判断，不把水源设定、模拟理解或记住内容等同于偏好。",
+        "产品事实、长期供应及基本选茶理解条件继续适用，新认知比较不会替代产品凭据或容许理解受损。",
+        "原有品牌承担与两路取舍仍成立于认知建设范围：具体用水资源提供持续归属内容，但伊刻替换仍否定泛化好水优势；新增判据要求更多任务带来实际认知增益才能继续。"
+      ],
+      "draftSha256": "80fdb0c9b2e7b5d00f89f40297db116627eed03029354db00b5cf2a598f25c30",
+      "firstReadSha256": "f87f036f1b881ecaaaabd01051503198d4a80871bd4397b8d6bbe8d8d1426e52",
+      "firstRead": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v1-brand/FIRST-READ.md",
+        "sha256": "f87f036f1b881ecaaaabd01051503198d4a80871bd4397b8d6bbe8d8d1426e52"
+      },
+      "firstReadRecord": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v1-brand/FIRST-READ.json",
+        "sha256": "edf02734f8fe9bff831f7586e73bc47badfb1bd19a0444b23b257ccfda4041c6"
+      },
+      "receipt": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v2-brand/VERDICT.json",
+        "sha256": "6b9f3614b1841a177bdfeccbe37f1f7e8ceef133d636a14369349fc58301ff68"
+      },
+      "report": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v2-brand/REPORT.md",
+        "sha256": "91765012c1cfb2a7b67c622f790e78ee3a21b3fda58a2397eb67b54fc27c6288"
+      }
+    },
+    {
+      "roleKind": "user",
+      "label": "目标用户视角",
+      "verdict": "方向成立，可交接",
+      "scope": "最终同版核查，沿用v1封存首读，非新一轮盲首读；仅为独立AI模拟用户的文本理解和相关性审查，不代表消费者研究、最终媒介效果或客户采用。",
+      "positiveReasons": [
+        "具体用水设定与机构饮茶实践支持可供验证的产品信息和条件性品牌关联，不证明普遍偏好。",
+        "比较明确区分自发准确归属、提示后认可与错误归属，并区分接触阶段，保住茶种和无糖理解。",
+        "对增益、持平、反向和无法区分分别设置取舍，不把认知收益升级为购买优势，也不将模拟或小样本次数外推总体。"
+      ],
+      "draftSha256": "80fdb0c9b2e7b5d00f89f40297db116627eed03029354db00b5cf2a598f25c30",
+      "firstReadSha256": "ed25e05b63b388b6528c03a1cd6128769d1047c92e44e021a295088ffbae5edd",
+      "firstRead": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v1-user/FIRST-READ.md",
+        "sha256": "ed25e05b63b388b6528c03a1cd6128769d1047c92e44e021a295088ffbae5edd"
+      },
+      "firstReadRecord": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v1-user/FIRST-READ.json",
+        "sha256": "47ed6bb74898bd5829ccee44ad34defdd413204bf2c7dd2aa1cf51a36c70f3a7"
+      },
+      "receipt": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v2-user/VERDICT.json",
+        "sha256": "0b28c70bde5473a5316c627277767687359d22a215c1c840b1b1f7ad3662a24a"
+      },
+      "report": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v2-user/REPORT.md",
+        "sha256": "cc4cd1af568ba1f74577c6a70051ffc746f99057818d3ee7cef28d8e5c3ce71e"
+      }
+    },
+    {
+      "roleKind": "strategy",
+      "label": "独立策略审查",
+      "verdict": "方向成立，可交接",
+      "scope": "独立 AI 策略专业模拟审查。限将 02 交下一阶段作本轮虚构产品的优先验证方向；产品核定、现实选购、真实客户采用与放大投入另有条件。",
+      "positiveReasons": [
+        "包装诉求、自报饮茶动机与实际行为被分开解释。即饮便利在两款都即饮时就失去区分力；买前读口味可以用来排除不合意的选项。前者解释了为什么考虑品类，后者解释了为什么可将茶种适配设为两路底线。调查不足以重建目标办公者的浏览次序，文中对此已有约束。对应 J1、J2 和 E03 至 E06。",
+        "虎跑取水泡茶的有据可查的地方实践，给“为什么在茶上谈这个地方”提供比地名装饰更直接的回答。用户的配方设定使这层联系可具体归给青屿。换成伊刻仍有用水理由，但其历史产品解释把阿尔山与分离盖、当场混合相联系，不能照搬来说明青屿的配方。这个差别足以支持可建设的产品认知，还推不出青屿比伊刻更值得买。对应 U-PRODUCT-01、HUPAO-CULTURE、INIKIN-WATER、J3、J4。",
+        "同一简报同时要求选茶和理解产品特点。01 把稀缺注意优先用在确保适配，对尚未确定是否想喝这类茶的人有直接价值。02 在适配底线之上，能让继续对照相近茶款的人知道青屿做过哪项配方选择。品牌没有给出领先的茶种或口感依据，这项新增认知与简报的产品理解任务有关，比继续加重通用品类说明更值得拿来做首轮方向验证。此优先级并不承诺购买转化，亦不要求虎跑水源具有排他性。",
+        "两路都给出水源，02 的额外投入现有明确检验对象：品牌用水的自发准确归属。J7 逐项给出认知收益、选茶损失与实际选择的不同后果，足以交付方向验证，并允许负责人据结果退回 01。"
+      ],
+      "draftSha256": "80fdb0c9b2e7b5d00f89f40297db116627eed03029354db00b5cf2a598f25c30",
+      "firstReadSha256": "caea861013066cfbf4a7677cdc4bf446cf951a2cf2b02ec7e013b542f817f1e5",
+      "firstRead": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v1-strategy/FIRST-READ.md",
+        "sha256": "caea861013066cfbf4a7677cdc4bf446cf951a2cf2b02ec7e013b542f817f1e5"
+      },
+      "firstReadRecord": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v1-strategy/FIRST-READ.json",
+        "sha256": "c74b2b8b5f1726b5ad3ad8acd61552c282189c2730e32667d2aa7aae6b89faf5"
+      },
+      "receipt": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v2-strategy/VERDICT.json",
+        "sha256": "1f1e9d2a55e277b993b5d4e829caacf264612d4cff11bbff38803fcc63a3968f"
+      },
+      "report": {
+        "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v2-strategy/REPORT.md",
+        "sha256": "46901b8db805e861fa354829ea75fc9428c4e90c179e904350a236b9cce80167"
+      }
+    }
+  ],
+  "closure": {
+    "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v2-strategy/CLOSURE.json",
+    "sha256": "e252414ed7e754529762f39cefa71ae31cae5a73f0d5b9106d85040087cee6d5"
+  },
+  "remaining": [
+    "具体茶种、完整配料、用水范围与来源凭据待核定。",
+    "两渠道同条件下的认知增益、误读与基本选茶理解尚未实测。",
+    "水源对购买、目标价格及长期记忆的作用未验证。"
+  ],
+  "firstReadSeal": {
+    "path": ".scratch/qingyu-strategy-r3-20261110/reviews/v1-FIRST-READ-SEAL.json",
+    "sha256": "6d27b0d59bd1d7d0b8d871ea31155ea982ac36bcb38cfbfa34aec1b133f5239b"
+  }
+}

@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>提案工作台</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:#283c36;background:#f4f5f0;font-size:14px;line-height:1.6;--muted:#6b7771;--line:#dde3dc;--green:#285948}*{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}button,a,input,textarea,select{outline-offset:4px}button{cursor:pointer;border:1px solid var(--line);border-radius:7px;padding:9px 14px;color:inherit;background:#fff}button:hover{border-color:var(--green)}button:disabled{opacity:.55;cursor:default}.primary{background:var(--green);color:white;border-color:var(--green)}header{height:76px;background:#fff;border-bottom:1px solid var(--line);padding:0 32px;display:flex;align-items:center;justify-content:space-between}header strong{font-size:19px;letter-spacing:.08em}header small{margin-left:16px;color:var(--muted)}a{color:var(--green)}.shell{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:calc(100vh - 76px)}aside{padding:28px 20px;border-right:1px solid var(--line);background:#fafbf7}aside>button{width:100%}.eyebrow{font-size:11px;letter-spacing:.16em;color:var(--muted);margin:0 0 12px}.projects{display:grid;gap:8px;margin-top:22px}.project{width:100%;text-align:left;background:transparent;overflow-wrap:anywhere}.project.active{background:#e5eee7;border-color:#becfc1}.project small{display:block;color:var(--muted)}main{padding:34px 40px;max-width:1320px;width:100%;margin:auto}.intro{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}h1{font-weight:600;font-size:28px;line-height:1.3;margin:0 0 8px;overflow-wrap:anywhere}h2{font-size:17px;margin:0 0 16px}h3{font-size:15px;margin:0 0 10px}p{margin:8px 0}.muted{color:var(--muted)}.notice{background:#eaf0e9;border:1px solid #d6e0d2;border-radius:9px;padding:14px 18px;margin-bottom:22px;color:#435b47}.error{background:#fff1ed;color:#953c2b;border:1px solid #ecc9be;padding:14px 18px;border-radius:9px;margin-bottom:20px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px}.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:20px}.grid>.card{margin:0}.field{display:grid;gap:7px;margin-bottom:18px}.field>span,legend{font-weight:500}input[type=text],textarea,select{width:100%;border:1px solid #cbd6cd;background:#fff;border-radius:7px;padding:10px 12px;color:inherit}textarea{resize:vertical;min-height:138px}input[type=checkbox]{accent-color:var(--green);width:16px;height:16px;margin:0}fieldset{border:0;padding:0;margin:0 0 20px}.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}.check{display:flex;align-items:center;gap:9px}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.step{padding:15px;border:1px solid var(--line);border-radius:8px}.step small{display:block;color:var(--muted);margin-top:6px}.step strong{display:flex;justify-content:space-between;gap:8px;font-size:13px}.status{font-size:11px;font-weight:400;color:var(--muted)}.pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:360px;overflow:auto;font:12px/1.7 ui-monospace,monospace;background:#f7f8f4;padding:14px;border-radius:7px}.brief{white-space:pre-wrap;overflow-wrap:anywhere}.badge{display:inline-block;font-size:12px;background:#edf2ed;border-radius:5px;padding:3px 8px}.revision{display:flex;gap:10px;align-items:center;white-space:nowrap}.revision select{width:auto;max-width:180px}details{margin-top:14px}summary{cursor:pointer;color:var(--muted)}.empty{padding:48px 24px;text-align:center}.artifact{border-top:1px solid var(--line);padding-top:18px;margin-top:18px}#feedback:empty{display:none}button:focus-visible,a:focus-visible{outline:3px solid #80aa92}@media(max-width:900px){main{padding:24px}.grid{grid-template-columns:1fr}.shell{grid-template-columns:210px minmax(0,1fr)}.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}.intro{align-items:flex-start;flex-direction:column}}@media(max-width:620px){header{padding:0 18px;height:70px}header small{display:none}.shell{display:block}aside{padding:16px;border-right:0;border-bottom:1px solid var(--line)}.projects{display:flex;overflow:auto;margin-top:12px}.project{min-width:160px}main{padding:22px 16px}.card{padding:20px}.timeline{grid-template-columns:1fr 1fr}.checks{grid-template-columns:1fr}h1{font-size:24px}}
+</style></head><body>
+<header><div><strong>提案工作台</strong><small>从任务共识开始</small></div><a href="http://127.0.0.1:4180" target="_blank" rel="noopener">打开自动排版 ↗</a></header>
+<div class="shell"><aside><p class="eyebrow">PROJECTS / 项目</p><button id="newProject" class="primary">＋ 新建项目</button><nav id="projects" class="projects" aria-label="项目列表"></nav></aside><main><div id="feedback" role="alert"></div><div class="notice" id="capabilities">本地项目、文字修订、资料核验及策略／文案模型评审已接入。未校准评分仅供诊断。自动检索、图片生成与完整提案串联仍未完成；确认任务卡不会启动生成。</div><div id="content"></div></main></div>
+<script>
+'use strict';
+const labels={research:'调研与证据',strategy:'策略方向',copy:'文案内容',references:'视觉参考',sketch:'概念草图',visual:'视觉精绘',content_review:'排版前内容审核',layout:'提案排版',final_review:'交付前最终审核'};
+const gateKeys=['research','strategy','copy','references','sketch','visual','content_review','final_review'];
+const statusLabels={queued:'已排队',running:'执行中',failed:'执行失败',awaiting_reconciliation:'执行结果待核对',succeeded:'已生成 · 待审核',succeeded_stale:'旧输入产物',blocked:'等待前置条件',ready:'可进入 · 未执行',awaiting_release:'等待审核与放行',released:'已放行',stale:'上游已更新'};
+const reasonLabels={FEEDBACK_REVISION_REQUIRED:'已收到修改意见，等待生成覆盖全部意见的新稿',FEEDBACK_REVIEW_REQUIRED:'等待独立检查修改意见是否落实',FEEDBACK_UNRESOLVED:'修改意见仍有未解决项，请修订或作明确的创意取舍',STALE_FEEDBACK:'任务使用的意见、任务卡或参与节点已更新',INVALID_FEEDBACK_REVIEW:'意见落实检查与当前稿件不一致',STALE_VISUAL_CATALOGUE:'引用的图片依据已失去当前独立支持，请重新调研',INVALID_VISUAL_CATALOGUE:'图片依据与冻结成果不一致',STALE_ARTIFACT:'成果输入已更新，请生成当前版本',STALE_POLICY:'人工节点策略已更新，请刷新',HARD_BLOCKER:'来源核验缺失或存在事实阻断，需补证或修正',HUMAN_GATE:'等待你对当前成果指定采用',RESEARCH_READINESS_REQUIRED:'等待独立研究充分性审查',RESEARCH_READINESS_BLOCKED:'研究充分性审查未通过，需补充研究',RESEARCH_HANDOFF_REQUIRED:'等待研究与策略负责人完成双向交接',RESEARCH_HANDOFF_BLOCKED:'负责人交接未通过或已失效',REVIEW_REQUIRED:'等待完整独立岗位评审',OPPOSITION_REQUIRED:'等待逐票对抗评审',DISPOSITION_REQUIRED:'等待异议裁决',SCOPE_UNCONFIRMED:'请先确认任务卡',DEPENDENCY_BLOCKED:'前置成果尚未放行',HANDOFF_REQUIRED:'等待上下游负责人交接',VISUAL_AUTHORIZATION_REQUIRED:'等待当前草图的绘制授权',AUTHORIZATION_ENDPOINT:'超出当前授权终点'};
+const content=document.querySelector('#content'), feedback=document.querySelector('#feedback');
+let capabilities={stages:[]};
+let current=null,latestRevision=0,historical=false,dirty=false,busy=false,loadToken=0,pendingMutation=null;
+const disabledControls=new Map();
+function el(tag,text,cls){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node}
+function button(text,action,primary=false){const b=el('button',text,primary?'primary':'');b.type='button';b.onclick=()=>safe(action);return b}
+function field(text,input){const label=el('label',undefined,'field');label.append(el('span',text),input);return label}
+function detail(title,value){const d=el('details');d.append(el('summary',title),el('pre',JSON.stringify(value,null,2),'pre'));return d}
+function notice(text){feedback.replaceChildren(el('div',text,'notice'))}
+function errorMessage(error){const codes={REVISION_CONFLICT:'项目已在其他窗口更新。请刷新最新版本，再重新确认你的修改。',STALE_ARTIFACT:'该成果已失效，请刷新项目并查看当前版本。',HARD_BLOCKER:'存在事实或生产问题，不能通过指定采用绕过。',STALE_SCOPE:'任务卡已更新，请刷新后确认当前任务卡。'};return codes[error.code]||error.message||'操作失败，请重试。'}
+function lockControls(){
+  document.querySelectorAll('button,input,select,textarea').forEach(control=>{
+    if(!busy&&control.dataset.recovery)return;
+    if(!disabledControls.has(control))disabledControls.set(control,control.disabled);
+    control.disabled=true;
+  });
+}
+function restoreControls(){
+  for(const [control,disabled] of disabledControls){
+    if(!pendingMutation||control.dataset.recovery){control.disabled=disabled;disabledControls.delete(control)}
+  }
+}
+function showError(error){
+  const box=el('div',undefined,'error');
+  if(pendingMutation){
+    box.append(el('p',pendingMutation.result?'保存已确认，但项目刷新失败。请重试加载。':'尚未确认保存结果，已保留本次提交。请重试同一请求；完成前暂时锁定编辑。'));
+    const retry=button(pendingMutation.result?'重新加载保存结果':'重试同一请求',finishMutation,true);
+    retry.dataset.recovery='true';box.append(retry);
+  }else{
+    box.append(el('p',errorMessage(error)));
+    if(error.code==='REVISION_CONFLICT'&&current)box.append(button('刷新最新版本',()=>openProject(current.project.id)));
+  }
+  feedback.replaceChildren(box);
+}
+async function safe(action){
+  if(busy)return;
+  if(pendingMutation&&action!==finishMutation){showError(new Error('待确认保存'));return}
+  busy=true;lockControls();
+  const observer=new MutationObserver(lockControls);
+  observer.observe(document.body,{childList:true,subtree:true});
+  try{await action()}catch(error){showError(error)}finally{
+    observer.disconnect();busy=false;
+    if(pendingMutation)lockControls();
+    restoreControls();
+  }
+}
+async function api(path,data){
+  const response=await fetch(path,{method:data?'POST':'GET',headers:data?{'Content-Type':'application/json'}:{},body:data?(typeof data==='string'?data:JSON.stringify(data)):undefined});
+  const body=await response.json();
+  if(!response.ok){
+    const error=new Error(typeof body.error==='string'?body.error:body.error?.message||body.message||'请求失败');
+    error.code=body.code||body.error?.code;
+    error.definitive=response.status>=400&&response.status<500&&typeof error.code==='string';
+    throw error;
+  }
+  return body;
+}
+async function finishMutation(){
+  const pending=pendingMutation;
+  if(!pending)return;
+  if(!pending.result){
+    try{
+      const result=await api(pending.path,pending.body);
+      if(!result?.project?.id)throw new Error('保存响应不完整');
+      pending.result=result;
+    }catch(error){if(error.definitive)pendingMutation=null;throw error}
+  }
+  await openProject(pending.result.project.id,false);
+  pendingMutation=null;
+  notice(pending.message);
+}
+async function mutate(path,payload,message){
+  pendingMutation={path,body:JSON.stringify(payload),message,result:null};
+  await finishMutation();
+}
+function allowNavigation(){return !dirty||window.confirm('有尚未保存的修改。离开并放弃这些修改？')}
+function track(form){form.addEventListener('input',()=>{dirty=true;form.dataset.unsaved='true'})}
+function policyFields(value={mode:'assisted',humanGates:['references']}){const wrap=el('div');const mode=el('select');for(const [key,title] of [['assisted','辅助模式 · 在指定节点等待我'],['auto','自动模式 · 按授权流程推进']]){const option=el('option',title);option.value=key;mode.append(option)}mode.value=value.mode;wrap.append(field('协作模式',mode));const gates=el('fieldset'),choices=el('div',undefined,'checks');gates.append(el('legend','需要我确认的节点'));for(const key of gateKeys){const label=el('label',undefined,'check'),check=el('input');check.type='checkbox';check.value=key;check.checked=value.humanGates.includes(key);label.append(check,document.createTextNode(labels[key]));choices.append(label)}gates.append(choices);wrap.append(gates,el('p','自动模式仍遵守你选中的人工节点。模式设置不会跳过证据核验或独立评审。','muted'));return {node:wrap,read:()=>({mode:mode.value,humanGates:[...choices.querySelectorAll('input:checked')].map(n=>n.value)})}}
+async function listProjects(){const data=await api('/api/projects');const nav=document.querySelector('#projects');nav.replaceChildren();for(const p of data.projects){const b=button('',()=>openProject(p.id));b.className='project'+(current?.project.id===p.id?' active':'');b.append(el('span',p.name),el('small','版本 '+p.revision));nav.append(b)}if(!data.projects.length)nav.append(el('p','还没有项目。','muted'))}
+function createScreen(){if(!allowNavigation())return;loadToken++;current=null;historical=false;dirty=false;feedback.replaceChildren();content.replaceChildren();const intro=el('div',undefined,'intro');const title=el('div');title.append(el('p','NEW PROJECT / 开始一个提案','eyebrow'),el('h1','先说清楚，要解决什么。'),el('p','保存 Brief 后，确认任务卡并设置你希望参与的节点。','muted'));intro.append(title);content.append(intro);const form=el('form',undefined,'card'),name=el('input'),brief=el('textarea');name.type='text';name.required=true;name.maxLength=160;name.placeholder='例如：品牌春节传播提案';brief.required=true;brief.placeholder='项目背景、目标人群、需要解决的问题、交付形式，以及已知限制。';const policy=policyFields();form.append(field('项目名称',name),field('项目 Brief',brief),policy.node);const submit=el('button','创建项目','primary');submit.type='submit';form.append(submit);track(form);form.onsubmit=e=>{e.preventDefault();safe(async()=>{await mutate('/api/projects',{commandId:crypto.randomUUID(),name:name.value.trim(),brief:brief.value.trim(),...policy.read()},'项目已保存。请核对并确认任务卡。')})};content.append(form)}
+async function openProject(id,checkDirty=true,revision){if(checkDirty&&!allowNavigation())return;const token=++loadToken;const result=await api('/api/projects/'+encodeURIComponent(id)+(revision===undefined?'':'?revision='+revision));if(token!==loadToken)return;current=result;historical=revision!==undefined;if(!historical)latestRevision=result.project.revision;dirty=false;feedback.replaceChildren();renderProject();await listProjects()}
+async function command(kind,values,submittedForm){if([...content.querySelectorAll('form[data-unsaved]')].some(form=>form!==submittedForm)&&!allowNavigation())return;const id=current.project.id;await mutate('/api/projects/'+encodeURIComponent(id)+'/commands',{kind,commandId:crypto.randomUUID(),expectedRevision:current.project.revision,...values},'已保存。记录已写入项目历史。')}
+function renderProject(){const {project:p,view:v}=current;content.replaceChildren();const intro=el('div',undefined,'intro'),heading=el('div');heading.append(el('p','PROJECT / 项目工作台','eyebrow'),el('h1',p.name),el('p','项目版本 '+p.revision+' · '+(v.policy.mode==='auto'?'自动模式':'辅助模式'),'muted'));const version=el('select');version.setAttribute('aria-label','查看项目版本');const latest=el('option','最新版本');latest.value='latest';version.append(latest);for(let n=latestRevision;n>=0;n--){const o=el('option','历史版本 '+n);o.value=String(n);version.append(o)}version.value=historical?String(p.revision):'latest';version.onchange=()=>safe(async()=>{const selected=version.value;await openProject(p.id,true,selected==='latest'?undefined:Number(selected));version.value=historical?String(current.project.revision):'latest'});const revision=el('div',undefined,'revision');revision.append(version,button('刷新',()=>openProject(p.id,true,historical?p.revision:undefined)));intro.append(heading,revision);content.append(intro);if(historical)content.append(el('div','正在查看历史快照，仅供阅读。请切回最新版本进行修改或确认。','notice'));
+const grid=el('div',undefined,'grid'),scope=el('section',undefined,'card');scope.append(el('h2','任务卡'));const confirmed=p.confirmations.some(c=>c.taskCardId===p.activeTaskCardId);scope.append(el('span',confirmed?'已确认':'等待确认','badge'),el('p',v.taskCard.brief,'brief'));if(!historical){const actions=el('div',undefined,'actions');if(!confirmed)actions.append(button('确认这份任务卡',()=>command('confirm-task-card',{taskCardId:p.activeTaskCardId}),true));actions.append(button('修改 Brief',()=>editBrief(scope,p,v)));scope.append(actions)}const policyCard=el('section',undefined,'card');policyCard.append(el('h2','我的参与节点'));if(historical){policyCard.append(el('p',v.policy.humanGates.map(k=>labels[k]).join('、')||'未设置人工节点','brief'))}else{const form=el('form'),policy=policyFields(v.policy);form.append(policy.node);const save=el('button','保存模式与节点');save.type='submit';form.append(save);track(form);form.onsubmit=e=>{e.preventDefault();safe(()=>command('set-policy',policy.read(),form))};policyCard.append(form)}grid.append(scope,policyCard);content.append(grid);const stages=el('section',undefined,'card');stages.style.marginTop='20px';stages.append(el('h2','阶段进度'),el('p','“可进入”表示前置条件满足。仅已接入的文字阶段可执行。生成完成后仍需证据核验、独立评审与交接。','muted'));const timeline=el('div',undefined,'timeline');v.stages.forEach((s,i)=>{const step=el('div',undefined,'step'),title=el('strong',(i+1)+'. '+labels[s.stage]);title.append(el('span',statusLabels[s.status]||s.status,'status'));step.append(title);s.blockedReasons.forEach(r=>step.append(el('small',reasonLabels[r]||r)));timeline.append(step)});stages.append(timeline);content.append(stages);renderSources(p);renderImages(p,v);renderExecution(p,v);renderArtifacts(p,v);renderReferences(p,v);const history=el('section',undefined,'card');history.append(el('h2','版本与记录'),el('p','每次修改与决定保留原记录。指定采用不会修改原始评审分数。','muted'),detail('查看操作记录（'+p.audit.length+'）',p.audit),detail('查看已存决定与绘制授权',{decisions:p.decisions,visualAuthorizations:p.visualAuthorizations}),detail('查看全部成果版本（'+p.artifacts.length+'）',p.artifacts));content.append(history)}
+function renderReferences(p,v){
+ const section=el('section',undefined,'card'),route='/api/projects/'+encodeURIComponent(p.id);section.append(el('h2','参考图工作台'),el('p','原图仅用于明确范围的视觉借鉴。模型评审不是客户批准或真实消费者研究；未校准报告会保留诊断状态。','muted'));
+ if(p.activeByStage.copy&&!historical)section.append(button('交付完整文案并开始参考探索',()=>mutate(route+'/copy-continuations',{artifactId:p.activeByStage.copy,commandId:crypto.randomUUID(),expectedRevision:p.revision},'继续意图已保存。实际源文案门禁通过后才会调用下一负责人。'),true));
+ if(p.activeByStage.copy&&!historical){section.append(button('登记人工提供的参考图与借鉴说明',()=>showReferenceMaterialForm(section,p)),button('用人工提供的参考图继续',()=>mutate(route+'/copy-continuations',{artifactId:p.activeByStage.copy,discoveryMode:'manual_supplied',commandId:crypto.randomUUID(),expectedRevision:p.revision},'已保存人工参考继续意图；不记作自动搜索。')));for(const material of (p.referenceMaterials||[]).filter(m=>m.artifactId===p.activeByStage.copy&&!m.removed)){const row=el('div');row.append(el('p',material.directionId+' · '+material.applicabilityProfile+' · '+material.borrowingNote),button('移除此版人工参考',()=>mutate(route+'/reference-materials',{action:'remove',materialId:material.id,reason:'由用户移除此版人工参考；保留历史。',commandId:crypto.randomUUID(),expectedRevision:p.revision},'已移除当前材料选择并保留历史。')));section.append(row)}}
+ for(const d of p.referenceDossiers||[]){const state=(v.references||[]).find(x=>x.dossierId===d.id)||{},box=el('div',undefined,'artifact');box.append(el('h3','参考册 · '+state.status),el('p',d.id,'muted'),el('p','调用计划 '+d.envelope.expandedPlan.modelCalls+' 次模型调用 · '+d.envelope.expandedPlan.searchCalls+' 次搜索 · 已保存报告 '+d.reports.length+' · 费用未知'));
+ if(state.reason)box.append(el('p',state.reason,'notice'));
+ for(const directionId of d.envelope.directionIds){const group=el('div');group.append(el('h4','文案方向 '+directionId));for(const c of d.candidates.filter(c=>c.directionId===directionId)){const figure=el('figure'),img=el('img');img.src=route+'/images/'+encodeURIComponent(c.image.imageId);img.alt='原始参考图 '+c.id;img.style.maxWidth='260px';figure.append(img,el('figcaption',c.image.sha256+' · 品牌／日期／许可未知'));for(const provenance of c.provenance){if(provenance.kind==='manual_supplied'){const material=d.envelope.source.manualReferences.find(m=>m.id===provenance.materialId);figure.append(el('p','人工提供 · '+material.borrowingNote));continue}const page=d.tools.find(t=>t.id===provenance.pageId),link=el('a','查看捕获来源');link.href=page.argument;link.target='_blank';link.rel='noopener noreferrer';figure.append(link)}figure.append(detail('查看发现、捕获与原图绑定',c));group.append(figure)}box.append(group)}
+ box.append(detail('负责人、采集与独立评审原始报告',d.reports),detail('实际任务树与返回契约',p.jobs.filter(j=>j.dossierId===d.id)),detail('主参考、互补、备用与适配比较',state),detail('机器退回与原始负面历史',d.previousReturns));
+ if(!historical){if(state.status==='returned'&&d.cycle<3&&(state.findings||[]).length&&(state.findings||[]).every(x=>['reference-lead','acquisition','independent-adjudication'].includes((x.finding||x).owner)))box.append(button('按原始机器退回重做参考',()=>mutate(route+'/reference-actions',{action:'revise',dossierId:d.id,commandId:crypto.randomUUID(),expectedRevision:p.revision},'已按原始机器发现建立修订；原图、分数与异议继续保留。')));box.append(button(d.paused?'恢复参考工作':'暂停参考工作',()=>mutate(route+'/reference-actions',{action:d.paused?'resume':'pause',dossierId:d.id,commandId:crypto.randomUUID(),expectedRevision:p.revision},'已保存参考工作状态。')));if(['diagnostic','waiting_human'].includes(state.status)){const form=el('form'),reason=el('textarea');reason.placeholder='我决定采用此版参考方案的理由。原分数、异议与证据局限继续保留。';reason.required=true;form.append(reason);const adopt=el('button','由我采用这一版选择');adopt.type='submit';form.append(adopt);track(form);form.onsubmit=e=>{e.preventDefault();safe(()=>mutate(route+'/reference-actions',{action:'adopt',dossierId:d.id,selectionHash:state.selectionHash,reason:reason.value,commandId:crypto.randomUUID(),expectedRevision:p.revision},'已保存实际人工采用。原始诊断结论与限制继续保留。'))};box.append(form)}}section.append(box)}
+ content.append(section);
+}
+async function showReferenceMaterialForm(container,p){
+ const route='/api/projects/'+encodeURIComponent(p.id),data=await api(route+'/artifacts/'+encodeURIComponent(p.activeByStage.copy)+'/content');if(!container.isConnected)return;
+ const form=el('form'),direction=el('select'),image=el('select'),profile=el('select'),note=el('textarea');for(const d of data.content.directions){const option=el('option',d.id+' · '+d.slogan);option.value=d.id;direction.append(option)}for(const asset of p.imageAssets||[]){const option=el('option',(asset.provenance?.originalFilename||asset.id)+' · '+asset.sha256.slice(0,12));option.value=asset.id;image.append(option)}for(const [value,label]of [['direction','完整方向参考'],['composition_component','构图局部参考'],['style_component','美术风格参考'],['viewpoint_scene_component','视角／场景参考'],['carrier_component','载体参考'],['material_color_component','材质／色彩参考']]){const option=el('option',label);option.value=value;profile.append(option)}note.required=true;note.placeholder='借鉴哪部分、希望如何使用、哪些部分不能照搬。这里只是提案，不是事实或适用性批准。';form.append(field('已确认文案方向',direction),field('已上传项目原图',image),field('声明借鉴范围',profile),field('借鉴说明',note),el('p','先使用上方图片上传。每个方向至少两张不同原图；同一原图可登记不同用途。人工参考会经过负责人、四方评分、反方与裁决。','muted'));const save=el('button','登记人工参考');save.type='submit';form.append(save);track(form);form.onsubmit=e=>{e.preventDefault();safe(()=>mutate(route+'/reference-materials',{action:'attach',artifactId:p.activeByStage.copy,directionId:direction.value,imageId:image.value,kind:profile.value==='direction'?'direction':'component',applicabilityProfile:profile.value,borrowingNote:note.value,commandId:crypto.randomUUID(),expectedRevision:p.revision},'人工参考已登记。使用人工参考继续后进入同一图片评审流程。'))};container.append(form);
+}
+function renderSources(p){
+  const panel=el('section',undefined,'card'),route='/api/projects/'+encodeURIComponent(p.id);
+  panel.append(el('h2','来源采集与案例身份'),el('p','采集公开 HTTPS 页面，保留原始字节与提取回执。案例审查比较来源图片候选和项目参考图；脚本声明不证明页面显示、图注对应或案例身份。采集与身份对应均不等于来源真实性或研究放行。','muted'));
+  if(!historical){const form=el('form'),url=el('input');url.type='url';url.required=true;url.placeholder='https://…';form.append(field('公开来源 URL',url));const submit=el('button','采集来源');submit.type='submit';form.append(submit);track(form);form.onsubmit=e=>{e.preventDefault();safe(()=>mutate(route+'/source-captures',{url:url.value.trim(),commandId:crypto.randomUUID(),expectedRevision:p.revision},'采集任务已保存。完成后刷新查看回执。'))};panel.append(form)}
+  for(const capture of p.sourceCaptures||[]){const box=el('div',undefined,'step');box.append(el('h3',capture.record.extraction.title||capture.record.finalUrl),detail('采集回执',capture));
+    if(!historical&&capture.record.extraction.images.length){const form=el('form'),source=el('select'),reference=el('select');for(const image of capture.record.extraction.images){const option=el('option',image.discovery?.kind==='script-declared'?'脚本声明候选 · '+image.url:image.caption||image.alt||image.url);option.value=image.url;source.append(option)}for(const image of p.imageAssets||[]){const option=el('option',image.provenance.originalFilename||image.id);option.value=image.id;reference.append(option)}form.append(field('来源图片候选',source),field('项目参考图',reference));const submit=el('button','审查案例身份');submit.type='submit';submit.disabled=!reference.options.length||!capabilities.caseIdentity?.available;form.append(submit);track(form);form.onsubmit=e=>{e.preventDefault();safe(()=>mutate(route+'/case-identities',{captureId:capture.id,sourceImageUrl:source.value,referenceImageId:reference.value,commandId:crypto.randomUUID(),expectedRevision:p.revision},'来源图片已采集，身份审查任务已保存。'))};box.append(form)}panel.append(box)}
+  for(const review of p.caseIdentityReviews||[]){panel.append(el('p',review.report.verdict==='usable'?'案例对应可用，来源主张仍需归属与核验':'案例对应受阻'),detail('逐字段身份与任务适用性报告',review))}
+  content.append(panel);
+}
+function renderImages(p,v){
+  const panel=el('section',undefined,'card'),route='/api/projects/'+encodeURIComponent(p.id);
+  panel.append(el('h2','图片资料与独立观察'),el('p','上传 PNG/JPEG，每张最多 8 MiB、2000 万像素。来源链接与说明由你提供，不能证明图片真实性。选择 1–4 张图片后提交独立观察。','muted'));
+  if(!historical){
+    const form=el('form'),file=el('input'),url=el('input'),description=el('input'),representation=el('select');
+    file.type='file';file.accept='image/png,image/jpeg';file.required=true;file.setAttribute('aria-label','选择图片');
+    url.type='url';url.placeholder='https://…（可选，仅保存，不抓取）';description.type='text';description.maxLength=2000;description.placeholder='采集说明或纳入理由';
+    for(const [value,label] of [['screenshot','网页截图'],['supplied_image','供图']]){const option=el('option',label);option.value=value;representation.append(option)}
+    form.append(field('本地图片',file),field('图片形式',representation),field('来源网页',url),field('说明与理由',description));
+    const upload=el('button','上传图片');upload.type='submit';form.append(upload);track(form);
+    form.onsubmit=e=>{e.preventDefault();safe(async()=>{
+      const chosen=file.files[0];if(!chosen||chosen.size>8*1024*1024)throw new Error('请选择不超过 8 MiB 的 PNG/JPEG 图片。');
+      const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('无法读取图片'));reader.readAsDataURL(chosen)});
+      const metadata={originalFilename:chosen.name,representation:representation.value,...(url.value.trim()?{sourcePageUrl:url.value.trim()}:{}),...(description.value.trim()?{description:description.value.trim()}:{})};
+      await mutate(route+'/images',{base64,metadata,commandId:crypto.randomUUID(),expectedRevision:p.revision},'图片已保存。选择图片后可运行独立观察。');
+    })};panel.append(form);
+  }
+  const selected=new Set(),gallery=el('div',undefined,'timeline');
+  let observe;
+  for(const asset of p.imageAssets||[]){
+    const box=el('div',undefined,'step'),img=el('img');img.src=route+'/images/'+encodeURIComponent(asset.id);img.alt=asset.provenance.originalFilename||'上传图片';img.loading='lazy';img.style.cssText='width:100%;height:170px;object-fit:contain';
+    const seen=(p.imageObservations||[]).some(report=>report.images.some(image=>image.imageId===asset.id));
+    box.append(img,el('p',asset.provenance.originalFilename||asset.id),el('p',seen?'已有观察报告':'尚未观察','badge'),detail('来源声明与图片哈希',asset));
+    if(!historical){const check=el('input'),label=el('label',undefined,'check');check.type='checkbox';check.onchange=()=>{if(check.checked)selected.add(asset.id);else selected.delete(asset.id);observe.disabled=!capabilities.imageObservation?.available||!v.taskCard||!p.confirmations.some(c=>c.taskCardId===p.activeTaskCardId)||selected.size<1||selected.size>4};label.append(check,document.createTextNode('纳入本次观察'));box.append(label)}
+    gallery.append(box);
+  }
+  panel.append(gallery);
+  if(!historical){observe=button('观察所选图片',async()=>{if(!allowNavigation())return;await mutate(route+'/observations',{imageIds:[...selected],commandId:crypto.randomUUID(),expectedRevision:p.revision},'图片观察任务已保存。完成后刷新查看报告。')},true);observe.disabled=true;panel.append(observe);if(!capabilities.imageObservation?.available)panel.append(el('p','尚未配置图片观察岗位。','muted'))}
+  for(const report of p.imageObservations||[]){
+    const box=el('div',undefined,'artifact');box.id='observation-'+report.id;box.append(el('h3','独立图片观察报告'),el('p','观察仅描述可见像素及可辨文字，不认证来源、消费者偏好或物理性能。独立复核支持的条目会自动供下一次调研引用；阶段放行仍需核验和交接。','muted'));
+    for(const observation of report.observations){
+      const asset=(p.imageAssets||[]).find(item=>item.id===observation.imageId);box.append(el('h3',asset?.provenance.originalFilename||observation.imageId));
+      for(const item of observation.visibleFeatures)box.append(el('p',item.region+' · '+item.description));
+      for(const item of observation.legibleText)box.append(el('p','图中文字转录 · '+item.region+' · '+item.transcription));
+      for(const text of observation.uncertainties)box.append(el('p','不确定 · '+text,'muted'));
+      for(const text of observation.limitations)box.append(el('p','限制 · '+text,'muted'));
+    }
+    const reviews=(p.observationReviews||[]).filter(review=>review.observationId===report.id);
+    if(!historical&&report.taskCard.id===p.activeTaskCardId&&capabilities.imageObservationReview?.available){
+      const reviewButton=button('独立复核图片观察',async()=>{if(!allowNavigation())return;await mutate(route+'/observation-reviews',{observationId:report.id,commandId:crypto.randomUUID(),expectedRevision:p.revision},'图片复核任务已保存。完成后刷新查看逐项结论。')});
+      reviewButton.disabled=p.jobs.some(job=>job.purpose==='observation_review'&&job.targetObservationId===report.id&&['queued','running','awaiting_reconciliation'].includes(job.status));box.append(reviewButton);
+    }
+    for(const review of reviews){
+      const result=el('div',undefined,'artifact');result.id='visual-review-'+review.id;result.append(el('h3','独立像素复核'),el('p','仅支持可见视觉描述；不认证来源，不证明偏好或物理性能。复核不产生阶段放行。','muted'));
+      for(const finding of review.findings){
+        const item=report.observations.flatMap(o=>[...o.visibleFeatures,...o.legibleText]).find(item=>item.id===finding.id);
+        result.append(el('p',(finding.status==='supported'?'可引用':'排除')+' · '+finding.id+' · '+(item?.description||item?.transcription||'')+' · '+finding.reason));
+      }
+      result.append(detail('复核输入绑定与独立调用回执',review));box.append(result);
+    }
+    if(!reviews.length)box.append(el('p','尚无独立像素复核；观察特征暂不可作为已复核视觉引用。','muted'));
+    box.append(detail('冻结任务卡、图片清单与原始回执',report));panel.append(box);
+  }
+  content.append(panel);
+}
+function renderExecution(p,v){
+  const panel=el('section',undefined,'card');panel.append(el('h2','阶段执行与资料'));
+  panel.append(el('p','此入口整理你提供的资料，不代表已联网搜集。原文摘录均按待核验资料保存；模型生成不等于审核通过。','muted'));
+  const supported=capabilities.stages.filter(item=>item.available&&['research','strategy','copy'].includes(item.stage));
+  if(historical)panel.append(el('p','历史版本不执行新任务。','muted'));
+  else if(!supported.length)panel.append(el('p','尚未配置文字模型。启动服务时设置 WORKBENCH_MODEL 后启用；图片生成和自动检索尚未接入。','muted'));
+  else{
+    const form=el('form'),stage=el('select');stage.setAttribute('aria-label','执行阶段');
+    for(const item of supported){const option=el('option',labels[item.stage]);option.value=item.stage;stage.append(option)}
+    form.append(field('执行阶段',stage));const records=el('div');let index=0;
+    const add=()=>{
+      const row=el('fieldset');row.dataset.source='true';
+      const title=el('legend','资料 '+(++index)),url=el('input'),text=el('textarea'),relation=el('select'),reason=el('input');
+      url.type='url';url.required=true;url.name='sourceUrl';url.placeholder='https://…';text.required=true;text.name='sourceText';text.placeholder='粘贴已读的原文摘录，保留上下文';reason.type='text';reason.required=true;reason.name='sourceReason';
+      relation.name='sourceRelation';for(const [key,label] of [['direct','直接比较'],['background','背景资料'],['visual','视觉借鉴'],['unverified','待核验用途']]){const option=el('option',label);option.value=key;relation.append(option)}
+      row.dataset.sourceId='source-'+crypto.randomUUID();row.append(title,field('来源网页',url),field('原文摘录',text),field('拟纳入用途',relation),field('纳入理由',reason),button('移除此条',()=>{row.remove();dirty=true;form.dataset.unsaved='true'}));records.append(row);
+    };
+    form.append(records,button('添加一条来源',()=>{add();dirty=true;form.dataset.unsaved='true'}));
+    const submit=el('button','保存资料并执行','primary');submit.type='submit';const actions=el('div',undefined,'actions');actions.append(submit);form.append(actions,el('p','没有来源时只会生成待补资料计划。策略与文案会继承已放行上游的来源。','muted'));track(form);
+    form.onsubmit=e=>{e.preventDefault();safe(async()=>{
+      if([...content.querySelectorAll('form[data-unsaved]')].some(item=>item!==form)&&!allowNavigation())return;
+      const sourceRecords=[...records.querySelectorAll('[data-source]')].map(row=>({id:row.dataset.sourceId,url:row.querySelector('[name=sourceUrl]').value.trim(),text:row.querySelector('[name=sourceText]').value.trim(),scopeRelation:row.querySelector('[name=sourceRelation]').value,reason:row.querySelector('[name=sourceReason]').value.trim()}));
+      await mutate('/api/projects/'+encodeURIComponent(p.id)+'/jobs',{stage:stage.value,commandId:crypto.randomUUID(),expectedRevision:p.revision,sourceRecords},'执行请求已保存。稍后刷新项目查看结果；请勿重复提交同一任务。');
+    })};panel.append(form);
+  }
+  for(const job of [...(p.jobs||[])].reverse()){
+    const box=el('div',undefined,'artifact');box.append(el('h3',(job.purpose==='observation_review'?'独立像素复核':job.purpose==='observation'?'独立图片观察':job.purpose==='owner_acceptance'?'策略与文案负责人接收':job.purpose==='handoff'?'负责人交接 · '+(job.side==='producer'?'研究方':'策略方'):job.purpose==='readiness'?'研究交接审查':job.purpose==='verification'?'独立资料核验':labels[job.stage]||job.stage)+' · '+(statusLabels[job.status]||job.status)));
+    if(job.error)box.append(el('p',job.error.message,'error'));
+    const recoveries=(p.reconciliations||[]).filter(r=>r.jobId===job.id);
+    if(recoveries.length)box.append(detail('本地恢复记录，原调用记录保留',recoveries));
+    if(!historical&&job.status==='awaiting_reconciliation'&&job.error?.code==='INVALID_STAGE_OUTPUT'&&!['verification','readiness','handoff','observation','observation_review'].includes(job.purpose))box.append(button('核对已保存结果并恢复',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/reconciliations',{jobId:job.id,commandId:crypto.randomUUID(),expectedRevision:p.revision,reason:'重新校验已保存的成功响应，不重复调用模型'},'本地结果已恢复。仍需独立核验和阶段验收。')}));
+    if(job.readinessResolutionId)box.append(el('p','一次替代评审。许可在领取时消耗，失败或超时不会自动退回。','muted'));
+    if(!historical&&job.status==='awaiting_reconciliation'&&job.purpose==='readiness'&&job.task.readinessInput.reviewProtocolVersion==='research-readiness-v2'){
+      const attemptId=job.attempts.at(-1).id,route='/api/projects/'+encodeURIComponent(p.id)+'/readiness-resolutions';
+      box.append(button('查看未知调用与恢复选项',async()=>{
+        const response=await fetch(route+'?jobId='+encodeURIComponent(job.id)+'&attemptId='+encodeURIComponent(attemptId));const view=await response.json();if(!response.ok)throw view;
+        const controls=el('div');controls.append(el('p','原调用结果未知，费用 '+(view.originalCost===null?'未知':JSON.stringify(view.originalCost))+'。供应商精确查询暂不支持。'),detail('原调用与证据状态',view));
+        controls.append(button('核对已保存的独立评审结果（不调用模型）',async()=>mutate(route,{action:'recover-saved',jobId:job.id,attemptId,commandId:crypto.randomUUID(),expectedRevision:view.revision},'已核对保存证据。证据不足时原结果仍未知，不放行。')));
+        if(view.proposals.length){
+          const select=el('select');for(const proposal of view.proposals){const option=el('option',proposal.binding.providerId+' / '+proposal.binding.model);option.value=proposal.proposalId;select.append(option);}
+          const chosen=el('div'),ack=el('input');ack.type='checkbox';const render=()=>{ack.checked=false;chosen.replaceChildren(detail('将执行的确切冻结输入与模型',view.proposals.find(x=>x.proposalId===select.value)));};select.onchange=render;render();
+          controls.append(field('替代评审模型',select),chosen,field('原调用可能仍完成并计费；我接受结果与费用未知及重复收费风险，仅另行调用一次。',ack),el('p','替代费用未知。许可领取后即消耗，超时不自动重试。此操作依赖本地真人直接操作，代理不得代为授权。','muted'),button('接受上述风险，仅执行一次替代评审',async()=>{if(!ack.checked)throw new Error('请先明确接受未知结果、未知费用与可能重复收费。');await mutate(route,{action:'authorize-one-replacement',jobId:job.id,attemptId,proposalId:select.value,acknowledgement:true,commandId:crypto.randomUUID(),expectedRevision:view.revision},'一次替代许可与任务已保存。原未知调用保留，研究未获批准或放行。');}));
+        }
+        box.append(controls);
+      }));
+    }
+    box.append(detail('执行身份、原始回执与使用量',{jobId:job.id,binding:job.binding,attempts:job.attempts}),detail('本次冻结的来源',job.task?.handoffInput?.sourceRecords||job.task?.readinessInput?.sourceRecords||job.task?.verificationInput?.sourceRecords||job.task?.sourceRecords||[]));panel.append(box);
+  }
+  content.append(panel);
+}
+function editBrief(scope,p,v){if(!allowNavigation())return;dirty=false;scope.replaceChildren(el('h2','修改任务卡'));const form=el('form'),input=el('textarea');input.required=true;input.value=v.taskCard.brief;form.append(field('项目 Brief',input),el('p','保存后生成新任务卡，需要重新确认。依赖旧任务卡的成果会失效。','muted'));const row=el('div',undefined,'actions'),save=el('button','保存新任务卡','primary');save.type='submit';row.append(save,button('取消修改',()=>{if(allowNavigation()){dirty=false;renderProject()}}));form.append(row);track(form);form.onsubmit=e=>{e.preventDefault();safe(()=>command('revise-task-card',{taskCardId:p.id+':scope:'+crypto.randomUUID(),brief:input.value.trim()},form))};scope.append(form);input.focus()}
+async function showArtifactBody(container,projectId,artifact){
+  container.append(el('p','正在读取生成内容…','muted'));
+  try{
+    const data=await api('/api/projects/'+encodeURIComponent(projectId)+'/artifacts/'+encodeURIComponent(artifact.id)+'/content');
+    if(!container.isConnected)return;
+    container.replaceChildren();const draft=data.content;
+    container.append(el('p','生成草稿 · 可用状态以核验与评审记录为准','badge'));
+    if(typeof draft.title==='string')container.append(el('h3',draft.title));
+    if(typeof draft.summary==='string')container.append(el('p',draft.summary,'brief'));
+    for(const section of Array.isArray(draft.sections)?draft.sections:[]){
+      const item=el('section');if(typeof section.heading==='string')item.append(el('h3',section.heading));if(typeof section.body==='string')item.append(el('p',section.body,'brief'));
+      if(Array.isArray(section.evidenceIds)&&section.evidenceIds.length){const refs=el('p','依据：','muted');for(const id of section.evidenceIds){const visual=(artifact.technicalReceipts?.visualCatalogue||[]).find(entry=>entry.id===id);if(visual){const link=el('a',visual.region+'（图片）');link.href='#visual-evidence-'+artifact.id+'-'+id;link.onclick=()=>{const target=document.getElementById('visual-evidence-'+artifact.id+'-'+id);if(target)target.parentElement.open=true};refs.append(link,document.createTextNode(' '))}else refs.append(document.createTextNode(id+' '))}item.append(refs)}container.append(item);
+    }
+    if(Array.isArray(draft.directions))for(const direction of draft.directions){const item=el('section');item.append(el('h3',direction.title||direction.id),el('p',direction.slogan||'','brief'),el('h4','支撑文案'),el('p',direction.supportingCopy||'历史稿未提供','brief'),el('h4','创意说明'),el('p',direction.creativeExplanation||'历史稿未提供','brief'),el('h4','策略依据'),el('p',direction.rationale||'','brief'),el('h4','方向差异'),el('p',direction.differentiation||'','brief'));container.append(item)}
+    if(Array.isArray(draft.gaps)&&draft.gaps.length){container.append(el('h3','待补资料与未解决问题'));const list=el('ul');draft.gaps.forEach(gap=>list.append(el('li',String(gap))));container.append(list)}
+    const visualCatalogue=artifact.technicalReceipts?.visualCatalogue||[];
+    const usedVisualIds=new Set([...(draft.sections||[]).flatMap(section=>section.evidenceIds||[]),...(draft.claims||[]).flatMap(claim=>claim.evidenceRefs||[]),...(draft.directions||[]).flatMap(direction=>direction.evidenceIds||[])]);
+    const usedVisuals=visualCatalogue.filter(entry=>usedVisualIds.has(entry.id));
+    if(usedVisuals.length){const evidence=el('details');evidence.append(el('summary','查看引用的图片依据（'+usedVisuals.length+'）'));
+      for(const entry of usedVisuals){const row=el('section');row.id='visual-evidence-'+artifact.id+'-'+entry.id;
+        const link=el('a',entry.id+' · '+entry.region);link.href='#visual-review-'+entry.reviewId;
+        const imageLink=el('a'),image=el('img');imageLink.href='/api/projects/'+encodeURIComponent(projectId)+'/images/'+encodeURIComponent(entry.imageId);imageLink.target='_blank';imageLink.rel='noopener noreferrer';image.src=imageLink.href;image.alt=entry.text;image.loading='lazy';image.style.cssText='max-width:240px;max-height:160px;object-fit:contain';imageLink.append(image);
+        row.append(link,el('p',entry.text),imageLink,el('p','使用限制：'+entry.limits.join('；'),'muted'));evidence.append(row);
+      }container.append(evidence);
+    }
+    const sources=artifact.technicalReceipts?.sourceCatalogue?.records||[];
+    if(sources.length){container.append(el('h3','对应来源'));for(const source of sources){const row=el('p');row.append(document.createTextNode(source.id+' · '));try{const url=new URL(source.url);if(['http:','https:'].includes(url.protocol)){const link=el('a',source.url);link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';row.append(link)}}catch{};if(source.reason)row.append(document.createTextNode(' · '+source.reason));container.append(row)}}
+    container.append(detail('逐条论断和原始内容',draft));
+  }catch(error){if(container.isConnected)container.replaceChildren(el('p','无法读取此版本内容：'+errorMessage(error),'error'))}
+}
+function renderHumanFeedback(p,s,artifact){
+ const section=el('details'),title=el('summary','修改意见与修订过程');section.append(title);
+ const items=(p.humanFeedback||[]).filter(item=>item.stage===s.stage&&item.taskCardId===p.activeTaskCardId);
+ for(const item of items)section.append(detail('人工意见 · '+item.id,{instructions:item.instructions,themes:item.themes,materials:item.materials,artifactId:item.artifactId}));
+ if(artifact.revision)section.append(detail('本稿修订关系及逐项答复',{revisionOf:artifact.revision.revisionOf,feedbackResponses:artifact.feedbackResponses,revisionResponses:artifact.revisionResponses,sources:artifact.revision.sources}));
+ for(const report of [...(p.feedbackReviews||[]),...(p.correctionReviews||[])].filter(item=>item.artifactId===artifact.id))section.append(el('p','独立意见落实检查：'+(report.hasBlockingFindings?'仍有未解决项':'已找到落实依据')+'。这不等于审美通过或人工确认。','muted'),detail('落实检查与原始回执',report));
+ if(historical||s.status==='stale')return section;
+ if(!capabilities.feedback?.supportedStages?.includes(s.stage)){section.append(el('p','此阶段尚未接入真实修订执行。','muted'));return section;}
+ const form=el('form'),instructions=el('textarea'),theme=el('input'),notes=el('input');theme.type='text';notes.type='text';instructions.placeholder='指出需要修改的内容、保留项和理由。修改请求会阻断旧稿继续流转。';theme.placeholder='可选，填写你希望纳入的主题';notes.placeholder='选择图片时说明借鉴什么，不能把图片当成事实证明';form.append(field('修改要求',instructions),field('我的候选主题',theme));
+ const choices=[];if(p.imageAssets?.length){form.append(el('p','参考素材从已登记图片中选择，累计最多4张。','muted'));for(const asset of p.imageAssets){const row=el('label',undefined,'check'),check=el('input');check.type='checkbox';row.append(check,document.createTextNode(asset.provenance?.description||asset.id));form.append(row);choices.push({check,imageId:asset.id});}form.append(field('素材借鉴说明',notes));}
+ const submit=el('button','提交修改意见');submit.type='submit';form.append(submit);track(form);form.onsubmit=e=>{e.preventDefault();safe(async()=>{const materials=choices.filter(item=>item.check.checked).map(item=>({imageId:item.imageId,intendedUse:'创意参考',borrowingNotes:notes.value.trim()})),themes=theme.value.trim()?[{text:theme.value.trim(),intendedUse:'人工候选主题'}]:[];if(!instructions.value.trim()&&!themes.length&&!materials.length)throw new Error('请填写意见、主题或选择参考素材。');if(materials.length&&!notes.value.trim())throw new Error('请说明参考素材的借鉴点。');await mutate('/api/projects/'+encodeURIComponent(p.id)+'/feedback',{artifactId:artifact.id,feedbackId:crypto.randomUUID(),instructions:instructions.value.trim(),themes,materials,commandId:crypto.randomUUID(),expectedRevision:p.revision},'意见已保存。旧稿停止流转，请执行修订。')})};section.append(form);
+ const busy=p.jobs.some(j=>j.stage===s.stage&&['queued','running','awaiting_reconciliation'].includes(j.status)&&(!j.purpose||j.purpose==='stage'));
+ const machineReports=[...(p.verifications||[]),...(p.readinessReports||[]),...(p.handoffReports||[]),...(p.ownerReports||[]),...(p.feedbackReviews||[]),...(p.creativeReports||[]),...(p.correctionReviews||[])].filter(r=>r.artifactId===artifact.id);
+ if(machineReports.length)section.append(detail('全部机器评审来源，含肯定与异议',machineReports));
+ if(s.correctionAvailability?.reason==='NO_CORRECTION_REQUIRED')section.append(el('p','当前评审没有待落实的修改项。如需改进，请先提交具体意见。','muted'));
+ if(s.correctionAvailability?.available){const revise=button('按全部意见和评审生成新稿',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/revisions',{artifactId:artifact.id,commandId:crypto.randomUUID(),expectedRevision:p.revision},'修订任务已保存。旧稿、意见与素材会送入原岗位。')});revise.disabled=busy;section.append(revise);}
+ if(artifact.revision){const typed=['typed-revision-v2','typed-revision-v3'].includes(artifact.revision.protocolVersion);const check=button('独立检查意见落实',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+(typed?'/correction-reviews':'/feedback-reviews'),{artifactId:artifact.id,...(typed&&s.stage==='research'&&s.researchAssessment?.current?{protocolVersion:'correction-handling-v4'}:{}),commandId:crypto.randomUUID(),expectedRevision:p.revision},'独立落实检查已提交。审美评分、事实核验与人工采用仍需分别满足。')});check.disabled=!(typed?capabilities.correction?.reviewAvailable:capabilities.feedback.reviewAvailable)||p.jobs.some(j=>j.purpose===(typed?'correction_review':'feedback_review')&&j.targetArtifactId===artifact.id&&['queued','running','awaiting_reconciliation'].includes(j.status));section.append(check);}
+ return section;
+}
+function renderCreativePanel(p,s,artifact){
+ const section=el('section',undefined,'notice');if(!['strategy','copy'].includes(s.stage))return section;
+ section.append(el('h3','独立创意评审过程'),el('p','匿名首读 → 分角色评分 → 独立首轮质疑 → 镜像对抗 → 总监逐项裁决。均为模型模拟，不等于客户或真实用户认可。','muted'));
+ const panels=(p.creativePanels||[]).filter(x=>x.packet.artifactId===artifact.id);
+ for(const panel of panels){
+   const reports=(p.creativeReports||[]).filter(r=>r.panelId===panel.id),decision=p.decisions.find(d=>d.kind==='creative-director'&&d.creativePanelId===panel.id);
+   section.append(el('strong',decision?'总监结果：'+decision.creativeStatus:'执行进度：'+reports.length+'/'+panel.nodes.length),el('p','未完成独立校准时，评分仅为诊断，不能自动放行。原始分数与异议保留。','muted'));
+   for(const node of panel.nodes){const job=p.jobs.find(j=>j.id===node.jobId),report=reports.find(r=>r.nodeKey===node.key);section.append(detail(node.role+' · '+node.phase+' · '+(job?.status||'等待前置结果'),report||{dependencies:node.dependencies,error:job?.error}));}
+   if(decision)section.append(detail('总监逐条采纳、驳回、暂缓与待定',decision));
+ }
+ if(!historical&&s.status!=='stale')section.append(button(panels.length?'恢复未完成评审':'启动独立创意评审',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/creative-panels',{artifactId:artifact.id,commandId:crypto.randomUUID(),expectedRevision:p.revision},'评审计划已保存。重复点击不重复调用；未知结果停止，等待核对。')}));
+ return section;
+}
+function renderArtifacts(p,v){const section=el('section',undefined,'card');section.append(el('h2','当前成果与评审'));const active=v.stages.filter(s=>s.activeArtifactId);if(!active.length)section.append(el('p','暂无成果。先确认任务卡，再提交资料并执行已接入的阶段。','muted'));for(const s of active){const artifact=p.artifacts.find(a=>a.id===s.activeArtifactId);if(!artifact)continue;const block=el('div',undefined,'artifact');block.append(el('h3',labels[s.stage]),el('p',artifact.id,'muted'),el('p','成果引用：'+artifact.payloadRef,'brief'));const body=el('div',undefined,'artifact-body');block.append(body);setTimeout(()=>showArtifactBody(body,p.id,artifact),0);block.append(renderHumanFeedback(p,s,artifact),renderCreativePanel(p,s,artifact));const verifications=(p.verifications||[]).filter(r=>r.artifactId===artifact.id);
+for(const report of verifications){block.append(el('h3','独立资料核验 · '+(report.hasBlockingFindings?'仍有阻塞问题':'摘录支持检查通过')),el('p','只检查所供资料的支持关系，不等于网站真实性验证或最终放行。','muted'),detail('逐条核验与原始调用记录',report));}
+if(!historical&&capabilities.verification?.available&&s.status!=='stale'){const verify=button('运行独立资料核验',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/verifications',{artifactId:artifact.id,commandId:crypto.randomUUID(),expectedRevision:p.revision},'独立核验任务已保存。完成后刷新查看报告。')});verify.disabled=p.jobs.some(j=>j.purpose==='verification'&&j.targetArtifactId===artifact.id&&['queued','running','awaiting_reconciliation'].includes(j.status));block.append(verify);}
+for(const report of (p.readinessReports||[]).filter(r=>r.artifactId===artifact.id)){block.append(el('h3','研究交接审查 · '+(report.verdict==='ready'?'资料适用性通过':'需要补充研究')),el('p','此审查判断资料是否支撑策略，不替代摘录核验和负责人交接。','muted'),detail('覆盖缺口、使用限制与调用记录',report));}
+if(!historical&&capabilities.readiness?.available&&s.stage==='research'&&s.status!=='stale'){const check=button('检查是否足够进入策略',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/readiness',{artifactId:artifact.id,protocolVersion:'research-readiness-v2',commandId:crypto.randomUUID(),expectedRevision:p.revision},'独立研究交接审查已提交。完成后刷新查看。')});check.disabled=p.jobs.some(j=>j.purpose==='readiness'&&j.targetArtifactId===artifact.id&&['queued','running','awaiting_reconciliation'].includes(j.status));block.append(check);}
+if(s.stage==='strategy'){
+ const delivery=el('div',undefined,'artifact');delivery.append(el('h3','策略交付与文案负责人接收'));
+ const edges=(v.ownerEdges||[]).filter(e=>e.artifactId===artifact.id);
+ if(!edges.length)delivery.append(el('p',s.blockedReasons.includes('HUMAN_GATE')?'等待你采纳当前策略。回复前不会调用策略交付负责人或文案负责人。':'策略满足证据、评审和参与节点要求后，将由双方负责人分别阅读并接收。','muted'));
+ for(const state of edges){const edge=p.ownerEdges.find(e=>e.id===state.edgeId),reports=(p.ownerReports||[]).filter(r=>r.edgeId===edge.id);delivery.append(el('p','交付状态 '+state.status+(state.blockedReason?' · '+state.blockedReason:'')));
+ for(const r of reports){delivery.append(el('h4',(r.side==='producer'?'策略交付负责人':'文案接收负责人')+' · '+(r.decision==='accept'?'接收':'退回')),detail('理解、限制、退回原文位置与真实执行记录',r));for(const issue of r.unresolvedIssues||[])if(issue.blocking)delivery.append(el('p','退回 '+issue.returnTo.responsibleRole+' · '+issue.returnTo.artifactId+' '+issue.returnTo.location+' · '+issue.reason));}
+ if(state.jobId)delivery.append(el('p','实际下一任务 '+state.jobId));}
+ if(!historical){const action=button('交付策略并开始文案',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/strategy-continuations',{artifactId:artifact.id,commandId:crypto.randomUUID(),expectedRevision:p.revision},'继续请求已保存。选定的人工节点通过后，双方负责人将接收同版策略并开始文案。')},true);action.disabled=!capabilities.ownerEdge?.available;delivery.append(action);}
+ block.append(delivery);
+}
+const handoffs=(p.handoffReports||[]).filter(r=>r.artifactId===artifact.id);
+for(const report of handoffs)block.append(el('h3',(report.side==='producer'?'研究负责人':'策略负责人')+'交接 · '+(report.decision==='accept'?'接受':'退回')),detail('理解、使用限制与原始回执',report));
+if(!historical&&capabilities.handoff?.available&&s.stage==='research'&&s.status!=='stale'){
+const evidence=(p.verifications||[]).filter(r=>r.artifactId===artifact.id),ready=(p.readinessReports||[]).filter(r=>r.artifactId===artifact.id);
+const reviewed=evidence.length&&evidence.every(r=>!r.hasBlockingFindings)&&(s.researchAssessment?s.researchAssessment.current&&s.researchAssessment.ready&&!s.researchAssessment.handlingBlocked:ready.length&&ready.every(r=>r.verdict==='ready'&&!r.hasBlockingFindings));
+for(const side of ['producer','consumer']){const b=button(side==='producer'?'研究负责人确认交付':'策略负责人确认接收',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/handoffs',{artifactId:artifact.id,side,...(s.researchAssessment?.current?{protocolVersion:'research-handoff-v2'}:{}),commandId:crypto.randomUUID(),expectedRevision:p.revision},'负责人交接任务已提交，完成后刷新查看。')});b.disabled=!reviewed||handoffs.some(r=>r.decision!=='accept'||r.side===side)||p.jobs.some(j=>j.purpose==='handoff'&&j.targetArtifactId===artifact.id&&['queued','running','awaiting_reconciliation'].includes(j.status))||(side==='consumer'&&!handoffs.some(r=>r.side==='producer'&&r.decision==='accept'));block.append(b);}}
+if(s.blockedReasons.length)block.append(el('p','当前放行阻塞：'+s.blockedReasons.map(code=>reasonLabels[code]||code).join('；'),'notice'));
+if(s.stage==='research'){
+block.append(el('p','继续执行会检查当前版本全部门禁，放行调研并提交策略任务。策略之后的继续执行尚未接入。','muted'));
+if(!historical){const next=button('放行调研并继续策略',async()=>{if(!allowNavigation())return;await mutate('/api/projects/'+encodeURIComponent(p.id)+'/continuations',{artifactId:artifact.id,policyVersion:v.policy.version,commandId:crypto.randomUUID(),expectedRevision:p.revision},'调研已放行，策略任务已保存。重复提交不会创建重复任务。')},true);next.disabled=!capabilities.continuation?.available||s.blockedReasons.length>0||v.policy.authorizedThrough==='research';block.append(next);}
+}else block.append(el('p','此阶段的自动交接与继续执行尚未接入。','muted'));
+const reviews=p.reviews.filter(r=>r.artifactId===artifact.id);block.append(el('p','真实模型评审与历史元数据记录分别保留；诊断分数不等于已校准通过，也不代表真实客户批准或消费者研究。','muted'));if(!reviews.length)block.append(el('p','尚无原始评审。','muted'));for(const r of reviews){const review=el('div',undefined,'notice');review.append(el('strong',(r.reviewType==='opposition'?'对抗评审':'原始评审')+' · '+r.role+' · '+(r.verdict==='pass'?'通过':'未通过')+(r.score===undefined?'':' · '+r.score+'/5')),el('pre',JSON.stringify({id:r.id,findings:r.findings,referenceFit:r.referenceFit,pairedReviewId:r.pairedReviewId},null,2),'pre'));block.append(review)}block.append(detail('查看成果证据与来源',artifact));if(!historical&&s.status!=='stale'){const form=el('form'),reason=el('textarea');reason.required=true;reason.placeholder='说明采用或授权的理由。原始分数和问题记录将保留。';form.append(field('我的决定理由',reason));const row=el('div',undefined,'actions');const adopt=el('button','指定采用当前成果');adopt.type='submit';row.append(adopt);if(s.stage==='sketch')row.append(button('授权当前草图进入精绘',()=>{if(form.reportValidity())return command('authorize-visual',{sketchArtifactId:artifact.id,reason:reason.value.trim()},form)}));form.append(row,el('p','采用只记录你的选择，不等于事实核验通过或阶段放行。','muted'));track(form);form.onsubmit=e=>{e.preventDefault();safe(()=>command('adopt-creative',{artifactId:artifact.id,reason:reason.value.trim()},form))};block.append(form)}else if(s.status==='stale')block.append(el('p','此成果依赖旧版本，不能采用或授权。','muted'));section.append(block)}content.append(section)}
+document.querySelector('#newProject').onclick=()=>safe(async()=>{createScreen();await listProjects()});window.addEventListener('beforeunload',e=>{if(dirty||pendingMutation){e.preventDefault();e.returnValue=''}});
+safe(async()=>{capabilities=await api('/api/capabilities');await listProjects();createScreen()});
+</script></body></html>

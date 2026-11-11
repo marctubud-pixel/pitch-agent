@@ -1,0 +1,98 @@
+{
+  "id": "qingyu-layout-seal-20261111-r1",
+  "directorId": "qingyu-layout-preflight-director-20261111-r1",
+  "directorSha256": "a914e60b8c604728e15cedcc82930fa9f8a3029e0056d2fada088f75df14ed67",
+  "limits": [
+    "本轮为虚构任务条件下的静态排版预览。未签正式业务通过、内容冻结、视觉终稿、研究释放或排版后终审。",
+    "500ml、6至8元、25至34岁城市办公者、便利店/电商、青色与山形是题设，非市场验证结论。配方使用虎跑泉水为研究后补充的用户演练设定；茶种、风味、完整配料、用水比例与来源凭据仍未验证。",
+    "研究状态继续为研究待补。2023历史样本与2026包装饮料场景分开使用；线下销额不等于销量/人数，集中度保留机构定性归属；有目的竞品样本不代表市场全貌。",
+    "R2价格为12条历史有价记录及1条未知，分媒体原价/建议价、品牌投稿历史价和促销；不是2026现价排名、支付意愿或6至8元价值证明。不得将历史价绑定到未核同版原包装。",
+    "三张主图和三张正侧背模拟整板为已生成试稿。实际图未完整承载R2主副文、茶种和完整标签；图外保留封存原文，触点落位及人群读图效果仍未验证。不得为凑正式信息改图或新造产品。",
+    "原推荐仅为本地包装文字概念优先n7，不表示用户选案、包装效果、视觉评分或真实消费者研究。三圈是分析关系示意，不表示统计面积或已验证人群重合。",
+    "既有QY-CR-01/02/03作为随稿限制保留，不另生成阻止预览的待办；未发现使本次预览无法开展的新事实矛盾、错版或缺件。"
+  ],
+  "images": [
+    {
+      "id": "n7-main",
+      "path": "/visual-concepts/qingyu-20261110/n7-main.png",
+      "sha256": "e96feea741445faa82ad9e3e0cc28e83e41602217862fcfadd8cbca809e68ee2",
+      "width": 1122,
+      "height": 1402,
+      "mime": "image/png",
+      "identity": "AI生成设计试稿；不是印前生产稿、实物拍摄或通过正式视觉回环的终稿"
+    },
+    {
+      "id": "n7-mockups",
+      "path": "/visual-concepts/qingyu-20261110/n7-mockups.png",
+      "sha256": "7610c424e2c19ebac85d998dab65b92553c132b6c32056847704c117c6274d81",
+      "width": 1666,
+      "height": 944,
+      "mime": "image/png",
+      "identity": "AI生成设计试稿；不是印前生产稿、实物拍摄或通过正式视觉回环的终稿"
+    },
+    {
+      "id": "k4-main",
+      "path": "/visual-concepts/qingyu-20261110/k4-main.png",
+      "sha256": "34663a7a942f9b22ad0db633376fc761a79e584699b2889d55654971defa96e3",
+      "width": 1122,
+      "height": 1402,
+      "mime": "image/png",
+      "identity": "AI生成设计试稿；不是印前生产稿、实物拍摄或通过正式视觉回环的终稿"
+    },
+    {
+      "id": "k4-mockups",
+      "path": "/visual-concepts/qingyu-20261110/k4-mockups.png",
+      "sha256": "56af786e41de206678035b4c88c6585a71345c60c6928a962adbb5e620810a9b",
+      "width": 1774,
+      "height": 887,
+      "mime": "image/png",
+      "identity": "AI生成设计试稿；不是印前生产稿、实物拍摄或通过正式视觉回环的终稿"
+    },
+    {
+      "id": "v2-main",
+      "path": "/visual-concepts/qingyu-20261110/v2-main.png",
+      "sha256": "8e410bc79dfe3297674f7f104eaa8698d89c93784e8620f69a001c1b47047964",
+      "width": 1122,
+      "height": 1402,
+      "mime": "image/png",
+      "identity": "AI生成设计试稿；不是印前生产稿、实物拍摄或通过正式视觉回环的终稿"
+    },
+    {
+      "id": "v2-mockups",
+      "path": "/visual-concepts/qingyu-20261110/v2-mockups.png",
+      "sha256": "abebab73c0e3b3fef26c10eaecb724bb830966bfd7529f0275e55b44192086ca",
+      "width": 1774,
+      "height": 887,
+      "mime": "image/png",
+      "identity": "AI生成设计试稿；不是印前生产稿、实物拍摄或通过正式视觉回环的终稿"
+    }
+  ],
+  "sources": {
+    "strategy": {
+      "path": "../qingyu-strategy/summary.ts",
+      "sha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6"
+    },
+    "intersection": {
+      "path": "../qingyu-strategy/intersection-page.ts",
+      "sha256": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37"
+    },
+    "copy": {
+      "path": "../qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    "concept": {
+      "path": "../qingyu-visual/concept-images.ts",
+      "sha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e"
+    },
+    "prices": {
+      "path": "../qingyu-report/content-r2.json",
+      "sha256": "6a09986e67c970e8f803c3b6d6b20a5657c47cbfbbc4156a2efba2d3aab452b2"
+    }
+  },
+  "methods": {
+    "research": "r6-20261109",
+    "layout": "r7",
+    "visualLead": "1.0.0",
+    "authorization": "本地排版预览与同源PPTX；不签业务通过或终审"
+  }
+}

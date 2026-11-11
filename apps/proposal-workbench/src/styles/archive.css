@@ -1,0 +1,726 @@
+/*
+ * Homepage as a filing cabinet. One project lies open as the focal point, with its files fanned
+ * out inside; the others are packed into a drawer, showing only their staggered tabs.
+ * Pulling a folder out morphs it into place with the View Transitions API where supported.
+ */
+
+.open-folder,
+.cab-folder {
+  --strong: var(--tone-sky);
+  --soft: var(--tone-sky-soft);
+}
+:is(.open-folder, .cab-folder)[data-tone='peach'] { --strong: var(--tone-peach); --soft: var(--tone-peach-soft); }
+:is(.open-folder, .cab-folder)[data-tone='lime'] { --strong: var(--tone-lime); --soft: var(--tone-lime-soft); }
+:is(.open-folder, .cab-folder)[data-tone='lilac'] { --strong: var(--tone-lilac); --soft: var(--tone-lilac-soft); }
+:is(.open-folder, .cab-folder)[data-tone='butter'] { --strong: var(--tone-butter); --soft: var(--tone-butter-soft); }
+
+.archive {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+/* -------------------------------------------------------- open folder */
+
+.open-folder {
+  position: relative;
+  padding-top: 40px;
+  color: var(--folder-ink);
+  scroll-margin-top: calc(var(--topbar) + 16px);
+}
+
+.open-folder__back {
+  position: absolute;
+  inset: 40px 0 0;
+  border-radius: 8px 32px 32px 32px;
+  background: var(--strong);
+}
+
+.open-folder__tab {
+  position: absolute;
+  left: 0;
+  top: -40px;
+  display: block;
+  box-sizing: border-box;
+  height: 41px;
+  line-height: 41px;
+  max-width: min(78%, 520px);
+  padding: 0 26px 0 22px;
+  border-radius: 20px 20px 0 0;
+  background: var(--strong);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.open-folder__sheets {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding: 28px 26px 0;
+}
+
+.sheet {
+  --r: -1.6deg;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 250px;
+  padding: 16px 16px 72px;
+  border-radius: 18px;
+  background: var(--sheet);
+  color: var(--sheet-ink);
+  text-decoration: none;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 14px 28px -18px rgb(18 18 16 / 0.45);
+  transform: rotate(var(--r));
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;
+  animation: sheet-in 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 160ms);
+}
+
+.sheet:nth-child(2) { --r: 1.2deg; }
+.sheet:nth-child(3) { --r: -0.8deg; }
+.sheet:nth-child(4) { --r: 1.8deg; }
+
+.sheet:hover,
+.sheet:focus-visible {
+  transform: translateY(-10px) rotate(0deg);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 22px 36px -18px rgb(18 18 16 / 0.55);
+}
+
+.sheet:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(46px) rotate(0deg) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--r));
+  }
+}
+
+.sheet__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, currentColor 62%, transparent);
+}
+
+.sheet__title {
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.sheet__state {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--warn-wash);
+  color: var(--warn);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.sheet__state.is-ok {
+  background: var(--ok-wash);
+  color: var(--ok);
+}
+
+.sheet__lines {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: color-mix(in srgb, currentColor 72%, transparent);
+}
+
+.sheet__lines li {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.sheet__lines--text {
+  padding-left: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sheet__caption {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, currentColor 72%, transparent);
+}
+
+.sheet__empty {
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.sheet--next {
+  background: var(--ink-strong);
+  color: var(--canvas);
+}
+
+.sheet--next[data-kind='attention'] .sheet__go {
+  background: var(--warm);
+  color: var(--warm-ink);
+}
+
+.sheet--next[data-kind='attention'] .sheet__label {
+  color: var(--warm);
+}
+
+.sheet--next[data-kind='active'] .sheet__go {
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+.sheet--next[data-kind='ready'] {
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+.sheet__big {
+  font-size: 1.3125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.sheet__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 7px 12px 7px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.sheet__thumbs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.sheet__thumbs img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.sheet__thumbs img:first-child {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 9;
+}
+
+/* The latest work, shown as a print tucked into the folder */
+.sheet__art {
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--sheet-line);
+}
+
+.sheet__art.art-frame {
+  --art-mat: var(--sheet-line);
+  --art-pad: 9%;
+}
+
+.sheet__dirs {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.sheet__dirs li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet__dirs li[data-rec] {
+  font-weight: 700;
+}
+
+.cabinet__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--canvas);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-ui);
+}
+
+.folder__alert svg {
+  vertical-align: -2px;
+}
+
+/* Progress ring */
+.ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  margin: 6px 0 2px;
+}
+
+.ring svg {
+  position: absolute;
+  inset: 0;
+}
+
+.ring circle {
+  fill: none;
+  stroke-width: 9;
+}
+
+.ring__track {
+  stroke: var(--sheet-line);
+}
+
+.ring__value {
+  stroke: var(--ink-strong);
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ring__text {
+  position: relative;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ring__text small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+/* The folder's front flap, lying over the bottom of the files */
+.open-folder__front {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: -56px;
+  padding: 26px 28px 26px;
+  border-radius: 28px;
+  background: var(--soft);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 -10px 26px -22px rgb(18 18 16 / 0.6);
+}
+
+.open-folder__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.open-folder__name {
+  font-family: var(--font-grotesk);
+  font-size: clamp(2rem, 3.4vw, 2.875rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+
+.open-folder__summary {
+  max-width: 60ch;
+  color: var(--folder-muted);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.open-folder__stage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.open-folder__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.open-folder__open {
+  min-height: 46px;
+  padding: 6px 18px 6px 22px;
+  border-radius: 999px;
+  background: var(--ink-strong);
+  color: var(--canvas);
+}
+
+.open-folder--ghost {
+  min-height: 560px;
+  border-radius: 32px;
+  background: color-mix(in srgb, var(--card) 60%, transparent);
+}
+
+/* --------------------------------------------------------- cabinet */
+
+.cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border-radius: 30px;
+  background: var(--card);
+}
+
+.cabinet--ghost {
+  min-height: 560px;
+  opacity: 0.6;
+}
+
+.cabinet__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-grotesk);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.cabinet__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.drawer-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 4px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--folder-ink);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.drawer-label > span:last-child {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.drawer-label__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+.drawer-label[data-kind='attention'] .drawer-label__dot { background: var(--warm); }
+.drawer-label[data-kind='ready'] .drawer-label__dot { background: var(--tone-lime); }
+.drawer-label[data-kind='active'] .drawer-label__dot { background: var(--tone-sky); }
+
+.drawer-label[aria-pressed='true'] {
+  border-color: var(--ink-strong);
+  background: var(--ink-strong);
+  color: var(--canvas);
+}
+
+.drawer-label[aria-pressed='true'] > span:last-child {
+  color: color-mix(in srgb, var(--canvas) 70%, transparent);
+}
+
+.cabinet__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cabinet__search > svg {
+  position: absolute;
+  left: 14px;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+.cabinet .cabinet__search input[type='search'] {
+  min-height: 42px;
+  padding-left: 40px;
+  padding-right: 40px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--canvas);
+  font-family: var(--font-grotesk);
+}
+
+.cabinet__search .icon-btn {
+  position: absolute;
+  right: 4px;
+}
+
+/* The drawer interior, with folders packed front to back */
+.cabinet__drawer {
+  padding: 22px 12px 12px;
+  border-radius: 22px;
+  background: var(--canvas);
+  box-shadow: inset 0 10px 18px -14px rgb(18 18 16 / 0.45);
+}
+
+.cabinet__stack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cab-item {
+  position: relative;
+}
+
+.cab-item + .cab-item {
+  margin-top: -34px;
+}
+
+/* Tabs alternate left and right, so each one has room for the client's whole name. */
+.cab-item:nth-child(odd) .cab-folder__tab { left: 14px; right: auto; }
+.cab-item:nth-child(even) .cab-folder__tab { left: auto; right: 14px; }
+
+.cab-folder {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 24px 0 0;
+  border: 0;
+  background: transparent;
+  color: var(--folder-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cab-folder__tab {
+  position: absolute;
+  top: 0;
+  max-width: 68%;
+  box-sizing: border-box;
+  height: 25px;
+  padding: 5px 12px 0;
+  border-radius: 10px 10px 0 0;
+  background: var(--strong);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cab-folder__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 10px;
+  min-height: 104px;
+  align-content: start;
+  /* The next folder's tab overlaps the last 34px, so the text stays clear of it. */
+  padding: 14px 16px 44px;
+  border-radius: 16px;
+  background: var(--strong);
+  box-shadow: 0 -8px 16px -12px rgb(18 18 16 / 0.35);
+}
+
+.cab-folder__name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cab-folder .dot-pill {
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+}
+
+.cab-folder__next {
+  grid-column: 1 / -1;
+  font-size: 0.8125rem;
+  color: var(--folder-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cab-folder:hover,
+.cab-folder:focus-visible {
+  transform: translateY(-14px);
+}
+
+.cab-folder:focus-visible {
+  outline: none;
+}
+
+.cab-folder:focus-visible .cab-folder__body {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.cab-item:last-child .cab-folder__body {
+  padding-bottom: 16px;
+}
+
+.cabinet__empty {
+  padding: 24px 8px;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------- motion and layout */
+
+::view-transition-group(*) {
+  animation-duration: 0.48s;
+  animation-timing-function: cubic-bezier(0.22, 0.9, 0.24, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
+  .sheet,
+  .cab-folder,
+  .ring__value {
+    transition: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .open-folder__sheets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sheet {
+    min-height: 200px;
+  }
+  .sheet:nth-child(n + 3) {
+    padding-bottom: 72px;
+  }
+  .sheet:nth-child(-n + 2) {
+    padding-bottom: 16px;
+  }
+}
+
+@media (max-width: 960px) {
+  .archive {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .open-folder__sheets {
+    gap: 10px;
+    padding: 22px 14px 0;
+  }
+  .sheet {
+    min-height: 170px;
+    padding: 14px 12px;
+  }
+  .sheet:nth-child(n + 3) {
+    padding-bottom: 66px;
+  }
+  .sheet__title {
+    font-size: 1.5rem;
+  }
+  .sheet__big {
+    font-size: 1.0625rem;
+  }
+  .open-folder__front {
+    padding: 22px 18px;
+  }
+  .cabinet {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .cab-folder__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cab-folder .dot-pill {
+    justify-self: start;
+  }
+}
+
+.open-folder__name:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* Japanese: break big lines between phrases, not inside words (Chrome, Edge); elsewhere strict rules. */
+:lang(ja) :is(.sheet__big, .open-folder__name, .dash-hero__title, .bx-big__label, .ov-problem__title, .area-head__title, .pw-h1) {
+  line-break: strict;
+  word-break: auto-phrase;
+}
+
+:lang(ja) .sheet__big {
+  font-size: 1.125rem;
+}
+
+/* Phones: folder tabs may run wider, so a client's "(fictional)" marker stays readable. */
+@media (max-width: 520px) {
+  .cab-folder__tab {
+    max-width: calc(100% - 28px);
+  }
+  .open-folder__tab {
+    max-width: calc(100% - 12px);
+  }
+}

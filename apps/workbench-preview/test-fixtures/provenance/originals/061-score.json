@@ -1,0 +1,335 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "copy",
+  "model_id": "gpt-6-astra",
+  "actualmodel": "gpt-6-astra",
+  "packet_version": "r1",
+  "report_id": "r1-copy",
+  "input_hashes": {
+    ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION.md": "9daea2e3cca39b478107cf7a5137a7553e9fb46594baaf66e43c4c90b8edf870",
+    ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION-ADDENDUM.md": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc",
+    ".scratch/qingyu-copy-full-20261110/packets/r1/first-copy.md": "c17cd1b3a9dc0f7b517b6cf2cb963fceab6cffdc215db4deb251289e2ecc75f2",
+    ".scratch/qingyu-copy-full-20261110/packets/r1/FACTS.md": "639c1661800b52f646fe33fcadba7709c9e26940e1d8652aa49b273355159048",
+    ".scratch/qingyu-copy-full-20261110/inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    ".scratch/qingyu-copy-full-20261110/inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    ".scratch/qingyu-copy-full-20261110/v1/draft.json": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+    ".scratch/qingyu-copy-full-20261110/v1/SEAL.json": "89b6bdbb7bf730a86f9e73bd533f917086934c67ac944adb5e4a85a2c72daae4",
+    ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration.json": "af57b93239e533ad191f46a52b7df408bb42cecfddd1a65075bf4d0653fc4d8c",
+    ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration.md": "9c4c9e791516b746fe60202c3c5df6f36d758a92336cffe96cb118f06613eed8",
+    ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration-scale.json": "86f98124d83e18230a061d302bca5e02c53a73474495deb7641a281d64a61d4f",
+    ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration-scale.md": "38833cc4d6c362f3ef2e31c392ca744d1fd91baf6028472b39ec587108423b21",
+    ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/first-read.json": "4f83932b74045b11e53c21476ee3f3680dfe036893aab7b8bec93e0edf1b0c03",
+    ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/first-read.md": "ec79ab8fd2969e59a5410875e0c9515a538e73b21b9a0365fef62b901ddd16e2"
+  },
+  "calibration": [
+    {
+      "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration.json",
+      "sha256": "af57b93239e533ad191f46a52b7df408bb42cecfddd1a65075bf4d0653fc4d8c"
+    },
+    {
+      "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/calibration-scale.json",
+      "sha256": "86f98124d83e18230a061d302bca5e02c53a73474495deb7641a281d64a61d4f"
+    }
+  ],
+  "first_read": {
+    "path": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/first-read.json",
+    "sha256": "4f83932b74045b11e53c21476ee3f3680dfe036893aab7b8bec93e0edf1b0c03"
+  },
+  "limits": "以指定产品设定核对广告表达，仅为本轮内部文字岗位评价。未证实受众偏好、购买、记忆、供应凭据或人类审美一致性。",
+  "items": [
+    {
+      "id": "n7",
+      "scores": [
+        {
+          "dimension_id": "proposition",
+          "group": "direction",
+          "dimension": "主张成立",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“青屿做茶”之后让水“有名有姓”，再报“虎跑泉水”；首读能说出青屿具体用了什么水，与已知配方设定相合。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "mechanism_difference",
+          "group": "direction",
+          "dimension": "同组创意机制差异",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“有名有姓”给原料留下一个名字的位置，和 k4 报去处、v2 替人道谢的动作均有差别。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "chinese_rhythm",
+          "group": "copy",
+          "dimension": "中文表达与节奏",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“青屿做茶／水也有名有姓”能顺着短长两拍说出。副文在“虎跑泉水”处停一拍，随后“在……的配方里”带一点解释腔，仍读得顺。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "line_collaboration",
+          "group": "copy",
+          "dimension": "主副文协作",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“有名有姓”对“虎跑泉水”，“做茶”对“无糖茶的配方里”，上下句既回答名字，又说明它是谁的用料。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "n7-p1",
+          "text": "报名字的问答能完成",
+          "evidence": "首读主动寻找“有名有姓”的答案，读到“虎跑泉水”即能指认用料。"
+        }
+      ],
+      "issues": [
+        {
+          "id": "n7-i1",
+          "evidence": "“有名有姓”单看可听成强调名泉名气；副文已把水放回“配方里”。",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "suggested_action": "进入版面阶段时保持两句同读，检查隔远是否只剩名气的解释。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "给定设定下的同组三案文字概念，限文案岗位",
+      "reason": "四项达到概念门槛，水名与配方身份在当前两句内得到回答。",
+      "limits": "不据此认定消费者会关心水名或相信水更好。"
+    },
+    {
+      "id": "k4",
+      "scores": [
+        {
+          "dimension_id": "proposition",
+          "group": "direction",
+          "dimension": "主张成立",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“今天的茶歇，去趟虎跑”把暂停工作的时间安在具体去处；“工位上拧开”解释这次出发如何在原地发生。封存首读确实读出了想象中的短途。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "mechanism_difference",
+          "group": "direction",
+          "dimension": "同组创意机制差异",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "同一个虎跑，n7 要回答“什么水”，这里先让人听成一个要去的地方，再揭示它进了瓶。v2 需要另一个受赠人，本案只需要一个喝茶的人。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "chinese_rhythm",
+          "group": "copy",
+          "dimension": "中文表达与节奏",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“今天的茶歇／去趟虎跑”像一声招呼；“工位上拧开”把节奏带入动作。副文一次交代地点、品名、水名，密度较高，但中间的逗号能分出两拍。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "line_collaboration",
+          "group": "copy",
+          "dimension": "主副文协作",
+          "score": 5,
+          "status": "scored",
+          "required": true,
+          "evidence": "中性4分基准直接摆出产品与事实；此处“去趟虎跑”先给地名一种读法，“工位上拧开”使实地出游说不通，“瓶里就有虎跑泉水”随即给出第二种读法。首读经历了这次转折。同组 n7 用空位接答案，k4 还让读者用新的空间关系重读同一个地名。代价是缺少副文时容易看成出游邀约，仍需同屏。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "k4-p1",
+          "text": "地名的两层意思能在原句完成转换",
+          "evidence": "“去趟虎跑”到“工位上拧开”，再到“瓶里就有虎跑泉水”，首读由以为要出门转为人在原地。"
+        }
+      ],
+      "issues": [
+        {
+          "id": "k4-i1",
+          "evidence": "“去趟虎跑”单独成句，仍可指实地出行。",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "suggested_action": "制作时打样让主副同读，检验工位信息是否可见。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "给定设定下的同组三案文字概念，限文案岗位",
+      "reason": "完整文案能让一次原地茶歇成为可理解的想象活动，主副协作有可具体指出的超出基准之处。",
+      "limits": "不推定目标人群普遍认识虎跑、愿意想象出游或会记得青屿。"
+    },
+    {
+      "id": "v2",
+      "scores": [
+        {
+          "dimension_id": "proposition",
+          "group": "direction",
+          "dimension": "主张成立",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“谢你搭把手。这瓶茶，我请”已经给出可执行的关系和动作；“特意挑了青屿”表明回礼有所选择。产品细节与选择的因果仅能推断，列入协作项。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "mechanism_difference",
+          "group": "direction",
+          "dimension": "同组创意机制差异",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "n7 邀人认识配方，k4 安排独自茶歇，v2 明确有受帮助者和帮忙的人。“这瓶茶，我请”是拿得去对别人说的答谢。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "chinese_rhythm",
+          "group": "copy",
+          "dimension": "中文表达与节奏",
+          "score": 3,
+          "status": "scored",
+          "required": true,
+          "evidence": "“谢你搭把手。这瓶茶，我请”像真实对话的三拍；“特意挑了”沿用送茶人口气，后半句“里面用到了虎跑泉水”改用说明用料的口气。把两句连作一段当面致谢来读，末尾从对人说话变成介绍配方，削弱了本案承诺的可直接借用性。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "line_collaboration",
+          "group": "copy",
+          "dimension": "主副文协作",
+          "score": 3,
+          "status": "scored",
+          "required": true,
+          "evidence": "“特意挑了青屿无糖茶，里面用到了虎跑泉水”把选择和用水相邻陈列，受礼者能知道两件事，却不容易听出送茶人为什么要在此刻提这件事。首读只把它记作顺口补充，对是不是选择理由仍不能确定；作者在瓶侧延展中补出的“是因为”不在主副文。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "v2-p1",
+          "text": "谢意与递茶的关系清楚",
+          "evidence": "“搭把手”“我请”给出了谁在回应谁，封存首读可直述有人帮了我、我挑茶请他。"
+        }
+      ],
+      "issues": [
+        {
+          "id": "v2-i1",
+          "evidence": "“我请”到“里面用到了”由当面招呼切成配方说明，未保持赠茶人可直接接着说的口吻。",
+          "severity": "major",
+          "blocking": true,
+          "stage": "slogan",
+          "suggested_action": "沿着一个人把茶递给另一个人的说话节奏处理副文，朗读验证能否自然说完。"
+        },
+        {
+          "id": "v2-i2",
+          "evidence": "“特意挑了”后并列“里面用到了”；首读可把泉水听作附加瓶身信息，无法确定为何它在这份谢礼里值得提。",
+          "severity": "major",
+          "blocking": true,
+          "stage": "slogan",
+          "suggested_action": "让挑茶的人在当前主副文中有说出这一细节的理由，守住配方事实，不引入品质或价格判断。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "revise",
+      "scope": "给定设定下的同组三案文字概念，限文案岗位",
+      "reason": "答谢本身是一个独立方向，两句的口吻和泉水在挑选动作中的作用还没有共同撑住它。",
+      "limits": "“特意”与紧接的配方事实已经暗示挑选理由，并非完全没有联系。仅判当前表达力度，不要求所有人都愿意送茶。"
+    }
+  ],
+  "pairwise": [
+    {
+      "comparison_ids": [
+        "n7",
+        "k4"
+      ],
+      "distinction": "叫出原料名与想象去某地休息，两种读者动作成立。",
+      "swap_ab": "n7主＋k4副，仍能报出水名，但“工位上拧开”凭空引进新的讲述人和场景，做茶者的自我介绍中断。",
+      "swap_ba": "k4主＋n7副，水名还能暗示比喻，但没有工位作支点，原地出发的揭晓弱了。"
+    },
+    {
+      "comparison_ids": [
+        "n7",
+        "v2"
+      ],
+      "distinction": "n7由青屿介绍用料，v2由受帮助的人借茶表达谢意，叙述人和收获不同。",
+      "swap_ab": "n7主＋v2副，“青屿做茶”之后变成“特意挑了青屿”，从做茶者转到挑茶者而没有提示，水名仍能对上。",
+      "swap_ba": "v2主＋n7副，谢意和一条配方事实仍能并存，但少了“特意挑了”这个个人选择，听起来更像在读瓶签。"
+    },
+    {
+      "comparison_ids": [
+        "k4",
+        "v2"
+      ],
+      "distinction": "一个人留在工位想象出发，和一个人请另一个人喝茶，动作、关系和使用时刻各异。",
+      "swap_ab": "k4主＋v2副，“特意挑了”可勉强理解为为了这趟茶歇买茶，但想象去处与真实工位的落差消失。",
+      "swap_ba": "v2主＋k4副，请对方喝茶后直接说在工位拧开，像在指导对方在哪里喝；赠茶人挑选的动作不见了。"
+    }
+  ],
+  "set_decision": "revise",
+  "set_reason": "三条方向可区分。n7、k4达到本角色的文字概念门槛；v2两项文案分为3且有当前阻断，整组待修。",
+  "unresolved": [
+    "v2能否把泉水细节留在送茶者自然的话里，并让它参与答谢时的选茶动作。",
+    "正式瓶身的同读条件、实际复述、好感与购买行为未知；具体茶种及完整用水凭据依项目资料仍待补。"
+  ]
+}

@@ -1,0 +1,20 @@
+name: 功能或规范调整
+description: 明确范围后进入PR的改动
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+      description: 使用者、触发情景、当前困难与预期结果。
+    validations:
+      required: true
+  - type: textarea
+    id: contracts
+    attributes:
+      label: 依据与职责
+      description: 现行岗位、页面和方法ID；上游输入、交出对象、接收者及待决定范围。
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收及回退
+      description: 实际验证方法、独立复核、未涉及能力与回退办法。

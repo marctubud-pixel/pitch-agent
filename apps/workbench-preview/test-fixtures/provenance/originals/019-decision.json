@@ -1,0 +1,631 @@
+{
+  "stage": "slogan",
+  "model_id": "gpt-6-astra",
+  "sameDraftSha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+  "scope": "青屿R2三案主副文同读及组内比较，本地虚构包装文字概念",
+  "decision": "pass",
+  "input_hashes": {
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v1/draft.json": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+    "directors/r1/decision.json": "07ac301aa8c7448e57a4284ac5081762d8e947c2f079b59ef97981bb1b466526",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50",
+    "v2/RESPONSE.json": "1943ed32123471d74e9614b6f15431032fbc964c0933d66422041700ca26a504",
+    "reviews/r2-copy/first-read.json": "01137e5b18f93a090283a15e82596355c6034397f0dd0698487cd49a2a129068",
+    "reviews/r2-copy/score.json": "6b72253d3c8dfea2a01cf221bced9071c2fb5eadaffaa68ca6ab7fa343e24e3b",
+    "critics/r2-copy/first.json": "9cc0557162b8f494dd3e673793cf33231896342ab9bc806389c46a50b7542090",
+    "critics/r2-copy/review.json": "612805a8c572f71f4e82516f3c2f95e34d7263db31dc131c70a34bf273c8c583",
+    "reviews/r2-brand/first-read.json": "8bb14f463d4e859afb88d6bab0ebc3bc792102e419592c79725526e7dd708546",
+    "reviews/r2-brand/score.json": "e02813b28f3aaef97e87960a705860612f860aa7fb907339f48b9f975c0d9295",
+    "critics/r2-brand/first.json": "04b0e3f65b9151b8e8a4acddfa82bb5bfc36d26edf549dec713e68601064a732",
+    "critics/r2-brand/review.json": "521489478ab7f1ddb49a8cb0187432968d951953f576a1da2fee9127a07b20af",
+    "reviews/r2-user/first-read.json": "a1f7c80be779435190d5e568abf72148b2d41861ddc06aee3ca5a20732818d4c",
+    "reviews/r2-user/score.json": "4fdd019f6176811fe0cb8679fad5a1cca94325ebc578a97c34197e597fdb7667",
+    "critics/r2-user/first.json": "83454d7dc0970f1d383fb322ff848f4c2f3a49af6ee03f7fec001c211f46aef6",
+    "critics/r2-user/review.json": "741af89897aa990e4fa5d25ad82684d68d573fc6833602fea63c128c7734cc97",
+    "reviews/r2-comms/first-read.json": "ff826f8891310bbbeec5d02f9974237d35bdeb30593b388be63306e5404bc3e0",
+    "reviews/r2-comms/score.json": "d139e4b319fb4983836d7b2b601135cc70e517603c992ab9b5bf024d0825b875",
+    "critics/r2-comms/first.json": "95ef5be8f718cc20c7e5f86bc145a792adb05b7b33e4916a0a84ae98f4bda1c6",
+    "critics/r2-comms/review.json": "50ffd06df279ec673c728066fe13d3832816b5468e853efde6aefe71bb81290a",
+    "reviews/r2-user/CLARIFICATION.json": "8f49e40c6dee1b5cecfda63ac0d8fa774fb0aad5c584fd2c105b9fe4ac106c0d"
+  },
+  "adjudications": [
+    {
+      "sourceRound": "r2",
+      "sourceRole": "copy",
+      "issueId": "r2-copy-n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "“两张名片”独读时可以想到附卡或两个品牌。同读副文，“茶的牌子”和“茶用到的水”已各自点名。瓶样上核对两次署名能否一起读到。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "copy",
+      "issueId": "r2-copy-k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "“去趟虎跑”单读像出游邀请。现在的副文把人放回工位，用“喝一口就算到了”揭晓玩笑。实际拆句使用时另验归属和误读。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "copy",
+      "issueId": "r2-copy-v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "两个名字紧邻“这名字”。主文里只有虎跑是两人去过的地方，指代在上下文中可以追回。随茶留言试读时再查指代及完整品名的口语感。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "brand",
+      "issueId": "r2-brand-k4-I1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "青屿及无糖品类出现在副文。完整两句能认出是谁的茶，仅摘主文投放时需另核。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "brand",
+      "issueId": "r2-brand-v2-I1",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "青屿及无糖品类出现在副文。完整两句能认出是谁的茶，仅摘主文投放时需另核。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "user",
+      "issueId": "u2-n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "“两张名片”独读时可以想到附卡或两个品牌。同读副文，“茶的牌子”和“茶用到的水”已各自点名。瓶样上核对两次署名能否一起读到。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "user",
+      "issueId": "u2-k4-i1",
+      "itemId": "k4",
+      "disposition": "rejected",
+      "reason": "原3分及阻断真实存在。用户岗匿名首读已写出“借喝茶想象自己去了虎跑”。“放一放”是工作动作的停顿，“就算”限定了想象。要求再写虎跑为何值得向往，超出本项可理解性；同版原岗复核撤回阻断。",
+      "owner": "用户模拟岗（同版复核已完成）"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "user",
+      "issueId": "u2-k4-i2",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "“去趟虎跑”单读像出游邀请。现在的副文把人放回工位，用“喝一口就算到了”揭晓玩笑。实际拆句使用时另验归属和误读。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "user",
+      "issueId": "u2-v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "两个名字紧邻“这名字”。主文里只有虎跑是两人去过的地方，指代在上下文中可以追回。随茶留言试读时再查指代及完整品名的口语感。捎茶适用于有共同旧游的人。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "comms",
+      "issueId": "r2-comms-n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "“两张名片”独读时可以想到附卡或两个品牌。同读副文，“茶的牌子”和“茶用到的水”已各自点名。瓶样上核对两次署名能否一起读到。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "comms",
+      "issueId": "r2-comms-k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "“去趟虎跑”单读像出游邀请。现在的副文把人放回工位，用“喝一口就算到了”揭晓玩笑。实际拆句使用时另验归属和误读。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "comms",
+      "issueId": "r2-comms-v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "两个名字紧邻“这名字”。主文里只有虎跑是两人去过的地方，指代在上下文中可以追回。随茶留言试读时再查指代及完整品名的口语感。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "user-counter",
+      "challengeId": "cu2-k4-c1",
+      "itemId": "k4",
+      "disposition": "accepted_now",
+      "reason": "接受对判分范围的质疑。即便读者不熟悉地名，也能用自己的话讲出停一停手、原地喝茶并把这一口当成抵达。目的地的吸引力仍未知。",
+      "owner": "用户模拟岗（已出同版复核）"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "user",
+      "clarificationId": "qingyu-r2-user-clarification",
+      "itemId": "k4",
+      "disposition": "accepted_now",
+      "reason": "采纳原岗将 benefit_emotion 从3复核为4、撤回 u2-k4-i1 阻断的判断。原报告和整组原判 revise 留档，当前文字准入据原岗追加判断处理；拆句风险 u2-k4-i2 保留。",
+      "owner": "总监（采纳）"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "brand-counter",
+      "issueId": "brand-r2-01",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "“用到的水”确认用料，句子没有“全部”或“唯一”。名片式定义仍可能让人读成唯一用水。正式包装结合配料、用水比例和水源凭据核对，需要时收窄为“配方里用到了虎跑泉水”。",
+      "owner": "产品事实负责人、包装打样负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "copy-counter",
+      "issueId": "COPY-R2-W01",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "“两张名片”独读时可以想到附卡或两个品牌。同读副文，“茶的牌子”和“茶用到的水”已各自点名。瓶样上核对两次署名能否一起读到。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "copy-counter",
+      "issueId": "COPY-R2-W02",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "“去趟虎跑”单读像出游邀请。现在的副文把人放回工位，用“喝一口就算到了”揭晓玩笑。实际拆句使用时另验归属和误读。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "copy-counter",
+      "issueId": "COPY-R2-W03",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "共同旧游是赠言成立的具体条件。后续试读需保留这个前提。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "comms-counter",
+      "issueId": "C1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "“两张名片”独读时可以想到附卡或两个品牌。同读副文，“茶的牌子”和“茶用到的水”已各自点名。瓶样上核对两次署名能否一起读到。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "comms-counter",
+      "issueId": "C2",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "“去趟虎跑”单读像出游邀请。现在的副文把人放回工位，用“喝一口就算到了”揭晓玩笑。实际拆句使用时另验归属和误读。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "comms-counter",
+      "issueId": "C3",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "两个名字紧邻“这名字”。主文里只有虎跑是两人去过的地方，指代在上下文中可以追回。随茶留言试读时再查指代及完整品名的口语感。单独摘录还需核验青屿归属。",
+      "owner": "包装打样及读者验证负责人"
+    },
+    {
+      "sourceRound": "r2",
+      "sourceRole": "copy-counter",
+      "issueId": "observations.k4.鼠标放一放",
+      "itemId": "k4",
+      "disposition": "rejected",
+      "reason": "“鼠标放一放”可短暂读成挪放鼠标。后接“工位上拧开”时，手离开鼠标去喝茶仍成立，不能据此判定整句费解。",
+      "owner": "总监"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "copy",
+      "issueId": "n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "旧“有名有姓”已经撤掉。新版对字面附卡、两个品牌和唯一用水的联想，以及真实识名情况，留到事实核对和打样。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "brand",
+      "issueId": "n7-I1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "旧“有名有姓”已经撤掉。新版对字面附卡、两个品牌和唯一用水的联想，以及真实识名情况，留到事实核对和打样。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "user",
+      "issueId": "u-n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "旧“有名有姓”已经撤掉。新版对字面附卡、两个品牌和唯一用水的联想，以及真实识名情况，留到事实核对和打样。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "copy",
+      "issueId": "k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "新版用“用到了”限定配方事实，主副拆读仍可像出游。用水凭据与版面同读另验。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "brand",
+      "issueId": "k4-I1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "新版用“用到了”限定配方事实，主副拆读仍可像出游。用水凭据与版面同读另验。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "user",
+      "issueId": "u-k4-i2",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "新版用“用到了”限定配方事实，主副拆读仍可像出游。用水凭据与版面同读另验。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "comms",
+      "issueId": "k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "新版用“用到了”限定配方事实，主副拆读仍可像出游。用水凭据与版面同读另验。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "brand",
+      "issueId": "k4-I2",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "新版用“用到了”限定配方事实，主副拆读仍可像出游。用水凭据与版面同读另验。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "brand",
+      "issueId": "v2-I1",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "新版具体交代捎给谁，品牌仍依赖副文。试读时查留言是否自然、谁能用。",
+      "owner": "后续包装与产品核验负责人"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "copy",
+      "issueId": "v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "copy",
+      "issueId": "v2-i2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "user",
+      "issueId": "u-k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_now",
+      "reason": "原稿到“瓶里就有虎跑泉水”为止，只解释了目的地来自哪里。新版从放下鼠标开始，到“喝一口就算到了”结束，把读者留在工位上也能做什么写进实句。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "user",
+      "issueId": "u-v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "user",
+      "issueId": "u-v2-i2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "comms",
+      "issueId": "n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_now",
+      "reason": "原稿用“有名有姓”让水报名，任何一条含虎跑泉水的尾句都能作答。新版“两张名片”要求两个名字各领一个身份，副文的两句平行介绍完成了这件事。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "comms",
+      "issueId": "v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "comms",
+      "issueId": "v2-i2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "brand",
+      "issueId": "SET-BRAND-I1",
+      "itemId": "set",
+      "disposition": "accepted_now",
+      "reason": "互换仍能认出用水，三种具体收获却不相同。两次署名交代身份，一口茶完成原地抵达，旧地名勾起对同行者的回忆。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "user-counter",
+      "clarificationId": "cu-r1-k4-scope",
+      "itemId": "k4",
+      "disposition": "accepted_now",
+      "reason": "原稿到“瓶里就有虎跑泉水”为止，只解释了目的地来自哪里。新版从放下鼠标开始，到“喝一口就算到了”结束，把读者留在工位上也能做什么写进实句。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "user-counter",
+      "clarificationId": "cu-r1-v2-scope",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "brand-counter",
+      "clarificationId": "coverage.scope_clarifications",
+      "itemId": "set",
+      "disposition": "accepted_now",
+      "reason": "互换仍能认出用水，三种具体收获却不相同。两次署名交代身份，一口茶完成原地抵达，旧地名勾起对同行者的回忆。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "comms-counter",
+      "clarificationId": "pairwise_check:n7/v2",
+      "itemId": "set",
+      "disposition": "accepted_now",
+      "reason": "互换仍能认出用水，三种具体收获却不相同。两次署名交代身份，一口茶完成原地抵达，旧地名勾起对同行者的回忆。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "copy-counter",
+      "clarificationId": "coverage.scope_observation_mapping:v2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+      "owner": "总监（已核实际改稿）"
+    },
+    {
+      "sourceRound": "r1",
+      "sourceRole": "comms-counter",
+      "clarificationId": "coverage:n7",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "旧“有名有姓”已经撤掉。新版对字面附卡、两个品牌和唯一用水的联想，以及真实识名情况，留到事实核对和打样。",
+      "owner": "后续包装与产品核验负责人"
+    }
+  ],
+  "revisionBrief": [],
+  "revisionChecks": {
+    "n7": "原稿用“有名有姓”让水报名，任何一条含虎跑泉水的尾句都能作答。新版“两张名片”要求两个名字各领一个身份，副文的两句平行介绍完成了这件事。",
+    "k4": "原稿到“瓶里就有虎跑泉水”为止，只解释了目的地来自哪里。新版从放下鼠标开始，到“喝一口就算到了”结束，把读者留在工位上也能做什么写进实句。",
+    "v2": "原稿“谢你搭把手”换任何一瓶茶也能道谢。新版“上回你带我去虎跑”给了这两人一段共同经历，“看见这名字，就想起你”说明为什么今天挑中青屿带给此人。",
+    "set": "互换仍能认出用水，三种具体收获却不相同。两次署名交代身份，一口茶完成原地抵达，旧地名勾起对同行者的回忆。"
+  },
+  "swapChecks": {
+    "n7→k4": "以“两张名片”开头接工位副文，两名还在，读者要自己配对身份。",
+    "k4→n7": "用双署名回答工位邀请，能猜到目的地为何叫虎跑，却没有读到在工位如何算是到了。",
+    "n7→v2": "双名仍在，一句“想起你”引入没有交代的人，两张名片也没有逐张介绍。",
+    "v2→n7": "旧游与同名用水仍能让人猜出捎茶原因，陈列两个身份却不再是送茶人见名想到对方的口信。",
+    "k4→v2": "鼠标停下后转到“想起你”，从这次工位停顿跳到未交代的另一个人，原地抵达没有揭晓。",
+    "v2→k4": "捎茶配工位副文仍像邀对方故地重游。变成邀人一起喝之后，少了挑茶时认出地名而想到对方这一刻。"
+  },
+  "originalScoreRecord": {
+    "copy": [
+      {
+        "directionId": "n7",
+        "originalScores": {
+          "proposition": 4,
+          "mechanism_difference": 4,
+          "chinese_rhythm": 4,
+          "line_collaboration": 4
+        },
+        "originalDecision": "pass"
+      },
+      {
+        "directionId": "k4",
+        "originalScores": {
+          "proposition": 4,
+          "mechanism_difference": 4,
+          "chinese_rhythm": 4,
+          "line_collaboration": 5
+        },
+        "originalDecision": "pass"
+      },
+      {
+        "directionId": "v2",
+        "originalScores": {
+          "proposition": 4,
+          "mechanism_difference": 4,
+          "chinese_rhythm": 4,
+          "line_collaboration": 4
+        },
+        "originalDecision": "pass"
+      }
+    ],
+    "brand": [
+      {
+        "directionId": "n7",
+        "originalScores": {
+          "brand.direction.strategy_product": 4,
+          "brand.direction.semantic_link": 4,
+          "brand.copy.fact_boundary": 4,
+          "brand.copy.attribution": 4
+        },
+        "originalDecision": "pass"
+      },
+      {
+        "directionId": "k4",
+        "originalScores": {
+          "brand.direction.strategy_product": 4,
+          "brand.direction.semantic_link": 4,
+          "brand.copy.fact_boundary": 4,
+          "brand.copy.attribution": 4
+        },
+        "originalDecision": "pass"
+      },
+      {
+        "directionId": "v2",
+        "originalScores": {
+          "brand.direction.strategy_product": 4,
+          "brand.direction.semantic_link": 4,
+          "brand.copy.fact_boundary": 4,
+          "brand.copy.attribution": 4
+        },
+        "originalDecision": "pass"
+      }
+    ],
+    "user": [
+      {
+        "directionId": "n7",
+        "originalScores": {
+          "selection_context": 4,
+          "benefit_emotion": 4,
+          "direct_understanding": 4,
+          "credible_language": 4
+        },
+        "originalDecision": "pass"
+      },
+      {
+        "directionId": "k4",
+        "originalScores": {
+          "selection_context": 4,
+          "benefit_emotion": 3,
+          "direct_understanding": 4,
+          "credible_language": 4
+        },
+        "originalDecision": "revise"
+      },
+      {
+        "directionId": "v2",
+        "originalScores": {
+          "selection_context": 4,
+          "benefit_emotion": 4,
+          "direct_understanding": 4,
+          "credible_language": 4
+        },
+        "originalDecision": "pass"
+      }
+    ],
+    "comms": [
+      {
+        "directionId": "n7",
+        "originalScores": {
+          "comms_direction_distinction": 4,
+          "comms_memory_cue": 4,
+          "comms_concise_restatement": 4,
+          "comms_information_roles": 4
+        },
+        "originalDecision": "pass"
+      },
+      {
+        "directionId": "k4",
+        "originalScores": {
+          "comms_direction_distinction": 4,
+          "comms_memory_cue": 4,
+          "comms_concise_restatement": 4,
+          "comms_information_roles": 4
+        },
+        "originalDecision": "pass"
+      },
+      {
+        "directionId": "v2",
+        "originalScores": {
+          "comms_direction_distinction": 4,
+          "comms_memory_cue": 4,
+          "comms_concise_restatement": 4,
+          "comms_information_roles": 4
+        },
+        "originalDecision": "pass"
+      }
+    ]
+  },
+  "originalSetDecisions": {
+    "copy": "pass",
+    "brand": "pass",
+    "user": "revise",
+    "comms": "pass"
+  },
+  "userRecheck": {
+    "source": "reviews/r2-user/CLARIFICATION.json",
+    "directionId": "k4",
+    "dimensionId": "benefit_emotion",
+    "originalScore": 3,
+    "recheckedScore": 4,
+    "originalIssueId": "u2-k4-i1",
+    "currentBlocking": false,
+    "acceptedByDirector": true
+  },
+  "recommendation": {
+    "directionId": "n7",
+    "reasons": [
+      "“青屿，是茶的牌子”先报品牌，“虎跑泉水”紧接着说明这瓶茶用到了什么水。",
+      "两张名片都能在瓶上找到答案。把这句话放在货架或电商页，无须读者先熟悉虎跑。"
+    ],
+    "tradeoffs": [
+      "“两张名片”单读可能让人想到附卡，需与副文同读。它着重帮人认清产品，工位茶歇和赠茶留言各有更具体的使用场景。"
+    ],
+    "scope": "本地包装文字概念优先方向"
+  },
+  "unresolved": [
+    "实际包装上主副文同读、单独摘录的品牌归属，以及“名片”“到了”“这名字”的读法待验证。",
+    "目标人群是否喜欢工位短途、是否有赠茶情景和记忆效果仍未知。",
+    "具体茶种、用水比例及正式来源凭据待补。"
+  ],
+  "limits": [
+    "四个评分岗分别封存匿名主副文首读，再按职能评分。随后阅读的作者回应包含R1其他岗位问题及总监要求，可能提示解释方向。独立首读在先，正式评分带有这些背景。四个对抗首读看过创作主张，之后才核对本岗分数。",
+    "结论只适用于本地虚构青屿同一版完整主副文。未取得客户批准，未做真人理解、记忆、偏好或购买测试，未放行正式业务阶段。",
+    "具体茶种、用水比例与水源使用凭据待补。正式包装需核茶种和无糖标示、用水事实及主副文的实际相邻可读性。"
+  ]
+}

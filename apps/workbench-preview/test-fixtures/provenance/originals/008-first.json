@@ -1,0 +1,66 @@
+{
+  "schema_version": "paired-counter-review-v1",
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "user",
+  "model_id": "GPT-6 Codex (session model; exact model identifier unavailable)",
+  "packet_version": "r1-independent-before-paired-score",
+  "report_id": "r1-user-counter-first",
+  "input_hashes": {
+    ".scratch/qingyu-copy-full-20261110/inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    ".scratch/qingyu-copy-full-20261110/inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    ".scratch/qingyu-copy-full-20261110/v1/draft.json": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+    ".scratch/qingyu-copy-full-20261110/v1/SEAL.json": "89b6bdbb7bf730a86f9e73bd533f917086934c67ac944adb5e4a85a2c72daae4"
+  },
+  "independence": {
+    "author": false,
+    "paired_scorer": false,
+    "reviews_or_scores_seen": false,
+    "allowed_inputs_only": true
+  },
+  "scope": "用户模拟岗位的独立漏项检查；仅限本次虚构产品文字概念，检查选择情景、直接理解、利益或情绪的具体性、可信性及三机制可区分性。不是实际消费者反馈或购买效果验证。",
+  "risks": [],
+  "observations": [
+    {
+      "item": "n7",
+      "evidence": [
+        "青屿做茶，水也有名有姓。",
+        "虎跑泉水，在这瓶无糖茶的配方里。"
+      ],
+      "literal_comprehension": "主文把水拟人化为可报出名字的原料，副文给出虎跑泉水及其配方身份。合读能识别青屿无糖茶与具体用水；未承诺更好喝或全配方用水。",
+      "choice_context": "便利店或电商读者可获得一个具体配方信息。它为何值得买仍未知，但文本只要求读者认识该信息，不必补造购买利益。",
+      "mechanism": "做茶者向读者介绍一项原料选择。"
+    },
+    {
+      "item": "k4",
+      "evidence": [
+        "今天的茶歇，去趟虎跑。",
+        "工位上拧开青屿无糖茶，瓶里就有虎跑泉水。"
+      ],
+      "literal_comprehension": "主文单读可能是出游邀请；副文立即把人定位在工位，并交代地名来自瓶中用到的泉水，支持原地想象的普通创意解释。",
+      "choice_context": "办公者的饮茶暂停与原任务人群相关。这里只能确认情景可解释，不能确认目标人群向往虎跑或因此购买。",
+      "mechanism": "自饮茶歇的想象目的地，由开瓶与泉水连接。"
+    },
+    {
+      "item": "v2",
+      "evidence": [
+        "谢你搭把手。这瓶茶，我请。",
+        "特意挑了青屿无糖茶，里面用到了虎跑泉水。"
+      ],
+      "literal_comprehension": "说话者是递茶答谢的人；青屿是被挑中的无糖茶，虎跑泉水是随茶可说的选择细节。文本没有宣称所有购买者都认为它适合作礼物。",
+      "choice_context": "替同事捎茶或答谢的场景是设定办公人群中的一个可理解子情景。其覆盖面较窄，属于适用范围，不是当前阻断。",
+      "mechanism": "向另一个人递茶并说谢谢。与独自认识配方、自饮茶歇有不同说话关系及动作。"
+    }
+  ],
+  "set_check": {
+    "three_mechanisms": "原料报名、原地茶歇出发、递茶答谢可区分；共享产品事实不等于机制重复。",
+    "swap_diagnostic": "个别互换后仍通顺，但n7副文缺少k4的工位开瓶转折，k4副文不执行v2的挑茶答谢口吻，v2副文不继续n7做茶者介绍原料的视角。差异成立在整套语句的共同动作，不宣称互换后语法不成立。"
+  },
+  "boundaries": [
+    "未把作者的audienceHypothesis或普通虚构情景当成经验证的偏好。",
+    "茶种、凭据和用水比例待补由事实范围显式保留，本阶段不据此要求虚构填入，也不签发完整包装上市合规结论。",
+    "作者已列出的单看主文误读、名泉联想及赠茶场景覆盖问题，不自动重复登记为新增阻断；在完整主副文及本阶段范围下未发现额外实质问题。",
+    "0项风险不表示消费者会喜欢或购买；只表示本次独立检查没有提出需阻断本阶段的新增事项。"
+  ],
+  "next_step": "封存本轮独立记录；等待主控另发对应USER评分后，仅核查具体肯定与覆盖关系。"
+}

@@ -1,0 +1,2 @@
+# Preserve original-source hashes on every platform, including raw TS/JSON imports.
+* -text

@@ -1,0 +1,351 @@
+{
+  "bindings": {
+    "creative_director": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_director"
+    },
+    "creative_score_copy": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_score_copy"
+    },
+    "creative_opposition_copy": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_opposition_copy"
+    },
+    "creative_score_brand": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_score_brand"
+    },
+    "creative_opposition_brand": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_opposition_brand"
+    },
+    "creative_score_user": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_score_user"
+    },
+    "creative_opposition_user": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_opposition_user"
+    },
+    "creative_score_communication": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_score_communication"
+    },
+    "creative_opposition_communication": {
+      "providerId": "synthetic",
+      "model": "synthetic",
+      "role": "creative_opposition_communication"
+    }
+  },
+  "plan": {
+    "packet": {
+      "artifactId": "synthetic-copy",
+      "contentHash": "c75cfc321aa90f3c6cd5c970fbe33287a714f0ca2d4230d38f89c474ec9e9a76",
+      "stage": "copy",
+      "copyContractVersion": "copy-message-v2",
+      "content": {
+        "title": "Synthetic complete copy",
+        "directions": [
+          {
+            "id": "A",
+            "title": "稳健品牌表达｜把名字说完整",
+            "slogan": "得闲，留点时间相见。",
+            "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。",
+            "creativeExplanation": "Private synthetic rationale"
+          },
+          {
+            "id": "B",
+            "title": "产品识别表达｜让“闲”成为一扇门",
+            "slogan": "得闲，给相聚开扇门。",
+            "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。",
+            "creativeExplanation": "Private synthetic rationale"
+          },
+          {
+            "id": "C",
+            "title": "用户社交表达｜一句话就能开场",
+            "slogan": "得闲？一起聊会儿。",
+            "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。",
+            "creativeExplanation": "Private synthetic rationale"
+          }
+        ]
+      },
+      "taskCard": {
+        "brief": "Synthetic frozen task"
+      },
+      "sources": [],
+      "upstreamConstraints": [],
+      "protocolVersion": "creative-copy-message-v2",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "dimensions": {
+        "copy": [
+          "clarity",
+          "language",
+          "difference",
+          "visual_executability"
+        ],
+        "brand": [
+          "brand_connection",
+          "clarity",
+          "difference"
+        ],
+        "user": [
+          "clarity",
+          "audience_emotion",
+          "difference"
+        ],
+        "communication": [
+          "clarity",
+          "brand_connection",
+          "audience_connection",
+          "memorability",
+          "difference",
+          "trend_relevance"
+        ]
+      },
+      "calibrations": []
+    },
+    "packetHash": "4fd4cc90313f13680ef3dc5b91809edc95b7cdb988c1df87090d993a3076626b",
+    "nodes": [
+      {
+        "key": "copy:score_first_read",
+        "role": "copy",
+        "phase": "score_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_copy"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "copy:score",
+        "role": "copy",
+        "phase": "score",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_copy"
+        },
+        "dependencies": [
+          "copy:score_first_read"
+        ]
+      },
+      {
+        "key": "copy:opposition_first_read",
+        "role": "copy",
+        "phase": "opposition_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_copy"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "copy:opposition",
+        "role": "copy",
+        "phase": "opposition",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_copy"
+        },
+        "dependencies": [
+          "copy:opposition_first_read",
+          "copy:score"
+        ]
+      },
+      {
+        "key": "brand:score_first_read",
+        "role": "brand",
+        "phase": "score_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_brand"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "brand:score",
+        "role": "brand",
+        "phase": "score",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_brand"
+        },
+        "dependencies": [
+          "brand:score_first_read"
+        ]
+      },
+      {
+        "key": "brand:opposition_first_read",
+        "role": "brand",
+        "phase": "opposition_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_brand"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "brand:opposition",
+        "role": "brand",
+        "phase": "opposition",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_brand"
+        },
+        "dependencies": [
+          "brand:opposition_first_read",
+          "brand:score"
+        ]
+      },
+      {
+        "key": "user:score_first_read",
+        "role": "user",
+        "phase": "score_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_user"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "user:score",
+        "role": "user",
+        "phase": "score",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_user"
+        },
+        "dependencies": [
+          "user:score_first_read"
+        ]
+      },
+      {
+        "key": "user:opposition_first_read",
+        "role": "user",
+        "phase": "opposition_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_user"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "user:opposition",
+        "role": "user",
+        "phase": "opposition",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_user"
+        },
+        "dependencies": [
+          "user:opposition_first_read",
+          "user:score"
+        ]
+      },
+      {
+        "key": "communication:score_first_read",
+        "role": "communication",
+        "phase": "score_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_communication"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "communication:score",
+        "role": "communication",
+        "phase": "score",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_score_communication"
+        },
+        "dependencies": [
+          "communication:score_first_read"
+        ]
+      },
+      {
+        "key": "communication:opposition_first_read",
+        "role": "communication",
+        "phase": "opposition_first_read",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_communication"
+        },
+        "dependencies": []
+      },
+      {
+        "key": "communication:opposition",
+        "role": "communication",
+        "phase": "opposition",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_opposition_communication"
+        },
+        "dependencies": [
+          "communication:opposition_first_read",
+          "communication:score"
+        ]
+      },
+      {
+        "key": "director",
+        "role": "director",
+        "phase": "director",
+        "binding": {
+          "providerId": "synthetic",
+          "model": "synthetic",
+          "role": "creative_director"
+        },
+        "dependencies": [
+          "copy:opposition",
+          "brand:opposition",
+          "user:opposition",
+          "communication:opposition"
+        ]
+      }
+    ]
+  }
+}

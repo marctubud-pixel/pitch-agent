@@ -1,0 +1,34 @@
+{
+  "draftSha256": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+  "roles": [
+    "copy",
+    "brand",
+    "user",
+    "comms"
+  ],
+  "files": {
+    "reviews/r2-copy/calibration.json": "3e439eddfc9de553cedae4ee6ce78e492cbd34c14eb1d0d039df876617acab8f",
+    "reviews/r2-copy/first-read.json": "01137e5b18f93a090283a15e82596355c6034397f0dd0698487cd49a2a129068",
+    "reviews/r2-copy/calibration.md": "b69287bc67c09d79dceceb9324d9373c84761f80e27b783cd71e2fb9d87c85c4",
+    "reviews/r2-copy/first-read.md": "3c0f23ab0aa787219cd2d108532a44a5febb986549c14c1fc1b5a7c188bf5dcf",
+    "reviews/r2-brand/calibration.json": "4f8baa023214d4563c81c7a7b39579dc9aa3b3a9f0cbbd291374f6dc38262830",
+    "reviews/r2-brand/first-read.json": "8bb14f463d4e859afb88d6bab0ebc3bc792102e419592c79725526e7dd708546",
+    "reviews/r2-brand/calibration.md": "0989062faa9d036116406078f322aa37802fbe44392304666aa41a457c7e907d",
+    "reviews/r2-brand/calibration-scale.md": "b56fbba70db46dfcf8cfd0baa90303b42a7d4010adb72d4aa08124a5a8f94415",
+    "reviews/r2-brand/first-read.md": "2db251a8eef5fe9b36d2838673afcba574985b4303375a27e1b0ef2f5d0fa5ad",
+    "reviews/r2-brand/calibration-scale.json": "84568fe2c7d6b169d7a6b59ae8e00df0169f17320bcbde045dedb20adfabc2ea",
+    "reviews/r2-user/calibration.json": "9f722e41bbf327d7bfacdb4697c0ad64f84bddb78b39a31775323ab66c1d05d1",
+    "reviews/r2-user/first-read.json": "a1f7c80be779435190d5e568abf72148b2d41861ddc06aee3ca5a20732818d4c",
+    "reviews/r2-user/calibration.md": "a4f8e7d00329a391d5f70797558a9068ce46087182397c4272243940366f8a42",
+    "reviews/r2-user/calibration-scale.md": "b3c82d5ffffd0ee38a3c9f0a5c8f28eb0ac886a64f8dad23d7b1a8ad4c404b66",
+    "reviews/r2-user/first-read.md": "fdb88dbf294b1c2ecfaafd0d0a78e8eac49758dc30b3b0544e7510289a041114",
+    "reviews/r2-user/calibration-scale.json": "11a7868e0bad7a6d3e20c4711493c5262971e0a8b704235f94449272535cb090",
+    "reviews/r2-comms/calibration.json": "fc3693423a2a50f264892cf269bf2474838d6ec662c14626f1006b4e6a4d88d9",
+    "reviews/r2-comms/first-read.json": "ff826f8891310bbbeec5d02f9974237d35bdeb30593b388be63306e5404bc3e0",
+    "reviews/r2-comms/calibration.md": "0f8340f02006c1f15e33b8823701e857e731eeec75f3fea4fa70f22bea35a6f9",
+    "reviews/r2-comms/calibration-scale.md": "ad533664410582f6893f7c20c7ac29f0687ac6add148557a5f4daa321702072e",
+    "reviews/r2-comms/first-read.md": "7afd3ffb02a14754c589417268b8017f080b655d8d0aa89f833b1b6d08e4db5a",
+    "reviews/r2-comms/calibration-scale.json": "addbcc2913b7e19e559f086aac34256bc2dd61ecd6883f4d24ebe3aa518f9896"
+  },
+  "scope": "四个角色分别先读匿名主副文再收事实评分包；不是真人调研"
+}

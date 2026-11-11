@@ -1,0 +1,30 @@
+.qy-layout-preview { min-width: 0; }
+.qy-layout-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
+.qy-layout-toolbar h2 { font-size: 22px; margin: 0 0 5px; }
+.qy-layout-toolbar p { margin: 0; font-size: 13px; color: var(--ink-2); }
+.qy-layout-preview .deck { margin-top: 0; }
+.qy-layout-records { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 14px; color: var(--ink-2); font-size: 13px; }
+.qy-layout-records summary { cursor: pointer; color: var(--ink); }
+.qy-layout-directory { columns: 2; padding-left: 22px; line-height: 1.8; }
+.qy-layout-directory li { break-inside: avoid; padding: 3px 0; }
+.qy-layout-directory button { text-align: left; }
+.qy-layout-history { padding: 10px 14px; border-left: 3px solid #9a7437; }
+@media (max-width: 800px) { .qy-layout-toolbar { align-items: flex-start; flex-direction: column; } .qy-layout-directory { columns: 1; } }
+
+.qy-delivery-review { margin-top: 28px; padding: 22px 0 0; border-top: 1px solid var(--rule); }
+.qy-delivery-review h2, .qy-delivery-export h2 { font-size: 20px; margin: 0 0 12px; }
+.qy-delivery-review p, .qy-delivery-export p { line-height: 1.7; }
+.qy-delivery-state { font-weight: 600; color: var(--ink); }
+.qy-delivery-comparison button { display: block; margin-top: 10px; text-align: left; }
+.qy-delivery-export { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 24px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.qy-delivery-export p { margin: 0; color: var(--ink-2); }
+@media (max-width: 800px) { .qy-delivery-export { align-items: flex-start; flex-direction: column; } }
+
+.qy-final-findings { padding: 0; list-style: none; margin: 20px 0; }
+.qy-final-findings > li { padding: 18px 0; border-top: 1px solid var(--rule); }
+.qy-final-finding-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.qy-final-finding-head button { margin-left: 12px; }
+.qy-final-findings blockquote { margin: 8px 0; padding-left: 14px; border-left: 2px solid var(--rule); color: var(--ink-2); }
+.qy-final-roles { padding-left: 20px; }
+.qy-final-roles li { margin: 14px 0; }
+.qy-final-hash { overflow-wrap: anywhere; }

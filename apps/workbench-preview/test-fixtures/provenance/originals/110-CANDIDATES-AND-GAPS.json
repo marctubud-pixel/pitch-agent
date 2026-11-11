@@ -1,0 +1,436 @@
+{
+  "schemaVersion": 1,
+  "id": "visual-intake-qingyu-20261110-01-collection-norm-r2",
+  "taskId": "visual-intake-qingyu-20261110-01",
+  "input": {
+    "projectId": "qingyu",
+    "caseId": "qingyu-pack",
+    "taskType": "packaging",
+    "referenceSetId": "qingyu-packaging-references-20261110-v1",
+    "bundleId": "qingyu-copy-full-r2-20261110",
+    "roundId": "r2",
+    "copySha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+    "researchSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+    "directionIds": [
+      "n7",
+      "k4",
+      "v2"
+    ]
+  },
+  "skillManifest": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST-FINAL.json",
+    "sha256": "2c197d5a8a8d7716700a1ef11fafd5388158a39e4d5354d8b257c47fd8fe3e00"
+  },
+  "request": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+    "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+  },
+  "status": "collected_unreviewed",
+  "result": {
+    "kind": "collected_unreviewed",
+    "reviewCount": 0,
+    "artworkCount": 0
+  },
+  "selection": {
+    "mainId": null,
+    "auxiliaryIds": [],
+    "reserveIds": [],
+    "status": "unselected"
+  },
+  "productFactBoundary": "青屿虚构工程包装案例；虎跑泉用水为用户补充的演练设定，不是可直接发布的产品资质、功效或真实消费者证据。",
+  "directions": [
+    {
+      "id": "n7",
+      "visualQuestion": "如何让青屿品牌和虎跑泉用水分别清楚，同时形成完整包装？",
+      "focus": [
+        "两个名字各自的身份与阅读顺序",
+        "主副文共同呈现时的完整理解",
+        "保留与原地茶歇、共同旧游两案的机制差异"
+      ],
+      "limits": [
+        "沿用当前r2文案，不新增文案或具体画面方案",
+        "只收集参考，主/辅/备用均未选定",
+        "品牌身份、茶种和工艺不能从参考移入青屿"
+      ],
+      "gaps": [
+        "青屿具体茶种/SKU、瓶型、正标尺寸与展示面待补",
+        "实际文字长度与两行分离后的理解未核",
+        "让茶微字受原图分辨率限制"
+      ],
+      "referenceIds": [
+        "two-name-rangcha",
+        "two-name-chun"
+      ],
+      "originalDetailedQuestion": "在包装实际展示面上，既有信息组织参考对辨认青屿的品牌身份、无糖茶品类和虎跑泉水的用料身份能提供哪些可核线索；哪些证据仍不足以排除“两张名片”被理解为附卡？"
+    },
+    {
+      "id": "k4",
+      "visualQuestion": "包装怎样把工位茶歇和虎跑泉用水连起来，避免被看成旅游宣传？",
+      "focus": [
+        "原地喝茶与想象抵达之间的理解",
+        "地名与配方用水依据的关系",
+        "现有地域意象的借鉴边界"
+      ],
+      "limits": [
+        "参考图中的柳鸟、东北虎均不等于虎跑实景",
+        "不迁移跨品类价位、口感或购买效果",
+        "本轮不确定视觉主角、草图构图或造型"
+      ],
+      "gaps": [
+        "地域参考对工位茶歇机制的适用性尚未评审",
+        "主副文在实际瓶标同读时的理解未核",
+        "青屿展示面、尺寸及品牌图形资产待补"
+      ],
+      "referenceIds": [
+        "trip-longjing",
+        "trip-changbai"
+      ],
+      "originalDetailedQuestion": "既有地域表达参考对“人在工位喝茶即算到虎跑”的主副文关系有哪些可借线索和证据缺口，怎样核查它们不会把虚构的原地茶歇读成真实出游或把参考地域认作虎跑？"
+    },
+    {
+      "id": "v2",
+      "visualQuestion": "包装怎样承载想起某个人的情绪，减少对长文案的依赖？",
+      "focus": [
+        "看见地名与想起特定对象的因果关系",
+        "主副文及既有随茶留言的用途差别",
+        "称呼、相伴关系作为局部借鉴的范围"
+      ],
+      "limits": [
+        "不把参考称呼、卡通人物或兔群直接当作青屿方案",
+        "不借用促销字样或纪念瓶材质/成本/销售模式",
+        "共同到访经历为虚构情景，非消费者证据"
+      ],
+      "gaps": [
+        "共同经历这一窄适用前提及文案自然度未核",
+        "分享瓶近景无瓶底，另附全图本轮未查看",
+        "青屿单瓶/其他包材的实际交付范围待补"
+      ],
+      "referenceIds": [
+        "memory-coke",
+        "memory-rabbit"
+      ],
+      "originalDetailedQuestion": "既有称呼和相伴关系参考对“认出虎跑名字、想起曾同行的人、因此捎茶”这条现有文案因果链能提供哪些待核线索，如何区分关系表达与已证实的赠礼/社交效果？"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "two-name-rangcha",
+      "directionId": "n7",
+      "title": "让茶 · 竹香乌龙",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+        "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a"
+      },
+      "dimensions": [
+        168,
+        428
+      ],
+      "format": "PNG",
+      "sourceUrl": "https://www.rangcha.com/product/list/rangcha",
+      "imageUrl": "https://rangcha-oss.oss-cn-beijing.aliyuncs.com/v3_website/product/500zhuxiangwulongchadetails.png",
+      "sourceNameAsRecorded": "让茶官网",
+      "sourceVerification": "本地REQUEST与editorial记录一致；未访问或验证远端网页/图源。",
+      "originalAcquiredAt": "unknown",
+      "intakeObservedDuring": {
+        "firstClockSample": "2026-11-10T12:18:07Z",
+        "lastBound": "2026-11-10T12:20:37Z"
+      },
+      "visualObservation": "正面上部左侧绿色竖排“让茶”与右侧黑色竖排“竹香乌龙”分列，下方有竹叶图形；左上另有真人肖像元素。",
+      "borrowLocation": "瓶标上半部的品牌名与茶名分列关系。",
+      "borrowAsSupplied": "品牌名与茶名分列，借鉴两组信息各有位置，让“青屿”和“虎跑泉用水”可以分开读。",
+      "translationHypothesis": "既有借鉴用途作为待审假设保留；是否适用于当前方向须在另行授权的参考评审核实。",
+      "limitsAsSupplied": "原图168×428，仅参考大字层级，不读微字。",
+      "additionalUnknowns": [
+        "168×428 原图仅支持大字与区域观察；微字未读清。真人肖像与原品牌资产不在借鉴范围。",
+        "远端来源当前可达性、历史采集时间与复制使用许可未核。"
+      ],
+      "status": "collected_unreviewed",
+      "selectedRole": null,
+      "inheritedViewMethod": "functions.exec -> tools.view_image，实际打开原件；Pillow另做只读解码/尺寸核对。",
+      "viewMethod": "本角色仅核hash，未重新打开图片；实际图像观察继承原owner。",
+      "observationSource": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+        "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+      }
+    },
+    {
+      "id": "two-name-chun",
+      "directionId": "n7",
+      "title": "淳茶舍 · 冷萃茉莉花茶",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-moli.png",
+        "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+      },
+      "dimensions": [
+        2267,
+        2267
+      ],
+      "format": "PNG",
+      "sourceUrl": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+      "imageUrl": "https://www.coca-cola.com/content/dam/onexp/cn/zh/2025productupdate/molihuacha_250102.png",
+      "sourceNameAsRecorded": "可口可乐中国官网",
+      "sourceVerification": "本地REQUEST与editorial记录一致；未访问或验证远端网页/图源。",
+      "originalAcquiredAt": "unknown",
+      "intakeObservedDuring": {
+        "firstClockSample": "2026-11-10T12:18:07Z",
+        "lastBound": "2026-11-10T12:20:37Z"
+      },
+      "visualObservation": "瓶身上部圆形区可见“淳茶舍”，中央白色竖向区依次出现“冷萃”和“茉莉花茶”，旁有红色“无糖”；叶片、白花及茶碗亦可见。",
+      "borrowLocation": "品牌区域与中央工艺/茶名区域的不同位置及大小关系。",
+      "borrowAsSupplied": "上部认品牌、中央读特点，借鉴明确的阅读顺序，避免品牌名和用水信息互相淹没。",
+      "translationHypothesis": "既有借鉴用途作为待审假设保留；是否适用于当前方向须在另行授权的参考评审核实。",
+      "limitsAsSupplied": "只参考信息组织，不借用其冷萃工艺或茶种主张。",
+      "additionalUnknowns": [
+        "view_image 将2267×2267缩至1600×1600呈现；不核微字，不据图认定青屿茶种、冷萃工艺或其他产品事实。",
+        "远端来源当前可达性、历史采集时间与复制使用许可未核。"
+      ],
+      "status": "collected_unreviewed",
+      "selectedRole": null,
+      "inheritedViewMethod": "functions.exec -> tools.view_image，实际打开原件；Pillow另做只读解码/尺寸核对。",
+      "viewMethod": "本角色仅核hash，未重新打开图片；实际图像观察继承原owner。",
+      "observationSource": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+        "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+      }
+    },
+    {
+      "id": "trip-longjing",
+      "directionId": "k4",
+      "title": "东方树叶 · 龙井新茶",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+        "sha256": "df27729ed779264c5a18f81505220225f524f012470b16cb2c8ffc93c9fa91a4"
+      },
+      "dimensions": [
+        600,
+        642
+      ],
+      "format": "PNG",
+      "sourceUrl": "https://www.nongfuspring.com/goods/detail-all.html?id=1&pid=2&product_id=156",
+      "imageUrl": "https://file-cloud.yst.com.cn/photo/website/2026/07/01/2cba25b3f4e842aeb980ab774d32dbef.png",
+      "sourceNameAsRecorded": "农夫山泉官网",
+      "sourceVerification": "本地REQUEST与editorial记录一致；未访问或验证远端网页/图源。",
+      "originalAcquiredAt": "unknown",
+      "intakeObservedDuring": {
+        "firstClockSample": "2026-11-10T12:18:07Z",
+        "lastBound": "2026-11-10T12:20:37Z"
+      },
+      "visualObservation": "颈部绿色品牌区与浅色正标分离；正标可见柳枝、展翅鸟和较多浅色空隙，竖排“龙井新茶”。",
+      "borrowLocation": "正标柳枝、鸟与浅色空隙的关系。",
+      "borrowAsSupplied": "用柳枝、飞鸟和留白带出一段春日感受，借鉴少量具体意象，把地点感装进瓶身。",
+      "translationHypothesis": "既有借鉴用途作为待审假设保留；是否适用于当前方向须在另行授权的参考评审核实。",
+      "limitsAsSupplied": "图中意象仅作视觉借鉴，不等于虎跑或真实到访体验。",
+      "additionalUnknowns": [
+        "这些图形不是虎跑现场记录，未核它们对工位茶歇文案的适用性，也不迁移龙井茶种或春茶主张。",
+        "远端来源当前可达性、历史采集时间与复制使用许可未核。"
+      ],
+      "status": "collected_unreviewed",
+      "selectedRole": null,
+      "inheritedViewMethod": "functions.exec -> tools.view_image，实际打开原件；Pillow另做只读解码/尺寸核对。",
+      "viewMethod": "本角色仅核hash，未重新打开图片；实际图像观察继承原owner。",
+      "observationSource": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+        "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+      }
+    },
+    {
+      "id": "trip-changbai",
+      "directionId": "k4",
+      "title": "长白雪 · 东北虎款",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+        "sha256": "e734eefeb5199d0d8ff46f8f20702a16e9a6a5e867fea0cf6a15504a4c24a222"
+      },
+      "dimensions": [
+        600,
+        642
+      ],
+      "format": "PNG",
+      "sourceUrl": "https://www.nongfuspring.com/goods/detail-all.html?id=6&pid=28&product_id=105",
+      "imageUrl": "https://file-cloud.yst.com.cn/website/2023/03/26/f141ee7b8fea46218b5bf9949f3d98d3.png",
+      "sourceNameAsRecorded": "农夫山泉官网",
+      "sourceVerification": "本地REQUEST与editorial记录一致；未访问或验证远端网页/图源。",
+      "originalAcquiredAt": "unknown",
+      "intakeObservedDuring": {
+        "firstClockSample": "2026-11-10T12:18:07Z",
+        "lastBound": "2026-11-10T12:20:37Z"
+      },
+      "visualObservation": "白色瓶标中央偏左为较大的虎形象，右侧竖排“长白雪”，标签下部可见红色数字；瓶盖、瓶肩、瓶底轮廓可见。",
+      "borrowLocation": "瓶标主视区的单一动物形象与品牌文字关系。",
+      "borrowAsSupplied": "把产地关联的动物放在瓶身主视区，借鉴用一个可辨认的形象承载地点，而非堆满景点。",
+      "translationHypothesis": "既有借鉴用途作为待审假设保留；是否适用于当前方向须在另行授权的参考评审核实。",
+      "limitsAsSupplied": "跨品类只借鉴地域表达，不作价位、口感或购买效果对标。",
+      "additionalUnknowns": [
+        "局部细字与图下容量字未读清；地域归属来自既有来源记录，不能仅凭虎形象证明产地，也不能把东北虎移作虎跑事实。",
+        "远端来源当前可达性、历史采集时间与复制使用许可未核。"
+      ],
+      "status": "collected_unreviewed",
+      "selectedRole": null,
+      "inheritedViewMethod": "functions.exec -> tools.view_image，实际打开原件；Pillow另做只读解码/尺寸核对。",
+      "viewMethod": "本角色仅核hash，未重新打开图片；实际图像观察继承原owner。",
+      "observationSource": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+        "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+      }
+    },
+    {
+      "id": "memory-coke",
+      "directionId": "v2",
+      "title": "可口可乐 · 分享瓶",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+        "sha256": "828c6b208afe9eace44289592df186ff8f6b9a69d52817412f37834d1b9eddc7"
+      },
+      "dimensions": [
+        3840,
+        2560
+      ],
+      "format": "JPEG",
+      "sourceUrl": "https://www.coca-cola.com/cn/zh/media-center/Share-a-Coke",
+      "imageUrl": "https://www.coca-cola.com/content/dam/onexp/cn/zh/coke_share_bottle/coke_share_bottle_02.jpg",
+      "sourceNameAsRecorded": "可口可乐中国官网",
+      "sourceVerification": "本地REQUEST与editorial记录一致；未访问或验证远端网页/图源。",
+      "originalAcquiredAt": "unknown",
+      "intakeObservedDuring": {
+        "firstClockSample": "2026-11-10T12:18:07Z",
+        "lastBound": "2026-11-10T12:20:37Z"
+      },
+      "visualObservation": "两瓶实物近景，黄色瓶盖、红色瓶标；正面分别可读“干饭人”“时髦精”，下有对应人物图形，旁边同时出现促销信息；背景为虚化绿植，瓶底不在画面内。",
+      "borrowLocation": "瓶标面向人的称呼与人物图形；不是整个拍摄场景。",
+      "borrowAsSupplied": "把面向人的称呼放到瓶标正面，借鉴让递出的一瓶饮料自带一句“这是给你的”话语。",
+      "translationHypothesis": "既有借鉴用途作为待审假设保留；是否适用于当前方向须在另行授权的参考评审核实。",
+      "limitsAsSupplied": "近景原图未显示瓶底；不借鉴其促销字样、价格或社交效果。",
+      "additionalUnknowns": [
+        "view_image 将3840×2560缩至1920×1280；未核微字、促销有效性或社交效果。editorial另附fullImage未在本轮打开，不能将其视作已核全貌。",
+        "远端来源当前可达性、历史采集时间与复制使用许可未核。"
+      ],
+      "status": "collected_unreviewed",
+      "selectedRole": null,
+      "inheritedViewMethod": "functions.exec -> tools.view_image，实际打开原件；Pillow另做只读解码/尺寸核对。",
+      "viewMethod": "本角色仅核hash，未重新打开图片；实际图像观察继承原owner。",
+      "observationSource": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+        "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+      }
+    },
+    {
+      "id": "memory-rabbit",
+      "directionId": "v2",
+      "title": "农夫山泉 · 2023金兔生肖瓶",
+      "file": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+        "sha256": "1eef17132f995f2fd6199906eeb35f3d30544c328957f1ba5d19c1504450b9e0"
+      },
+      "dimensions": [
+        600,
+        642
+      ],
+      "format": "PNG",
+      "sourceUrl": "https://www.nongfuspring.com/goods/detail-all.html?id=6&pid=10&product_id=126",
+      "imageUrl": "https://file-cloud.yst.com.cn/website/2023/03/26/07be2037f8d6447cbd3cdc2bf92c2f9e.png",
+      "sourceNameAsRecorded": "农夫山泉官网",
+      "sourceVerification": "本地REQUEST与editorial记录一致；未访问或验证远端网页/图源。",
+      "originalAcquiredAt": "unknown",
+      "intakeObservedDuring": {
+        "firstClockSample": "2026-11-10T12:18:07Z",
+        "lastBound": "2026-11-10T12:20:37Z"
+      },
+      "visualObservation": "并列两只细长瓶：左瓶一只较大的兔子，右瓶为数只相伴/叠置的兔子；两瓶有农夫山泉品牌字与2023字样。",
+      "borrowLocation": "单兔与群兔、两瓶并列所形成的关系表达。",
+      "borrowAsSupplied": "用相伴的兔群和成对瓶身承载关系，借鉴让“想起你”的情绪也能由画面传达。",
+      "translationHypothesis": "既有借鉴用途作为待审假设保留；是否适用于当前方向须在另行授权的参考评审核实。",
+      "limitsAsSupplied": "只借鉴关系叙事，不照搬纪念玻璃瓶材质、成本或销售模式。",
+      "additionalUnknowns": [
+        "兔群不能证明真实赠礼关系或消费者感受；底部容量位置未读清，材质与成本不能凭图确认。",
+        "远端来源当前可达性、历史采集时间与复制使用许可未核。"
+      ],
+      "status": "collected_unreviewed",
+      "selectedRole": null,
+      "inheritedViewMethod": "functions.exec -> tools.view_image，实际打开原件；Pillow另做只读解码/尺寸核对。",
+      "viewMethod": "本角色仅核hash，未重新打开图片；实际图像观察继承原owner。",
+      "observationSource": {
+        "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+        "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+      }
+    }
+  ],
+  "gaps": [
+    {
+      "id": "INTAKE-G-SOURCE",
+      "stage": "reference_intake",
+      "location": "六参考图源记录",
+      "evidence": "本轮明确禁止网页调用；仅核本地记录及图像字节。",
+      "impact": "不能宣称远端来源已重新验证或取得复制使用授权。",
+      "acceptance": "后续获相应授权时补原始采集回执、日期与必要许可；保留原字节。",
+      "status": "open"
+    },
+    {
+      "id": "INTAKE-G-PRODUCT",
+      "stage": "reference_intake",
+      "location": "青屿产品输入",
+      "evidence": "本地虚构产品以“配方使用虎跑泉水”和无糖即饮茶品类为前提。茶种未定，正式呈现需与无糖信息一同明确。用水比例和来源凭据待补。茶歇及旧游均为虚构情景，未核验实际版面、受众接受、记忆或购买。",
+      "impact": "不能宣称可生产，也不能把参考茶种/工艺/容器当成本品事实。",
+      "acceptance": "补具体SKU/茶种、瓶型/包材、尺寸/展示面、品牌资产及事实凭据。",
+      "status": "open"
+    },
+    {
+      "id": "INTAKE-G-REVIEW",
+      "stage": "reference_intake",
+      "location": "参考适用性与方向冻结",
+      "evidence": "当前授权排除reference_review与select_main_reference；reviews为空。",
+      "impact": "没有参考审美通过或整方向准入结论。",
+      "acceptance": "另有明确参考评审授权后，按当前规范取得实际原票并决定主辅备用。",
+      "status": "open"
+    },
+    {
+      "id": "INTAKE-G-LEGIBILITY",
+      "stage": "reference_intake",
+      "location": "让茶微字及其他图像细字/局部缺面",
+      "evidence": "168×428让茶原图；分享瓶近景无瓶底；另附fullImage未查看。",
+      "impact": "这些位置不能作为已核微字、全部包装面或生产信息证据。",
+      "acceptance": "必要时取得并查看较清晰原件与实际所需视角；无此需求则保留范围限制。",
+      "status": "open"
+    },
+    {
+      "id": "INTAKE-G-RESEARCH",
+      "stage": "reference_intake",
+      "location": "研究源文件",
+      "evidence": "青屿为虚构案例。公开事实、题设与研究推论分别保留；本轮未做消费者访问或包装效果测试。目标直接画像、同期渠道价及本品资料仍待补。",
+      "impact": "本轮仅核hash、binding、scopeNote与gaps，未实质阅读全部facts/findings/chapters；不得推成受众偏好或选择效果。",
+      "acceptance": "未来所需断言逐条回读对应原证据；当前不提出此类结论。",
+      "status": "open"
+    },
+    {
+      "id": "INTAKE-G-COST",
+      "stage": "reference_intake",
+      "location": "模型及API工具实际费用",
+      "evidence": "本次工具无可核计费回执。",
+      "impact": "费用必须记unknown；不能记为0元。",
+      "acceptance": "有真实计费回执后补充；本轮停止于记录。",
+      "status": "open"
+    }
+  ],
+  "evidenceVerification": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/EVIDENCE-VERIFY.json",
+    "sha256": "65e96db7dce38576781ad75e52c7e02f8528edda610768cdc5c2bf3fad05b690"
+  },
+  "normRevision": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/NORM-REVISION.json",
+    "sha256": "f1a4607c7c20ffe7c25a26a0f7d6a17ae42309b543f3c754be6e4f67f3796b4c"
+  },
+  "stopAt": "reference_intake；参考待审，未进入reference_review，未选主辅备用，未画草图。",
+  "continuation": {
+    "originalCollection": {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+      "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+    },
+    "originalInvocation": {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/INVOCATION.json",
+      "sha256": "f1554f240ecb7470b48754d69414d4ea34b1747bf4c0d4aa6162df97b51501ca"
+    },
+    "imagesViewedThisRole": 0,
+    "imagesHashChecked": 6,
+    "observationBoundary": "下列visualObservation、尺寸、原观察时间及借鉴推理继承原owner原件；不表示本角色重新逐图观察。无新增研究/生成/文案。",
+    "displayQuestionsSource": "根本轮委派明示：PLAN已讨论确认的展示短问题；原owner详细推理保持来源。"
+  }
+}

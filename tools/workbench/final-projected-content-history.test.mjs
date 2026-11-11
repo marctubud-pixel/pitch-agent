@@ -1,0 +1,62 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {ingestContent,contentSourceLocations} from './complete-content.mjs';
+import {occurrenceScopes} from './content-visibility.mjs';
+import {sketchHash as hash} from './sketch-authority.mjs';
+import {contentHistorySemantics} from './content-original.mjs';
+import {indexFinalHistoryRecords} from './final-history-index.mjs';
+import {closeOwnedContentHistory} from './final-owned-content-history.mjs';
+function fixture(kind='effective_source_clause'){
+ const clause={clauseId:'clause',content:{variant:'exact_string',text:'Exact caveat'},kind:'uncertainty',effect:'unknown'};
+ const occurrences=['one','two'].map(id=>({occurrenceId:id,clauseId:clause.clauseId,originalContainerId:`original-${id}`,originalContainerHash:hash({limitation:'Exact caveat'}),originalPointer:'/limitation',valueHash:hash('Exact caveat'),sourceOwner:'reference-lead',applicability:{kind:'report',directionIds:['d'],useIds:['use']}}));
+ const projection={clauses:[clause],occurrences,sourceReturns:[],referenceUses:[{directionId:'d',useId:'use',imageId:'related'}]};
+ const visibility={...projection,projectionHash:hash(projection)};
+ const origin={originId:'clause',artifactId:'visual',pointer:'/visibility/clauses/0',owner:'content-author',kind:'qualification',value:clause};
+ const direction={directionId:'d',approvedCopy:{},explanation:'Explanation',presentationIntent:'Intent',claims:[],limitations:[],targets:[{imageId:'related'}]};
+ const source={schemaVersion:'content-source-v2',visual:{artifactId:'visual',contentHash:'visual-hash',payload:{directions:[direction]}},obligations:[origin],visibility,directionMap:[{sourceDirectionId:'d',rendererDirectionId:'A'}],claims:[],sources:[],images:['related','adjacent'].map(imageId=>({imageId,sha256:imageId,mediaType:'image/png',byteLength:1}))};
+ source.sourceHash=hash(source);
+ const manuscript={schemaVersion:'complete-manuscript-v2',title:'Proposal',narrativeBlocks:[{id:'clause-block',kind:'source',text:'Exact caveat',originIds:['clause']}],directions:[{...direction,rendererDirectionId:'A'}],claims:[],sources:[],edits:[],visibleObligations:[],pageIntents:['page-1','page-2'].map(id=>({id,central:{kind:'text',exactText:'Exact caveat'},heroImageId:null,blockIds:['clause-block'],imageIds:['related','adjacent'],allowedSplitAfterBlockIds:[]})),clausePlacements:['page-1','page-2'].map(id=>({clauseId:'clause',occurrenceScopeKeys:occurrences.flatMap(occurrenceScopes).map(s=>s.key),exactFragmentRanges:[{start:0,end:12}],blockId:'clause-block',affectedBlockIds:[],affectedImageIds:['related'],pageIntentIds:[id]}))};
+ const rows=contentSourceLocations({id:'root',task:{packetVersion:'content-packet-v3',source}}),row=rows[0];
+ const base={protocol:'complete-content-v1',packetVersion:'content-packet-v3',sourceHash:source.sourceHash,rootJobId:'root',sourceLocations:rows,neutral:{...source,visual:{...source.visual,directions:[direction]}},images:source.images,manuscript,predecessors:[]};
+ const evidence=[{originId:'clause',observation:'Exact caveat visible'}];
+ const payload={id:'f',category:'fact',blocking:true,description:'Review caveat',artifactId:origin.artifactId,pointer:origin.pointer,owner:origin.owner,acceptance:'Preserve caveat',evidence,ancestryAnchor:row.ancestryAnchor,location:kind==='effective_source_clause'?row.derived:row.originals[1]};
+ if(kind==='canonical_finding'){delete payload.location;delete payload.ancestryAnchor;}
+ payload.returnTargets=[{artifactId:origin.artifactId,pointer:origin.pointer,owner:origin.owner,location:row.derived}];
+ const authorInput={...base,phase:'author',nodeKey:'author',envelopeHash:'author'};
+ authorInput.neutral.strategy={artifactId:'strategy',contentHash:'s'};authorInput.neutral.copy={artifactId:'copy',contentHash:'c'};
+ const authored=ingestContent(authorInput,{responseText:JSON.stringify({protocol:base.protocol,nodeKey:'author',envelopeHash:'author',findings:[],decision:'accept',acceptedLegs:['strategy','copy','visual'].map(stage=>({stage,artifactId:authorInput.neutral[stage].artifactId,contentHash:authorInput.neutral[stage].contentHash,accepted:true})),manuscript})});
+ assert.equal(authored.valid,true,JSON.stringify(authored.diagnostics));
+ const firstInput={...base,phase:'first',nodeKey:'first:content',envelopeHash:'first'};
+ const first={protocol:base.protocol,nodeKey:'first:content',envelopeHash:'first',findings:[payload],verdict:'return',reading:'Read manuscript',evidence,imageEvidence:source.images.map(i=>({imageId:i.imageId,sha256:i.sha256,observation:'Reviewed'}))};
+ const directorInput={...base,phase:'director',nodeKey:'director',envelopeHash:'director',findings:[{...payload,originId:'first#f'}]};
+ const director={protocol:base.protocol,nodeKey:'director',envelopeHash:'director',findings:[],decision:'return',dispositions:[{findingOriginId:'first#f',outcome:'sustained',reason:'Retain caveat',evidence}],criteria:['completeness','factual_boundaries','sources','visual_copy','page_intents','limitations'].map(name=>({name,status:'fail',evidence}))};
+ const jobs=[['first',firstInput,first],['director',directorInput,director]].map(([id,input,raw])=>{const parsed=ingestContent(input,{responseText:JSON.stringify(raw)});assert.equal(parsed.valid,true,JSON.stringify(parsed.diagnostics));return {id,purpose:'complete_content_review',attempts:[],inputVersionIds:[],contentReport:{id:`report-${id}`,raw:parsed.raw},semantics:contentHistorySemantics(input,parsed,id)};});
+ const index=indexFinalHistoryRecords({id:'project',revision:1,artifacts:[],taskCards:[],jobs:jobs.map(({semantics,...j})=>j)});
+ return {selected:{reportAnchors:index.reportAnchors,findingOccurrences:index.findingOccurrences,targetOccurrences:index.targetOccurrences},checked:{facts:jobs.map(j=>({checked:{kind:'content-original',jobId:j.id,reportId:j.contentReport.id,raw:j.contentReport.raw,historySemantics:j.semantics},checkedRawAnchors:index.reportAnchors.filter(a=>a.identity===j.contentReport.id)}))},dispositions:index.dispositions,trusted:{source,contract:{rootJobId:'root',manuscript}},catalog:{rows,entries:[row.derived,...row.originals].map(location=>({location,ancestryAnchor:row.ancestryAnchor,value:location.kind==='effective_source_clause'?clause:'Exact caveat'}))},materials:source.images.map(i=>({identity:i.imageId,file:{state:'present',value:{sha256:i.sha256,originalPath:`/synthetic/${i.imageId}`}}})),roleMaterialScopes:['content','visual','brand','user','communication'].map(role=>({role,applicability:{state:'present',value:source.images.map(i=>({materialIdentity:i.imageId,decision:{state:'present',value:{required:role==='content'}}}))}}))};
+}
+for(const kind of ['effective_source_clause','original_occurrence','canonical_finding'])test(`projected ${kind} actual author parser, source-location builder, producer and index preserve every placement`,()=>{
+ const f=fixture(kind),r=closeOwnedContentHistory(f);assert.equal(r.findings.length,1);assert.equal(r.dispositions.length,1);
+ assert.deepEqual(r.findings[0].returnTargets,f.selected.targetOccurrences.map(t=>t.rawTarget));
+ const proof=r.findings[0].applicabilityProof;assert.equal(proof.placements.length,2);assert.equal(proof.occurrences.length,2);assert.equal(proof.sourceLocations.length,3);assert.equal(proof.pages.length,2);
+ assert.deepEqual(r.findings[0].applicableObligations.map(o=>o.materialIdentity),['related','adjacent']);
+});
+for(const mutation of ['namespace','hash','fragment','scope','page','image','stale-source','missing-original','duplicate-original','location','ancestry','target','target-value','target-version','version'])test(`projected ${mutation} remains unresolved`,()=>{
+ const f=fixture(),sem=f.checked.facts[0].checked.historySemantics;
+ if(mutation==='namespace')sem.projectedSource.sourceLocations[0].derived.kind='original_occurrence';
+ if(mutation==='hash')f.catalog.entries[0].value.content.text='Changed';
+ if(mutation==='fragment')f.trusted.contract.manuscript.clausePlacements[0].exactFragmentRanges[0].end=4;
+ if(mutation==='scope')f.trusted.contract.manuscript.clausePlacements[0].occurrenceScopeKeys.pop();
+ if(mutation==='page')f.trusted.contract.manuscript.clausePlacements[0].pageIntentIds=['absent'];
+ if(mutation==='image')f.trusted.contract.manuscript.clausePlacements[0].affectedImageIds=['adjacent'];
+ if(['fragment','scope','page','image'].includes(mutation))sem.manuscript=structuredClone(f.trusted.contract.manuscript);
+ if(mutation==='stale-source')f.trusted.source.sourceHash='stale';
+ if(mutation==='missing-original')f.catalog.entries.pop();
+ if(mutation==='duplicate-original')f.catalog.entries.push(structuredClone(f.catalog.entries[1]));
+ if(mutation==='location')sem.findings[0].value.location.pointer='/directions/0';
+ if(mutation==='ancestry')sem.findings[0].value.ancestryAnchor.role='payload';
+ if(mutation==='target')f.selected.findingOccurrences[0].exactOriginalPayload.acceptance='changed';
+ if(mutation==='target-value')f.selected.targetOccurrences[0].rawTarget.pointer='/changed';
+ if(mutation==='target-version')f.selected.targetOccurrences[0].reportVersion='changed';
+ if(mutation==='version')f.selected.findingOccurrences[0].originalReportVersion='changed';
+ const r=closeOwnedContentHistory(f);assert.deepEqual(r.closedFindingIdentities,[]);assert.deepEqual(r.closedDispositionPointers,[]);
+});

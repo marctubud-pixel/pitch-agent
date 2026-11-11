@@ -1,0 +1,48 @@
+{
+  "taskId": "visual-intake-qingyu-20261110-01",
+  "scopeVersion": "reference-intake-only-v1",
+  "inputVersion": "qingyu-packaging-references-20261110-v1+qingyu-copy-full-r2-20261110+r2",
+  "currentInputSha256": "2d76ea76b249795dd24832b8fed1e2685a101d3946c90820a821c7d56a7bbe48",
+  "sourceRequest": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+    "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+  },
+  "sourceAuthorization": {
+    "through": "reference_intake",
+    "source": "用户确认上一轮方案；仍明确不画草图和精修。",
+    "allowed": [
+      "read_existing_reference_files",
+      "inspect_existing_images",
+      "write_intake_record"
+    ],
+    "excluded": [
+      "reference_review",
+      "select_main_reference",
+      "sketch",
+      "refine",
+      "mockup",
+      "business_state_write",
+      "paid_calls",
+      "runtime_start"
+    ]
+  },
+  "through": "reference_intake",
+  "allowedStages": [
+    "reference_intake"
+  ],
+  "allowedActions": [
+    "record"
+  ],
+  "mode": "automatic",
+  "humanNodes": [],
+  "revisionLimit": 0,
+  "budget": {
+    "status": "unknown"
+  },
+  "derivation": "同案例同输入的规范接续复核；根本轮委派及原REQUEST仅授权reference_intake登记，不扩大授权，不代签人工确认。",
+  "notHumanApproval": "这是从封存REQUEST派生的协议适配，不是Agent代签用户确认，不是授权进入评审。",
+  "originalAuthorization": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/AUTHORIZATION.json",
+    "sha256": "ac55aa210f69ac0b735dc37f8760249497d0eaf23543311a548f641398c99ab0"
+  }
+}

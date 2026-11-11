@@ -1,0 +1,2300 @@
+[
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "score_first_read",
+      "role": "copy",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ]
+    },
+    "promptHash": "50146ac99279fb8307803480e20d152daa0e5993c0fd6fa9ed7005d7defa53a2",
+    "schemaHash": "532340c3d41bd2e0c73bb1e255d852548962c8c0693bb2acb058d2f05957b597",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "score_first_read",
+      "role": "user",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ]
+    },
+    "promptHash": "5e8becc5a0ec0d351f5ba0b2b4909e26d36df8ce8b3c63618f5875f37036ba86",
+    "schemaHash": "c3d343db1d4d29aef428f6bea64f75b046a32b925691c4db38f5a4e055fc4edb",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "score",
+      "role": "communication",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "clarity",
+        "brand_connection",
+        "audience_connection",
+        "memorability",
+        "difference",
+        "trend_relevance"
+      ],
+      "firstRead": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "score_first_read",
+        "role": "communication",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "readings": [
+          {
+            "subjectId": "A",
+            "meaning": "为见面和聊天留出时间，不必限定话题，用日常问候开始交流。最直接的记忆点是“留点时间相见”。",
+            "uncertainty": "无法确定“得闲”是品牌名称还是表示有空；无法识别具体产品、服务或相见场景。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              }
+            ]
+          },
+          {
+            "subjectId": "B",
+            "meaning": "以开门、留位置的画面邀请人们相聚，带来自己的故事，也听彼此分享。最直接的记忆点是“给相聚开扇门”。",
+            "uncertainty": "“门”可能是实际空间，也可能只是接纳交流的比喻；无法确定“得闲”的品牌身份及具体产品。",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "subjectId": "C",
+            "meaning": "像朋友一样问有没有空，邀请一起聊一会儿；无需准备话题，说话或倾听都可以。最直接的记忆点是口语化的聊天邀请。",
+            "uncertainty": "无法确定这是谁发出的邀请、通过什么场所或产品参与；“得闲”也可能被直接理解为日常问话。",
+            "evidence": [
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [],
+        "limitations": [
+          "本次仅记录完整公开信息的即时理解，不评分，不推断创作意图；未使用标题中的方向标签。",
+          "缺少任务背景、产品说明和受众信息，无法判断品牌识别是否符合既有认知、产品整合是否充分或目标受众相关性。",
+          "当前趋势相关性为 cannot_assess：未提供可支持趋势判断的来源。",
+          "以上为模拟专业判断，不代表真实品牌批准或消费者研究。"
+        ]
+      }
+    },
+    "promptHash": "8de75240b2b6e553b3cffcba09d3009359f32489fb0475c7cbd071b30c0f2bd5",
+    "schemaHash": "d3210165792b41921a5e6d30c1bb231ab31f26da31596d6898d08c168155cc57",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "opposition_first_read",
+      "role": "communication",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "clarity",
+        "brand_connection",
+        "audience_connection",
+        "memorability",
+        "difference",
+        "trend_relevance"
+      ]
+    },
+    "promptHash": "fa998570653b897848c1e4bd2c752fb99b7995660400c1862b53f2c9f9293aaf",
+    "schemaHash": "44b3b935aa236811b466eda11f284e993f143d14571a700d7d36f7f2a40ab6e0",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "score_first_read",
+      "role": "brand",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ]
+    },
+    "promptHash": "2dde9f7ef69d6bf1465101cacb4f0ecf0ca0ed785ebddecfe070ac28326a7120",
+    "schemaHash": "d38930214706b39d2dca4a3647959b301f45e8ff95fef835b8350bc62d736379",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "opposition_first_read",
+      "role": "copy",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "clarity",
+        "language",
+        "difference",
+        "visual_executability"
+      ]
+    },
+    "promptHash": "43b6157461d5de3fbde76c00dc42703d36a23a5475664a0d39d74bba7a411369",
+    "schemaHash": "43d67029fbd79362d39e131940a48950a5751c6795fe29d0c19147d56a3e6ce4",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "score",
+      "role": "copy",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "clarity",
+        "language",
+        "difference",
+        "visual_executability"
+      ],
+      "firstRead": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "score_first_read",
+        "role": "copy",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "readings": [
+          {
+            "subjectId": "A",
+            "meaning": "邀请人们留出时间见面、聊天；不必限定话题，可以从日常问候开始。",
+            "uncertainty": "“得闲”可能是日常用语，也可能是名称；无法确定具体品牌、产品或相见场景。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              }
+            ]
+          },
+          {
+            "subjectId": "B",
+            "meaning": "用开门、留位置的意象邀请相聚，鼓励大家带来自己的故事，也听彼此分享。",
+            "uncertainty": "“门”可能指实际空间，也可能只是相聚的比喻；“得闲”是否为名称以及具体产品均不明确。",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "subjectId": "C",
+            "meaning": "直接询问是否有空并邀请聊天，强调无需准备话题，分享和倾听都受欢迎。",
+            "uncertainty": "“得闲”首先可读作询问是否有空，但也可能兼具名称含义；无法确定聊天发生的场所或媒介。",
+            "evidence": [
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [],
+        "limitations": [
+          "仅根据各自标题、主标语及配套正文形成首次阅读理解，未使用标题中的方向标签推断创作意图。",
+          "未提供任务背景、品牌或产品说明、受众资料及外部来源；这些材料缺失，无法验证品牌归属、产品关联或受众适配。",
+          "当前趋势相关性为 cannot_assess；没有趋势证据。",
+          "本阶段不评分、不作通过判断；以上为模拟专业阅读判断，不代表真实品牌或客户批准。"
+        ]
+      }
+    },
+    "promptHash": "d30dec1bbd36653e829a8385ad247e9c7c1598f3f80469e6f56d155bca084d2b",
+    "schemaHash": "65a633d9934b05adacce5e33792dd3e9144970a7728ebaaffcdaace13de1f4df",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "opposition",
+      "role": "communication",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "clarity",
+        "brand_connection",
+        "audience_connection",
+        "memorability",
+        "difference",
+        "trend_relevance"
+      ],
+      "firstRead": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "opposition_first_read",
+        "role": "communication",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "readings": [
+          {
+            "subjectId": "A",
+            "meaning": "邀请人们腾出时间见面，以日常问候开始轻松聊天。",
+            "uncertainty": "“得闲”可被读作品牌名，也可被读作“有空”；仅凭这则完整文案，无法确定具体产品及其在相见中的作用。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              }
+            ]
+          },
+          {
+            "subjectId": "B",
+            "meaning": "用开门和留座的意象邀请人们相聚，带来自己的故事，也听别人分享。",
+            "uncertainty": "“门”可理解为接纳他人的比喻；文案没有明确它与具体品牌或产品的关系。",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "subjectId": "C",
+            "meaning": "直接询问对方是否有空，邀请随意聊一会儿；不必准备话题，说话和倾听都受欢迎。",
+            "uncertainty": "问句中的“得闲”首先也能作为日常邀约用语理解，品牌身份及具体产品仍不明确。",
+            "evidence": [
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "id": "communication-01",
+            "subjectIds": [
+              "A",
+              "B",
+              "C"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "三则表达方式有区别，但核心沟通利益高度重合。A与B分别用留时间和开门表达相见邀请；A与C分别用抒情陈述和直接问答降低聊天门槛；B与C分别用空间比喻和口语邀约接纳分享与倾听。完整文案最终都落在轻松相聚、随意聊天，尚未形成同样清楚的三种不同主张。",
+            "impact": "读者可能记住共同的聊天氛围，却难以分别复述三则各自独有的价值。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ],
+            "materialAbsence": "消费者可见文案中缺少足以让三则分别成立的独有利益或具体体验。"
+          }
+        ],
+        "limitations": [
+          "本轮仅依据三则标题之外的公开文案作独立首读，未读取评分，也未作数值评分或放行判断。",
+          "品牌识别、记忆与受众反应均为模拟专业判断，未经真实消费者验证。",
+          "没有可用的趋势证据，trend_relevance为cannot_assess；不能据此推断流行程度或市场差异。"
+        ]
+      },
+      "pairedScore": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "score",
+        "role": "communication",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "items": [
+          {
+            "subjectId": "A",
+            "dimensions": [
+              {
+                "dimension": "clarity",
+                "score": 5,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-clarity",
+                "reason": "完整信息明确邀请人们给见面聊天留时间，并提供日常问候作为开场，理解成本低。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+                  }
+                ]
+              },
+              {
+                "dimension": "brand_connection",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-brand",
+                "reason": "“得闲”与留时间相见自然衔接，但也容易被读成普通时间用语；辅助文案没有进一步建立品牌或产品身份。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "给相见留一点时间，给聊天留一点空白。"
+                  }
+                ]
+              },
+              {
+                "dimension": "audience_connection",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-audience",
+                "reason": "不限定话题并提供熟悉的问候，能够传达轻松社交的邀请；对25岁受众的实际吸引力仍未经验证。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+                  }
+                ]
+              },
+              {
+                "dimension": "memorability",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-memory",
+                "reason": "短句易复述，辅助文案的重复句式有节奏，但“留时间相见”的表达缺少更鲜明的专属记忆线索。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "给相见留一点时间，给聊天留一点空白。"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-difference",
+                "reason": "在本组三条中以时间分配为入口，但辅助文案仍回到宽松聊天与日常问候，核心承诺与另外两条接近。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+                  }
+                ]
+              },
+              {
+                "dimension": "trend_relevance",
+                "score": null,
+                "status": "unknown",
+                "required": true,
+                "claimId": "A-trend",
+                "reason": "cannot_assess：可识别留时间相见的诉求，但没有来源支持它与当前趋势的关联。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          },
+          {
+            "subjectId": "B",
+            "dimensions": [
+              {
+                "dimension": "clarity",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-clarity",
+                "reason": "开门和留位置的连续画面能传递欢迎相聚与交流，具体的“门”是空间还是比喻仍有歧义。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。"
+                  }
+                ]
+              },
+              {
+                "dimension": "brand_connection",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-brand",
+                "reason": "品牌名称进入邀请句，但开门意象没有在公开信息中与可辨认的产品特征建立联系，品牌归属仍弱。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。"
+                  }
+                ]
+              },
+              {
+                "dimension": "audience_connection",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-audience",
+                "reason": "留位置、允许表达余地并邀请互相分享，传达接纳与轻松交流；对指定年龄受众的实际效果未知。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+                  }
+                ]
+              },
+              {
+                "dimension": "memorability",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-memory",
+                "reason": "开门的具体动作得到“门里留个位置”的延续，形成完整可想象的画面，有利于记住这条信息。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-difference",
+                "reason": "开门与留位置形成组内鲜明的空间表达，但最终仍是邀请分享和倾听，尚未形成充分独立的核心利益。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "带着今天的故事来，也听听彼此的新鲜事。"
+                  }
+                ]
+              },
+              {
+                "dimension": "trend_relevance",
+                "score": null,
+                "status": "unknown",
+                "required": true,
+                "claimId": "B-trend",
+                "reason": "cannot_assess：相聚与分享的内容本身不能证明当前趋势相关性，未提供趋势来源。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "带着今天的故事来，也听听彼此的新鲜事。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          },
+          {
+            "subjectId": "C",
+            "dimensions": [
+              {
+                "dimension": "clarity",
+                "score": 5,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-clarity",
+                "reason": "标题直接发出聊天邀请，辅助文案说明无需准备话题、说话或倾听均可，行动含义清楚。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              },
+              {
+                "dimension": "brand_connection",
+                "score": 2,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-brand",
+                "reason": "问号使“得闲”很容易被完整理解为“有没有空”的日常问话；后文继续普通对话，缺少品牌或产品识别的补充。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "“最近怎样？”“坐下慢慢说。”"
+                  }
+                ]
+              },
+              {
+                "dimension": "audience_connection",
+                "score": 5,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-audience",
+                "reason": "直接回应开场时需要找话题的顾虑，并给倾听者参与空间，轻松社交的相关性表达充分；此分数不代表真实受众偏好验证。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              },
+              {
+                "dimension": "memorability",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-memory",
+                "reason": "问答口吻短而顺口，容易复述，但日常聊天用语较通用，记住句子未必能记住品牌归属。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "“最近怎样？”“坐下慢慢说。”"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-difference",
+                "reason": "以直接问话和参与许可形成不同语气，但无需准备话题的利益与A的随意开聊相近，组内意义差异有限。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              },
+              {
+                "dimension": "trend_relevance",
+                "score": null,
+                "status": "unknown",
+                "required": true,
+                "claimId": "C-trend",
+                "reason": "cannot_assess：降低聊天准备压力是可读出的诉求，但没有来源证明其当前流行程度或趋势关联。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          }
+        ],
+        "groupComparisons": [
+          {
+            "claimId": "pair-A-B",
+            "pair": [
+              "A",
+              "B"
+            ],
+            "meaningDifference": "A强调为相见腾出时间，B强调为相聚提供接纳空间；两者随后都邀请宽松交流，差别主要是进入社交的入口，核心承诺接近。",
+            "expressionDifference": "A采用时间与空白的抽象留白，B采用开门与留位置的空间比喻，画面机制有明确差别。",
+            "verdict": "similar",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "claimId": "pair-A-C",
+            "pair": [
+              "A",
+              "C"
+            ],
+            "meaningDifference": "A强调留时间见面，C强调立即开聊且无需准备；A已经用不限话题和日常问候覆盖了C的部分利益，完整信息高度接近。",
+            "expressionDifference": "A是舒缓的陈述式邀请，C用问号和口语对话模拟现场开场；语气和句式不同，但均依靠日常问候落实交流。",
+            "verdict": "similar",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          },
+          {
+            "claimId": "pair-B-C",
+            "pair": [
+              "B",
+              "C"
+            ],
+            "meaningDifference": "B突出留位置并互相分享故事，C明确无需准备话题、倾听也能参与；C对参与压力的说明更直接，但两者共同承诺接纳式聊天。",
+            "expressionDifference": "B通过门与位置构建空间画面，C通过问话和对话直接演示交流，表达机制清楚不同。",
+            "verdict": "similar",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "id": "brand-identification",
+            "subjectIds": [
+              "A",
+              "B",
+              "C"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "三条公开信息均可被理解为通用社交邀请，品牌与产品归属不足；C的问句尤其容易把品牌名吸收为普通问话。",
+            "impact": "理解邀请内容后，仍可能无法识别由谁提供何种产品或体验，削弱品牌记忆。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              }
+            ],
+            "materialAbsence": "公开信息没有补充可辨认的产品身份；任务也未提供可核实的具体产品特征。"
+          },
+          {
+            "id": "meaning-overlap",
+            "subjectIds": [
+              "A",
+              "B",
+              "C"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "三条有时间、空间、口语开场的表达差异，但完整信息都落在轻松相聚、随意分享与倾听，核心利益区分不足。",
+            "impact": "尚不足以满足三方向真正不同的任务要求。",
+            "evidence": [
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "不用先想好话题，想分享就说两句，想听听也欢迎。"
+              },
+              {
+                "location": "/taskCard/brief",
+                "quote": "主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。"
+              }
+            ],
+            "materialAbsence": "无；判断基于现有公开文案的意义重叠。"
+          }
+        ],
+        "limitations": [
+          "以上为模拟专业传播判断，不代表品牌批准或真实消费者研究；分数未经消费者效果校准。",
+          "只评估主题短句与辅助文案组成的完整公开信息，未用标题方向标签或作者意图证明效果。",
+          "差异判断仅限当前A、B、C组内，不构成市场独特性结论。",
+          "sources为空，当前趋势相关性均为cannot_assess；缺少趋势证据本身不构成创意缺陷。",
+          "受众相关性依据任务中的轻松社交要求作文本判断，无法验证25岁受众的实际偏好、记忆或行为。",
+          "各项均未达到全部必需维度评分至少4的通过条件，communication角色明确判定三项均需修改；组内相似性结论另行成立。"
+        ]
+      }
+    },
+    "promptHash": "98a23b5973a843e8ca86e0b57b03377f2cfa455d426314fba24e13aa8379c447",
+    "schemaHash": "73d01eb41d4145adb2dff3628a5fe2b8d7ac30e1b3a75a6416ba672f00c084b3",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "score",
+      "role": "brand",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "brand_connection",
+        "clarity",
+        "difference"
+      ],
+      "firstRead": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "score_first_read",
+        "role": "brand",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "readings": [
+          {
+            "subjectId": "A",
+            "meaning": "邀请人们从日常中留出时间见面聊天，以一句近况问候开始，传递从容、温和的相处感。",
+            "uncertainty": "“得闲”可读作有空时的口语表达，也可能是名称；仅凭这条信息无法确认品牌身份、产品类别或具体相见场景。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              }
+            ]
+          },
+          {
+            "subjectId": "B",
+            "meaning": "以开门、留位置的意象邀请人们相聚，带来自己的故事，也给他人表达和分享的空间。",
+            "uncertainty": "门和位置可能是实体空间，也可能只是相聚的比喻；“得闲”是否为品牌名称、提供什么产品或服务，信息中尚不明确。",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "subjectId": "C",
+            "meaning": "用“有空吗”的口吻直接邀人聊一会儿，无需准备话题，可以分享，也可以倾听，交流门槛较低。",
+            "uncertainty": "“得闲？”首先容易被理解为日常问句；是否同时指向品牌，以及聊天发生在线上还是线下，无法确认。",
+            "evidence": [
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "id": "brand_identity_unclear",
+            "subjectIds": [
+              "A",
+              "B",
+              "C"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "三条完整信息都能读出相聚聊天的邀请，但“得闲”同时可作为日常用语，品牌名称与普通表达的边界不清晰，产品或服务身份也未显现。",
+            "impact": "读者可能记住温和的社交邀请，却无法明确将其归属于哪个品牌或具体提供什么的产品。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ],
+            "materialAbsence": "未提供能确认“得闲”为品牌名称及其产品或服务类别的公众信息或呈现环境。"
+          }
+        ],
+        "limitations": [
+          "本次仅依据各自标题之外的主标语与 supportingCopy 作首次阅读判断，未使用任务背景或作者解释，未评分。",
+          "未提供目标受众、品牌既有认知及实际投放环境，无法确认受众适配和品牌识别的实际效果。",
+          "当前趋势相关性为 cannot_assess：未提供趋势证据。",
+          "以上为模拟专业判断，不构成真实品牌或消费者批准。"
+        ]
+      }
+    },
+    "promptHash": "fe20f06cb8ccc86f4404c6a6953ba9a6f29dd2ced8bb4bc1219dd55d00991de5",
+    "schemaHash": "2e1198bfcc4188def61b8b049d8e03bff0ae8f32490ad8e322dd117f9ef46940",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "opposition",
+      "role": "copy",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "clarity",
+        "language",
+        "difference",
+        "visual_executability"
+      ],
+      "firstRead": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "opposition_first_read",
+        "role": "copy",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "readings": [
+          {
+            "subjectId": "A",
+            "meaning": "邀请人们给见面聊天留出时间，不必拘泥于话题，用一句日常问候开始交流。",
+            "uncertainty": "“得闲”既可读作有空，也可能是名称；整条消息未说明具体产品或服务。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              }
+            ]
+          },
+          {
+            "subjectId": "B",
+            "meaning": "以开门、留位置的意象邀请人们相聚，带来自己的故事，也听取彼此近况。",
+            "uncertainty": "“门”可以是待客的比喻，也可能让人联想到实体场所；消息没有确定其具体所指。",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "subjectId": "C",
+            "meaning": "用口语问句邀请对方聊一会儿，并说明无需准备话题，说话或倾听都可以。",
+            "uncertainty": "能够理解轻松聊天的邀请，但无法仅凭消息确定邀请由什么品牌、产品或场所提供。",
+            "evidence": [
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "id": "FR-01",
+            "subjectIds": [
+              "A",
+              "B",
+              "C"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "三条完整消息均未提供可辨识的产品或服务线索。“得闲”同时具有日常用语读法，名称与具体提供物之间的联系无法从消息本身建立。",
+            "impact": "读者可以记住轻松相聚的邀请，但可能无法判断是谁提供什么，品牌及产品归属的记忆存在缺口。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ],
+            "materialAbsence": "缺少将“得闲”与具体产品或服务连接起来的消费者可见信息；未提供包装呈现环境，无法判断其他视觉元素是否补足该信息。"
+          }
+        ],
+        "limitations": [
+          "仅依据三条标题短句与辅助文案进行独立首读，未使用方向标题推断创作意图，未评分或作放行判断。",
+          "未提供实际包装或视觉稿，无法判断文案之外的产品识别信息。",
+          "未提供外部来源；市场差异、受众实际偏好及当前趋势相关性均为 cannot_assess。",
+          "本结果为模拟专业判断，不代表真实品牌批准或消费者研究。"
+        ]
+      },
+      "pairedScore": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "score",
+        "role": "copy",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "items": [
+          {
+            "subjectId": "A",
+            "dimensions": [
+              {
+                "dimension": "clarity",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-clarity",
+                "reason": "完整信息清楚邀请读者留时间见面，并用日常问候提供开场；具体产品关联仍不明确。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+                  }
+                ]
+              },
+              {
+                "dimension": "language",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-language",
+                "reason": "短句与重复的“留一点”形成易读节奏，日常问候降低理解门槛；“空白”略偏抽象。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "给相见留一点时间，给聊天留一点空白。"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-difference",
+                "reason": "留出时间是可辨认的切入点，但正文又落到无需限定话题、日常问候开场，与C的聊天邀请明显重叠。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+                  }
+                ]
+              },
+              {
+                "dimension": "visual_executability",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "A-visual",
+                "reason": "“留时间”与“留空白”能支持留白排版和问候文字层级，足以形成静态表达；不能据此认定已有包装资产。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "给相见留一点时间，给聊天留一点空白。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          },
+          {
+            "subjectId": "B",
+            "dimensions": [
+              {
+                "dimension": "clarity",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-clarity",
+                "reason": "正文把开门比喻落到带故事来、彼此倾听，相聚邀请可理解；门对应何种具体产品仍未知。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "带着今天的故事来，也听听彼此的新鲜事。"
+                  }
+                ]
+              },
+              {
+                "dimension": "language",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-language",
+                "reason": "“门里”与“话里”的对句简洁、有节奏，“留点余地”提供温和语气，但表达比直接邀聊多一层比喻。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-difference",
+                "reason": "以开门、留位置形成空间接纳意象，相较另外两条的时间邀请与直接邀聊，表达机制可辨；这种差异尚未建立产品识别关联。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。"
+                  }
+                ]
+              },
+              {
+                "dimension": "visual_executability",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B-visual",
+                "reason": "门和空位置提供具体、可组织的静态图形线索；其包装形态和结构只能作为设计假设。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          },
+          {
+            "subjectId": "C",
+            "dimensions": [
+              {
+                "dimension": "clarity",
+                "score": 5,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-clarity",
+                "reason": "问句接聊天邀请，正文明确无需准备话题、可以分享或倾听，行动含义直接；品牌身份仍有普通用语歧义。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              },
+              {
+                "dimension": "language",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-language",
+                "reason": "口语问答和短邀请便于理解与复述；正文连续解释参与方式，略削弱短句的利落感。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "“最近怎样？”“坐下慢慢说。”"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-difference",
+                "reason": "直接问答和允许倾听带来表达差别，但无需准备话题、从问候开始的核心社交承诺与A接近。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              },
+              {
+                "dimension": "visual_executability",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "C-visual",
+                "reason": "问句、回答与分享倾听两种参与方式，可转化为对话式文字编排，静态执行线索明确。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "“最近怎样？”“坐下慢慢说。”"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          }
+        ],
+        "groupComparisons": [
+          {
+            "claimId": "pair-A-B",
+            "pair": [
+              "A",
+              "B"
+            ],
+            "meaningDifference": "A强调为见面安排时间；B强调为相聚提供接纳空间。两者同属相聚邀请，但入口含义可区分。",
+            "expressionDifference": "A使用直接的时间请求；B使用开门的空间比喻，差异超过单纯替换词语。",
+            "verdict": "distinct",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              }
+            ]
+          },
+          {
+            "claimId": "pair-A-C",
+            "pair": [
+              "A",
+              "C"
+            ],
+            "meaningDifference": "A强调留时间，C强调直接开始聊天并允许倾听；但完整信息都以日常问候、无需预设话题降低聊天门槛，意义重叠较大。",
+            "expressionDifference": "A为舒缓的陈述式邀请，C为问句接即时邀约；句式不同，但正文共享“最近怎样”的开场，未充分拉开完整信息。",
+            "verdict": "similar",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          },
+          {
+            "claimId": "pair-B-C",
+            "pair": [
+              "B",
+              "C"
+            ],
+            "meaningDifference": "B表达为相聚打开接纳空间；C直接询问空闲并邀请聊天，分别强调相聚入口与即时交流。",
+            "expressionDifference": "B采用开门的具象比喻，C采用日常问句和短邀约，读者接收信息的语言机制不同。",
+            "verdict": "distinct",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "id": "copy-01",
+            "subjectIds": [
+              "A",
+              "C"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "A与C的完整信息共同落在随意聊天和日常问候开场，主题差异不足。",
+            "impact": "三条信息尚未同时满足真正不同的要求，A与C的差异维度均未达到通过门槛。",
+            "evidence": [
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ],
+            "materialAbsence": "当前完整信息中缺少足以拉开A与C核心社交承诺的内容。"
+          },
+          {
+            "id": "copy-02",
+            "subjectIds": [
+              "B"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "开门意象可识别，但公开文案未建立该意象与产品识别特征的联系。",
+            "impact": "即使四项诊断分数达到4，仍不足以明确判定其满足放大产品识别特征的任务要求，角色结论为revise。",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/taskCard/brief",
+                "quote": "三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。"
+              }
+            ],
+            "materialAbsence": "未提供消费者可见的产品识别联系，也没有已确认的产品特征材料可供验证；不能从标题推断已经实现。"
+          }
+        ],
+        "limitations": [
+          "以上为模拟专业判断，不代表真实品牌、客户批准或消费者研究；分数不是经过校准的市场表现预测。",
+          "sources为空。市场差异、受众偏好、记忆效果及当前趋势相关性均为cannot_assess；语言分数仅反映文本层面的易读与复述判断。",
+          "文案与轻松社交场景相关，但其对25岁人群的特定吸引力无法验证。",
+          "“得闲”均进入主标语，但兼具普通用语含义；品牌识别与产品关联效果存在不确定性。",
+          "视觉可执行性仅评估文字提供的静态设计线索，未验证实际包装、生产规格或成品效果。",
+          "组内判断为A/B distinct、A/C similar、B/C distinct；三条整体差异要求尚未通过。"
+        ]
+      }
+    },
+    "promptHash": "3c1fa11499b58bb078fb083a612f0767bf0ab2759f6b7377f7192389e318e358",
+    "schemaHash": "baa0efcff7625b7f93424b12829275252313730f4a3c933fab29356a2c983b89",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "opposition_first_read",
+      "role": "brand",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "brand_connection",
+        "clarity",
+        "difference"
+      ]
+    },
+    "promptHash": "1b81032e11b7e688536f9ec995b5e618087d3bbad85bd32bf74403ebbb0c9f97",
+    "schemaHash": "973d48b36f7a83e5652028c73647511ae63cd05c61eb9f8a0bce06fdafd7b41d",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "score_first_read",
+      "role": "communication",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ]
+    },
+    "promptHash": "8e927cd65b1d13502b61851f64f3ae9795b12ee4cda6c35a54b922b4029d2446",
+    "schemaHash": "897f7fd455df79f6bdfe0742004bec7ed0a6b43fe69e1403c3b5933ad1d10806",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "opposition",
+      "role": "brand",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "brand_connection",
+        "clarity",
+        "difference"
+      ],
+      "firstRead": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "opposition_first_read",
+        "role": "brand",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "readings": [
+          {
+            "subjectId": "A",
+            "meaning": "邀请人们留出时间见面，以日常问候开启轻松聊天。整条信息的记忆中心是“留时间相见”。",
+            "uncertainty": "“得闲”既可理解为日常用语，也可能是品牌名；文案本身没有明确其对应的产品或服务。",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              }
+            ]
+          },
+          {
+            "subjectId": "B",
+            "meaning": "以开门、留位置的意象邀请人们相聚，分享近况，也给彼此表达和倾听的空间。",
+            "uncertainty": "“门”可以读作欢迎相聚的比喻，无法仅凭这条信息判断它是否对应具体场所或产品特征；“得闲”的品牌身份也不明确。",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "subjectId": "C",
+            "meaning": "直接询问是否有空，并邀请一起聊聊；无需预备话题，愿意分享或只想倾听都能参与。",
+            "uncertainty": "“得闲？”首先也能读成口语问句，品牌名是否会被独立记住无法确认；具体产品或服务仍不明确。",
+            "evidence": [
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [],
+        "limitations": [
+          "本轮仅依据各自标题短句与辅助文案形成独立首读，未用方向标题或作者意图证明表达效果。",
+          "三条信息均未明确呈现产品或服务类别；这是首读信息缺口，尚不足以单独判定为阻断问题。",
+          "未进行评分、成对差异裁定或通过判断；未发现可仅凭首读文本确立的重大遗漏。",
+          "当前趋势相关性为 cannot_assess；没有可支持流行度判断的证据。",
+          "以上为模拟专业判断，不代表真实品牌批准或消费者研究。"
+        ]
+      },
+      "pairedScore": {
+        "protocolVersion": "creative-copy-message-v2",
+        "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+        "phase": "score",
+        "role": "brand",
+        "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+        "items": [
+          {
+            "subjectId": "A",
+            "dimensions": [
+              {
+                "dimension": "brand_connection",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "A_brand",
+                "reason": "“得闲”与留时间相见的意思自然衔接，但也能完整读成普通口语邀请，品牌名称的独立识别仍弱。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  }
+                ]
+              },
+              {
+                "dimension": "clarity",
+                "score": 5,
+                "status": "scored",
+                "required": true,
+                "claimId": "A_clarity",
+                "reason": "短句直接提出留时间见面，辅助文案用具体问候落实聊天方式，完整信息简单易懂。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "A_difference",
+                "reason": "留时间是可辨认的表达重点，但辅助文案仍落在轻松聊天与近况问候，与另两条共享主要社交利益，意义区隔有限。",
+                "evidence": [
+                  {
+                    "location": "/subjects/0/slogan",
+                    "quote": "得闲，留点时间相见。"
+                  },
+                  {
+                    "location": "/subjects/0/supportingCopy",
+                    "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          },
+          {
+            "subjectId": "B",
+            "dimensions": [
+              {
+                "dimension": "brand_connection",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "B_brand",
+                "reason": "“得闲”进入了相聚邀请，但门的意象未在公开文案中与品牌形成专属联系，名称仍容易融入普通句意。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+                  }
+                ]
+              },
+              {
+                "dimension": "clarity",
+                "score": 4,
+                "status": "scored",
+                "required": true,
+                "claimId": "B_clarity",
+                "reason": "开门、留位置与分享故事形成连贯邀请，容易理解为欢迎相聚；门究竟是实际场所还是比喻仍有轻微不确定性。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "B_difference",
+                "reason": "门与位置构成较鲜明的空间意象，但其承载的分享、倾听和相聚利益与另两条接近，表达差异强于意义差异。",
+                "evidence": [
+                  {
+                    "location": "/subjects/1/slogan",
+                    "quote": "得闲，给相聚开扇门。"
+                  },
+                  {
+                    "location": "/subjects/1/supportingCopy",
+                    "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          },
+          {
+            "subjectId": "C",
+            "dimensions": [
+              {
+                "dimension": "brand_connection",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "C_brand",
+                "reason": "“得闲？”与聊天邀约结合自然，但问句使它更容易作为“有空吗”被理解，品牌名称的独立识别不足。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  }
+                ]
+              },
+              {
+                "dimension": "clarity",
+                "score": 5,
+                "status": "scored",
+                "required": true,
+                "claimId": "C_clarity",
+                "reason": "直接邀聊，随后明确无需准备话题、可以说也可以听，行动和参与方式清楚，口语表达便于复述。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              },
+              {
+                "dimension": "difference",
+                "score": 3,
+                "status": "scored",
+                "required": true,
+                "claimId": "C_difference",
+                "reason": "问答式开场和无需准备话题形成具体特点，但分享与倾听的核心利益与其他信息重叠，尚未形成充分不同的主题。",
+                "evidence": [
+                  {
+                    "location": "/subjects/2/slogan",
+                    "quote": "得闲？一起聊会儿。"
+                  },
+                  {
+                    "location": "/subjects/2/supportingCopy",
+                    "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+                  }
+                ]
+              }
+            ],
+            "verdict": "revise"
+          }
+        ],
+        "groupComparisons": [
+          {
+            "claimId": "pair_AB",
+            "pair": [
+              "A",
+              "B"
+            ],
+            "meaningDifference": "A强调为见面腾出时间，B强调欢迎彼此进入相聚空间；两者最终都邀请轻松聊天和交换近况，核心利益接近。",
+            "expressionDifference": "A使用时间与空白的抽象表达，B持续使用门与位置的空间比喻，表达机制可辨，完整信息的意义区隔仍有限。",
+            "verdict": "similar",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              }
+            ]
+          },
+          {
+            "claimId": "pair_AC",
+            "pair": [
+              "A",
+              "C"
+            ],
+            "meaningDifference": "A强调留时间见面，C强调无需准备即可开始聊天；A也提供近况问候作为开场，两者在降低聊天门槛上明显重叠。",
+            "expressionDifference": "A是温和倡议并使用平行句，C是直接问句邀约并展示对话，语气和句式不同，但共同使用近况问候落实社交。",
+            "verdict": "similar",
+            "evidence": [
+              {
+                "location": "/subjects/0/slogan",
+                "quote": "得闲，留点时间相见。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          },
+          {
+            "claimId": "pair_BC",
+            "pair": [
+              "B",
+              "C"
+            ],
+            "meaningDifference": "B强调相聚中的接纳和交流空间，C强调随意开场与自由参与；两者都明确欢迎分享和倾听，主要社交承诺接近。",
+            "expressionDifference": "B以门和位置构建空间比喻，C用直接问句与示例对话呈现交流，表达机制不同，但没有充分拉开完整信息的意义。",
+            "verdict": "similar",
+            "evidence": [
+              {
+                "location": "/subjects/1/slogan",
+                "quote": "得闲，给相聚开扇门。"
+              },
+              {
+                "location": "/subjects/2/slogan",
+                "quote": "得闲？一起聊会儿。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "id": "limited_meaning_separation",
+            "subjectIds": [
+              "A",
+              "B",
+              "C"
+            ],
+            "category": "creative",
+            "severity": "major",
+            "finding": "三条有不同的句式和意象，但完整信息均集中于轻松相聚、聊天和互相分享，主题意义的区隔不足。",
+            "impact": "尚不足以满足三个方向真正不同的任务要求。",
+            "evidence": [
+              {
+                "location": "/subjects/0/supportingCopy",
+                "quote": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+              },
+              {
+                "location": "/subjects/1/supportingCopy",
+                "quote": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+              },
+              {
+                "location": "/subjects/2/supportingCopy",
+                "quote": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+              },
+              {
+                "location": "/taskCard/brief",
+                "quote": "主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。"
+              }
+            ],
+            "materialAbsence": "未提供可验证实际识别与区分效果的受众测试。"
+          }
+        ],
+        "limitations": [
+          "本次为模拟专业判断，不构成真实品牌批准、消费者研究或创意采用。",
+          "评分以各自标语与辅助文案作为完整公众信息；未以标题、方向标签或作者解释证明传播效果。",
+          "品牌名称已由任务明确，但名称能否在实际呈现中被识别仍不确定；未提供包装视觉或投放环境。",
+          "产品具体属性未确定，不能把未出现产品类别或规格本身视为事实错误，也不能将门的比喻认定为产品结构。",
+          "受众相关性仅能判断为与轻松社交需求相容，不能确认25岁人群的实际偏好或记忆效果。",
+          "当前趋势相关性为cannot_assess：sources为空，没有趋势证据。",
+          "差异判断仅限本组A、B、C，不涉及市场独特性。三项均未达到全部必需维度至少4分的文案通过条件；组间差异判断另见groupComparisons。"
+        ]
+      }
+    },
+    "promptHash": "2eeccdf802081f49391a5f621cf52052565778cdee3c76504e9c9b56db9ad281",
+    "schemaHash": "a8ed5084e12628d6c70e948425e7e36246b8d7d980d855ab7ca46d358cd53106",
+    "savedPromptMatches": true
+  },
+  {
+    "input": {
+      "protocolVersion": "creative-copy-message-v2",
+      "panelId": "creative-b885cc741b363ae2ec7cabd5ee4c5956d99a96efa9b6b9af066a26850e9c670e",
+      "panelPacketHash": "220bbce27526f193d766ddd6f735f39e3b1aee15458a71ed7ec6a5c24205af66",
+      "phase": "opposition_first_read",
+      "role": "user",
+      "stage": "copy",
+      "subjects": [
+        {
+          "id": "A",
+          "title": "稳健品牌表达｜把名字说完整",
+          "slogan": "得闲，留点时间相见。",
+          "supportingCopy": "给相见留一点时间，给聊天留一点空白。今天聊什么都好，从一句“最近怎样”开始。"
+        },
+        {
+          "id": "B",
+          "title": "产品识别表达｜让“闲”成为一扇门",
+          "slogan": "得闲，给相聚开扇门。",
+          "supportingCopy": "门里留个位置，话里留点余地。带着今天的故事来，也听听彼此的新鲜事。"
+        },
+        {
+          "id": "C",
+          "title": "用户社交表达｜一句话就能开场",
+          "slogan": "得闲？一起聊会儿。",
+          "supportingCopy": "“最近怎样？”“坐下慢慢说。”不用先想好话题，想分享就说两句，想听听也欢迎。"
+        }
+      ],
+      "taskCard": {
+        "id": "dexian-complete-copy-development-probe-v2:scope:1",
+        "brief": "仅验证新文案合同及独立评审流程，不是得闲正式研究放行或用户创意采用。沿用已确认业务信息：品牌得闲，面向25岁年轻人的社交使用，轻型只指轻松社交与轻负担的品牌表达，度数、容量、价格、购买者未定，不得写成低度、健康、饮酒无负担等功效。任务是包装创意与完整静态提案。以下上游是明确标记的开发占位，不支持市场、偏好、历史资产或生产规格主张。三个方向为稳健品牌表达、放大产品识别特征、放大用户社交氛围。新品牌无过往包装资产，稳健方向不虚构品牌历史。轮廓、结构及视觉建议均为设计假设，不能当作既定产品事实。每个方向要有主题短句、消费者可见的辅助文案、创意说明；主张简洁且三方向真正不同，不必硬蹭未经证实的流行趋势。",
+        "createdBy": "scripted-development-setup"
+      },
+      "sources": [],
+      "comparisonScope": "within_current_A_B_C_meaning_and_expression_mechanisms; market difference claims need supplied source text",
+      "upstreamConstraints": {
+        "fixture-strategy": {
+          "readiness": [],
+          "handoffs": []
+        }
+      },
+      "independentEvidenceReviews": [],
+      "dimensions": [
+        "clarity",
+        "audience_emotion",
+        "difference"
+      ]
+    },
+    "promptHash": "5a5b053eb409b21bc018c642fa7a4ae78afd98a64eafdc916048f917092a708f",
+    "schemaHash": "8d22c15cba8e1f0f520a31d3bb5f6f60d6e9d84ca5fbe8b5af0ecd6be3a2020e",
+    "savedPromptMatches": true
+  }
+]

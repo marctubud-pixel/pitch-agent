@@ -1,0 +1,112 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {createProject,applyCommand} from './project.mjs';
+import {planFinalReview} from './final-review-input.mjs';
+import {fixture} from './final-review-input-fixture.mjs';
+import {layoutHash} from './layout-boundary.mjs';
+import {finalReviewMetadataBasis,finalReviewCallAccounting,compactFinalReviewPlan,finalOperationAuthorizationIdentity,enforceFinalCallCeiling} from './final-review-authority.mjs';
+import {finalCallHash} from './final-review-call.mjs';
+const ctx={actorType:'agent',actorId:'local-final-runtime',runId:'setup-run',contextId:'setup-context',now:'2026-10-28T00:00:00Z'};
+const digest=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
+const clone=structuredClone;
+const command=(p,kind,fields={},context=ctx)=>applyCommand(p,{commandId:`command-${p.revision}-${kind}`,expectedRevision:p.revision,kind,...fields},context);
+const simulatedHuman={...ctx,actorType:'human',actorId:'simulated-human-task-confirmation'};
+const confirm=p=>command(p,'confirm-task-card',{taskCardId:p.activeTaskCardId},simulatedHuman);
+function owned({selected=false,totalCalls=1000}={}) {
+  const p=clone(confirm(createProject({id:'project',name:'Owned metadata fixture',brief:'Owned proposal fixture',mode:selected?'assisted':'auto',humanGates:selected?['final_review']:[]},ctx)));
+  const f=fixture({policy:p.policies[0],taskIdentity:p.activeTaskCardId}),s=f.snapshot,c=s.content.trusted.contract;
+  const ownerProfile=f.configuration.assignmentPolicy.profiles.find(x=>x.identity==='owners');ownerProfile.reportBoundBytes=16384;ownerProfile.context.maxOutputBytes=16384;
+  const b=s.layout.exactBinding;
+  Object.assign(b,{protocol:'project-layout-v1',taskCardId:p.activeTaskCardId});s.layout.bindingIdentity=layoutHash(b);
+  s.project.observedRevision=p.revision;s.history.retained.originalAttempts=[];
+  s.allowance.value={authorityIdentity:'owned-local-policy',totalCalls,reservedOtherCalls:0};s.humanFinalGate.value.selected=selected;
+  p.activeByStage.content_review=c.artifactId;
+  p.artifacts.push({id:c.artifactId,stage:'content_review',author:{actorId:'owned-content-creator'},contentHash:s.content.trusted.contentHash,completeContent:{rootJobId:c.rootJobId,manuscriptHash:c.manuscriptHash}});
+  p.jobs.push({id:c.rootJobId,purpose:'complete_content_plan',status:'succeeded',attempts:[],task:{packetVersion:'content-packet-v3',source:s.content.trusted.source}});
+  p.releases.push({artifactId:c.artifactId,policyVersion:p.policies[0].version,sourceHash:b.sourceHash});
+  for(const [index,e] of s.editions.value.entries()) {
+    const id=index===0?s.layout.rootJobId:e.originalExportJobId;e.originalExportJobId=id;
+    const receipt={operation:'local-native-export',model:null,cost:null,costStatus:'unknown',attemptId:e.originalAttemptId,bindingHash:s.layout.bindingIdentity,style:e.style,anchorPath:e.anchor.originalPath,anchorHash:e.anchor.sha256};
+    p.jobs.push({id,purpose:'layout_export',stage:'layout',status:'succeeded',attempts:[{id:e.originalAttemptId,status:'succeeded',receipt:clone(receipt)}],receipt,task:{bindingHash:s.layout.bindingIdentity,style:e.style,...(index===0?{binding:clone(b)}:{rootJobId:s.layout.rootJobId})}});
+  }
+  const proposal={protocol:'final-review-authority-v1',basedOnRevision:p.revision,basis:finalReviewMetadataBasis(p,s.layout.rootJobId),materials:s.materials.map(m=>({identity:m.identity,correspondenceHash:finalCallHash(m)})),roleMaterialScopes:clone(s.roleMaterialScopes),owners:Object.fromEntries(Object.entries(s.owners).map(([k,v])=>[k,clone(v.value)])),configuration:clone(f.configuration),allowance:{authorityIdentity:'owned-local-policy',totalCalls,provenance:'Owned local test allowance; no provider call'}};
+  for(const scope of proposal.roleMaterialScopes)for(const cell of scope.applicability.value)cell.reason='Owned fixture evidence, not verified external facts';
+  s.roleMaterialScopes=clone(proposal.roleMaterialScopes);
+  const planned=planFinalReview(s,f.configuration);
+  assert.equal(planned.kind,'planned',JSON.stringify(planned.blockers));
+  return {p,proposal,plan:compactFinalReviewPlan(planned.plan),full:planned.plan,f};
+}
+const configure=o=>command(o.p,'set-final-review-authority',{authority:o.proposal});
+const reserve=(p,plan)=>command(p,'reserve-final-review-plan',{setupId:p.finalReviewSetups.at(-1).id,plan});
+
+let checks=0;
+const check=(value)=>{assert.ok(value);checks++;};
+const refuses=(run,code)=>{assert.throws(run,e=>e.code===code);checks++;};
+const requirement={identity:'1'.repeat(64),providerId:'fixture-provider',model:'fixture-model',adapterProtocol:'final-review-codex-cli-text-v1',adapterSourceIdentity:'2'.repeat(64),operationEnvelopeIdentity:'3'.repeat(64)};
+function runtime(o,totalCalls=40){
+ const conf=clone(o.proposal.configuration);
+ for(const profile of conf.assignmentPolicy.profiles){profile.providerIdentity=requirement.providerId;profile.modelIdentity=requirement.model;}
+ const owners=clone(o.proposal.owners);for(const owner of Object.values(owners)){owner.providerIdentity=requirement.providerId;owner.modelIdentity=requirement.model;}
+ return {...ctx,finalOperation:{launchConfiguration:{mode:'configured',identity:{schemaVersion:'workbench-launch-v1',sha256:'4'.repeat(64)},moduleConfigs:{finalReview:{schemaVersion:'final-review-runtime-v1',configuration:conf,owners,allowance:{...o.proposal.allowance,totalCalls}}},textProviders:{[requirement.providerId]:{adapter:'codex-cli',model:requirement.model}}},manifest:{protocol:'final-operation-manifest-v1',requirements:[clone(requirement)]}}};
+}
+const o=owned();let p=confirm(createProject({id:'bare',name:'bare',brief:'bare',mode:'auto'},ctx)),context=runtime(o);
+const unconfirmed=createProject({id:'bare',name:'bare',brief:'bare',mode:'auto'},ctx);
+const unconfirmedBefore=clone(unconfirmed);
+refuses(()=>command(unconfirmed,'bind-final-operation-authorization',{authorizationIdentity:finalOperationAuthorizationIdentity(p,context)},context),'FINAL_OPERATION_NOT_AUTHORIZED');
+check(JSON.stringify(unconfirmed)===JSON.stringify(unconfirmedBefore));
+check(unconfirmed.jobs.length===0&&finalReviewCallAccounting(unconfirmed).consumedCalls===0);
+const identity=finalOperationAuthorizationIdentity(p,context);
+p=command(p,'bind-final-operation-authorization',{authorizationIdentity:identity},context);check(!p.finalReviewSetups);check(p.jobs.length===0);
+const fields={authorizationId:identity,requirementIdentity:requirement.identity,jobId:'observation-1',attemptId:'operation-run',requestBasis:{protocol:'final-operation-request-basis-v1',authorizationId:identity,requirementIdentity:requirement.identity,independentContextIdentity:'operation-context',originals:[{name:'request',sha256:'5'.repeat(64),bytes:12}]}};
+const executor={...context,runId:fields.attemptId,contextId:fields.requestBasis.independentContextIdentity};
+const noConfirmation=clone(p);noConfirmation.confirmations=[];
+const noConfirmationBefore=clone(noConfirmation);
+refuses(()=>command(noConfirmation,'mark-final-operation-dispatched',fields,executor),'FINAL_OPERATION_NOT_AUTHORIZED');
+check(JSON.stringify(noConfirmation)===JSON.stringify(noConfirmationBefore));
+check(noConfirmation.jobs.length===0&&finalReviewCallAccounting(noConfirmation).consumedCalls===0);
+const revised=command(p,'revise-task-card',{taskCardId:'bare:scope:2',brief:'Revised task requires existing confirmation gate'},simulatedHuman),revisedBefore=clone(revised);
+refuses(()=>command(revised,'bind-final-operation-authorization',{authorizationIdentity:identity},context),'FINAL_OPERATION_NOT_AUTHORIZED');
+refuses(()=>command(revised,'mark-final-operation-dispatched',fields,executor),'FINAL_OPERATION_NOT_AUTHORIZED');
+check(JSON.stringify(revised)===JSON.stringify(revisedBefore));
+check(revised.jobs.length===0&&finalReviewCallAccounting(revised).consumedCalls===0);
+const revisedConfirmed=confirm(revised);
+refuses(()=>command(revisedConfirmed,'mark-final-operation-dispatched',fields,executor),'FINAL_OPERATION_AUTHORITY_CHANGED');
+const revisedIdentity=finalOperationAuthorizationIdentity(revisedConfirmed,context);
+const revisedBound=command(revisedConfirmed,'bind-final-operation-authorization',{authorizationIdentity:revisedIdentity},context);
+check(revisedIdentity!==identity&&revisedBound.finalOperationAuthorizations.at(-1).taskCardId===revisedConfirmed.activeTaskCardId);
+const revisedCharged=command(revisedBound,'mark-final-operation-dispatched',{...fields,authorizationId:revisedIdentity,requestBasis:{...fields.requestBasis,authorizationId:revisedIdentity}},executor);
+check(finalReviewCallAccounting(revisedCharged).consumedCalls===1&&revisedCharged.jobs.length===1);
+const marked={kind:'mark-final-operation-dispatched',...fields,commandId:'mark-once',expectedRevision:p.revision};
+let charged=applyCommand(p,marked,executor);check(finalReviewCallAccounting(charged).consumedCalls===1);check(finalReviewCallAccounting(charged).unknown.length===1);check(charged.jobs[0].attempts.length===1);check(charged.jobs[0].status==='awaiting_reconciliation');check(charged.jobs[0].observationResult===null);
+charged=JSON.parse(JSON.stringify(charged));check(applyCommand(charged,marked,executor)===charged);
+refuses(()=>applyCommand(charged,{...marked,jobId:'changed-replay'},executor),'COMMAND_ID_REUSED');
+const chargedRevised=command(charged,'revise-task-card',{taskCardId:'bare:scope:3',brief:'Revision retains charged unknown original'},simulatedHuman);
+check(finalReviewCallAccounting(chargedRevised).consumedCalls===1&&finalReviewCallAccounting(chargedRevised).unknown.length===1&&chargedRevised.jobs[0].attempts.length===1);
+refuses(()=>command(chargedRevised,'mark-final-operation-dispatched',{...fields,jobId:'new-card-observation'},executor),'FINAL_OPERATION_NOT_AUTHORIZED');
+refuses(()=>command(charged,'mark-final-operation-dispatched',fields,executor),'FINAL_ATTEMPT_COLLISION');
+refuses(()=>command(charged,'mark-final-operation-dispatched',{...fields,jobId:'other',attemptId:'other-run'},{...executor,runId:'other-run'}),'FINAL_OPERATION_ALREADY_DISPATCHED');
+for(const kind of ['settle-final-operation-observation','reconcile-final-operation-observation'])refuses(()=>command(charged,kind,{authorizationId:identity,jobId:fields.jobId,attemptId:fields.attemptId},executor),'FINAL_OPERATION_TERMINAL_AUTHORITY_UNIMPLEMENTED');
+for(const kind of ['start-job','retry-job'])refuses(()=>command(charged,kind,{jobId:fields.jobId,attemptId:'replacement'},executor),'LAYOUT_EXECUTION_UNAVAILABLE');
+refuses(()=>command(charged,'reconcile-stage',{jobId:fields.jobId,attemptId:fields.attemptId},executor),'INVALID_JOB');
+const changed=clone(context);changed.finalOperation.launchConfiguration.identity.sha256='6'.repeat(64);
+refuses(()=>command(charged,'bind-final-operation-authorization',{authorizationIdentity:finalOperationAuthorizationIdentity(charged,changed)},changed),'FINAL_UNKNOWN_BLOCKS');
+refuses(()=>command(charged,'mark-final-operation-dispatched',fields,changed),'FINAL_OPERATION_AUTHORITY_CHANGED');
+const zero=runtime(o,0);let z=confirm(createProject({id:'zero',name:'zero',brief:'zero',mode:'auto'},ctx));const zid=finalOperationAuthorizationIdentity(z,zero);z=command(z,'bind-final-operation-authorization',{authorizationIdentity:zid},zero);
+refuses(()=>command(z,'mark-final-operation-dispatched',{...fields,authorizationId:zid,requestBasis:{...fields.requestBasis,authorizationId:zid}},{...zero,runId:fields.attemptId,contextId:'operation-context'}),'FINAL_CUMULATIVE_ALLOWANCE');
+for(const mutate of [x=>x.policies.at(-1).authorizedThrough='copy',x=>x.activeTaskCardId='missing']){const bad=clone(p);mutate(bad);refuses(()=>finalOperationAuthorizationIdentity(bad,context),'FINAL_OPERATION_NOT_AUTHORIZED');}
+const badProvider=clone(context);badProvider.finalOperation.launchConfiguration.textProviders[requirement.providerId].model='changed';refuses(()=>finalOperationAuthorizationIdentity(p,badProvider),'FINAL_OPERATION_PROVIDER_CHANGED');
+const badManifest=clone(context);badManifest.finalOperation.manifest.requirements.push(clone(requirement));refuses(()=>finalOperationAuthorizationIdentity(p,badManifest),'FINAL_OPERATION_MANIFEST_REQUIRED');
+refuses(()=>command(p,'bind-final-operation-authorization',{authorizationIdentity:identity},{...context,actorType:'human'}),'FINAL_TRUSTED_RUNTIME_REQUIRED');
+const held=reserve(configure(o),o.plan);check(held.finalReviewReservations[0].calls.length===2*Object.values(o.plan.Krole).reduce((a,b)=>a+b,0)+20);
+const heldContext={...ctx,finalOperation:{launchConfiguration:{mode:'configured',identity:{schemaVersion:'workbench-launch-v1',sha256:'7'.repeat(64)},moduleConfigs:{finalReview:{schemaVersion:'final-review-runtime-v1',configuration:o.proposal.configuration,owners:o.proposal.owners,allowance:o.proposal.allowance}},textProviders:Object.fromEntries(o.proposal.configuration.assignmentPolicy.profiles.map(x=>[x.providerIdentity,{adapter:'codex-cli',model:x.modelIdentity}]))},manifest:{protocol:'final-operation-manifest-v1',requirements:[{...requirement,providerId:o.proposal.configuration.assignmentPolicy.profiles[0].providerIdentity,model:o.proposal.configuration.assignmentPolicy.profiles[0].modelIdentity}]}}};
+const hid=finalOperationAuthorizationIdentity(held,heldContext),withAuthority=command(held,'bind-final-operation-authorization',{authorizationIdentity:hid},heldContext);
+const hp=command(withAuthority,'mark-final-operation-dispatched',{...fields,authorizationId:hid,requestBasis:{...fields.requestBasis,authorizationId:hid}},{...heldContext,runId:fields.attemptId,contextId:'operation-context'});check(finalReviewCallAccounting(hp).reservedOtherCalls===held.finalReviewReservations[0].calls.length);check(finalReviewCallAccounting(hp).consumedCalls===1);
+const lower=clone(heldContext);lower.finalOperation.launchConfiguration.moduleConfigs.finalReview.allowance.totalCalls=0;refuses(()=>command(held,'bind-final-operation-authorization',{authorizationIdentity:finalOperationAuthorizationIdentity(held,lower)},lower),'FINAL_ALLOWANCE_LINEAGE');
+const tightOwned=owned({totalCalls:94}),tightHeld=reserve(configure(tightOwned),tightOwned.plan),tightContext=clone(heldContext);tightContext.finalOperation.launchConfiguration.moduleConfigs.finalReview.allowance=clone(tightOwned.proposal.allowance);const tightId=finalOperationAuthorizationIdentity(tightHeld,tightContext),tightBound=command(tightHeld,'bind-final-operation-authorization',{authorizationIdentity:tightId},tightContext);
+refuses(()=>command(tightBound,'mark-final-operation-dispatched',{...fields,authorizationId:tightId,requestBasis:{...fields.requestBasis,authorizationId:tightId}},{...tightContext,runId:fields.attemptId,contextId:'operation-context'}),'FINAL_CUMULATIVE_ALLOWANCE');
+const malformed=clone(fields);malformed.requestBasis.originals[0].bytes=-1;refuses(()=>command(p,'mark-final-operation-dispatched',malformed,executor),'FINAL_OPERATION_ORIGINALS_REQUIRED');
+const stale=clone(p);stale.policies.at(-1).version++;refuses(()=>command(stale,'mark-final-operation-dispatched',fields,executor),'FINAL_OPERATION_AUTHORITY_CHANGED');
+const attemptCollision=clone(p);attemptCollision.jobs.push({id:'old-job',purpose:'stage',binding:{providerId:'p',model:'m'},attempts:[{id:fields.attemptId,status:'succeeded',receipt:{providerId:'p',model:'m'}}]});refuses(()=>command(attemptCollision,'mark-final-operation-dispatched',fields,executor),'FINAL_ATTEMPT_COLLISION');
+const nonfinal=createProject({id:'ordinary',name:'ordinary',brief:'ordinary'},ctx);enforceFinalCallCeiling(nonfinal);checks++;
+const forged=clone(charged);forged.jobs[0].attempts[0].status='succeeded';forged.jobs[0].attempts[0].receipt={providerId:requirement.providerId,model:requirement.model};check(finalReviewCallAccounting(forged).unknown.length===1);
+console.log(JSON.stringify({checks,consumed:finalReviewCallAccounting(charged).consumedCalls,unknown:finalReviewCallAccounting(charged).unknown.length,heldCalls:held.finalReviewReservations[0].calls.length,terminalAuthority:'unimplemented',genuineProducer:false}));

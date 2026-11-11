@@ -1,0 +1,1184 @@
+{
+  "schemaVersion": 1,
+  "id": "qingyu-packaging-results-20261109",
+  "title": "青屿无糖茶包装研究",
+  "subtitle": "中国大陆公开资料研究 · 工程演练",
+  "asOf": "2026-11-09",
+  "status": "研究待补",
+  "lead": "NIQ所列无糖茶活跃单品在2019至2024年6月间增加。所查两品牌已用茶种、系列颜色及公开产品说明表达各款差别；青屿的具体产品特点和目标办公者审美资料仍待补。",
+  "scopeNote": "青屿、25至34岁成年城市办公者、500ml与6至8元为虚构任务条件。报告保留各来源年份与市场范围，未开展消费者实测。",
+  "sections": [
+    {
+      "id": "market",
+      "title": "行业与市场",
+      "headline": "历史资料显示，商品与渠道均有扩展",
+      "conclusion": "NIQ报告的2019至2024年6月活跃单品数增加，另有销售与铺货增长记录。不同指标分别说明商品与渠道的历史变化。",
+      "findingIds": [
+        "PK-F01",
+        "PK-F02"
+      ],
+      "datumIds": [
+        "MP-F2",
+        "MP-F1",
+        "MP-F4",
+        "PC-F1"
+      ],
+      "chartIds": [
+        "PK-C01",
+        "PK-C02"
+      ],
+      "caseIds": [],
+      "support": [
+        {
+          "text": "2025年NIQ摘要仍称无糖茶细分保持两位数年增长。",
+          "datumIds": [
+            "MP-F4"
+          ]
+        },
+        {
+          "text": "历史价格背景中，2021至2023年全饮料即饮装5至7元段的销售重要性上升。",
+          "datumIds": [
+            "PC-F1"
+          ]
+        }
+      ],
+      "gapIds": [
+        "PK-G02"
+      ],
+      "footnote": "活跃单品统计未单列地理与渠道覆盖。销售与铺货的80%/96%另为全国线下口径；历史全饮料价带不等于当前同店茶饮价格。"
+    },
+    {
+      "id": "people",
+      "title": "人群",
+      "headline": "信息关注有依据，目标审美仍待补",
+      "conclusion": "泛食饮受访者自报关注成分等信息。英敏特公开稿另称约三分之二消费者兼顾价格功能与情绪体验，作为整体消费背景；目标办公者的包装审美资料仍缺。",
+      "findingIds": [
+        "PK-F03",
+        "PK-F04"
+      ],
+      "datumIds": [
+        "MP-F7",
+        "MP-F10"
+      ],
+      "chartIds": [
+        "PK-C03"
+      ],
+      "caseIds": [],
+      "support": [
+        {
+          "text": "71%来自公开摘要对成分、产地及营养功效的合并表述，原题及选项未公开，不能拆成每项各71%。",
+          "datumIds": [
+            "MP-F7"
+          ]
+        },
+        {
+          "text": "英敏特2026公开稿称约三分之二消费者兼顾价格功能与情绪体验，仅作整体消费背景。",
+          "datumIds": [
+            "MP-F10"
+          ]
+        }
+      ],
+      "gapIds": [
+        "PK-G01",
+        "PK-G03"
+      ],
+      "footnote": "本块数据来自泛食饮或整体消费者。25至34岁成年办公者的专门样本未取得。"
+    },
+    {
+      "id": "competition",
+      "title": "竞品",
+      "headline": "茶种主信息与系列区分已在使用",
+      "conclusion": "两品牌五张原件都有茶名与浅底竖长信息区；淳茶舍以不同瓶盖色和茶名字色区分三款茶。",
+      "findingIds": [
+        "PK-F05",
+        "PK-F06"
+      ],
+      "datumIds": [
+        "CP-F6",
+        "CP-F11",
+        "CP-F12",
+        "CP-F15",
+        "CP-F16",
+        "CP-F17"
+      ],
+      "chartIds": [
+        "PK-C04"
+      ],
+      "caseIds": [
+        "PK-CASE01",
+        "PK-CASE02",
+        "PK-CASE03",
+        "PK-CASE04",
+        "PK-CASE05"
+      ],
+      "support": [
+        {
+          "text": "淳茶舍把冷萃工艺与减少苦涩、回甘相连，形成具体的产品解释。",
+          "datumIds": [
+            "CP-F11"
+          ]
+        },
+        {
+          "text": "东方树叶年报记录了陈皮白茶与菊花普洱新品，所附宣传图的茶名与系列结构可直接核对。",
+          "datumIds": [
+            "CP-F6",
+            "CP-F15"
+          ]
+        }
+      ],
+      "gapIds": [
+        "PK-G05"
+      ],
+      "footnote": "仅描述所选官方物料。商品渲染与年报宣传图分别标注，原图完整保留。"
+    },
+    {
+      "id": "product",
+      "title": "产品本身",
+      "headline": "产品边界已定，具体茶与口感未给",
+      "conclusion": "青屿的容量、无糖属性、目标售价和品牌资产已作为题设给定；独特产品理由仍缺具体资料。",
+      "findingIds": [
+        "PK-F07"
+      ],
+      "datumIds": [
+        "BRIEF-pack"
+      ],
+      "chartIds": [],
+      "caseIds": [],
+      "conditions": [
+        {
+          "label": "产品",
+          "value": "500ml 无糖即饮茶",
+          "evidence": "任务条件"
+        },
+        {
+          "label": "目标售价",
+          "value": "6至8元每瓶",
+          "evidence": "任务条件"
+        },
+        {
+          "label": "既有品牌资产",
+          "value": "青色与山形线条",
+          "evidence": "任务条件"
+        },
+        {
+          "label": "信息要求",
+          "value": "清楚标明茶种与配料",
+          "evidence": "任务条件"
+        }
+      ],
+      "support": [
+        {
+          "text": "所查竞品已有茶种和工艺到口感的表达，这为青屿需要补足的真实产品内容提供了具体对照。",
+          "datumIds": [
+            "CP-F6",
+            "CP-F11",
+            "BRIEF-pack"
+          ]
+        }
+      ],
+      "gapIds": [
+        "PK-G04",
+        "PK-G02"
+      ],
+      "footnote": "青屿为虚构工程案例。本块没有青屿实物图、产品测试或消费者实测图表。"
+    },
+    {
+      "id": "conclusion",
+      "title": "研究结论",
+      "headline": "所查物料有共同线索，青屿差异待判断",
+      "conclusion": "两个品牌的所查物料已表达茶种与产品特点。青屿与这些参照如何不同，现有产品和目标人群资料还不足以判断。",
+      "findingIds": [
+        "PK-F08"
+      ],
+      "datumIds": [
+        "MP-F2",
+        "MP-F7",
+        "CP-F6",
+        "CP-F11",
+        "CP-F15",
+        "CP-F16",
+        "BRIEF-pack"
+      ],
+      "chartIds": [],
+      "caseIds": [],
+      "takeaways": [
+        {
+          "text": "基础信息并非空白。所查样本已把茶种、无糖及工艺口感放进公开表达。",
+          "findingIds": [
+            "PK-F05",
+            "PK-F06"
+          ]
+        },
+        {
+          "text": "两品牌所选物料的共同线索与系列区分并存。竖长信息区、植物图形与系列颜色同时出现；是否帮助认出青屿仍缺目标场景资料。",
+          "findingIds": [
+            "PK-F05"
+          ]
+        },
+        {
+          "text": "青色、山形与6至8元是给定条件。现有材料尚未把这些条件连接成有证据的审美偏好或购买理由。",
+          "findingIds": [
+            "PK-F07",
+            "PK-F08"
+          ]
+        }
+      ],
+      "gapIds": [
+        "PK-G01",
+        "PK-G02",
+        "PK-G03",
+        "PK-G04"
+      ],
+      "footnote": "本轮停在研究结论，具体定位、风格与策略方向不在此处选定。"
+    }
+  ],
+  "sources": [
+    {
+      "id": "MP-S1",
+      "title": "尼尔森IQ 饮料行业2024中期展望：包装饮料的趋势与机遇",
+      "url": "https://nielseniq.cn/global/zh/insights/report/2024/niq-2024-china-beverage-mid-year-review/",
+      "publisher": "尼尔森IQ中国",
+      "published": "2024-08-29",
+      "dataPeriod": "主要截至2024年6月，另含2019年和2023年比较",
+      "market": "中国，核心饮料数据为全国线下",
+      "population": "零售市场及商品，非25至34岁办公人群调查",
+      "method": "NIQ零售监测公开摘要，样本店数、抽样和外推方法未披露",
+      "access": "已实际阅读全文，公开HTML，2026-11-09查阅",
+      "locator": "正文‘趋势一：品类结构显著重塑’及‘趋势二：延展规格应对消费和场景分化’，网页正文第90、92、97段对应行",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/market-people.json"
+    },
+    {
+      "id": "MP-S2",
+      "title": "2025解构中国饮料行业增长新势能",
+      "url": "https://nielseniq.cn/global/zh/insights/report/2025/china-beverage-report/",
+      "publisher": "尼尔森IQ中国",
+      "published": "2025-09-04",
+      "dataPeriod": "2025年，公开页未注明监测截止月及同比区间",
+      "market": "中国饮料市场",
+      "population": "饮料市场；另引用1995至2009年出生的Z世代场景分析",
+      "method": "NIQ市场监测与研究归纳，消费者子样本和具体问项未公开",
+      "access": "已实际阅读全文，公开HTML，2026-11-09查阅",
+      "locator": "‘品类洗牌’第83及87行；‘价值重构’第78行；‘创新突围’第100行",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/market-people.json"
+    },
+    {
+      "id": "MP-S3",
+      "title": "2025大食饮行业消费者心智及决策链路研究白皮书",
+      "url": "https://nielseniq.cn/global/zh/insights/report/2025/rednote-foodbeverage-whitepaper/",
+      "publisher": "尼尔森IQ与小红书联合研究，NIQ公开摘要",
+      "published": "2025-07-30",
+      "dataPeriod": "2025年6月至7月",
+      "market": "中国大食饮市场",
+      "population": "食品、饮料、乳制品、酒水、本地餐饮消费者；公开页未披露完整年龄和地域配额",
+      "method": "消费者调研及专家深访。样本量、招募框、权重、完整问卷未公开。平台联合研究需保留商业语境。",
+      "access": "已实际阅读全文，公开HTML摘要，未提交下载表单或索取付费报告，2026-11-09查阅",
+      "locator": "研究范围第70行，成分第81行，互动及分享第87行，年龄第88行，包装归纳第83行",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/market-people.json"
+    },
+    {
+      "id": "MP-S4",
+      "title": "英敏特发布《2026中国消费者》报告：分化时代下的中国消费新逻辑",
+      "url": "https://china.mintel.com/press-centre/chinese-consumer-2026/",
+      "publisher": "英敏特中国",
+      "published": "2026-06-23",
+      "dataPeriod": "含2025年市场观察和过去三年品牌形象趋势，调查具体起止日未知",
+      "market": "中国消费者",
+      "population": "整体消费者，年龄、城市及办公身份分组未公开",
+      "method": "年度报告公开新闻稿，问卷原题、样本量、抽样和权重未公开",
+      "access": "已实际阅读全文，公开HTML，2026-11-09查阅",
+      "locator": "‘效率与体验’第37至43行；‘成功叙事’第48至56行",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/market-people.json"
+    },
+    {
+      "id": "CP-S2",
+      "title": "农夫山泉2025年度报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-17/1225121774.PDF",
+      "publisher": "农夫山泉，经巨潮资讯披露",
+      "published": "2026-04-17，按披露URL日期；董事长致辞落款2026-03-24",
+      "dataPeriod": "2025年度",
+      "market": "中国大陆经营叙述为主；集团报告亦含海外业务",
+      "population": "公司产品业务，不是消费者研究",
+      "method": "上市公司年度经营披露",
+      "access": "PDF正文成功读取，230页。根Agent由原PDF直接提取第18页两张内嵌JPEG，本分支随后实际查看这两张原字节图片。",
+      "locator": "印刷第18页，管理层讨论与分析，茶饮料产品；PDF零基页18，文本969至1016行",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/competitor-packs.json"
+    },
+    {
+      "id": "CP-S4",
+      "title": "可口可乐中国，淳茶舍官方品牌与产品页",
+      "url": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+      "publisher": "可口可乐中国",
+      "published": null,
+      "dataPeriod": "核查时网页；三张现页图片路径含2025productupdate与250102",
+      "market": "中国大陆",
+      "population": "官网淳茶舍系列列示SKU",
+      "method": "品牌官方产品说明和官方商品图",
+      "access": "正文92行可读，已逐一打开官方图片链接。根Agent保存原图，本分支实际查看moli.png、wulong.png、yulu.png，与原页身份对应。",
+      "locator": "第21至64行，产品总述及茉莉、玉露、铁观音三个SKU段落；图链接6、8、9",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/competitor-packs.json"
+    },
+    {
+      "id": "PC-S1",
+      "title": "尼尔森IQ 2024中国饮料行业趋势与展望",
+      "url": "https://nielseniq.cn/global/zh/insights/report/2024/niq-2024-china-beverage-industry-trend-and-outlook/",
+      "publisher": "尼尔森IQ，中国官网原始报告摘要",
+      "published": "2024-04-19",
+      "dataPeriod": "2021–2023年；不同段落涉及2023年线下饮料市场",
+      "market": "中国线下饮料；不是无糖茶专项价格调查",
+      "population": "饮料即饮装监测；公开摘要未披露门店样本规模",
+      "method": "机构线下零售监测的官方摘要；本轮未取得完整方法附件，不推定样本",
+      "access": "2026-11-09 实际读取官网正文；不以搜索摘要代替原文",
+      "locator": "正文“聚焦消费者，提高经营效率”第二段；“穿越周期”无糖茶陈列段",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/price-context.json"
+    },
+    {
+      "id": "CTX-S1",
+      "title": "Does In-Store Marketing Work? Effects of the Number and Position of Shelf Facings on Brand Attention and Evaluation at the Point of Purchase",
+      "url": "https://www.insead.edu/sites/insead/files/assets/faculty-personal-site/pierre-chandon/documents/JM_Chandon%20does%20in-store%20marketing%20work%20JM%2009.pdf",
+      "publisher": "Chandon、Hutchinson、Bradlow、Young；Journal of Marketing；作者机构 INSEAD 公开原文",
+      "published": "2009-11",
+      "dataPeriod": "原文未明确采集年月；不得按发表年推定",
+      "market": "美国；海外机制参照",
+      "population": "8 个美国城市招募 384 名成年主要家庭采购者，24–69 岁；分析保留 348 人，非中国办公人群",
+      "method": "随机呈现肥皂与止痛药的实物大小货架图片；操纵陈列面数、位置、价格和选择/考虑任务；60Hz 眼动；口头报告考虑与选择，非真实交易。",
+      "access": "2026-11-09 通过 web 阅读作者机构托管的 17 页完整 PDF；未使用付费库。",
+      "locator": "印刷/PDF第1页摘要；第5至8页实验、程序与指标；第13至15页结果与讨论。",
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/context-media.json",
+      "use": "仅后置方法参照，不进入中国人群或包装效果结论。"
+    },
+    {
+      "id": "BRIEF-S1",
+      "title": "青屿包装设计研究工程演练Brief",
+      "url": null,
+      "recordPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/BRIEFS.json",
+      "publisher": "本地工程演练题设",
+      "published": "2026-11-09任务版本",
+      "dataPeriod": null,
+      "market": "题设为中国大陆",
+      "population": "题设为25至34岁成年城市办公者",
+      "method": "虚构任务条件，不是消费者调研",
+      "access": "已读取本地原件",
+      "locator": "id=pack，brief与context字段",
+      "use": "仅界定本次问题，不作为市场、产品实测或批准证据。"
+    }
+  ],
+  "datums": [
+    {
+      "id": "MP-F1",
+      "text": "截至2024年6月，无糖茶全国线下销售同比增长80%，铺货点数量同比增长96%。",
+      "value": {
+        "salesGrowth": 80,
+        "distributionGrowth": 96
+      },
+      "unit": "%同比",
+      "basis": "全国线下无糖茶与上年同期比较。页面未说明销售指销售额或销量，也未标明累计期或滚动年。",
+      "limits": "不可写成购买人数增长80%，也不能把增长归因于包装。",
+      "sourceIds": [
+        "MP-S1"
+      ],
+      "originalFactId": "MP-F1",
+      "locator": "“趋势一：品类结构显著重塑”无糖茶段的80%销售、96%铺货点同比增长。",
+      "scope": {
+        "market": "中国，核心饮料数据为全国线下",
+        "period": "主要截至2024年6月，另含2019年和2023年比较",
+        "population": "零售市场及商品，非25至34岁办公人群调查"
+      },
+      "evidenceType": "published-report"
+    },
+    {
+      "id": "MP-F2",
+      "text": "无糖茶活跃单品由2019年94个增加至2024年6月489个。",
+      "value": {
+        "2019": 94,
+        "2024-06": 489
+      },
+      "unit": "个活跃单品",
+      "basis": "NIQ所监测无糖茶SKU，活跃定义及覆盖渠道未完整公开。",
+      "limits": "不是品牌数，也不是同一门店陈列数量。",
+      "sourceIds": [
+        "MP-S1"
+      ],
+      "originalFactId": "MP-F2",
+      "locator": "“趋势一：品类结构显著重塑”无糖茶段所列2019年94个、2024年6月489个活跃单品。",
+      "scope": {
+        "market": "NIQ公开报告所列无糖茶活跃单品；本统计未单列地理及渠道覆盖。",
+        "period": "主要截至2024年6月，另含2019年和2023年比较",
+        "population": "零售市场及商品，非25至34岁办公人群调查"
+      },
+      "evidenceType": "published-report"
+    },
+    {
+      "id": "MP-F4",
+      "text": "NIQ的2025年摘要称，无糖茶细分仍有两位数年增长。",
+      "basis": "即饮茶、功能饮料及无糖茶细分的市场监测摘要。具体增幅、金额或销量口径和截止月未公开。",
+      "limits": "即饮茶不等于无糖茶，标题中的无糖茶登顶不能替代正文品类口径。",
+      "sourceIds": [
+        "MP-S2"
+      ],
+      "originalFactId": "MP-F4",
+      "locator": "“品类洗牌”中无糖茶细分两位数增长描述。",
+      "scope": {
+        "market": "中国饮料市场",
+        "period": "2025年，公开页未注明监测截止月及同比区间",
+        "population": "饮料市场；另引用1995至2009年出生的Z世代场景分析"
+      },
+      "evidenceType": "published-report",
+      "value": null
+    },
+    {
+      "id": "MP-F7",
+      "text": "71%的受访消费者表示选购食饮时会研究成分、产地及营养功效。",
+      "value": 71,
+      "unit": "%受访消费者",
+      "basis": "公开摘要未给原题、人数及三个事项是否合并选项。可查位置为正文第81行。",
+      "limits": "自报关注，不是实际阅读包装比例，不能证明任何具体版式有效。",
+      "sourceIds": [
+        "MP-S3"
+      ],
+      "originalFactId": "MP-F7",
+      "locator": "大食饮公开摘要关于成分、产地及营养功效的71%自报关注段。",
+      "scope": {
+        "market": "中国大食饮市场",
+        "period": "2025年6月至7月",
+        "population": "食品、饮料、乳制品、酒水、本地餐饮消费者；公开页未披露完整年龄和地域配额"
+      },
+      "evidenceType": "published-report"
+    },
+    {
+      "id": "MP-F10",
+      "text": "英敏特称约三分之二消费者兼顾价格功能与情绪体验。",
+      "basis": "公开稿所谓平衡群体的研究归纳，原题、群体划分及样本数未知。",
+      "limits": "宏观心态，不能当作无糖茶目标顾客比例。",
+      "sourceIds": [
+        "MP-S4"
+      ],
+      "originalFactId": "MP-F10",
+      "locator": "“效率与体验”段关于约三分之二消费者的归纳。",
+      "scope": {
+        "market": "中国消费者",
+        "period": "含2025年市场观察和过去三年品牌形象趋势，调查具体起止日未知",
+        "population": "整体消费者，年龄、城市及办公身份分组未公开"
+      },
+      "evidenceType": "published-report"
+    },
+    {
+      "id": "MP-F11",
+      "text": "英敏特称近三年成就与突破类品牌形象偏好走弱，轻松、陪伴和关怀类上升。",
+      "basis": "公开稿第52行的方向性结论，没有各形象分数或显著性。",
+      "limits": "提供传播语境，不证明短片的某个剧情有效，更不能推出某种视觉审美。",
+      "sourceIds": [
+        "MP-S4"
+      ],
+      "originalFactId": "MP-F11",
+      "locator": "近三年品牌形象偏好变化段中，成就/突破与轻松/陪伴/关怀的对照。",
+      "scope": {
+        "market": "中国消费者",
+        "period": "含2025年市场观察和过去三年品牌形象趋势，调查具体起止日未知",
+        "population": "整体消费者，年龄、城市及办公身份分组未公开"
+      },
+      "evidenceType": "published-report"
+    },
+    {
+      "id": "CP-F6",
+      "text": "2025年新增陈皮白茶和菊花普洱，并延续春季龙井、秋季桂花乌龙产品安排。公司将原料、茶种扩展与品质认知和品牌联系相连。",
+      "basis": "公开产品组合与品牌经营说明",
+      "limits": "可见其产品叙事路径，不能推断所有无糖茶或青屿应采用季节限定。",
+      "sourceIds": [
+        "CP-S2"
+      ],
+      "originalFactId": "CP-F6",
+      "locator": "农夫山泉2025年报印刷第18页（PDF第19页）茶饮料产品说明及新品段。",
+      "scope": {
+        "market": "中国大陆经营叙述为主；集团报告亦含海外业务",
+        "period": "2025年度",
+        "population": "公司产品业务，不是消费者研究"
+      },
+      "evidenceType": "brand-self-description"
+    },
+    {
+      "id": "CP-F15",
+      "text": "第18页菊花普洱与陈皮白茶宣传图中的瓶标均可读500ml。两款都用绿色颈标、较浅的竖长正标、竖排茶名与植物或鸟类插画。陈皮白茶KV右下注明画面部分由AI生成。",
+      "basis": "实际视检source-assets/annual2025-p18-image0.jpeg和image1.jpeg，由原年报内嵌JPEG直接提取",
+      "limits": "公司公开宣传物料，不等于实物摄影或货架观察。不能推断塑料材质、工艺、触感、实际色差、视觉效果或消费者偏好。",
+      "sourceIds": [
+        "CP-S2"
+      ],
+      "originalFactId": "CP-F15",
+      "locator": "年报印刷第18页（PDF第19页）两张新品图的瓶面500ml、颈标/正标；陈皮白茶图右下AI辅助声明。",
+      "scope": {
+        "market": "中国大陆经营叙述为主；集团报告亦含海外业务",
+        "period": "2025年度",
+        "population": "公司产品业务，不是消费者研究"
+      },
+      "evidenceType": "visual-observation",
+      "value": {
+        "capacityMl": 500
+      },
+      "unit": "ml，宣传图瓶标"
+    },
+    {
+      "id": "CP-F11",
+      "text": "品牌公开产品理由是选用茶叶、以低温慢沏的冷萃工艺减少苦涩并呈现回甘；它用可被理解的口感描述解释工艺。",
+      "basis": "品牌自述归纳",
+      "limits": "不等于经独立试饮验证的口感优势或25至34岁办公人群偏好。",
+      "sourceIds": [
+        "CP-S4"
+      ],
+      "originalFactId": "CP-F11",
+      "locator": "淳茶舍官网品牌介绍中的低温冷萃工艺、减少苦涩和回甘描述。",
+      "scope": {
+        "market": "中国大陆",
+        "period": "核查时网页；三张现页图片路径含2025productupdate与250102",
+        "population": "官网淳茶舍系列列示SKU"
+      },
+      "evidenceType": "brand-self-description"
+    },
+    {
+      "id": "CP-F12",
+      "text": "茉莉SKU说明所用茶叶为茉莉银毫，乌龙SKU说明为铁观音，玉露SKU说明为玉露绿茶；三个SKU在同页各有对应原图。",
+      "basis": "各SKU文字与图片身份的官方对应",
+      "limits": "这里的100%描述茶叶原料，不是整瓶饮料只有茶叶；全配料及营养标签仍需背标。",
+      "sourceIds": [
+        "CP-S4"
+      ],
+      "originalFactId": "CP-F12",
+      "locator": "淳茶舍官网三款产品介绍；铁观音为乌龙产品网页配文。",
+      "scope": {
+        "market": "中国大陆",
+        "period": "核查时网页；三张现页图片路径含2025productupdate与250102",
+        "population": "官网淳茶舍系列列示SKU"
+      },
+      "evidenceType": "brand-self-description"
+    },
+    {
+      "id": "CP-F16",
+      "text": "三张淳茶舍官方图都以白色竖长区域安排工艺与茶名，侧接红色无糖块，周围有放大叶片和底部茶杯图形。茉莉、乌龙、绿茶分别使用蓝、橙、绿瓶盖及对应文字色。",
+      "basis": "实际视检三张官网原图，不来自图片搜索自动描述",
+      "limits": "这是研究者对所选官方图的视觉归纳。不能推出品牌设计动机、消费者偏好或货架表现。三图均有图案参考说明。",
+      "sourceIds": [
+        "CP-S4"
+      ],
+      "originalFactId": "CP-F16",
+      "locator": "淳茶舍官网茉莉/乌龙/玉露三张商品原图：瓶盖、正标茶名及红色无糖块。",
+      "scope": {
+        "market": "中国大陆",
+        "period": "核查时网页；三张现页图片路径含2025productupdate与250102",
+        "population": "官网淳茶舍系列列示SKU"
+      },
+      "evidenceType": "visual-observation"
+    },
+    {
+      "id": "CP-F17",
+      "text": "茉莉花茶、乌龙茶、玉露绿茶三张官方商品图的底部容量标示均为480ml。",
+      "value": 480,
+      "unit": "ml",
+      "basis": "实际读取三张官方图瓶标",
+      "limits": "不是青屿Brief的500ml，也未由背标或实际购买验证现货。",
+      "sourceIds": [
+        "CP-S4"
+      ],
+      "originalFactId": "CP-F17",
+      "locator": "淳茶舍官网三张商品原图各自瓶标底部480ml标示。",
+      "scope": {
+        "market": "中国大陆",
+        "period": "核查时网页；三张现页图片路径含2025productupdate与250102",
+        "population": "官网淳茶舍系列列示SKU"
+      },
+      "evidenceType": "visual-observation"
+    },
+    {
+      "id": "PC-F1",
+      "text": "在2021–2023年即饮装监测中，5–7元/瓶价格段的销售重要性上升；7元以上仍占较小部分。",
+      "basis": "官网“聚焦消费者，提高经营效率”，即饮装均价分布段",
+      "limits": "历史全饮料观察，不是当前同店无糖茶价格或25–34岁愿付价；不能据此认定6–8元合理、高端或可被接受。",
+      "sourceIds": [
+        "PC-S1"
+      ],
+      "originalFactId": "PC-F1",
+      "locator": "“聚焦消费者，提高经营效率”中的2021–2023年即饮装均价分布段。",
+      "scope": {
+        "market": "中国线下饮料；不是无糖茶专项价格调查",
+        "period": "2021–2023年；不同段落涉及2023年线下饮料市场",
+        "population": "饮料即饮装监测；公开摘要未披露门店样本规模"
+      },
+      "evidenceType": "published-report"
+    },
+    {
+      "id": "CTX-F2",
+      "text": "研究将注意、复看、回忆、考虑和选择分别测量；回忆不能可靠替代实际视觉注意，增加注意也未必转化为选择。",
+      "basis": "印刷/PDF第7至8页记录与统计；第15页 Measures of point-of-purchase effectiveness",
+      "limits": "仅支持测量区分，不提供中国无糖茶包装效果或审美偏好。",
+      "sourceIds": [
+        "CTX-S1"
+      ],
+      "originalFactId": "CTX-F2",
+      "locator": "原论文印刷/PDF第7–8页测量与统计，以及第15页Measures of point-of-purchase effectiveness。",
+      "scope": {
+        "market": "美国；海外机制参照",
+        "period": "原文未明确采集年月；不得按发表年推定",
+        "population": "8 个美国城市招募 384 名成年主要家庭采购者，24–69 岁；分析保留 348 人，非中国办公人群"
+      },
+      "evidenceType": "method-reference"
+    },
+    {
+      "id": "BRIEF-pack",
+      "originalFactId": "BRIEF-pack",
+      "text": "青屿为虚构品牌。题设为中国大陆25至34岁成年城市办公者，500ml无糖即饮茶，目标零售价6至8元，保留青色与山形线条，标清茶种和配料。",
+      "sourceIds": [
+        "BRIEF-S1"
+      ],
+      "locator": "本案例给定任务条件中的产品规格、目标人群、售价及品牌资产。",
+      "scope": {
+        "market": "中国大陆，题设",
+        "period": "本次工程演练",
+        "population": "25至34岁成年城市办公者，题设"
+      },
+      "evidenceType": "brief-condition",
+      "value": {
+        "capacityMl": 500,
+        "targetPriceMinCny": 6,
+        "targetPriceMaxCny": 8,
+        "ageMin": 25,
+        "ageMax": 34
+      },
+      "limits": "未上市产品或真实任务卡事实；没有配方、具体茶种、实物或试饮数据。"
+    }
+  ],
+  "findings": [
+    {
+      "id": "PK-F01",
+      "title": "截至2024年6月，报告所列活跃单品已增加",
+      "text": "NIQ监测的无糖茶活跃单品由2019年94个增至2024年6月489个；2025年摘要仍记录该细分两位数年增长。",
+      "datumIds": [
+        "MP-F2",
+        "MP-F4"
+      ],
+      "sourceIds": [
+        "MP-S1",
+        "MP-S2"
+      ],
+      "locator": "MP-S1品类结构段；MP-S2品类洗牌段",
+      "scope": "NIQ中国饮料报告中的无糖茶资料；活跃单品统计未单列地理及渠道覆盖。",
+      "kind": "published-report",
+      "implication": "新品进入的是已有多种商品和茶种表达的品类。"
+    },
+    {
+      "id": "PK-F02",
+      "title": "增长同时伴随渠道覆盖扩大",
+      "text": "截至2024年6月，NIQ报告全国线下无糖茶销售同比增长80%，铺货点数量同比增长96%。",
+      "datumIds": [
+        "MP-F1"
+      ],
+      "sourceIds": [
+        "MP-S1"
+      ],
+      "locator": "趋势一，品类结构显著重塑",
+      "scope": "中国全国线下无糖茶；原文未细分销售额或销量，未明确累计期。",
+      "kind": "published-report",
+      "implication": "销售与渠道均有扩展记录，不能单凭增长挑选包装风格。"
+    },
+    {
+      "id": "PK-F03",
+      "title": "产品信息是已有的选购关注点",
+      "text": "2025年大食饮调研中，71%的受访者自报选购时会研究成分、产地及营养功效。",
+      "datumIds": [
+        "MP-F7"
+      ],
+      "sourceIds": [
+        "MP-S3"
+      ],
+      "locator": "公开摘要正文第81行",
+      "scope": "中国泛食饮受访者，2025年6至7月；非目标办公者专样。",
+      "kind": "published-report",
+      "implication": "茶种与配料属于有消费背景的信息内容。"
+    },
+    {
+      "id": "PK-F04",
+      "title": "价格功能与情绪体验并存",
+      "text": "英敏特2026年公开稿归纳，约三分之二消费者兼顾价格功能与情绪体验。",
+      "datumIds": [
+        "MP-F10"
+      ],
+      "sourceIds": [
+        "MP-S4"
+      ],
+      "locator": "效率与体验段，第37至43行",
+      "scope": "中国整体消费者；公开稿未给年龄、办公身份分组。",
+      "kind": "published-report",
+      "implication": "这项资料提供整体消费语境，不直接说明包装感受、目标办公者审美或视觉偏好。"
+    },
+    {
+      "id": "PK-F05",
+      "title": "所选竞品把茶种放进正面主信息区",
+      "text": "五张官方图均可见茶名与浅底竖长文字区。东方树叶两款共享绿色颈标；淳茶舍三款用瓶盖色和茶名字色分款。",
+      "datumIds": [
+        "CP-F15",
+        "CP-F16",
+        "CP-F17"
+      ],
+      "sourceIds": [
+        "CP-S2",
+        "CP-S4"
+      ],
+      "locator": "年报印刷第18页两图；淳茶舍官网三款官方商品图",
+      "scope": "两品牌五张目的性选取的官方物料。",
+      "kind": "visual-observation",
+      "implication": "所选两品牌样本既有相似信息区，也有系列内区分；不能据此概括全品类。"
+    },
+    {
+      "id": "PK-F06",
+      "title": "品牌用茶种与工艺说明产品",
+      "text": "淳茶舍官网以低温冷萃解释减少苦涩与回甘；东方树叶2025年报记录了陈皮白茶、菊花普洱等茶种扩展。",
+      "datumIds": [
+        "CP-F11",
+        "CP-F6"
+      ],
+      "sourceIds": [
+        "CP-S4",
+        "CP-S2"
+      ],
+      "locator": "淳茶舍产品总述；农夫山泉年报印刷第18页",
+      "scope": "企业公开产品说明和经营记录。口感为品牌自述。",
+      "kind": "brand-self-description",
+      "implication": "公开材料显示所查品牌怎样解释茶种、工艺与口感，没有测量消费者据此购买的原因。"
+    },
+    {
+      "id": "PK-F07",
+      "title": "青屿已有明确产品与品牌边界",
+      "text": "题设已给500ml、无糖、6至8元目标价，以及青色和山形线条。具体茶种、配方、工艺与口感尚未提供。",
+      "datumIds": [
+        "BRIEF-pack"
+      ],
+      "sourceIds": [
+        "BRIEF-S1"
+      ],
+      "locator": "包装Brief的brief字段",
+      "scope": "仅本次虚构工程演练。",
+      "kind": "brief-condition",
+      "implication": "现有题设能限定品牌与产品范围，具体产品资料仍不足以判断其差异化理由。"
+    },
+    {
+      "id": "PK-F08",
+      "title": "所查物料有共同线索，青屿差异待判断",
+      "text": "行业活跃单品增加，两个所查品牌的物料已呈现茶种与产品说明。青屿的任务条件尚缺具体茶种、工艺和口感，现有资料还不足以判断其产品差异。",
+      "datumIds": [
+        "MP-F2",
+        "CP-F6",
+        "CP-F11",
+        "CP-F15",
+        "CP-F16",
+        "BRIEF-pack"
+      ],
+      "sourceIds": [
+        "MP-S1",
+        "CP-S2",
+        "CP-S4",
+        "BRIEF-S1"
+      ],
+      "locator": "上述行业数据、竞品原件与包装Brief的综合分析",
+      "scope": "研究者综合判断，限当前公开材料与题设。",
+      "kind": "research-synthesis",
+      "implication": "已有研究能描述所选物料及待补产品条件；不能概括完整竞争格局，也未选定视觉风格或策略方向。"
+    }
+  ],
+  "charts": [
+    {
+      "id": "PK-C01",
+      "title": "无糖茶活跃单品数",
+      "type": "bar",
+      "unit": "个活跃单品",
+      "rows": [
+        {
+          "label": "2019年",
+          "value": 94,
+          "datumId": "MP-F2",
+          "valuePath": "2019"
+        },
+        {
+          "label": "2024年6月",
+          "value": 489,
+          "datumId": "MP-F2",
+          "valuePath": "2024-06"
+        }
+      ],
+      "sourceIds": [
+        "MP-S1"
+      ],
+      "scope": "NIQ公开报告所列无糖茶活跃单品；本统计未单列地理及渠道覆盖。",
+      "caption": "原报告所列历史活跃单品计数，非品牌数或单店选项数。",
+      "locator": "MP-S1，趋势一品类结构段"
+    },
+    {
+      "id": "PK-C02",
+      "title": "销售与铺货的同比变化",
+      "type": "metrics",
+      "unit": "%同比",
+      "rows": [
+        {
+          "label": "无糖茶销售",
+          "value": 80,
+          "datumId": "MP-F1",
+          "valuePath": "salesGrowth"
+        },
+        {
+          "label": "铺货点数量",
+          "value": 96,
+          "datumId": "MP-F1",
+          "valuePath": "distributionGrowth"
+        }
+      ],
+      "sourceIds": [
+        "MP-S1"
+      ],
+      "scope": "截至2024年6月，中国全国线下无糖茶。",
+      "caption": "销售与铺货为不同指标。原文未说明销售额或销量、累计期或滚动年。",
+      "locator": "MP-S1，趋势一品类结构段"
+    },
+    {
+      "id": "PK-C03",
+      "title": "自报研究成分、产地及营养功效",
+      "type": "single-metric",
+      "unit": "%受访者",
+      "rows": [
+        {
+          "label": "选购食饮时表示会研究",
+          "value": 71,
+          "datumId": "MP-F7"
+        }
+      ],
+      "sourceIds": [
+        "MP-S3"
+      ],
+      "scope": "中国大食饮调查，2025年6至7月。",
+      "caption": "泛食饮自报关注，非青屿瓶标阅读率。公开摘要未给样本量和原题。",
+      "locator": "MP-S3，正文第81行"
+    },
+    {
+      "id": "PK-C04",
+      "title": "五张原件的容量与表达对照",
+      "type": "comparison-table",
+      "columns": [
+        "产品",
+        "图示容量",
+        "可见系列线索",
+        "原件身份"
+      ],
+      "rows": [
+        {
+          "label": "淳茶舍冷萃茉莉花茶",
+          "capacityMl": 480,
+          "cue": "蓝盖、青绿色茶名、红色无糖块",
+          "identity": "官方商品渲染图",
+          "caseId": "PK-CASE01",
+          "datumId": "CP-F17",
+          "cueDatumIds": [
+            "CP-F16"
+          ]
+        },
+        {
+          "label": "淳茶舍冷萃乌龙茶",
+          "capacityMl": 480,
+          "cue": "橙盖、棕红茶名、红色无糖块",
+          "identity": "官方商品渲染图",
+          "caseId": "PK-CASE02",
+          "datumId": "CP-F17",
+          "cueDatumIds": [
+            "CP-F16"
+          ]
+        },
+        {
+          "label": "淳茶舍冷萃玉露绿茶",
+          "capacityMl": 480,
+          "cue": "绿盖、绿色茶名、红色无糖块",
+          "identity": "官方商品渲染图",
+          "caseId": "PK-CASE03",
+          "datumId": "CP-F17",
+          "cueDatumIds": [
+            "CP-F16"
+          ]
+        },
+        {
+          "label": "东方树叶菊花普洱",
+          "capacityMl": 500,
+          "cue": "绿色颈标、竖排茶名、花鸟图案",
+          "identity": "年报宣传物料",
+          "caseId": "PK-CASE04",
+          "datumId": "CP-F15",
+          "cueDatumIds": [
+            "CP-F15"
+          ],
+          "valuePath": "capacityMl"
+        },
+        {
+          "label": "东方树叶陈皮白茶",
+          "capacityMl": 500,
+          "cue": "绿色颈标、竖排茶名、花鸟图案",
+          "identity": "年报宣传物料，标注部分由AI生成",
+          "caseId": "PK-CASE05",
+          "datumId": "CP-F15",
+          "cueDatumIds": [
+            "CP-F15"
+          ],
+          "valuePath": "capacityMl"
+        }
+      ],
+      "sourceIds": [
+        "CP-S2",
+        "CP-S4"
+      ],
+      "scope": "两品牌五张已查读的官方物料，非同价同店市场抽样。",
+      "caption": "三款淳茶舍属于同一品牌系列；两张东方树叶为年报宣传图。",
+      "locator": "淳茶舍三张官网图；年报印刷第18页两图"
+    }
+  ],
+  "cases": [
+    {
+      "id": "PK-CASE01",
+      "title": "淳茶舍冷萃茉莉花茶",
+      "sourceIds": [
+        "CP-S4"
+      ],
+      "originalProductId": "CP-P3",
+      "datumIds": [
+        "CP-F16",
+        "CP-F17"
+      ],
+      "image": {
+        "file": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/source-assets/moli.png",
+        "sourcePage": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+        "identity": "official product render",
+        "identityLabel": "官方商品渲染图",
+        "preserveEntireImage": true,
+        "alt": "淳茶舍冷萃茉莉花茶，图示480ml",
+        "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+      },
+      "capacityMl": 480,
+      "observation": "蓝盖与青绿色茶名相配，白色竖区突出冷萃与茉莉花茶，侧边为红色无糖块。",
+      "comparisonUse": "看同一系列如何保留相同信息骨架，再用颜色与花叶图区分茶种。",
+      "scope": "中国大陆；本次官方物料样本，不代表市场覆盖率或消费者偏好。",
+      "locator": "第21至64行，产品总述及茉莉、玉露、铁观音三个SKU段落；图链接6、8、9",
+      "limits": "官网列示，不证明消费者偏好、实际印刷或货架识读；未核实当前售价"
+    },
+    {
+      "id": "PK-CASE02",
+      "title": "淳茶舍冷萃乌龙茶",
+      "sourceIds": [
+        "CP-S4"
+      ],
+      "originalProductId": "CP-P4",
+      "datumIds": [
+        "CP-F12",
+        "CP-F16",
+        "CP-F17"
+      ],
+      "image": {
+        "file": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/source-assets/wulong.png",
+        "sourcePage": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+        "identity": "official product render",
+        "identityLabel": "官方商品渲染图",
+        "preserveEntireImage": true,
+        "alt": "淳茶舍冷萃铁观音乌龙茶，图示480ml",
+        "sha256": "ba10aeb0fa05a5b03a98feb2c815a21b447f19874ad1dc8ee9f1e430db3b9622"
+      },
+      "capacityMl": 480,
+      "observation": "橙盖与棕红茶名相配，正面写乌龙茶。官网配文称茶叶为铁观音。",
+      "comparisonUse": "把瓶面可读的茶名与网页补充的原料分开，比较消费者在不同接触面能获得哪些信息。",
+      "scope": "中国大陆；本次官方物料样本，不代表市场覆盖率或消费者偏好。",
+      "locator": "第21至64行，产品总述及茉莉、玉露、铁观音三个SKU段落；图链接6、8、9",
+      "limits": "同品牌系列样本，不当作独立品牌；不是Brief500ml"
+    },
+    {
+      "id": "PK-CASE03",
+      "title": "淳茶舍冷萃玉露绿茶",
+      "sourceIds": [
+        "CP-S4"
+      ],
+      "originalProductId": "CP-P5",
+      "datumIds": [
+        "CP-F16",
+        "CP-F17"
+      ],
+      "image": {
+        "file": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/source-assets/yulu.png",
+        "sourcePage": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+        "identity": "official product render",
+        "identityLabel": "官方商品渲染图",
+        "preserveEntireImage": true,
+        "alt": "淳茶舍冷萃玉露绿茶，图示480ml",
+        "sha256": "dd885afafc03027f7e01999f57e0a2a05d1d47202b07e3aaf33e153424ce2457"
+      },
+      "capacityMl": 480,
+      "observation": "绿盖与绿色茶名相配，冷萃和无糖仍占据与同系列相同的位置。",
+      "comparisonUse": "比较绿色茶种线索与既有青屿青色资产的异同，作为样本对照，不作喜好结论。",
+      "scope": "中国大陆；本次官方物料样本，不代表市场覆盖率或消费者偏好。",
+      "locator": "第21至64行，产品总述及茉莉、玉露、铁观音三个SKU段落；图链接6、8、9",
+      "limits": "视觉观察不是偏好或销量因果"
+    },
+    {
+      "id": "PK-CASE04",
+      "title": "东方树叶菊花普洱",
+      "sourceIds": [
+        "CP-S2"
+      ],
+      "originalProductId": "CP-P6",
+      "datumIds": [
+        "CP-F15"
+      ],
+      "image": {
+        "file": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/source-assets/annual2025-p18-image0.jpeg",
+        "sourcePage": "https://static.cninfo.com.cn/finalpage/2026-04-17/1225121774.PDF#page=19",
+        "identity": "unaltered embedded official promotional image",
+        "identityLabel": "年报宣传物料",
+        "preserveEntireImage": true,
+        "alt": "东方树叶2025年报印刷页18，菊花普洱新品宣传物料",
+        "sha256": "72f3bb165c39ae43c5a7448477825beef5ee16508b8d6d7ec7a2630cab5fd83f"
+      },
+      "capacityMl": 500,
+      "observation": "宣传画面突出菊花普洱与新上市；瓶面保留绿色颈标、竖排茶名及花鸟图案。",
+      "comparisonUse": "分开观察广告画面的产品名与瓶身小字，避免把大幅宣传图的可读性当成瓶标效果。",
+      "scope": "中国大陆；本次官方物料样本，不代表市场覆盖率或消费者偏好。",
+      "locator": "印刷第18页，管理层讨论与分析，茶饮料产品；PDF零基页18，文本969至1016行",
+      "limits": "公司公开宣传物料，非本次实拍或货架观察；不证明物理质感/市场效果"
+    },
+    {
+      "id": "PK-CASE05",
+      "title": "东方树叶陈皮白茶",
+      "sourceIds": [
+        "CP-S2"
+      ],
+      "originalProductId": "CP-P7",
+      "datumIds": [
+        "CP-F15"
+      ],
+      "image": {
+        "file": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/source-assets/annual2025-p18-image1.jpeg",
+        "sourcePage": "https://static.cninfo.com.cn/finalpage/2026-04-17/1225121774.PDF#page=19",
+        "identity": "unaltered embedded official promotional image with AI assistance disclosure",
+        "identityLabel": "年报宣传物料，部分由AI生成",
+        "preserveEntireImage": true,
+        "alt": "东方树叶2025年报印刷页18，陈皮白茶新品宣传物料",
+        "sha256": "f472fa508994febe99f1c84f20ec6a5c50df5cf82aa9db2a5082a6c358d95d72"
+      },
+      "capacityMl": 500,
+      "observation": "宣传画面以绿色产品名呼应品牌横条；瓶面为竖排茶名与花鸟图案，右下注明部分由AI生成。",
+      "comparisonUse": "可比较品牌统一线索与新品茶名如何共存，保留原图的AI辅助声明。",
+      "scope": "中国大陆；本次官方物料样本，不代表市场覆盖率或消费者偏好。",
+      "locator": "印刷第18页，管理层讨论与分析，茶饮料产品；PDF零基页18，文本969至1016行",
+      "limits": "保留原标注，不把宣传合成图作为实物摄影/生产质感证明"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "PK-G01",
+      "title": "目标人群审美",
+      "status": "待补",
+      "text": "未取得25至34岁成年城市办公者对青色、山形、字体、版式或包装风格的偏好数据。",
+      "scope": "中国大陆目标办公者",
+      "consequence": "人群页保留空缺，不用竞品图片或宏观情绪补成审美结论。",
+      "sourceIds": [
+        "MP-S3",
+        "MP-S4"
+      ],
+      "locator": "MP-G1、MP-G3；公开摘要的样本与设计效应披露范围"
+    },
+    {
+      "id": "PK-G02",
+      "title": "同渠道价格与付费选择",
+      "status": "待补",
+      "text": "缺同日同店或同一线上渠道、规格和促销条件明确的无糖茶报价，也缺目标人群按真实价格购买的资料。",
+      "scope": "青屿拟进入的中国大陆渠道",
+      "consequence": "6至8元仍是任务目标，不能据此认定高端、价格空位或被接受。",
+      "sourceIds": [
+        "PC-S1",
+        "BRIEF-S1"
+      ],
+      "locator": "price-context.json PC-G1；BRIEFS.json pack"
+    },
+    {
+      "id": "PK-G03",
+      "title": "真实选择场景",
+      "status": "待补",
+      "text": "缺中国便利店冷柜与电商小图中的品牌识别、茶种理解和选择结果。",
+      "scope": "目标渠道与目标办公者",
+      "consequence": "不提供货架显眼度排名或电商转化效果。",
+      "sourceIds": [
+        "CTX-S1"
+      ],
+      "locator": "context-media.json CTX-G1、CTX-G4"
+    },
+    {
+      "id": "PK-G04",
+      "title": "青屿产品资料",
+      "status": "待补",
+      "text": "具体茶种、完整配料、实物标签、工艺与口感资料尚未提供。",
+      "scope": "本次虚构青屿产品",
+      "consequence": "不能编写独特口感、原料优势或健康功效。",
+      "sourceIds": [
+        "BRIEF-S1"
+      ],
+      "locator": "BRIEFS.json pack，已给和未给字段"
+    },
+    {
+      "id": "PK-G05",
+      "title": "竞品实物与背标",
+      "status": "待补",
+      "text": "五图可核对公开表达，背标、实物、同场景货架及当期价格仍缺。",
+      "scope": "本次两品牌五图样本",
+      "consequence": "不推断材质、印刷、触感、现售铺货或市场效果。",
+      "sourceIds": [
+        "CP-S2",
+        "CP-S4"
+      ],
+      "locator": "competitor-packs.json CP-G2、CP-G3、CP-G6"
+    }
+  ],
+  "evidenceNotes": {
+    "defaultCollapsed": true,
+    "label": "资料、口径与核验",
+    "methodology": [
+      "优先复用已实际查读的原始机构公开报告、企业原件和五张官方原图。本轮未扩大网络检索。",
+      "研究发布方的公开摘要按原范围引用。样本量、原题或零售监测口径未公开时保留未知。",
+      "竞品五图为目的性样本。淳茶舍三图属于同一品牌系列，东方树叶两图为年报宣传物料。作者本轮逐图复看，保留图片身份及AI辅助标注。",
+      "美国货架图片实验仅作后置方法参照。原实验为肥皂与止痛药，不是中国冷柜、目标办公者或审美结果。注意、回忆、考虑和选择应分别理解。"
+    ],
+    "methodReferenceDatumIds": [
+      "CTX-F2"
+    ],
+    "sourceDecisionFile": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/SOURCE-DECISIONS-R2.json",
+    "quarantinedFactIds": [
+      "CP-F1",
+      "CP-F2",
+      "CP-F3"
+    ],
+    "priorChecks": [
+      {
+        "file": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/source-check-r2-1.json",
+        "role": "独立AI事实核验",
+        "scope": "新增情景与价格资料及纠错应用的窄审，不是本轮新页面或全部旧事实批准。"
+      },
+      {
+        "file": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/design-research-skill-v2-20261109/reader-final.json",
+        "role": "独立AI新读者理解检查",
+        "scope": "仅证明此前三份指定正文可被区分理解，不证明消费者认同、审美或购买效果。"
+      }
+    ],
+    "correctionsApplied": [
+      "CP-F1、CP-F2、CP-F3不进入有效datums、findings或图表。",
+      "不沿用MP-I4的办公持续饮用事实性写法。",
+      "不把原报告所列活跃单品数（统计覆盖未单列）改成单店选择数。",
+      "不使用65%与26%拼接参与或购买漏斗。",
+      "不把淳茶舍乌龙瓶面的乌龙茶改写成瓶面铁观音。",
+      "不使用农夫山泉茶饮料分部收入证明东方树叶包装效果。",
+      "不将图片路径当拍摄或发售日期。"
+    ],
+    "sourceTypeLabels": {
+      "published-report": "机构公开报告引述",
+      "visual-observation": "官方物料可见观察",
+      "brand-self-description": "品牌自述",
+      "research-synthesis": "研究分析",
+      "brief-condition": "虚构任务条件",
+      "brief-derived": "题设换算",
+      "method-reference": "境外方法参照"
+    }
+  }
+}

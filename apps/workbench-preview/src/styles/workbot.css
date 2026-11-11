@@ -1,0 +1,1025 @@
+/* ================================================================ WorkBot */
+
+:root {
+  --wb-lilac: #c9bdf6;
+  --wb-lilac-ink: #1e1838;
+  --wbc-ink: #151815;
+  --wbc-body: #d4f53c;
+  --wbc-paper: #ffffff;
+  --wbc-bubble: #fffaf0;
+  --wbc-limb: #151815;
+  --workbot-w: 400px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --wbc-limb: #e3e8df;
+    --wb-lilac: #3c3466;
+    --wb-lilac-ink: #ece8ff;
+  }
+}
+
+:root[data-theme='dark'] {
+  --wbc-limb: #e3e8df;
+  --wb-lilac: #3c3466;
+  --wb-lilac-ink: #ece8ff;
+}
+
+/* ---------------------------------------------------------------- character */
+
+.wbc {
+  display: block;
+  overflow: visible;
+}
+
+.wbc__front,
+.wbc__back {
+  fill: var(--wbc-body);
+}
+
+.wbc__paper {
+  fill: var(--wbc-paper);
+}
+
+.wbc__white {
+  fill: #ffffff;
+}
+
+.wbc__figure,
+.wbc__arm,
+.wbc__eye,
+.wbc__pupil {
+  transform-box: view-box;
+}
+
+.wbc__figure {
+  transform-origin: 59px 74px;
+  transition: transform 220ms ease;
+}
+
+.wbc__arm--right {
+  transform-origin: 98.4px 50.6px;
+}
+
+.wbc__arm--left {
+  transform-origin: 22px 44.5px;
+}
+
+.wbc__eye--left {
+  transform-origin: 48.4px 40px;
+}
+
+.wbc__eye--right {
+  transform-origin: 78px 40.2px;
+}
+
+.wbc__pupil {
+  transition: transform 240ms ease;
+}
+
+/* The glasses never move, so they stay readable whatever the eyes do. */
+
+/* Idle: an occasional blink of the eyes behind the glasses. */
+.wbc[data-mood='idle'] .wbc__eye {
+  animation: wbc-blink 7s infinite;
+}
+
+@keyframes wbc-blink {
+  0%,
+  95%,
+  100% {
+    transform: scaleY(1);
+  }
+  97% {
+    transform: scaleY(0.08);
+  }
+}
+
+/* Idle: a slow breath, and the arms hang loose and sway a little. */
+.wbc[data-mood='idle'] .wbc__folder,
+.wbc[data-mood='idle'] .wbc__eyes,
+.wbc[data-mood='idle'] .wbc__glasses {
+  transform-box: view-box;
+  transform-origin: 59px 62px;
+  animation: wbc-breathe 3.6s ease-in-out infinite;
+}
+
+.wbc[data-mood='idle'] .wbc__arm--left {
+  animation: wbc-sway-l 4.8s ease-in-out infinite;
+}
+
+.wbc[data-mood='idle'] .wbc__arm--right {
+  animation: wbc-sway-r 5.4s ease-in-out infinite;
+}
+
+@keyframes wbc-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.012, 1.03) translateY(-0.8px);
+  }
+}
+
+@keyframes wbc-sway-l {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes wbc-sway-r {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-7deg);
+  }
+}
+
+/* Idle gestures, one at a time (WorkBot.tsx picks them). They override the sway while they play. */
+.wbc[data-act='look-left'] .wbc__pupil {
+  animation: wbc-look-l 1.9s ease-in-out 1;
+}
+
+.wbc[data-act='look-left'] .wbc__figure {
+  animation: wbc-turn-l 1.9s ease-in-out 1;
+}
+
+.wbc[data-act='look-right'] .wbc__pupil {
+  animation: wbc-look-r 1.9s ease-in-out 1;
+}
+
+.wbc[data-act='look-right'] .wbc__figure {
+  animation: wbc-turn-r 1.9s ease-in-out 1;
+}
+
+@keyframes wbc-look-l {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20%,
+  70% {
+    transform: translate(-4px, 0.4px);
+  }
+}
+
+@keyframes wbc-look-r {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20%,
+  70% {
+    transform: translate(3px, 0.4px);
+  }
+}
+
+@keyframes wbc-turn-l {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25%,
+  70% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes wbc-turn-r {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25%,
+  70% {
+    transform: rotate(4deg);
+  }
+}
+
+.wbc[data-act='wave'] .wbc__arm--right {
+  animation: wbc-wave 700ms ease-in-out 2;
+}
+
+.wbc[data-act='wave'] .wbc__pupil {
+  transform: translate(-1.6px, -0.6px);
+}
+
+.wbc[data-act='stretch'] .wbc__arm--left {
+  animation: wbc-stretch-l 1.6s ease-in-out 1;
+}
+
+.wbc[data-act='stretch'] .wbc__arm--right {
+  animation: wbc-stretch-r 1.6s ease-in-out 1;
+}
+
+.wbc[data-act='stretch'] .wbc__figure {
+  animation: wbc-rise 1.6s ease-in-out 1;
+}
+
+@keyframes wbc-stretch-l {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35%,
+  65% {
+    transform: rotate(48deg);
+  }
+}
+
+@keyframes wbc-stretch-r {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35%,
+  65% {
+    transform: rotate(-30deg);
+  }
+}
+
+@keyframes wbc-rise {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  35%,
+  65% {
+    transform: translateY(-2px);
+  }
+}
+
+.wbc[data-act='hop'] .wbc__figure {
+  animation: wbc-hop 900ms cubic-bezier(0.3, 0.7, 0.4, 1) 1;
+}
+
+@keyframes wbc-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  15% {
+    transform: translateY(1px) scale(1.04, 0.95);
+  }
+  45% {
+    transform: translateY(-7px) scale(0.98, 1.03);
+  }
+  75% {
+    transform: translateY(0.6px) scale(1.03, 0.97);
+  }
+}
+
+.wbc[data-act='tap'] .wbc__arm--left {
+  animation: wbc-tap 430ms ease-in-out 3;
+}
+
+.wbc[data-act='tap'] .wbc__pupil {
+  transform: translate(-2.6px, 1.8px);
+}
+
+@keyframes wbc-tap {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-16deg);
+  }
+}
+
+/* Opening: a brief wave. */
+.wbc[data-mood='welcome'] .wbc__arm--right {
+  animation: wbc-wave 900ms ease-in-out 1;
+}
+
+@keyframes wbc-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25%,
+  75% {
+    transform: rotate(-22deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+/* Waiting: pupils look about while a request is actually in flight. */
+.wbc[data-mood='thinking'] .wbc__pupil {
+  animation: wbc-scan 1.8s ease-in-out infinite;
+}
+
+@keyframes wbc-scan {
+  0%,
+  100% {
+    transform: translate(-3px, -1.6px);
+  }
+  50% {
+    transform: translate(0.6px, -1.6px);
+  }
+}
+
+/* Answer received: one small nod. */
+.wbc[data-mood='ack'] .wbc__figure {
+  animation: wbc-nod 520ms ease-out 1;
+}
+
+@keyframes wbc-nod {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(1.6px);
+  }
+}
+
+/* Error: eyes drop and narrow a little. The text beside it says what went wrong. */
+.wbc[data-mood='error'] .wbc__eye {
+  transform: scaleY(0.82);
+}
+
+.wbc[data-mood='error'] .wbc__pupil {
+  transform: translate(-2px, 2.6px);
+}
+
+.wbc[data-mood='error'] .wbc__arm--right {
+  transform: rotate(38deg);
+}
+
+/* Hover or keyboard focus: a slight tilt toward the person. */
+.workbot-launcher:hover .wbc__figure,
+.workbot-launcher:focus-visible .wbc__figure {
+  transform: rotate(-5deg);
+}
+
+.workbot-launcher:hover .wbc[data-mood='idle'] .wbc__pupil,
+.workbot-launcher:focus-visible .wbc[data-mood='idle'] .wbc__pupil {
+  transform: translate(-2.4px, 0.6px);
+}
+
+/* ---------------------------------------------------------------- launcher */
+
+.workbot-launcher {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right, 0px));
+  bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--wbc-ink);
+  cursor: pointer;
+}
+
+.workbot-launcher:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.workbot-launcher[hidden] {
+  display: none;
+}
+
+.workbot-launcher__figure {
+  flex: none;
+}
+
+/*
+ * The bubble comes out from behind WorkBot now and then and goes back in. Hidden, it stays in the
+ * accessibility tree as the button's name; it is only drawn out of sight.
+ */
+.workbot-launcher__bubble {
+  /* Outside the button's own box, so the hidden bubble never catches clicks meant for the page. */
+  /* Above the character, toward the right edge, so it sits in the gutter rather than on content. */
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 6px;
+  width: max-content;
+  opacity: 0;
+  transform: translateY(10px) scale(0.86);
+  transform-origin: calc(100% - 30px) bottom;
+  transition:
+    opacity 220ms ease,
+    transform 320ms cubic-bezier(0.3, 1.4, 0.5, 1);
+  pointer-events: none;
+}
+
+.workbot-launcher__bubble[data-show] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.workbot-launcher__bubble {
+  max-width: 190px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--wbc-ink);
+  border-radius: 16px;
+  background: var(--wbc-bubble);
+  color: var(--wbc-ink);
+  font-size: var(--step--1);
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+}
+
+/* The tail points at the character. */
+.workbot-launcher__bubble::before,
+.workbot-launcher__bubble::after {
+  content: '';
+  position: absolute;
+  border-style: solid;
+}
+
+.workbot-launcher__bubble::before {
+  bottom: -10px;
+  right: 26px;
+  border-width: 10px 7px 0 7px;
+  border-color: var(--wbc-ink) transparent transparent transparent;
+}
+
+.workbot-launcher__bubble::after {
+  bottom: -7.5px;
+  right: 27.5px;
+  border-width: 8px 5.5px 0 5.5px;
+  border-color: var(--wbc-bubble) transparent transparent transparent;
+}
+
+.workbot-launcher:hover .workbot-launcher__bubble {
+  background: #ffffff;
+}
+
+.workbot-launcher__bubble[data-kind='error'] {
+  background: var(--bad-wash);
+  color: var(--bad);
+  border-color: var(--bad);
+}
+
+.workbot-launcher__bubble[data-kind='error']::before {
+  border-top-color: var(--bad);
+}
+
+.workbot-launcher__bubble[data-kind='error']::after {
+  border-top-color: var(--bad-wash);
+}
+
+.workbot-launcher__bubble[data-kind='unread'] {
+  background: var(--lime);
+}
+
+.workbot-launcher__bubble[data-kind='unread']::after {
+  border-top-color: var(--lime);
+}
+
+/* Keep the end of every page reachable above the launcher. */
+.main {
+  padding-bottom: 104px;
+}
+
+/* ---------------------------------------------------------------- panel */
+/*
+ * The panel uses the same language as the workspace: the page colour as its ground, a lime head
+ * tile with the character, white rounded cards for answers, dark pills for what you wrote, and
+ * pill controls with a round go button for sending.
+ */
+
+.workbot {
+  position: fixed;
+  z-index: 70;
+  top: var(--topbar);
+  right: 0;
+  bottom: 0;
+  width: min(var(--workbot-w), 100vw);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  padding: 10px 10px 12px;
+  background: var(--canvas);
+  border-left: 1px solid var(--rule);
+  box-shadow: -12px 0 32px rgb(18 28 22 / 0.1);
+  font-family: var(--font-grotesk);
+}
+
+.workbot[hidden] {
+  display: none;
+}
+
+/* On wide screens the panel sits beside the workspace instead of covering it. */
+@media (min-width: 1000px) {
+  :root[data-workbot='open'] .app {
+    margin-right: var(--workbot-w);
+  }
+
+  .workbot {
+    top: 0;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .workbot {
+    top: 0;
+    width: 100vw;
+    border-left: 0;
+    padding-top: max(10px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Head: a lime tile with the character standing on it */
+.workbot__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 10px 12px 14px;
+  border-radius: 24px;
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+.workbot__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.workbot__title h2 {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.workbot__avatar {
+  display: block;
+  flex: none;
+}
+
+.workbot__head .sim-label {
+  border-color: color-mix(in srgb, var(--lime-ink) 45%, transparent);
+  color: var(--lime-ink);
+}
+
+.workbot__tools {
+  display: flex;
+  gap: 6px;
+}
+
+.workbot__tools .icon-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: color-mix(in srgb, #ffffff 55%, transparent);
+  color: var(--lime-ink);
+}
+
+.workbot__tools .icon-btn:hover:not(:disabled) {
+  background: #ffffff;
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sim-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border: 1px dashed var(--rule-strong);
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* What the questions are about */
+.workbot__scope {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.workbot__scope > .small:first-child {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workbot__scope-note {
+  margin: 0;
+}
+
+.scope-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.scope-switch__opt {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-height: 34px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--sunken);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--step--1);
+  cursor: pointer;
+}
+
+.scope-switch__opt:hover {
+  background: color-mix(in srgb, var(--ink-strong) 10%, var(--sunken));
+}
+
+.scope-switch__opt[aria-checked='true'] {
+  background: var(--ink-strong);
+  color: var(--canvas);
+  font-weight: 600;
+}
+
+.workbot__notice {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: var(--wb-lilac);
+  color: var(--wb-lilac-ink);
+  font-size: var(--step--1);
+}
+
+/* The conversation */
+.workbot__log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overscroll-behavior: contain;
+}
+
+.workbot__empty {
+  margin: auto 0;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 22px 18px;
+  border-radius: 22px;
+  background: var(--card);
+  text-align: center;
+}
+
+.workbot__empty-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.wb-msg {
+  max-width: 100%;
+}
+
+.wb-msg p {
+  margin: 0;
+}
+
+.wb-msg--user {
+  align-self: flex-end;
+  max-width: 85%;
+  padding: 10px 16px;
+  border-radius: 22px 22px 6px 22px;
+  background: var(--ink-strong);
+  color: var(--canvas);
+}
+
+.wb-msg--bot {
+  align-self: stretch;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 6px 22px 22px 22px;
+  background: var(--card);
+}
+
+.wb-msg__status {
+  font-weight: 600;
+  font-size: var(--step--1);
+}
+
+.wb-msg__status[data-tone='bad'],
+.wb-msg--error p {
+  color: var(--bad);
+}
+
+.wb-msg--error {
+  background: var(--bad-wash);
+  justify-items: start;
+}
+
+/* Each part of an answer is labelled with a coloured tag, as in the tiles */
+.wb-block {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+
+.wb-block > p,
+.wb-block > ul,
+.wb-block > .wb-refs {
+  justify-self: stretch;
+}
+
+.wb-block__kind {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--sunken);
+  color: var(--ink-2);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.wb-block[data-kind='interpretation'] .wb-block__kind {
+  background: var(--bx-lilac, #c9bdf6);
+  color: var(--bx-lilac-ink, #1e1838);
+}
+
+.wb-block[data-kind='recommendation'] .wb-block__kind {
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+.wb-block[data-kind='missing'] .wb-block__kind {
+  background: var(--warm);
+  color: var(--warm-ink);
+}
+
+.wb-block[data-kind='guidance'] .wb-block__kind {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--rule-strong);
+}
+
+.wb-block ul {
+  margin: 2px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 2px;
+  font-size: var(--step--1);
+}
+
+.wb-refs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.ref-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  min-height: 30px;
+  padding: 2px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--sunken);
+  color: var(--ink-strong);
+  font: inherit;
+  font-size: var(--step--1);
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ref-chip:hover {
+  background: var(--ink-strong);
+  color: var(--canvas);
+}
+
+.wb-msg__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--rule);
+}
+
+.wb-msg__foot:empty {
+  display: none;
+}
+
+.wb-msg__foot svg {
+  vertical-align: -2px;
+}
+
+.wb-stale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: var(--warn-wash);
+}
+
+.wb-stale[data-tone='bad'] {
+  background: var(--bad-wash);
+}
+
+.wb-msg--typing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  align-self: flex-start;
+}
+
+.wb-typing {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.wb-typing i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-2);
+  animation: wb-type 1.1s ease-in-out infinite;
+}
+
+.wb-typing i:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.wb-typing i:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes wb-type {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Suggested questions and the composer sit on one white card at the foot */
+.workbot__suggest {
+  display: flex;
+  gap: 6px;
+  padding: 2px 28px 4px 2px;
+  scroll-padding-inline-end: 28px;
+  mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.suggest-chip {
+  flex: none;
+  max-width: 260px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--step--1);
+  text-align: left;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.suggest-chip:hover:not(:disabled) {
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+.suggest-chip:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.workbot__composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 28px;
+  background: var(--card);
+}
+
+.workbot__composer:focus-within {
+  box-shadow: 0 0 0 2px var(--ink-strong);
+}
+
+.workbot__composer textarea {
+  flex: 1;
+  min-height: 44px;
+  max-height: 140px;
+  resize: none;
+  padding: 11px 12px 11px 14px;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.workbot__composer textarea:focus {
+  outline: none;
+}
+
+.workbot__composer .btn--icon {
+  border-radius: 50%;
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--lime-ink);
+}
+
+.btn--icon {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  flex: none;
+}
+
+.workbot__rules {
+  margin: 0;
+  padding: 0 8px;
+  font-size: 0.75rem;
+}
+
+/* ---------------------------------------------------------------- reduced motion */
+/* Static equivalents: each mood keeps a distinct still pose, and the bubble and panel say it in text. */
+
+@media (prefers-reduced-motion: reduce) {
+  .wbc *,
+  .wbc__figure,
+  .wb-typing i {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .workbot-launcher:hover .wbc__figure,
+  .workbot-launcher:focus-visible .wbc__figure {
+    transform: none;
+  }
+
+  .wbc[data-mood='thinking'] .wbc__pupil {
+    transform: translate(-1.5px, -2px);
+  }
+
+  .wbc[data-mood='welcome'] .wbc__arm--right {
+    transform: rotate(-18deg);
+  }
+
+  .wb-typing i {
+    opacity: 0.7;
+  }
+
+  .workbot-launcher__bubble,
+  .workbot-launcher__bubble[data-show] {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* WorkBot steps out while a modal is open; the phone toolbar keeps its layout space. */
+:root:has(dialog:modal) .workbot-launcher {
+  display: none;
+}

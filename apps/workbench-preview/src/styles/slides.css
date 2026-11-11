@@ -1,0 +1,791 @@
+/*
+ * Slide styles built from the supplied decks (cobalt.css holds the third). Sizes are container
+ * units of the slide (100cqw wide, 56.25cqw tall). The PowerPoint export mirrors these layouts.
+ */
+
+/* ================================================================ Editorial: case-study grid */
+
+.slide[data-style='editorial'],
+.slide[data-style='studio'] {
+  display: block;
+}
+
+.ed {
+  position: absolute;
+  inset: 0;
+  padding: 3.2cqw 4cqw;
+  background: var(--ed-mat, var(--s-wash));
+}
+
+.ed-card {
+  position: relative;
+  height: 100%;
+  border-radius: 1.6cqw;
+  background: var(--s-paper);
+  color: var(--s-ink);
+  overflow: hidden;
+}
+
+.slide[data-style='editorial'] .slide__folio {
+  right: 6cqw;
+  bottom: 5cqw;
+}
+
+.ed-lead {
+  font-family: var(--font-grotesk);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.slide[data-face='serif'] .ed-lead {
+  font-family: var(--font-reading);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.ed-lead--xl { font-size: 5.2cqw; }
+.ed-lead--lg { font-size: 3.4cqw; }
+.ed-lead--md { font-size: 2.7cqw; }
+.ed-lead--statement { font-size: 3.8cqw; max-width: 24ch; }
+.ed-lead--slogan { font-size: 5cqw; max-width: 16ch; }
+
+.ed-sub {
+  font-size: 1.3cqw;
+  line-height: 1.45;
+  color: var(--s-muted);
+  max-width: 42ch;
+}
+
+.ed-kicker {
+  font-size: 1.05cqw;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--s-muted);
+}
+
+.ed-note {
+  font-size: 1cqw;
+  color: var(--s-muted);
+}
+
+.ed-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6cqw;
+}
+
+.ed-chip {
+  padding: 0.35cqw 0.85cqw;
+  border-radius: 0.5cqw;
+  background: #f2c59b;
+  color: #6b3b12;
+  font-family: var(--font-grotesk);
+  font-size: 0.95cqw;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ed-chip[data-i='1'] { background: #b7d3a8; color: #24452a; }
+.ed-chip[data-i='2'] { background: #c9c1ee; color: #3c3270; }
+
+.ed-pill {
+  position: absolute;
+  bottom: 4cqw;
+  left: 50%;
+  padding: 0.9cqw 2.6cqw;
+  border-radius: 999px;
+  background: #141416;
+  color: #ffffff;
+  font-family: var(--font-grotesk);
+  font-size: 1.15cqw;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+/* A picture with a pastel arrow button in a notch at its bottom-right corner */
+.ed-pic {
+  --nr: 1.6cqw;
+  position: relative;
+}
+
+.ed-pic__frame {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--nr);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--s-ink) 7%, transparent);
+}
+
+.ed-pic__frame .art,
+.ed-pic__frame .art svg,
+.ed-pic__blank {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ed-pic__notch {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 7.2cqw;
+  height: 7.2cqw;
+  padding: 0.9cqw 0 0 0.9cqw;
+  border-top-left-radius: 3.4cqw;
+  background: var(--s-paper);
+  box-sizing: border-box;
+}
+
+.ed-pic__notch::before,
+.ed-pic__notch::after {
+  content: '';
+  position: absolute;
+  width: var(--nr);
+  height: var(--nr);
+  background: radial-gradient(circle at 0 0, transparent calc(var(--nr) - 0.5px), var(--s-paper) var(--nr));
+}
+
+.ed-pic__notch::before {
+  top: calc(var(--nr) * -1);
+  right: 0;
+}
+
+.ed-pic__notch::after {
+  bottom: 0;
+  left: calc(var(--nr) * -1);
+}
+
+.ed-orb {
+  width: 100%;
+  height: 100%;
+  background: var(--orb) !important;
+  color: #1b1a1f !important;
+}
+
+.ed-orb svg {
+  width: 38%;
+  height: 38%;
+}
+
+.ed-cover__text {
+  position: absolute;
+  top: 5cqw;
+  left: 5cqw;
+  width: 36cqw;
+  display: grid;
+  gap: 2cqw;
+}
+
+.ed-pic--cover {
+  position: absolute;
+  top: 4cqw;
+  right: 4cqw;
+  bottom: 4cqw;
+  width: 44cqw;
+}
+
+.ed-statement {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2cqw;
+  padding: 5cqw 8cqw 10cqw;
+  text-align: center;
+}
+
+.ed-statement .ed-chips {
+  justify-content: center;
+}
+
+.ed-data {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 4cqw;
+  padding: 5cqw 6cqw;
+}
+
+.ed-number {
+  font-family: var(--font-reading);
+  font-size: 13cqw;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.ed-data__text {
+  display: grid;
+  gap: 1.6cqw;
+}
+
+.ed-theme {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  gap: 2.2cqw;
+  padding: 5cqw 7cqw;
+}
+
+.ed-compare__title {
+  position: absolute;
+  top: 4.4cqw;
+  left: 5cqw;
+  max-width: 24ch;
+}
+
+.ed-compare {
+  position: absolute;
+  top: 15cqw;
+  right: 4cqw;
+  left: 4cqw;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2cqw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ed-compare li {
+  display: grid;
+  gap: 0.8cqw;
+  align-content: start;
+}
+
+.ed-compare .ed-pic {
+  height: 17cqw;
+  margin-bottom: 0.6cqw;
+}
+
+.ed-compare__name {
+  font-family: var(--font-grotesk);
+  font-size: 2cqw;
+  font-weight: 500;
+}
+
+.ed-compare__line {
+  font-size: 1.15cqw;
+  line-height: 1.4;
+  color: var(--s-muted);
+}
+
+.ed-pic--hero {
+  position: absolute;
+  top: 4cqw;
+  bottom: 4cqw;
+  left: 4cqw;
+  width: 52cqw;
+}
+
+.ed-side {
+  position: absolute;
+  top: 50%;
+  right: 5cqw;
+  width: 28cqw;
+  display: grid;
+  gap: 1.6cqw;
+  transform: translateY(-50%);
+}
+
+.ed-text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5cqw;
+  width: 38cqw;
+  display: grid;
+  align-content: center;
+  gap: 1.8cqw;
+}
+
+.ed-pic--side {
+  position: absolute;
+  top: 4cqw;
+  right: 4cqw;
+  bottom: 4cqw;
+  width: 40cqw;
+}
+
+/* ================================================================ Studio: marketing deck */
+
+.sd {
+  position: absolute;
+  inset: 0;
+  padding: 2.6cqw 3.4cqw;
+  background: var(--s-wash);
+  font-family: var(--font-grotesk);
+}
+
+.sd-page {
+  position: relative;
+  height: 100%;
+  border-radius: 1cqw;
+  background: var(--s-paper);
+  color: var(--s-ink);
+  overflow: hidden;
+}
+
+.slide[data-style='studio'] .slide__folio {
+  right: 5cqw;
+  bottom: 4cqw;
+}
+
+.sd-head {
+  position: absolute;
+  top: 3cqw;
+  right: 4cqw;
+  left: 4cqw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqw;
+}
+
+.sd-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4cqw;
+  min-width: 0;
+}
+
+.sd-tag__n {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.9cqw;
+  height: 1.9cqw;
+  border-radius: 50%;
+  background: #111214;
+  color: #ffffff;
+  font-size: 0.85cqw;
+  font-weight: 700;
+}
+
+.sd-tag__l {
+  overflow: hidden;
+  padding: 0.35cqw 1cqw;
+  border-radius: 999px;
+  background: #111214;
+  color: #ffffff;
+  font-size: 0.9cqw;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 40cqw;
+}
+
+.sd-label {
+  font-size: 0.9cqw;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sd-lead {
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.sd-lead--xl { font-size: 5.8cqw; }
+.sd-lead--lg { font-size: 3.4cqw; }
+.sd-lead--md { font-size: 2.6cqw; }
+.sd-lead--statement { font-size: 4.4cqw; max-width: 22ch; }
+.sd-lead--slogan { font-size: 4.8cqw; max-width: 14ch; }
+
+.sd-sub {
+  font-size: 1.15cqw;
+  line-height: 1.45;
+  color: var(--s-muted);
+  max-width: 40ch;
+}
+
+.sd-note {
+  font-size: 0.95cqw;
+  color: var(--s-muted);
+}
+
+.sd-pill {
+  justify-self: start;
+  padding: 0.6cqw 1.4cqw;
+  border-radius: 999px;
+  background: #111214;
+  color: #ffffff;
+  font-size: 1cqw;
+}
+
+/* Large thin arrow in the bottom-left corner of text pages */
+.sd-arrow {
+  position: absolute;
+  bottom: 3.4cqw;
+  left: 4cqw;
+  width: 4.6cqw;
+  height: 4.6cqw;
+  background: transparent !important;
+  color: var(--s-ink) !important;
+}
+
+.sd-arrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sd-arrow--static {
+  position: static;
+  margin-top: auto;
+}
+
+/* Tall picture cards with a coloured pill and a tick */
+.sd-tall {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.2cqw;
+  border-radius: 1.8cqw;
+  background: #1d1d22;
+  color: #ffffff;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.sd-tall__pic {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.sd-tall__pic .art,
+.sd-tall__pic .art svg,
+.sd-tall__blank {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sd-tall::after {
+  content: '';
+  position: absolute;
+  inset: 40% 0 0;
+  z-index: -1;
+  background: linear-gradient(transparent, rgb(12 12 16 / 0.88));
+}
+
+.sd-tall__n {
+  position: absolute;
+  top: 1.2cqw;
+  left: 1.2cqw;
+  display: grid;
+  place-items: center;
+  width: 2.3cqw;
+  height: 2.3cqw;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #111214;
+  font-size: 1cqw;
+  font-weight: 700;
+}
+
+.sd-tall__text {
+  display: grid;
+  gap: 0.6cqw;
+  margin-bottom: 1.2cqw;
+}
+
+.sd-tall__title {
+  font-size: 1.8cqw;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.sd-tall__line {
+  font-size: 1cqw;
+  line-height: 1.4;
+  opacity: 0.88;
+}
+
+.sd-tall__pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6cqw;
+  padding: 0.65cqw 1cqw;
+  border-radius: 999px;
+  background: #6f63f0;
+  color: #ffffff;
+  font-size: 1cqw;
+  white-space: nowrap;
+}
+
+.sd-tall__pill[data-c='lime'] {
+  background: var(--s-hl);
+  color: #111214;
+}
+
+.sd-cover__sub {
+  position: absolute;
+  top: 30cqw;
+  left: 4cqw;
+}
+
+.slide[data-style='studio'] .sd-page > .sd-lead--xl {
+  position: absolute;
+  top: 9cqw;
+  left: 4cqw;
+  width: 48cqw;
+}
+
+.sd-tall--cover {
+  position: absolute;
+  top: 7cqw;
+  right: 4cqw;
+  bottom: 3.6cqw;
+  width: 24cqw;
+}
+
+.sd-statement {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2cqw;
+  padding: 11cqw 4cqw 3.4cqw;
+}
+
+.sd-bento {
+  position: absolute;
+  top: 8cqw;
+  right: 4cqw;
+  bottom: 3.6cqw;
+  left: 4cqw;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.4cqw;
+}
+
+.sd-tile {
+  border-radius: 2cqw;
+}
+
+.sd-tile--lime { background: var(--s-hl); color: #111214; }
+.sd-tile--violet { background: var(--s-accent); color: #ffffff; }
+.sd-tile--lilac { background: #7d6ff2; color: #ffffff; }
+
+.sd-bento__lead {
+  display: grid;
+  align-content: end;
+  padding: 2.6cqw;
+}
+
+.sd-bento__list {
+  display: grid;
+  align-content: end;
+  gap: 1cqw;
+  margin: 0;
+  padding: 2.6cqw;
+  list-style: none;
+  font-size: 1.8cqw;
+  font-weight: 700;
+}
+
+.sd-bento__orb {
+  position: absolute;
+  top: -0.2cqw;
+  right: -0.2cqw;
+  width: 6cqw;
+  height: 6cqw;
+  border: 0.7cqw solid var(--s-paper);
+  background: var(--s-paper) !important;
+  color: var(--s-ink) !important;
+  box-shadow: inset 0 0 0 0.15cqw var(--s-ink);
+}
+
+.sd-data,
+.sd-theme,
+.sd-growth,
+.sd-visual,
+.sd-why {
+  position: absolute;
+  top: 8cqw;
+  right: 4cqw;
+  bottom: 3.6cqw;
+  left: 4cqw;
+  display: grid;
+  gap: 3cqw;
+}
+
+.sd-data {
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+}
+
+.sd-data__text {
+  display: grid;
+  gap: 1.4cqw;
+}
+
+.sd-stat {
+  display: grid;
+  align-content: end;
+  gap: 0.8cqw;
+  min-height: 24cqw;
+  padding: 2.6cqw;
+}
+
+.sd-stat__n {
+  font-size: 6.6cqw;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.sd-stat__l {
+  font-size: 1.15cqw;
+  line-height: 1.35;
+}
+
+.sd-theme {
+  grid-template-columns: 1.4fr 1fr;
+  align-items: center;
+}
+
+.sd-theme__text {
+  display: grid;
+  gap: 1.8cqw;
+}
+
+.sd-theme__tile {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1cqw;
+  height: 100%;
+  background: var(--c);
+  color: #ffffff;
+}
+
+.sd-theme__id {
+  font-size: 12cqw;
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.sd-theme__name {
+  font-size: 1.5cqw;
+  font-weight: 700;
+}
+
+.sd-growth {
+  grid-template-columns: 0.95fr 2fr;
+}
+
+.sd-growth__text,
+.sd-visual__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6cqw;
+}
+
+.sd-growth__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2cqw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sd-visual {
+  grid-template-columns: 1fr 1.25fr;
+}
+
+.sd-why {
+  grid-template-columns: 1fr 1.2fr;
+}
+
+.sd-why__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6cqw;
+}
+
+.sd-why__media {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 1.2cqw;
+}
+
+.sd-why__stat {
+  display: grid;
+  align-content: end;
+  gap: 0.8cqw;
+  padding: 2cqw;
+}
+
+.sd-why__pic {
+  border-radius: 2cqw;
+  overflow: hidden;
+  background: #ececf3;
+}
+
+.sd-why__pic .art,
+.sd-why__pic .art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sd-why__text .sd-pill {
+  align-self: flex-start;
+}
+
+/* Whole pieces (posters, packs, mockups) sit on a mat in the slide's own palette, never cropped. */
+.slide .art-frame {
+  --art-mat: color-mix(in srgb, var(--s-ink, #222) 7%, var(--s-paper, #f5f2ea));
+  --art-pad: 6%;
+}
+
+.slide .art-frame[data-mat] > .art {
+  filter: drop-shadow(0 0.8cqw 1.4cqw rgb(0 0 0 / 0.22));
+}
+
+/* Studio picture cards holding a whole piece (poster, pack, mockup): the piece sits whole on a mat
+   with its text and pill below it, never under a gradient. Pictures keep the full-bleed card. */
+.sd-tall:has(.art-frame[data-mat]) {
+  gap: 1cqw;
+  justify-content: stretch;
+  background: color-mix(in srgb, var(--s-ink, #222) 7%, var(--s-paper, #f5f2ea));
+  color: var(--s-ink, #111214);
+}
+
+.sd-tall:has(.art-frame[data-mat])::after {
+  display: none;
+}
+
+.sd-tall:has(.art-frame[data-mat]) .sd-tall__pic {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.sd-tall:has(.art-frame[data-mat]) .art-frame {
+  --art-pad: 0.4cqw;
+  background: transparent;
+}
+
+.sd-tall:has(.art-frame[data-mat]) .sd-tall__text {
+  margin-bottom: 0;
+}

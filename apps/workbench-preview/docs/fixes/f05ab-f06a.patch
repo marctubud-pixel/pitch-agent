@@ -1,0 +1,491 @@
+diff -ruN proposal-workbench/src/i18n/messages/en.ts /home/claude/proposal-workbench/src/i18n/messages/en.ts
+--- proposal-workbench/src/i18n/messages/en.ts	2026-11-03 08:08:20.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/en.ts	2026-11-03 09:03:45.627219517 +0800
+@@ -1099,6 +1099,8 @@
+   "pw.contrib.send": "Add to this stage",
+   "pw.contrib.sent": "Added. The agents will take it into account.",
+   "pw.contrib.note": "Your input is a suggestion for the agents. Facts still need evidence: a preference cannot make an unsupported claim true.",
++  "pw.rev.matching": "Matching text",
++  "pw.rev.findMatch": "Find matching text: direction {id}, copy lines",
+   "wb.hide": "Hide WorkBot",
+   "wb.show": "Show WorkBot",
+   "pw.rev.previous": "Previous",
+@@ -1125,13 +1127,11 @@
+   "pw.rev.open": "Still open",
+   "pw.rev.noneRecorded": "Nothing recorded as open for {v}.",
+   "pw.rev.compare": "Compare {from} and {to}",
+-  "pw.rev.passages_one": "{count} passage changed by the review",
+-  "pw.rev.passages_other": "{count} passages changed by the review",
++  "pw.rev.passages_one": "{count} changed passage",
++  "pw.rev.passages_other": "{count} changed passages",
+   "pw.rev.noReason": "no reason recorded",
+   "pw.rev.checksNotLinked_one": "The review lists {count} revised check above; the data does not link checks to passages.",
+   "pw.rev.checksNotLinked_other": "The review lists {count} revised checks above; the data does not link checks to passages.",
+-  "pw.rev.yourIdea": "Your idea",
+-  "pw.rev.usedIn": "See where it is used: direction {id}, copy lines",
+   "pw.rev.yourRequest": "Your revision request",
+   "pw.rev.notConnected": "Revision results are not connected in this prototype. The stage comes back to you for a decision (simulated).",
+   "pw.rev.noRecords": "No revision records are available yet.",
+diff -ruN proposal-workbench/src/i18n/messages/es.ts /home/claude/proposal-workbench/src/i18n/messages/es.ts
+--- proposal-workbench/src/i18n/messages/es.ts	2026-11-03 08:08:20.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/es.ts	2026-11-03 09:03:45.641577807 +0800
+@@ -1082,6 +1082,8 @@
+   "pw.contrib.send": "Añadir a esta etapa",
+   "pw.contrib.sent": "Añadido. Los agentes lo tendrán en cuenta.",
+   "pw.contrib.note": "Tu aporte es una sugerencia para los agentes. Los hechos siguen necesitando evidencia: una preferencia no vuelve cierta una afirmación sin respaldo.",
++  "pw.rev.matching": "Texto coincidente",
++  "pw.rev.findMatch": "Buscar el texto coincidente: dirección {id}, textos",
+   "wb.hide": "Ocultar WorkBot",
+   "wb.show": "Mostrar WorkBot",
+   "pw.rev.previous": "Anterior",
+@@ -1108,13 +1110,11 @@
+   "pw.rev.open": "Aún abierto",
+   "pw.rev.noneRecorded": "No hay nada registrado como abierto para la {v}.",
+   "pw.rev.compare": "Comparar la {from} y la {to}",
+-  "pw.rev.passages_one": "{count} pasaje cambiado por la revisión",
+-  "pw.rev.passages_other": "{count} pasajes cambiados por la revisión",
++  "pw.rev.passages_one": "{count} pasaje cambiado",
++  "pw.rev.passages_other": "{count} pasajes cambiados",
+   "pw.rev.noReason": "sin motivo registrado",
+   "pw.rev.checksNotLinked_one": "La revisión de arriba incluye {count} control revisado; los datos no vinculan los controles con los pasajes.",
+   "pw.rev.checksNotLinked_other": "La revisión de arriba incluye {count} controles revisados; los datos no vinculan los controles con los pasajes.",
+-  "pw.rev.yourIdea": "Tu idea",
+-  "pw.rev.usedIn": "Ver dónde se usa: dirección {id}, textos",
+   "pw.rev.yourRequest": "Tu solicitud de revisión",
+   "pw.rev.notConnected": "Los resultados de revisión no están conectados en este prototipo. La etapa vuelve a ti para que decidas (simulado).",
+   "pw.rev.noRecords": "Aún no hay registros de revisión disponibles.",
+diff -ruN proposal-workbench/src/i18n/messages/fr.ts /home/claude/proposal-workbench/src/i18n/messages/fr.ts
+--- proposal-workbench/src/i18n/messages/fr.ts	2026-11-03 08:08:20.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/fr.ts	2026-11-03 09:03:45.638927559 +0800
+@@ -1082,6 +1082,8 @@
+   "pw.contrib.send": "Ajouter à cette étape",
+   "pw.contrib.sent": "Ajouté. Les agents en tiendront compte.",
+   "pw.contrib.note": "Votre apport est une suggestion pour les agents. Les faits restent à prouver : une préférence ne rend pas vraie une affirmation non étayée.",
++  "pw.rev.matching": "Texte identique",
++  "pw.rev.findMatch": "Trouver le texte identique : piste {id}, accroches",
+   "wb.hide": "Masquer WorkBot",
+   "wb.show": "Afficher WorkBot",
+   "pw.rev.previous": "Précédente",
+@@ -1108,13 +1110,11 @@
+   "pw.rev.open": "Encore ouvert",
+   "pw.rev.noneRecorded": "Rien n’est consigné comme ouvert pour la {v}.",
+   "pw.rev.compare": "Comparer la {from} et la {to}",
+-  "pw.rev.passages_one": "{count} passage modifié par la revue",
+-  "pw.rev.passages_other": "{count} passages modifiés par la revue",
++  "pw.rev.passages_one": "{count} passage modifié",
++  "pw.rev.passages_other": "{count} passages modifiés",
+   "pw.rev.noReason": "aucune raison consignée",
+   "pw.rev.checksNotLinked_one": "La revue ci-dessus compte {count} contrôle révisé ; les données ne relient pas les contrôles aux passages.",
+   "pw.rev.checksNotLinked_other": "La revue ci-dessus compte {count} contrôles révisés ; les données ne relient pas les contrôles aux passages.",
+-  "pw.rev.yourIdea": "Votre idée",
+-  "pw.rev.usedIn": "Voir où elle est utilisée : piste {id}, accroches",
+   "pw.rev.yourRequest": "Votre demande de révision",
+   "pw.rev.notConnected": "Les résultats de révision ne sont pas connectés dans ce prototype. L’étape revient vers vous pour décision (simulé).",
+   "pw.rev.noRecords": "Aucun historique de révision n’est encore disponible.",
+diff -ruN proposal-workbench/src/i18n/messages/ja.ts /home/claude/proposal-workbench/src/i18n/messages/ja.ts
+--- proposal-workbench/src/i18n/messages/ja.ts	2026-11-03 08:08:20.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/ja.ts	2026-11-03 09:03:45.632441681 +0800
+@@ -1082,6 +1082,8 @@
+   "pw.contrib.send": "このステージに追加",
+   "pw.contrib.sent": "追加しました。エージェントが考慮します。",
+   "pw.contrib.note": "入力はエージェントへの提案です。事実には引き続き根拠が必要で、好みによって裏付けのない主張が真になることはありません。",
++  "pw.rev.matching": "同じ文言",
++  "pw.rev.findMatch": "同じ文言を探す：方向 {id} のコピー",
+   "wb.hide": "WorkBot を隠す",
+   "wb.show": "WorkBot を表示",
+   "pw.rev.previous": "以前",
+@@ -1108,13 +1110,11 @@
+   "pw.rev.open": "未解決",
+   "pw.rev.noneRecorded": "{v} に未解決として記録された項目はありません。",
+   "pw.rev.compare": "{from} と {to} を比較",
+-  "pw.rev.passages_one": "レビューで変更された段落：{count}",
+-  "pw.rev.passages_other": "レビューで変更された段落：{count}",
++  "pw.rev.passages_one": "変更された段落：{count}",
++  "pw.rev.passages_other": "変更された段落：{count}",
+   "pw.rev.noReason": "理由の記録なし",
+   "pw.rev.checksNotLinked_one": "上のレビューには修正済みチェックが {count} 件ありますが、データはチェックと段落を関連付けていません。",
+   "pw.rev.checksNotLinked_other": "上のレビューには修正済みチェックが {count} 件ありますが、データはチェックと段落を関連付けていません。",
+-  "pw.rev.yourIdea": "あなたのアイデア",
+-  "pw.rev.usedIn": "使われている場所を見る：方向 {id} のコピー",
+   "pw.rev.yourRequest": "あなたの修正依頼",
+   "pw.rev.notConnected": "このプロトタイプでは修正結果は接続されていません。ステージは決定のためにあなたに戻ります（シミュレーション）。",
+   "pw.rev.noRecords": "利用できる修正記録はまだありません。",
+diff -ruN proposal-workbench/src/i18n/messages/ko.ts /home/claude/proposal-workbench/src/i18n/messages/ko.ts
+--- proposal-workbench/src/i18n/messages/ko.ts	2026-11-03 08:08:20.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/ko.ts	2026-11-03 09:03:45.635006167 +0800
+@@ -1082,6 +1082,8 @@
+   "pw.contrib.send": "이 단계에 추가",
+   "pw.contrib.sent": "추가했습니다. 에이전트가 반영을 검토합니다.",
+   "pw.contrib.note": "입력은 에이전트에 대한 제안입니다. 사실에는 여전히 근거가 필요하며, 선호가 근거 없는 주장을 사실로 만들지 않습니다.",
++  "pw.rev.matching": "같은 문구",
++  "pw.rev.findMatch": "같은 문구 찾기: 방향 {id}의 카피",
+   "wb.hide": "WorkBot 숨기기",
+   "wb.show": "WorkBot 보이기",
+   "pw.rev.previous": "이전",
+@@ -1108,13 +1110,11 @@
+   "pw.rev.open": "남은 문제",
+   "pw.rev.noneRecorded": "{v}에 미해결로 기록된 항목이 없습니다.",
+   "pw.rev.compare": "{from}와 {to} 비교",
+-  "pw.rev.passages_one": "검토로 변경된 단락 {count}개",
+-  "pw.rev.passages_other": "검토로 변경된 단락 {count}개",
++  "pw.rev.passages_one": "변경된 단락 {count}개",
++  "pw.rev.passages_other": "변경된 단락 {count}개",
+   "pw.rev.noReason": "기록된 이유 없음",
+   "pw.rev.checksNotLinked_one": "위 검토에 수정된 확인이 {count}개 있지만, 데이터는 확인과 단락을 연결하지 않습니다.",
+   "pw.rev.checksNotLinked_other": "위 검토에 수정된 확인이 {count}개 있지만, 데이터는 확인과 단락을 연결하지 않습니다.",
+-  "pw.rev.yourIdea": "내 아이디어",
+-  "pw.rev.usedIn": "사용된 곳 보기: 방향 {id}의 카피",
+   "pw.rev.yourRequest": "내 수정 요청",
+   "pw.rev.notConnected": "이 프로토타입에는 수정 결과가 연결되어 있지 않습니다. 단계는 결정을 위해 다시 돌아옵니다(시뮬레이션).",
+   "pw.rev.noRecords": "아직 사용할 수 있는 수정 기록이 없습니다.",
+diff -ruN proposal-workbench/src/i18n/messages/zh-CN.ts /home/claude/proposal-workbench/src/i18n/messages/zh-CN.ts
+--- proposal-workbench/src/i18n/messages/zh-CN.ts	2026-11-03 08:08:20.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/zh-CN.ts	2026-11-03 09:03:45.629942406 +0800
+@@ -1082,6 +1082,8 @@
+   "pw.contrib.send": "添加到此阶段",
+   "pw.contrib.sent": "已添加，智能体会加以考虑。",
+   "pw.contrib.note": "你的输入是给智能体的建议。事实仍需证据：个人偏好不能让无依据的说法成立。",
++  "pw.rev.matching": "相同文字",
++  "pw.rev.findMatch": "查找相同文字：方向 {id} 的文案",
+   "wb.hide": "隐藏 WorkBot",
+   "wb.show": "显示 WorkBot",
+   "pw.rev.previous": "之前",
+@@ -1108,13 +1110,11 @@
+   "pw.rev.open": "仍待解决",
+   "pw.rev.noneRecorded": "{v} 没有记录待解决的问题。",
+   "pw.rev.compare": "比较 {from} 和 {to}",
+-  "pw.rev.passages_one": "评审改动了 {count} 段",
+-  "pw.rev.passages_other": "评审改动了 {count} 段",
++  "pw.rev.passages_one": "{count} 段已改动",
++  "pw.rev.passages_other": "{count} 段已改动",
+   "pw.rev.noReason": "没有记录原因",
+   "pw.rev.checksNotLinked_one": "上方评审列出 {count} 项已修改的检查；数据没有把检查与段落关联。",
+   "pw.rev.checksNotLinked_other": "上方评审列出 {count} 项已修改的检查；数据没有把检查与段落关联。",
+-  "pw.rev.yourIdea": "你的想法",
+-  "pw.rev.usedIn": "查看使用位置：方向 {id} 的文案",
+   "pw.rev.yourRequest": "你的修改请求",
+   "pw.rev.notConnected": "此原型未接入修改结果。该阶段会回到你这里等待决定（模拟）。",
+   "pw.rev.noRecords": "目前没有可用的修改记录。",
+diff -ruN proposal-workbench/src/proposal/revisions.test.ts /home/claude/proposal-workbench/src/proposal/revisions.test.ts
+--- proposal-workbench/src/proposal/revisions.test.ts	2026-11-03 08:10:05.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/revisions.test.ts	2026-11-03 09:03:58.375879924 +0800
+@@ -2,7 +2,7 @@
+ import { MockWorkbenchService } from '../services/mock/MockWorkbenchService';
+ import { memoryStore } from '../services/mock/storage';
+ import { MockProposalService } from '../services/proposal/MockProposalService';
+-import { artworkRevision, ideaUsedIn, latestRevisionRequest } from './revisions';
++import { artworkRevision, latestRevisionRequest, matchingTextIn } from './revisions';
+ 
+ async function load(id: string, agentDelay = 0) {
+   const store = memoryStore();
+@@ -40,11 +40,16 @@
+   });
+ });
+ 
+-describe('ideaUsedIn', () => {
+-  it('finds an idea that appears word for word in a direction', async () => {
+-    const { p } = await load('northline');
+-    expect(ideaUsedIn(p, p.contributions[0])).toEqual({ directionId: 'C' });
+-    expect(ideaUsedIn(p, { ...p.contributions[0], text: 'Not in any direction' })).toBeNull();
++describe('matchingTextIn', () => {
++  it('finds identical text, and nothing more: a new idea that matches existing copy stays unadopted', async () => {
++    const { proposals, p } = await load('northline');
++    expect(matchingTextIn(p, 'Same path. Colder air.')).toEqual([{ directionId: 'A' }]);
++    expect(matchingTextIn(p, 'Not in any direction')).toEqual([]);
++    const after = await proposals.contribute(p.id, 'themes', { kind: 'slogan', text: 'Same path. Colder air.', borrow: null });
++    const added = after.contributions[after.contributions.length - 1];
++    // the match exists, but the recorded status says the idea has not been used
++    expect(matchingTextIn(after, added.text)).toEqual([{ directionId: 'A' }]);
++    expect(added.status).toBe('new');
+   });
+ });
+ 
+diff -ruN proposal-workbench/src/proposal/revisions.ts /home/claude/proposal-workbench/src/proposal/revisions.ts
+--- proposal-workbench/src/proposal/revisions.ts	2026-11-03 08:05:02.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/revisions.ts	2026-11-03 09:03:35.422828490 +0800
+@@ -1,4 +1,4 @@
+-import type { Contribution, HumanDecision, Proposal, RefinedVisual, ReviewRecord, StageId, VersionRecord, VisualBranch } from '../domain/proposal';
++import type { HumanDecision, Proposal, RefinedVisual, ReviewRecord, StageId, VersionRecord, VisualBranch } from '../domain/proposal';
+ import { latestRefined } from './pending';
+ 
+ /**
+@@ -56,12 +56,15 @@
+   };
+ }
+ 
+-/** Where an idea the person gave ended up, when the data shows it word for word in a direction's copy. */
+-export function ideaUsedIn(p: Proposal, c: Contribution): { directionId: string } | null {
+-  const text = c.text.trim();
+-  if (!text) return null;
+-  const d = p.themes?.directions.find((x) => x.slogan.trim() === text || x.copyLines.some((l) => l.trim() === text));
+-  return d ? { directionId: d.id } : null;
++/**
++ * Directions whose slogan or copy lines contain exactly this text. An identical text proves only
++ * that the text is the same: not that an idea was adopted, nor where existing copy came from.
++ * Adoption is whatever the contribution's own recorded status and response say.
++ */
++export function matchingTextIn(p: Proposal, text: string): Array<{ directionId: string }> {
++  const t = text.trim();
++  if (!t) return [];
++  return (p.themes?.directions ?? []).filter((x) => x.slogan.trim() === t || x.copyLines.some((l) => l.trim() === t)).map((x) => ({ directionId: x.id }));
+ }
+ 
+ /** The person's latest revision request for a stage, with what the data recorded after it. */
+diff -ruN proposal-workbench/src/styles/refine.css /home/claude/proposal-workbench/src/styles/refine.css
+--- proposal-workbench/src/styles/refine.css	2026-11-03 08:09:29.000000000 +0800
++++ /home/claude/proposal-workbench/src/styles/refine.css	2026-11-03 09:03:35.424629074 +0800
+@@ -1381,8 +1381,8 @@
+   margin: 0 0 16px;
+ }
+ .pw-compare figure { display: grid; gap: 8px; margin: 0; align-content: start; }
+-.pw-copylines li[data-yours] { font-weight: 600; }
+-.pw-copylines__yours { margin-left: 6px; }
++.pw-copylines li[data-match] { font-weight: 600; }
++.pw-copylines__match { margin-left: 6px; }
+ .pw-passage.is-flash { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 12px; }
+ 
+ /* ---- F07: overview shortcuts, count composition, brief summary ---- */
+diff -ruN proposal-workbench/src/styles/workbot.css /home/claude/proposal-workbench/src/styles/workbot.css
+--- proposal-workbench/src/styles/workbot.css	2026-11-03 08:13:26.000000000 +0800
++++ /home/claude/proposal-workbench/src/styles/workbot.css	2026-11-03 09:04:29.265599234 +0800
+@@ -1092,3 +1092,31 @@
+ :root:has(dialog:modal) :is(.workbot-launcher, .workbot-hide, .workbot-tab) {
+   display: none;
+ }
++
++/* The docked tab sits where it covers nothing (placed by WorkBot.tsx); a slimmer handle when space is tight. */
++.workbot-tab[data-size='slim'] {
++  width: 16px;
++}
++.workbot-tab[data-size='slim'] .workbot-tab__figure {
++  transform: translateX(14px);
++}
++.workbot-tab[data-size='slim'] .workbot-tab__dot {
++  left: 4px;
++  width: 6px;
++  height: 6px;
++}
++/* While the page scrolls, or when nowhere is free, it slides off the edge and takes no taps.
++   Keyboard focus always brings it back into view. */
++.workbot-tab[data-aside] {
++  transform: translateX(100%);
++  pointer-events: none;
++}
++.workbot-tab[data-aside]:focus-visible {
++  transform: none;
++  pointer-events: auto;
++}
++@media (prefers-reduced-motion: no-preference) {
++  .workbot-tab {
++    transition: transform 160ms ease, bottom 160ms ease;
++  }
++}
+diff -ruN proposal-workbench/src/views/project/ProposalArea.tsx /home/claude/proposal-workbench/src/views/project/ProposalArea.tsx
+--- proposal-workbench/src/views/project/ProposalArea.tsx	2026-11-03 08:06:18.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/project/ProposalArea.tsx	2026-11-03 09:03:35.423839439 +0800
+@@ -11,7 +11,7 @@
+ import { useT } from '../../i18n';
+ import { clearIfUnchanged, draftKey, pendingDrafts, readDraft, snapshotDraft, useIdeaDraft } from '../../proposal/drafts';
+ import { pendingVisuals } from '../../proposal/pending';
+-import { ideaUsedIn, latestRevisionRequest } from '../../proposal/revisions';
++import { latestRevisionRequest, matchingTextIn } from '../../proposal/revisions';
+ import { Backed, STAGE_ICON, STATUS_ICON, StatusPill } from '../../proposal/ui';
+ import { Action, Time } from '../../ui/kit';
+ import { BriefStage } from '../stages/BriefStage';
+@@ -468,17 +468,14 @@
+                 </p>
+               )}
+               {c.response && <p className="small muted">↳ {c.response}</p>}
+-              {(() => {
+-                // Where the idea ended up, when the data shows it word for word in a direction's copy.
+-                const used = ideaUsedIn(p, c);
+-                return used ? (
+-                  <p className="small">
+-                    <Link className="text-link" to={projectPath(p.workbenchId, 'proposal', { stage: 'themes', focus: `copy-${used.directionId}` })}>
+-                      {t('pw.rev.usedIn', { id: used.directionId })}
+-                    </Link>
+-                  </p>
+-                ) : null;
+-              })()}
++              {/* Identical text elsewhere is only a match; adoption is what the status and response above say. */}
++              {matchingTextIn(p, c.text).map((m) => (
++                <p key={m.directionId} className="small">
++                  <Link className="text-link" to={projectPath(p.workbenchId, 'proposal', { stage: 'themes', focus: `copy-${m.directionId}`, match: c.id })}>
++                    {t('pw.rev.findMatch', { id: m.directionId })}
++                  </Link>
++                </p>
++              ))}
+               <p className="small muted">
+                 {c.by} · <Time iso={c.at} relative /> · {t(`pw.contrib.status.${c.status}`)}
+               </p>
+diff -ruN proposal-workbench/src/views/stages/ContentReviewStage.tsx /home/claude/proposal-workbench/src/views/stages/ContentReviewStage.tsx
+--- proposal-workbench/src/views/stages/ContentReviewStage.tsx	2026-11-03 08:05:36.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/ContentReviewStage.tsx	2026-11-03 09:03:35.424916167 +0800
+@@ -42,9 +42,10 @@
+ }
+ 
+ /**
+- * An index of the passages the review changed, read-only: what changed it (the recorded reason)
+- * and a link to the passage itself, where the earlier wording is shown struck through. Only shown
+- * when the data records changed passages; the review's checks are not linked to passages in the data.
++ * An index of the changed passages, read-only: each passage's recorded reason and a link to the
++ * passage, where the earlier wording is shown struck through. Changes can come from the review or
++ * from a person editing the wording, and the data does not record which, so the index does not say.
++ * The review's checks are not linked to passages in the data. Only shown when passages changed.
+  */
+ function ChangedPassages({ proposal: p }: { proposal: Proposal }) {
+   const t = useT();
+diff -ruN proposal-workbench/src/views/stages/ThemesStage.tsx /home/claude/proposal-workbench/src/views/stages/ThemesStage.tsx
+--- proposal-workbench/src/views/stages/ThemesStage.tsx	2026-11-03 08:05:53.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/ThemesStage.tsx	2026-11-03 09:03:35.424152550 +0800
+@@ -26,8 +26,9 @@
+   // A link from one of your ideas (`?focus=copy-C`) opens that direction's copy lines.
+   const { params } = useRouter();
+   const focus = params.get('focus');
+-  // Copy lines that are word for word one of your ideas are marked as yours.
+-  const yours = new Set(p.contributions.map((c) => c.text.trim()).filter(Boolean));
++  // Arriving from "Find matching text" (`?match=<idea id>`): highlight the identical line, neutrally.
++  // Identical text says nothing about who wrote the line or whether the idea was adopted.
++  const match = p.contributions.find((c) => c.id === params.get('match'))?.text.trim() ?? null;
+   const th = p.themes;
+   if (!th) return <StageEmpty proposal={p} stage="themes" />;
+   const rec = th.directions.find((d) => d.id === th.recommendation.id);
+@@ -154,9 +155,9 @@
+                       <More label={t('pw.th.copyLines', { count: d.copyLines.length })} forceOpen={focus === `copy-${d.id}`}>
+                         <ul className="pw-copylines">
+                           {d.copyLines.map((l) => (
+-                            <li key={l} data-yours={yours.has(l.trim()) || undefined}>
++                            <li key={l} data-match={(match !== null && l.trim() === match) || undefined}>
+                               {l}
+-                              {yours.has(l.trim()) && <span className="pw-tag pw-copylines__yours">{t('pw.rev.yourIdea')}</span>}
++                              {match !== null && l.trim() === match && <span className="pw-tag pw-copylines__match">{t('pw.rev.matching')}</span>}
+                             </li>
+                           ))}
+                         </ul>
+diff -ruN proposal-workbench/src/workbot/WorkBot.tsx /home/claude/proposal-workbench/src/workbot/WorkBot.tsx
+--- proposal-workbench/src/workbot/WorkBot.tsx	2026-11-03 08:13:26.000000000 +0800
++++ /home/claude/proposal-workbench/src/workbot/WorkBot.tsx	2026-11-03 09:04:29.263698535 +0800
+@@ -134,6 +134,92 @@
+   return reading;
+ }
+ 
++/**
++ * Where the docked tab can sit without covering anything. When the page is still (after a scroll,
++ * a resize, a route change or new content), it measures what is on screen (every control and every
++ * painted line of text) and picks the lowest place on the right edge where the tab overlaps none
++ * of it, trying the full tab first and a slimmer handle second. While the page scrolls the tab moves
++ * aside (and takes no taps) and comes back once the page settles.
++ */
++const TAB_H = 44;
++const TAB_W = { full: 30, slim: 16 } as const;
++const CONTROLS = 'a[href], button, input, textarea, select, summary, [role=tab], [role=button], [role=radio], [tabindex]:not([tabindex="-1"])';
++type TabSlot = { bottom: number; size: 'full' | 'slim' } | null;
++
++function findTabSlot(): TabSlot {
++  const W = window.innerWidth;
++  const H = window.innerHeight;
++  const top = (document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0) + 8;
++  const boxes: Array<{ l: number; r: number; t: number; b: number }> = [];
++  const keep = (r: DOMRect) => {
++    if (r.width > 0 && r.height > 0 && r.bottom > top && r.top < H && r.right > W - TAB_W.full - 1) boxes.push({ l: r.left, r: r.right, t: r.top, b: r.bottom });
++  };
++  for (const el of document.querySelectorAll(CONTROLS)) {
++    if (el.closest('.workbot, .workbot-tab, .workbot-launcher, .workbot-hide')) continue;
++    for (const r of el.getClientRects()) keep(r);
++  }
++  const main = document.querySelector('main');
++  if (main) {
++    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
++    const range = document.createRange();
++    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
++      if (!n.textContent?.trim()) continue;
++      range.selectNodeContents(n);
++      for (const r of range.getClientRects()) keep(r);
++    }
++  }
++  const free = (left: number, t: number, b: number) => boxes.every((x) => x.r <= left || x.l >= W || x.b <= t || x.t >= b);
++  for (const size of ['full', 'slim'] as const) {
++    const left = W - TAB_W[size];
++    for (let bottom = 20; H - bottom - TAB_H >= top; bottom += 6) {
++      if (free(left, H - bottom - TAB_H - 2, H - bottom + 2)) return { bottom, size };
++    }
++  }
++  return null;
++}
++
++function useTabSlot(active: boolean, routeKey: string) {
++  const [slot, setSlot] = useState<TabSlot>({ bottom: 20, size: 'full' });
++  const [moving, setMoving] = useState(false);
++  useEffect(() => {
++    if (!active) return;
++    let timer = 0;
++    let frame = 0;
++    const place = () => {
++      cancelAnimationFrame(frame);
++      frame = requestAnimationFrame(() => {
++        setSlot(findTabSlot());
++        setMoving(false);
++      });
++    };
++    const settleSoon = (ms: number) => {
++      window.clearTimeout(timer);
++      timer = window.setTimeout(place, ms);
++    };
++    const onScroll = () => {
++      setMoving(true);
++      settleSoon(160);
++    };
++    place();
++    // content that loads after a route change (or a disclosure opening) is measured again
++    const later = [window.setTimeout(place, 350), window.setTimeout(place, 1200)];
++    const main = document.querySelector('main');
++    const mo = main ? new MutationObserver(() => settleSoon(120)) : null;
++    if (main && mo) mo.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class', 'open', 'aria-expanded'] });
++    window.addEventListener('scroll', onScroll, { passive: true });
++    window.addEventListener('resize', onScroll);
++    return () => {
++      window.removeEventListener('scroll', onScroll);
++      window.removeEventListener('resize', onScroll);
++      mo?.disconnect();
++      later.forEach((x) => window.clearTimeout(x));
++      window.clearTimeout(timer);
++      cancelAnimationFrame(frame);
++    };
++  }, [active, routeKey]);
++  return { slot, moving };
++}
++
+ const DOCK_KEY = 'pw.workbot.docked';
+ const readDocked = () => {
+   try {
+@@ -170,6 +256,8 @@
+   const reading = useReading(phone);
+   const tab = useRef<HTMLButtonElement>(null);
+   const isDocked = phone && docked;
++  const { path, params } = useRouter();
++  const tabSlot = useTabSlot(isDocked && !open && !typing, `${path}?${params.toString()}`);
+   const away = phone && (docked || typing);
+   const setDocked = (v: boolean) => {
+     setDockedState(v);
+@@ -229,7 +317,20 @@
+       <button type="button" className="workbot-hide" hidden={!phone || open || away} onClick={() => setDocked(true)} aria-label={t('wb.hide')} title={t('wb.hide')}>
+         <ChevronsRight size={14} aria-hidden="true" />
+       </button>
+-      <button ref={tab} type="button" className="workbot-tab" hidden={!isDocked || open || typing} onClick={() => setDocked(false)} aria-label={t('wb.show')} title={t('wb.show')}>
++      <button
++        ref={tab}
++        type="button"
++        className="workbot-tab"
++        hidden={!isDocked || open || typing}
++        data-size={tabSlot.slot?.size ?? 'slim'}
++        // moving: the page is scrolling; nowhere free: the page is covered edge to edge here.
++        // Either way the tab steps aside until it can sit on free space; focus keeps it reachable.
++        data-aside={tabSlot.moving || !tabSlot.slot || undefined}
++        style={tabSlot.slot ? { bottom: `${tabSlot.slot.bottom}px` } : undefined}
++        onClick={() => setDocked(false)}
++        aria-label={t('wb.show')}
++        title={t('wb.show')}
++      >
+         <WorkBotCharacter mood={life.mood} act={null} height={30} className="workbot-tab__figure" />
+         {status && <span className="workbot-tab__dot" aria-hidden="true" />}
+       </button>

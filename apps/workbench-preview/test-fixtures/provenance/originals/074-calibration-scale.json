@@ -1,0 +1,18 @@
+{
+  "understands_4_5_distinction": true,
+  "four_means": "达到给定阶段的本地文字概念基准，可有非关键优化。",
+  "five_requires": "有对照且能说明具体超过基准的地方，同时交代取舍。事实完全匹配本身不构成5分。",
+  "neutral_reference": {
+    "text": "松涧冷泡茶。冷泡12小时，配料三项。",
+    "quality_scores": {"factual_fit": 4, "direct_comprehension": 4, "grounded_brand_product_link": 4},
+    "reasons": {
+      "factual_fit": "与给定产品事实一致，达到指定中性4分基准。",
+      "direct_comprehension": "读者直接读到产品与两项信息，无须补出隐藏逻辑，达到该基准。",
+      "grounded_brand_product_link": "工艺与配料确实属于句中品牌产品，语义对应有据，达到该基准。"
+    },
+    "fact_support_status": "fully_supported_in_control_material",
+    "not_scored_from_this": ["情绪感染", "实际分享", "实测传播效果"]
+  },
+  "prior_answer_handling": "未读取任何旧答卷。本轮calibration.json已采用质量尺度。若先前答卷将事实完全匹配记为5，旧分只能限定为事实匹配强度，不能直接当成本轮质量5分；保留原件，不回改。",
+  "limit": "仅统一内部边界和数字含义，不证明模型与真实人类审美一致。"
+}

@@ -1,22 +1,40 @@
-# AI创意提案工作台
+# 提案工作台 · Pitch Agent
 
-从Brief生成有来源的研究、策略、文案与视觉，再排成可讲解、可导出原生PPT的静态提案。当前中文桌面与样本预览可用，通用正式业务编排和部分服务仍未接通。
+中文桌面提案应用，从简报、研究、策略、文案与主题、视觉开发到版式和终审交付。当前七阶段预览及青屿23页案例可运行，真实模型编排、正式多人账号和部分业务服务仍待接通。
 
-## 开发先从这里读
+## 快速开始
 
-- [Agent和页面规范基线](docs/specs/README.md)：岗位、16页规格、固定方法、版本与待定范围。
-- [现行七阶段](docs/workflows/提案工作流_现行规则.md)：当前执行顺序；历史流程另存，不混作新规则。
-- [当前实际状态](status/current.md)：原生回执和实现导航，不能用规范文件替代运行结果。
-- [源码与Git纳管范围](docs/specs/repository-scope.md)：本轮规范基线保护哪些文件，活跃源在哪里。
-- [版本截图图册](http://127.0.0.1:4418/)：本地只读HTML入口；原单文件在 output/version-atlas-20261111/index.html。
-
-## 检查规范
+要求Node 24.13.0和Python 3.11或更新版本。
 
 ```sh
-python3 scripts/check-specs.py
-python3 scripts/check-specs.test.py
+git clone git@github.com:marctubud-pixel/pitch-agent.git
+cd pitch-agent
+npm run setup:frontend
+npm run dev
 ```
 
-规范修改按[版本与PR规则](docs/specs/change-control.md)，登记版本、更新变更记录，复核后刷新锁。内容和页面分别有合同；有岗位不代表必须有复杂Skill，策略继续用两项基础要求。
+打开 http://127.0.0.1:4420/ 。默认本地演示不需要密钥或业务后端。青屿终审位于 `#/p/qingyu/proposal/delivery`。完整操作见[使用说明](docs/usage/README.md)。
 
-本轮先形成规范提交；尚未纳入Git的源码、数据库和历史产物不能靠该提交回退。GitHub目的仓库尚未配置，真实PR未创建。原[项目首页](README.history-20261111.md)、[历史工作流](docs/workflows/提案工作流_历史_截至20261111.md)与原件继续保留。
+## 开发与协作
+
+- [开发入口](docs/development/README.md)：安装、启动、目录和验证命令。
+- [应用与Agent架构](docs/architecture/runtime.md)：前端、服务、存储、编排、原生工具及实际接线。
+- [Agent组织与职责](docs/agents/README.md)：业务与开发统筹、各岗位MD、执行与独立评审。
+- [页面责任与基线](docs/pages/README.md)：逐页负责人、保留版式、实际路由与空态。
+- [规范基线](docs/specs/README.md)：固定方法、版本锁、交接和[终审协议](docs/specs/final-review.md)。
+- [提交约定](CONTRIBUTING.md)与[PR和回退](docs/development/git-and-recovery.md)：分支、检查、评审和版本恢复。
+- [当前状态](status/current.md)与[明确待办](status/issues/README.md)：已验范围、失败与下一步。
+
+## 检查
+
+```sh
+npm run check
+```
+
+包括规范及隔离反例、仓库与证据身份、前端类型及测试、明示核心域测试和构建。[测试说明](docs/development/testing.md)另列已知旧后端失败、实际UI和原生PPT未验范围。CI文件已配置，远程运行结果与保护设置须按实际GitHub回执确认。
+
+## 源码和数据
+
+当前开发入口是 `apps/workbench-preview`，由原活跃scratch前端按字节导入。较早的 `apps/proposal-workbench`、三组tools源码、测试、必要夹具和既有文档分别保留。详见[纳管边界](docs/specs/repository-scope.md)、[源码与资源](docs/development/resources.md)。
+
+数据库、原业务run、失败原件、外部PDF和完整交付池保持本地原位，不整体上传。Git保护明示纳管的源码和文档，不能恢复未纳管运行数据或重建此前未提交历史。研究参照、品牌图片、生成试稿及第三方代码保留各自来源和权利，未新授予统一开源许可。

@@ -1,0 +1,186 @@
+{
+  "taskId": "visual-intake-qingyu-20261110-01",
+  "assignedRole": "视觉负责人 Agent",
+  "purpose": "按新视觉开发规范接续现有参考，核对来源和用途边界并整理下一步待核问题；本次不是独立视觉评分或选优。",
+  "authorization": {
+    "through": "reference_intake",
+    "source": "用户确认上一轮方案；仍明确不画草图和精修。",
+    "allowed": [
+      "read_existing_reference_files",
+      "inspect_existing_images",
+      "write_intake_record"
+    ],
+    "excluded": [
+      "reference_review",
+      "select_main_reference",
+      "sketch",
+      "refine",
+      "mockup",
+      "business_state_write",
+      "paid_calls",
+      "runtime_start"
+    ]
+  },
+  "input": {
+    "projectId": "qingyu",
+    "caseId": "qingyu-pack",
+    "taskType": "packaging",
+    "referenceSetId": "qingyu-packaging-references-20261110-v1",
+    "bundleId": "qingyu-copy-full-r2-20261110",
+    "roundId": "r2",
+    "copySha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+    "researchSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+    "directionIds": [
+      "n7",
+      "k4",
+      "v2"
+    ]
+  },
+  "copyDirections": [
+    {
+      "id": "n7",
+      "name": "两张名片",
+      "proposition": "让买茶的人分清瓶上两个名字各指什么，认牌子，也认得配方里的一样原料。",
+      "mechanism": "先递两张“名片”，再分别报名字和身份，一张认品牌，一张认用料。",
+      "strategyLink": "沿用无糖品类与配方用水两项信息，把青屿和虎跑泉水各自的身份说清。",
+      "audienceHypothesis": "初次看到这两个名字的人也许能记住哪个是牌子、哪个是用料。",
+      "brandBridge": "青屿署在做茶者的位置，虎跑泉水署在用料的位置。",
+      "slogan": "一瓶无糖茶，两张名片。",
+      "subline": "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "extensions": [
+        {
+          "label": "瓶侧",
+          "text": "先认识做茶的青屿，再认识这瓶茶用到的虎跑泉水。"
+        },
+        {
+          "label": "电商短句",
+          "text": "认牌子，青屿。认这瓶无糖茶用到的泉水，虎跑。"
+        }
+      ],
+      "risk": "主文单独出现时，名片可能让人想到随瓶附卡。两行相隔多远仍能看懂，留待打样。",
+      "whyDistinct": "读者得到一对身份。延展时保留两次点名，每个名字都带上它在这瓶茶里的角色。"
+    },
+    {
+      "id": "k4",
+      "name": "一口到虎跑",
+      "proposition": "给屏幕前的一次停顿定个去处。手放开鼠标，在工位喝口茶，就算到了虎跑。",
+      "mechanism": "先让手停下来，再用工位上的一口茶完成想象中的短途。目的地取自茶里用到的泉水。",
+      "strategyLink": "这次茶歇能叫“去虎跑”，依据是青屿无糖茶的配方用到了虎跑泉水。",
+      "audienceHypothesis": "坐在工位上的人也许会照着做一次。理解放下鼠标、喝口茶这个动作，无需知道虎跑有什么景色。",
+      "brandBridge": "在工位上拧开青屿是出发，喝到用过虎跑泉水的这瓶茶是抵达。",
+      "slogan": "鼠标放一放，去趟虎跑。",
+      "subline": "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "extensions": [
+        {
+          "label": "瓶侧",
+          "text": "今天从工位出发。喝口青屿，茶里用到了虎跑泉水，这就算到虎跑了。"
+        },
+        {
+          "label": "茶歇提醒",
+          "text": "屏幕先锁上，去趟虎跑。拧开青屿无糖茶，茶里用到了虎跑泉水。"
+        }
+      ],
+      "risk": "单看“去趟虎跑”仍可能像约人出门。两句同读时的理解和实际版面待核。",
+      "whyDistinct": "读者得到一件眼下就能做的小事。延展时更换停下的工作动作，保留在原地喝茶即抵达的揭晓。"
+    },
+    {
+      "id": "v2",
+      "name": "看见虎跑，想起你",
+      "proposition": "给曾一起去过虎跑的人捎瓶茶。让自己想起对方的，是这瓶茶上两个人都见过的那个名字。",
+      "mechanism": "先提“你带我去”的旧事，再说看到茶中用到了哪处的泉水，交代“我给你带茶”的缘由。",
+      "strategyLink": "青屿用到了虎跑泉水，因此可以让这个地名成为一次具体的捎茶理由。",
+      "audienceHypothesis": "如果两个人有过这段经历，挑茶的人也许愿意把原因告诉对方。这是单次虚构对话。",
+      "brandBridge": "挑青屿的人认出配方里的虎跑泉水，想起一起去过那里的人，才给对方带这瓶。",
+      "slogan": "上回你带我去虎跑，这回换我给你带茶。",
+      "subline": "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "extensions": [
+        {
+          "label": "随茶留言",
+          "text": "还记得咱俩去虎跑那天吗？看到青屿无糖茶用到了虎跑泉水，就给你带了一瓶。"
+        },
+        {
+          "label": "捎茶口信",
+          "text": "上回去虎跑是你带的路。今天看见一瓶青屿，茶里用到了虎跑泉水，我就想着也给你带一瓶。"
+        }
+      ],
+      "risk": "适用对象窄，需要两人有共同经历；随茶留言能否被听成自然对话，仍需核验。",
+      "whyDistinct": "读者得到一句可以送给特定对象的话。延展时换叙旧的说法，保留同一个地点如何让挑茶人想到对方。"
+    }
+  ],
+  "referenceEditorialPath": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-packaging-references-20261110/references-editorial.json",
+  "referenceEditorialSha256": "0d44eaf83ced56b6d9bc517bbf4b629d24adae2696fa1bacbf4d38f6238d3b14",
+  "imageRoot": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public",
+  "references": [
+    {
+      "id": "two-name-rangcha",
+      "directionId": "n7",
+      "title": "让茶 · 竹香乌龙",
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+      "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a",
+      "sourceUrl": "https://www.rangcha.com/product/list/rangcha",
+      "borrow": "品牌名与茶名分列，借鉴两组信息各有位置，让“青屿”和“虎跑泉用水”可以分开读。",
+      "limits": "原图168×428，仅参考大字层级，不读微字。"
+    },
+    {
+      "id": "two-name-chun",
+      "directionId": "n7",
+      "title": "淳茶舍 · 冷萃茉莉花茶",
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-moli.png",
+      "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b",
+      "sourceUrl": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+      "borrow": "上部认品牌、中央读特点，借鉴明确的阅读顺序，避免品牌名和用水信息互相淹没。",
+      "limits": "只参考信息组织，不借用其冷萃工艺或茶种主张。"
+    },
+    {
+      "id": "trip-longjing",
+      "directionId": "k4",
+      "title": "东方树叶 · 龙井新茶",
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+      "sha256": "df27729ed779264c5a18f81505220225f524f012470b16cb2c8ffc93c9fa91a4",
+      "sourceUrl": "https://www.nongfuspring.com/goods/detail-all.html?id=1&pid=2&product_id=156",
+      "borrow": "用柳枝、飞鸟和留白带出一段春日感受，借鉴少量具体意象，把地点感装进瓶身。",
+      "limits": "图中意象仅作视觉借鉴，不等于虎跑或真实到访体验。"
+    },
+    {
+      "id": "trip-changbai",
+      "directionId": "k4",
+      "title": "长白雪 · 东北虎款",
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+      "sha256": "e734eefeb5199d0d8ff46f8f20702a16e9a6a5e867fea0cf6a15504a4c24a222",
+      "sourceUrl": "https://www.nongfuspring.com/goods/detail-all.html?id=6&pid=28&product_id=105",
+      "borrow": "把产地关联的动物放在瓶身主视区，借鉴用一个可辨认的形象承载地点，而非堆满景点。",
+      "limits": "跨品类只借鉴地域表达，不作价位、口感或购买效果对标。"
+    },
+    {
+      "id": "memory-coke",
+      "directionId": "v2",
+      "title": "可口可乐 · 分享瓶",
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+      "sha256": "828c6b208afe9eace44289592df186ff8f6b9a69d52817412f37834d1b9eddc7",
+      "sourceUrl": "https://www.coca-cola.com/cn/zh/media-center/Share-a-Coke",
+      "borrow": "把面向人的称呼放到瓶标正面，借鉴让递出的一瓶饮料自带一句“这是给你的”话语。",
+      "limits": "近景原图未显示瓶底；不借鉴其促销字样、价格或社交效果。"
+    },
+    {
+      "id": "memory-rabbit",
+      "directionId": "v2",
+      "title": "农夫山泉 · 2023金兔生肖瓶",
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+      "sha256": "1eef17132f995f2fd6199906eeb35f3d30544c328957f1ba5d19c1504450b9e0",
+      "sourceUrl": "https://www.nongfuspring.com/goods/detail-all.html?id=6&pid=10&product_id=126",
+      "borrow": "用相伴的兔群和成对瓶身承载关系，借鉴让“想起你”的情绪也能由画面传达。",
+      "limits": "只借鉴关系叙事，不照搬纪念玻璃瓶材质、成本或销售模式。"
+    }
+  ],
+  "productFactBoundary": "青屿虚构工程包装案例；虎跑泉用水为用户补充的演练设定，不是可直接发布的产品资质、功效或真实消费者证据。",
+  "sourcePaths": [
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-packaging-references-20261110/references-editorial.json",
+      "sha256": "0d44eaf83ced56b6d9bc517bbf4b629d24adae2696fa1bacbf4d38f6238d3b14"
+    }
+  ]
+}

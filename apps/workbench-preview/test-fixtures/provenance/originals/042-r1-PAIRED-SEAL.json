@@ -1,0 +1,74 @@
+{
+  "draftSha256": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+  "rows": [
+    {
+      "role": "copy",
+      "score": {
+        "path": "reviews/r1-copy/score.json",
+        "sha256": "2c4d12f468730f20f5f5b4d30076a478ca8bcf7b1677fc05f8f685ebad593c23"
+      },
+      "critic": {
+        "path": "critics/r1-copy/review.json",
+        "sha256": "4b85198a38790a91b84625acb1d6a9f6c8704210df063f714e1cbf0c38752f34"
+      },
+      "criticFirst": {
+        "path": "critics/r1-copy/first.json",
+        "sha256": "5c7669b11953f64e747a7729c944fd6696d317c16453572010cd8e2c21e835ef"
+      },
+      "positiveCount": 3,
+      "challenges": 0
+    },
+    {
+      "role": "brand",
+      "score": {
+        "path": "reviews/r1-brand/score.json",
+        "sha256": "abf92720bd3f603e46227976196f1a9b83c6d91f7def0ef16feeefd492d1a4f2"
+      },
+      "critic": {
+        "path": "critics/r1-brand/review.json",
+        "sha256": "cb32200d674bd8a70a2dd5eb5de7cdd969e71a353d5a95de114376957c2d31f0"
+      },
+      "criticFirst": {
+        "path": "critics/r1-brand/first.json",
+        "sha256": "e4df955bbd8c448847586ca266ac49348585b437cf6011d15cf0675fc148598f"
+      },
+      "positiveCount": 3,
+      "challenges": 0
+    },
+    {
+      "role": "user",
+      "score": {
+        "path": "reviews/r1-user/score.json",
+        "sha256": "d21926577e94a3fb14c019f2144f0edd26659f1be76ce86ea97113ebd553063b"
+      },
+      "critic": {
+        "path": "critics/r1-user/review.json",
+        "sha256": "b87f9163803e1bd48d622cb42d7b53bea935af40367a2197b1cedba5354a3b42"
+      },
+      "criticFirst": {
+        "path": "critics/r1-user/first.json",
+        "sha256": "c781e74cc45f38d6fbe1350219bd80008fdec76e9eab8fbb713bd47a69489636"
+      },
+      "positiveCount": 3,
+      "challenges": 2
+    },
+    {
+      "role": "comms",
+      "score": {
+        "path": "reviews/r1-comms/score.json",
+        "sha256": "cf37a028bb932055e3e29851e1f40f8793efde03958abf411f6fae921bd5c8d5"
+      },
+      "critic": {
+        "path": "critics/r1-comms/review.json",
+        "sha256": "7a63478df3957360dff18e65459254dfaf9118d07f1922a157f738870bfc6563"
+      },
+      "criticFirst": {
+        "path": "critics/r1-comms/first.json",
+        "sha256": "22f79caa77cd14d12c4d685fe1832a897332707313b475e27f81537767b87c60"
+      },
+      "positiveCount": 6,
+      "challenges": 0
+    }
+  ],
+  "scope": "配对全部肯定已核引用；0新增不当作全局无缺陷或对抗有效性证明"
+}

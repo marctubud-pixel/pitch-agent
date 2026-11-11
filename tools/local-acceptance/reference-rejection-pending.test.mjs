@@ -1,0 +1,10 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {webcrypto} from 'node:crypto';
+import {createBrowserPending,createPendingApi} from './browser-pending.mjs';
+function setup(){const store=new Map();return createBrowserPending({origin:'http://127.0.0.1:4460',crypto:webcrypto,storage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)},withLock:async(_,work)=>work()});}
+const path='/api/cases/example/reference-materials';
+test('validated negative receipt releases a corrected request, not a retry',async()=>{const journal=setup(),calls=[];let saved;
+ const api=createPendingApi({journal,request:async(p,body)=>{calls.push(p);if(body){saved={protocol:'local-reference-rejection-v1',caseId:'example',projectId:'project',commandId:body.commandId,operation:'reference_material',requestDigest:await journal.digest(body),state:'rejected_before_native_dispatch',nativeRegistration:'not_dispatched',managedFiles:'not_written_by_operation',factualAuthority:false,reason:'INVALID_PURPOSE'};throw Object.assign(Error('invalid'),{status:422});}return saved;}});
+ await assert.rejects(()=>api.api(path,{commandId:'first',borrowingNote:''}));await api.reconcile();assert.equal(journal.list().length,0);
+ await assert.rejects(()=>api.api(path,{commandId:'second',borrowingNote:'corrected'}));assert.equal(journal.list()[0].commandId,'second');assert.equal(calls.length,3);
+});
+test('wrong digest and negative claims with unknown effects do not clear',async()=>{for(const patch of [{requestDigest:'0'.repeat(64)},{nativeRegistration:'unknown'},{operation:'reference_upload'},{managedFiles:'no_effects'}]){const journal=setup(),r=await journal.prepare(path,{commandId:'request',note:'x'});await journal.unknown(r);await journal.reconcile({readReferenceCommand:async()=>({protocol:'local-reference-rejection-v1',caseId:'example',projectId:'project',commandId:r.commandId,requestDigest:r.requestDigest,operation:'reference_material',state:'rejected_before_native_dispatch',nativeRegistration:'not_dispatched',managedFiles:'not_written_by_operation',factualAuthority:false,reason:'INVALID_PURPOSE',...patch})});assert.equal(journal.list().length,1);}});

@@ -1,0 +1,17 @@
+{
+  "draftSha256": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+  "firstReads": {
+    "copy": {
+      "path": "reviews/r1-copy/first-read.json",
+      "sha256": "4f83932b74045b11e53c21476ee3f3680dfe036893aab7b8bec93e0edf1b0c03"
+    },
+    "brand": {
+      "path": "reviews/r1-brand/first-read.json",
+      "sha256": "e9360178024bc198387bff63db403e5317beda6c08f72df7d50f3a598576230d"
+    },
+    "user": {
+      "path": "reviews/r1-user/first-read.json",
+      "sha256": "0345385988f960114f8f1a21d82e6207a299a0058407aaaf0decdd8f1a2d20ed"
+    }
+  }
+}

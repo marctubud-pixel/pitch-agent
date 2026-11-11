@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/scripts/check-stage.mjs",
+    "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/WORK-PACKAGE.json"
+  ],
+  "startedAt": "2026-11-10T12:23:22Z",
+  "completedAt": "2026-11-10T12:23:22Z",
+  "exitCode": 0,
+  "stdout": "{\"decision\":\"record_only\",\"reasons\":[\"Intake evidence is bound to the recorded input and authorization; no aesthetic approval\"]}\n",
+  "stderr": "",
+  "workPackage": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/WORK-PACKAGE.json",
+    "sha256": "de8c85e840615ac18667ebcb27768699ac6c71bbd7df7e77d293496419c19bc3"
+  },
+  "checker": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/scripts/check-stage.mjs",
+    "sha256": "8186a2c46497f38c46edd46789c352f33957d6d2affcc356b48f321e7051fb5f"
+  },
+  "meaning": "仅当次reference_intake记录结构检查，不是审美通过、实际来源真实性证明或全部视觉业务链测试。"
+}

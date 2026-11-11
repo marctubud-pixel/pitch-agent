@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import {EventEmitter} from 'node:events';
+import {mkdtemp,realpath,readFile,writeFile,chmod,readdir} from 'node:fs/promises';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {loadImageProvider} from './image-api-provider.mjs';
+import {createImageEvidenceStore} from './image-evidence.mjs';
+import {verifyFinalVisualOriginal} from './final-visual-original.mjs';
+import {finalImageTask} from './final-visual.mjs';
+const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAE0lEQVR4nGP8//8/AwMDEwMYAAAkBgMBXaJOiAAAAABJRU5ErkJggg==','base64');
+
+test('owned final image original recovers actual local adapter evidence without sockets',async t=>{
+ const root=await realpath(await mkdtemp(join(tmpdir(),'final-image-original-owned-'))),imageStore=createImageEvidenceStore({rootDir:join(root,'images')}),requests=[];
+ const input=await imageStore.ingest({projectId:'owned',bytes:png,metadata:{representation:'supplied_image',description:'owned fixture'}}),loaded=await imageStore.read({projectId:'owned',imageId:input.id,expectedHash:input.sha256});
+ const original=http.request;
+ http.request=(url,options,callback)=>{const req=new EventEmitter();req.destroy=()=>{};req.end=body=>{requests.push(body);queueMicrotask(()=>{const res=new EventEmitter();res.statusCode=200;res.headers={'content-type':'application/json'};res.destroy=()=>{};callback(res);res.emit('data',Buffer.from(JSON.stringify({data:[{b64_json:png.toString('base64')}]})));res.emit('end');});};return req;};t.after(()=>{http.request=original;});
+ const provider=loadImageProvider({config:{providerId:'owned-fixture',adapter:'openai-images-v1',baseUrl:'http://127.0.0.1:1/v1',model:'local',credentialEnv:'OWNED_FIXTURE_KEY',operations:{generate:false,edit:true},supportedOptions:{generate:{},edit:{}},timeoutMs:2000},allowLoopbackHttp:true,resolveCredential:()=> 'fixture-key-8294'});
+ const target={id:'target',operation:{kind:'edit',prompt:'Constructed geometry',options:{},images:[{imageId:input.id,sha256:input.sha256}]}};
+ const run={id:'final-run',source:{sourceHash:'constructed',copyArtifactId:'copy',copyHash:'copyhash',sketchArtifact:{id:'sketch',contentHash:'sketchhash',authority:{generationId:'g',reviewRunId:'r'}},handoffs:[],images:[],referenceSource:{dossierId:'d'}},assignments:{image:provider.capability().binding},plan:{directions:[{targets:[target]}]},reports:[]};
+ const job={id:'final-image',finalVisualRunId:run.id,nodeKey:'image:target',node:{key:'image:target',phase:'image',dependencies:[]},purpose:'final_visual_image',binding:run.assignments.image,target,inputVersionIds:['copy','sketch'],status:'succeeded',attempts:[]};
+ const p={id:'owned',finalVisualRuns:[run],jobs:[job],artifacts:[{id:'copy',contentHash:'copyhash'},{id:'sketch',contentHash:'sketchhash',sketchGeneration:run.source.sketchArtifact.authority}],imageAssets:[input]};
+ const prepared=await provider.prepare(finalImageTask(p,run,job,'owned-attempt'),[{...input,imageId:input.id,bytes:loaded.bytes}]);assert.equal(prepared.kind,'prepared');
+ const evidenceDir=join(root,'image-provider-evidence'),result=await provider.execute(prepared,{evidenceDir});assert.equal(result.kind,'image');
+ const asset=await imageStore.ingestGenerated({projectId:p.id,result});p.imageAssets.push(asset);job.outputVersionIds=[asset.id];job.attempts.push({id:'owned-attempt',status:'succeeded',dispatchStarted:true,requestHash:prepared.requestHash,receipt:result.receipt});
+ const verify=()=>verifyFinalVisualOriginal(p,run,job,{executionRoot:root,imageStore});assert.equal((await verify()).outputVersionId,asset.id);assert.equal(requests.length,1);
+ const folder=join(evidenceDir,(await readdir(evidenceDir))[0]);
+ for(const file of ['manifest.json','request.json','response.json','receipt.json','image.bin'])await t.test(`${file} tamper refused`,async()=>{const path=join(folder,file),bytes=await readFile(path);await chmod(path,0o600);await writeFile(path,'{}');await assert.rejects(verify,{code:'FINAL_IMAGE_ANCHOR_CHANGED'});await writeFile(path,bytes);await chmod(path,0o400);});
+ await t.test('managed asset ambiguity refused',async()=>{p.imageAssets.push(structuredClone(asset));await assert.rejects(verify,{code:'FINAL_ORIGINAL_MEMBERSHIP_REQUIRED'});p.imageAssets.pop();});
+ await t.test('unsupported recovery refused',async()=>{const saved=result.receipt.responseEvidence.protocol;job.attempts[0].receipt.responseEvidence.protocol='unsupported';await assert.rejects(verify,{code:'FINAL_IMAGE_ANCHOR_CHANGED'});job.attempts[0].receipt.responseEvidence.protocol=saved;});
+ assert.equal((await verify()).kind,'final-visual-image-original');assert.equal(requests.length,1);
+ console.log(JSON.stringify({ownedRoot:root,transport:'socket_free_local_adapter_contract',transportRequests:requests.length,externalCalls:0,authority:'constructed_upstream_and_final_registration_only',generatedAsset:asset.id}));
+});

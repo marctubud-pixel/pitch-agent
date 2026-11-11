@@ -1,0 +1,16 @@
+{
+  "id": "qingyu-cooler-scene-illustration-20261109",
+  "kind": "generated-illustration",
+  "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-boards-20261109/assets/cooler-choice-illustration.png",
+  "publicPath": "/research-case/qingyu-boards-20261109/cooler-choice-illustration.png",
+  "sha256": "75ca946b2e78a5aaa363c9e0638a0e5bf420db5fd27a13cc8b17570e7798835c",
+  "width": 1536,
+  "height": 1024,
+  "tool": "built-in image_gen",
+  "originalGeneratedPath": "/Users/marc/.codex/generated_images/01a15585-3a9f-7f13-b259-074fbbe31525/exec-245b1d6c-dff5-4fa7-b745-0bd6fdbb0a3c.png",
+  "promptFile": "IMAGE-PROMPT.txt",
+  "label": "生成场景示意 · 非实拍、非调研样本",
+  "caption": "任务设定中的便利店冷柜选购情境",
+  "use": "辅助理解接触场景，不证明目标人群、偏好、行为或购买结果",
+  "review": "根Agent已查看图像；人物与店铺为虚构，瓶身无真实品牌与研究统计"
+}

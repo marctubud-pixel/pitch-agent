@@ -1,0 +1,94 @@
+{
+  "schema_version": "double-panel-v2",
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "user",
+  "model_id": "gpt-6.1-sol",
+  "packet_version": "r2-first",
+  "candidate_version": "qingyu-copy-reviewed-r2",
+  "report_id": "r2-user-counter-first",
+  "input_hashes": {
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50"
+  },
+  "phase": "independent_risk_capture_before_role_scores",
+  "blindness": {
+    "read_candidate_and_brief": true,
+    "read_any_scores": false,
+    "read_old_drafts": false,
+    "read_author_response": false,
+    "read_director": false
+  },
+  "items": [
+    {
+      "id": "n7",
+      "natural_understanding": "青屿是无糖茶品牌，虎跑泉水是这瓶茶用到的水。“两张名片”用两次身份介绍来解释两个名字。",
+      "brand_product_identification": "茶品牌与用水名的归属直接可辨。",
+      "independent_risks": [],
+      "limits": [
+        {
+          "quote": "一瓶无糖茶，两张名片。",
+          "observation": "只看主文可能以为瓶内或随瓶有名片。副文马上逐一解释身份，因此在本轮主副文同读范围不是新增阻断；实际分离版面仍未知。",
+          "classification": "candidate_already_disclosed_nonblocking_risk"
+        }
+      ]
+    },
+    {
+      "id": "k4",
+      "natural_understanding": "在工位暂时放下鼠标，喝用到虎跑泉水的青屿茶，把这口茶当成一次想象中的虎跑短途。",
+      "brand_product_identification": "副文明确青屿无糖茶和虎跑泉水的用料关系。",
+      "independent_risks": [],
+      "limits": [
+        {
+          "quote": "茶里用到了虎跑泉水，喝一口就算到了。",
+          "observation": "“就算到了”足以标明把喝茶当作抵达的玩笑，不构成真实出游或提神效果承诺。对不知道虎跑的人，它提供的是停下和喝茶的动作，目的地是否有吸引力仍未知；不能把未知记作确定的不理解。",
+          "classification": "effect_unknown_not_text_blocker"
+        },
+        {
+          "quote": "鼠标放一放，去趟虎跑。",
+          "observation": "工位和鼠标切合部分办公情景，便利店或电商购买后可以代入该使用情景。主文孤立时像出游邀请，已由副文揭晓，版面分读风险不在本次文字同读验证中解决。",
+          "classification": "candidate_already_disclosed_nonblocking_risk"
+        }
+      ]
+    },
+    {
+      "id": "v2",
+      "natural_understanding": "说话人看见这瓶茶用了虎跑泉水，想起曾带自己去虎跑的人，于是给对方带茶。",
+      "brand_product_identification": "青屿为茶品牌；虎跑是共同旅行地点，同时与配方泉水名称相连。",
+      "independent_risks": [],
+      "limits": [
+        {
+          "quote": "上回你带我去虎跑，这回换我给你带茶。",
+          "observation": "共同去过虎跑是这个捎茶理由的前提。没有这段经历的读者仍能理解故事，但不能照搬这句留言。该适用范围已写进主张和受众假设，不能将窄情景本身当作本轮新增硬问题，也不能推定多数设定人群会代入。",
+          "classification": "explicit_scenario_boundary"
+        },
+        {
+          "quote": "看见这名字，就想起你。",
+          "observation": "紧接“虎跑泉水”后，“这名字”通常指虎跑，可以接上共同经历；真实受赠者是否觉得自然、是否触发情绪尚未验证。",
+          "classification": "effect_unknown_not_text_blocker"
+        }
+      ]
+    }
+  ],
+  "independent_new_blockers": [],
+  "independent_new_major_risks": [],
+  "fact_scope_check": {
+    "result": "未见主副文将使用泉水升级为全部用水、独家、水质或口感优越；未指定茶种或产地。",
+    "evidence": [
+      "n7：虎跑泉水，是这瓶茶用到的水。",
+      "k4：茶里用到了虎跑泉水。",
+      "v2：这瓶青屿无糖茶用到了虎跑泉水。"
+    ],
+    "limits": [
+      "事实核对以所给虚构产品前提为限，没有验证正式产品来源凭据。",
+      "茶种尚未确定，三案均未虚构；最终包装需与茶种信息搭配，本轮不得因待补而宣称完整货架理解已验证。"
+    ]
+  },
+  "overall_limits": [
+    "这是读完任务与主张后的独立风险捕捉，不能冒称未见方向解释的真实消费者首读。",
+    "未评分、未推荐、未改稿；尚未核验对应岗位肯定项及覆盖关系。",
+    "不以个人喜欢虎跑、出游或送茶的程度推定目标人群偏好。"
+  ]
+}

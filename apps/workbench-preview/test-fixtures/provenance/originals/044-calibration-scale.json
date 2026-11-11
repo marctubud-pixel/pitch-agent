@@ -1,0 +1,23 @@
+{
+  "actualmodel": "gpt-6.1-sol",
+  "role": "brand",
+  "phase": "calibration-scale",
+  "input_path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-copy-full-20261110/inputs/CALIBRATION-ADDENDUM.md",
+  "input_sha256": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc",
+  "understands_quality_4_vs_5": true,
+  "quality_scale": {
+    "1": "严重不成立",
+    "2": "有想法但重大差距",
+    "3": "意思可讲清但完成度低于本阶段基准",
+    "4": "达到给定阶段和基准，可有非关键优化",
+    "5": "有对照且具体优于基准，须说明超过在哪里及取舍"
+  },
+  "neutral_benchmark_scores": {
+    "fact_match": 4,
+    "direct_understanding": 4,
+    "evidence_based_brand_product_semantic_link": 4
+  },
+  "reason": "中性基准准确、直接，工艺与配料对应已确认产品；达到给定基准即可得4。完全匹配体现事实置信度，不自动构成高于基准的质量5。未提供具体优于基准的对照，不能给5，也不添加情绪或传播效果分。",
+  "prior_answer_scope": "旧校准中的事实匹配5、直接理解5使用匹配强度与理解确定性尺度，并非本轮正式质量尺度；旧答卷保留。正式评审采用本补充的质量尺度，不能沿用那些5作为质量5。",
+  "limit": "虚构例只核内部边界，不证明与真实人类审美一致。"
+}

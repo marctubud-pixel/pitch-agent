@@ -1,0 +1,34 @@
+import {mkdtemp,realpath,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {randomUUID} from 'node:crypto';
+import {openStore} from './store.mjs';
+import {createExecutor} from './executor.mjs';
+import {diskReceipt} from './selected-stage-fixture.mjs';
+import {output,human,bindings as originalBindings,source} from './research-operator-fixture.mjs';
+import {acquisitionHash as hash,ACQUISITION_BRANCHES} from './research-acquisition.mjs';
+export const quoted=r=>JSON.parse(r.prompt.slice(r.prompt.indexOf('UNTRUSTED_JSON_DATA\n')+20,r.prompt.lastIndexOf('\nEND_UNTRUSTED_JSON_DATA')));
+export async function acquisitionFixture({adapter='json-http-v1',brief='Explore the supplied blue packaging example, without audience claims.',mode='auto',humanGates=[],confirmed=true,empty=false,unknown=false,configuration={searchProviderId:'search'},handler,transportHook,pdfExtractor}={}){
+ const root=await realpath(await mkdtemp(join(tmpdir(),'acquisition-engineering-'))),store=openStore(join(root,'db')),calls=[],tools=[],bindings={...originalBindings,research_planner:{providerId:'planner',model:'synthetic',role:'research-lead'}};
+ const provider={model:'synthetic',async execute(request){const input=quoted(request);calls.push({request,input});let value;
+  if(request.outputSchema.properties.generationId){const e=input.envelope;value={protocolVersion:'research-acquisition-plan-v1',generationId:e.id,envelopeHash:e.envelopeHash,branches:ACQUISITION_BRANCHES.map((kind,i)=>({kind,scope:e.scope,applicability:unknown&&i===3?'unknown':'active',reason:unknown&&i===3?'User scenario is unknown.':'Bounded synthetic literal discovery.',queries:unknown&&i===3?[]:[kind+' synthetic']}))};}
+  else if(request.outputSchema.properties.outputKind?.enum[0]==='research_findings'||request.outputSchema.properties.researchContractVersion){
+   const records=input.sourceRecords;value=records.length?{outputKind:'research_findings',status:'complete',title:'Synthetic acquired research',summary:source.text,sections:[{heading:'Finding',body:source.text,evidenceIds:records.map(s=>s.id)}],claims:[{text:source.text,kind:'fact',evidenceRefs:records.map(s=>s.id),limitations:['Source-relative synthetic engineering only.']}],gaps:[],evidenceClassifications:records.map(s=>({sourceId:s.id,scopeRelation:s.scopeRelation==='direct'?'direct':'background',reason:'Literal source-relative background. No direct case upgrade.'})),researchContractVersion:'research-data-v2',chartData:null,quantitativeClaims:[]}:{outputKind:'research_plan',status:'blocked',title:'Research gaps',summary:'No usable source.',sections:[{heading:'Research needed',body:'Acquire bounded source material before findings.',evidenceIds:[]}],claims:[],gaps:['No complete source text was obtained.'],evidenceClassifications:[],researchContractVersion:'research-data-v2',chartData:null,quantitativeClaims:[]};
+  }else {
+   value=output(request);
+   if(input.claimManifest){const sources=input.sourceRecords;for(const r of value.results)r.citations=sources.length?[{sourceId:sources[0].id,textHash:hash(sources[0].text),quote:source.text}]:[];}
+   if(value.sourceAssessments)value.sourceAssessments=input.sourceRecords.map((s,i)=>({sourceId:s.id,textHash:hash(s.text),use:'usable_with_limits',relevance:'Synthetic bounded example.',provenance:'Literal captured excerpt. Not authenticated.',limitations:['No consumer or professional authenticity claim.'],refs:[{location:`/sourceRecords/${i}/text`,quote:source.text}]}));
+  }
+  if(handler)value=await handler(value,input,request);
+  return diskReceipt(root,request,{runId:request.runId,model:'synthetic',requestedModel:'synthetic',threadId:randomUUID(),inputPacketHash:'',exitCode:0,responseText:JSON.stringify(value),parsedOutput:value,cost:null});
+ }};
+ const providers=Object.fromEntries(['author','reviewer','strategist','planner'].map(k=>[k,provider]));
+ const searchProviders={search:adapter==='ddg-lite-v1'?{adapter}:{adapter,endpoint:'https://search.acquisition.org/find',queryParameter:'q',resultsPath:['results'],urlPath:['url'],titlePath:['title']}};
+ const acquisitionDependencies={lookup:async host=>{tools.push({kind:'dns',host});return [{address:'8.8.8.8',family:4}];},async transport(request){tools.push({kind:'http',url:request.url.href,address:request.address,maxBytes:request.maxBytes});if(transportHook){const result=await transportHook(request,tools);if(result)return result;}const isSearch=request.url.hostname==='lite.duckduckgo.com'||request.url.hostname==='search.acquisition.org';const page='https://sources.acquisition.org/blue';const records=empty?[]:[{url:page,title:'Synthetic blue'},{url:page+'#repeat',title:'Duplicate'},{url:'http://127.0.0.1/private',title:'Rejected'},{url:'https://sources.acquisition.org/white',title:'Second'}];return {status:200,headers:{'content-type':isSearch?(adapter==='ddg-lite-v1'?'text/html; charset=utf-8':'application/json'):'text/html; charset=utf-8'},body:Buffer.from(isSearch?(adapter==='ddg-lite-v1'?`<html><body><table>${records.map(r=>`<tr><td><a class="result-link" href="${r.url}">${r.title}</a></td></tr>`).join('')}</table></body></html>`:JSON.stringify({results:records})):`<html><head><title>Bounded original</title></head><body><p>${source.text}</p></body></html>`)};},...(pdfExtractor?{researchPdfExtractor:pdfExtractor}:{})};
+ store.create({id:'p',name:'Synthetic acquisition only',brief,mode,humanGates},human);
+ if(confirmed)store.command('p',{kind:'confirm-task-card',taskCardId:'p:scope:1',commandId:'confirm',expectedRevision:0},human);
+ const options={store,rootDir:root,providers,bindings,searchProviders,researchAcquisitionConfiguration:configuration,acquisitionDependencies,imageProvider:null},executor=createExecutor(options);
+ return {root,store,calls,tools,bindings,providers,searchProviders,acquisitionDependencies,configuration,executor,options,request:(extra={})=>({protocolVersion:'research-acquisition-v1',commandId:randomUUID(),expectedRevision:store.read('p').revision,sourceEntryIds:[],materialIds:[],...extra}),close:async({retain=false}={})=>{store.close();if(!retain)await rm(root,{recursive:true,force:true});}};
+}
+export async function planAcquisition(f,request=f.request()){await f.executor.continueResearch('p',request);const id=f.executor.researchStatus('p').queuedJobIds[0];if(id)await f.executor.execute('p',id);return f.executor.researchStatus('p');}
+export async function finishAcquisition(f,{producer=true}={}){for(let i=0;i<8;i++){const p=f.store.read('p'),ids=f.executor.researchStatus('p').queuedJobIds.filter(id=>producer||p.jobs.find(j=>j.id===id)?.purpose==='research_acquisition_branch');for(const id of ids)await f.executor.execute('p',id);await f.executor.advanceResearch('p');if(!f.executor.researchStatus('p').queuedJobIds.some(id=>producer||f.store.read('p').jobs.find(j=>j.id===id)?.purpose==='research_acquisition_branch'))break;}return f.executor.researchStatus('p');}

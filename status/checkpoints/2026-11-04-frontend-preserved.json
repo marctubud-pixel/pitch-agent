@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-11-04T01:54:49+08:00",
+  "retention": "Preserve original archive, accepted source and acceptance evidence in place. No relocation, deletion, frontend merge, backend or integration operation.",
+  "zip_path": "/Users/marc/Downloads/未命名文件夹/proposal-workbench-f05ab-f06a.zip",
+  "zip_sha256": "8c29d800cf567857d268408cd4cf5ec599ff67396cb3b2885a99f9ba3daf8b64",
+  "source_root": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-f05ab-f06a-acceptance-20261103/package/proposal-workbench",
+  "files_verified": 297,
+  "mismatches": [],
+  "file_manifest": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-backend-handoff-plan-20261103/baseline.json",
+  "frontend_visual_local_interaction_baseline_accepted": true,
+  "backend_integration_accepted": false,
+  "handoff_docs_fully_accepted": false,
+  "handoff_docs_remaining": [
+    "8 Overview Brief fields mix a candidate with verified source",
+    "standalone next-readonly-batches.md differs from packaged version"
+  ],
+  "deferred_task": ".scratch/frontend-integration-after-backend-20261104/issues/01-connect-frozen-frontend.md",
+  "trigger": "Only after current backend milestone actual completion/acceptance and stable handoff, per user decision 2026-11-04."
+}

@@ -1,0 +1,1989 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-11",
+  "sourceRoot": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench",
+  "targetRoot": "apps/workbench-preview",
+  "scope": "原件原位保留，导入字节身份；后续可移植改动见变更清单，不冒称全量历史备份",
+  "files": [
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/App.tsx",
+      "path": "apps/workbench-preview/src/App.tsx",
+      "sha256": "7a454133330c45902efcb166f4bcb7dc2409385727715fc33ae7cac539b5e503"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/DemoPanel.tsx",
+      "path": "apps/workbench-preview/src/app/DemoPanel.tsx",
+      "sha256": "8c1f5a15505d8885cb81c8903ffd67ad99dfa3bf27af8bf32fcc8d5742a67111"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/commands.ts",
+      "path": "apps/workbench-preview/src/app/commands.ts",
+      "sha256": "1a9abf420b1158f599011bfe86e6e00b814431f28f97c58ef7789a138bfe412d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/confirm.tsx",
+      "path": "apps/workbench-preview/src/app/confirm.tsx",
+      "sha256": "7640edc6d5b15370f16db04c69c5b7fbce3113f9673b471d61d2a20a9cffa722"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/feedback.tsx",
+      "path": "apps/workbench-preview/src/app/feedback.tsx",
+      "sha256": "e22da7a15eba55f5d88d408a976f36482aa952beb781be5d19c9a3d758e24899"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/prefs.ts",
+      "path": "apps/workbench-preview/src/app/prefs.ts",
+      "sha256": "6abf4d245a20abce7ddc83dc1f99ada0ae5492dac9ea3c2ef43f8420ff9c563b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/proposalQuery.ts",
+      "path": "apps/workbench-preview/src/app/proposalQuery.ts",
+      "sha256": "bcf1b3068c804f6503677e77c7037f8a552b02dfa50faf65ac48726368b52c06"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/query.ts",
+      "path": "apps/workbench-preview/src/app/query.ts",
+      "sha256": "d6f07d061efd01347fdf3ed0386e533aa4f83c0ec4ad45ba65dac6420ba8fcef"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/router.test.ts",
+      "path": "apps/workbench-preview/src/app/router.test.ts",
+      "sha256": "f4bbf65319e43219d26e87d716ffe6c72f776dd5f8ff6c9b657a0726f1b7977a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/router.tsx",
+      "path": "apps/workbench-preview/src/app/router.tsx",
+      "sha256": "c549336efe07938513853e2ca5a3fcf5ed8bbcea51dad2f25d46ce719e179ded"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/services.tsx",
+      "path": "apps/workbench-preview/src/app/services.tsx",
+      "sha256": "e1d71983f4dd8124582c16a10960f4be09fe1d01dcafb8896b79bbed542e9f01"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/app/theme.ts",
+      "path": "apps/workbench-preview/src/app/theme.ts",
+      "sha256": "7f115002ecfcf3d7297866837d02c6de94c02105dc54eda798d02267d485b4d4"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/LocalTeamStore.test.ts",
+      "path": "apps/workbench-preview/src/collaboration/LocalTeamStore.test.ts",
+      "sha256": "ee609cdbb16e4dedad976a16041fbdfe4fbd9236c91707b95e88c19de71ad1dc"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/LocalTeamStore.ts",
+      "path": "apps/workbench-preview/src/collaboration/LocalTeamStore.ts",
+      "sha256": "cc57f89633c8f4dc0b887da6f03e8d7b0997514c877f49466abed5cb5775270b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/TeamTools.tsx",
+      "path": "apps/workbench-preview/src/collaboration/TeamTools.tsx",
+      "sha256": "a523051d7783dd95ee40e8d2e0972db6043ff7f3e2412da67ba10e4db0988f09"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/assistant.ts",
+      "path": "apps/workbench-preview/src/collaboration/assistant.ts",
+      "sha256": "fe161ddf692a561a43186fa4fd6e6c9f218393623e90ea5ed0660683ea4a8600"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/context.tsx",
+      "path": "apps/workbench-preview/src/collaboration/context.tsx",
+      "sha256": "cbe7e10302619738054b208465a327e8f810d2aad842c9b25b22b4a0623cd5a8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/protectServices.test.ts",
+      "path": "apps/workbench-preview/src/collaboration/protectServices.test.ts",
+      "sha256": "efc9d2d96cb759dc0c89116d7279e90f523c49d08e37950611a71c6760d9f598"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/protectServices.ts",
+      "path": "apps/workbench-preview/src/collaboration/protectServices.ts",
+      "sha256": "420778880009ac8374de4e974b1828f1f3a71bb202aeaaa2f9b0bd0b4af0ce1b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/testSupport.ts",
+      "path": "apps/workbench-preview/src/collaboration/testSupport.ts",
+      "sha256": "16ed97bf3032124151f1700d3d8c8cb0675425079feb0ec2fc63954316facf81"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/collaboration/types.ts",
+      "path": "apps/workbench-preview/src/collaboration/types.ts",
+      "sha256": "51c817d8d1059a24c5c19a5899cbcd5593bebe556955f9fe450d114eb88a2d99"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/assistant.ts",
+      "path": "apps/workbench-preview/src/domain/assistant.ts",
+      "sha256": "06f2e3b46bde7ff98ba20f7773ff685fcd70366b9d93457f59756e8b4caa147f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/brandResources.ts",
+      "path": "apps/workbench-preview/src/domain/brandResources.ts",
+      "sha256": "8fd10eea022c8f49b1a0678174c0f9c9567ab94daafb846f961d883492453c6b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/briefRequirements.ts",
+      "path": "apps/workbench-preview/src/domain/briefRequirements.ts",
+      "sha256": "d658640108b0b8e0319c951b95af3d0d67a50a175361b099f69648fa6d3b5d89"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/intake.ts",
+      "path": "apps/workbench-preview/src/domain/intake.ts",
+      "sha256": "d03db899aab0e91353841be9b467eb15d23ed319986815dd15232347e68f29dd"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/models.ts",
+      "path": "apps/workbench-preview/src/domain/models.ts",
+      "sha256": "3d00b6d8c1510dab536ef6b848fb2fab7452f85f4f627e73d88babfb06acb723"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/presentationTime.ts",
+      "path": "apps/workbench-preview/src/domain/presentationTime.ts",
+      "sha256": "336fabc6d8afe2cb3b7d50dd545c9b5ee5da4dd7e6ba1622f564a2e8d6e1f940"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/proposal.ts",
+      "path": "apps/workbench-preview/src/domain/proposal.ts",
+      "sha256": "3415ade6b9e590ec31223871254392da5f71a6152afd47e6ff1020b883590823"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/proposalType.ts",
+      "path": "apps/workbench-preview/src/domain/proposalType.ts",
+      "sha256": "da08036dbc9befc0ce0d6afc0e87b531dda311a7911544752790970d124572cd"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/researchMethod.ts",
+      "path": "apps/workbench-preview/src/domain/researchMethod.ts",
+      "sha256": "40b1c61b5e5587637f8d15cc130427929ac021564f7bdb77cfd6b07b5f74f3e0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/domain/service.ts",
+      "path": "apps/workbench-preview/src/domain/service.ts",
+      "sha256": "7c75576b69845538900e626f1054cfe7544c651c16e7c90495f290fce705abf3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/i18n/index.tsx",
+      "path": "apps/workbench-preview/src/i18n/index.tsx",
+      "sha256": "a6f0802d63fbdcbf507f1588b8502adc0e6894722913a0df7a6b8ab32795c949"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/i18n/messages/zh-CN.ts",
+      "path": "apps/workbench-preview/src/i18n/messages/zh-CN.ts",
+      "sha256": "5db33a4509188f25a6f81f6b2d3e0922b832b70f0ee0a1f5ff27925211f77f10"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/intake/ChangeReview.tsx",
+      "path": "apps/workbench-preview/src/intake/ChangeReview.tsx",
+      "sha256": "1234233c8cf0ad6f9e5592516c251738bbd5ea2b3a72986417be6677326d908d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/intake/IntakeSourcePanel.tsx",
+      "path": "apps/workbench-preview/src/intake/IntakeSourcePanel.tsx",
+      "sha256": "a4a26247b9d50b282e9cea3b83068d485593afe81f511807d0362a7ff496d264"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/intake/MappingBanner.tsx",
+      "path": "apps/workbench-preview/src/intake/MappingBanner.tsx",
+      "sha256": "4ebbd4431eaf38a208a9cdd7a7ad19b7ce415ae60bab6901c61116d5ea7b5f71"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/intake/TaskCardEditor.tsx",
+      "path": "apps/workbench-preview/src/intake/TaskCardEditor.tsx",
+      "sha256": "b8c0b9ee250725500df60bd26da716db4f7a32505c779f70f6fb59b391e31ec2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/intake/emptyCard.ts",
+      "path": "apps/workbench-preview/src/intake/emptyCard.ts",
+      "sha256": "b79cac2a63c4317615364399caf8907734a19beda54452f21dcd5a712e1f445f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/intake/taskCard.ts",
+      "path": "apps/workbench-preview/src/intake/taskCard.ts",
+      "sha256": "bf7bb98380ba3c70b116e76d0f30defa64a18c26829a861e843d98711484f129"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/intake/useIntakeRun.ts",
+      "path": "apps/workbench-preview/src/intake/useIntakeRun.ts",
+      "sha256": "5e466430092129c5a51d72dbb79de92753938c90ca17d3f6246b240f74b3ceda"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/main.tsx",
+      "path": "apps/workbench-preview/src/main.tsx",
+      "sha256": "a10a0ec9921aa74a92ba1a59777af7f50a9d0f6bff0ca29d728308906be24d79"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/BrandResources.tsx",
+      "path": "apps/workbench-preview/src/proposal/BrandResources.tsx",
+      "sha256": "9f77785b8c031c9b14a67953496faa65094f75e4565b750058477fd8d8c7ff96"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/BriefVersionRecords.tsx",
+      "path": "apps/workbench-preview/src/proposal/BriefVersionRecords.tsx",
+      "sha256": "d0d65ea326a35ae9acee2c0c08c55edc673bfbfae7e568ff2e6eed46822fc54d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/ConfirmationOwner.tsx",
+      "path": "apps/workbench-preview/src/proposal/ConfirmationOwner.tsx",
+      "sha256": "5718f8ea9b9ddc7fdbf5f30361d2f76e2b75db6449f8940fa441131d44759418"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/DeckViewer.tsx",
+      "path": "apps/workbench-preview/src/proposal/DeckViewer.tsx",
+      "sha256": "a2a4a8e0745f1b82206418618f3e7321094b50d49b1e9661b66485697b84ef2f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/Drawer.tsx",
+      "path": "apps/workbench-preview/src/proposal/Drawer.tsx",
+      "sha256": "4c7275c3a6fc939afaba46b6edc28374fceadf2998294d5883ab4a0b3315368b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/EvidenceBack.tsx",
+      "path": "apps/workbench-preview/src/proposal/EvidenceBack.tsx",
+      "sha256": "88ba757d86b6f4ce8329c6754437bc9499798c5feff674dc61f9965b86a656f2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/Slide.tsx",
+      "path": "apps/workbench-preview/src/proposal/Slide.tsx",
+      "sha256": "698ef58d57822da2135647cc0889471d7b003065c02adf1cdd9279a318845037"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/Tabs.tsx",
+      "path": "apps/workbench-preview/src/proposal/Tabs.tsx",
+      "sha256": "ffd90513e0325f86f645e73bc50d57f6dfca12cf6922e74dfac1c92aeb4785b2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/artwork.ts",
+      "path": "apps/workbench-preview/src/proposal/artwork.ts",
+      "sha256": "64290f44988a0bce831f777c59d89183fb4830a06dc320485fdb013d8894e9e0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/briefVersions.ts",
+      "path": "apps/workbench-preview/src/proposal/briefVersions.ts",
+      "sha256": "35b5cb3ea20f8c828ac91b3ca74fa0e82c04f76ea94570f2eed96b719830cc8f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/color.ts",
+      "path": "apps/workbench-preview/src/proposal/color.ts",
+      "sha256": "41b18e848ded7fa05e16fa452f530552b6ddf65937c09658ad37f971260f386b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/content-review/ContentReadthrough.tsx",
+      "path": "apps/workbench-preview/src/proposal/content-review/ContentReadthrough.tsx",
+      "sha256": "294565d9b126f65b5418a22892cdc6f02a787939f02c10caf78c7fc5719b9ba5"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/content-review/content-review.css",
+      "path": "apps/workbench-preview/src/proposal/content-review/content-review.css",
+      "sha256": "96b75f6a2b1d128d521c438225d70a69a6d0373bc6fcfa0a6a3f4e5880231499"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/content-review/model.ts",
+      "path": "apps/workbench-preview/src/proposal/content-review/model.ts",
+      "sha256": "211f07b07994593a328b6036c29e278e9ba1c9a117ad7602065204e717ab025a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/contributionTargets.ts",
+      "path": "apps/workbench-preview/src/proposal/contributionTargets.ts",
+      "sha256": "a40e9a85b62422faa744fa9eead4969bc71da165471fb0cf94cbf53cb2a3f01b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/Viewer.tsx",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/Viewer.tsx",
+      "sha256": "21daa3b6009398b54f06504363b4f355b622f54106dbcd9b75258c056161f793"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/chart-layout.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/chart-layout.ts",
+      "sha256": "2f248b6c4e67883584e93c6e96a772749783dc627ffa981e1481d913f2faebff"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/deck.test.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/deck.test.ts",
+      "sha256": "ab8b23771b3f004b4d48d61ce905dd562a10490e6f73afda29846826d2183db5"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/engine.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/engine.ts",
+      "sha256": "5647a9447a64b496949bdf836a16593a320dcc2349266eac057e756f6e611115"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/errors.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/errors.ts",
+      "sha256": "5676e7e7dc3a9042cb9cb9f5c181d37fc09462a2c1c16c1381ea8994d07b9135"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/export.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/export.ts",
+      "sha256": "f61a73969faac88a6f814228bc5bd89d1c994214e2b51641299cec39f15fa1cd"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/index.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/index.ts",
+      "sha256": "c5561e40ba6f1123243531368ccc8aea37d172da45ced94c87eaa7f682f19a1f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/model.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/model.ts",
+      "sha256": "d43e76f800afeb6719c9a1a9c964009da105cda4d4608ab062e274e3009965e2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/prices.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/prices.ts",
+      "sha256": "3c56cfd694cac3658bb22ae790a39a8a8ed32610bcf82436c3c94123fcc13148"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/proposal.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/proposal.ts",
+      "sha256": "d294c936da831257d9286dcd3336a7631c922423a7981fef7995afe3b19e80f3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/research.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/research.ts",
+      "sha256": "d2dfc039a33dbf0b6df9444c30eedeed14cd8ce102233081dcbfb8206cc7b178"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/templates.ts",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/templates.ts",
+      "sha256": "12185d61e09ef5c61fcac90b5fad47d4a5603247d6d78094ffbeb68d996501b4"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio/vendor/deck-engine.js",
+      "path": "apps/workbench-preview/src/proposal/deck-studio/vendor/deck-engine.js",
+      "sha256": "5dadbc9a151246a511e7ee6cd47bbd369ca34d93d91cfd145b56c76229005d78"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/deck-studio-ui.tsx",
+      "path": "apps/workbench-preview/src/proposal/deck-studio-ui.tsx",
+      "sha256": "5d6f46bbe8e9ca3f8b26fc969608da05d241beac81631316ba726a7dd8451c01"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/derive.ts",
+      "path": "apps/workbench-preview/src/proposal/derive.ts",
+      "sha256": "5b3713cb9a41c6dbc606872788f73e049c32d08ab48f0c6113f3970634b0b195"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/drafts.test.ts",
+      "path": "apps/workbench-preview/src/proposal/drafts.test.ts",
+      "sha256": "f6fa3f2a730fb25ab9321fe9ed7d53effb2a1242b11407b02509a592bf7b6698"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/drafts.ts",
+      "path": "apps/workbench-preview/src/proposal/drafts.ts",
+      "sha256": "f4f0d50351dbba9790595b34948b18859a021a90bd8e570d42e6a8efd477aa03"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/needs.ts",
+      "path": "apps/workbench-preview/src/proposal/needs.ts",
+      "sha256": "fabb7dbf46fdf7927c67d73c4ffd59abba01a387a3291e650b81e640456e9ca2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/pending.test.ts",
+      "path": "apps/workbench-preview/src/proposal/pending.test.ts",
+      "sha256": "ccd3e6266b1aaa49d2d316e78eb7c094b2d1ad6d398e392eb953bcb6a22d657d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/pending.ts",
+      "path": "apps/workbench-preview/src/proposal/pending.ts",
+      "sha256": "53514b8c90980b5956c398bdda4547193af015949f7a359cb40fda8e3ea08afb"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/pptx.ts",
+      "path": "apps/workbench-preview/src/proposal/pptx.ts",
+      "sha256": "35e41721c16c9070300c2d39802811abd543df104db6da945f797acf9ae5053f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/projectDetails.test.ts",
+      "path": "apps/workbench-preview/src/proposal/projectDetails.test.ts",
+      "sha256": "6a0454fd79ffca49fa8f30194cab48670c25c82ef7638daf72adc5e5b71a7dd3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/projectDetails.ts",
+      "path": "apps/workbench-preview/src/proposal/projectDetails.ts",
+      "sha256": "f4eab69dbb7da01be805f2802eccd13bbe69be706340ef163ddfcd5d5283cc5b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/QingyuContentReviewPreview.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/QingyuContentReviewPreview.tsx",
+      "sha256": "4af8ed4f20647020897a3a1d58e49b024ab153cb2ba14de6efa440186de1e075"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/basis-copy.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/basis-copy.txt",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/basis-intersection.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/basis-intersection.txt",
+      "sha256": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/basis-owner.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/basis-owner.txt",
+      "sha256": "c99c071da079b9783672c8c0eb02e3b9a76f40236aba33647d37d2f9029281e6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/basis-strategy.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/basis-strategy.txt",
+      "sha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/basis-visual.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/basis-visual.txt",
+      "sha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/director-reading.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/director-reading.json",
+      "sha256": "7ea0d19b40d4d2b7b76b2f64f86d92912c46c48ce0710ba77ef8b3a8609177d8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/owner-reading.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/owner-reading.json",
+      "sha256": "c99c071da079b9783672c8c0eb02e3b9a76f40236aba33647d37d2f9029281e6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/preview.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/preview.test.ts",
+      "sha256": "850b612b75a882a2acb27d409f12fdd7102f648b1f9fc70fe9caaf3f40edb2b3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/preview.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/preview.ts",
+      "sha256": "3851430c01f176c12f86431ee5d055b0b3ba889f0ee42a434a222250d5171f44"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-content-review/view.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-content-review/view.test.ts",
+      "sha256": "a0aded0b501f4f0992054a8d231fffde74b62455eec4709317485210274661d1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-final-review/FinalReviewSummary.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-final-review/FinalReviewSummary.tsx",
+      "sha256": "7f75e0d9e2c8ff8dcd324988d25e88bffe60e0e9f0e0cf4745fcaa2108c1d49f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-final-review/record.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-final-review/record.json",
+      "sha256": "b2b7504ac20785606645dd886f5014dd45b55b48a18876a7530eb1b100407eb2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-final-review/record.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-final-review/record.test.ts",
+      "sha256": "f9f443563fcb0b2f8ba469b4eb63cac53b688da59f223d0a8a51bd27efe33d19"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-final-review/record.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-final-review/record.ts",
+      "sha256": "704f6956a23081ef478dd0d3909a035c7e62a25ac79c6082a83492067889ff06"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-final-review/sources.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-final-review/sources.ts",
+      "sha256": "00ac45bad2da0f3b34acfe922ddc5544664e7c14dbcd26c764e12fa634fa8232"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/QingyuLayoutPreview.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/QingyuLayoutPreview.tsx",
+      "sha256": "a1dc03a90ac4159f445c88394f8a021f7d121e6246e4743edc710cea31c9cb9b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/assemble.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/assemble.ts",
+      "sha256": "ef9358eb705ae2d9ba68bb6160900c9fffa64e29b1c032749840f51df41d87fe"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/basis-concept.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/basis-concept.txt",
+      "sha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/basis-copy.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/basis-copy.txt",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/basis-intersection.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/basis-intersection.txt",
+      "sha256": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/basis-prices.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/basis-prices.txt",
+      "sha256": "6a09986e67c970e8f803c3b6d6b20a5657c47cbfbbc4156a2efba2d3aab452b2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/basis-strategy.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/basis-strategy.txt",
+      "sha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/layout.css",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/layout.css",
+      "sha256": "03d8ac4d4524301ca7dfd450674950368711619f64bc8d9ac206c726a46778d0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/layout.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/layout.test.ts",
+      "sha256": "924029e04bcf53290c336aae1c5abe38a1213126d11512885fa3680783e5b0a1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/manifest.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/manifest.json",
+      "sha256": "63becf989ae345da7715d73a777881390f85c319760b8a86441706f4e1724d3b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-layout/preview.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-layout/preview.ts",
+      "sha256": "00b0cbae293b320fce11418f7402c6759f9dc830c49115f0fb29714a8a23c087"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/ChapterBoards.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/ChapterBoards.tsx",
+      "sha256": "a2d46f226d9d62ae0c3ea3a12dc49770f3ddeb529dfb8e5048b4546fc6fab77c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/QingyuR2View.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/QingyuR2View.tsx",
+      "sha256": "44083d95942c23a0511651d2818401c9f9065c73acb79303aec1257cf19f862f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/QingyuR3View.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/QingyuR3View.tsx",
+      "sha256": "774fe9ce831d58d555f19cadacfd7478ffced2a3c66f51bc3f8f927be0aeff2e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/QingyuR4View.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/QingyuR4View.tsx",
+      "sha256": "14ca6490cf9336abad414a0c6d2477556eacf969368ac59ce0e585022c00a6e6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/QingyuReportRevisions.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/QingyuReportRevisions.tsx",
+      "sha256": "54364f93c9fc57f444f1c8c945f4ea7f83491f7b0aef871850dd36ff333b431b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/QingyuReportView.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/QingyuReportView.tsx",
+      "sha256": "ea96177fa8690e38b9c397db95bd4f7b33ba791b0943dd00ddc12639bef17475"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/QingyuStudioView.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/QingyuStudioView.tsx",
+      "sha256": "89384a95c675da5cbf41bd86b591aada8e2b556458c01d18e65c1642d2da64be"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/binding.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/binding.ts",
+      "sha256": "e5e5fc053c42bc8488e9fb77daf2c5bf1618add3ece0aee80909b06e69cbb234"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/board-export.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/board-export.ts",
+      "sha256": "fb8dec8e53ee7c473a639578ae4c30fd746a57a154deacd5d0ba6ab8f18e98ce"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/boards.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/boards.test.ts",
+      "sha256": "6566591addca5fd84ce6200804254bf3841464cad2fbce17d225781e176b0850"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/bundle-r2.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/bundle-r2.ts",
+      "sha256": "7cc20977c133bfc70a43de9b7012d1faad92142ebdeb76a81c8d6df160a463e9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/bundle-r3.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/bundle-r3.ts",
+      "sha256": "c8171c2a6b15481a40b78445d0d8e20e54fccc48dd2756cef5182ba3cbab7827"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/bundle-r4.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/bundle-r4.ts",
+      "sha256": "9b2905a09f207251879f333f1d2e315115414f7038becc6a5b0c666b1f27dab7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content-r2.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/content-r2.json",
+      "sha256": "6a09986e67c970e8f803c3b6d6b20a5657c47cbfbbc4156a2efba2d3aab452b2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content-r3.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/content-r3.json",
+      "sha256": "3a0e0ec05e3a11ed6b1f4ca7a2446aa230ca639611f1a9fd6e4cc5003bba8653"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content-r4.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/content-r4.json",
+      "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/content.json",
+      "sha256": "6b8dc104176509882f7cde0ae9a08f8f43945b653953f9f346b76b6439e4f0a3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/pptx-r3.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/pptx-r3.test.ts",
+      "sha256": "a13ad307f34580f0cf979e7a514f48b822c16e99b24731d5b2c2d4832c44e7fc"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/pptx-r3.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/pptx-r3.ts",
+      "sha256": "e782785eb543624d248eb4a5fe46c668ceff16f73ceffa0200b427762c4d5539"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/pptx-r4.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/pptx-r4.test.ts",
+      "sha256": "a80f0b23fbc08cc16af79edbd0a574f74bbc9971021d50d7662bb1775503a9b0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/pptx-r4.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/pptx-r4.ts",
+      "sha256": "8614e7eeb4f985438e9203c14c1909419c65e526d72136539b1b494e8edd3610"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/r3.test-fixture.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/r3.test-fixture.ts",
+      "sha256": "67fc7bc4bca6a50bec2970e0ee10e0e01f3a36cc746065f86d89ecb0b0447a17"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report-r2.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report-r2.test.ts",
+      "sha256": "cd8456f649e2cea4895fb35a666b34ddc439b3bc94f58959f4c7a555d149b2b8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report-r2.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report-r2.ts",
+      "sha256": "f7ef85c1840041d1d6cebdfb90606fb7ff17c6461bf9772d6609fa71b40554e0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report-r3.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report-r3.test.ts",
+      "sha256": "a77b362a9c356a72bb55b8aeaad431264e2c62c9531ba0f8a700df7f66a98f48"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report-r3.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report-r3.ts",
+      "sha256": "137b07ce69d3f8b4dd42c1e8291759056c17daa0c6d7c50ae2d510cf6a90ca46"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report-r4.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report-r4.test.ts",
+      "sha256": "c0a1af12ead6eff5aae32f3ce4c04a886428f34dc27c1e6ca1d5bfd3167ab1eb"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report-r4.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report-r4.ts",
+      "sha256": "cd9136ea28f97480a7ff04d86d4ae8a6257863fc94853b4c3516dd958e8ab454"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report.test.ts",
+      "sha256": "c7bd3f3c97359c4594dddf49d5110afac79cc361b2fec2062e1d8beeb41e4d9e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/report.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/report.ts",
+      "sha256": "b9b9860262fa658aebb242267203d3d9d0315d33129461da659c39f9bea3193d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/revisions-r2.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/revisions-r2.test.ts",
+      "sha256": "ee5f74936cb31a21ca88be708b6cd8f6ef8a9156689589dbd7d52955f826f3d7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/revisions-r3.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/revisions-r3.test.ts",
+      "sha256": "ec37d5596acba3d7f54a898bfe14eb8d1cdbe71e9ac801e9e97adc3685845f8f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/revisions-r4.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/revisions-r4.test.ts",
+      "sha256": "f1e81d09ba3f7b35eb4ac8f62d575b4ef8f04aa6073bc453b5aa6b142880014b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/revisions-studio.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-report/revisions-studio.test.ts",
+      "sha256": "7a688aef2376eb8779d12b4b8ac6bcb2b00b509c56d2513c1d7db449eee38a11"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/ClaimRecord.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/ClaimRecord.tsx",
+      "sha256": "cfee44eafa1fde92e18a309474845dba659673045a34a83c403c79ee51cc7eee"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/QingyuStrategyPreview.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/QingyuStrategyPreview.tsx",
+      "sha256": "523b149c38351e6fc7396b475df045643fef5f5d03c4121357e6f001d890682e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/basis-r4.txt",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/basis-r4.txt",
+      "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/content.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/content.ts",
+      "sha256": "4bf97abf390e311904d8309fe529da83cd723fe5dc3937aa9310cb5b44242aa6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/draft-r2.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/draft-r2.json",
+      "sha256": "068fb26a54ed0e43dfa1df7e56afab0b4f142b2965e8d1a499f3ed50af14ebb8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/draft-r3.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/draft-r3.json",
+      "sha256": "e20f98ee8b728c7a033b3ca9c0aa026399d321142a0576299008082b7d4feafd"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/identity.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/identity.json",
+      "sha256": "81ed9120b78813185048ef19d83386ade59273dccc7af326bd102546d22fc9c1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/intersection-page.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/intersection-page.ts",
+      "sha256": "4ff1c20a9fc19ee1b4aa4459c2945bebdeac12798c591366956f73a88b16fe37"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/preview.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/preview.test.ts",
+      "sha256": "31cfc2c23aba781e1697420af2244614df088c0377f0cf079a111f2ad82d8017"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/preview.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/preview.ts",
+      "sha256": "3491c7dc8630d0e51140dea352c9c3205678bfdb3ba08b37f88fe8d87c3a4436"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/reviewed-packet.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/reviewed-packet.json",
+      "sha256": "487ee544db341ea650ac6a588c9d00f217178401a705539686f22155a183e0e7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/reviewed-strategy.md",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/reviewed-strategy.md",
+      "sha256": "80fdb0c9b2e7b5d00f89f40297db116627eed03029354db00b5cf2a598f25c30"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/sample.svg",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/sample.svg",
+      "sha256": "7a2e2eda58f3d9cd50e68cda6162a5c319f6f34bd40126906e11e408910f831e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/strategy.css",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/strategy.css",
+      "sha256": "2823f6da38321d46a8b382578a79b218c79f5c6fa217689b95abcbb3bea490f1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/strategy.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/strategy.test.ts",
+      "sha256": "ed3df2f7f7560615f9d1871f63fa6999aef10d81014dbfe5a44a0a04b285c422"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/summary.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/summary.test.ts",
+      "sha256": "b970201c5de54a91f1edfd059e9dda7469043bd27c08bb8a50acda2edb1bf359"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-strategy/summary.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-strategy/summary.ts",
+      "sha256": "2a978c780b225a3e028f7ea4bcfe10e50804a8a9303f10d437eb33c4878100f6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/QingyuThemesPreview.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/QingyuThemesPreview.tsx",
+      "sha256": "3f0e94b093844a1ee5ec307385e3991877702c058512d76ce14fe3b2dfed18e1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/bundle.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/bundle.test.ts",
+      "sha256": "be49dbb5108aa7c352aa5ae65db75018fb2929d2352c5b7173a8d8538ffe6daf"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/content.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/content.test.ts",
+      "sha256": "da42a5b749fe007e8dc8d118092e67439d68a2d24806fce04aaad95b80e02350"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/content.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/content.ts",
+      "sha256": "fd0dca9243e11c315b9973f6bb80da90f1d70cbd3b4485b856353f22aaed53a3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/preview.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/preview.ts",
+      "sha256": "74f2bedea78c9b891bbaf3dee8a64e352608fd1609cd7cee75ad9ef885d7cbfa"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/themes.css",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/themes.css",
+      "sha256": "439b28bec0d057d61c5a8ddd6e43d1aaab8f5b89dd82879c95d75686b6932c3f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/themes.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-themes/themes.test.ts",
+      "sha256": "9a5106c1a3927776f907e8fb917921dfc887601b083636dd357a2ebd71702715"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/QingyuVisualPreview.tsx",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/QingyuVisualPreview.tsx",
+      "sha256": "0639007452363f0929fcc83208b5f9510d17d012325e43a75262b4041139a087"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/concept-images.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/concept-images.ts",
+      "sha256": "06dbe9600c8a1c52888256855d55908401b197f2f66fb376729062102ae1424e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/eligibility.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/eligibility.ts",
+      "sha256": "e1c05345286adb2a369a06c4ef1477db93f0b5e97a1aee9ae2bc6d1079aca49e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/packaging-references.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/packaging-references.ts",
+      "sha256": "979208e5dbb27eddfdc305a5fff7d72b564562a1dd5882beef47af65825dd74e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/visual-preview.css",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/visual-preview.css",
+      "sha256": "066b0c422c475f22c15c57ec7378df8e310657c78e9e2d00f854980e33192137"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/visual-preview.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/visual-preview.test.ts",
+      "sha256": "28c4aef7aa06db7d6edc361055cb5cd73a5eb09ec955974479e62f8ceb456c75"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/workflow-intake-record.json",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/workflow-intake-record.json",
+      "sha256": "db010e2a2f5e046f29904bc6170e62f94b45a21eec6a0f92eabd06a7336637ba"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/workflow-intake.test.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/workflow-intake.test.ts",
+      "sha256": "cf3728e7db1a24d6210b5762041510e2eba0303adb1e72f158d31f019c3abff4"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/workflow-intake.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/workflow-intake.ts",
+      "sha256": "07ad47911484b5f2be835f088b6670cacdabe5cbcdc55683e41c83aa427f9d80"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-visual/workflow-record.ts",
+      "path": "apps/workbench-preview/src/proposal/qingyu-visual/workflow-record.ts",
+      "sha256": "fe7a1920fe24081e2154b9a5f302a4dd91493d6e2db9f425db7ebde9330bf332"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/recordTargets.test.ts",
+      "path": "apps/workbench-preview/src/proposal/recordTargets.test.ts",
+      "sha256": "eddab8d980ae06163bf5074a067d881298d7ead926e76f20424d4ff209d16c78"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/recordTargets.ts",
+      "path": "apps/workbench-preview/src/proposal/recordTargets.ts",
+      "sha256": "21b319e29edaa4ad509452ffdbd7499f191026eeca4d03292e03ca9a510224d7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/CaseSlot.test.ts",
+      "path": "apps/workbench-preview/src/proposal/research-case/CaseSlot.test.ts",
+      "sha256": "6b478c6759d9d967e3aa5faebbbecd70bc6772ffeedcbc074254fc417351f47e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/CaseSlot.tsx",
+      "path": "apps/workbench-preview/src/proposal/research-case/CaseSlot.tsx",
+      "sha256": "062adb7171b8501405b2eb8e38baba9469aef5f4e0d34beaf32bb0d07bb9e02b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/binding.test.ts",
+      "path": "apps/workbench-preview/src/proposal/research-case/binding.test.ts",
+      "sha256": "6128ec1996c498b141afec89bc2744d8ccc6d184c0c3c749444663703fb22f5e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/binding.ts",
+      "path": "apps/workbench-preview/src/proposal/research-case/binding.ts",
+      "sha256": "6525e4f445b0fc40f84df3a27ff2bcf785c1d341168b38922203f28bfa23e115"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/charts.tsx",
+      "path": "apps/workbench-preview/src/proposal/research-case/charts.tsx",
+      "sha256": "45e11f87313d8abab935776be90b0e8cd8a5a0958a3f7bc654d1945681151c28"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/index.ts",
+      "path": "apps/workbench-preview/src/proposal/research-case/index.ts",
+      "sha256": "efc48141cb6fd56e8380117c83b1f0a431ed8a1c7f23bd684f22b45fee9f449b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/luma-report.json",
+      "path": "apps/workbench-preview/src/proposal/research-case/luma-report.json",
+      "sha256": "4b782f9a88b55d57d01582e0da7dba149134b517944c48d11cf4a9c925063fe6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/report.test.ts",
+      "path": "apps/workbench-preview/src/proposal/research-case/report.test.ts",
+      "sha256": "e53d5d1e8d0ee759ecf2852157febffe6458e0bb1da074b6f1456ab28e439253"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-case/report.ts",
+      "path": "apps/workbench-preview/src/proposal/research-case/report.ts",
+      "sha256": "ea69054eb49ef14ed844df33c1b82bf815af2f717370035df2c861acaeb4799e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/ResearchMethodView.test.ts",
+      "path": "apps/workbench-preview/src/proposal/research-method/ResearchMethodView.test.ts",
+      "sha256": "ab46798efd871f8e91d02759c8b3f5dd4b0b07a1f591f0111171b570d214d876"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/ResearchMethodView.tsx",
+      "path": "apps/workbench-preview/src/proposal/research-method/ResearchMethodView.tsx",
+      "sha256": "a190fe757bfe37d567f443b1b6b8fad15a7bca5c70b840ea739cd618e7fcfe3f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/figures.test.ts",
+      "path": "apps/workbench-preview/src/proposal/research-method/figures.test.ts",
+      "sha256": "7d5e8b1c5b6954bf27d34018909d0935444aa3eb75947e82da9cd6dff8efbff0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/figures.tsx",
+      "path": "apps/workbench-preview/src/proposal/research-method/figures.tsx",
+      "sha256": "78c1cd3bccef6808e019e0431ae4afdf6f7a116555a0e4dacb8b4c263f3d00e4"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/lumaReference.ts",
+      "path": "apps/workbench-preview/src/proposal/research-method/lumaReference.ts",
+      "sha256": "45bf1f7d143115f274e53e854f91e5268253734e096c8626dc7ab238a913c725"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/model.ts",
+      "path": "apps/workbench-preview/src/proposal/research-method/model.ts",
+      "sha256": "af047afc60bf5aff761f5220464424dafd69e8f9ae7b8cf6357853fa8a49757a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/project.test.ts",
+      "path": "apps/workbench-preview/src/proposal/research-method/project.test.ts",
+      "sha256": "c01aaa53453292564553599460f5ec4b40c43f6168e4408976b2a065cb0bb199"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/project.ts",
+      "path": "apps/workbench-preview/src/proposal/research-method/project.ts",
+      "sha256": "af54d57044a28288a209302e699338e1778848f0630c3f8ed829d42ce8abdb4d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/research-method/samples.ts",
+      "path": "apps/workbench-preview/src/proposal/research-method/samples.ts",
+      "sha256": "4fe37b1d4f006e18b0efc3fd4de3fb42ce522fd75ca9c26da4bb32827932dfe1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/researchClaims.test.ts",
+      "path": "apps/workbench-preview/src/proposal/researchClaims.test.ts",
+      "sha256": "0a66f26df78c44f37f94dbfc379675872b747a19c1a78ae4ada1a4a040fc4f51"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/researchClaims.ts",
+      "path": "apps/workbench-preview/src/proposal/researchClaims.ts",
+      "sha256": "7eb568bf2f25ef54e2cbeb215465ff15d4ff4f92da1647d7f0e5250e5ec7fb69"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/revisions.test.ts",
+      "path": "apps/workbench-preview/src/proposal/revisions.test.ts",
+      "sha256": "28cda1e610bd32e4a28c6cab2f20d8352e328b7ea392dc24fb7d8f4cfabad257"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/revisions.ts",
+      "path": "apps/workbench-preview/src/proposal/revisions.ts",
+      "sha256": "c0dfb90b5c4ae4d0e9d5bbb1db99334c3e55efd0fb15a15ca2b97bda9714b2c8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/stageOwners.ts",
+      "path": "apps/workbench-preview/src/proposal/stageOwners.ts",
+      "sha256": "0f4c2ca7c6ee435aa2d0771fe3aaf05ed0bbbc9fe920a54cb90bf4aa95d1a52f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/stageRoute.ts",
+      "path": "apps/workbench-preview/src/proposal/stageRoute.ts",
+      "sha256": "1d616b478beea1f9ecb91e5ac78df1ac0e5982032f4f0a575cd56927d88277a2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/tone.ts",
+      "path": "apps/workbench-preview/src/proposal/tone.ts",
+      "sha256": "d63419f990325ee13b4e53a3e3f898bdd6f6a1dec71d4f3defc04c060fb2b6ae"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/ui.tsx",
+      "path": "apps/workbench-preview/src/proposal/ui.tsx",
+      "sha256": "9d26f1448b5a831ac42018890fc587fe2db386186f7c54d7aba07c984008e375"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/cases/installQingyu.test.ts",
+      "path": "apps/workbench-preview/src/services/cases/installQingyu.test.ts",
+      "sha256": "a897928f32bbec39bb848009eddbd9006ba7ce15866605e79d05b41f43ff4aab"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/cases/installQingyu.ts",
+      "path": "apps/workbench-preview/src/services/cases/installQingyu.ts",
+      "sha256": "f7e5556b6a03e363dc9e8584ccb65750f9c3da69f3908a761e88e1c25c06aa46"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/cases/qingyuFixture.ts",
+      "path": "apps/workbench-preview/src/services/cases/qingyuFixture.ts",
+      "sha256": "e80503d5f9a59c11cf097371b0eeda1bcfc1d1be86586c9c754314c0250a0c82"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/demo.ts",
+      "path": "apps/workbench-preview/src/services/demo.ts",
+      "sha256": "c061385d4ee2a8ff0905e4b7320e0b3581984cf95e38f557002e2dce1383423a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/http/HttpAssistantService.ts",
+      "path": "apps/workbench-preview/src/services/http/HttpAssistantService.ts",
+      "sha256": "6cb9d12c9ec42eae27f1035ae55e7b443d02f808dfc08572da816af6655eb8ca"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/http/HttpIntakeService.ts",
+      "path": "apps/workbench-preview/src/services/http/HttpIntakeService.ts",
+      "sha256": "d7b87b9ef0691dcce9975c44c2f6128e6415cacf0934389645f486fe602727f5"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/http/HttpWorkbenchService.ts",
+      "path": "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts",
+      "sha256": "d8223d31100e49c1c5bf7af524f6ae52ab077d3c057b65140a9926b5f4c0cc68"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/http/mappers.ts",
+      "path": "apps/workbench-preview/src/services/http/mappers.ts",
+      "sha256": "a090e11c85c19f7b9d8b262bcf02b2d4ba000a0568e870d5c1262000617bdbac"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/index.ts",
+      "path": "apps/workbench-preview/src/services/index.ts",
+      "sha256": "faf3d982946b92acac9c2f736739e3fffc65b78955621a66daec3850dd7b9e52"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/intake/LocalIntakeService.ts",
+      "path": "apps/workbench-preview/src/services/intake/LocalIntakeService.ts",
+      "sha256": "29be308eedb00143d311e77906306d49cd0a02ca675b86030d65bc159f990f73"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/intake/extract.ts",
+      "path": "apps/workbench-preview/src/services/intake/extract.ts",
+      "sha256": "f4b365f13a845365dfa35a79278472f7411e065b161052a5d1b7a0804eeb0e4a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/intake/headings.ts",
+      "path": "apps/workbench-preview/src/services/intake/headings.ts",
+      "sha256": "98ea5d1b0ef4e34969d971d5bd3deaa6f622616568c4b97ac9befa2c272fbeb8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/intake/intake.test.ts",
+      "path": "apps/workbench-preview/src/services/intake/intake.test.ts",
+      "sha256": "8494294c14595968b345b5748001aa4681e919dcb7310a350fc3b1469c559a8d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/intake/samples.ts",
+      "path": "apps/workbench-preview/src/services/intake/samples.ts",
+      "sha256": "70b4963b1f11838fe0016a91987cf1bc7ccfdab6636d8879bca5af2fabadb755"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/MockAssistantService.test.ts",
+      "path": "apps/workbench-preview/src/services/mock/MockAssistantService.test.ts",
+      "sha256": "8ae11e3119016dcc0b4481f821f6a4437c6ac491a1ab205e53efed277312d128"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/MockAssistantService.ts",
+      "path": "apps/workbench-preview/src/services/mock/MockAssistantService.ts",
+      "sha256": "314cc27f1a1c5264d206c758563734fffcb300742d1cdddcacc71e7aa39c9b37"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/MockWorkbenchService.test.ts",
+      "path": "apps/workbench-preview/src/services/mock/MockWorkbenchService.test.ts",
+      "sha256": "df4cd2f58d8bde9e1354e5c260e28b9ba780f9b2e70fae69370a2caedbf1bc61"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/MockWorkbenchService.ts",
+      "path": "apps/workbench-preview/src/services/mock/MockWorkbenchService.ts",
+      "sha256": "d0547e3bc2688aa4023b2416b0304372694862486869f83abcfafd42ad67a05d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/db.ts",
+      "path": "apps/workbench-preview/src/services/mock/db.ts",
+      "sha256": "e2a3a5c4e9e342b17e4ae561f3f75268132cf1d73b044133e2fdf5bc859659b3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/demoChinese.test.ts",
+      "path": "apps/workbench-preview/src/services/mock/demoChinese.test.ts",
+      "sha256": "5eac6ce4c1199da9c5e39329b12eb31702cebf14201b49c57e3a01a9b0189210"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/demoChinese.ts",
+      "path": "apps/workbench-preview/src/services/mock/demoChinese.ts",
+      "sha256": "dcc20224cba23cd823acfb0702e25bce098fdecb42a9737df84be7cdf71aa4be"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/fixtures/placeholders.ts",
+      "path": "apps/workbench-preview/src/services/mock/fixtures/placeholders.ts",
+      "sha256": "b3b3398134b161b92f753dd665f1ba6f668c08b45e6b3bc373bd6f32f400a97e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/fixtures/seed.ts",
+      "path": "apps/workbench-preview/src/services/mock/fixtures/seed.ts",
+      "sha256": "ec271432f4f48a9015173d62da86fddb97189765f6ee79e9e0cbb4e8318ca12b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/i18n.ts",
+      "path": "apps/workbench-preview/src/services/mock/i18n.ts",
+      "sha256": "fe0d05ae01c15806a5cf8e0874e587c8f9ccc79c48939d1ce2ec4b7931505540"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/messages/zh-CN.ts",
+      "path": "apps/workbench-preview/src/services/mock/messages/zh-CN.ts",
+      "sha256": "f5a4d3771e6423ade5e2a43c3a2019f57d7fd8056233b5ba8bf0697c17446250"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/rules.ts",
+      "path": "apps/workbench-preview/src/services/mock/rules.ts",
+      "sha256": "e808c061adfb7fb24d6234fdfdb4454c03858323f33754c89aa59a21257b94bc"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/simulation.ts",
+      "path": "apps/workbench-preview/src/services/mock/simulation.ts",
+      "sha256": "007e6c8197670b5a860c16eba0ed667d70fe4322edbed7939cdf8ba8ea3783be"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/storage.ts",
+      "path": "apps/workbench-preview/src/services/mock/storage.ts",
+      "sha256": "dc7ad2b9f669ddcf25a5cdd73ab4563e9d79cbf0574cdec24ab73a90ae61d9ca"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/taskCardContent.test.ts",
+      "path": "apps/workbench-preview/src/services/mock/taskCardContent.test.ts",
+      "sha256": "d77e41e8c98e6c010c135cbfb6e6967fd35a70f8a205552c1a7ea784d7c2676b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/mock/transactions.ts",
+      "path": "apps/workbench-preview/src/services/mock/transactions.ts",
+      "sha256": "8d552fd3ebb6df48f9cd94aa31d356c9684e1a3e0ee72a13726b18ae93467804"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/BrandResourceRepository.test.ts",
+      "path": "apps/workbench-preview/src/services/proposal/BrandResourceRepository.test.ts",
+      "sha256": "649f3d43c7e6a34f24bb781f32c93a8173a6373edf1f66afd420fa5053f5f056"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/BrandResourceRepository.ts",
+      "path": "apps/workbench-preview/src/services/proposal/BrandResourceRepository.ts",
+      "sha256": "134feb022c5f47a5ff4b73a812f6cadffa4c5ece8d59f5321713cf7e68924e5a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/BrandResources.service.test.ts",
+      "path": "apps/workbench-preview/src/services/proposal/BrandResources.service.test.ts",
+      "sha256": "d9f04c2aeda02c5088f65cf23124fd39d3a7950b98762e56dc5398f93d372592"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/MockProposalService.test.ts",
+      "path": "apps/workbench-preview/src/services/proposal/MockProposalService.test.ts",
+      "sha256": "348ca656722b6249347bea086015db72d048e4d04972d88263b2b7425a474ba7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/MockProposalService.ts",
+      "path": "apps/workbench-preview/src/services/proposal/MockProposalService.ts",
+      "sha256": "d9ef93c9614c6569e1e185fc008e567eb2973b8bf50a660d4aaf4637c3aa5936"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/fixtures/helpers.ts",
+      "path": "apps/workbench-preview/src/services/proposal/fixtures/helpers.ts",
+      "sha256": "7722105da509540ac0113338f2c2d340b9164fc00cdd806484617a8a2769ede1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/fixtures/luma.ts",
+      "path": "apps/workbench-preview/src/services/proposal/fixtures/luma.ts",
+      "sha256": "b55cd74c4b849b52ed4558603c9e99f04791143717b742d49e247a2bffc55522"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/fixtures/northline.ts",
+      "path": "apps/workbench-preview/src/services/proposal/fixtures/northline.ts",
+      "sha256": "303892733e4d2070b678bab4fc4ff906849eec2dff5e9c51decbce6476e7854b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/fixtures/plumtide.ts",
+      "path": "apps/workbench-preview/src/services/proposal/fixtures/plumtide.ts",
+      "sha256": "7557d485ff1736402647c6704cd40910d11a929a7b77396c21a773c423969612"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/proposal/sevenStages.test.ts",
+      "path": "apps/workbench-preview/src/services/proposal/sevenStages.test.ts",
+      "sha256": "f8880969d838528a3993bfc9e93e5b4eae610f6191d94fa65da11d1103fc93e1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/app.css",
+      "path": "apps/workbench-preview/src/styles/app.css",
+      "sha256": "4db0b7af8292384ecfb43a0b07841c23c32979eda476f7f8cdd00d6921d68408"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/archive.css",
+      "path": "apps/workbench-preview/src/styles/archive.css",
+      "sha256": "dd729aa6be72e292fd209e2eff10cae2d532a4a036008c6b6919cac2c8f664c1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/areas.css",
+      "path": "apps/workbench-preview/src/styles/areas.css",
+      "sha256": "8c035bdd6b7ed2c13284958d354a76c398d44d5b389bca13d0e16bc685f45ef0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/bento.css",
+      "path": "apps/workbench-preview/src/styles/bento.css",
+      "sha256": "379b9b4842b662b5c4d0cb6f30ae159980290f0e21c71d196464ad67094841bb"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/cobalt.css",
+      "path": "apps/workbench-preview/src/styles/cobalt.css",
+      "sha256": "5347b38d4423a295b907dc587672340b519bc235dfcde26b9bcd38be6c48b565"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/collaboration.css",
+      "path": "apps/workbench-preview/src/styles/collaboration.css",
+      "sha256": "c243fa88ce8b7d6362e0c9e4a30f525f97dc883d00845fd639681a5111bf4e9b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/dashboard.css",
+      "path": "apps/workbench-preview/src/styles/dashboard.css",
+      "sha256": "19ec191e862cb05718b798ad2fa837d28d959516c88006532599761d4c7020e5"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/deck-studio-ui.css",
+      "path": "apps/workbench-preview/src/styles/deck-studio-ui.css",
+      "sha256": "a473b36c254e14e85bddd185d71f42e83948f7e042f929e3f3ecfe0d1bc255e2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/experience.css",
+      "path": "apps/workbench-preview/src/styles/experience.css",
+      "sha256": "6b8627c1d843e9875c3f25ca30db4019b9331999bfe97e713cb429b122b1b4d7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/fonts.css",
+      "path": "apps/workbench-preview/src/styles/fonts.css",
+      "sha256": "1fc17d3075c33b72518720bec069dc6bddcae3e9806a91a51fafd595443e5492"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/frames.css",
+      "path": "apps/workbench-preview/src/styles/frames.css",
+      "sha256": "c38d627efca8b651cc3d5a58426b8a2dbdbe9dd9afb266fa9822a6705cbfc89b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/intake.css",
+      "path": "apps/workbench-preview/src/styles/intake.css",
+      "sha256": "929f5d1b7d3a255fe901465ae3e4681289391541c135885c79504f06f2ace8b8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/modules.css",
+      "path": "apps/workbench-preview/src/styles/modules.css",
+      "sha256": "4bd2bdad14f8fa81220e98f9fcb40d4bbf87dd44ca3f60bcea6f800315b260fb"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/overview.css",
+      "path": "apps/workbench-preview/src/styles/overview.css",
+      "sha256": "1634123eca27944e345b378a2b2ac4236ba33e9eac93db546ae91dd9cf3769ad"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/palette.css",
+      "path": "apps/workbench-preview/src/styles/palette.css",
+      "sha256": "2b13991a1deba40004dc5add9924ddf4924c536041e792f32131d5b0055e017c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/proposal.css",
+      "path": "apps/workbench-preview/src/styles/proposal.css",
+      "sha256": "c68f0d38e59d1d5abd4dddd8d5d0aaafb71ce49968fc7bc7e4c183d0037cb2df"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/qingyu-report-r2.css",
+      "path": "apps/workbench-preview/src/styles/qingyu-report-r2.css",
+      "sha256": "2f01cf85c69ea496227fe7f0b60eafd38bf4a904919ddf393e42915e81384dfb"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/qingyu-report-r3.css",
+      "path": "apps/workbench-preview/src/styles/qingyu-report-r3.css",
+      "sha256": "6a05e309dfd668c91b73f24d4f7192f485fcb00bcf3e257b45e5d74c03249534"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/qingyu-report-r4.css",
+      "path": "apps/workbench-preview/src/styles/qingyu-report-r4.css",
+      "sha256": "6f4f46df3b9f80b7c64d949afc8e36b474ea166b5dbb9bd1e2fd6118903e79a8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/qingyu-report.css",
+      "path": "apps/workbench-preview/src/styles/qingyu-report.css",
+      "sha256": "b8457e20008f5a11f7269179f59454465ac7fdbe06d3236b25077b0a2cf7f067"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/refine.css",
+      "path": "apps/workbench-preview/src/styles/refine.css",
+      "sha256": "f11e5e28bc5e4c54c6a9d4ebccf734f75ead8e48374c2e0a3c81e1181ff8f8cb"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/research-case.css",
+      "path": "apps/workbench-preview/src/styles/research-case.css",
+      "sha256": "04524cabdc24bbc98d1f0c68f3d74753e8d45d9de603f38469aa655fec5f03e6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/research-method.css",
+      "path": "apps/workbench-preview/src/styles/research-method.css",
+      "sha256": "f613b48eeb88a4871d4fa779e8000b69fde378bbbe3a5797b73bf9ff1884dd4e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/slides.css",
+      "path": "apps/workbench-preview/src/styles/slides.css",
+      "sha256": "9b1f6a2ba7832c01c5a27c72c858d73ae68d204c05b9321d27dc7fb49eda419c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/stages.css",
+      "path": "apps/workbench-preview/src/styles/stages.css",
+      "sha256": "3d6966b05ca5b48f41686a5d91a8ca8a9847ed343dd237d9b2da97a237000ac6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/workbot.css",
+      "path": "apps/workbench-preview/src/styles/workbot.css",
+      "sha256": "bf1f0a8cf6b49582ad6d9cd0708e9452254d16645c9c399fe93e45db26988451"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/styles/workspace-refine.css",
+      "path": "apps/workbench-preview/src/styles/workspace-refine.css",
+      "sha256": "6f32914444220b8dddc245af656f4e3ed410964039195b027380f751b3e9e92e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/Inspector.tsx",
+      "path": "apps/workbench-preview/src/ui/Inspector.tsx",
+      "sha256": "d56fa66bd5e36009df3141c67e20af00bb6f2e13e931b125eeea7fa1b42b487f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/Modal.tsx",
+      "path": "apps/workbench-preview/src/ui/Modal.tsx",
+      "sha256": "8d140b797b5d198ae5074261943d90a9ad4217741122d501766f627a9ccb37b0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/Notch.tsx",
+      "path": "apps/workbench-preview/src/ui/Notch.tsx",
+      "sha256": "1450e6fc6dd12889e0747f316a689a0d150c12e6b6b3ec9d600390d4f4f32d3c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/art/Art.tsx",
+      "path": "apps/workbench-preview/src/ui/art/Art.tsx",
+      "sha256": "d88dbbdfcc7afc0fedada865bad234dc77b9a01ff0e167928580500757ac78c0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/art/ArtFrame.tsx",
+      "path": "apps/workbench-preview/src/ui/art/ArtFrame.tsx",
+      "sha256": "6aa27bbd7f163f1fb64806a3680121ce78dcb0e417d72dc52084acc665ed4293"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/art/geometry.test.ts",
+      "path": "apps/workbench-preview/src/ui/art/geometry.test.ts",
+      "sha256": "003718156fb92631c3563777009137b8ee8f82c83c46ef7262c01e768fc8e2a7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/art/geometry.ts",
+      "path": "apps/workbench-preview/src/ui/art/geometry.ts",
+      "sha256": "6e37b21326e9152674369858a7cd6e752fa3062be2b6572b6fb9fb0a85db8c0f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/art/scenes.tsx",
+      "path": "apps/workbench-preview/src/ui/art/scenes.tsx",
+      "sha256": "b39c3173cdf425f0b625d1a78a0f242598e77436f466faa622bc779bc11453dc"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/charts.tsx",
+      "path": "apps/workbench-preview/src/ui/charts.tsx",
+      "sha256": "8391547134f382b59680319d9f735469ee765a2335aaf6d8ab52e1d0174b76b5"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/format.ts",
+      "path": "apps/workbench-preview/src/ui/format.ts",
+      "sha256": "86d08b2229efcff3555264b956e258ebe6b7164b6e24bd471b46332ce87c294c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/image.ts",
+      "path": "apps/workbench-preview/src/ui/image.ts",
+      "sha256": "632cc4cfcc36fa624f54772e7816a27cd58fe5e557b16c8436d3e61624cf6aed"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/kit.tsx",
+      "path": "apps/workbench-preview/src/ui/kit.tsx",
+      "sha256": "071761d4c392f4f46172ab65c7c481a85cc0d3e480700c6130f456a98033a8d0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/selectionKeys.ts",
+      "path": "apps/workbench-preview/src/ui/selectionKeys.ts",
+      "sha256": "625dfca6a4b2c8195f4939f264b651b85616b88ae79b542dba0f22f8da1e3649"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/ui/status.tsx",
+      "path": "apps/workbench-preview/src/ui/status.tsx",
+      "sha256": "115369ef965070934387b12cc2e58dc5764a4f2d5b9f3e0c56bc196bd9620f95"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/ArtifactsView.tsx",
+      "path": "apps/workbench-preview/src/views/ArtifactsView.tsx",
+      "sha256": "5524111764b45bb871f6db74747780e4efcbc7ba2f09c282eaf0c4973ccd7aa7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/BriefView.tsx",
+      "path": "apps/workbench-preview/src/views/BriefView.tsx",
+      "sha256": "40668e1f605716012844b357bb0066ddb98f448907a4ea0a276c293f47bad3f1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/DevView.tsx",
+      "path": "apps/workbench-preview/src/views/DevView.tsx",
+      "sha256": "76fc1b0fa049ff6984e92bf7b4b362a274d11e74a9e76c81be9ae6414c71c9a6"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/HandoffView.tsx",
+      "path": "apps/workbench-preview/src/views/HandoffView.tsx",
+      "sha256": "060b14a5df7b2894243f44b996a5dac8218e5b2b5688a3bea19196e514f73f9d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/HomeDeadline.tsx",
+      "path": "apps/workbench-preview/src/views/HomeDeadline.tsx",
+      "sha256": "d854a9e0b1b1de946581cf7776bd3d7cf40477a8cb8dd86ccfb547e8f4fb2f17"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/HomeView.tsx",
+      "path": "apps/workbench-preview/src/views/HomeView.tsx",
+      "sha256": "56896f2865b401b793a55275dbe80bac71e40c740e668697ec6a1344ae77cc2c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/ImagesView.tsx",
+      "path": "apps/workbench-preview/src/views/ImagesView.tsx",
+      "sha256": "710ea6973eeceddec99144d025180f6a3a8bfec158991c86e246425fe020edd9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/JobsView.tsx",
+      "path": "apps/workbench-preview/src/views/JobsView.tsx",
+      "sha256": "9ab334e36d7a819de2d3f0a77639b19e8d5134efd7f3283547b3b9de0c753547"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/NewProjectView.tsx",
+      "path": "apps/workbench-preview/src/views/NewProjectView.tsx",
+      "sha256": "df2fe2cfafb3b632a3b3ceee6d385490bcdac076fccc56e59bc0dd325d9055d8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/ProjectWorkspace.tsx",
+      "path": "apps/workbench-preview/src/views/ProjectWorkspace.tsx",
+      "sha256": "e859196c2799e47ce67063d6e6ad1457ed32b612985f18d7bc3104468ce04950"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/ResearchView.tsx",
+      "path": "apps/workbench-preview/src/views/ResearchView.tsx",
+      "sha256": "a00b961782f3897fa6a0ea875175498fb41eb96c4b4f44441e723ef8b2465a86"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/SourcesView.tsx",
+      "path": "apps/workbench-preview/src/views/SourcesView.tsx",
+      "sha256": "13eaad9e6256f941e849c57a53ac3464c61d9d72f657fa0cf3883115c46c3bc9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/project/AreaHead.tsx",
+      "path": "apps/workbench-preview/src/views/project/AreaHead.tsx",
+      "sha256": "319aa83919f72570ee9cbb3acede6a8d979867759e88f064f32fe74df5f3f63f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/project/DeliveryArea.tsx",
+      "path": "apps/workbench-preview/src/views/project/DeliveryArea.tsx",
+      "sha256": "ddd517d3b10aeab52471ccab4a22dd7def496460989a9ed66153fa87b2c443f9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/project/LibraryArea.tsx",
+      "path": "apps/workbench-preview/src/views/project/LibraryArea.tsx",
+      "sha256": "71737f9aff514ff8ba4f424d7578949c9fb7607643b5f39376dcf9e9a296b6ff"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/project/OverviewArea.tsx",
+      "path": "apps/workbench-preview/src/views/project/OverviewArea.tsx",
+      "sha256": "edef48ba9c6492eeda38f8613b9135e433418fd19ff83dbe706c639cc819782a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/project/ProcessArea.tsx",
+      "path": "apps/workbench-preview/src/views/project/ProcessArea.tsx",
+      "sha256": "2259d0c5f2bae9e51432933ffb2b794894b1ee3ed83c975e96d3a11466a634cc"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/project/ProposalArea.tsx",
+      "path": "apps/workbench-preview/src/views/project/ProposalArea.tsx",
+      "sha256": "675d70be6a43835a45872e654c68ecf90251c7b4f0509fd1bd0e7f195bfe88e9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/project/SetupProposal.tsx",
+      "path": "apps/workbench-preview/src/views/project/SetupProposal.tsx",
+      "sha256": "bc89cb63438082c98bbc91c2264b44ad1a20c92547640127afbeb58be63da506"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/shared.tsx",
+      "path": "apps/workbench-preview/src/views/shared.tsx",
+      "sha256": "e0a0e6fca8d096fb3dc601079bd8855c06692e3d83addb709f8e4d0fe81a8f60"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/BriefStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/BriefStage.tsx",
+      "sha256": "3172b99181bae7e528e53790e520ec1e49a113c796dde3e06a1a625fbe513e4d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/ContentReviewStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/ContentReviewStage.tsx",
+      "sha256": "21cc204d73749b6a1d69343a78113dff793e100a5534b911533dded2460652ae"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/DeliveryStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/DeliveryStage.tsx",
+      "sha256": "e2e025bf7c061d3011fe6b5f5805f8ec25c1310785124f977ad16b12f98daa32"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/LayoutStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/LayoutStage.tsx",
+      "sha256": "4f9f6ea468f1e5aba67cc15674a7eb902ea241198f7eb85eee596ae068641e35"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/ModeFields.tsx",
+      "path": "apps/workbench-preview/src/views/stages/ModeFields.tsx",
+      "sha256": "370c3c565a9dbcf723bd433e1ae1846f97bd0c08d3890b3cfaa0edd9dcf0f5b8"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/ResearchStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/ResearchStage.tsx",
+      "sha256": "c530b570d36cdab3492ac8a624998a7681d784fdc303a21b36c10f04f7cfb3b7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/ReviewRows.tsx",
+      "path": "apps/workbench-preview/src/views/stages/ReviewRows.tsx",
+      "sha256": "95fdce1a38c924710a789b9662345c28f7a81d818ae9dd75539481fe6742fff9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/StageEmpty.tsx",
+      "path": "apps/workbench-preview/src/views/stages/StageEmpty.tsx",
+      "sha256": "e8272984777afa6c0f7dd77c1230dca24f44b0ff5b42d5db4ca000396454a831"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/StrategyStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/StrategyStage.tsx",
+      "sha256": "3151ad393327f10f16d0e2cc93c5916237ef483c2bda0546111311f6290625e3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/ThemesStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/ThemesStage.tsx",
+      "sha256": "ecf16201f1cefcac20f9bc92f52ad32f26087206667e3fa456893487927eec7c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/stages/VisualStage.tsx",
+      "path": "apps/workbench-preview/src/views/stages/VisualStage.tsx",
+      "sha256": "0f838aa0cc19fd091d773e925973a3f1e297ac4d29e0490f178e4b3ac1decce9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/views/useWorkflowCommand.ts",
+      "path": "apps/workbench-preview/src/views/useWorkflowCommand.ts",
+      "sha256": "78c7519478f8f1f002712fc884bc981ad7f12ef876d8810124c00af455c4e691"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/workbot/Character.tsx",
+      "path": "apps/workbench-preview/src/workbot/Character.tsx",
+      "sha256": "4c3b5990844da7451eb72e2725327cb32ae452f020373beced3c09bcdc94dc99"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/workbot/WorkBot.tsx",
+      "path": "apps/workbench-preview/src/workbot/WorkBot.tsx",
+      "sha256": "b52c5f78062c35f16e6516458213ea8149b8af3c5db149655cd4f251960f2c0c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/workbot/context.tsx",
+      "path": "apps/workbench-preview/src/workbot/context.tsx",
+      "sha256": "3f50dd4436b232394fa837cf05a8a5a551c0c488e50ab5886f6daeb2d0bc704e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/luma-uk-20261109/ATTRIBUTION.json",
+      "path": "apps/workbench-preview/public/research-case/luma-uk-20261109/ATTRIBUTION.json",
+      "sha256": "8bb27d5e51eb15430722e9d935973c31147fbc64e4054eb13ef4835a044a2f2c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/luma-uk-20261109/funkin-passionfruit-pack.jpg",
+      "path": "apps/workbench-preview/public/research-case/luma-uk-20261109/funkin-passionfruit-pack.jpg",
+      "sha256": "7017e8bb59b8e530d0c09f91a2f2c1a606f146aca84a1d873a6107f97881aea4"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/luma-uk-20261109/gordons-tonic.jpg",
+      "path": "apps/workbench-preview/public/research-case/luma-uk-20261109/gordons-tonic.jpg",
+      "sha256": "52cae5a8166dfaebb3584ce4ca4aa8a592e416a9acc0e4903ee5b449594c6b01"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/luma-uk-20261109/gordons-zero.jpg",
+      "path": "apps/workbench-preview/public/research-case/luma-uk-20261109/gordons-zero.jpg",
+      "sha256": "f4ef9a216df42fc3ae5cf183ce86eadcae335663b0122b77edf6f36d81c3c231"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/luma-uk-20261109/moth-margarita.jpg",
+      "path": "apps/workbench-preview/public/research-case/luma-uk-20261109/moth-margarita.jpg",
+      "sha256": "139e6dd771f33b2cffc297f3af6b8efe9cafd7e54ae10047f1d8d95f4a3b078e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/luma-uk-20261109/white-claw-lime.jpg",
+      "path": "apps/workbench-preview/public/research-case/luma-uk-20261109/white-claw-lime.jpg",
+      "sha256": "a44334b33a725b5b1e58ebfd0ab5309c90aad189086c72a01382a9078c908616"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-boards-20261109/cooler-choice-illustration.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-boards-20261109/cooler-choice-illustration.png",
+      "sha256": "75ca946b2e78a5aaa363c9e0638a0e5bf420db5fd27a13cc8b17570e7798835c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-20261109/annual2025-p18-image0.jpeg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-20261109/annual2025-p18-image0.jpeg",
+      "sha256": "72f3bb165c39ae43c5a7448477825beef5ee16508b8d6d7ec7a2630cab5fd83f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-20261109/annual2025-p18-image1.jpeg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-20261109/annual2025-p18-image1.jpeg",
+      "sha256": "f472fa508994febe99f1c84f20ec6a5c50df5cf82aa9db2a5082a6c358d95d72"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-20261109/moli.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-20261109/moli.png",
+      "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-20261109/wulong.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-20261109/wulong.png",
+      "sha256": "ba10aeb0fa05a5b03a98feb2c815a21b447f19874ad1dc8ee9f1e430db3b9622"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-20261109/yulu.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-20261109/yulu.png",
+      "sha256": "dd885afafc03027f7e01999f57e0a2a05d1d47202b07e3aaf33e153424ce2457"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm01.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm01.png",
+      "sha256": "0c4412eb29d40aa80883e54ebbc9e98a7c012456480c999c4c14b84098542cc5"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm02.jpg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm02.jpg",
+      "sha256": "2b7f6d970155f253030c16ebe2d9dd79c0dc3c69d14d130cee523966591d3270"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm03.jpg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm03.jpg",
+      "sha256": "701f0428e540ceb567fc2338e6455e2e5e2c8bb4deb11acccf316c31aa999313"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm04.jpg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm04.jpg",
+      "sha256": "8727ecf6e309cf08932d2c6ac068479f9bab1ad26ee9fba3814ad9524a41da06"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm05.jpg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm05.jpg",
+      "sha256": "2b2f9fab83399377674db8aaf2b26891dd088ffcafc1960a0e5133d305097c0c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm06.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm06.png",
+      "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm07.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm07.png",
+      "sha256": "ba10aeb0fa05a5b03a98feb2c815a21b447f19874ad1dc8ee9f1e430db3b9622"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-pack-r2-20261109/cm08.jpeg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-pack-r2-20261109/cm08.jpeg",
+      "sha256": "72f3bb165c39ae43c5a7448477825beef5ee16508b8d6d7ec7a2630cab5fd83f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+      "sha256": "e734eefeb5199d0d8ff46f8f20702a16e9a6a5e867fea0cf6a15504a4c24a222"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+      "sha256": "828c6b208afe9eace44289592df186ff8f6b9a69d52817412f37834d1b9eddc7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-03.jpg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-packrefs-20261110/coke-share-03.jpg",
+      "sha256": "96759d427d8c63f99fc381a3d74e5d704eb810cb09a7ca87f37241fb5807764e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+      "sha256": "1eef17132f995f2fd6199906eeb35f3d30544c328957f1ba5d19c1504450b9e0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+      "sha256": "df27729ed779264c5a18f81505220225f524f012470b16cb2c8ffc93c9fa91a4"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-moli.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-r3-20261109/chun-moli.png",
+      "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-wulong.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-r3-20261109/chun-wulong.png",
+      "sha256": "ba10aeb0fa05a5b03a98feb2c815a21b447f19874ad1dc8ee9f1e430db3b9622"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/inikin-02.jpg",
+      "path": "apps/workbench-preview/public/research-case/qingyu-r3-20261109/inikin-02.jpg",
+      "sha256": "6e2c2e5c16220de458d040b9287802d149d0dc0a62a79910c71dd134c2391324"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+      "path": "apps/workbench-preview/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+      "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-main.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/k4-main.png",
+      "sha256": "34663a7a942f9b22ad0db633376fc761a79e584699b2889d55654971defa96e3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-mockups.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/k4-mockups.png",
+      "sha256": "56af786e41de206678035b4c88c6585a71345c60c6928a962adbb5e620810a9b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-sketch-1.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/k4-sketch-1.png",
+      "sha256": "82604c0195d57fcddf3cd1a616e51c1f99390a3bcc83ec6b1de2a6f567741ff3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-sketch-2.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/k4-sketch-2.png",
+      "sha256": "d354d2d728322fab2be4b5de66536a9ac75bd6bad8b02eee6767b9e0289156d9"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/k4-sketch-3.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/k4-sketch-3.png",
+      "sha256": "ea4d1df9b496de7559a7008d2ae30c24fb7fea34698298b66a26f64fffbf8c3e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-main.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/n7-main.png",
+      "sha256": "e96feea741445faa82ad9e3e0cc28e83e41602217862fcfadd8cbca809e68ee2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-mockups.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/n7-mockups.png",
+      "sha256": "7610c424e2c19ebac85d998dab65b92553c132b6c32056847704c117c6274d81"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-sketch-1.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/n7-sketch-1.png",
+      "sha256": "fc13540411104889f220cddeaf7a149d3f7aba372fcbca33d3bf8ced24ac59b3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-sketch-2.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/n7-sketch-2.png",
+      "sha256": "143ecb4c2bdc8c26403f6b3127e3d6ae1b07e6bdc4beea23d917a7ed5d79784f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/n7-sketch-3.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/n7-sketch-3.png",
+      "sha256": "470ebc9d7423d46e6cca950d33f7ecbf0c61b164ee8703c9ad29f8dd12d734dc"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-main.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/v2-main.png",
+      "sha256": "8e410bc79dfe3297674f7f104eaa8698d89c93784e8620f69a001c1b47047964"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-mockups.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/v2-mockups.png",
+      "sha256": "abebab73c0e3b3fef26c10eaecb724bb830966bfd7529f0275e55b44192086ca"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-sketch-1.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/v2-sketch-1.png",
+      "sha256": "6c0bb24b207c904b4904f53a853653c375f93464a2c5bf1f03f94962706536c7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-sketch-2.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/v2-sketch-2.png",
+      "sha256": "3bf09bcf523085418849d4a40d4cd0fe1f31ec201c27f63388f1ca32c46ef703"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/visual-concepts/qingyu-20261110/v2-sketch-3.png",
+      "path": "apps/workbench-preview/public/visual-concepts/qingyu-20261110/v2-sketch-3.png",
+      "sha256": "9aaf47ed0b5479b8999891958d496dd2ccc7385afecaba4e3c11c29ae6553125"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/scripts/deck-studio-probe.cjs",
+      "path": "apps/workbench-preview/scripts/deck-studio-probe.cjs",
+      "sha256": "e846e0409a32f6f0dc8b55e9ced86cecbb6afb9c1fb719b33981b35409efba3a"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/scripts/experience-desktop.mjs",
+      "path": "apps/workbench-preview/scripts/experience-desktop.mjs",
+      "sha256": "a1ef28b14586006f1484353a9042d41f3554a96fc3338a5d3cb5e0c006b9b6f1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/scripts/verify-deck-studio.mjs",
+      "path": "apps/workbench-preview/scripts/verify-deck-studio.mjs",
+      "sha256": "b191ac21185a4ebc16a8198b32d9ec70ca43573418a4ba58effff513123a7b4b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/BACKEND-INTEGRATION.md",
+      "path": "apps/workbench-preview/docs/BACKEND-INTEGRATION.md",
+      "sha256": "bee46d2d9532d5a418e5fee99c73b650c4a4bdce4e7dba5b37bdcd1ebc57df38"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/DESIGN-SPEC.md",
+      "path": "apps/workbench-preview/docs/DESIGN-SPEC.md",
+      "sha256": "93e87152f0acf06a071debccb47f54e82a3f2a116d5c9e83eb6ec7aab0dcb2da"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/DESKTOP-CN.md",
+      "path": "apps/workbench-preview/docs/DESKTOP-CN.md",
+      "sha256": "ba3c570fe19fe6502e03bb080623ace1c933e70a9feb8bddc95a76aa789e02e2"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/EXPERIENCE-20261108.md",
+      "path": "apps/workbench-preview/docs/EXPERIENCE-20261108.md",
+      "sha256": "fb387aa5c6edbd54457ef66ceba509b8e76302a574c13cf3bb894f2bfb43bf2c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/SCREENSHOTS.md",
+      "path": "apps/workbench-preview/docs/SCREENSHOTS.md",
+      "sha256": "af83959a7f5d4cbff0ecb3ca60c28767b38ec83c0d10f2cb51cb1e68773fd95b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/TEAM-COLLABORATION.md",
+      "path": "apps/workbench-preview/docs/TEAM-COLLABORATION.md",
+      "sha256": "1d0d626f4ca61f23a074a1fa3a82daa93b2e4fb8284c26fcedc988f7aeae7bdd"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/F01-F04.md",
+      "path": "apps/workbench-preview/docs/fixes/F01-F04.md",
+      "sha256": "758221b5a4fdf92a0d0ae372a2ec7ab1f31196b6daf338f51ab4b2c30ce07d02"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/F05-F07.md",
+      "path": "apps/workbench-preview/docs/fixes/F05-F07.md",
+      "sha256": "544896d07206ad3a1fc7de3b1dabf90ef1bb7da22fc07163127a57cbfe649dec"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/F05AB-F06A.md",
+      "path": "apps/workbench-preview/docs/fixes/F05AB-F06A.md",
+      "sha256": "1d60e4cc324030819e92d19f7319128e805e332c2d55bc222f293707782531d7"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/accept-f01-f04.mjs",
+      "path": "apps/workbench-preview/docs/fixes/accept-f01-f04.mjs",
+      "sha256": "a94be7cb2194825d8d0e9cb4467c3712353aad322d274892cac85722df5b2e8c"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/accept-f05-f07.mjs",
+      "path": "apps/workbench-preview/docs/fixes/accept-f05-f07.mjs",
+      "sha256": "9fdd1db0831dc15e05d5f6334225687939cd3216c2918456436a05b2d14caae3"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/accept-f05ab-f06a.mjs",
+      "path": "apps/workbench-preview/docs/fixes/accept-f05ab-f06a.mjs",
+      "sha256": "878ff070ab1b780fead89e1e259c196cf03eafec87c9e9ae3c057a9933be21b1"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/f01-f04.patch",
+      "path": "apps/workbench-preview/docs/fixes/f01-f04.patch",
+      "sha256": "419e6d1a0611307b8335cc635268d6fbfc06fc79427948ca2456f34b9b53ed0b"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/f05-f07.patch",
+      "path": "apps/workbench-preview/docs/fixes/f05-f07.patch",
+      "sha256": "9bc4c4397842df5bc562b1963e1abe2084bfb822643696e38dc4343f0f332dc0"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/f05ab-f06a.patch",
+      "path": "apps/workbench-preview/docs/fixes/f05ab-f06a.patch",
+      "sha256": "f3a5ad73ceaa107775ff95441bd9f3f9691ff2bea89dfb662d22ae669e8d1f3f"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/obstruct-f06.mjs",
+      "path": "apps/workbench-preview/docs/fixes/obstruct-f06.mjs",
+      "sha256": "e31069e4831869a71555c6e834542840fe1bb6d6ce2f753906bb88b5e5930dee"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/race-f01.mjs",
+      "path": "apps/workbench-preview/docs/fixes/race-f01.mjs",
+      "sha256": "868c91a60c949dfe030474c1c4000942a14419ac89fa5e9ce82865d7cd6e6837"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/repro-f01-f04.mjs",
+      "path": "apps/workbench-preview/docs/fixes/repro-f01-f04.mjs",
+      "sha256": "3f833768de9ab5fcd942f63ef103584439fe26e8161cf39c477f20f57cd72349"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/docs/fixes/tab-overlap.mjs",
+      "path": "apps/workbench-preview/docs/fixes/tab-overlap.mjs",
+      "sha256": "c9ddba6695835e2bdf8d578a45a7de4876c175825b9e4cbad88d85f69eebd20d"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/index.html",
+      "path": "apps/workbench-preview/index.html",
+      "sha256": "32f250e050c91b8839850207741fc7aee3873084375116b0bff2d47586aa90ef"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/package.json",
+      "path": "apps/workbench-preview/package.json",
+      "sha256": "fa56b7eb81d36485ff0f47ef7872969fe3a871327e638cfc1246998c4db0bf44"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/package-lock.json",
+      "path": "apps/workbench-preview/package-lock.json",
+      "sha256": "35cfcb71b2908c14d53caf00afe4871d59fb54f62040f73031b67cf41ff9c31e"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/tsconfig.json",
+      "path": "apps/workbench-preview/tsconfig.json",
+      "sha256": "8d28709186df22db2cebbde5916de224727ed5123a392fdbec53033e36842daa"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/vite.config.ts",
+      "path": "apps/workbench-preview/vite.config.ts",
+      "sha256": "27f9b9de67990f15081c86eb5ddef588e6896eaf9d8422529112e3013b9bd6b4"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/.gitignore",
+      "path": "apps/workbench-preview/.gitignore",
+      "sha256": "fdd9377032936fb16fac035474563522d69b83d9d899bf5b943d9e6ea6da7370"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/README.md",
+      "path": "apps/workbench-preview/README.md",
+      "sha256": "ad765d01e67cd997b2303ab7b8fa42faa1dc0a85ad14eee904d060b21a333c87"
+    },
+    {
+      "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/HANDOFF.md",
+      "path": "apps/workbench-preview/HANDOFF.md",
+      "sha256": "8c69d8e16b0013720c42af3cdfe809b2ed6bc596885c8e70ef7839bd821e85b0"
+    }
+  ],
+  "proofFiles": 147,
+  "adaptations": {
+    "apps/workbench-preview/README.md": {
+      "reason": "更新为七阶段当前仓库启动与模块入口；不修改案例内容",
+      "sha256": "530b6de45d27a240421f9bf4fa37a8dd245d7180ae9055696a7a35f5d723da75"
+    },
+    "apps/workbench-preview/src/proposal/qingyu-themes/bundle.test.ts": {
+      "reason": "原95来源及bundle从仓库封存证据映射读取，断言和原字节保持",
+      "sha256": "de72aa369067fa5e5a37e599e4a77f20aaa74a9285b8fddbd209c2c4c66108e6"
+    },
+    "apps/workbench-preview/src/proposal/qingyu-visual/workflow-intake.test.ts": {
+      "reason": "历史绝对路径只作身份，实际原件从仓库内映射读取",
+      "sha256": "356ff846670bcf96e199ec21192212562a6cf58f9345e3c2a28b362765303764"
+    }
+  }
+}

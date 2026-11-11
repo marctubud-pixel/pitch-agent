@@ -1,0 +1,119 @@
+{
+  "taskId": "visual-intake-qingyu-20261110-01",
+  "scopeVersion": "reference-intake-only-v1",
+  "inputVersion": "qingyu-packaging-references-20261110-v1+qingyu-copy-full-r2-20261110+r2",
+  "reviewTask": "核对既有六张包装参考的原图、来源记录和借鉴边界，封存候选与缺口；不作视觉评分或选优。",
+  "requiresNode": false,
+  "creatorIds": [
+    "/root/visual_reference_intake"
+  ],
+  "sourceRequest": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+    "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+  },
+  "input": {
+    "projectId": "qingyu",
+    "caseId": "qingyu-pack",
+    "taskType": "packaging",
+    "referenceSetId": "qingyu-packaging-references-20261110-v1",
+    "bundleId": "qingyu-copy-full-r2-20261110",
+    "roundId": "r2",
+    "copySha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+    "researchSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+    "directionIds": [
+      "n7",
+      "k4",
+      "v2"
+    ]
+  },
+  "copyDirections": [
+    {
+      "id": "n7",
+      "name": "两张名片",
+      "proposition": "让买茶的人分清瓶上两个名字各指什么，认牌子，也认得配方里的一样原料。",
+      "mechanism": "先递两张“名片”，再分别报名字和身份，一张认品牌，一张认用料。",
+      "strategyLink": "沿用无糖品类与配方用水两项信息，把青屿和虎跑泉水各自的身份说清。",
+      "audienceHypothesis": "初次看到这两个名字的人也许能记住哪个是牌子、哪个是用料。",
+      "brandBridge": "青屿署在做茶者的位置，虎跑泉水署在用料的位置。",
+      "slogan": "一瓶无糖茶，两张名片。",
+      "subline": "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+      "extensions": [
+        {
+          "label": "瓶侧",
+          "text": "先认识做茶的青屿，再认识这瓶茶用到的虎跑泉水。"
+        },
+        {
+          "label": "电商短句",
+          "text": "认牌子，青屿。认这瓶无糖茶用到的泉水，虎跑。"
+        }
+      ],
+      "risk": "主文单独出现时，名片可能让人想到随瓶附卡。两行相隔多远仍能看懂，留待打样。",
+      "whyDistinct": "读者得到一对身份。延展时保留两次点名，每个名字都带上它在这瓶茶里的角色。"
+    },
+    {
+      "id": "k4",
+      "name": "一口到虎跑",
+      "proposition": "给屏幕前的一次停顿定个去处。手放开鼠标，在工位喝口茶，就算到了虎跑。",
+      "mechanism": "先让手停下来，再用工位上的一口茶完成想象中的短途。目的地取自茶里用到的泉水。",
+      "strategyLink": "这次茶歇能叫“去虎跑”，依据是青屿无糖茶的配方用到了虎跑泉水。",
+      "audienceHypothesis": "坐在工位上的人也许会照着做一次。理解放下鼠标、喝口茶这个动作，无需知道虎跑有什么景色。",
+      "brandBridge": "在工位上拧开青屿是出发，喝到用过虎跑泉水的这瓶茶是抵达。",
+      "slogan": "鼠标放一放，去趟虎跑。",
+      "subline": "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+      "extensions": [
+        {
+          "label": "瓶侧",
+          "text": "今天从工位出发。喝口青屿，茶里用到了虎跑泉水，这就算到虎跑了。"
+        },
+        {
+          "label": "茶歇提醒",
+          "text": "屏幕先锁上，去趟虎跑。拧开青屿无糖茶，茶里用到了虎跑泉水。"
+        }
+      ],
+      "risk": "单看“去趟虎跑”仍可能像约人出门。两句同读时的理解和实际版面待核。",
+      "whyDistinct": "读者得到一件眼下就能做的小事。延展时更换停下的工作动作，保留在原地喝茶即抵达的揭晓。"
+    },
+    {
+      "id": "v2",
+      "name": "看见虎跑，想起你",
+      "proposition": "给曾一起去过虎跑的人捎瓶茶。让自己想起对方的，是这瓶茶上两个人都见过的那个名字。",
+      "mechanism": "先提“你带我去”的旧事，再说看到茶中用到了哪处的泉水，交代“我给你带茶”的缘由。",
+      "strategyLink": "青屿用到了虎跑泉水，因此可以让这个地名成为一次具体的捎茶理由。",
+      "audienceHypothesis": "如果两个人有过这段经历，挑茶的人也许愿意把原因告诉对方。这是单次虚构对话。",
+      "brandBridge": "挑青屿的人认出配方里的虎跑泉水，想起一起去过那里的人，才给对方带这瓶。",
+      "slogan": "上回你带我去虎跑，这回换我给你带茶。",
+      "subline": "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+      "extensions": [
+        {
+          "label": "随茶留言",
+          "text": "还记得咱俩去虎跑那天吗？看到青屿无糖茶用到了虎跑泉水，就给你带了一瓶。"
+        },
+        {
+          "label": "捎茶口信",
+          "text": "上回去虎跑是你带的路。今天看见一瓶青屿，茶里用到了虎跑泉水，我就想着也给你带一瓶。"
+        }
+      ],
+      "risk": "适用对象窄，需要两人有共同经历；随茶留言能否被听成自然对话，仍需核验。",
+      "whyDistinct": "读者得到一句可以送给特定对象的话。延展时换叙旧的说法，保留同一个地点如何让挑茶人想到对方。"
+    }
+  ],
+  "sourcePointers": [
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-packaging-references-20261110/references-editorial.json",
+      "sha256": "0d44eaf83ced56b6d9bc517bbf4b629d24adae2696fa1bacbf4d38f6238d3b14"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-copy-full-20261110/inputs/research-r4.json",
+      "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+    }
+  ],
+  "requiresNodeDerivation": "本次包装参考收集任务未指定营销/节庆节点；不代表未来阶段配置。",
+  "skillManifest": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST.json",
+    "sha256": "8bf6da565da5a14b8efcd53b0d7580e499f1d5aaef257607eaf258b7687fd22d"
+  }
+}

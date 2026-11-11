@@ -17,7 +17,7 @@
 
 ### Issue tracker
 
-当前项目无远程仓库，默认使用本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。未来切换跟踪平台时再调整。
+默认使用本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。已配置Git远程不自动切换任务跟踪平台。
 
 ### Triage labels
 
@@ -51,6 +51,13 @@
 ## 规范基线与版本
 
 - 开始制作或修改阶段、页面、Agent方法时，先读 [规范入口](docs/specs/README.md) 和对应注册项，按岗位／页面加载固定方法，避免整段历史规则进入当前执行上下文。
+- 派发业务或开发任务时读取[Agent组织与责任](docs/agents/README.md)；页面开发同时读取[页面责任与基线索引](docs/pages/README.md)。比稿Agent统筹业务，开发统筹组织实现，工作台UI负责人维护跨页基线，独立UI审核者复验。终审使用[排版后终审协议](docs/specs/final-review.md)。
 - 当前规范路径与版本由 `docs/specs/registry.json` 指定，文件锁为 `docs/specs/spec-lock.json`。变更同步更新对应版本和 `docs/specs/CHANGELOG.md`，运行 `python3 scripts/check-specs.py`；跨提交检查可加 `--base <提交>`。历史原文只用于追溯。
 - 项目调研Skill固定在 `skills/design-research-lead/SKILL.md`；页面UI审核固定在 `skills/ui-review/SKILL.md`。这些本地方法快照不自动证明生产运行时已经接入，也不改旧产物生成身份。
 - Git只按明确纳管清单暂存；规范提交不能冒称源码全量备份。目的仓库、公开范围及远程PR均按实际授权与回执记录。
+
+## 当前仓库开发入口
+
+- 当前应用默认修改 `apps/workbench-preview`，先读[工程入口](docs/development/README.md)和[模块约定](apps/workbench-preview/AGENTS.md)。较早正式 `apps/proposal-workbench`及原scratch活跃源保持身份，不互相覆盖。
+- 业务工具按[tools边界](tools/AGENTS.md)，不因源码纳管启动旧run、付费模型、原生PPT或在线编辑。根 `npm run check`只验证明示范围，已知旧测试失败见[问题索引](status/issues/README.md)。
+- 纳管与暂存按 `scripts/repository-files.json`，变更原件或导入适配时同步来源与版本记录。后续PR和回退按[提交约定](CONTRIBUTING.md)，运行数据仍按存储保留合同处理。

@@ -1,0 +1,1296 @@
+/*
+ * Tile boards for project pages, mapped from the supplied UI references (see the comments in
+ * OverviewArea.tsx): big soft tiles in a tight grid, one lime and one dark accent tile, notches cut
+ * into corners for small controls, light big numbers under bracketed labels, round arrow orbs.
+ */
+
+.bx {
+  --bx-gap: 16px;
+  --bx-r: 32px;
+  --bx-bg: var(--paper);
+  --bx-sage: #dfe3da;
+  --bx-sage-ink: #1b211c;
+  --bx-dark: #141815;
+  --bx-dark-ink: #eef1ec;
+  --bx-blue: #4b4fd8;
+  --bx-blue-ink: #ffffff;
+  --bx-lilac: #c9bdf6;
+  --bx-lilac-ink: #1e1838;
+  font-family: var(--font-grotesk);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .bx {
+    --bx-sage: #232a24;
+    --bx-sage-ink: #e6ebe5;
+    --bx-dark: #0a0c0b;
+    --bx-blue: #3d41b8;
+    --bx-lilac: #3c3466;
+    --bx-lilac-ink: #ece8ff;
+  }
+}
+
+:root[data-theme='dark'] .bx {
+  --bx-sage: #232a24;
+  --bx-sage-ink: #e6ebe5;
+  --bx-dark: #0a0c0b;
+  --bx-blue: #3d41b8;
+  --bx-lilac: #3c3466;
+  --bx-lilac-ink: #ece8ff;
+}
+
+.bx-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 26px 28px;
+  border-radius: var(--bx-r);
+  background: var(--card);
+  color: var(--folder-ink);
+  text-decoration: none;
+}
+
+a.bx-tile {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+a.bx-tile:hover {
+  transform: translateY(-3px);
+}
+
+a.bx-tile:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.bx-tile--lime { background: var(--lime); color: var(--lime-ink); }
+.bx-tile--sage { background: var(--bx-sage); color: var(--bx-sage-ink); }
+.bx-tile--dark { background: var(--bx-dark); color: var(--bx-dark-ink); }
+.bx-tile--blue { background: var(--bx-blue); color: var(--bx-blue-ink); }
+.bx-tile--lilac { background: var(--bx-lilac); color: var(--bx-lilac-ink); }
+.bx-tile--white { background: var(--card); }
+
+/* [ BRACKETED LABEL ], as in the Patria tiles */
+.bx-bracket {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.bx-bracket::before { content: '[ '; }
+.bx-bracket::after { content: ' ]'; }
+
+.bx-title {
+  margin: 0;
+  font-size: clamp(1.375rem, 2vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.bx-muted {
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* ---------------------------------------------------------------- notch */
+
+.bx-notch {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  padding: 0 0 12px 12px;
+  border-bottom-left-radius: 26px;
+  background: var(--bx-bg);
+}
+
+.bx-notch::before,
+.bx-notch::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 0 100%, transparent 25.5px, var(--bx-bg) 26px);
+  pointer-events: none;
+}
+
+.bx-notch::before {
+  top: 0;
+  left: -26px;
+}
+
+.bx-notch::after {
+  right: 0;
+  bottom: -26px;
+}
+
+.bx-notch .pw-status {
+  min-height: 40px;
+  padding-inline: 14px;
+  background: var(--card);
+}
+
+.bx-next {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bx-next__pill {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 58px;
+  justify-content: center;
+  padding: 8px 22px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 999px;
+}
+
+.bx-next__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.66;
+}
+
+.bx-next__text {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.bx-go {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--bx-dark);
+  color: #ffffff;
+  transition: transform 0.2s;
+}
+
+.bx-go:hover {
+  transform: rotate(-35deg);
+}
+
+.bx-go:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------- latest output */
+
+.bx-big {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.bx-big__n {
+  font-size: clamp(3.5rem, 6vw, 5rem);
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.bx-big__label {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.bx-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bx-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+
+.bx-list__icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--folder-ink);
+}
+
+.bx-tile--dark .bx-list__icon {
+  background: rgb(255 255 255 / 0.12);
+  color: inherit;
+}
+
+.bx-list li[data-tone='attention'] .bx-list__icon { background: var(--warm); color: var(--warm-ink); }
+.bx-list li[data-tone='bad'] .bx-list__icon { background: #f3a097; color: #3a0d09; }
+.bx-list li[data-tone='warn'] .bx-list__icon { background: var(--tone-butter); color: #2c2205; }
+.bx-list li[data-tone='info'] .bx-list__icon { background: var(--tone-sky); color: #0d2234; }
+
+.bx-list__title {
+  display: block;
+  margin: 0;
+  color: inherit;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+a.bx-list__title:hover {
+  text-decoration: underline;
+}
+
+.bx-list__note {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  opacity: 0.72;
+}
+
+.bx-tile--dark .pw-backed {
+  color: inherit;
+  border-color: rgb(255 255 255 / 0.3);
+}
+
+/* ---------------------------------------------------------------- decisions */
+
+.bx-chip-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.bx-chip-link:hover {
+  border-color: currentColor;
+}
+
+/* In dark mode the dark tile keeps its edge against the page. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .bx-tile--dark {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+}
+
+:root[data-theme='dark'] .bx-tile--dark {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+
+/* ================================================================ Copy & themes (tx) */
+
+.tx {
+  font-family: var(--font-grotesk);
+}
+
+.tx-hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 3fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.tx-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 8px 0;
+}
+
+/* Three short statements stacked, as in "Grow Bold. Move Free. Play Hard." */
+.tx-stack {
+  display: grid;
+  margin: 0;
+  font-size: clamp(1.875rem, 3vw, 2.625rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  color: var(--ink-strong);
+}
+
+.tx-copydir {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2, var(--ink));
+}
+
+.tx-jump {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  color: var(--ink-strong);
+  text-decoration: none;
+}
+
+.tx-jump__text {
+  display: grid;
+  flex: 1;
+  min-height: 54px;
+  align-content: center;
+  padding: 6px 18px;
+  border-radius: 16px;
+  background: var(--card);
+  font-weight: 600;
+}
+
+.tx-jump__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tx-jump__go {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: var(--ink-strong);
+  color: var(--canvas);
+}
+
+.tx-jump:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 16px;
+}
+
+.tx-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tx-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 30px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.tx-card[data-recommended] {
+  box-shadow: 0 0 0 3px var(--ink-strong);
+}
+
+.tx-card__top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px 22px;
+}
+
+.tx-card__chips {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tx-chip {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--canvas);
+  color: var(--ink-strong);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tx-card__name {
+  margin: 0;
+  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--ink-strong);
+}
+
+.tx-card__why {
+  display: -webkit-box;
+  margin: 0;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+/* The colour panel, carrying the direction's line instead of an illustration */
+.tx-card__panel {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 260px;
+  margin: 0 6px 6px;
+  padding: 22px 20px;
+  border-radius: 26px;
+  background: var(--dir);
+  color: var(--dir-ink);
+}
+
+.tx-card__slogan {
+  margin: 0;
+  font-family: var(--font-reading);
+  font-size: clamp(1.625rem, 2.4vw, 2.125rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.tx-card__sub {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  opacity: 0.85;
+}
+
+.tx-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--lime);
+  color: var(--lime-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Recommendation: one highlighted phrase, numbered reasons */
+.tx-rec {
+  display: grid;
+  gap: 22px;
+  padding: 34px 34px 30px;
+  border-radius: 32px;
+  background: var(--card);
+  scroll-margin-top: calc(var(--topbar) + 80px);
+}
+
+.tx-rec__title {
+  margin: 0;
+  font-size: clamp(1.875rem, 3.4vw, 2.875rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--ink-strong);
+}
+
+.tx-rec__title mark {
+  padding: 0 0.22em 0.04em;
+  border-radius: 0.28em;
+  background: var(--lime);
+  color: var(--lime-ink);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.tx-reasons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tx-reasons li {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: var(--canvas);
+}
+
+.tx-reasons p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.tx-reasons__n {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink-3);
+}
+
+.tx-rec__note {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+/* Side-by-side comparison */
+.tx-table-wrap {
+  overflow-x: auto;
+  border-radius: 26px;
+  background: var(--card);
+}
+
+.tx-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.tx-table th,
+.tx-table td {
+  padding: 14px 18px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tx-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.tx-table thead th {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tx-table tbody th {
+  width: 16%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tx-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tx-evals .pw-eval {
+  border-radius: 24px;
+}
+
+@media (max-width: 1100px) {
+  .tx-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tx-stack {
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 0.3em;
+  }
+  .tx-jump {
+    margin-top: 4px;
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tx-stack {
+    grid-auto-flow: row;
+  }
+  .tx-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tx-card__panel {
+    min-height: 200px;
+  }
+  .tx-rec {
+    padding: 24px 20px;
+    border-radius: 26px;
+  }
+}
+
+/* ================================================================ Overview (ov) */
+/* One column of full-width tiles in reading order; the last row splits into three. */
+
+.ov {
+  display: grid;
+  gap: var(--bx-gap);
+}
+
+/* 1. What this proposal solves */
+.ov-problem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+  gap: 28px;
+  padding: 30px 32px;
+}
+
+.ov-problem:not(:has(.ov-problem__pic)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ov-problem__text {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.ov-problem__title {
+  margin: 0;
+  max-width: 26ch;
+  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.ov-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.ov-facts > div {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: var(--sunken);
+}
+
+.ov-facts dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.ov-facts dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.ov-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ov-chips li {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 0.8125rem;
+}
+
+.ov-problem__link {
+  justify-self: start;
+}
+
+/* The client's own material, shown whole at its own ratio on a quiet ground. */
+.ov-problem__pic {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 22px;
+  border-radius: 24px;
+  background: var(--sunken);
+}
+
+.ov-problem__pic .art-frame {
+  width: min(100%, calc(340px * var(--r)));
+  border-radius: 8px;
+  box-shadow: 0 14px 28px -16px rgb(18 18 16 / 0.5);
+}
+
+/* 2. Progress: the stage track */
+.ov-progress {
+  gap: 22px;
+  padding-top: 30px;
+}
+
+.ov-progress__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 24px;
+  padding-right: 150px;
+}
+
+.ov-progress__head > div:first-child {
+  display: grid;
+  gap: 10px;
+}
+
+.ov-progress__stage {
+  margin: 0;
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+
+.ov-progress__summary {
+  margin: 0;
+  max-width: 60ch;
+  line-height: 1.45;
+  opacity: 0.84;
+}
+
+.ov-progress__stats {
+  display: flex;
+  gap: 10px;
+}
+
+.ov-stat {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 128px;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 22px;
+  background: color-mix(in srgb, #ffffff 55%, transparent);
+  color: inherit;
+  text-decoration: none;
+}
+
+.ov-stat--link:hover {
+  background: color-mix(in srgb, #ffffff 80%, transparent);
+}
+
+.ov-stat__n {
+  font-size: 2.25rem;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ov-stat__label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  opacity: 0.8;
+}
+
+.ov-track {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ov-track a {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  justify-items: start;
+  gap: 6px;
+  height: 100%;
+  min-height: 104px;
+  box-sizing: border-box;
+  padding: 12px 12px 14px;
+  border-radius: 18px;
+  background: color-mix(in srgb, #ffffff 60%, transparent);
+  color: var(--lime-ink);
+  text-decoration: none;
+}
+
+.ov-track a:hover {
+  background: #ffffff;
+}
+
+.ov-track a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.ov-track__n {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ov-track__name {
+  align-self: end;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ov-track li[data-status='done'] a {
+  background: var(--bx-dark);
+  color: #f2f5ef;
+}
+
+.ov-track li[data-status='not_started'] a {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--lime-ink) 22%, transparent);
+  opacity: 0.75;
+}
+
+.ov-track li[data-status='waiting_for_you'] a {
+  background: var(--warm);
+  color: var(--warm-ink);
+}
+
+.ov-track li[data-status='needs_revision'] a {
+  background: #f3a097;
+  color: #3a0d09;
+}
+
+.ov-track li[data-current] a {
+  box-shadow: 0 0 0 3px var(--lime-ink);
+}
+
+/* 3. Still needs your confirmation */
+.ov-confirm {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+  align-items: start;
+  gap: 28px;
+}
+
+.ov-confirm .bx-big {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ov-confirm .bx-big__label {
+  max-width: 14ch;
+  font-size: 1.5rem;
+  line-height: 1.15;
+}
+
+.ov-confirm__body {
+  display: grid;
+  gap: 18px;
+}
+
+.ov-confirm .bx-go {
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+/* 4. Produced so far: a shelf of prints and cards, all one height */
+.ov-made {
+  gap: 18px;
+}
+
+.ov-made__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ov-made__count {
+  margin: 0;
+  font-size: 0.875rem;
+  opacity: 0.75;
+}
+
+.ov-shelf {
+  --shelf-h: 270px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 18px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Justified rows: text cards share a row evenly; prints and the deck grow in proportion to their
+ * own ratio (--r), so pieces in one row end up the same height and the row fills the panel.
+ * A cap keeps a short last row from blowing up.
+ */
+.ov-shelf li {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ov-shelf li[data-kind='visual'],
+.ov-shelf li[data-kind='deck'] {
+  flex: var(--r) 1 calc(var(--r) * 200px);
+  max-width: calc(var(--r) * 420px);
+}
+
+.ov-shelf--text {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.ov-shelf + .ov-shelf {
+  margin-top: 18px;
+}
+
+.ov-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: var(--shelf-h);
+  box-sizing: border-box;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ov-card:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 20px;
+}
+
+.ov-card__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* Prints: as tall as the shelf, as wide as their own ratio */
+.ov-card--print,
+.ov-card--deck {
+  height: auto;
+}
+
+.ov-card--print .art-frame {
+  width: 100%;
+}
+
+.ov-card--print .art-frame {
+  flex: none;
+  border-radius: 10px;
+  box-shadow: 0 14px 28px -16px rgb(18 18 16 / 0.5);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ov-card--print:hover .art-frame {
+  transform: translateY(-4px);
+}
+
+/* The deck: its real cover slide at 16:9 */
+.ov-card__slide {
+  flex: none;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 14px 28px -16px rgb(18 18 16 / 0.5);
+  pointer-events: none;
+}
+
+.ov-card__slide .slide {
+  width: 100%;
+}
+
+/* Text outputs: a card with the line itself */
+.ov-card--text {
+  width: 100%;
+  padding: 18px 18px 20px;
+  border-radius: 24px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.ov-card--text .ov-card__label {
+  opacity: 0.7;
+}
+
+.ov-card__title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+}
+
+.ov-card__text {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  opacity: 0.75;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.ov-card__dirs {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ov-card__dirs li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+
+.ov-card__dirs li[data-rec] span:last-child {
+  font-weight: 600;
+}
+
+.ov-card__orb {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--lime-ink);
+}
+
+/* 5. Ideas, work in progress, decisions */
+.ov-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--bx-gap);
+  align-items: stretch;
+}
+
+.ov-row > .bx-tile {
+  gap: 16px;
+}
+
+.ov-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  margin-left: 6px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  vertical-align: 0.2em;
+}
+
+.ov-muted {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  opacity: 0.72;
+}
+
+.ov-tile-foot {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.ov-ideas__list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ov-ideas__list a {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: color-mix(in srgb, #ffffff 45%, transparent);
+  color: inherit;
+  text-decoration: none;
+}
+
+.ov-ideas__list a:hover {
+  background: color-mix(in srgb, #ffffff 70%, transparent);
+}
+
+.ov-ideas__meta,
+.ov-ideas__status {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.ov-ideas__text {
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+.ov-timeline {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0 0 0 18px;
+  border-left: 2px dashed var(--rule);
+  list-style: none;
+}
+
+.ov-timeline li {
+  position: relative;
+  display: grid;
+  gap: 4px;
+}
+
+.ov-timeline li::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: -25px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ink-strong);
+}
+
+.ov-timeline li[data-kind='chosen_despite_review']::before { background: var(--warm); }
+.ov-timeline li[data-kind='revision_requested']::before { background: var(--tone-butter); }
+
+.ov-timeline p {
+  margin: 0;
+}
+
+.ov-timeline__what {
+  font-weight: 600;
+}
+
+.ov-timeline__quote {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 1100px) {
+  .ov-track {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ov-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .ov-decisions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .bx-tile {
+    padding: 22px 20px;
+    border-radius: 26px;
+  }
+  .bx-big__n {
+    font-size: 3.25rem;
+  }
+  .ov-problem,
+  .ov-confirm,
+  .ov-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ov-problem__pic .art-frame {
+    width: min(100%, calc(220px * var(--r)));
+  }
+  .ov-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ov-progress {
+    padding-top: 64px;
+  }
+  .ov-progress__head {
+    grid-template-columns: minmax(0, 1fr);
+    padding-right: 0;
+  }
+  .ov-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ov-track a {
+    min-height: 0;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-rows: none;
+    align-items: center;
+  }
+  .ov-shelf {
+    --shelf-h: 220px;
+  }
+  .ov-shelf li[data-kind='deck'],
+  .ov-shelf li[data-kind='task'],
+  .ov-shelf li[data-kind='research'],
+  .ov-shelf li[data-kind='strategy'],
+  .ov-shelf li[data-kind='theme'] {
+    flex: 1 1 100%;
+  }
+  .ov-card--text,
+  .ov-card--deck {
+    width: 100%;
+  }
+  .ov-card--deck {
+    height: auto;
+  }
+  .ov-card__slide {
+    flex: none;
+  }
+  .ov-decisions {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-card--print .art-frame {
+    transition: none;
+  }
+}

@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,rm,readFile,writeFile,realpath} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {Readable} from 'node:stream';
+import {randomUUID,createHash} from 'node:crypto';
+import {createServer} from './server.mjs';
+const sha=v=>createHash('sha256').update(v).digest('hex');
+const extract=p=>JSON.parse(p.slice(p.indexOf('UNTRUSTED_JSON_DATA\n')+20,p.lastIndexOf('\nEND_UNTRUSTED_JSON_DATA')));
+const draft=summary=>({outputKind:'research_findings',status:'draft',title:'合成HTTP稿',summary,sections:[{heading:'资料整理',body:summary,evidenceIds:['s1']}],claims:[{text:'示例摘录',kind:'fact',evidenceRefs:['s1'],limitations:['未核验']}],gaps:['待补证'],evidenceClassifications:[{sourceId:'s1',scopeRelation:'background',reason:'合成测试'}]});
+test('HTTP persists human input, invokes revision and independent check, rejects forged evidence and retains selected pause after reopen',async t=>{
+ const root=await realpath(await mkdtemp(join(tmpdir(),'feedback-http-'))),dbPath=join(root,'db'),uiPath=join(root,'ui.html');await writeFile(uiPath,'<h1>test</h1>');
+ let calls=0;const providers={synthetic:{model:'synthetic',execute:async req=>{calls++;const d=extract(req.prompt),rev=d.revisionInput;let out;if(d.content&&rev)out={protocolVersion:'human-feedback-v1',artifactId:d.artifactId,contentHash:d.contentHash,feedbackHash:rev.feedbackHash,findings:rev.feedback.map(f=>({feedbackId:f.id,status:'addressed',category:'creative_preference',reason:'新版表达已明确',refs:[{location:'/summary',quote:'新版明确表达'}]})),limitations:['非审美通过']};else{out=draft(rev?'新版明确表达':'原始表达');if(rev)out.feedbackResponses=rev.feedback.map(f=>({feedbackId:f.id,action:'applied',explanation:'真实新版位置',outputLocations:[{location:'/summary',quote:'新版明确表达'}]}));}return {runId:req.runId,requestedModel:'synthetic',threadId:randomUUID(),inputPacketHash:sha(JSON.stringify({runId:req.runId,model:'synthetic',prompt:req.prompt,outputSchema:req.outputSchema})),exitCode:0,responseText:JSON.stringify(out),parsedOutput:out};}}};
+ const bindings=Object.fromEntries(['research','feedback_review'].map(s=>[s,{providerId:'synthetic',model:'synthetic',role:s+'-lead'}]));let server=createServer({dbPath,uiPath,rootDir:root,providers,bindings});t.after(async()=>{await server.drain();server.emit('close');await rm(root,{recursive:true,force:true});});
+ async function request(path,body){const req=Readable.from([Buffer.from(body===undefined?'':JSON.stringify(body))]);Object.assign(req,{url:path,method:body===undefined?'GET':'POST',headers:{host:'127.0.0.1:4181','content-type':'application/json'}});return new Promise(resolve=>{const res={setHeader(){},writeHead(status){this.status=status;},end(payload){resolve({status:this.status,body:JSON.parse(String(payload))});}};server.emit('request',req,res);});}
+ let p=(await request('/api/projects',{name:'HTTP反馈测试',brief:'仅合成验证',mode:'assisted',humanGates:['research'],commandId:'create'})).body.project;const route='/api/projects/'+p.id;
+ p=(await request(route+'/commands',{kind:'confirm-task-card',taskCardId:p.activeTaskCardId,commandId:'confirm',expectedRevision:p.revision})).body.project;
+ assert.equal((await request(route+'/jobs',{stage:'research',sourceRecords:[{id:'s1',url:'https://example.org',text:'示例摘录',scopeRelation:'background'}],commandId:'produce',expectedRevision:p.revision})).status,202);await server.drain();p=(await request(route)).body.project;const old=p.activeByStage.research;
+ const input={artifactId:old,feedbackId:'f1',instructions:'改为新版明确表达',themes:[{text:'新版明确表达',intendedUse:'表达候选'}],materials:[],commandId:'feedback',expectedRevision:p.revision};
+ assert.equal((await request(route+'/feedback',{...input,verification:'verified'})).status,400);
+ assert.equal((await request(route+'/feedback',{...input,materials:[{imageId:'other-project-image',intendedUse:'参考',borrowingNotes:'留白'}]})).status,422);
+ let result=await request(route+'/feedback',input);assert.equal(result.status,200);p=result.body.project;assert.equal(p.humanFeedback[0].createdBy,'local-operator');assert.equal((await request(route+'/feedback',input)).body.project.revision,p.revision);
+ assert.equal((await request(route+'/revisions',{artifactId:old,commandId:'revision',expectedRevision:p.revision,revisionInput:{}})).status,400);
+ const revRequest={artifactId:old,commandId:'revision',expectedRevision:p.revision};assert.equal((await request(route+'/revisions',revRequest)).status,202);await server.drain();p=(await request(route)).body.project;const revised=p.activeByStage.research;assert.notEqual(revised,old);assert.equal(p.artifacts.length,2);
+ assert.equal((await request(route+'/revisions',revRequest)).status,202);await server.drain();assert.equal(calls,2);
+ assert.equal((await request(route+'/feedback-reviews',{artifactId:revised,commandId:'check',expectedRevision:p.revision})).status,202);await server.drain();
+ let state=(await request(route)).body;assert.equal(state.project.feedbackReviews.length,1);assert.equal(state.project.decisions.length,0);assert.equal(state.project.releases.length,0);assert.equal(state.view.complete,false);
+ const content=(await request(route+'/artifacts/'+revised+'/content')).body;assert.equal(content.content.summary,'新版明确表达');assert.equal(Object.hasOwn(content.content,'feedbackResponses'),false);
+ server.emit('close');server=createServer({dbPath,uiPath,rootDir:root,providers,bindings});state=(await request(route)).body;assert.equal(state.project.humanFeedback.length,1);assert.equal(state.project.artifacts.length,2);assert.equal(state.project.feedbackReviews.length,1);assert.equal(state.project.decisions.length,0);assert.equal(state.project.policies.at(-1).humanGates.includes('research'),true);
+});

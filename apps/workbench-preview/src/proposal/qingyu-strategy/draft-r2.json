@@ -1,0 +1,1487 @@
+{
+  "schemaVersion": 1,
+  "draftId": "qingyu-strategy-r2-draft02",
+  "page": {
+    "id": "qingyu-strategy-r2-draft02",
+    "title": "青屿的桌角茶席",
+    "scope": "条件探索 · 稿件 02",
+    "question": {
+      "text": "想在工位喝茶，手边却不便泡，青屿能做什么？",
+      "claimIds": [
+        "J1",
+        "H1",
+        "D1"
+      ]
+    },
+    "lead": {
+      "text": "借个桌角，开瓶喝茶。",
+      "detail": "瓶里已经是可以喝的茶，包装让人看见它在自己手边的位置。青色的山线走到瓶标下方，折成桌沿。桌角只摆这一瓶，就算有了一席茶。",
+      "claimIds": [
+        "F1",
+        "H1",
+        "D1",
+        "D3"
+      ]
+    },
+    "circles": [
+      {
+        "title": "人想做什么",
+        "text": "想喝茶，手边不便泡。",
+        "detail": "不便自泡出现在历史无糖茶调查中。它是否影响今天的目标办公者，仍是工作假设。",
+        "claimIds": [
+          "J1",
+          "J2",
+          "H1"
+        ]
+      },
+      {
+        "title": "品牌靠什么",
+        "text": "一瓶可以直接喝的茶。",
+        "detail": "无糖即饮茶、500 mL、青色和山线来自题设。山线可接上桌沿，把“屿”画成手边的一小块地方。",
+        "claimIds": [
+          "F1",
+          "D3"
+        ]
+      },
+      {
+        "title": "货架上已有谁",
+        "text": "茶种、冷萃、现泡都有人讲。",
+        "detail": "已有竞品也画山。青屿可表达即饮的使用时机，独特识别与选择效果尚未测得。",
+        "claimIds": [
+          "J4",
+          "D1",
+          "P1"
+        ]
+      }
+    ],
+    "situation": {
+      "text": "只演练一次买来带回工位喝。",
+      "detail": "持续工作与工作间歇是研究中的两个子组。桌角这一次不要求停工、相约同事或先有放松需求。",
+      "claimIds": [
+        "J2",
+        "H1"
+      ]
+    },
+    "insight": {
+      "text": "一个人想在工位喝茶，未必想为此找茶具、等水开。",
+      "detail": "想喝茶与愿意泡一杯茶可以分开。若人已经决定买瓶装茶，同样便捷的几款摆在一起，他更可能要问哪一瓶合口味。",
+      "claimIds": [
+        "J1",
+        "J3",
+        "H1",
+        "H2"
+      ]
+    },
+    "role": {
+      "text": "桌角只摆这一瓶，就算有了一席茶。",
+      "detail": "青屿给手边能喝上茶这件事一个具体画面。别人也能提供即饮，这里借“屿”来画桌上那一小块地方。",
+      "claimIds": [
+        "F1",
+        "J4",
+        "D1",
+        "D3"
+      ]
+    },
+    "routes": [
+      {
+        "title": "桌角茶席",
+        "motive": "原本想喝茶，手边不便泡。",
+        "role": "把一瓶即饮茶放回具体用处。",
+        "mechanism": "山线接桌沿，一瓶就开席。",
+        "loss": "让出大段品饮介绍的位置。各家瓶装茶都方便，若只在几款即饮茶之间选味，这个理由较弱。",
+        "claimIds": [
+          "F1",
+          "J1",
+          "H1",
+          "D1",
+          "D3"
+        ]
+      },
+      {
+        "title": "给这一口留个词",
+        "motive": "这瓶可能怎样喝，下次又怎么认出它？",
+        "role": "青屿做一枚可拍照保存的茶签。",
+        "mechanism": "核定茶名、一句有依据的口感描述，配上“这一口，我会叫它＿＿”。",
+        "loss": "让出日常场景主画面，也多要求一次关注或记录。",
+        "claimIds": [
+          "F2",
+          "J3",
+          "H2",
+          "D2"
+        ]
+      }
+    ],
+    "relationship": {
+      "text": "两条争同一个位置，分别把“此时就能喝上茶”和“我能选、能记自己的那一口”作为拿起青屿的理由。",
+      "detail": "茶种、配料和无糖属于两条路共有的产品说明。我们只把一条邀请放到瓶身正面。",
+      "claimIds": [
+        "F2",
+        "D1",
+        "D2"
+      ]
+    },
+    "recommendation": {
+      "text": "本轮先打桌角茶席。",
+      "detail": "不便自泡在历史调查中有具体动机，题设中的即饮规格已经能回应它。茶签有更直接的选味依据，但青屿还拿不出经过核对的茶种和口感描述，“人愿意用自己的词记下这一口”也未经观察。",
+      "claimIds": [
+        "F1",
+        "F2",
+        "J1",
+        "J3",
+        "H1",
+        "H2",
+        "D1"
+      ]
+    },
+    "mechanism": {
+      "fixed": {
+        "text": "固定一笔山、一处边、一瓶茶。",
+        "detail": "青屿与无糖即饮茶同面。青色山线连上日常物件的边，在转角处画一瓶已经开盖的茶。",
+        "claimIds": [
+          "D3"
+        ]
+      },
+      "variable": {
+        "text": "位置可换，茶种随真实产品换。",
+        "detail": "桌角换窗台，山线和句子都跟着换。同一商品可以出现在两个位置，景物不编码口味。",
+        "claimIds": [
+          "F2",
+          "D3",
+          "D4"
+        ]
+      },
+      "exclude": {
+        "text": "舍弃单独一幅远山和未经证实的产区地图。",
+        "detail": "前者丢了开瓶的动作，后者会暗示没有依据的产地。",
+        "claimIds": [
+          "F2",
+          "D3"
+        ]
+      }
+    },
+    "sample": {
+      "file": "sample.svg",
+      "shelf": {
+        "text": "借个桌角，开瓶喝茶。",
+        "detail": "近看能读工作句与茶种，侧标指向背面的配料表。当前两处标明待核。",
+        "claimIds": [
+          "F2",
+          "D3",
+          "D4",
+          "P1"
+        ]
+      },
+      "commerce": {
+        "text": "借个窗台，开瓶喝茶。",
+        "detail": "列表在瓶身小字之外，单独给出可读的“借个桌角，开瓶喝茶”。第二张图把山线接到窗台，同属一款；配料图可放大。实际平台尺寸和截断另测。",
+        "claimIds": [
+          "D3",
+          "D4",
+          "P1"
+        ]
+      }
+    },
+    "switch": {
+      "text": "若主要在比较茶味，先提高茶签打样优先级。",
+      "detail": "比较茶味不等于愿意留词。只有同款对比显示茶签的留词确有用、桌角只在重复品类便利时，才考虑改选茶签为主方向；否则继续比较或保留未决。",
+      "claimIds": [
+        "J3",
+        "H1",
+        "H2",
+        "T1"
+      ]
+    },
+    "boundary": {
+      "text": "任务卡未确认，研究待补，正式策略未开始。",
+      "detail": "缺直接选择事件、核定茶种、完整配料、口感依据、瓶型与背标。工作样只检验这项策略的含义。",
+      "claimIds": [
+        "F2",
+        "T1"
+      ]
+    }
+  },
+  "ledger": {
+    "id": "qingyu-strategy-r2-draft02",
+    "basis": {
+      "taskId": "brf-qingyu-v1",
+      "taskVersion": 1,
+      "fixturePath": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/services/cases/qingyuFixture.ts",
+      "fixtureSha256": "e80503d5f9a59c11cf097371b0eeda1bcfc1d1be86586c9c754314c0250a0c82",
+      "researchId": "qingyu-packaging-public-report-r4-20261109",
+      "researchPath": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-report/content-r4.json",
+      "researchSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d",
+      "binding": {
+        "briefVersion": 1,
+        "storedArtifactId": "art-qingyu-research-v1"
+      },
+      "researchOrigin": {
+        "skillRevision": "r6-20261109",
+        "adoptionSha256": "281df7c52c66590fe0d2b2018ebc9fae040f38945e4129503d71a9dac9145026",
+        "branchReceiptPaths": [
+          ".scratch/qingyu-research-r4-20261109/research/people/SKILL-USE.json",
+          ".scratch/qingyu-research-r4-20261109/research/competition/SKILL-USE.json"
+        ]
+      },
+      "status": "研究待补",
+      "strategyRevision": "r2-20261109"
+    },
+    "claims": [
+      {
+        "id": "F1",
+        "kind": "任务题设",
+        "title": "规格与对象",
+        "text": "青屿面向25至34岁城市办公者，题设为500 mL单瓶无糖即饮茶，目标零售价6至8元，触点为便利店与电商商品图，保留青色和山形线条。",
+        "factIds": [
+          "P-TARGET",
+          "D-SPEC",
+          "D-CHANNEL",
+          "D-ASSET"
+        ],
+        "findingIds": [
+          "R4-F-PRODUCT"
+        ],
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "gapIds": [
+          "R4-G-TARGET",
+          "R4-G-PRICE"
+        ],
+        "scope": "brf-qingyu-v1 第1版的虚构工程题设。",
+        "impact": "即饮允许提出开瓶喝茶这个使用动作。资产可供创作。",
+        "counterexample": "其他即饮茶也能直接喝，给定资产未获得独特识别证明。目标价不能推出愿付价。"
+      },
+      {
+        "id": "F2",
+        "kind": "任务题设与已知缺口",
+        "title": "哪些话暂时不能写上瓶",
+        "text": "须清晰标明茶种及配料，不从无糖推健康。具体茶种、配方、工艺、口感、背标、瓶型和源资产待补。任务卡未确认、研究待补、正式策略未开始。",
+        "factIds": [
+          "D-INFO",
+          "D-ASSET",
+          "P-TARGET"
+        ],
+        "findingIds": [
+          "R4-F-PRODUCT",
+          "R4-F-PROOF"
+        ],
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "gapIds": [
+          "R4-G-PRODUCT",
+          "R4-G-TARGET",
+          "R4-G-PRICE",
+          "R4-G-EFFECT"
+        ],
+        "scope": "fixture.qingyuBrief.constraints/openQuestions；qingyuProject.humanGates；qingyuProposal.stages.brief/research/strategy。",
+        "impact": "示意中明确标出待核的茶种和配料。本轮只能审条件探索。",
+        "counterexample": "有竞品茶名与口感资料也不能写入青屿。缺产品资料只阻断相应的声称及正式落地。"
+      },
+      {
+        "id": "J1",
+        "kind": "研究判断",
+        "title": "不方便泡茶是一个可追问的时机",
+        "text": "亿欧2023年无糖茶历史调查p13，30.2%整体样本选想喝茶却懒得或不方便自己泡，34.4%选比水多一点滋味、能让自己多喝水。",
+        "factIds": [
+          "R4P16",
+          "R4P17"
+        ],
+        "findingIds": [
+          "R4-F-CHOICE"
+        ],
+        "sourceIds": [
+          "EO23"
+        ],
+        "gapIds": [
+          "R4-G-TARGET"
+        ],
+        "scope": "EO23整体样本，两项是原文复合选项；未披露招募与子组人数。",
+        "impact": "以不便自泡作为一条候选的动机起点。",
+        "counterexample": "后一个选项也可以由其他有味道的饮料满足；两项均不证明今天某个办公者会买青屿。"
+      },
+      {
+        "id": "J2",
+        "kind": "研究判断",
+        "title": "区分持续工作和茶歇",
+        "text": "益普索2026年包装饮料研究p10、13分列工作时段与工作间歇，时段子组的期待饮用还包括有糖即饮茶与即饮咖啡。",
+        "factIds": [
+          "R4P01",
+          "R4P02",
+          "R4P03",
+          "R4P04",
+          "R4P05",
+          "R4P06",
+          "R4P07"
+        ],
+        "findingIds": [
+          "R4-F-PROFILE",
+          "R4-F-ALTERNATIVES"
+        ],
+        "sourceIds": [
+          "IP26"
+        ],
+        "gapIds": [
+          "R4-G-TARGET"
+        ],
+        "scope": "IP26两个场景子组，不是25至34岁无糖茶买家的交叉画像。",
+        "impact": "只演练一次买回工位喝；不拼成同一人的一天、不预设与同事茶歇。",
+        "counterexample": "有人正好会和同事喝饮料，但那是另一种需要核实的接触条件。期待不等于实际选择。"
+      },
+      {
+        "id": "J3",
+        "kind": "研究判断",
+        "title": "选味也可能是本题的主任务",
+        "text": "益普索p14工作时段子组，59%将口味/风味选入购买包装即饮饮料的前三考虑因素。亿欧p11无糖茶历史样本，68.8%希望明确了解茶的口味，61.5%希望有明确风味特征，54.4%希望有明确无糖标识。",
+        "factIds": [
+          "R4P08",
+          "R4P18",
+          "R4P19",
+          "R4P20"
+        ],
+        "findingIds": [
+          "R4-F-PEOPLE",
+          "R4-L-PEOPLE"
+        ],
+        "sourceIds": [
+          "EO23",
+          "IP26"
+        ],
+        "gapIds": [
+          "R4-G-TARGET",
+          "R4-G-EFFECT"
+        ],
+        "scope": "IP26、EO23的年份、调查问题、品类与样本各异。百分比不能相加或排序两个样本。",
+        "impact": "提出同层茶签路线；在桌角路线上仍须保护茶种与产品信息的位置。",
+        "counterexample": "对茶味有兴趣不等于需要记录，也不能证明工作时口味是唯一决策条件。"
+      },
+      {
+        "id": "J4",
+        "kind": "研究判断",
+        "title": "同类有多种解释，青山也并非专属",
+        "text": "七品牌目的抽样见茶种、冷萃、原料与竹香、现泡结构等表达。让茶代表原图有竹香乌龙大字，伊刻有现泡、大盖和绿山，淳茶舍两款并列冷萃和茶种，茶种字与配色有差别。",
+        "factIds": [
+          "C4-M01-REASON",
+          "C4-M02-REASON",
+          "C4-M03-REASON",
+          "C4-M04-REASON",
+          "C4-M05-REASON",
+          "C4-M06-REASON",
+          "C4-M07-REASON",
+          "C-RANG-HIERARCHY",
+          "C-INIKIN-OBS",
+          "C-INIKIN-DIFFERENCE",
+          "C-CHUN-MOLI-HIERARCHY",
+          "C-CHUN-MOLI-DIFFERENCE",
+          "C-CHUN-WULONG-DIFFERENCE"
+        ],
+        "findingIds": [
+          "R4-F-LANDSCAPE",
+          "R4-F-PACKAGING",
+          "R4-F-ASSET"
+        ],
+        "sourceIds": [
+          "C-S01",
+          "C-S02",
+          "C-S03",
+          "C-S04",
+          "C4-S01",
+          "C4-S04",
+          "C4-S06",
+          "C4-S08"
+        ],
+        "gapIds": [
+          "R4-G-EFFECT"
+        ],
+        "scope": "七家公开资料作定性比较；直接视觉比较以四件原图、三品牌为限。",
+        "impact": "不照搬别家的风味和工艺，把青屿的山线用作具体使用情景。",
+        "counterexample": "其他品牌也能移用桌角画面；四张图不能证明市场普遍表达，更不能证明品牌独占或理解效果。"
+      },
+      {
+        "id": "H1",
+        "kind": "工作假设",
+        "title": "想喝茶未必想专门泡一杯",
+        "text": "假设一位自购自饮的城市办公者打算带饮料回手边，可能想喝茶又不想为它找茶具、等水开。他是否用这个理由挑选，未访谈。",
+        "factIds": [
+          "R4P17",
+          "P-TARGET",
+          "D-CHANNEL",
+          "D-SPEC"
+        ],
+        "findingIds": [
+          "R4-F-PROFILE",
+          "R4-F-CHOICE"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "EO23"
+        ],
+        "gapIds": [
+          "R4-G-TARGET"
+        ],
+        "scope": "为当前工作样构造的情景，不能推作全体目标人群心理。",
+        "impact": "使青屿可以回应在工位直接喝上茶的愿望，场景无需组织茶歇。",
+        "counterexample": "如果此人有茶具也愿意泡，或本来就锁定即饮茶，该动机弱或只解释品类选择。"
+      },
+      {
+        "id": "H2",
+        "kind": "工作假设",
+        "title": "想选味也可能想记住一款",
+        "text": "若消费者已决定买瓶装茶，尚待解决的可能是哪个味道适合自己。愿意用自己的词记住茶、拍照留签，是另一个尚未观察的假设。",
+        "factIds": [
+          "R4P08",
+          "R4P18",
+          "R4P19"
+        ],
+        "findingIds": [
+          "R4-F-PEOPLE",
+          "R4-L-PEOPLE"
+        ],
+        "sourceIds": [
+          "EO23",
+          "IP26"
+        ],
+        "gapIds": [
+          "R4-G-TARGET",
+          "R4-G-PRODUCT"
+        ],
+        "scope": "研究支持询问风味需要；个人记录行为只有策略假设。",
+        "impact": "为茶签提供独立的品牌角色和反过来优先的条件。",
+        "counterexample": "已经熟悉茶名的人可能能直接选中；即便比较口味也可能无意留词。"
+      },
+      {
+        "id": "D1",
+        "kind": "条件策略选择",
+        "title": "桌角茶席优先打样",
+        "text": "优先把免去自泡的品类便利说成单次可想象的用途。桌角能放一瓶就有一席，青屿是让这一口茶到手边的品牌。",
+        "factIds": [
+          "D-SPEC",
+          "D-ASSET",
+          "R4P17",
+          "R4P08",
+          "R4P18"
+        ],
+        "findingIds": [
+          "R4-F-CHOICE",
+          "R4-F-ASSET",
+          "R4-F-PRODUCT"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "EO23",
+          "IP26"
+        ],
+        "gapIds": [
+          "R4-G-PRODUCT",
+          "R4-G-TARGET",
+          "R4-G-EFFECT"
+        ],
+        "scope": "先做工作样，不是正式选案。H1给出情景；此路线对未知风味的依赖较少。",
+        "impact": "与茶签争第一选择理由，只保留一个主邀请；让出大段品饮介绍的版面。",
+        "counterexample": "便捷属于许多品牌。若目标实际只比较瓶装茶味，桌角主张无法单独回答为什么选此款。"
+      },
+      {
+        "id": "D2",
+        "kind": "备选策略",
+        "title": "给这一口留个词",
+        "text": "备选用核定茶名、一条有据口感描述和个人留词位置做可拍照的茶签。目标是在选择时辨味，喝过后给下次认款留线索。",
+        "factIds": [
+          "R4P08",
+          "R4P18",
+          "R4P19",
+          "D-INFO"
+        ],
+        "findingIds": [
+          "R4-F-PEOPLE",
+          "R4-F-PROOF"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "EO23",
+          "IP26"
+        ],
+        "gapIds": [
+          "R4-G-PRODUCT",
+          "R4-G-TARGET",
+          "R4-G-EFFECT"
+        ],
+        "scope": "H2与真实茶种、口感资料是成立条件。用户可在保存的照片上自行写词，无需可写瓶贴。",
+        "impact": "用个人茶签主导，会舍弃大幅场景内容。共同的茶种、配料信息仍然提供。",
+        "counterexample": "人可能需要比较却不愿记录。茶名或感官依据缺失时，茶签不能给出这款的具体味觉解释。"
+      },
+      {
+        "id": "D3",
+        "kind": "创意机制",
+        "title": "山线接到手边",
+        "text": "让青色山线接上桌沿或窗台，在转角置一瓶茶。固定青屿、无糖即饮茶、核定茶种与“借个〔落瓶处〕，开瓶喝茶”；地点可变。单画远山与产区地图均舍弃。",
+        "factIds": [
+          "D-ASSET",
+          "D-SPEC",
+          "D-INFO",
+          "C-INIKIN-OBS"
+        ],
+        "findingIds": [
+          "R4-F-ASSET",
+          "R4-F-PACKAGING"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "C-S03"
+        ],
+        "gapIds": [
+          "R4-G-PRODUCT",
+          "R4-G-EFFECT"
+        ],
+        "scope": "青屿名与小块落脚处的联系是创作比喻，品类即饮属性有题设依据。",
+        "impact": "同款可有桌角和窗台的两种内容，不以景物编码味型。若有其他真实款，再用各自茶名作区分。",
+        "counterexample": "如果图像被读成山泉、茶山产区或第二种味型，需改山线、品类字或同款标注。"
+      },
+      {
+        "id": "D4",
+        "kind": "触点工作决定",
+        "title": "让包装与商品图各做一件事",
+        "text": "货架需能近看茶种、转瓶核配料。电商列表在瓶身小字之外单独呈现可读的工作邀请和产品名，点进同款第二图再看窗台变体；配料图可单独放大。",
+        "factIds": [
+          "D-CHANNEL",
+          "D-INFO",
+          "D-ASSET",
+          "R4P18",
+          "R4P19"
+        ],
+        "findingIds": [
+          "R4-F-CHANNEL"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "EO23"
+        ],
+        "gapIds": [
+          "R4-G-PRODUCT",
+          "R4-G-EFFECT"
+        ],
+        "scope": "这是设计分工。实物标签、冷柜尺寸和真实平台展示效果未知。",
+        "impact": "同一邀请在两个触点各有可接触的表达。列表邀请能否被读到与是否值得点击分开检验，不能借第二图补救列表未呈现的理由。",
+        "counterexample": "真实平台的图文形式、标题截断和缩略图尺寸尚缺。此工作样没有验证实际移动端、平台合规或点击效果。"
+      },
+      {
+        "id": "P1",
+        "kind": "待测预测",
+        "title": "读者能把青屿与手边喝茶连起来吗",
+        "text": "期待读者看出青屿无糖即饮茶，能复述图中是手边就能开瓶喝茶，并在对应触点找到茶种与配料。实际注意、理解、独特识别和购买意愿均未测。",
+        "factIds": [
+          "D-CHANNEL",
+          "D-INFO",
+          "R4P17",
+          "R4P18"
+        ],
+        "findingIds": [
+          "R4-F-CHANNEL",
+          "R4-F-ASSET"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "EO23"
+        ],
+        "gapIds": [
+          "R4-G-EFFECT",
+          "R4-G-PRODUCT"
+        ],
+        "scope": "这是识读预测，不设提升率、不声称优于竞品。真实茶种与配料不能用占位签测试。",
+        "impact": "可先审图中所说的话；真实数据到位后再测信息寻找与是否改变选择。",
+        "counterexample": "山线可能抢走品类和开瓶动作；即使读懂，也可能觉得所有瓶装茶都行。"
+      },
+      {
+        "id": "T1",
+        "kind": "补证与否证条件",
+        "title": "什么会让首选换位",
+        "text": "先在未看样前追问近期真实自购事件、替代品与泡茶条件；再以同款核定资料制作两案，在相同货架距离及列表尺寸分开阅读。",
+        "factIds": [
+          "P-TARGET",
+          "D-CHANNEL",
+          "D-INFO",
+          "R4P08",
+          "R4P17",
+          "R4P18"
+        ],
+        "findingIds": [
+          "R4-F-CHANNEL",
+          "R4-F-PROOF"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "EO23",
+          "IP26"
+        ],
+        "gapIds": [
+          "R4-G-PRODUCT",
+          "R4-G-TARGET",
+          "R4-G-EFFECT"
+        ],
+        "scope": "建议的检验，当前未执行。单次模拟理解仅属模拟记录。",
+        "impact": "若真实事件主要在选茶味，提高茶签打样优先级；仅当同款对比显示留词有用且桌角只重复品类便利，才考虑改选茶签为主方向。两者都无用则保留未决。",
+        "counterexample": "近期发现只比较茶味时先提升茶签候选优先级；没有资料或单个访谈均不足以宣布其为正式策略。"
+      }
+    ],
+    "sourceIndex": [
+      {
+        "id": "BRIEF",
+        "title": "青屿任务卡第1版（本地虚构工程案例）",
+        "publisher": "提案工作台本地题设",
+        "url": null,
+        "published": null,
+        "dataPeriod": "简报第1版",
+        "market": "中国大陆",
+        "population": "题设25至34岁成年城市办公者",
+        "method": "既有fixture与保存的任务卡绑定，不是研究样本",
+        "access": "本轮只读核对既有任务卡源码；无业务写入",
+        "locator": "src/services/cases/qingyuFixture.ts；qingyuBrief",
+        "limits": "没有真实上市、客户委托、配方或目标消费者验证"
+      },
+      {
+        "id": "EO23",
+        "title": "2023中国无糖茶饮行业白皮书",
+        "publisher": "亿欧智库",
+        "url": "https://finance.sina.com.cn/wm/2023-11-07/doc-imztumwq2393524.shtml",
+        "published": "2023（本次复读的新浪转载日期2023-11-07；不等于原报告首发日）",
+        "dataPeriod": "图题称2023年近半年；确切调查起止未公开",
+        "market": "中国大陆",
+        "population": "报告中的无糖茶饮调研样本，含深度/潜力/低频接触者；不能确认招募全为实际购买者",
+        "method": "原图仅写亿欧调研；抽样、招募、权重、访问渠道未公开",
+        "access": "R3原采集：qy_r3_people，原HTML及16张内嵌原报告图；R4重开新浪正文，并实际可视重读原报告p11–13（本地page10–12）",
+        "locator": "原报告p11包装、p12年龄/购买组、p13动机；R3 raw/eo-reprint-page10–12.jpg",
+        "limits": "历史截面；不能代表2026全国买家；各 subgroup n 未公开；系列页含燃茶品牌导向叙述，原报告p14某产品口感评价另列元气森林用户N=951，未纳入本次品牌排名结论；年龄档左图25–30、右图26–30不一致，不可据此重算25–34"
+      },
+      {
+        "id": "C-S01",
+        "title": "让茶竹香乌龙茶饮料无糖",
+        "publisher": "让茶（北京）饮料有限公司／FBIF品牌投稿",
+        "url": "https://www.foodtalks.cn/fbifwowfoodawards/gallery/wowfood/detail/5891",
+        "published": null,
+        "dataPeriod": "上市2023-12；投稿日未知",
+        "market": "中国大陆；不适用对象另列",
+        "population": "公开产品/品牌材料，非消费者样本",
+        "method": "原始品牌公开材料；读取范围见access",
+        "access": "本轮实际在线正文核读",
+        "locator": "理念L20–24；规格/价格L49–55；渠道L65–67",
+        "limits": "品牌自述，不是本轮消费者测量；旧价与官网肩贴版未确认同版"
+      },
+      {
+        "id": "C-S02",
+        "title": "让茶产品列表及竹香乌龙详情的公开站点脚本",
+        "publisher": "让茶官方",
+        "url": "https://www.rangcha.com/product/list/rangcha",
+        "published": null,
+        "dataPeriod": "读取日网站公开版本；发布日期及现售版关系未知",
+        "market": "中国大陆",
+        "population": "本报告只采用品牌公开物料及设计、规格自述，非本轮消费者测量",
+        "method": "公开HTML与其实际引用的公开JS产品列表/详情，未登录、未调用私有接口",
+        "access": "本轮实际核读原文及原图；留存于research分支",
+        "locator": "rangcha-list.js 500zhuxiangwulongcha.png；rangcha-detail.js 500zhuxiangwulongchadetails.png及对应竹香乌龙茶段",
+        "limits": "非当前货架实拍或实际成交证明；发布日期未知保持未知；品牌声称的测试未核招募或原始结果，不作本报告消费者证据"
+      },
+      {
+        "id": "C-S03",
+        "title": "伊刻活泉现泡茶",
+        "publisher": "内蒙古伊利实业集团股份有限公司／FBIF品牌投稿",
+        "url": "https://www.foodtalks.cn/fbifwowfoodawards/gallery/wowfood/detail/5563",
+        "published": null,
+        "dataPeriod": "上市2023-06；投稿日未知",
+        "market": "中国大陆；不适用对象另列",
+        "population": "公开产品/品牌材料，非消费者样本",
+        "method": "原始品牌公开材料；读取范围见access",
+        "access": "本轮实际在线正文核读",
+        "locator": "理念L16–28；规格/价格L46–52；渠道L62–64",
+        "limits": "系列条目价不等于逐味型现价；风味/注意/销量效果自述不作独立效果证据"
+      },
+      {
+        "id": "C-S04",
+        "title": "淳茶舍",
+        "publisher": "可口可乐中国",
+        "url": "https://www.coca-cola.com/cn/zh/brands/authentic-tea-house-ath",
+        "published": null,
+        "dataPeriod": "本轮读取网站版本；图片文件名2025不作独立发布日期",
+        "market": "中国大陆；不适用对象另列",
+        "population": "公开产品/品牌材料，非消费者样本",
+        "method": "原始品牌公开材料；读取范围见access",
+        "access": "本轮实际在线正文核读及原件查看",
+        "locator": "品牌简介L21–23；茉莉L29–33；铁观音L50–54",
+        "limits": "口感/工艺为品牌主张；具体款当前价格及现售版未知"
+      },
+      {
+        "id": "IP26",
+        "title": "包装饮料消费的“场景革命”与“价值锚点”",
+        "publisher": "益普索 Ipsos（原作者）；东方财富（公开PDF镜像承载）",
+        "url": "https://pdf.dfcfw.com/pdf/H3_AP202601281818514060_1.pdf?1769636563000.pdf=",
+        "published": "2026-01公开镜像；原机构准确首发日未核实",
+        "dataPeriod": "图页署“2026益普索定量调研”；具体访问日期未公开",
+        "market": "中国报告语境；样本城市、地区配额未披露",
+        "population": "包装即饮饮料场景被访者，工作时段与工作间歇子组；不是无糖茶专样本，也未给25–34交叉表",
+        "method": "报告署定量调研；总体N、子组n、招募、问卷题干和加权未披露",
+        "access": "R2已登记PS04；R4实际重开30页原作者PDF，读取p4、10–14及页脚；公开镜像，不冒充原机构托管",
+        "locator": "PDF与印刷页码一致：p4场景划分、p10工作间歇、p13工作时段、p14选品因素",
+        "limits": "各比例仅描述报告对应场景子组；场景类别不可直接当个人类型；期待不等于购买/饮用份额；无糖茶期待者未单列画像；原文提神/健康话术不作为功效证据；报告含AI场景图，不计研究证据"
+      },
+      {
+        "id": "C4-S01",
+        "title": "夏日消费观察｜攻入3元价格带 无糖茶热战终端",
+        "publisher": "北京商报孔文燮报道；经济观察网转载",
+        "url": "https://www.eeo.com.cn/2024/0627/669151.shtml",
+        "published": "2024-06-27",
+        "dataPeriod": "原稿2024-06-24；转载2024-06-27；采价为报道前近日，具体日未知",
+        "market": "中国大陆；不适用对象另列",
+        "population": "北京有限门店及线上渠道历史走访，不是全国价格样本",
+        "method": "记者历史门店走访及线上官方渠道价格转述；本轮重读存件",
+        "access": "本轮重读本地历史原始正文存件；线上原稿/转载403；搜索索引摘录复核价格段",
+        "locator": "价格战厮杀；产品密集上新",
+        "limits": "有限北京走访与线上官方渠道，非全国现价；门店/资格/运费多未明；同源转载非独立研究"
+      },
+      {
+        "id": "C4-S04",
+        "title": "乌龙上茶",
+        "publisher": "东鹏饮料／FBIF品牌投稿；设计团队靳刘高",
+        "url": "https://www.foodtalks.cn/fbifwowfoodawards/gallery/wowpackaging/detail/4544",
+        "published": null,
+        "dataPeriod": "2023作品历史身份沿用R2/R3；网页发布日期未知",
+        "market": "中国大陆；不适用对象另列",
+        "population": "公开产品/品牌材料，非消费者样本",
+        "method": "原始品牌公开材料；读取范围见access",
+        "access": "本轮实际在线正文核读及旧原图查看",
+        "locator": "设计L52–57；工艺L66–72",
+        "limits": "公开意图与可见观察分开；销量和复购自述不作包装因果"
+      },
+      {
+        "id": "C4-S06",
+        "title": "东方树叶官网产品页索引",
+        "publisher": "农夫山泉",
+        "url": "https://www.nongfuspring.com/mobile/goods/detail-all.html?id=1&pid=2",
+        "published": null,
+        "dataPeriod": "读取日索引；具体产品发布日未知",
+        "market": "中国大陆；不适用对象另列",
+        "population": "公开产品/品牌材料，非消费者样本",
+        "method": "原始品牌公开材料；读取范围见access",
+        "access": "只获官方页面搜索索引摘录；open正文为JS占位，未宣称完整正文核读",
+        "locator": "索引乌龙/青柑普洱/菊花普洱等产品段",
+        "limits": "仅支持系列/茶种表述的有限核对；不支持当前配方细节、价格或瓶贴观察"
+      },
+      {
+        "id": "C4-S08",
+        "title": "China Business",
+        "publisher": "Suntory官网",
+        "url": "https://www.suntory.com/business/china/?ke=hd",
+        "published": null,
+        "dataPeriod": "发布日期未知；叙事含1995–2015历史",
+        "market": "中国大陆；不适用对象另列",
+        "population": "公开产品/品牌材料，非消费者样本",
+        "method": "原始品牌公开材料；读取范围见access",
+        "access": "本轮实际在线正文核读",
+        "locator": "L97–104中国软饮业务段",
+        "limits": "仅确认中国乌龙业务；页面含历史叙事，不作2026销量/产品配方证明"
+      }
+    ],
+    "factIndex": [
+      {
+        "id": "C-RANG-HIERARCHY",
+        "text": "茶种与竹香大字优先；品牌及人物肩贴在上方。",
+        "sourceIds": [
+          "C-S02"
+        ],
+        "locator": "C-A01原图；assets.json实际SHA/尺寸",
+        "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+        "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+        "evidenceType": "visual-observation",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "C-INIKIN-OBS",
+        "text": "现泡茶大字领先，茉莉花茶与0糖在下级；大白盖、绿颈环、茉莉花和绿山层可见。",
+        "sourceIds": [
+          "C-S03"
+        ],
+        "locator": "C-A02原图；assets.json实际SHA/尺寸",
+        "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+        "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+        "evidenceType": "visual-observation",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "C-INIKIN-DIFFERENCE",
+        "text": "品牌介绍茶水分离结构，结合大白盖参与现泡叙事；差别不只来自瓶贴。",
+        "sourceIds": [
+          "C-S03"
+        ],
+        "locator": "C-A02原图；assets.json实际SHA/尺寸",
+        "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+        "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+        "evidenceType": "brand-self-description",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "C-CHUN-MOLI-HIERARCHY",
+        "text": "冷萃与茶种同列，红无糖块单独强调。",
+        "sourceIds": [
+          "C-S04"
+        ],
+        "locator": "C-A03原图；assets.json实际SHA/尺寸",
+        "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+        "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+        "evidenceType": "visual-observation",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "C-CHUN-MOLI-DIFFERENCE",
+        "text": "与乌龙款共用标志与版式，以蓝盖、青绿叶、茶种字区分。",
+        "sourceIds": [
+          "C-S04"
+        ],
+        "locator": "C-A03原图；assets.json实际SHA/尺寸",
+        "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+        "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+        "evidenceType": "visual-observation",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "C-CHUN-WULONG-DIFFERENCE",
+        "text": "仅这两款可作同品牌系列对照，不能扩成全品牌规则。",
+        "sourceIds": [
+          "C-S04"
+        ],
+        "locator": "C-A04原图；assets.json实际SHA/尺寸",
+        "scope": "三品牌、四件中国公开单品物料 · 目的抽样，非全市场或时间趋势",
+        "limits": "可见观察或所引品牌说明，不证明注意、理解、偏好或购买；不确认当前现售版",
+        "evidenceType": "visual-observation",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "D-CHANNEL",
+        "text": "设计面向便利店货架与电商商品图，不是同一接触尺寸与购物过程。",
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "locator": "qingyuBrief.background/constraints/objectives",
+        "scope": "青屿任务卡第1版",
+        "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+        "evidenceType": "brief-condition",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "D-SPEC",
+        "text": "题设为500ml无糖即饮茶、单瓶6至8元目标价；不是当前成交价。",
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "locator": "qingyuBrief.background/constraints/objectives",
+        "scope": "青屿任务卡第1版",
+        "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+        "evidenceType": "brief-condition",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "D-ASSET",
+        "text": "保留青色与山形线条；这两项是已有资产限制，未验证识别度或审美效果。",
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "locator": "qingyuBrief.background/constraints/objectives",
+        "scope": "青屿任务卡第1版",
+        "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+        "evidenceType": "brief-condition",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "D-INFO",
+        "text": "任务卡要求清晰标明茶种与配料，不把无糖推导为健康功效。",
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "locator": "qingyuBrief.background/constraints/objectives",
+        "scope": "青屿任务卡第1版",
+        "limits": "本地虚构工程条件，非产品检测、消费者研究或批准",
+        "evidenceType": "brief-condition",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "P-TARGET",
+        "text": "25至34岁城市办公者是青屿题设范围，职业、收入与统一生活方式尚未得到调研验证。",
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "locator": "qingyuBrief.audience及openQuestions",
+        "scope": "青屿简报第1版",
+        "limits": "不生成虚构姓名、收入、作息或消费人格",
+        "evidenceType": "brief-condition",
+        "quantity": null,
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P01",
+        "text": "工作时段子组：白领人群占91%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p13（0基P12）",
+        "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+        "limits": "不能反推“91%的白领喝无糖茶”；工作时长未说明按日/周等完整题干。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 91,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P02",
+        "text": "工作时段子组：工作超过8小时占55%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p13（0基P12）",
+        "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+        "limits": "不能反推“91%的白领喝无糖茶”；工作时长未说明按日/周等完整题干。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 55,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P03",
+        "text": "工作间歇子组：在下午为60%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p10（0基P9）",
+        "scope": "2026包装饮料报告的“工作间歇”子组，n未披露",
+        "limits": "报告未公开场景归类题干及子组n；不能拼成同一人的固定一日旅程。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 60,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作间歇”子组，n未披露"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P04",
+        "text": "工作间歇子组：和同事一起为40%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p10（0基P9）",
+        "scope": "2026包装饮料报告的“工作间歇”子组，n未披露",
+        "limits": "报告未公开场景归类题干及子组n；不能拼成同一人的固定一日旅程。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 40,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作间歇”子组，n未披露"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P05",
+        "text": "工作时段子组期待饮用有糖即饮茶：47%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p13“期待饮用”",
+        "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+        "limits": "期待而非实购；题型/允许选项数未披露，不能作互斥构成比或市场份额。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 47,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P06",
+        "text": "工作时段子组期待饮用无糖即饮茶：46%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p13“期待饮用”",
+        "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+        "limits": "期待而非实购；题型/允许选项数未披露，不能作互斥构成比或市场份额。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 46,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P07",
+        "text": "工作时段子组期待饮用即饮咖啡：39%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p13“期待饮用”",
+        "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+        "limits": "期待而非实购；题型/允许选项数未披露，不能作互斥构成比或市场份额。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 39,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P08",
+        "text": "工作时段子组购买包装即饮饮料时，Top3考虑因素选中口味/风味：59%。",
+        "sourceIds": [
+          "IP26"
+        ],
+        "locator": "PDF p14“Top 3考虑因素”",
+        "scope": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体",
+        "limits": "选中比例不是权重；自报考虑不是产品功效，也不是包装偏好。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 59,
+          "unit": "%",
+          "basis": "2026包装饮料报告的“工作时段”子组，n未披露；不是无糖茶买家总体"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P16",
+        "text": "整体样本购买无糖茶饮动机：比水多一点滋味，能让我喝更多水 34.4%。",
+        "sourceIds": [
+          "EO23"
+        ],
+        "locator": "原报告p13左栏",
+        "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+        "limits": "和新用户为不同分母；不能用本组值直接比较新用户比例；不能称完整JTBD事件。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 34.4,
+          "unit": "%",
+          "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P17",
+        "text": "整体样本购买无糖茶饮动机：想喝茶，但懒得/不方便自己泡茶 30.2%。",
+        "sourceIds": [
+          "EO23"
+        ],
+        "locator": "原报告p13左栏",
+        "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+        "limits": "和新用户为不同分母；不能用本组值直接比较新用户比例；不能称完整JTBD事件。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 30.2,
+          "unit": "%",
+          "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P18",
+        "text": "无糖茶包装诉求：能明确了解茶的口味 68.8%。",
+        "sourceIds": [
+          "EO23"
+        ],
+        "locator": "原报告p11右栏",
+        "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+        "limits": "历史样本自报；三个信息诉求可能重叠，不是审美风格/货架注意/实际购买效果。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 68.8,
+          "unit": "%",
+          "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P19",
+        "text": "无糖茶包装诉求：有明确产品风味特征 61.5%。",
+        "sourceIds": [
+          "EO23"
+        ],
+        "locator": "原报告p11右栏",
+        "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+        "limits": "历史样本自报；三个信息诉求可能重叠，不是审美风格/货架注意/实际购买效果。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 61.5,
+          "unit": "%",
+          "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "R4P20",
+        "text": "无糖茶包装诉求：有明确的无糖标识 54.4%。",
+        "sourceIds": [
+          "EO23"
+        ],
+        "locator": "原报告p11右栏",
+        "scope": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开",
+        "limits": "历史样本自报；三个信息诉求可能重叠，不是审美风格/货架注意/实际购买效果。",
+        "evidenceType": "published-report",
+        "quantity": {
+          "value": 54.4,
+          "unit": "%",
+          "basis": "2023亿欧无糖茶饮报告调研N=1,200；对应题实际有效分母/招募未公开"
+        },
+        "derivedFrom": []
+      },
+      {
+        "id": "C4-M01-REASON",
+        "text": "官网索引并列纯茶和复合茶，茶种是产品线索",
+        "locator": "对应source.locator；只采用access实际读取范围",
+        "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+        "limits": "历史乌龙报价与菊花普洱原图分SKU；官网仅实读索引",
+        "evidenceType": "brand-self-description",
+        "derivedFrom": [],
+        "sourceIds": [
+          "C4-S06"
+        ],
+        "quantity": null
+      },
+      {
+        "id": "C4-M02-REASON",
+        "text": "常规无糖乌龙；报道另列桂花乌龙等扩展",
+        "locator": "对应source.locator；只采用access实际读取范围",
+        "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+        "limits": "三得利无糖与低糖在原文并列，本图仅无糖；无对应清图，不编码瓶贴",
+        "evidenceType": "brand-self-description",
+        "derivedFrom": [],
+        "sourceIds": [
+          "C4-S01",
+          "C4-S08"
+        ],
+        "quantity": null
+      },
+      {
+        "id": "C4-M03-REASON",
+        "text": "品牌以茶种优先、原叶与茶杯结构讲产品",
+        "locator": "对应source.locator；只采用access实际读取范围",
+        "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+        "limits": "555ml；具体门店未逐款列出；旧场景合成不能确认现售版",
+        "evidenceType": "brand-self-description",
+        "derivedFrom": [],
+        "sourceIds": [
+          "C4-S04"
+        ],
+        "quantity": null
+      },
+      {
+        "id": "C4-M04-REASON",
+        "text": "产品以冷萃无糖命名，具体茶种味型未明",
+        "locator": "对应source.locator；只采用access实际读取范围",
+        "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+        "limits": "2024历史建议价与整箱促销并列；34.9÷15约2.33元；不代表单瓶成交；官方报告仅索引",
+        "evidenceType": "published-report",
+        "derivedFrom": [],
+        "sourceIds": [
+          "C4-S01"
+        ],
+        "quantity": null
+      },
+      {
+        "id": "C4-M05-REASON",
+        "text": "官网以冷萃及茶原料解释产品，回甘为自述",
+        "locator": "对应source.locator；只采用access实际读取范围",
+        "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+        "limits": "2024系列价不能绑定官网现图具体味型；线上低价装数与资格未知",
+        "evidenceType": "brand-self-description",
+        "derivedFrom": [],
+        "sourceIds": [
+          "C-S04"
+        ],
+        "quantity": null
+      },
+      {
+        "id": "C4-M06-REASON",
+        "text": "旧投稿以高山原料、竹香和茶器灵感沟通",
+        "locator": "对应source.locator；只采用access实际读取范围",
+        "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+        "limits": "官网图168×428，仅大字/轮廓；6元历史投稿版与人物肩贴版未确认同版",
+        "evidenceType": "brand-self-description",
+        "derivedFrom": [],
+        "sourceIds": [
+          "C-S01"
+        ],
+        "quantity": null
+      },
+      {
+        "id": "C4-M07-REASON",
+        "text": "品牌以分离盖和拧盖混合解释现泡体验",
+        "locator": "对应source.locator；只采用access实际读取范围",
+        "scope": "中国公开目的抽样；2024报道或历史投稿分组；非2026现价",
+        "limits": "系列条目价未逐款核对；不当茉莉现价；结构/口感主张不是本轮试泡或效果测量",
+        "evidenceType": "brand-self-description",
+        "derivedFrom": [],
+        "sourceIds": [
+          "C-S03"
+        ],
+        "quantity": null
+      }
+    ],
+    "findingIndex": [
+      {
+        "id": "R4-F-PEOPLE",
+        "title": "工作选饮料重味道，无糖茶包装需讲清茶味",
+        "text": "工作相关饮料研究中，口味与口感是重要选择因素；无糖茶历史调查还呈现补味、便捷饮茶和看懂风味的需要。两类证据共同指向茶味预期这一信息任务。",
+        "factIds": [
+          "R4P01",
+          "R4P02",
+          "R4P08",
+          "R4P09",
+          "R4P16",
+          "R4P17",
+          "R4P18",
+          "R4P19",
+          "R4P20"
+        ],
+        "sourceIds": [
+          "EO23",
+          "IP26"
+        ],
+        "scope": "2026包装饮料工作时段参照与2023无糖茶信息调查分别使用",
+        "limits": "不是25至34岁办公者交叉画像，未证明青屿的偏好、理解或购买效果。",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-PROFILE",
+        "title": "持续工作与茶歇，不是同一种接触情景",
+        "text": "工作时段子组以白领为主，且有长时工作者；工作间歇则常在下午，也可能与同事一起。两组用来解释接触条件差异，不拼成一个人的生活故事。",
+        "factIds": [
+          "R4P01",
+          "R4P02",
+          "R4P03",
+          "R4P04"
+        ],
+        "sourceIds": [
+          "IP26"
+        ],
+        "scope": "益普索2026包装饮料两个场景子组",
+        "limits": "样本量、年龄交叉与招募未披露；不能外推全体无糖茶买家。",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-CHOICE",
+        "title": "补味与省去泡茶",
+        "text": "历史样本的饮用需要包括比水多一点滋味、想喝茶却不便自泡；不能据此选定审美。",
+        "factIds": [
+          "R4P16",
+          "R4P17",
+          "R4P18",
+          "R4P19"
+        ],
+        "sourceIds": [
+          "EO23"
+        ],
+        "scope": "2023无糖茶历史样本",
+        "limits": "不是2026目标人群规模或偏好排序；不能选定配色和风格。",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-ALTERNATIVES",
+        "title": "工作饮料的替代选择不只无糖茶",
+        "text": "工作时段报告同时列有糖即饮茶、无糖即饮茶与即饮咖啡的期待选择。期待不等于购买，不能将这些比例当份额或据微小差距判断优劣。",
+        "factIds": [
+          "R4P05",
+          "R4P06",
+          "R4P07"
+        ],
+        "sourceIds": [
+          "IP26"
+        ],
+        "scope": "2026包装饮料工作时段子组",
+        "limits": "n未披露、非无糖茶专样本；本轮未估算替代率。",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-LANDSCAPE",
+        "title": "相近历史金额，已有不同茶味理由与购买条件",
+        "text": "七品牌范围保留了常规乌龙、冷萃、原料与竹香、现泡结构等不同解释。目标金额附近既有不同容量，也有建议价和促销条件，价格数字相近仍需逐项判断是否可比。",
+        "factIds": [
+          "C4-M01-PRICE",
+          "C4-M01-REASON",
+          "C4-M02-PRICE",
+          "C4-M02-REASON",
+          "C4-M03-PRICE",
+          "C4-M03-REASON",
+          "C4-M04-PRICE",
+          "C4-M04-REASON",
+          "C4-M05-PRICE",
+          "C4-M05-REASON",
+          "C4-M06-PRICE",
+          "C4-M06-REASON",
+          "C4-M07-PRICE",
+          "C4-M07-REASON",
+          "D-SPEC"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "C-S01",
+          "C-S03",
+          "C-S04",
+          "C4-S01",
+          "C4-S04",
+          "C4-S06",
+          "C4-S08"
+        ],
+        "scope": "七品牌目的抽样；2024媒体报价与历史品牌投稿分开；非2026现价普查",
+        "limits": "不推断价格带份额、产品优劣、收入或审美。系列旧价不绑定当前具体单品图。",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-PACKAGING",
+        "title": "茶与无糖是共用线索，主导信息各有分工",
+        "text": "让茶突出竹香乌龙，伊刻以现泡茶和瓶盖结构解释产品，淳茶舍并列冷萃与茶种。淳茶舍两款又以盖色、叶色与茶种字区分口味，说明系列统一与味型差异可以并存。",
+        "factIds": [
+          "C-RANG-HIERARCHY",
+          "C-INIKIN-HIERARCHY",
+          "C-INIKIN-DIFFERENCE",
+          "C-CHUN-MOLI-HIERARCHY",
+          "C-CHUN-MOLI-DIFFERENCE",
+          "C-CHUN-WULONG-DIFFERENCE"
+        ],
+        "sourceIds": [
+          "C-S02",
+          "C-S03",
+          "C-S04"
+        ],
+        "scope": "四件原图、三品牌的可见表达比较",
+        "limits": "不是全市场趋势；未测是否被看见、看懂或喜欢。让茶仅支持大字与轮廓。",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-PRODUCT",
+        "title": "规格和资产已定，真实产品理由还需补齐",
+        "text": "题设面向25至34岁城市办公者，容量、目标价、渠道与资产已定。真实茶种、配方、工艺和口感仍待资料支持；任务设定不能当作已验证画像。",
+        "factIds": [
+          "D-CHANNEL",
+          "D-SPEC",
+          "D-ASSET",
+          "D-INFO",
+          "P-TARGET"
+        ],
+        "sourceIds": [
+          "BRIEF"
+        ],
+        "scope": "虚构青屿任务卡第1版",
+        "limits": "题设不是上市、成交、功效或审美测量。",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-CHANNEL",
+        "title": "货架与商品缩略图分别检验理解",
+        "text": "实际可见性和读懂程度需回到对应接触条件验证，本轮场景图只帮助理解任务。",
+        "factIds": [
+          "D-CHANNEL",
+          "R4P18",
+          "R4P19"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "EO23"
+        ],
+        "scope": "本轮任务相关研究综合",
+        "limits": "不表示消费者效果、客户批准或已选策略",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-ASSET",
+        "title": "保留资产，识别与偏好仍需另核",
+        "text": "青色与山形是约束；竞品也使用植物和山形线索，是否独特、是否被目标人群喜欢尚无测量。",
+        "factIds": [
+          "D-ASSET",
+          "C-RANG-OBS",
+          "C-INIKIN-OBS"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "C-S02",
+          "C-S03"
+        ],
+        "scope": "本轮任务相关研究综合",
+        "limits": "不表示消费者效果、客户批准或已选策略",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-F-PROOF",
+        "title": "先有真实产品信息，才能解释差别",
+        "text": "茶种、配料及可证明的风味信息是后续表达依据，未知内容保持待补。",
+        "factIds": [
+          "D-INFO",
+          "C-RANG-REASON",
+          "C-INIKIN-REASON",
+          "C-CHUN-REASON"
+        ],
+        "sourceIds": [
+          "BRIEF",
+          "C-S01",
+          "C-S03",
+          "C-S04"
+        ],
+        "scope": "本轮任务相关研究综合",
+        "limits": "不表示消费者效果、客户批准或已选策略",
+        "kind": "synthesis"
+      },
+      {
+        "id": "R4-L-PEOPLE",
+        "title": "茶味需要被理解",
+        "text": "工作相关选择因素与无糖茶信息诉求形成有条件连接。",
+        "factIds": [
+          "R4P08",
+          "R4P18",
+          "R4P19"
+        ],
+        "sourceIds": [
+          "EO23",
+          "IP26"
+        ],
+        "scope": "本轮任务相关研究综合",
+        "limits": "不表示消费者效果、客户批准或已选策略",
+        "kind": "synthesis"
+      }
+    ],
+    "gapIndex": [
+      {
+        "id": "R4-G-PRODUCT",
+        "title": "本品事实",
+        "text": "具体茶种、配方、工艺、口感、背标、实物瓶型和资产源文件待提供。",
+        "consequence": "不能确定青屿的产品差别与可写主张。"
+      },
+      {
+        "id": "R4-G-TARGET",
+        "title": "目标人群与审美",
+        "text": "未取得当前中国25至34岁办公者与无糖茶的直接交叉画像、审美和真实选择事件。",
+        "consequence": "保留品类与工作情景参照，不补成目标人群统一偏好。"
+      },
+      {
+        "id": "R4-G-PRICE",
+        "title": "同期渠道价格",
+        "text": "代表价格为历史报道与品牌投稿，当前同款同渠道价格及部分包装版次未核齐。",
+        "consequence": "不构成2026现价排名或目标价接受度。"
+      },
+      {
+        "id": "R4-G-EFFECT",
+        "title": "实际寻找与理解",
+        "text": "未开展冷柜、货架或商品缩略图的目标用户测试。",
+        "consequence": "可见表达不是已测注意、理解、偏好或购买效果。"
+      }
+    ]
+  }
+}

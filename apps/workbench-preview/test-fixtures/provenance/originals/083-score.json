@@ -1,0 +1,334 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "copy",
+  "model_id": "gpt-6-astra",
+  "packet_version": "r2",
+  "report_id": "r2-copy",
+  "input_hashes": {
+    "inputs/CALIBRATION.md": "9daea2e3cca39b478107cf7a5137a7553e9fb46594baaf66e43c4c90b8edf870",
+    "inputs/CALIBRATION-ADDENDUM.md": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc",
+    "packets/r2/first-copy.md": "2fb4025fb84b85e29288f3be130bc6191830899cffb94b7b5608a77f2072f3bf",
+    "reviews/r2-copy/first-read.json": "01137e5b18f93a090283a15e82596355c6034397f0dd0698487cd49a2a129068",
+    "packets/r2/SCORE-INSTRUCTIONS.md": "d984dcfbd88420cc6ced1608897b4d8b6632947d7ab6d063c3cd5862fcd1d787",
+    "packets/r2/FACTS.md": "2b4cda986d14436cc033e27b40a771d73ccdeb0af959f41ffeb5762e93c0d184",
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50",
+    "v2/RESPONSE.json": "1943ed32123471d74e9614b6f15431032fbc964c0933d66422041700ca26a504",
+    "reviews/r1-copy/score.json": "2c4d12f468730f20f5f5b4d30076a478ca8bcf7b1677fc05f8f685ebad593c23"
+  },
+  "first_read": {
+    "path": "reviews/r2-copy/first-read.json",
+    "sha256": "01137e5b18f93a090283a15e82596355c6034397f0dd0698487cd49a2a129068",
+    "verification": "三案的读者动作在封存首读中均已出现。核验将泉水表述限定在虚构配方用料，未将初读感受当作真人反馈。"
+  },
+  "items": [
+    {
+      "id": "n7",
+      "scores": [
+        {
+          "dimension_id": "proposition",
+          "group": "direction",
+          "dimension": "主张成立",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。”这两个答案让初次接触两个名字的人也能复述品牌和用料。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "mechanism_difference",
+          "group": "direction",
+          "dimension": "同组创意机制差异",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“两张名片”要求读者认出两个名字的身份。k4 的“喝一口就算到了”需要想象，v2 的“就想起你”需要一段共同往事，这里都用不上。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "chinese_rhythm",
+          "group": "copy",
+          "dimension": "中文表达与节奏",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“一瓶无糖茶，两张名片”用一、二分成两拍。副文两次先叫名字再报身份，读起来整齐，末尾“泉水／用到的水”略显钝重。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "line_collaboration",
+          "group": "copy",
+          "dimension": "主副文协作",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "主文只给数量，副文依次翻出“青屿”和“虎跑泉水”两张名片。首读中一度以为要介绍两个牌子，到“用到的水”即能分清。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "r2-copy-n7-p1",
+          "claim": "两项身份完整落在同一瓶茶上。",
+          "evidence": "“青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。”"
+        }
+      ],
+      "issues": [
+        {
+          "id": "r2-copy-n7-i1",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "evidence": "“两张名片”单看并不知道是谁的名片，首读短暂预期两个品牌。",
+          "suggested_action": "在瓶样上核对两句能否同读，再判断是否需要改标题。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "本地包装文字概念，同组三案，文案岗位。",
+      "limits": "限完整主副文。配方用水沿用任务设定，比例、茶种及实际消费者识别率未知。"
+    },
+    {
+      "id": "k4",
+      "scores": [
+        {
+          "dimension_id": "proposition",
+          "group": "direction",
+          "dimension": "主张成立",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“鼠标放一放”有可以执行的第一步，“工位上拧开”让人留在原地，“喝一口就算到了”说明这趟短途如何完成。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "mechanism_difference",
+          "group": "direction",
+          "dimension": "同组创意机制差异",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“去趟虎跑”把水名当目的地，请读者亲手完成一次茶歇。另两案分别报名字和捎茶，不需要把地理上的距离想象成一口茶。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "chinese_rhythm",
+          "group": "copy",
+          "dimension": "中文表达与节奏",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“放一放／去趟”听得出招呼人的语气。“工位上拧开青屿无糖茶。茶里用到了虎跑泉水”读得稍慢，末尾“就算到了”接回最初的玩笑。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "line_collaboration",
+          "group": "copy",
+          "dimension": "主副文协作",
+          "score": 5,
+          "status": "scored",
+          "required": true,
+          "evidence": "中性基准把产品事实交代清楚。这里同一个“虎跑”先是想去的地方，接着是拧开这瓶茶的理由；“喝一口就算到了”还能反过来改变对主文的理解。相较 n7 简明地报两个身份，多了一次有文字凭据的转折。代价是单看标题仍像约人出门。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "r2-copy-k4-p1",
+          "claim": "开头的邀请在末尾有回音。",
+          "evidence": "“去趟虎跑”呼应“喝一口就算到了”，匿名首读能从实地邀约转到工位上的想象。"
+        }
+      ],
+      "issues": [
+        {
+          "id": "r2-copy-k4-i1",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "evidence": "“去趟虎跑”也可被理解为实际出游，工位和抵达都在副文。",
+          "suggested_action": "版面打样时检查工位和结尾是否紧跟主文。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "本地包装文字概念，同组三案，文案岗位。",
+      "limits": "只判文字中的玩笑可理解。是否觉得有趣、愿意照做或购买均未知。"
+    },
+    {
+      "id": "v2",
+      "scores": [
+        {
+          "dimension_id": "proposition",
+          "group": "direction",
+          "dimension": "主张成立",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "上回两个人去过虎跑，这回“看见这名字，就想起你”，同一地名给了选这瓶茶的理由。全句落在一个人挑茶送另一个人的具体情形上。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "mechanism_difference",
+          "group": "direction",
+          "dimension": "同组创意机制差异",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“你带我去”与“我给你带茶”让两个人互换动作。k4 虽也去虎跑，却在眼下工位想象抵达；n7 则只要求认得名字。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "chinese_rhythm",
+          "group": "copy",
+          "dimension": "中文表达与节奏",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "“上回／这回”“你带我／我给你带”念起来有应答。“这瓶青屿无糖茶用到了虎跑泉水”稍像念瓶签，“看见这名字，就想起你”又接回递茶人的声音。一段话能说完，居中一句仍比两头生硬。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "line_collaboration",
+          "group": "copy",
+          "dimension": "主副文协作",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": "先交代“你带我去虎跑”，副文里的“虎跑泉水”因此具有私人来历，末句“想起你”回答为什么今天带茶。两个名字相邻带来一瞬指代犹豫，首读仍能从旧游找回所指。",
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "r2-copy-v2-p1",
+          "claim": "配方里这个名字参与了送茶人的选择。",
+          "evidence": "“上回你带我去虎跑”给出共有地名，“用到了虎跑泉水。看见这名字，就想起你”把回忆接到这瓶茶。"
+        }
+      ],
+      "issues": [
+        {
+          "id": "r2-copy-v2-i1",
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "evidence": "“这瓶青屿无糖茶用到了虎跑泉水。看见这名字”里出现了两个名字；中间的产品全称也让送茶人短暂像在介绍商品。",
+          "suggested_action": "随茶留言打样可试读代词和完整品名，观察听者能否在“这名字”处紧接到虎跑。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "本地包装文字概念，同组三案，文案岗位。",
+      "limits": "适用于共享虎跑旧游的虚构对话。人物关系、经历普遍性及真实送礼意愿无依据。"
+    }
+  ],
+  "previous_issues": [
+    {
+      "issue_id": "n7-i1",
+      "item_id": "n7",
+      "status": "closed",
+      "evidence": "旧“有名有姓”可能指名气。新句直说“虎跑泉水，是这瓶茶用到的水”，首读只短暂误猜为两个牌子，没有读出名气给产品增值。新歧义另记。"
+    },
+    {
+      "issue_id": "k4-i1",
+      "item_id": "k4",
+      "status": "deferred",
+      "evidence": "“鼠标放一放，去趟虎跑”仍能单读作邀约，“工位上拧开”与“喝一口就算到了”足以在两句同读时澄清。主文在实物上能否独立出现，留到打样核对。"
+    },
+    {
+      "issue_id": "v2-i1",
+      "item_id": "v2",
+      "status": "closed",
+      "evidence": "旧稿以配方说明结束。新版“看见这名字，就想起你”让当事人接着对受赠人说完。中间产品全称还有瓶签口气，但整段讲话的对象和收束已经清楚。"
+    },
+    {
+      "issue_id": "v2-i2",
+      "item_id": "v2",
+      "status": "closed",
+      "evidence": "“上回你带我去虎跑”交代往事，“看见这名字，就想起你”交代触发。匿名首读能复述因由，配方信息已参与送茶选择。"
+    }
+  ],
+  "pairwise": [
+    {
+      "comparison_ids": [
+        "n7",
+        "k4"
+      ],
+      "distinction": "认名字与在工位想象短途。",
+      "swap_ab": "“两张名片”后接“工位上拧开”仍给出品牌与水名，但“就算到了”回答的是原文没问的目的地。",
+      "swap_ba": "“去趟虎跑”后接“是这瓶茶用到的水”能猜到为何去虎跑，却看不到工位上喝一口怎样完成这次出行。"
+    },
+    {
+      "comparison_ids": [
+        "n7",
+        "v2"
+      ],
+      "distinction": "把水名当作待介绍的身份，与把水名当作两人的共同记忆。",
+      "swap_ab": "“两张名片”接“用到了虎跑泉水”仍可对出两个名字，“就想起你”突然多出一位没介绍的人。",
+      "swap_ba": "“上回你带我去虎跑”接“是这瓶茶用到的水”也足以暗示送茶因由，但从当面递茶变成指给人看两个名字，缺了说出挂念的那一句。"
+    },
+    {
+      "comparison_ids": [
+        "k4",
+        "v2"
+      ],
+      "distinction": "即时、独自的茶歇与事后、对人的回忆。",
+      "swap_ab": "“鼠标放一放，去趟虎跑”接“看见这名字，就想起你”，虎跑一词能接上，喝茶者怎样在工位上到达却没有下文。",
+      "swap_ba": "“这回换我给你带茶”接“喝一口就算到了”仍可以解释为邀你重游。新意思说得通，但“工位上拧开”指定了对方喝茶的场景，也失去了挑茶人当时想起谁的理由。"
+    }
+  ],
+  "set_decision": "pass",
+  "set_reason": "三案交给读者的分别是一对身份、一次可照做的茶歇、一句给特定对象的捎茶口信。文案岗位十二项皆达文字概念阶段基准。v2 的送茶缘由与说话对象已经能从当前句子读出。",
+  "limits": "同组文字判断。当前用水前提取自虚构产品任务，未证具体茶种、用水比例与来源凭据，未验证版面、记忆、消费者感受及购买。"
+}

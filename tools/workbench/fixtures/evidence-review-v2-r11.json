@@ -1,0 +1,1802 @@
+{
+  "label": "Actual R11 v2 invocation and original reviewer response retained for byte regression; historical blocking outcome unchanged",
+  "input": {
+    "artifactId": "af3459d1-fcd3-4d78-a176-9b5b94febb36",
+    "contentHash": "d05babcce657b8bf7ebf2656163279b41a1123013dcae38e4b82503ec75df02a",
+    "content": {
+      "outputKind": "research_findings",
+      "status": "complete",
+      "title": "得闲社交型白酒包装调研草案",
+      "summary": "已形成同用途案例、历史用户背景与已审阅视觉参考的有界比较，可用于确定后续包装测试问题，尚不足以选定创意主题、瓶型、容量或度数。complete仅表示本次草案生成完成，所有事实与推断仍需后续独立核验，不代表研究充分或阶段批准。",
+      "sections": [
+        {
+          "heading": "项目依据与证据边界",
+          "body": "沿用已确认需求：品牌为“得闲”，面向约25岁的年轻人社交饮用，交付包装创意与完整静态提案。“轻型”指轻松社交、轻负担的品牌表达；度数未定，不转化为低酒精度或生理功效承诺。两项同用途案例仅在已登记的页面与图片对应范围内作直接比较；其来源自述仍需归因。其他文字记录作为背景，独立视觉记录仅作外观参考。",
+          "evidenceIds": [
+            "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+            "case_aac90674-e924-4a33-aee0-ed0b36bdbac9"
+          ]
+        },
+        {
+          "heading": "同用途比较：图形表达与组合表达",
+          "body": "凤凰网捕获文章将小郎酒涂鸦版列为2022年主题款，并描述好友相聚用途；对应已审阅横幅左侧瓶体可见蓝色主体、白框标签与红色涂鸦字形。古一设计发布的文章则将台乡窖三酉描述为可组合、围绕好友下班小酌的包装。两者提供了不同研究切口：前者考察单瓶图形识别，后者考察组合关系与聚饮情境的理解。此比较用于决定测试哪些表达机制，不证明任何机制更受25岁人群欢迎。三酉的版次、设计及上市时间未知；其组合与容量描述属于作者自述，本轮没有对应的独立视觉条目可用于细节分析。",
+          "evidenceIds": [
+            "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+            "case_aac90674-e924-4a33-aee0-ed0b36bdbac9",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05"
+          ]
+        },
+        {
+          "heading": "视觉参考：固定识别区与变化区",
+          "body": "已审阅的江小白字样供图中，三个瓶状物共同使用蓝底白字上部标签，下部场景图形与色彩分别变化；小郎酒参考则在蓝色瓶体正面叠加白框标签和红色涂鸦字形。可比较的机制是：前者以固定区域维持系列联系、以变化区域区分画面；后者以瓶体底色和叠加图形形成视觉层次。对得闲，这提示后续应测试品牌名能否在变化图形中保持可读，以及不同款能否被识别为同一系列。江小白供图身份、版次与年份未经核实，仅作视觉参考；横幅背景与大标题不作为包装本体特征。",
+          "evidenceIds": [
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f02",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t01",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05"
+          ]
+        },
+        {
+          "heading": "视觉参考：外盒陈列与瓶体层次",
+          "body": "红色盒装参考在中下部呈现五个相似物件及浅色对应凹槽，盖面右下可读“净含量:100ml×5”；另一供图中央则呈现暗红色长方体瓶状物和透明外观的多层方形上部。前者可用于研究外盒内的排列、取放与数量信息，后者可用于研究瓶体轮廓和层次对识别的影响。两者分别提示外盒与单瓶需要不同测试视图，不能仅凭效果图判断便携、握持或开瓶表现。文字只是图面转录，透明外观不能确认材料，两张参考均不能证明与得闲用途相同。",
+          "evidenceIds": [
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf002",
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf004",
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx004",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f07"
+          ]
+        },
+        {
+          "heading": "用户背景：先验证情境与信息任务",
+          "body": "2024年报道摘录称“超7成年轻人喜欢与亲密好友喝酒”，但不能作为全体年轻人或25岁人群的总体比例。2023年腾讯报告以95后职场新人画像描述同事聚餐、商务交往及熟悉品牌选择；2019年报告的一条95后用户引语提到白酒系列与口味难区分。2023年包装相关摘录还涉及购买时检查包装，以及特定价位组对特色、亮眼包装的期望。这些历史材料适合生成访谈问题：谁买酒、和谁喝、如何判断产品差异、包装需要解释哪些信息；不能直接确定配色、瓶型或价格。",
+          "evidenceIds": [
+            "dexian-user-huaxia-r4",
+            "tencent-baijiu-user-primary-r6",
+            "tencent-baijiu-social-adults-2023-r7",
+            "tencent-packaging-choice-primary-2023-r9"
+          ]
+        },
+        {
+          "heading": "规格背景与下一步决策",
+          "body": "泸小二页面摘录列出42%vol、52%vol及500ml、250ml；高光页面摘录列出38%vol、40.9%vol、52%vol及500ml，并自述简约瓶身、极光绿与锤纹瓶肩。这些仅构成各自产品记录的规格与表达背景，不是得闲的参数依据，也没有高光图片可供本轮视觉比较。下一步先补足目标用户与使用流程证据，再决定单瓶或组合装、信息层级、容量与结构测试范围；本阶段不选创意主题或口号。",
+          "evidenceIds": [
+            "B06-excerpt-r2",
+            "B09-excerpt-r2"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "text": "捕获的凤凰网文章将小郎酒涂鸦版列入2022年主题款，并将主题款与好友相聚联系。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "case_7fa7ccfb-e384-461a-992f-280af79b94f4"
+          ],
+          "limitations": [
+            "仅为来源记述，待独立核验；身份检查仅确认捕获页面与图片对应。",
+            "不证明实际销量、消费者偏好或完整上市日期。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "已审阅横幅左侧瓶体可见蓝色主体、白框标签和红色涂鸦字形。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05"
+          ],
+          "limitations": [
+            "限横幅左侧可见区域及所供视角，待独立复核；不证明材质或包装实物效果。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "古一设计文章将台乡窖三酉描述为可组合、围绕好友下班小酌的白酒包装。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "case_aac90674-e924-4a33-aee0-ed0b36bdbac9"
+          ],
+          "limitations": [
+            "作者自述待独立核验；身份对应不认证来源真实性。",
+            "版次及设计、上市时间未知；奖项年份不能替代产品时间。",
+            "不据此确认实物组合功能、容量适宜性或获奖真实性。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "小郎酒与三酉可分别提供单瓶图形识别、组合关系与聚饮情境理解的测试切口。",
+          "kind": "inference",
+          "evidenceRefs": [
+            "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+            "case_aac90674-e924-4a33-aee0-ed0b36bdbac9",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05"
+          ],
+          "limitations": [
+            "研究者判断，待独立验证；不是效果排序或25岁人群偏好结论。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "江小白字样供图的三个瓶状物共同使用蓝底白字上部标签，下部场景图形和色彩有所变化。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f02",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t01"
+          ],
+          "limitations": [
+            "限三个瓶状物正面可见区域，待独立复核。",
+            "文字辨读不认证品牌、SKU、版次或年份。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "固定标签区域与变化图形区域、瓶体底色与叠加图形，可作为系列识别及品牌名可读性的对比测试变量。",
+          "kind": "inference",
+          "evidenceRefs": [
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f02",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05"
+          ],
+          "limitations": [
+            "视觉机制解释属于研究者判断，待独立验证。",
+            "不证明实际识别效率、偏好或销售效果。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "红色盒装供图中下部可见五个相似物件和浅色对应凹槽，盖面右下文字可读为“净含量:100ml×5”。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf002",
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf004",
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx004"
+          ],
+          "limitations": [
+            "沿用所供像素审阅，待独立复核；最右侧物件仅部分可见。",
+            "仅转录图面文字，不认证实际容量、SKU、材料或用途。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "另一供图中央可见暗红色长方体瓶状物，上部为透明外观的多层方形结构。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f07"
+          ],
+          "limitations": [
+            "限中央前景可见外观，待独立复核；不确认品牌、材质、尺寸或生产可行性。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "外盒排列与单瓶轮廓需要分别通过取放、信息识别及握持测试评估。",
+          "kind": "inference",
+          "evidenceRefs": [
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf002",
+            "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf004",
+            "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f07"
+          ],
+          "limitations": [
+            "测试建议待独立验证；供图不能建立便携、取放、握持或开瓶性能。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "2024年报道摘录称“超7成年轻人喜欢与亲密好友喝酒”。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "dexian-user-huaxia-r4"
+          ],
+          "limitations": [
+            "二手报道陈述待独立核验；抽样与代表性不明。",
+            "不外推全体年轻人或精确25岁人群，不证明包装偏好。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "2023年腾讯报告摘录以95后职场新人画像描述同事聚餐、商务交往及熟悉品牌选择。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "tencent-baijiu-social-adults-2023-r7"
+          ],
+          "limitations": [
+            "报告画像与分析待独立核验，不视作已验证个人或人群比例。",
+            "研究不含未满18岁人群；不是精确25岁研究或2026年趋势证据。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "2019年腾讯报告的一条绵阳95后用户引语提到白酒系列与口味难区分；其定量研究标注1303样本，20至59岁范围对应定性访谈。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "tencent-baijiu-user-primary-r6"
+          ],
+          "limitations": [
+            "历史报告与引语待独立核验。",
+            "不能将定性年龄范围套用于全部定量样本；单条引语不能推定普遍比例。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "2023年包装相关报告摘录涉及线下购买时检查包装，并对101至500元及百元内价位组提及特色、亮眼的包装期望。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "tencent-packaging-choice-primary-2023-r9"
+          ],
+          "limitations": [
+            "报告分组总结待独立核验；不是25岁分组或包装效果实验。",
+            "得闲价格未定，不能直接套用其中一个价位组，也不引用未提供的渠道比例。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "这些用户背景适合用于询问购买角色、聚饮关系、产品差异判断及包装信息任务，尚不足以指定视觉风格或参数。",
+          "kind": "inference",
+          "evidenceRefs": [
+            "dexian-user-huaxia-r4",
+            "tencent-baijiu-user-primary-r6",
+            "tencent-baijiu-social-adults-2023-r7",
+            "tencent-packaging-choice-primary-2023-r9"
+          ],
+          "limitations": [
+            "访谈方向属于研究者判断，待独立验证。",
+            "2019、2023、2024年资料不能确立2026年目标人群偏好。"
+          ],
+          "verification": "pending"
+        },
+        {
+          "text": "泸小二页面摘录列出42%vol、52%vol及500ml、250ml；高光页面摘录列出38%vol、40.9%vol、52%vol及500ml，并自述简约瓶身、极光绿与锤纹瓶肩。",
+          "kind": "fact",
+          "evidenceRefs": [
+            "B06-excerpt-r2",
+            "B09-excerpt-r2"
+          ],
+          "limitations": [
+            "捕获页面自述待独立核验，发布日期不明。",
+            "摘录未明确列出每种度数与容量的SKU对应关系。",
+            "高光未提供已审阅产品图片，不将文字自述当作像素观察。",
+            "不能据此确定得闲的容量、度数或风格。"
+          ],
+          "verification": "pending"
+        }
+      ],
+      "gaps": [
+        "缺少精确覆盖约25岁成年社交饮用者的包装研究，需记录地区、招募方式、样本构成及购买者与饮用者关系。",
+        "缺少目标用户对品牌名可读性、系列识别、包装特色及轻松社交表达的对比测试；尚不能选定创意主题或口号。",
+        "缺少实际携带、取放、开瓶、分饮与重封的观察证据，不能将这些环节写成已证实痛点。",
+        "得闲价格、容量、度数、单瓶或组合装及销售渠道待决策；应结合使用任务和供应条件确定。",
+        "缺少包装正背侧面、开合状态、尺寸、材料与结构资料，以及实物功能和生产可行性验证。",
+        "三酉版次及设计、上市时间未知，本轮无对应的独立已审阅视觉条目；不能作有日期、版次的外观细节比较。",
+        "其他视觉参考的来源身份、SKU、时间及同用途关系未确立；保持视觉参考用途。",
+        "全部捕获文字的真实性与适用性、视觉观察及机制推断仍需后续独立核验；身份对应检查不替代来源认证。",
+        "现有历史资料不足以建立2026年行业趋势或目标人群总体比例，亦不构成研究充分性或发布批准。"
+      ],
+      "evidenceClassifications": [
+        {
+          "sourceId": "B06-excerpt-r2",
+          "scopeRelation": "background",
+          "reason": "保留背景用途：仅引用捕获摘录中的规格，不建立同用途比较、消费者偏好或得闲参数。",
+          "suppliedScopeRelation": "background",
+          "sourceVerification": "captured"
+        },
+        {
+          "sourceId": "B09-excerpt-r2",
+          "scopeRelation": "background",
+          "reason": "保留背景用途：规格与包装表达均为页面自述；没有已审阅图片，不能作为视觉发现。",
+          "suppliedScopeRelation": "background",
+          "sourceVerification": "captured"
+        },
+        {
+          "sourceId": "dexian-user-huaxia-r4",
+          "scopeRelation": "background",
+          "reason": "保留背景用途：2024年二手报道仅生成亲密好友情境问题，不外推总体比例或25岁包装偏好。",
+          "suppliedScopeRelation": "background",
+          "sourceVerification": "captured"
+        },
+        {
+          "sourceId": "tencent-baijiu-user-primary-r6",
+          "scopeRelation": "background",
+          "reason": "保留背景用途：2019年方法摘录与单条用户引语支持信息识别问题的探索，不代表当前普遍需求。",
+          "suppliedScopeRelation": "background",
+          "sourceVerification": "captured"
+        },
+        {
+          "sourceId": "tencent-baijiu-social-adults-2023-r7",
+          "scopeRelation": "background",
+          "reason": "保留背景用途：2023年成年95后画像仅用于社交情境假设，不证明精确25岁人群偏好或购买角色。",
+          "suppliedScopeRelation": "background",
+          "sourceVerification": "captured"
+        },
+        {
+          "sourceId": "tencent-packaging-choice-primary-2023-r9",
+          "scopeRelation": "background",
+          "reason": "保留背景用途：2023年渠道与价位分组陈述用于包装检查及识别任务探索，不直接指定得闲定位或视觉风格。",
+          "suppliedScopeRelation": "background",
+          "sourceVerification": "captured"
+        },
+        {
+          "sourceId": "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+          "scopeRelation": "direct",
+          "reason": "已登记identity_checked且用途为same_use，仅在捕获页面与对应图片的年轻化社交白酒包装比较中保留直接用途。2022年为页面记述；身份检查不认证来源、销量、偏好或实物性能。",
+          "suppliedScopeRelation": "direct",
+          "sourceVerification": "captured"
+        },
+        {
+          "sourceId": "case_aac90674-e924-4a33-aee0-ed0b36bdbac9",
+          "scopeRelation": "direct",
+          "reason": "已登记identity_checked且用途为same_use，仅对好友下班小酌包装的作者描述保留直接比较。版次及产品时间未知，不能用奖项年份替代；不认证来源、获奖、实物功能或消费者认可。",
+          "suppliedScopeRelation": "direct",
+          "sourceVerification": "captured"
+        }
+      ]
+    },
+    "taskCard": {
+      "id": "dexian-packaging-v1:scope:2",
+      "brief": "{\n  \"confirmed\": {\n    \"deliverable\": \"包装创意与完整静态提案\",\n    \"product\": \"得闲年轻化社交型轻型白酒\",\n    \"targetAge\": 25,\n    \"scenario\": \"年轻人社交饮用\",\n    \"brand\": \"得闲\",\n    \"researchScope\": \"同用途包装、社交使用体验及25岁人群包装偏好，行业趋势仅限与新品定位有关的内容\",\n    \"lightDefinition\": \"轻松社交、轻负担的品牌表达\"\n  },\n  \"unknowns\": {\n    \"primaryPerspective\": \"社交饮用者\",\n    \"purchaseRole\": \"未确定是否本人购买\",\n    \"alcoholContent\": \"度数未定\"\n  },\n  \"userConfirmation\": \"产品的品牌名字叫：“得闲”，其他确认；轻松社交、轻负担的品牌表达，度数未定\",\n  \"interpretationLimits\": [\n    \"轻型是品牌表达，不自动等同低酒精度，不作健康、低负担生理功效承诺\"\n  ]\n}",
+      "createdBy": "user:marc"
+    },
+    "taskCardConfirmed": true,
+    "sourceRecords": [
+      {
+        "id": "B06-excerpt-r2",
+        "url": "https://www.lzlj.com/brand/erqu/11734.html",
+        "text": "泸小二精酿\n度数\n42%vol 52%vol\n规格\n500ml 250ml\n产品名称轻松上口、拟人趣味化。",
+        "scopeRelation": "background",
+        "reason": "官方产品页短摘录。仅用作同品类规格和命名表达背景，不代表25岁消费者偏好或得闲定位。2026-10-24读取；原页未标注发布日期。",
+        "verification": "captured"
+      },
+      {
+        "id": "B09-excerpt-r2",
+        "url": "https://www.lzlj.com/brand/gaoguang/3783.html",
+        "text": "高光\n度数\n38%vol 40.9%vol 52%vol\n规格\n500ml\n简约瓶身，让体验回归内在纯粹品质。极光绿新锐色彩，尽显美学品味。锤纹瓶肩，似历经千锤百炼，质感不凡。",
+        "scopeRelation": "background",
+        "reason": "官方品牌自述，仅为包装表达背景；不是用户测试。2026-10-24读取，未观察产品图片。",
+        "verification": "captured"
+      },
+      {
+        "id": "dexian-user-huaxia-r4",
+        "url": "https://www.shm.com.cn/szb/hxjb/paper/pc/content/202412/10/content_210479.html",
+        "text": "白酒的未来在青年，如何深耕年轻人市场？\n2024年12月10日\n本报记者 刘雪霞 发自北京\n超7成年轻人喜欢与亲密好友喝酒",
+        "scopeRelation": "background",
+        "reason": "专业行业媒体对后浪研究所原调查的二手报道。2024-12-10。为亲密好友相聚这一候选情境提供专业报道旁证，可用于后续访谈提问；不足以直接指定瓶型、视觉风格或价格。 限制：未见25岁独立分组。；样本招募及代表性未知，不能把超7成作为全体年轻人的总体比例。；亲密好友偏好并非包装偏好实验证据，也不能确认受访者由谁购酒。 2026-10-24重新读取原页面，正文标题、日期、记者署名与摘录一并保留。机构归属来自网页，不将未收入摘录的信息直接作为论断。",
+        "verification": "captured"
+      },
+      {
+        "id": "tencent-baijiu-user-primary-r6",
+        "url": "https://file.tencentads.com/files/pdf/2019/10/d45e1bd7b0014ad197658e74a11cdf69/2019%E7%99%BD%E9%85%92%E8%A1%8C%E4%B8%9A%E6%95%B0%E5%AD%97%E5%8C%96%E5%8F%91%E5%B1%95%E6%B4%9E%E5%AF%9F%E6%8A%A5%E5%91%8A.pdf",
+        "text": "2019白酒行业\n数字化发展洞察报告\n研究方法和数据说明\n消费者\n定性访谈\n• 访谈时间：2019年9月\n• 调研形式：座谈会+消费者深访\n• 消费者覆盖：20-59岁的饮酒人群，覆盖一至三\n线城市\n腾讯调研\n平台线上\n定量调研\n• 调研时间：2019年9月-10月\n• 样本量：1303样本\n• 覆盖城市：覆盖全国一至五线城市\n• 调研对象：白酒消费人群及潜在消费人群，其\n他酒类消费人群\n“白酒的系列多，口味不同，分不清区别，需要上网查找对比。”\n——绵阳中低端白酒用户，95后",
+        "scopeRelation": "background",
+        "reason": "2026-10-25再次实际web打开腾讯广告官方原PDF；text仅收录原PDF的标题、方法事实和单条消费者引语/归属，保留解析行内断字，没有把研究者判断混入正文。因PDF多栏解析顺序，将方法类别标题与其项目排列在一起以免类别误配；不是整页连续摘录。来源定位：印刷第1页标题；第4页方法，web原文L48–61（保留消费者访谈与线上定量，省略专家访谈/营销大数据方法）；第32页原话与归属L811–812（省略其他用户引语及报告解读）。1303是定量样本，20–59岁是定性访谈范围，不能合并成1303名20–59岁，也未公开95后子样本量/深访人数。单条95后绵阳访谈支持存在识别障碍，不能推定25岁全国用户普遍比例或包装效果。此次未把第35页扫码图表摘入text，因此不得单靠此记录引用扫码74%或详细分组。2019历史证据。状态仅captured，不是verified。",
+        "verification": "captured"
+      },
+      {
+        "id": "tencent-baijiu-social-adults-2023-r7",
+        "url": "https://file.tencentads.com/files/pdf/2023/4/f5dcb0c1b7f343978dc6cb79498c96ce.pdf",
+        "text": "《2023年中国白酒行业消费白皮书》\n典型细分人群2：95年后出生的职场新人\n进入工作后，唐先生希望能够更好融入到工作中，也经常下班后与同事们一起聚餐聊天，增进彼此的距离；同时，随着工作的开展，也需要经常与不同的合作公司建联，也必不可少会增加一些商务场景的用酒饮酒，逐渐他也习惯了以白酒为主要社交用酒的模式。\n在自己组织的聚餐、商务活动中，他更倾向选择品牌口碑好、身边人都在使用、到处能看到宣传、大家都熟知的品牌\n渴望获得步入社会/成熟标志的认同、希望更好地融入到社交活动和社交圈子是使用白酒的主要驱动\n帮助打开话匣子\n本次研究不含未满18周岁的人群。\n数据来源：2023年腾讯白酒行业消费者定量研究（N~1,500+）",
+        "scopeRelation": "background",
+        "reason": "2026-10-25实际从腾讯官方域名下载原PDF，本地保存research-round6/tencent-2023-original.pdf。正文为PDF物理页43和45有界摘录，非连续段落；95后脚注1省略为紧随摘录的成人范围说明。页43是报告典型用户画像，不当作已核验个人或人群比例，页45是报告分析。物理页32另有购买渠道现场验真与包装检查的需求但未摘入，不能凭备注引用。样本只标N~1500+，未见完整招募/权重与95后子样本量；非精确25岁研究，不证明2026趋势、购买者与饮用者必同一人，不能直接推出容量/度数/价格/具体风格。用于相近成年用户社交认同、对熟悉品牌的顾虑和信息识别任务的有界假设。captured，不升级verified。",
+        "verification": "captured"
+      },
+      {
+        "id": "tencent-packaging-choice-primary-2023-r9",
+        "url": "https://file.tencentads.com/files/pdf/2023/4/f5dcb0c1b7f343978dc6cb79498c96ce.pdf",
+        "text": "《2023年中国白酒行业消费白皮书》\n31\n线下作为白酒消费者的首要购买渠道，源于其非常便利，尤其针对临时突发场合。\n再者，线下渠道对于消费者而言易于进行现场验真和产品包装检查。\n54\n101元至500元价位段的白酒更多用于节庆亲友聚会、宴席等。\n对包装期望有特色、亮眼。\n百元内白酒消费者认为口感最重要，香型和酒精度数要适合自己，价格要适中；更倾向选择口碑好、包装有特色、亮眼的白酒。\n数据来源：2023年腾讯白酒行业消费者定量研究（N~1,500+）",
+        "scopeRelation": "background",
+        "reason": "2026-10-25用pymupdf实际提取此前下载的腾讯官方原PDF，并渲染、目视核对物理第32页/印刷31页和物理第55页/印刷54页，PNG随本轮记录保存。text为三处非连续短摘录，依次来自页32渠道讨论、页55的101至500元段、页55百元以下段。报告来自腾讯营销洞察与中国酒业协会，页脚标注2023腾讯白酒行业消费者定量研究N~1500+，研究说明称兼用平台定量和深访，全文未见足够招募、权重和价位子样本量。价位分组并非25岁分组；得闲价格未定，不能择一个价位当作其定位。包装特色亮眼是报告的分组总结，并未隔离颜色/瓶型/字体或做包装效果实验。渠道文字支持购买时检查包装这一信息任务背景，不支持已经证实携带、开瓶、分饮、重封痛点。资料为2023历史，不是2026当前比例，不由此指定容量、度数、健康功效或买饮角色。短摘录不含比例，后续不得仅据此记录引用渠道比例/价位份额。状态captured，尚未经过工作台事实核验。 主执行者再次从原PDF提取核对，text扩充为带页码、价位及样本脚注的非连续原文摘录，避免把分组背景仅写在不可引用的reason中。摘录换行按阅读顺序整理，不改变措辞。",
+        "verification": "captured"
+      },
+      {
+        "id": "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+        "url": "https://finance.ifeng.com/c/8M5Si7mJguC",
+        "text": "2022小郎酒主题款三部曲，尽显青春、个性与时尚_凤凰网\n\n首页\n\n资讯\n\n视频\n\n直播\n\n凤凰卫视\n\n财经\n\n娱乐\n\n体育\n\n时尚\n\n汽车\n\n房产\n\n科技\n\n军事\n\n文化\n\n旅游\n\n佛教\n\n国学\n\n数码\n\n更多\n健康\n\n公益\n\n教育\n\n酒业\n\n美食\n\n财经 > 财经滚动新闻 > 正文\n\n2022小郎酒主题款三部曲，尽显青春、个性与时尚\n\n凤凰网财经\n\n下载客户端\n独家抢先看\n\n2022年12月27日 15:31:50 来自北京市\n\n经典与时尚交融，颜值与内涵并存。2022年，小郎酒陆续推出了主题款三部曲——虎威版、涂鸦版、圆虹版，三大主题款融合潮流，尽显个性、青春与时尚。三大产品一经发售，便引发抢购热潮。\n\n小郎酒虎威版——瓶身印制虎头与古钱币纹样，温暖的橙色瓶身，活力四射，交错编织老虎与古钱币图案，充满祝福与美好。\n\n小郎酒涂鸦版——融入强烈的颜色，蓝色瓶身、红色涂鸦LANG的设计，展现年轻人对“独立自由，随性洒脱”的热爱追求。\n\n小郎酒圆虹版——包装源自全新设计、绚丽色彩，乳白色的瓶身，缀以色彩绚丽的12个不同样式的圆虹轮转，寓意岁月周而复始无有尽头，生活本应该如此多彩，人生理应缤纷多彩。\n\n在包装上，瓶嘴靠左的瓶体设计，独树一帜，100ml小瓶装和内外双盖的搭配设计，方便开盖直饮。长条礼盒装，颜值在线，精美便携，是礼中佳品。手提绳采用三股绳丝编织而成，柔软光滑，不勒手，简单又贴心。\n\n在酒体上，主题款三部曲源自兼香郎酒工艺独特的数字密码：2大核心产区，5种类型基酒，2种陈酿方式，7步勾调技艺。采用独有郎酒专利技术打造的小郎酒，既有酱香之雅，又有浓香之冽；既是精湛酿酒工艺的传承，也是中国浓酱兼香型白酒的代表。\n\n主题款三部曲颜值与口味并存，创意十足，非常适合拍照打卡，在与好友相聚时，畅聊青春，亦是相当惬意。\n\n不被定义的时尚、不被定义的颜值、不被定义的品牌，小郎酒主题款三部曲应时当令，赋予不同的美好寓意，也用行动诠释了“年轻，就是有无限可能。”",
+        "verification": "captured",
+        "scopeRelation": "direct",
+        "reason": "Same-use case correspondence independently checked against captured page and both images; assertions remain source-attributed.",
+        "identityStatus": "identity_checked",
+        "identityMeaning": "captured_page_image_correspondence_not_source_authentication",
+        "caseIdentity": {
+          "packetHash": "87b5f88216df7da53b3a9de1e915f423f590bc5f66ad1586f8d2111b994cbfbd",
+          "actualImageManifestHash": "7980b4d272fd9556d63360010052eb3a03ec3809ee8bf59910fc3d53d06ae49e",
+          "reportHash": "a524e9312d6c764f4bb2e773d0e43a36d536808ccb18014af091c06b200eb7a8",
+          "pageCaptureHash": "dce8d46ba3b6fb1dff1e22c30a1b535c71a4478a9475442a32fabf19e8496367",
+          "sourceImageCaptureHash": "86cc7fa14fa83e2b43df4fd4fd0c8fe856e4974e77bdd7a0fb7ae8a038df8d9a",
+          "sourceImageUrl": "https://x0.ifengimg.com/ucms/2022_53/5DA55FA05B3421420D196A3C870983567D2460EC_size59_w1080_h459.jpg",
+          "fields": {
+            "brand": {
+              "status": "supported",
+              "value": "小郎酒",
+              "reason": "页面明确命名小郎酒；两图瓶标与之相符。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "小郎酒涂鸦版——融入强烈的颜色，蓝色瓶身、红色涂鸦LANG的设计，展现年轻人对“独立自由，随性洒脱”的热爱追求。"
+                }
+              ],
+              "pixels": []
+            },
+            "product": {
+              "status": "supported",
+              "value": "小郎酒主题款白酒",
+              "reason": "页面将主题款归于小郎酒白酒产品，图中呈现对应瓶装产品。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "采用独有郎酒专利技术打造的小郎酒，既有酱香之雅，又有浓香之冽；既是精湛酿酒工艺的传承，也是中国浓酱兼香型白酒的代表。"
+                }
+              ],
+              "pixels": []
+            },
+            "edition": {
+              "status": "supported",
+              "value": "涂鸦版",
+              "reason": "页面明确描述涂鸦版的蓝瓶与红色LANG设计，与两图一致。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "小郎酒涂鸦版——融入强烈的颜色，蓝色瓶身、红色涂鸦LANG的设计，展现年轻人对“独立自由，随性洒脱”的热爱追求。"
+                }
+              ],
+              "pixels": []
+            },
+            "time": {
+              "status": "supported",
+              "value": "2022年推出（页面记述）",
+              "reason": "正文明确将涂鸦版列入2022年陆续推出的主题款；不以文章发布时间或采集时间代替产品日期。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "2022年，小郎酒陆续推出了主题款三部曲——虎威版、涂鸦版、圆虹版，三大主题款融合潮流，尽显个性、青春与时尚。"
+                }
+              ],
+              "pixels": []
+            },
+            "use": {
+              "status": "supported",
+              "value": "年轻化白酒包装与好友相聚社交场景",
+              "reason": "页面同时描述年轻化包装表达及好友相聚场景，足以支持用途对应。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "小郎酒涂鸦版——融入强烈的颜色，蓝色瓶身、红色涂鸦LANG的设计，展现年轻人对“独立自由，随性洒脱”的热爱追求。"
+                },
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "主题款三部曲颜值与口味并存，创意十足，非常适合拍照打卡，在与好友相聚时，畅聊青春，亦是相当惬意。"
+                }
+              ],
+              "pixels": []
+            }
+          },
+          "taskFit": {
+            "status": "same_use",
+            "reason": "任务研究年轻人社交饮用白酒的同用途包装；页面案例明确涉及年轻化白酒包装和好友相聚。用途相同不意味着品牌相同，也不证明25岁人群偏好。",
+            "refs": [
+              {
+                "location": "/taskCard/brief",
+                "quote": "\"researchScope\": \"同用途包装、社交使用体验及25岁人群包装偏好，行业趋势仅限与新品定位有关的内容\""
+              },
+              {
+                "location": "/taskCard/brief",
+                "quote": "\"scenario\": \"年轻人社交饮用\""
+              },
+              {
+                "location": "/pageCapture/record/extraction/text",
+                "quote": "主题款三部曲颜值与口味并存，创意十足，非常适合拍照打卡，在与好友相聚时，畅聊青春，亦是相当惬意。"
+              }
+            ]
+          },
+          "imageMatch": {
+            "status": "supported",
+            "reason": "第一图黑边内的广告与第二图对应：蓝色砖墙、左侧偏置瓶嘴蓝瓶、红色LANG涂鸦及右侧标题和上线文字均一致。页面对涂鸦版的独特配色与图案描述亦吻合。",
+            "refs": [
+              {
+                "location": "/pageCapture/record/extraction/text",
+                "quote": "小郎酒涂鸦版——融入强烈的颜色，蓝色瓶身、红色涂鸦LANG的设计，展现年轻人对“独立自由，随性洒脱”的热爱追求。"
+              }
+            ],
+            "pixels": [
+              {
+                "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+                "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+                "region": "整图1280×720中的广告区域，约x100–1180、y130–590",
+                "observation": "蓝色砖墙背景；左侧蓝瓶带小郎酒瓶标和红色LANG涂鸦；右侧为“10月27日潮酷上线”“涂鸦小郎酒”。"
+              },
+              {
+                "imageId": "img_f8261880-8aa6-4f7f-8df2-97b9655147c0",
+                "imageSha256": "914bc227cf3b8c094137976a69ded9f3eb7ad39dd98d0d5c759ac5d3edd29293",
+                "region": "整图1080×459",
+                "observation": "与第一图广告区域构图对应；蓝瓶、白色刷痕、红色LANG涂鸦及右侧两组标题均匹配，区别为无外围黑边。"
+              }
+            ]
+          },
+          "limitations": [
+            "结论仅确认所提供捕获页面、嵌入图片与项目参考图的身份对应，不认证来源真实性。",
+            "页面支持2022年推出；图片显示10月27日上线，但不据此独立确认完整上市日期。",
+            "页面营销表述不构成实际生产、材料、物理性能、消费者偏好或销量的验证。",
+            "不证明25岁消费者认可、研究充分性或发布批准。",
+            "Identity checking establishes only reviewer-assessed correspondence among captured page text, its selected image and the supplied reference.",
+            "Captured text remains attributed source claims, not authenticated website truth, consumer evidence, material proof or release approval.",
+            "Unknown edition or time stays unknown and cannot support a version-specific or dated comparison."
+          ]
+        }
+      },
+      {
+        "id": "case_aac90674-e924-4a33-aee0-ed0b36bdbac9",
+        "url": "https://www.sohu.com/a/798606967_100018552",
+        "text": "来自深圳古一设计，八款斩获国际设计奖的酒包装设计案例分享_大奖_品牌_创意\n\n新闻\n\n体育\n\n汽车\n\n房产\n\n旅游\n\n教育\n\n时尚\n\n科技\n\n财经\n\n娱乐\n\n2026年10月26日 政府频道最新文章 政府频道最新文章\n\n来自深圳古一设计，八款斩获国际设计奖的酒包装设计案例分享\n\n古一设计机构\n\n文章\n\n总阅读\n\n查看TA的文章>\n\n来自深圳古一设计，八款斩获国际设计奖的酒包装设计案例分享\n\n2024-08-05 10:26\n发布于：广东省\n\n酒水穿新衣，设计找古一，大家好我是古小一，来自深圳的酒类品牌包装设计公司的小编！酒包装设计作为产品的外在表现，不仅仅是一个简单的外包装，更是传递品牌形象和价值观的重要媒介。酒包装设计在国际设计大奖中的获奖，其背后也是具有一定的商业价值，一个获得设计大奖的酒包装作品无疑具有更高的专业水准和创意力，以及对细节和质量的高度关注，不仅在审美上具备突出的优势，还能够有效传达品牌的价值观和故事，成为品牌的金字招牌，吸引更多消费者的关注和购买。同时，这也为品牌在国际舞台上树立了良好的形象，提升了品牌的知名度和美誉度，为品牌带来了商机和成长的机会。\n\n接下来就和大家分享我们古一团队打造的八款国际设计大奖的酒包装设计案例分享。\n\n▲台乡窖青春包装设计图\n\n斩获了2023年的if设计大奖以及2022年度的muse设计大奖。整个白酒包装设计也是具备了多个创意点：杯瓶合一、差异化容量、透明瓶身等等，都是产品设计的亮点所在，我们会看到整个酒瓶设计也是多功能，瓶盖设计成了酒杯，在瓶口融入鹰嘴设计瓶身就成为了分酒器。\n\n▲海伦司粉丝款啤酒包装设计图\n\n斩获了3项国际设计大奖：2021pentawards设计大奖、2021年度MARKING AWARDs最佳产品设计大奖、2022年度的muse设计大奖，整个酒瓶包装设计创意：整个酒瓶设计从酒馆粉丝外号海带出发设计，酒瓶造型就像水中摇曳的海带一样。\n\n▲领匠火炬白酒包装设计图\n\n斩获了2023年度的muse设计大奖，整个酒瓶设计成了火炬造型，整个酒瓶视觉上极具艺术感，螺旋式上升造型的瓶底设计，宛如激情的升腾一般，就像我们生命中的希望升起，加上独特的火焰盖头恰似一一支点燃的火炬。\n\n▲领匠赢家白酒包装设计图\n\n斩获了2023年度的muse设计大奖，整个酒瓶包装设计创意：整个酒瓶设计成奖杯超级符号，正所谓做自己的人生赢家，赢取属于自己的胜利奖杯，让产品能够更好的与消费者形成共鸣。\n\n▲台乡窖三酉白酒包装设计图\n\n斩获了2023年度的muse设计大奖，整个酒瓶包装设计创意：这是一组非常有意思的创意白酒包装，可以进行组合，整个设计从三两好友酉时喝酒的点进行设计。酉时下午下班的时候，喊上几个好友一起小酌一杯，每瓶三两三的容量刚刚好。\n\n▲平八清酒包装设计图\n\n斩获了4项国际设计大奖：2020年度A'Design设计大奖、2020年度金点设计大奖、2021年度IF设计大奖、2022年度MUSE设计大奖，整个酒瓶包装设计创意：我们赋予品牌拼搏的内在文化，平八谐音拼吧。标签为双面折叠标签，利用目标手环进行固定，画面结合具有冲劲的鹰来呼应品牌内在文化。\n\n▲西夏王红酒包装设计图\n\n斩获了2020A' Design Award设计大奖，整个酒瓶包装设计创意：这是我们为西夏王升级的红酒包装设计，我们为其早期设计的皮标黑比诺在市场得到了非常好的反馈，再升级中，我们结合与橡木桶类似的水松纸材料进行创意设计。\n\n▲澳洲六宝葡萄酒包装设计图\n\n斩获了2016年度的pentaward设计大奖，整个酒瓶包装设计创意：这是我们公司早期的获奖作品，手绘澳洲六种比较具有代表性的动物，并与葡萄酒元素进行创意互动，整个酒标画面非常具有画面感。\n\n以上就是今天关于《八款国际设计大奖的酒包装设计案例分享》的分享，希望对大家有所帮助，如果想要了解我们深圳古一设计的案例可以查看导航栏的案列选项！案例图片均为古一设计原创设计。如有转载，请注明来自古一，谢谢。本文关键词语：白酒包装设计、红酒包装设计、啤酒包装设计。返回搜狐，查看更多\n\n阅读 ()\n\n平台声明\n\n该文观点仅代表作者本人，搜狐号系信息发布平台，搜狐仅提供信息存储空间服务。",
+        "verification": "captured",
+        "scopeRelation": "direct",
+        "reason": "Same-use case correspondence independently checked against captured page and both images; assertions remain source-attributed.",
+        "identityStatus": "identity_checked",
+        "identityMeaning": "captured_page_image_correspondence_not_source_authentication",
+        "caseIdentity": {
+          "packetHash": "9272d7a22defec8372f0fa232eca40baa676dbca0f9cdeeab7a405e7495f20bb",
+          "actualImageManifestHash": "59e2602bcd4b3bbc5cb8f0e2e0376f0451d456b516dbf7e297a786573ebb6ecb",
+          "reportHash": "a169714d166c9e647d963272acc2507af780d7bbddfb947b463910ac3db9798c",
+          "pageCaptureHash": "835606f6595905a4a03619ec74a982757022fb8207077ef5b1d2c5961dc9763d",
+          "sourceImageCaptureHash": "9ab884218258e8d1ea36c55f57e87d25412b4f1d84ae4afa6a5eb74c8d873b62",
+          "sourceImageUrl": "https://q0.itc.cn/images01/20240805/bfc180f600b14135bd631cf2f6002c25.jpeg",
+          "fields": {
+            "brand": {
+              "status": "supported",
+              "value": "台乡窖",
+              "reason": "页面明确命名该案例，两张图的瓶身均可见对应金色品牌字样。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "▲台乡窖三酉白酒包装设计图"
+                }
+              ],
+              "pixels": [
+                {
+                  "imageId": "img_00e56681-b148-4044-bfb7-84f0d477047e",
+                  "imageSha256": "b526bb063ff3904c2e115b089dcbeaac770301e08e12dafd57853926c4fafb7f",
+                  "region": "中央红瓶标签右侧",
+                  "observation": "可见竖排金色“台乡窖”字样。"
+                }
+              ]
+            },
+            "product": {
+              "status": "supported",
+              "value": "台乡窖三酉白酒包装设计案例",
+              "reason": "页面直接命名三酉白酒；图片的三瓶组合及好友、三两、酉时相关标签与案例描述相符。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "▲台乡窖三酉白酒包装设计图"
+                }
+              ],
+              "pixels": []
+            },
+            "edition": {
+              "status": "unknown",
+              "value": "unknown",
+              "reason": "页面未明确提供产品版次；三酉为案例名称，不能据此推定版次。",
+              "refs": [],
+              "pixels": []
+            },
+            "time": {
+              "status": "unknown",
+              "value": "unknown",
+              "reason": "页面的2023年指设计奖年份，文章发布日期也不能证明产品设计或上市时间。",
+              "refs": [],
+              "pixels": []
+            },
+            "use": {
+              "status": "supported",
+              "value": "好友下班后社交小酌的白酒包装",
+              "reason": "页面直接说明好友在下班后一起小酌的使用情境。",
+              "refs": [
+                {
+                  "location": "/pageCapture/record/extraction/text",
+                  "quote": "酉时下午下班的时候，喊上几个好友一起小酌一杯，每瓶三两三的容量刚刚好。"
+                }
+              ],
+              "pixels": []
+            }
+          },
+          "taskFit": {
+            "status": "same_use",
+            "reason": "任务研究社交饮用白酒包装；该案例明确围绕好友下班后小酌，属于同用途。页面未证明25岁人群偏好或轻负担表达效果。",
+            "refs": [
+              {
+                "location": "/taskCard/brief",
+                "quote": "\"scenario\": \"年轻人社交饮用\""
+              },
+              {
+                "location": "/taskCard/brief",
+                "quote": "\"researchScope\": \"同用途包装、社交使用体验及25岁人群包装偏好，行业趋势仅限与新品定位有关的内容\""
+              },
+              {
+                "location": "/pageCapture/record/extraction/text",
+                "quote": "酉时下午下班的时候，喊上几个好友一起小酌一杯，每瓶三两三的容量刚刚好。"
+              }
+            ]
+          },
+          "imageMatch": {
+            "status": "supported",
+            "reason": "两张实际图片的构图、瓶形、标签、展台及奖项图样一致。瓶身可见台乡窖字样，三瓶标签的好友、三两、酉时表达与页面三酉案例及好友小酌描述对应；判断不依赖声明数组顺序或推定图注关联。",
+            "refs": [
+              {
+                "location": "/pageCapture/record/extraction/text",
+                "quote": "▲台乡窖三酉白酒包装设计图"
+              },
+              {
+                "location": "/pageCapture/record/extraction/text",
+                "quote": "整个设计从三两好友酉时喝酒的点进行设计。"
+              }
+            ],
+            "pixels": [
+              {
+                "imageId": "img_00e56681-b148-4044-bfb7-84f0d477047e",
+                "imageSha256": "b526bb063ff3904c2e115b089dcbeaac770301e08e12dafd57853926c4fafb7f",
+                "region": "全图，重点为中央三瓶及右上角",
+                "observation": "蓝、红、灰三瓶错落陈列，透明方形瓶盖，标签含台乡窖及好友、三两、酉时相关大字；右上角为MUSE 2023 GOLD WINNER图样。"
+              },
+              {
+                "imageId": "img_8a6fe44c-4963-47ba-902a-ba930940919b",
+                "imageSha256": "b526bb063ff3904c2e115b089dcbeaac770301e08e12dafd57853926c4fafb7f",
+                "region": "全图，重点为中央三瓶及右上角",
+                "observation": "与项目参考图相同的三瓶、标签、透明展台、光影和奖项图样均可见，位置与细节一致。"
+              }
+            ]
+          },
+          "limitations": [
+            "结论仅支持捕获页面、来源图片与项目参考图之间的案例身份对应，不构成来源真实性认证。",
+            "产品版次及设计、上市时间未知；奖项年份不能替代产品时间。",
+            "脚本声明不能证明图片的实际DOM可见性、文章位置或图注关联。",
+            "不证明实际生产、材料、物理性能、消费者偏好、销量或25岁人群适配性。",
+            "不构成研究充分性、消费者验证或发布批准。",
+            "Identity checking establishes only reviewer-assessed correspondence among captured page text, its selected image and the supplied reference.",
+            "Captured text remains attributed source claims, not authenticated website truth, consumer evidence, material proof or release approval.",
+            "Unknown edition or time stays unknown and cannot support a version-specific or dated comparison."
+          ]
+        }
+      }
+    ],
+    "visualCatalogue": [
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf001",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "visibleFeature",
+        "text": "画面上下有宽黑边，中间为倾斜俯视的红色长方形盒体及上方盖面。",
+        "region": "全图",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf002",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "visibleFeature",
+        "text": "盒内为浅米黄色衬底，排列五个相似物件；每个均有红色多瓣圆角正面、深色外缘及向画面上方伸出的金属色圆柱状部分。最右侧物件仅部分可见。",
+        "region": "中部至下部",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf003",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "visibleFeature",
+        "text": "红色正面有浅红色大型线状装饰图案，中央排列浅金色竖向文字与小圆形标记，下缘有细小文字。",
+        "region": "各物件红色正面",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf004",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "visibleFeature",
+        "text": "浅色衬底围绕各物件形成对应凹槽，圆柱状部分周围可见长方形槽口及深色阴影。",
+        "region": "盒内",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf005",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "visibleFeature",
+        "text": "上方红色盖面左侧有由蓝、黄、绿等彩色小点组成的局部装饰；右侧有大型浅金色文字、较暗的红色印记状图案及两行浅色小字。",
+        "region": "上方盖面",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf006",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "visibleFeature",
+        "text": "盒体外侧为深红色，边沿有较亮的细红线；背景也呈红褐色。",
+        "region": "盒体边缘及周围",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx001",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "legibleText",
+        "text": "金六福",
+        "region": "上方盖面右上，末字靠近右侧边界",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx002",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "legibleText",
+        "text": "浓香型白酒",
+        "region": "上方盖面右下",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx003",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "legibleText",
+        "text": "酒精度:50%vol",
+        "region": "上方盖面右下小字左段",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx004",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "legibleText",
+        "text": "净含量:100ml×5",
+        "region": "上方盖面右下小字右段",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx005",
+        "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+        "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+        "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+        "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+        "kind": "legibleText",
+        "text": "金六福",
+        "region": "左侧第一个物件正面中央竖排",
+        "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+        "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+        "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8",
+        "limits": [
+          "仅依据本次供图可见像素观察，无法验证图中文字所述品牌或规格。",
+          "截图或供图观察不能证明真实性、消费者偏好或物理性能，也不能确定材质成分、真实年代或生产可行性。",
+          "盖面右侧较暗的印记状文字无法可靠辨认。",
+          "各物件正面的圆形小字及底部规格小字较模糊，无法完整转录。",
+          "彩色点状装饰与红色正面的大型线状图案是否构成具体文字，无法确定。",
+          "右侧及下方部分内容被画面边界截断。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f01",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+        "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+        "kind": "visibleFeature",
+        "text": "黑色大幅边框内嵌横向画面，画面中有三个扁平长方形瓶状物，均有短颈和浅色横纹盖。左侧一个倾斜，中间和右侧两个直立。",
+        "region": "整图中央",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "表观透明及反光不能证明材质成分，图中品牌与规格未经核实。",
+          "标签上其余小字模糊，无法可靠逐字转录。",
+          "背景及标签人物的细节无法辨清。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f02",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+        "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+        "kind": "visibleFeature",
+        "text": "三个瓶状物上部均有蓝底白字标签；左侧标签下部以浅色为主并有深色人物剪影，中间下部呈紫红色场景，右侧下部呈蓝白色场景并有人物图形。",
+        "region": "中央偏下的三个瓶状物正面",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "表观透明及反光不能证明材质成分，图中品牌与规格未经核实。",
+          "标签上其余小字模糊，无法可靠逐字转录。",
+          "背景及标签人物的细节无法辨清。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f03",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+        "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+        "kind": "visibleFeature",
+        "text": "瓶状物置于有多条横向缝隙的灰褐色台面上；右侧有竖直块状物，背景建筑和地面明显模糊。",
+        "region": "内嵌画面下部、右侧及背景",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "表观透明及反光不能证明材质成分，图中品牌与规格未经核实。",
+          "标签上其余小字模糊，无法可靠逐字转录。",
+          "背景及标签人物的细节无法辨清。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t01",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+        "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+        "kind": "legibleText",
+        "text": "江小白",
+        "region": "左侧倾斜瓶状物的蓝色标签",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "表观透明及反光不能证明材质成分，图中品牌与规格未经核实。",
+          "标签上其余小字模糊，无法可靠逐字转录。",
+          "背景及标签人物的细节无法辨清。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t02",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+        "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+        "kind": "legibleText",
+        "text": "江小白",
+        "region": "中间瓶状物的蓝色标签",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "表观透明及反光不能证明材质成分，图中品牌与规格未经核实。",
+          "标签上其余小字模糊，无法可靠逐字转录。",
+          "背景及标签人物的细节无法辨清。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t03",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+        "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+        "kind": "legibleText",
+        "text": "江小白",
+        "region": "右侧瓶状物的蓝色标签",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "表观透明及反光不能证明材质成分，图中品牌与规格未经核实。",
+          "标签上其余小字模糊，无法可靠逐字转录。",
+          "背景及标签人物的细节无法辨清。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f04",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "visibleFeature",
+        "text": "黑色边框内为蓝色横向版面，背景有较浅的砖墙线条。左侧排列瓶状物，右侧为大字号文字。",
+        "region": "整图中央横幅",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "visibleFeature",
+        "text": "左侧瓶状物主体为蓝色，轮廓上窄下宽，肩部斜向伸展，顶部为白色盖状部分；正面有白色边框标签及红色涂鸦状字形。",
+        "region": "横幅左侧",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f06",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "visibleFeature",
+        "text": "瓶状物后方有白色横向刷痕；右侧上方文字为白色，下方主标题为红色并带白色描边与暗色阴影，小标题置于红色斜边色块中。",
+        "region": "横幅中部至右侧",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t04",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "legibleText",
+        "text": "郎",
+        "region": "横幅左上角",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t06",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "legibleText",
+        "text": "10月27日潮酷上线",
+        "region": "横幅右上部",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t07",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "legibleText",
+        "text": "精酿·小郎酒涂鸦版",
+        "region": "右侧主标题上方红色色块",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t08",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "legibleText",
+        "text": "涂鸦小郎酒",
+        "region": "横幅右侧中央大字",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t09",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "legibleText",
+        "text": "小郎酒",
+        "region": "瓶状物白色盖状部分",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t10",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+        "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+        "kind": "legibleText",
+        "text": "精酿\n小郎酒\nLittle Lang Baijiu",
+        "region": "瓶状物正面标签上部",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "日期及规格仅为图中文字转录，不能据此核实上线时间、实际容量或实际酒精度。",
+          "瓶身底部其他细小文字不能可靠辨认。",
+          "涂鸦字形高度变形，其字母边界存在辨读不确定性。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f07",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_3a8919ff-6678-4543-b8d9-4713f44833b9",
+        "imageSha256": "291cbcfe99489a5a2dce2264e9e4d96078bcbce35c3e77168bb0a361a016d705",
+        "kind": "visibleFeature",
+        "text": "中央为直立长方体瓶状物，下部大面积暗红色，上部为透明外观的多层方形结构；短颈上方有宽扁方形盖状结构。",
+        "region": "画面中央前景",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "透明、折射及镜面般反光的表观不能证明玻璃等材质成分，也不能证明结构或生产可行性。",
+          "中央瓶状物竖排书写体文字笔画较模糊，转录存在不确定性。",
+          "圆形标记外围细字及其他微小文字无法可靠辨认。",
+          "后方相似轮廓中，独立物体与反射影像无法完全区分。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f08",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_3a8919ff-6678-4543-b8d9-4713f44833b9",
+        "imageSha256": "291cbcfe99489a5a2dce2264e9e4d96078bcbce35c3e77168bb0a361a016d705",
+        "kind": "visibleFeature",
+        "text": "中央瓶状物正面右上有竖排浅金色书写体文字，下部有细密点状纹理，红色表面还可见较暗的线条图形。",
+        "region": "中央瓶状物正面",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "透明、折射及镜面般反光的表观不能证明玻璃等材质成分，也不能证明结构或生产可行性。",
+          "中央瓶状物竖排书写体文字笔画较模糊，转录存在不确定性。",
+          "圆形标记外围细字及其他微小文字无法可靠辨认。",
+          "后方相似轮廓中，独立物体与反射影像无法完全区分。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f09",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_3a8919ff-6678-4543-b8d9-4713f44833b9",
+        "imageSha256": "291cbcfe99489a5a2dce2264e9e4d96078bcbce35c3e77168bb0a361a016d705",
+        "kind": "visibleFeature",
+        "text": "左右及后方出现多个相似瓶状轮廓；底部和两侧有明显镜面般倒影，细线形成斜向交叉与分割。整体以黑、白、灰及暗红色为主。",
+        "region": "画面两侧、后方及下半部",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "透明、折射及镜面般反光的表观不能证明玻璃等材质成分，也不能证明结构或生产可行性。",
+          "中央瓶状物竖排书写体文字笔画较模糊，转录存在不确定性。",
+          "圆形标记外围细字及其他微小文字无法可靠辨认。",
+          "后方相似轮廓中，独立物体与反射影像无法完全区分。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f10",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_3a8919ff-6678-4543-b8d9-4713f44833b9",
+        "imageSha256": "291cbcfe99489a5a2dce2264e9e4d96078bcbce35c3e77168bb0a361a016d705",
+        "kind": "visibleFeature",
+        "text": "一条细长竖线从顶部延伸到中央盖状结构；左下偏中有圆形印章状叠加图形。",
+        "region": "中央顶部及中央瓶状物左下方",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "透明、折射及镜面般反光的表观不能证明玻璃等材质成分，也不能证明结构或生产可行性。",
+          "中央瓶状物竖排书写体文字笔画较模糊，转录存在不确定性。",
+          "圆形标记外围细字及其他微小文字无法可靠辨认。",
+          "后方相似轮廓中，独立物体与反射影像无法完全区分。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      },
+      {
+        "id": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t15",
+        "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+        "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+        "imageId": "img_3a8919ff-6678-4543-b8d9-4713f44833b9",
+        "imageSha256": "291cbcfe99489a5a2dce2264e9e4d96078bcbce35c3e77168bb0a361a016d705",
+        "kind": "legibleText",
+        "text": "古一设计",
+        "region": "中央瓶状物左下方圆形标记内",
+        "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+        "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+        "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad",
+        "limits": [
+          "仅依据本次供图的可见像素观察；截图或供图观察不能证明真实性、消费者偏好或物理性能。",
+          "透明、折射及镜面般反光的表观不能证明玻璃等材质成分，也不能证明结构或生产可行性。",
+          "中央瓶状物竖排书写体文字笔画较模糊，转录存在不确定性。",
+          "圆形标记外围细字及其他微小文字无法可靠辨认。",
+          "后方相似轮廓中，独立物体与反射影像无法完全区分。",
+          "Reviewed pixels support visible appearance or legible image text only; semantic support remains a reviewer judgment.",
+          "Image observations do not authenticate sources or establish consumer preference, physical properties, production feasibility or research sufficiency."
+        ]
+      }
+    ]
+  },
+  "rawReport": {
+    "protocolVersion": "excerpt-support-v2",
+    "artifactId": "af3459d1-fcd3-4d78-a176-9b5b94febb36",
+    "contentHash": "d05babcce657b8bf7ebf2656163279b41a1123013dcae38e4b82503ec75df02a",
+    "contentObjectHash": "d34109a4212772d6f11d743d85f837c8958dfa5fef5b574238f7b528e1383cc5",
+    "taskCardId": "dexian-packaging-v1:scope:2",
+    "taskCardHash": "085294fd0f6664586b16f77b9f08f33cf2947927bbf79e05157e6b5b8b57058f",
+    "claimManifestHash": "67658eebc3806903ef4b7efc851c75e64fadb3ebcf920658d941aa3f66b149c2",
+    "sourceManifestHash": "a94b9c600b830a6e082f3a792e9a19d0847dfa0a2a1fc827f37284aa541822f1",
+    "checkedFactMeaning": "source_relative_excerpt_support_not_website_truth",
+    "visualManifestHash": "a58853648e872372abb05abad2b78f79109b5d3fd4856a302366b0450eb4255f",
+    "results": [
+      {
+        "claimKey": "fc0990d2d67ba7e935e3e4293d2bcf8aaa032bfcdaf6d36ac0c20fdc8b372a51",
+        "outcome": "supported_excerpt",
+        "rationale": "正文明确将涂鸦版列入2022年主题款，并描述好友相聚情境。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+            "textHash": "a1b8afa5f5371598c50da84e5b8c02b72e01c460dba08eb97eb40cc1e054855b",
+            "quote": "2022年，小郎酒陆续推出了主题款三部曲——虎威版、涂鸦版、圆虹版，三大主题款融合潮流，尽显个性、青春与时尚。"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+            "textHash": "a1b8afa5f5371598c50da84e5b8c02b72e01c460dba08eb97eb40cc1e054855b",
+            "quote": "主题款三部曲颜值与口味并存，创意十足，非常适合拍照打卡，在与好友相聚时，畅聊青春，亦是相当惬意。"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "仅支持捕获文章如何记述，不认证来源真实性、页面图片对应、实际销量或消费者偏好。",
+          "不能独立确认完整上市日期。"
+        ]
+      },
+      {
+        "claimKey": "8d15bb107d0f033c938ecbc87ba353fe1e583d9dd3855cabcefede604b2a495d",
+        "outcome": "supported_visual",
+        "rationale": "视觉条目直接描述横幅左侧的蓝色主体、白框标签和红色涂鸦字形。",
+        "citations": [
+          {
+            "kind": "visual",
+            "visualId": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05",
+            "quote": "左侧瓶状物主体为蓝色，轮廓上窄下宽，肩部斜向伸展，顶部为白色盖状部分；正面有白色边框标签及红色涂鸦状字形。",
+            "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+            "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+            "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+            "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+            "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+            "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+            "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "限所供横幅左侧可见外观，不认证品牌、实物效果、材料或性能。",
+          "涂鸦字形变形，不能由此确定字母边界。"
+        ]
+      },
+      {
+        "claimKey": "2beb572ed1c53f292e5f1bb79bb06aa303112e5a2e4100461ea00dec2f1925d1",
+        "outcome": "supported_excerpt",
+        "rationale": "三酉对应正文直接描述可组合及好友下班后小酌。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "case_aac90674-e924-4a33-aee0-ed0b36bdbac9",
+            "textHash": "92a4b0557e60703767121d284de88591fd0244f5bf5d46f4f6d2f3f3041bf4fa",
+            "quote": "▲台乡窖三酉白酒包装设计图\n\n斩获了2023年度的muse设计大奖，整个酒瓶包装设计创意：这是一组非常有意思的创意白酒包装，可以进行组合，整个设计从三两好友酉时喝酒的点进行设计。酉时下午下班的时候，喊上几个好友一起小酌一杯，每瓶三两三的容量刚刚好。"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "仅支持作者自述，不认证来源、奖项、实际组合功能或容量适宜性。",
+          "版次及设计、上市时间未知，奖项年份不能代替产品时间。"
+        ]
+      },
+      {
+        "claimKey": "cf80324b8163572dcf078dba11fea0c55c6a259ef80f3edf65a746179cd9609e",
+        "outcome": "bounded_inference",
+        "rationale": "来源分别描述瓶身图形与组合社交构思，可合理生成不同测试问题；该主张明确标为待验证的研究者判断。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "case_7fa7ccfb-e384-461a-992f-280af79b94f4",
+            "textHash": "a1b8afa5f5371598c50da84e5b8c02b72e01c460dba08eb97eb40cc1e054855b",
+            "quote": "小郎酒涂鸦版——融入强烈的颜色，蓝色瓶身、红色涂鸦LANG的设计，展现年轻人对“独立自由，随性洒脱”的热爱追求。"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "case_aac90674-e924-4a33-aee0-ed0b36bdbac9",
+            "textHash": "92a4b0557e60703767121d284de88591fd0244f5bf5d46f4f6d2f3f3041bf4fa",
+            "quote": "这是一组非常有意思的创意白酒包装，可以进行组合，整个设计从三两好友酉时喝酒的点进行设计。酉时下午下班的时候，喊上几个好友一起小酌一杯，每瓶三两三的容量刚刚好。"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "仅为测试切口，不证明识别效果、组合实物功能、效果排序或25岁人群偏好。",
+          "依赖未认证的来源自述，仍待独立验证。"
+        ]
+      },
+      {
+        "claimKey": "130d1c33c2b73ad1d1280e471f15744229fa01322191586a54f479c0a92cbd48",
+        "outcome": "supported_visual",
+        "rationale": "视觉特征条目支持三个瓶状物共同标签区域及下部差异，文字条目支持供图可见江小白字样。",
+        "citations": [
+          {
+            "kind": "visual",
+            "visualId": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f02",
+            "quote": "三个瓶状物上部均有蓝底白字标签；左侧标签下部以浅色为主并有深色人物剪影，中间下部呈紫红色场景，右侧下部呈蓝白色场景并有人物图形。",
+            "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+            "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+            "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+            "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+            "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+            "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+            "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad"
+          },
+          {
+            "kind": "visual",
+            "visualId": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:t01",
+            "quote": "江小白",
+            "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+            "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+            "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+            "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+            "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+            "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+            "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "限所供正面可见区域；文字辨读不认证品牌、SKU、版次或年份。",
+          "人物及其余小字细节不能完整辨清，不证明材料、性能或消费者反应。"
+        ]
+      },
+      {
+        "claimKey": "fd7b6e81ed8578ed9fcaeff7dd95d24a515d615fef8c36f631cc94b0e4e6cbc8",
+        "outcome": "bounded_inference",
+        "rationale": "共同标签区域、变化场景及叠加字形可以作为测试变量；主张明确保留待验证性质，没有将识别收益写成实证结论。",
+        "citations": [
+          {
+            "kind": "visual",
+            "visualId": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f02",
+            "quote": "三个瓶状物上部均有蓝底白字标签；左侧标签下部以浅色为主并有深色人物剪影，中间下部呈紫红色场景，右侧下部呈蓝白色场景并有人物图形。",
+            "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+            "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+            "imageId": "img_044c136a-ce12-4ead-9079-4cf19a9a0aa6",
+            "imageSha256": "dee91423f4cf5bee8a56b0f89c2867ec68a136fe06f93e9b174eab1644e58546",
+            "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+            "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+            "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad"
+          },
+          {
+            "kind": "visual",
+            "visualId": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f05",
+            "quote": "左侧瓶状物主体为蓝色，轮廓上窄下宽，肩部斜向伸展，顶部为白色盖状部分；正面有白色边框标签及红色涂鸦状字形。",
+            "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+            "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+            "imageId": "img_80dd2d95-1ba1-4f38-b649-4838f22a4e81",
+            "imageSha256": "4d57d0fad903b499cbef1ef6773f0f1ec5f299c52c99ad23320eea11e00e9629",
+            "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+            "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+            "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "视觉机制为研究者解释，尚待实际测试。",
+          "不能证明系列识别效率、品牌名可读性提升、消费者偏好或销售效果，也不认证供图身份。"
+        ]
+      },
+      {
+        "claimKey": "41edd3dd7c4a84de625f1ce84ba39c82c82028d0ffa29154fe9045b000c4aa37",
+        "outcome": "supported_visual",
+        "rationale": "三个视觉条目分别支持物件数量、对应凹槽及盖面容量文字。",
+        "citations": [
+          {
+            "kind": "visual",
+            "visualId": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf002",
+            "quote": "盒内为浅米黄色衬底，排列五个相似物件；每个均有红色多瓣圆角正面、深色外缘及向画面上方伸出的金属色圆柱状部分。最右侧物件仅部分可见。",
+            "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+            "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+            "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+            "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+            "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+            "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+            "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8"
+          },
+          {
+            "kind": "visual",
+            "visualId": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf004",
+            "quote": "浅色衬底围绕各物件形成对应凹槽，圆柱状部分周围可见长方形槽口及深色阴影。",
+            "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+            "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+            "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+            "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+            "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+            "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+            "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8"
+          },
+          {
+            "kind": "visual",
+            "visualId": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:tx004",
+            "quote": "净含量:100ml×5",
+            "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+            "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+            "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+            "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+            "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+            "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+            "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "最右物件仅部分可见，画面存在截断。",
+          "容量仅为图面文字转录，不认证实际容量、SKU、品牌、材料或用途。",
+          "可见凹槽不证明实际固定、保护或取放性能。"
+        ]
+      },
+      {
+        "claimKey": "2a6f03e687873d76d9cbf4a9b5cdd51c2a71f99f3334cb5405017ad09e56fb7a",
+        "outcome": "supported_visual",
+        "rationale": "视觉条目直接支持中央长方体瓶状物的暗红下部和透明外观多层方形上部。",
+        "citations": [
+          {
+            "kind": "visual",
+            "visualId": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f07",
+            "quote": "中央为直立长方体瓶状物，下部大面积暗红色，上部为透明外观的多层方形结构；短颈上方有宽扁方形盖状结构。",
+            "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+            "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+            "imageId": "img_3a8919ff-6678-4543-b8d9-4713f44833b9",
+            "imageSha256": "291cbcfe99489a5a2dce2264e9e4d96078bcbce35c3e77168bb0a361a016d705",
+            "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+            "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+            "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "限中央前景可见外观，不确认品牌、材质、尺寸、结构性能或生产可行性。",
+          "透明及反光表观不能证明玻璃等材料成分。"
+        ]
+      },
+      {
+        "claimKey": "d52e1b8a19d05f0543925a5d62000a64ff6930cda972f599baf8cd8c66e165bf",
+        "outcome": "bounded_inference",
+        "rationale": "外盒排列与单瓶轮廓的可见差异可用于提出分项测试建议；主张明确作为待验证建议，未声称已有性能结果。",
+        "citations": [
+          {
+            "kind": "visual",
+            "visualId": "visual:c939b655-7353-44ad-be2f-66b1a3fcb517:vf002",
+            "quote": "盒内为浅米黄色衬底，排列五个相似物件；每个均有红色多瓣圆角正面、深色外缘及向画面上方伸出的金属色圆柱状部分。最右侧物件仅部分可见。",
+            "observationId": "c939b655-7353-44ad-be2f-66b1a3fcb517",
+            "reviewId": "1a7fa97b-30f8-4f21-a3de-6e8ffc5d7792",
+            "imageId": "img_be0244fd-36ed-4933-bd68-ef7310a176a3",
+            "imageSha256": "6ce04c54d17605309f207b268df24448f698960bc19d43b0fa2bf4102fe24134",
+            "manifestHash": "a0e1b0269d254c7a7a736c363aed9024b9828dabff0254b6f4763304fd910f3d",
+            "observationHash": "738f4c2ff3c1bed71d8cbf4fc1db1a6738e5e56f3dc5ac6dfef07a1b4eb7f65b",
+            "reviewHash": "931872b011e80faca51620eefee62e1146d476ffcfcf11a759bb7d0538fba8a8"
+          },
+          {
+            "kind": "visual",
+            "visualId": "visual:23fe8f56-2b6c-442a-95a4-b59864cd9a48:f07",
+            "quote": "中央为直立长方体瓶状物，下部大面积暗红色，上部为透明外观的多层方形结构；短颈上方有宽扁方形盖状结构。",
+            "observationId": "23fe8f56-2b6c-442a-95a4-b59864cd9a48",
+            "reviewId": "a4a9d48e-214d-4560-8eb9-6043417f4424",
+            "imageId": "img_3a8919ff-6678-4543-b8d9-4713f44833b9",
+            "imageSha256": "291cbcfe99489a5a2dce2264e9e4d96078bcbce35c3e77168bb0a361a016d705",
+            "manifestHash": "f0d3350652ed45b96918c9da5c03e09944a92bc30c69d2b08591fb40b328a06f",
+            "observationHash": "545d0f3cdc80a8ee348e0bcc95bf1c6b9c424aa6440e200660d3429b37048747",
+            "reviewHash": "8797d1455159e9614751897dee1e3804182251642fbf2e5740a1810dee23e9ad"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "仅支持提出测试问题，不证明这些测试已实施或足以完成评价。",
+          "供图不建立便携、取放、握持、开瓶性能、材料成分或生产可行性。"
+        ]
+      },
+      {
+        "claimKey": "add286d9dcc956d4b612cf8ea1bec1b8169c82d386dd04229265d7d632520893",
+        "outcome": "supported_excerpt",
+        "rationale": "摘录同时包含2024年日期及所引报道陈述。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "dexian-user-huaxia-r4",
+            "textHash": "3bf564b67ea8589c334ea732e349cfdacc5858acb3aa341303b949dc633d56c4",
+            "quote": "2024年12月10日\n本报记者 刘雪霞 发自北京\n超7成年轻人喜欢与亲密好友喝酒"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "仅支持报道如此表述，抽样、代表性及原始调查未由摘录确立。",
+          "不能外推全体年轻人、精确25岁人群或包装偏好。"
+        ]
+      },
+      {
+        "claimKey": "62b2a29682e70c6ac9d85f0bdbfe4d5894e179277fc412d8cc34566f1d8c9284",
+        "outcome": "supported_excerpt",
+        "rationale": "摘录明确为2023年报告的95后职场新人画像，并包含同事聚餐、商务用酒与熟悉品牌选择。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-baijiu-social-adults-2023-r7",
+            "textHash": "e4ac3b9f854c1b25d25d3b9218cf56f3e45ce0489b7a8ef51ed5e401e7748a22",
+            "quote": "《2023年中国白酒行业消费白皮书》\n典型细分人群2：95年后出生的职场新人\n进入工作后，唐先生希望能够更好融入到工作中，也经常下班后与同事们一起聚餐聊天，增进彼此的距离；同时，随着工作的开展，也需要经常与不同的合作公司建联，也必不可少会增加一些商务场景的用酒饮酒，逐渐他也习惯了以白酒为主要社交用酒的模式。\n在自己组织的聚餐、商务活动中，他更倾向选择品牌口碑好、身边人都在使用、到处能看到宣传、大家都熟知的品牌"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "支持报告画像的内容，不验证真实个人或人群比例。",
+          "研究不含未满18周岁人群；不是精确25岁研究或2026年趋势证据。",
+          "不能由画像确定得闲购买者身份或包装参数。"
+        ]
+      },
+      {
+        "claimKey": "f959f94e09c20d11f4b20c6043f2aac04e4bb01f3d3f372e063f1cb437c053e8",
+        "outcome": "supported_excerpt",
+        "rationale": "摘录将20至59岁明确置于定性访谈，将1303样本置于线上定量调研，并给出绵阳95后用户引语。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-baijiu-user-primary-r6",
+            "textHash": "95e029c1cc42a4fc50a07fec93c32c776006fd2be39a77066b2354e12862fc36",
+            "quote": "2019白酒行业\n数字化发展洞察报告\n研究方法和数据说明\n消费者\n定性访谈\n• 访谈时间：2019年9月\n• 调研形式：座谈会+消费者深访\n• 消费者覆盖：20-59岁的饮酒人群，覆盖一至三\n线城市\n腾讯调研\n平台线上\n定量调研\n• 调研时间：2019年9月-10月\n• 样本量：1303样本"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-baijiu-user-primary-r6",
+            "textHash": "95e029c1cc42a4fc50a07fec93c32c776006fd2be39a77066b2354e12862fc36",
+            "quote": "“白酒的系列多，口味不同，分不清区别，需要上网查找对比。”\n——绵阳中低端白酒用户，95后"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "2019年历史报告及单条引语，不代表当前普遍需求或全国25岁人群比例。",
+          "不能将定性访谈年龄范围套用到全部1303份定量样本。",
+          "不认证引语真实性或包装效果。"
+        ]
+      },
+      {
+        "claimKey": "bd344b8a6d5e37ff86da296ee1895e3600e9e2fca836ca0271220e8b4651a067",
+        "outcome": "supported_excerpt",
+        "rationale": "摘录直接提及线下包装检查，并分别给出两个价位组的包装期望。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-packaging-choice-primary-2023-r9",
+            "textHash": "0992aab059549b072f88e83b01f9519f4c2518ee080e5c04acb675f7930f6887",
+            "quote": "再者，线下渠道对于消费者而言易于进行现场验真和产品包装检查。"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-packaging-choice-primary-2023-r9",
+            "textHash": "0992aab059549b072f88e83b01f9519f4c2518ee080e5c04acb675f7930f6887",
+            "quote": "101元至500元价位段的白酒更多用于节庆亲友聚会、宴席等。\n对包装期望有特色、亮眼。\n百元内白酒消费者认为口感最重要，香型和酒精度数要适合自己，价格要适中；更倾向选择口碑好、包装有特色、亮眼的白酒。"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-packaging-choice-primary-2023-r9",
+            "textHash": "0992aab059549b072f88e83b01f9519f4c2518ee080e5c04acb675f7930f6887",
+            "quote": "数据来源：2023年腾讯白酒行业消费者定量研究（N~1,500+）"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "仅支持报告分组陈述，不是25岁分组、包装效果实验或2026年现状。",
+          "得闲价格未定，不能直接套用某个价位组或指定视觉风格。",
+          "摘录不提供渠道比例，也不能证明携带、开瓶等使用痛点。"
+        ]
+      },
+      {
+        "claimKey": "65c0e126c2ea0355e97570f9ee3696629ac0aa28af08196ef7fb699049efd756",
+        "outcome": "bounded_inference",
+        "rationale": "好友情境、组织聚餐时的品牌选择、差异辨识引语及包装检查陈述可用于生成访谈问题；主张明确保留历史与适用性限制。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "dexian-user-huaxia-r4",
+            "textHash": "3bf564b67ea8589c334ea732e349cfdacc5858acb3aa341303b949dc633d56c4",
+            "quote": "超7成年轻人喜欢与亲密好友喝酒"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-baijiu-social-adults-2023-r7",
+            "textHash": "e4ac3b9f854c1b25d25d3b9218cf56f3e45ce0489b7a8ef51ed5e401e7748a22",
+            "quote": "在自己组织的聚餐、商务活动中，他更倾向选择品牌口碑好、身边人都在使用、到处能看到宣传、大家都熟知的品牌"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-baijiu-user-primary-r6",
+            "textHash": "95e029c1cc42a4fc50a07fec93c32c776006fd2be39a77066b2354e12862fc36",
+            "quote": "“白酒的系列多，口味不同，分不清区别，需要上网查找对比。”"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "tencent-packaging-choice-primary-2023-r9",
+            "textHash": "0992aab059549b072f88e83b01f9519f4c2518ee080e5c04acb675f7930f6887",
+            "quote": "再者，线下渠道对于消费者而言易于进行现场验真和产品包装检查。"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "只是待验证的访谈方向，不证明购买者与饮用者相同或这些任务已成为目标用户的普遍需求。",
+          "2019、2023、2024年材料不能确立2026年25岁目标人群偏好。",
+          "不足以指定配色、瓶型、容量、度数或价格；来源真实性及代表性未获认证。"
+        ]
+      },
+      {
+        "claimKey": "d111ba0bbc2ad3854291ecf172e1f3b781c4b234f8deb201c352c1bc0e896345",
+        "outcome": "supported_excerpt",
+        "rationale": "两个产品摘录逐项包含所述度数、容量及高光包装表达。",
+        "citations": [
+          {
+            "kind": "excerpt",
+            "sourceId": "B06-excerpt-r2",
+            "textHash": "3f2ffc70077dcf9427c7568191396586df87f027c51741866d83e7867d786cc9",
+            "quote": "泸小二精酿\n度数\n42%vol 52%vol\n规格\n500ml 250ml"
+          },
+          {
+            "kind": "excerpt",
+            "sourceId": "B09-excerpt-r2",
+            "textHash": "daf1e7db3d13da7a078ca7d009d5c92cc6ace797d225a2b544938b838a967e81",
+            "quote": "高光\n度数\n38%vol 40.9%vol 52%vol\n规格\n500ml\n简约瓶身，让体验回归内在纯粹品质。极光绿新锐色彩，尽显美学品味。锤纹瓶肩，似历经千锤百炼，质感不凡。"
+          }
+        ],
+        "requirementRefs": [],
+        "limitations": [
+          "仅支持捕获页面所列内容，发布日期不明，未认证实际产品规格。",
+          "摘录没有明确每种度数与容量的SKU对应关系。",
+          "高光包装特征仅为文字自述，没有对应已审阅图片，不构成像素观察或品质证明。",
+          "不能据此确定得闲的容量、度数或风格。"
+        ]
+      }
+    ],
+    "wholeTextScan": {
+      "status": "complete",
+      "creativeClaimKeys": [],
+      "omissions": [
+        {
+          "location": "/evidenceClassifications/6/reason",
+          "quote": "已登记identity_checked且用途为same_use",
+          "reason": "新增案例身份检查及用途对应状态的事实断言，未由主张清单覆盖。该状态仅见目录操作记录，不能由sourceRecords文本或独立视觉条目确立；来源自述可以支持用途比较判断，不能证明身份核验已完成。"
+        },
+        {
+          "location": "/evidenceClassifications/7/reason",
+          "quote": "已登记identity_checked且用途为same_use",
+          "reason": "新增另一案例身份检查及用途对应状态的事实断言，未由主张清单覆盖。该状态来自操作元数据，不是可引用正文；本轮独立视觉目录也没有该案例对应条目，不能据此认证页面与图片对应。"
+        }
+      ],
+      "mismatchedCreative": []
+    },
+    "limitations": [
+      "审阅仅使用所供正文、任务卡和视觉目录；没有使用工具或独立访问来源、图片。",
+      "支持结论均为来源相对支持或所供视觉记录支持，不升级任何来源为verified，不认证网站真实性。",
+      "视觉支持仅限可见外观与可辨文字，不建立消费者偏好、物理性能、材料成分、生产可行性或研究充分性。",
+      "已检查标题、摘要、全部章节、主张、缺口及证据分类；未发现creative类型主张。",
+      "本报告不构成阶段批准或发布批准，结构有效性不能证明语义充分或扫描绝对无遗漏。"
+    ]
+  },
+  "requestHash": "9751a6f5154bbf766c685fc96eb4e10a1ba4d19cf3bffa8700ce51a0d73cad42",
+  "normalizedHash": "b2d610c6a3add48e169cf862baa74d09a4af5ff44d9953a7b1b2bbaf0d87c4f8"
+}

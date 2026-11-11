@@ -1,0 +1,177 @@
+{
+  "checkedAtISO": "2026-11-10T12:56:32.900078Z",
+  "request": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+    "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+  },
+  "skillManifest": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST-FINAL.json",
+    "sha256": "2c197d5a8a8d7716700a1ef11fafd5388158a39e4d5354d8b257c47fd8fe3e00"
+  },
+  "skillFiles": [
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/SKILL.md",
+      "sha256": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/packaging.md",
+      "sha256": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/stage-review.md",
+      "sha256": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/kv.md",
+      "sha256": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/references/records.md",
+      "sha256": "ee707e90ca10e8ebac767d926091a43c787396d9bb719d8105b9a4fcc7eab155"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/tests/check-stage.test.mjs",
+      "sha256": "d3e8fa7e48ac35ddaf0d2c585681c224bd6e14230fc133bb32fefe9fdbd93adc"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/scripts/check-stage.mjs",
+      "sha256": "e989e82288e1ee4b8b873ec409c061a734e0881cce37ffb9b0597e54ad796dd4"
+    }
+  ],
+  "oldOwnerRecords": [
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/AUTHORIZATION.json",
+      "sha256": "ac55aa210f69ac0b735dc37f8760249497d0eaf23543311a548f641398c99ab0"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+      "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CHECK-RESULT.json",
+      "sha256": "d190dd3a4848871a9a79cf2b3e8e2054e22d3afeee1693e187b4ad1b134ff131"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CHECK-STDERR.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CHECK-STDOUT.json",
+      "sha256": "074e0bfcd88dad3776c04e9706686bb3d181bd4a3875b54dd33ac565adaef0a0"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CURRENT-INPUT.json",
+      "sha256": "c9a1889e797f21e3f2c8321222671a55e61192bb72552259a4cc1e0f75206247"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/EVIDENCE-VERIFY.json",
+      "sha256": "37ad9b6256f5f5f06df3b4ab45ade6b087d12e381141c2caa30ce73ee1cba219"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/INVOCATION.json",
+      "sha256": "f1554f240ecb7470b48754d69414d4ea34b1747bf4c0d4aa6162df97b51501ca"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/NORM-REVISION.json",
+      "sha256": "f1a4607c7c20ffe7c25a26a0f7d6a17ae42309b543f3c754be6e4f67f3796b4c"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/PAGE-PACKET.json",
+      "sha256": "dbf2f8380154ac89919a32441112e74780b49b5e426a7d895891d69b2069955b"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/SOURCE-CLOSURE-CHECK.json",
+      "sha256": "e945f0e6b5225da4d774daf6515f25d8f4a414664ae401146d225edfa03de949"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/WORK-PACKAGE.json",
+      "sha256": "de8c85e840615ac18667ebcb27768699ac6c71bbd7df7e77d293496419c19bc3"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/build-intake-record.py",
+      "sha256": "8a6719ab627adc584e1d109c523df2c13e55cc4ec7eb791cf7b0a7520bdc3a84"
+    }
+  ],
+  "oldPageSources": [
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+      "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST.json",
+      "sha256": "8bf6da565da5a14b8efcd53b0d7580e499f1d5aaef257607eaf258b7687fd22d"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/SKILL.md",
+      "sha256": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/kv.md",
+      "sha256": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/packaging.md",
+      "sha256": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/records.md",
+      "sha256": "6cb5d794a79eb68961ae8372e9931aa39ce821cdf9553afe4030ee1d141354dd"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/stage-review.md",
+      "sha256": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/scripts/check-stage.mjs",
+      "sha256": "8186a2c46497f38c46edd46789c352f33957d6d2affcc356b48f321e7051fb5f"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/tests/check-stage.test.mjs",
+      "sha256": "c6b5c3e17ec939bd9d2fba70a75239c1ec0de50661e2b4e00539ec06f2ca011f"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-packaging-references-20261110/references-editorial.json",
+      "sha256": "0d44eaf83ced56b6d9bc517bbf4b629d24adae2696fa1bacbf4d38f6238d3b14"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-copy-full-20261110/inputs/research-r4.json",
+      "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+      "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-moli.png",
+      "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+      "sha256": "df27729ed779264c5a18f81505220225f524f012470b16cb2c8ffc93c9fa91a4"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+      "sha256": "e734eefeb5199d0d8ff46f8f20702a16e9a6a5e867fea0cf6a15504a4c24a222"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+      "sha256": "828c6b208afe9eace44289592df186ff8f6b9a69d52817412f37834d1b9eddc7"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+      "sha256": "1eef17132f995f2fd6199906eeb35f3d30544c328957f1ba5d19c1504450b9e0"
+    }
+  ],
+  "allHashesMatch": true,
+  "imagesHashChecked": 6,
+  "imagesViewedThisRole": 0,
+  "observationSource": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner/CANDIDATES-AND-GAPS.json",
+    "sha256": "b52fc0651d83f4275ed9a102fad42cd4a1e8ce0057374cec3e51cef6c6a1db86"
+  },
+  "observationBoundary": "六图仅重核原字节hash；继承原owner实际查看观察，本角色没有重新看图。源URL、远端研究、微字及原有缺面边界继续待核；hash相同不证明来源有效或审美适用。"
+}

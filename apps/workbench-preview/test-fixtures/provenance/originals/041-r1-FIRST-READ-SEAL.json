@@ -1,0 +1,34 @@
+{
+  "draftSha256": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+  "records": [
+    {
+      "role": "copy",
+      "calibration": "af57b93239e533ad191f46a52b7df408bb42cecfddd1a65075bf4d0653fc4d8c",
+      "scale": "86f98124d83e18230a061d302bca5e02c53a73474495deb7641a281d64a61d4f",
+      "firstReadJson": "4f83932b74045b11e53c21476ee3f3680dfe036893aab7b8bec93e0edf1b0c03",
+      "firstReadMd": "ec79ab8fd2969e59a5410875e0c9515a538e73b21b9a0365fef62b901ddd16e2"
+    },
+    {
+      "role": "brand",
+      "calibration": "0e895717e2141d50448d0c8ed90e28ef1566ce26e1b0a9c16650ead41ef3eb95",
+      "scale": "d9bdab85a1e2035e975a31f41667656ef6dfee8a88db056f4dca83c537933060",
+      "firstReadJson": "e9360178024bc198387bff63db403e5317beda6c08f72df7d50f3a598576230d",
+      "firstReadMd": "32f7713dde894061fc30bc1672e75141229faa8af8b807f97d9285802f48d7ec"
+    },
+    {
+      "role": "user",
+      "calibration": "45e6d746e1aee2e60482b7e71d0e0c03a3bf221368a7a10e75fe39bddf3f77b1",
+      "scale": "8efd3fbc6d88dcf3ba89260a4e1b99d9991e3babac40ac930032fbfa0ba71fef",
+      "firstReadJson": "0345385988f960114f8f1a21d82e6207a299a0058407aaaf0decdd8f1a2d20ed",
+      "firstReadMd": "aab44448e7802a67c76c025a9e6f3cdb7ef45d12b07aa468cde42318383683b9"
+    },
+    {
+      "role": "comms",
+      "calibration": "a6bfc5550cc59b27d423ab511d0610c7b81b5f25b969cd7ad591800ba2d440c7",
+      "scale": "9b63e398f3281881720d178308953d9d72a3dde802ef613fb32a27bdde21f336",
+      "firstReadJson": "ad70474ed1b5ae36595b66350005dfff1b117400684c4e005158c74380cf4e5b",
+      "firstReadMd": "458c57ab9db5e6318483a9f896e5a6c3ce05dcf872759a4da83ec003993142bd"
+    }
+  ],
+  "scope": "四份独立模型首读、内部边界与尺度对齐；非真人限时/审美校准"
+}

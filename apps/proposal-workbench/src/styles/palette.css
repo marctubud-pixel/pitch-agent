@@ -1,0 +1,373 @@
+/*
+ * The interface palette: three colours.
+ *   1. International Klein Blue (#002FA7), the dominant colour, with one scale of tints for
+ *      grounds and deeper shades for dark tiles. Solid fills and links are Klein blue itself.
+ *   2. Near-achromatic greys, a gallery-white paper so the blue reads at full intensity.
+ *   3. One warm orange accent, kept for what needs a person: decisions, warnings, problems.
+ * Status follows the same rule: done and in progress are blue, anything that needs you is orange.
+ *
+ * Loaded last, so it overrides the older per-file tokens. Proposal content keeps its own colours:
+ * posters, packs, direction marks (A/B/C) and the three slide styles are the work being made,
+ * not the interface around it.
+ */
+
+/* Listed with the dark-mode selectors too, so this mapping outranks the older per-file dark values. */
+:root,
+:root:not([data-theme='light']),
+:root[data-theme='dark'] {
+  /* Blue: International Klein Blue and its scale */
+  --klein: #002fa7;
+  --b-950: #000c2e;
+  --b-900: #001352;
+  --b-800: #001f80;
+  --b-700: #002fa7;
+  --b-600: #0a38b8;
+  --b-500: #1f4fd6;
+  --b-400: #5c7fe8;
+  --b-300: #9cb2f3;
+  --b-200: #c8d5f9;
+  --b-100: #e4ebfd;
+  --b-50: #f3f6fe;
+  /* Deep grounds for dark mode, on the same hue */
+  --b-850: #0b1a52;
+  --b-875: #08143d;
+  --b-925: #070b1c;
+  /* Neutral */
+  --n-paper: #f1f1ee;
+  --n-card: #ffffff;
+  --n-sunken: #f6f6f3;
+  --n-ink: #101114;
+  --n-ink-2: #45464d;
+  --n-ink-3: #64656c;
+  --n-rule: #e3e3df;
+  --n-rule-strong: #c4c4bf;
+  /* Orange accent */
+  --o-800: #8f3300;
+  --o-700: #ad4300;
+  --o-600: #c75000;
+  --o-500: #ff7a1f;
+  --o-100: #ffe8d6;
+  --o-ink: #2a1000;
+  /* Orange for dark grounds */
+  --o-400: #f2924f;
+  --o-300: #f6a56c;
+  --o-200: #f7b083;
+  --o-900: #3a2213;
+  --o-950: #3d1f10;
+
+  /* Base tokens (app.css) */
+  --paper: var(--n-paper);
+  --surface: var(--n-card);
+  --sunken: var(--n-sunken);
+  --ink: var(--n-ink);
+  --ink-2: var(--n-ink-2);
+  --ink-3: var(--n-ink-3);
+  --rule: var(--n-rule);
+  --rule-strong: var(--n-rule-strong);
+  --accent: var(--b-700);
+  --accent-ink: #ffffff;
+  --accent-wash: var(--b-100);
+  --ok: var(--b-700);
+  --ok-wash: var(--b-100);
+  --info: var(--b-600);
+  --info-wash: var(--b-50);
+  --warn: var(--o-700);
+  --warn-wash: var(--o-100);
+  --bad: var(--o-800);
+  --bad-wash: var(--o-100);
+  --neutral: var(--n-ink-2);
+  --neutral-wash: #ebebe7;
+  --focus: var(--b-600);
+  --backdrop: rgb(10 10 14 / 0.45);
+  --shadow: 0 1px 2px rgb(16 17 20 / 0.05), 0 10px 28px rgb(16 17 20 / 0.07);
+
+  /* Cabinet and tiles (dashboard.css) */
+  --canvas: var(--n-paper);
+  --card: var(--n-card);
+  --ink-strong: var(--n-ink);
+  --lime: var(--klein);
+  --lime-ink: #ffffff;
+  --warm: var(--o-500);
+  --warm-ink: var(--o-ink);
+  --folder-ink: var(--n-ink);
+  --folder-muted: var(--n-ink-2);
+  --sheet: #fbfbf9;
+  --sheet-line: var(--n-rule);
+  --sheet-ink: var(--n-ink);
+  /* Project folders: one blue each, at different depths, so projects still tell apart. */
+  --tone-lime: var(--b-200);
+  --tone-lime-soft: rgb(244 247 254 / 0.92);
+  --tone-sky: var(--b-200);
+  --tone-sky-soft: rgb(244 247 254 / 0.92);
+  --tone-peach: var(--b-100);
+  --tone-peach-soft: rgb(244 247 254 / 0.92);
+  --tone-lilac: var(--b-100);
+  --tone-lilac-soft: rgb(244 247 254 / 0.92);
+  --tone-butter: var(--b-200);
+  --tone-butter-soft: rgb(244 247 254 / 0.92);
+
+  /* Attention (proposal.css) */
+  --pw-attn: var(--o-700);
+  --pw-attn-wash: var(--o-100);
+
+  /* WorkBot */
+  --wb-lilac: var(--b-100);
+  --wb-lilac-ink: var(--b-950);
+  --wbc-ink: #101114;
+  --wbc-body: var(--b-300);
+  --wbc-bubble: #ffffff;
+  --wbc-limb: #101114;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --n-paper: #0b0b0a;
+    --n-card: #151513;
+    --n-sunken: #1c1c1a;
+    --n-ink: #ededea;
+    --n-ink-2: #b8b8b2;
+    --n-ink-3: #9c9c96;
+    --n-rule: #282826;
+    --n-rule-strong: #3f3f3c;
+    --accent: var(--b-300);
+    --accent-ink: var(--b-950);
+    --accent-wash: var(--b-850);
+    --ok: var(--b-300);
+    --ok-wash: var(--b-850);
+    --info: var(--b-300);
+    --info-wash: var(--b-875);
+    --warn: var(--o-300);
+    --warn-wash: var(--o-900);
+    --bad: var(--o-200);
+    --bad-wash: var(--o-950);
+    --neutral-wash: #1f1f1d;
+    --focus: var(--b-300);
+    --backdrop: rgb(0 0 0 / 0.6);
+    --lime: var(--klein);
+    --warm: var(--o-400);
+    --sheet: #1c1c1a;
+    --tone-lime: var(--b-850);
+    --tone-lime-soft: rgb(14 18 36 / 0.92);
+    --tone-sky: var(--b-875);
+    --tone-sky-soft: rgb(14 18 36 / 0.92);
+    --tone-peach: var(--b-850);
+    --tone-peach-soft: rgb(14 18 36 / 0.92);
+    --tone-lilac: var(--b-875);
+    --tone-lilac-soft: rgb(14 18 36 / 0.92);
+    --tone-butter: var(--b-850);
+    --tone-butter-soft: rgb(14 18 36 / 0.92);
+    --pw-attn: var(--o-400);
+    --pw-attn-wash: var(--o-900);
+    --wb-lilac: var(--b-850);
+    --wb-lilac-ink: var(--b-100);
+    --wbc-limb: #e1e6f2;
+  }
+}
+
+:root[data-theme='dark'] {
+  --n-paper: #0b0b0a;
+  --n-card: #151513;
+  --n-sunken: #1c1c1a;
+  --n-ink: #ededea;
+  --n-ink-2: #b8b8b2;
+  --n-ink-3: #9c9c96;
+  --n-rule: #282826;
+  --n-rule-strong: #3f3f3c;
+  --accent: var(--b-300);
+  --accent-ink: var(--b-950);
+  --accent-wash: var(--b-850);
+  --ok: var(--b-300);
+  --ok-wash: var(--b-850);
+  --info: var(--b-300);
+  --info-wash: var(--b-875);
+  --warn: var(--o-300);
+  --warn-wash: var(--o-900);
+  --bad: var(--o-200);
+  --bad-wash: var(--o-950);
+  --neutral-wash: #1f1f1d;
+  --focus: var(--b-300);
+  --backdrop: rgb(0 0 0 / 0.6);
+  --lime: var(--klein);
+  --warm: var(--o-400);
+  --sheet: #1c1c1a;
+  --tone-lime: var(--b-850);
+  --tone-lime-soft: rgb(14 18 36 / 0.92);
+  --tone-sky: var(--b-875);
+  --tone-sky-soft: rgb(14 18 36 / 0.92);
+  --tone-peach: var(--b-850);
+  --tone-peach-soft: rgb(14 18 36 / 0.92);
+  --tone-lilac: var(--b-875);
+  --tone-lilac-soft: rgb(14 18 36 / 0.92);
+  --tone-butter: var(--b-850);
+  --tone-butter-soft: rgb(14 18 36 / 0.92);
+  --pw-attn: var(--o-400);
+  --pw-attn-wash: var(--o-900);
+  --wb-lilac: var(--b-850);
+  --wb-lilac-ink: var(--b-100);
+  --wbc-limb: #e1e6f2;
+}
+
+/* Bento tiles: sage becomes a quiet grey-blue ground, lilac a pale blue, dark a deep navy. */
+.bx {
+  --bx-sage: #e8e8e4;
+  --bx-sage-ink: var(--n-ink);
+  --bx-dark: var(--b-950);
+  --bx-dark-ink: #eef1fb;
+  --bx-blue: var(--b-600);
+  --bx-blue-ink: #ffffff;
+  --bx-lilac: var(--b-100);
+  --bx-lilac-ink: var(--b-950);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .bx {
+    --bx-sage: #171715;
+    --bx-sage-ink: var(--n-ink);
+    --bx-dark: var(--b-925);
+    --bx-blue: var(--klein);
+    --bx-lilac: var(--b-850);
+    --bx-lilac-ink: var(--b-100);
+  }
+}
+
+:root[data-theme='dark'] .bx {
+  --bx-sage: #171715;
+  --bx-sage-ink: var(--n-ink);
+  --bx-dark: var(--b-925);
+  --bx-blue: var(--klein);
+  --bx-lilac: var(--b-850);
+  --bx-lilac-ink: var(--b-100);
+}
+
+/* ---------------------------------------------------------------- hard-coded colours */
+
+/* Brief */
+.bf-tile--lilac,
+.bf-unknowns__count {
+  background: var(--b-500);
+  color: #ffffff;
+}
+.bf-tile--dark {
+  background: var(--b-950);
+}
+.bf-e__img::after {
+  background: linear-gradient(180deg, rgb(11 20 56 / 0.12) 0%, rgb(11 20 56 / 0.9) 55%, var(--b-950) 100%);
+}
+
+/* Research tags: background and inspiration in blue, unverified in the accent so it stands out. */
+.rs-tag[data-kind='background'] { background: var(--b-200); color: var(--b-950); }
+.rs-tag[data-kind='inspiration'] { background: var(--b-100); color: var(--b-950); }
+.rs-tag[data-kind='unverified'] { background: var(--o-100); color: var(--o-800); }
+.rs-tag--support[data-tone='warn'] { border-color: var(--o-600); color: var(--o-700); }
+
+/* Evidence kinds */
+[data-kind='comparison'] { --k: var(--b-700); }
+[data-kind='background'] { --k: var(--n-ink-3); }
+[data-kind='inspiration'] { --k: var(--b-400); }
+[data-kind='unverified'] { --k: var(--o-600); }
+[data-kind='evidence'] { --k: var(--b-900); }
+
+/* Dark picture panels */
+.st-card {
+  background: var(--b-950);
+}
+
+/* Overview list icons */
+.bx-list li[data-tone='bad'] .bx-list__icon,
+.bx-list li[data-tone='warn'] .bx-list__icon {
+  background: var(--o-100);
+  color: var(--o-800);
+}
+.bx-list li[data-tone='info'] .bx-list__icon {
+  background: var(--b-200);
+  color: var(--b-950);
+}
+
+/* Library / Process tiles */
+.area-stats li[data-tone='dark'] .area-stat,
+.area-sheet .pw-org > li[data-level='director'] {
+  background: var(--b-950);
+  color: #eef1fb;
+}
+.area-stats li[data-tone='lilac'] .area-stat,
+.area-sheet .pw-org > li[data-level='evaluator'] {
+  background: var(--b-100);
+  color: var(--b-950);
+}
+
+/* Paper mats for sketches and art: neutral, not cream */
+.vd-sheet .art-frame {
+  --art-mat: #f4f5f8;
+  background: #f4f5f8;
+}
+.pw-cands--sketch .art {
+  background: #f4f5f8;
+}
+
+/* Review outcome tiles share one blue */
+.rv-tile[data-outcome='fixed'],
+.rv-rows li[data-outcome='fixed'] .rv-rows__icon {
+  background: var(--b-600);
+}
+
+/* Translucent insets that sat on lime now sit on blue: white glass, white text. */
+.ov-stat {
+  background: rgb(255 255 255 / 0.16);
+}
+.ov-stat--link:hover {
+  background: rgb(255 255 255 / 0.26);
+}
+.ov-stat__label {
+  opacity: 0.9;
+}
+.ov-track a {
+  background: rgb(255 255 255 / 0.16);
+}
+.ov-track a:hover {
+  background: rgb(255 255 255 / 0.3);
+}
+.workbot__tools .icon-btn {
+  background: rgb(255 255 255 / 0.18);
+}
+.workbot__tools .icon-btn:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.32);
+}
+.ov-track li[data-status='needs_revision'] a {
+  background: var(--o-100);
+  color: var(--o-800);
+}
+
+/* Stage spines: done in a pale blue, the current stage in solid blue, only waiting/revision in orange. */
+.sp-hero,
+:root:not([data-theme='light']) .sp-hero,
+:root[data-theme='dark'] .sp-hero {
+  --sp-done: var(--b-100);
+  --sp-waiting: var(--o-500);
+  --sp-revision: var(--o-100);
+  --sp-progress: var(--b-200);
+  --sp-ink: var(--n-ink);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .sp-hero {
+    --sp-done: var(--b-850);
+    --sp-waiting: var(--o-600);
+    --sp-revision: var(--o-900);
+    --sp-progress: var(--b-900);
+  }
+}
+:root[data-theme='dark'] .sp-hero {
+  --sp-done: var(--b-850);
+  --sp-waiting: var(--o-600);
+  --sp-revision: var(--o-900);
+  --sp-progress: var(--b-900);
+}
+
+/* Orange is only for what needs you; decorative tiles use blue. */
+.area-stats li[data-tone='peach'] .area-stat {
+  background: var(--b-200);
+  color: var(--b-950);
+}
+.area-sheet .pw-org > li[data-level='adversary'] {
+  background: var(--b-300);
+  color: var(--b-950);
+}

@@ -8,6 +8,11 @@
 *.log
 **/node_modules/
 **/dist/
+**/dist-single/
+**/__pycache__/
+*.pyc
+/apps/workbench-preview/artifacts/
+/apps/workbench-preview/.audit/
 .env
 .env.*
 !.env.example

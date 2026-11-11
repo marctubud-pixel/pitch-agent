@@ -1,0 +1,78 @@
+/* The current draft and the person's next action lead the workspace. */
+
+/* Compact reading hierarchy; all overrides below use the shared type roles. */
+:root { --t-h1: 2rem; --t-h2: 1.625rem; --t-h3: 1.375rem; --t-caption: .75rem; }
+
+.pw-head__inner { padding-top: 14px; padding-bottom: 0; }
+.pw-head__name { font-size: var(--t-h2); line-height: 1.25; overflow-wrap: anywhere; }
+.sp-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(430px, 1.1fr); min-height: 0; }
+.sp-hero__text { padding: 20px 24px; }
+.sp-hero .pw-h1 { font-size: var(--t-h1); line-height: 1.15; }
+.sp-hero .pw-lede { font-size: var(--t-small); line-height: 1.55; margin: 8px 0 0; }
+.sp-hero .pw-stage__head { display: block; gap: 12px; margin: 0; }
+.sp-hero .pw-kicker { margin: 0 0 6px; }
+.sp-hero .pw-stage__title > .pw-lede { display: none; }
+.sp-hero .pw-stage__meta { gap: 7px; margin-top: 12px; }
+.sp-spines ol { min-height: 166px; height: 100%; }
+.sp-spines .sp-spine { min-height: 166px; padding: 12px 6px; gap: 10px; }
+.sp-spine__icon { display: none; }
+.sp-spine__top { gap: 4px; }
+.sp-spine__name, .sp-spines li[data-current] .sp-spine__name { font-size: var(--t-small); max-height: 100px; }
+.sp-spine__foot { width: 22px; height: 22px; }
+.sp-spine__foot svg { width: 12px; height: 12px; }
+.stage-detail { margin-top: 12px; font-size: var(--t-small); line-height: 1.55; }
+.stage-detail summary { cursor: pointer; color: var(--ink-2); }
+.stage-detail summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.stage-detail .pw-stage__summary, .stage-detail .pw-reviewline { margin-top: 10px; font-size: var(--t-small); line-height: 1.6; }
+
+.visual-view-controls { display: flex; gap: 8px; margin: 16px 0 20px; flex-wrap: wrap; }
+.visual-view-controls button { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--rule); background: var(--card); color: var(--ink); font: inherit; font-size: var(--t-small); cursor: pointer; }
+.visual-view-controls button[aria-pressed='true'] { color: var(--canvas); background: var(--ink-strong); border-color: var(--ink-strong); }
+.visual-view-controls button:disabled { opacity: .45; cursor: not-allowed; }
+.visual-view-controls button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+#vis-search, #vis-references, #vis-sketches, #vis-refined, [data-focus='decision'] { scroll-margin-top: calc(var(--topbar) + 18px); }
+.pw-refined { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
+.pw-refined__why { font-size: var(--t-body); line-height: 1.7; }
+.pw-refined__side .pw-scores { margin: 16px 0; }
+.pw-visual .pw-branch-panel > .pw-branch-body { min-width: 0; }
+.pw-visual .pw-branch { grid-template-columns: 44px minmax(0, 1fr); border-radius: 18px; }
+.pw-visual .pw-branch__thumb { width: 44px; }
+.pw-stage__body > .pw-visual { gap: 16px; }
+.pw-visual .visual-view-controls { margin: 0; }
+.pw-stage { padding-top: 14px; }
+
+.ov-next-action { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 24px; border-radius: 16px; border: 1px solid var(--rule); border-left: 5px solid var(--focus); background: var(--card); margin-bottom: 16px; }
+.ov-next-action__text { flex: 1; min-width: 0; }
+.ov-next-action .pw-kicker { margin: 0 0 6px; color: var(--ink-2); }
+.ov-next-action h2 { font-size: var(--t-h3); line-height: 1.35; margin: 0; }
+.ov-next-action__summary { margin: 7px 0 0; font-size: var(--t-small); line-height: 1.5; color: var(--ink-2); }
+.ov-pending-artwork { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.ov-pending-artwork li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; font-size: var(--t-small); }
+.ov-pending-artwork li > span { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ov-next-action > .btn { flex-shrink: 0; }
+.ov-problem__title { font-size: var(--t-h1); line-height: 1.25; }
+.ov-problem__pic .art-frame { max-height: 265px; }
+.ov-problem { min-height: 0; }
+.ov-facts { font-size: var(--t-small); }
+.ov-jump { margin-bottom: 16px; }
+
+.cab-item + .cab-item { margin-top: 12px; }
+.cab-folder__body, .cab-item:last-child .cab-folder__body { padding: 14px 16px 16px; min-height: 120px; gap: 10px; }
+.cab-folder__name { grid-column: 1 / -1; white-space: normal; overflow: visible; overflow-wrap: anywhere; line-height: 1.4; }
+.cab-folder__next { white-space: normal; overflow: visible; line-height: 1.5; }
+.cab-folder__body .dot-pill { justify-self: start; }
+.cab-folder:hover, .cab-folder:focus-visible { transform: translateY(-3px); }
+.cabinet__drawer { padding-top: 12px; }
+.pw-records__head { gap: 10px 18px; }
+.pw-records__score { font-size: var(--t-h1); }
+.pw-records .small { font-size: var(--t-small); line-height: 1.7; }
+.pw-records .pw-label { font-size: var(--t-caption); }
+
+@media (min-width: 641px) and (max-width: 920px) {
+  .sp-hero { grid-template-columns: 1fr; }
+  .sp-spines ol, .sp-spines .sp-spine { min-height: 128px; }
+  .sp-spine__name { max-height: 78px; }
+}
+
+/* Balance Chinese proposal lines instead of leaving a one-character final line. */
+.tx-card__slogan { text-wrap: balance; line-break: strict; }

@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.0.1",
-  "registrySha256": "61e85654c8b3a752776283bbb65d989277adbc863b87c3147594c0094cfcbc82",
+  "baselineVersion": "1.2.0",
+  "registrySha256": "2c3136d90e823286b19baafc5a3c55b06139cb3444f5e117d127eaa851c970cd",
   "entries": {
     "agent.proposal-director": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/proposal-director.md": "09a2c55f5a661420c064631b958867035136718bf6a71eee0769a56b5125e56a"
+        "docs/agents/proposal-director.md": "baaa2a19c0b0492f06668d234fcf90e7d92ff0864ec4b9c1ac0514ad1a7ace0b"
       }
     },
     "agent.brief-owner": {
@@ -53,31 +53,31 @@
       }
     },
     "agent.final-review-owner": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/final-review-owner.md": "918a4f57f249796d1ebccd0090693244344624fe88b09ed195cd95afb4536a53"
+        "docs/agents/final-review-owner.md": "0b410009a9aa587ef4f9700d4deb9994b48dbd8787c9f1caeb4919591d1314f8"
       }
     },
     "agent.independent-reviewer": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/independent-reviewer.md": "d00ce7ab8ad60710a5c6805de46fb68025543dcf7fc6e26e22a9db0e512e7849"
+        "docs/agents/independent-reviewer.md": "faa783466b4e0129b77a05acdc3b72ea2f2c3568423513e5af0e4e00ac68a5bf"
       }
     },
     "agent.ui-review-owner": {
-      "version": "1.0.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/agents/ui-review-owner.md": "e743e64f252f72f430573ed55c843470d206d7883aa7ab883e97c05234b09dca"
-      }
-    },
-    "page.home": {
       "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/home.md": "27a2c7fd759ea04ddbf5e6539f0ac6cb3702ebe004b555423a4a58cbb36a0c5f"
+        "docs/agents/ui-review-owner.md": "cac8a695bbc8b033fa91fca62f2bfd7293937141ef253837d04af34fdfeaaf3e"
+      }
+    },
+    "page.home": {
+      "version": "1.0.2",
+      "lifecycle": "current",
+      "files": {
+        "docs/pages/home.md": "13a6eabf835d87acc02a3dfacfc5dcd8eba49f92f4226ecc22e4a51247cabd24"
       }
     },
     "page.new": {
@@ -137,10 +137,10 @@
       }
     },
     "page.delivery": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "files": {
-        "docs/pages/delivery.md": "7811c8666d8b9d6abe4071e5d724a029a6ee95c3c9efc4d06348d9436e8e3296"
+        "docs/pages/delivery.md": "8922cce01276b691f3793c10c4317796d402c0d5a84c89d69e424e509cff6db5"
       }
     },
     "page.content_review": {
@@ -227,17 +227,17 @@
       }
     },
     "contract.handoff": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/handoff.md": "6e4c1b2c2316ab01a9a88c8e52c093f70f797afbc71ae0e37e356d311750d201"
+        "docs/specs/handoff.md": "beee886c324b84091789873b769b40bf24d1874efd2eae298e0757658cd6c8be"
       }
     },
     "contract.ui": {
-      "version": "1.0.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/ui-system.md": "368faffcf720f9b178b20666232d859878f06e5152397ba6495ae28ede341813"
+        "docs/specs/ui-system.md": "3c0093557f64506155ff0e0fbc420aa11c90d5eea07d23819649e35875cd0ef6"
       }
     },
     "contract.workflow": {
@@ -248,17 +248,17 @@
       }
     },
     "contract.change": {
-      "version": "1.0.1",
+      "version": "1.0.3",
       "lifecycle": "current",
       "files": {
-        "docs/specs/change-control.md": "cd14e53831b8ee3b34c191e2f3236f2ff9a810a5bbc636142119635c71d3cddf"
+        "docs/specs/change-control.md": "8c0b9702fbdeef1cd88398796917199d288846efc79bf3443c3fd8b7d82810d4"
       }
     },
     "contract.decisions": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/decisions.md": "cdef7b35b7b2dc266ea09533eb56f2989819988dcefbe9b38a7e5381ef61cd89"
+        "docs/specs/decisions.md": "e142ab8ae54562d57872995fef768154cdd1a5734259da66070cce4479181f25"
       }
     },
     "method.review": {
@@ -267,15 +267,110 @@
       "files": {
         "docs/evaluation/双团评审输出契约_v2.md": "3a1a89f73b2fd153afb59fd3f533b1ec8b381b343c8519ba474f65c256d8ecab"
       }
+    },
+    "agent.development-lead": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/agents/development-lead.md": "45ef6d04706db5d4c0fa6f545232f64f77b908230991816cbf3f81906d7f7006"
+      }
+    },
+    "agent.workbench-ui-owner": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/agents/workbench-ui-owner.md": "9941cf74f61c6cccc6a140309496cda6a45702ff493d1d0e72a682cd5bc5d757"
+      }
+    },
+    "contract.organization": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/agents/README.md": "520c434afa64480d22aa1d217e521460dca0eac062961e9394bb2a395a8c45ea"
+      }
+    },
+    "contract.pages": {
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/pages/README.md": "44aede7310feb09d89d103f1fb85d99e5666004c6160b66b41facd4a8d600d4c"
+      }
+    },
+    "contract.final-review": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/specs/final-review.md": "8ffd851b6e5a6ba446388a14365da3939b033ffa98602ec9b1dcfc8b4bd2bfc5"
+      }
+    },
+    "contract.repository": {
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/specs/repository-scope.md": "1df973c8b4d49c93cc62c9c4821fa450ecce3e6a73e9860ae5f09628cfe4a831"
+      }
+    },
+    "contract.development": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/README.md": "45088f641a0591a819145358305c69d9624b7a9ee219ddd59ee993a219b63150"
+      }
+    },
+    "contract.runtime": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/architecture/runtime.md": "9385e5a48a4f887994321d160a00190438c1e0cf689c5770fef24d475874c306"
+      }
+    },
+    "contract.configuration": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/configuration.md": "1850beb051e07833908605c950dd3dc3ed5c8127a704bc8fc47559c14c032160"
+      }
+    },
+    "contract.testing": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/testing.md": "9f07f083313a4044c65ddf7809b6ac1874aedd60ad848b542ca28e9cd111b655"
+      }
+    },
+    "contract.git": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/git-and-recovery.md": "96498df1675beeee289acd0542aa4af4ee5c259ba3117f509410552ae238bb15"
+      }
+    },
+    "contract.resources": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/resources.md": "6156dba7324637524a4bfa8892e0c3c23efa4a5e902bb71216157531b174b296"
+      }
+    },
+    "contract.usage": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/usage/README.md": "79658466b65539b87423b75ce7936a2f3db4d616198a654c3cbb07c7cbe85881"
+      }
     }
   },
   "entryDocuments": {
-    "AGENTS.md": "ea02027a5bcd94be7084e79b97383222af4af8c65e9773538a8a69d25af97de5",
+    "AGENTS.md": "4c0908910c89b4daf10293a3f9b6185d3c9161cce80628ea8983256a410be711",
     "docs/agents/skills-installation.json": "1e6191692293183bf4ae2d45a45e8be35dff56663aa5825960a61a868f655dce",
     "docs/agents/issue-tracker.md": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e",
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
-    "docs/storage-retention.md": "1c648304f660e0c9ade0982b7b80364baff2fc5cbcf971904ea4dcaca5fa1e33"
+    "docs/storage-retention.md": "1c648304f660e0c9ade0982b7b80364baff2fc5cbcf971904ea4dcaca5fa1e33",
+    "docs/specs/README.md": "13ffabdcd7b1d7f95d69abda7c63eb57523a716918ef525c2ab5d9e7dea463dc",
+    "CONTRIBUTING.md": "0480c0c35c588a8b57cf62b47d39a9145b445f3c683d20c376d4bed8cd84a493",
+    "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
+    "tools/AGENTS.md": "543c10128101add3f7df08dfa8c971c77c7295fbe67f65d7fe5852953fe09921"
   },
   "screenshots": {
     "docs/specs/screenshots/home.png": "9031e9fe130ecf30798ce76da9d58bbad8667d814a91d547aa62a1e1cab64b24",

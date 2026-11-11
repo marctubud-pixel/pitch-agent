@@ -1,0 +1,27 @@
+.qs-strategy { --qs-blue: var(--klein); --qs-tint: color-mix(in srgb, var(--qs-blue) 7%, var(--card)); }
+.qs-analysis { min-width: 0; width: 100%; display: block; }
+.qs-history, .qs-status { padding: 16px 20px; margin-block: 16px; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); line-height: 1.8; }
+.qs-history p { margin-bottom: 0; }
+.qs-status button { margin-left: 12px; }
+.qs-strategy summary { cursor: pointer; font-size: .875rem; line-height: 1.8; }
+.qs-strategy summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+.qs-evidence { padding: 20px 0; border-block: 1px solid var(--rule); }
+.qs-evidence > summary { font-weight: 600; }
+.qs-evidence > p, .qs-history-record p { margin-block: 16px; font-size: .875rem; line-height: 1.85; }
+.qs-record { border-top: 1px solid var(--rule); margin-top: 10px; padding-top: 10px; scroll-margin-top: 100px; }
+.qs-record > summary { margin-left: 15px; padding: 8px 0; }
+.qs-record > summary span { display: inline-block; margin-right: 10px; color: var(--qs-blue); font-size: .75rem; }
+.qs-record-body { padding: 12px 16px 18px; }
+.qs-strategy dl { margin: 16px 0; display: grid; gap: 14px; font-size: .8125rem; line-height: 1.8; }
+.qs-strategy dl > div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 20px; }
+.qs-strategy dt { color: var(--ink-3); }
+.qs-strategy dd { margin: 0; overflow-wrap: anywhere; }
+.qs-research-record, .qs-history-record, .qs-supplements { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.qs-strategy h4 { font-size: .9375rem; line-height: 1.8; margin: 0; }
+.qs-research-record p { margin: 8px 0; font-size: .8125rem; line-height: 1.8; overflow-wrap: anywhere; }
+.qs-research-record .pw-label { font-size: .6875rem; }
+.qs-research-record a { color: var(--qs-blue); text-underline-offset: 3px; }
+.qs-gap { margin-top: 15px; padding: 14px; border-left: 2px solid var(--qs-blue); background: var(--qs-tint); font-size: .8125rem; line-height: 1.8; }
+.qs-gap p { margin: 6px 0; }
+:root[data-theme='dark'] .qs-strategy { --qs-blue: var(--b-200); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .qs-strategy { --qs-blue: var(--b-200); } }

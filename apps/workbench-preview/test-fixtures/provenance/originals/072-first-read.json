@@ -1,0 +1,70 @@
+{
+  "role": "brand",
+  "model": "gpt-6.1-sol",
+  "packet": "r2-first",
+  "packet_file": "packets/r2/first-brand.md",
+  "packet_sha256": "aa089e0e433afe44d5822bf45859671a65cdca215d085ef291ca26c14f0ed423",
+  "stage": "anonymous_natural_first_read_before_fact_packet",
+  "scored": false,
+  "items": [
+    {
+      "id": "k4",
+      "natural_understanding": "叫正在用电脑的人暂时停一下，在工位上喝青屿无糖茶。因为茶里用了虎跑泉水，喝它就当去了一趟虎跑。",
+      "speaker": "像品牌对正在工作的人说话。",
+      "addressee": "工位上的电脑使用者。",
+      "brand_read": "青屿",
+      "category_read": "无糖茶",
+      "product_facts_read": [
+        "茶里用到了虎跑泉水。"
+      ],
+      "difficulties_or_misreadings": [
+        "主文先让我想到实际离开工位去虎跑，副文才改成在工位喝茶代替去一趟。",
+        "“喝一口就算到了”读作想象中的抵达，不是实际到场。"
+      ],
+      "unresolved_from_text": [
+        "未说明无糖茶的具体茶种。"
+      ]
+    },
+    {
+      "id": "n7",
+      "natural_understanding": "这瓶茶需要认识两个名字。青屿是茶品牌，虎跑泉水是茶所用的水。",
+      "speaker": "像品牌或产品介绍者在给读者辨认名称。",
+      "addressee": "还不认识青屿或不清楚虎跑泉水与这瓶茶关系的人。",
+      "brand_read": "青屿",
+      "category_read": "无糖茶",
+      "product_facts_read": [
+        "这瓶茶用到了虎跑泉水。"
+      ],
+      "difficulties_or_misreadings": [
+        "只读“两张名片”时还不知道指哪两个身份，副文读完后明白是品牌名与用水名。"
+      ],
+      "unresolved_from_text": [
+        "未说明无糖茶的具体茶种。"
+      ]
+    },
+    {
+      "id": "v2",
+      "natural_understanding": "一个人记得对方上次带自己去虎跑，这次带一瓶青屿茶给对方，瓶上的虎跑名字让自己想起对方。",
+      "speaker": "曾被对方带去虎跑、现在带茶回赠的人。",
+      "addressee": "上次带说话者去虎跑的人。",
+      "brand_read": "青屿",
+      "category_read": "无糖茶",
+      "product_facts_read": [
+        "这瓶茶用到了虎跑泉水。"
+      ],
+      "difficulties_or_misreadings": [
+        "“这名字”就近承接虎跑泉水，并回接共同去虎跑的经历；自然读到的是虎跑，但指代没有再点明。"
+      ],
+      "unresolved_from_text": [
+        "两人具体是什么关系没有写明。",
+        "未说明无糖茶的具体茶种。"
+      ]
+    }
+  ],
+  "group_differences": {
+    "different": true,
+    "description": "三案读到的事情有差别。k4是工位里用喝茶替代出行的小休息；n7是辨认品牌与用水名称；v2是带茶回赠并想起同行者。",
+    "shared_content": "三案都把青屿读成无糖茶品牌，都说茶用到了虎跑泉水。",
+    "limits": "这里只记录文本首读差别，不评价差别大小、质量、事实真伪或作者意图。"
+  }
+}

@@ -1,0 +1,1290 @@
+{
+  "schemaVersion": 1,
+  "id": "case-report:luma-uk-20261109-v1",
+  "edition": 1,
+  "authoredOn": "2026-11-09",
+  "title": "露玛罐装饮品 · 包装改版研究",
+  "subtitle": "英国零售案例｜25–34岁成年受众｜250ml罐装",
+  "provenance": "authored-desk-research",
+  "fictionalBrand": true,
+  "scopeNote": "露玛为虚构品牌；英国是本次模拟范围。公开事实、包装观察与案例分析分别标明，未开展露玛消费者访谈。",
+  "binding": {
+    "projectId": "luma",
+    "expectedHead": {
+      "artifactId": "art-luma-research-v1",
+      "version": 1,
+      "briefVersion": 2
+    },
+    "acceptedBriefSnapshotsFrom": "src/proposal/research-method/lumaReference.ts originalLumaAttachments[].brief; accept exact raw/knownChinese snapshot only"
+  },
+  "assumptions": [
+    {
+      "id": "assumption-uk",
+      "kind": "case-assumption",
+      "text": "本次以英国罐装预调酒零售为研究范围。",
+      "reason": "原任务卡未指定市场，此处用于模拟案例，不回写已保存简报。"
+    },
+    {
+      "id": "brief-product",
+      "kind": "brief",
+      "text": "露玛为虚构品牌，250ml罐装气泡烈酒；酒精度与售价尚未确定。",
+      "field": "brand"
+    },
+    {
+      "id": "brief-audience",
+      "kind": "brief",
+      "text": "目标为达到法定饮酒年龄的25–34岁成年人，在家参加或举办小型聚会，从便利店或杂货店买饮品。",
+      "field": "audience"
+    },
+    {
+      "id": "brief-questions",
+      "kind": "brief",
+      "text": "要解释适合分享的货架线索，以及竞品怎样传达口味与酒精度。",
+      "field": "researchQuestions"
+    },
+    {
+      "id": "brief-constraints",
+      "kind": "brief",
+      "text": "采用可回收铝罐、无塑料套标；酒精度须臂长可读，不将饮酒与社交或性吸引力成功关联。",
+      "field": "constraints"
+    },
+    {
+      "id": "brief-deliverables",
+      "kind": "brief",
+      "text": "先给有依据的研究，再进入包装策略与三个设计方向。",
+      "field": "deliverables"
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "title": "英国酒类市场与2023年销量变化",
+      "publisher": "IWSR",
+      "url": "https://www.theiwsr.com/insight/no-and-low-alcohol-drinks-outperform-a-declining-uk-alcohol-market/",
+      "published": "2024-06-13",
+      "accessedOn": "2026-11-09",
+      "geography": "英国",
+      "method": "IWSR市场销量估计，2023对2022，各酒类同比。",
+      "limitations": [
+        "RTD包含多种包装和酒基，不等于罐装气泡烈酒；公开摘要未披露分类样本量或置信区间。"
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "预调酒新品的酒精度及价格带结构",
+      "publisher": "IWSR",
+      "url": "https://www.theiwsr.com/insight/how-are-rtds-using-innovation-to-drive-category-expansion/",
+      "published": "2025-05-01",
+      "accessedOn": "2026-11-09",
+      "geography": "英国",
+      "method": "IWSR RTD Innovation Catalogue；本报告只取明确标为英国的新品数比例。",
+      "limitations": [
+        "分母为新品数量，不是销量、销售额或消费者偏好；英国新品总数量与分档阈值未公开。"
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "Drinkaware Monitor 2025完整报告",
+      "publisher": "Drinkaware / YouGov / PS Research",
+      "url": "https://media.drinkaware.co.uk/media/qv2jonrp/drinkaware_monitor_2025_full_report.pdf?v=1dc165c63d5cab0",
+      "published": "2025-08",
+      "accessedOn": "2026-11-09",
+      "geography": "英国",
+      "method": "2025年6月加权在线调查：18–85岁成人7256人，其中饮酒者6074人；购买后饮用时间见印刷页21。",
+      "limitations": [
+        "18–34与目标25–34不完全重合；涵盖所有酒类，不是露玛或RTD专项；自报数据有回忆误差。"
+      ]
+    },
+    {
+      "id": "S4",
+      "title": "Drinkaware Monitor 2025摘要与调查方法",
+      "publisher": "Drinkaware",
+      "url": "https://www.drinkaware.co.uk/research/drinkaware-monitors/drinkaware-monitor-2025",
+      "published": null,
+      "accessedOn": "2026-11-09",
+      "geography": "英国",
+      "method": "网页最后审核日2025-08-27；YouGov面板，按年龄、性别、社会等级和地区加权；并非文章发布日期。",
+      "limitations": [
+        "年龄分组并非25–34专项；省钱动机不等于具体产品支付意愿。"
+      ]
+    },
+    {
+      "id": "S5",
+      "title": "居家饮酒的情境与便利动机",
+      "publisher": "Drinkaware",
+      "url": "https://www.drinkaware.co.uk/research/research-and-evaluation-reports/drinking-at-home",
+      "published": "2026-02-24",
+      "accessedOn": "2026-11-09",
+      "geography": "英国",
+      "method": "整合Monitor与既有研究的居家情境综述。",
+      "limitations": [
+        "只用情境与动机讨论，未采用与2025原报告口径冲突的居家周饮比例。"
+      ]
+    },
+    {
+      "id": "S6",
+      "title": "2024年酒类市场初步数据更新",
+      "publisher": "IWSR",
+      "url": "https://www.theiwsr.com/insight/iwsr-preliminary-data-release-beverage-alcohol-endures-another-tough-year-in-2024/",
+      "published": "2025-04-03",
+      "accessedOn": "2026-11-09",
+      "geography": "英国及全球前20市场",
+      "method": "2024年初步销量估计；本文只取英国未增长的定性更新。",
+      "limitations": [
+        "文中全球RTD增长2%不是英国数据；公开稿未给英国RTD精确变化率。"
+      ]
+    },
+    {
+      "id": "S7",
+      "title": "2025年全年酒类市场更新",
+      "publisher": "IWSR",
+      "url": "https://www.theiwsr.com/insight/a-major-reset-beverage-alcohol-volumes-fall-again-in-2025/?entry=9231918",
+      "published": "2026-06-11",
+      "accessedOn": "2026-11-09",
+      "geography": "英国及全球市场",
+      "method": "IWSR 2026数据发布；只取原文将英国列入RTD主要增长市场的定性描述。",
+      "limitations": [
+        "全球RTD增长3%不是英国增幅；未披露2025年英国精确变化率。部分直接访问仅显示摘要，英国句按公开索引版本核对。"
+      ]
+    },
+    {
+      "id": "P1",
+      "title": "MOTH Margarita 商品规格与单罐标价",
+      "publisher": "Tesco",
+      "url": "https://www.tesco.com/shop/en-GB/products/311690697",
+      "published": null,
+      "accessedOn": "2026-11-09",
+      "geography": "英国零售商品页",
+      "method": "零售商公开SKU规格和未计会员促销的页面标价，读取日快照。",
+      "limitations": [
+        "网页图片无法确认表面光泽或实际印刷质感。",
+        "价格因地区、更新与促销变化；不是成交价或市场份额。"
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "FUNKIN Passion Fruit Martini 商品规格与单罐标价",
+      "publisher": "Tesco",
+      "url": "https://www.tesco.com/shop/en-GB/products/304413254",
+      "published": null,
+      "accessedOn": "2026-11-09",
+      "geography": "英国零售商品页",
+      "method": "零售商公开SKU规格和未计会员促销的页面标价，读取日快照。",
+      "limitations": [
+        "观察所选200ml商品图，不能推及所有系列。",
+        "价格因地区、更新与促销变化；不是成交价或市场份额。"
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Gordon's Gin & Tonic 商品规格与单罐标价",
+      "publisher": "Tesco",
+      "url": "https://www.tesco.com/shop/en-GB/products/285490057",
+      "published": null,
+      "accessedOn": "2026-11-09",
+      "geography": "英国零售商品页",
+      "method": "零售商公开SKU规格和未计会员促销的页面标价，读取日快照。",
+      "limitations": [
+        "当前参考图含活动促销，版次可能变化；本角度未见的信息不等于包装上没有。",
+        "价格因地区、更新与促销变化；不是成交价或市场份额。"
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "White Claw Natural Lime 商品规格与单罐标价",
+      "publisher": "Tesco",
+      "url": "https://www.tesco.com/shop/en-GB/products/306821194",
+      "published": null,
+      "accessedOn": "2026-11-09",
+      "geography": "英国零售商品页",
+      "method": "零售商公开SKU规格和未计会员促销的页面标价，读取日快照。",
+      "limitations": [
+        "价格为缺货页面的列示记录，不保证当前可购。",
+        "价格因地区、更新与促销变化；不是成交价或市场份额。"
+      ]
+    },
+    {
+      "id": "P5",
+      "title": "Gordon's 0.0% & Tonic 商品规格与单罐标价",
+      "publisher": "Tesco",
+      "url": "https://www.tesco.com/shop/en-GB/products/317994645",
+      "published": null,
+      "accessedOn": "2026-11-09",
+      "geography": "英国零售商品页",
+      "method": "零售商公开SKU规格和未计会员促销的页面标价，读取日快照。",
+      "limitations": [
+        "仅是替代选择，不表示露玛将成为无酒精产品；页面标示缺货。",
+        "价格因地区、更新与促销变化；不是成交价或市场份额。"
+      ]
+    },
+    {
+      "id": "P6",
+      "title": "FUNKIN百香果氮气鸡尾酒产品说明",
+      "publisher": "FUNKIN COCKTAILS",
+      "url": "https://funkincocktails.co.uk/products/nitro-can-passionfruit-martini",
+      "published": null,
+      "accessedOn": "2026-11-09",
+      "geography": "英国品牌官网",
+      "method": "品牌原始产品页，确认200ml、5%及氮气口感卖点。",
+      "limitations": [
+        "品牌自述不等于独立口味评测；不使用12罐批发价替代零售单罐价。"
+      ]
+    }
+  ],
+  "datums": [
+    {
+      "id": "moth-volume",
+      "label": "MOTH Margarita 容量",
+      "value": 125,
+      "unit": "ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P1",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "moth-abv",
+      "label": "MOTH Margarita 酒精度",
+      "value": 14.9,
+      "unit": "% ABV",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P1",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "moth-price",
+      "label": "MOTH Margarita 单罐标价",
+      "value": 4.0,
+      "unit": "GBP/罐",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P1",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "moth-unit-price",
+      "label": "MOTH Margarita 每100ml标价",
+      "value": 3.2,
+      "unit": "GBP/100ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "basis": "calculated",
+      "formula": "单罐标价 ÷ 容量ml × 100",
+      "inputDatumIds": [
+        "moth-price",
+        "moth-volume"
+      ]
+    },
+    {
+      "id": "funkin-volume",
+      "label": "FUNKIN Passion Fruit Martini 容量",
+      "value": 200,
+      "unit": "ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P2",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "funkin-abv",
+      "label": "FUNKIN Passion Fruit Martini 酒精度",
+      "value": 5.0,
+      "unit": "% ABV",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P2",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "funkin-price",
+      "label": "FUNKIN Passion Fruit Martini 单罐标价",
+      "value": 2.45,
+      "unit": "GBP/罐",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P2",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "funkin-unit-price",
+      "label": "FUNKIN Passion Fruit Martini 每100ml标价",
+      "value": 1.225,
+      "unit": "GBP/100ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "basis": "calculated",
+      "formula": "单罐标价 ÷ 容量ml × 100",
+      "inputDatumIds": [
+        "funkin-price",
+        "funkin-volume"
+      ]
+    },
+    {
+      "id": "gordons-volume",
+      "label": "Gordon's Gin & Tonic 容量",
+      "value": 250,
+      "unit": "ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P3",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "gordons-abv",
+      "label": "Gordon's Gin & Tonic 酒精度",
+      "value": 5.0,
+      "unit": "% ABV",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P3",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "gordons-price",
+      "label": "Gordon's Gin & Tonic 单罐标价",
+      "value": 2.4,
+      "unit": "GBP/罐",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P3",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "gordons-unit-price",
+      "label": "Gordon's Gin & Tonic 每100ml标价",
+      "value": 0.96,
+      "unit": "GBP/100ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "basis": "calculated",
+      "formula": "单罐标价 ÷ 容量ml × 100",
+      "inputDatumIds": [
+        "gordons-price",
+        "gordons-volume"
+      ]
+    },
+    {
+      "id": "whiteclaw-volume",
+      "label": "White Claw Natural Lime 容量",
+      "value": 330,
+      "unit": "ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P4",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "whiteclaw-abv",
+      "label": "White Claw Natural Lime 酒精度",
+      "value": 4.5,
+      "unit": "% ABV",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P4",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "whiteclaw-price",
+      "label": "White Claw Natural Lime 单罐标价",
+      "value": 2.4,
+      "unit": "GBP/罐",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P4",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "whiteclaw-unit-price",
+      "label": "White Claw Natural Lime 每100ml标价",
+      "value": 0.7272727272727273,
+      "unit": "GBP/100ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "basis": "calculated",
+      "formula": "单罐标价 ÷ 容量ml × 100",
+      "inputDatumIds": [
+        "whiteclaw-price",
+        "whiteclaw-volume"
+      ]
+    },
+    {
+      "id": "gordons-zero-volume",
+      "label": "Gordon's 0.0% & Tonic 容量",
+      "value": 250,
+      "unit": "ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P5",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "gordons-zero-abv",
+      "label": "Gordon's 0.0% & Tonic 酒精度",
+      "value": 0.0,
+      "unit": "% ABV",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P5",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "gordons-zero-price",
+      "label": "Gordon's 0.0% & Tonic 单罐标价",
+      "value": 1.25,
+      "unit": "GBP/罐",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "sourceId": "P5",
+      "locator": "商品标题、标价与规格/ABV栏",
+      "basis": "reported"
+    },
+    {
+      "id": "gordons-zero-unit-price",
+      "label": "Gordon's 0.0% & Tonic 每100ml标价",
+      "value": 0.5,
+      "unit": "GBP/100ml",
+      "period": "2026-11-09页面记录",
+      "geography": "英国",
+      "population": "所选SKU",
+      "basis": "calculated",
+      "formula": "单罐标价 ÷ 容量ml × 100",
+      "inputDatumIds": [
+        "gordons-zero-price",
+        "gordons-zero-volume"
+      ]
+    },
+    {
+      "id": "growth-rtd",
+      "label": "即饮酒",
+      "value": 2,
+      "unit": "销量同比%",
+      "period": "2023对2022",
+      "geography": "英国",
+      "population": "英国相应酒类销量",
+      "sourceId": "S1",
+      "locator": "各品类销量段落及RTDs buck the trend",
+      "basis": "reported"
+    },
+    {
+      "id": "growth-spirits",
+      "label": "烈酒",
+      "value": -5,
+      "unit": "销量同比%",
+      "period": "2023对2022",
+      "geography": "英国",
+      "population": "英国相应酒类销量",
+      "sourceId": "S1",
+      "locator": "各品类销量段落及RTDs buck the trend",
+      "basis": "reported"
+    },
+    {
+      "id": "growth-wine",
+      "label": "葡萄酒",
+      "value": -4,
+      "unit": "销量同比%",
+      "period": "2023对2022",
+      "geography": "英国",
+      "population": "英国相应酒类销量",
+      "sourceId": "S1",
+      "locator": "各品类销量段落及RTDs buck the trend",
+      "basis": "reported"
+    },
+    {
+      "id": "growth-beer",
+      "label": "啤酒",
+      "value": -2,
+      "unit": "销量同比%",
+      "period": "2023对2022",
+      "geography": "英国",
+      "population": "英国相应酒类销量",
+      "sourceId": "S1",
+      "locator": "各品类销量段落及RTDs buck the trend",
+      "basis": "reported"
+    },
+    {
+      "id": "growth-all",
+      "label": "酒类总体",
+      "value": -2,
+      "unit": "销量同比%",
+      "period": "2023对2022",
+      "geography": "英国",
+      "population": "英国相应酒类销量",
+      "sourceId": "S1",
+      "locator": "各品类销量段落及RTDs buck the trend",
+      "basis": "reported"
+    },
+    {
+      "id": "launch-2021",
+      "label": "2021年",
+      "value": 53,
+      "unit": "%新品数",
+      "period": "2021",
+      "geography": "英国",
+      "population": "英国当年新上市RTD产品",
+      "sourceId": "S2",
+      "locator": "Higher ABV levels pique interest：英国高于5%ABV新品",
+      "basis": "reported"
+    },
+    {
+      "id": "launch-2024",
+      "label": "2024年",
+      "value": 72,
+      "unit": "%新品数",
+      "period": "2024",
+      "geography": "英国",
+      "population": "英国当年新上市RTD产品",
+      "sourceId": "S2",
+      "locator": "Higher ABV levels pique interest：英国高于5%ABV新品",
+      "basis": "reported"
+    },
+    {
+      "id": "launch-premium-2024",
+      "label": "较高价格带新品",
+      "value": 74,
+      "unit": "%新品数",
+      "period": "2024",
+      "geography": "英国",
+      "population": "英国当年新上市RTD产品",
+      "sourceId": "S2",
+      "locator": "premium-plus innovations，英国74%",
+      "basis": "reported"
+    },
+    {
+      "id": "same-day-young",
+      "label": "18–34岁",
+      "value": 32,
+      "unit": "%该年龄饮酒者",
+      "period": "2025年6月",
+      "geography": "英国",
+      "population": "英国相应年龄组饮酒者；所有酒类",
+      "sourceId": "S3",
+      "locator": "印刷页21 / PDF第21页，最近一次从商店买酒后，当天稍后开始饮用；右侧年龄比较图",
+      "basis": "reported"
+    },
+    {
+      "id": "same-day-older",
+      "label": "55岁以上",
+      "value": 14,
+      "unit": "%该年龄饮酒者",
+      "period": "2025年6月",
+      "geography": "英国",
+      "population": "英国相应年龄组饮酒者；所有酒类",
+      "sourceId": "S3",
+      "locator": "印刷页21 / PDF第21页，最近一次从商店买酒后，当天稍后开始饮用；右侧年龄比较图",
+      "basis": "reported"
+    },
+    {
+      "id": "budget-young",
+      "label": "18–34岁",
+      "value": 44,
+      "unit": "%该年龄节制饮酒者",
+      "period": "2025年6月",
+      "geography": "英国",
+      "population": "英国该年龄、已采取至少一种节制饮酒做法的饮酒者",
+      "sourceId": "S3",
+      "locator": "印刷页38与40，节制饮酒动机；此题全龄基数n=5295",
+      "basis": "reported"
+    },
+    {
+      "id": "budget-older",
+      "label": "55岁以上",
+      "value": 23,
+      "unit": "%该年龄节制饮酒者",
+      "period": "2025年6月",
+      "geography": "英国",
+      "population": "英国该年龄、已采取至少一种节制饮酒做法的饮酒者",
+      "sourceId": "S3",
+      "locator": "印刷页38与40，节制饮酒动机；此题全龄基数n=5295",
+      "basis": "reported"
+    }
+  ],
+  "findings": [
+    {
+      "id": "visual-moth",
+      "kind": "public-fact",
+      "text": "黑色大块与成分大字，14.9%信息占显著一行，侧边亮绿。",
+      "sourceIds": [
+        "P1"
+      ],
+      "locator": "已检查商品主图：/research-case/luma-uk-20261109/moth-margarita.jpg",
+      "image": "/research-case/luma-uk-20261109/moth-margarita.jpg",
+      "limitations": [
+        "对所选商品图的可见包装观察，不是消费者识别测试或材质鉴定。"
+      ]
+    },
+    {
+      "id": "visual-funkin",
+      "kind": "public-fact",
+      "text": "洋红底、黄色口味名、酒杯与百香果图形；底部标200ml、5%。",
+      "sourceIds": [
+        "P2"
+      ],
+      "locator": "已检查商品主图：/research-case/luma-uk-20261109/funkin-passionfruit-pack.jpg",
+      "image": "/research-case/luma-uk-20261109/funkin-passionfruit-pack.jpg",
+      "limitations": [
+        "对所选商品图的可见包装观察，不是消费者识别测试或材质鉴定。"
+      ]
+    },
+    {
+      "id": "visual-gordons",
+      "kind": "public-fact",
+      "text": "大幅手写品牌、白色品牌横带、绿色主体和GIN & TONIC品类名。",
+      "sourceIds": [
+        "P3"
+      ],
+      "locator": "已检查商品主图：/research-case/luma-uk-20261109/gordons-tonic.jpg",
+      "image": "/research-case/luma-uk-20261109/gordons-tonic.jpg",
+      "limitations": [
+        "对所选商品图的可见包装观察，不是消费者识别测试或材质鉴定。"
+      ]
+    },
+    {
+      "id": "visual-whiteclaw",
+      "kind": "public-fact",
+      "text": "白底大幅海浪标识、青柠色口味横条、圆形4.5%标记及330ml容量。",
+      "sourceIds": [
+        "P4"
+      ],
+      "locator": "已检查商品主图：/research-case/luma-uk-20261109/white-claw-lime.jpg",
+      "image": "/research-case/luma-uk-20261109/white-claw-lime.jpg",
+      "limitations": [
+        "对所选商品图的可见包装观察，不是消费者识别测试或材质鉴定。"
+      ]
+    },
+    {
+      "id": "visual-gordons-zero",
+      "kind": "public-fact",
+      "text": "绿色品牌体系，中段蓝色无酒精标识与醒目的0.0圆标。",
+      "sourceIds": [
+        "P5"
+      ],
+      "locator": "已检查商品主图：/research-case/luma-uk-20261109/gordons-zero.jpg",
+      "image": "/research-case/luma-uk-20261109/gordons-zero.jpg",
+      "limitations": [
+        "对所选商品图的可见包装观察，不是消费者识别测试或材质鉴定。"
+      ]
+    },
+    {
+      "id": "market-update",
+      "kind": "public-fact",
+      "text": "2024年初步数据将英国列入RTD销量未增长的市场，公开稿未披露英国具体增幅。",
+      "sourceIds": [
+        "S6"
+      ],
+      "limitations": []
+    },
+    {
+      "id": "market-update-2025",
+      "kind": "public-fact",
+      "text": "2025年全年更新将英国列入RTD主要增长市场，未披露英国精确增幅。",
+      "sourceIds": [
+        "S7"
+      ],
+      "limitations": []
+    },
+    {
+      "id": "home-context",
+      "kind": "public-fact",
+      "text": "Drinkaware居家饮酒综述讨论了便利、成本和不同居家情境。",
+      "sourceIds": [
+        "S5"
+      ],
+      "limitations": []
+    },
+    {
+      "id": "funkin-offer",
+      "kind": "public-fact",
+      "text": "FUNKIN以200ml、5%氮气鸡尾酒强调即开与口感体验。",
+      "sourceIds": [
+        "P6"
+      ],
+      "limitations": []
+    },
+    {
+      "id": "market-conclusion",
+      "kind": "analysis",
+      "text": "即饮已是竞争基础，露玛不能仅靠“开罐就喝”建立差异。",
+      "premiseIds": [
+        "growth-rtd",
+        "market-update",
+        "market-update-2025",
+        "launch-2024",
+        "launch-premium-2024",
+        "funkin-offer"
+      ],
+      "limitations": [
+        "新品比例是供给结构，不等于消费者偏好；2023的增长不可当作当前增速。"
+      ]
+    },
+    {
+      "id": "segments-conclusion",
+      "kind": "analysis",
+      "text": "先把25–34岁的小聚任务拆成临时带饮、备饮主理和份量预算核对三种情境。",
+      "premiseIds": [
+        "brief-audience",
+        "same-day-young",
+        "budget-young",
+        "home-context"
+      ],
+      "limitations": [
+        "这是围绕任务卡提出的情境细分，可重叠；没有25–34岁专项分群调查，不给份额或支付意愿。"
+      ]
+    },
+    {
+      "id": "competition-conclusion",
+      "kind": "analysis",
+      "text": "所选SKU已覆盖传统配方、果味鸡尾酒、气泡水与0.0替代；露玛的规格和强度需一起被读懂。",
+      "premiseIds": [
+        "moth-abv",
+        "funkin-abv",
+        "gordons-abv",
+        "whiteclaw-abv",
+        "gordons-zero-abv",
+        "brief-product"
+      ],
+      "limitations": [
+        "5个定向选取SKU不是全市场样本；露玛售价和酒精度未定，未画虚构坐标。"
+      ]
+    },
+    {
+      "id": "packaging-conclusion",
+      "kind": "analysis",
+      "text": "口味与饮品身份已有多种成熟表达，露玛应先形成清楚的信息骨架，再比较视觉风格。",
+      "premiseIds": [
+        "visual-moth",
+        "visual-funkin",
+        "visual-gordons",
+        "visual-whiteclaw",
+        "visual-gordons-zero",
+        "brief-constraints"
+      ],
+      "limitations": [
+        "商品图观察不能证明真实冷柜识别率、实际材质或消费者偏好。"
+      ]
+    },
+    {
+      "id": "opportunity-conclusion",
+      "kind": "analysis",
+      "text": "把“轻松”落实为容易选口味、看清酒精度和直接备饮，作为露玛优先验证的包装突破口。",
+      "premiseIds": [
+        "market-conclusion",
+        "segments-conclusion",
+        "competition-conclusion",
+        "packaging-conclusion"
+      ],
+      "limitations": [
+        "不是已验证的独占市场空白；需先确认真实配方、定价、目标市场，再做25–34岁消费者和货架测试。"
+      ]
+    },
+    {
+      "id": "opp-flavour",
+      "kind": "analysis",
+      "text": "口味先被认出：在同一品牌骨架中，用原料图形或清楚口味名区分不同罐。",
+      "premiseIds": [
+        "visual-funkin",
+        "visual-whiteclaw",
+        "same-day-young",
+        "brief-questions"
+      ],
+      "limitations": [
+        "不把相邻年龄的当天饮用比例解释为口味偏好；限时找物与品类误认需要另测。"
+      ]
+    },
+    {
+      "id": "opp-strength",
+      "kind": "analysis",
+      "text": "让轻松不等于低度：真实ABV与250ml放在稳定位置，避免只凭罐装外形猜强度。",
+      "premiseIds": [
+        "launch-2024",
+        "moth-abv",
+        "gordons-abv",
+        "gordons-zero-abv",
+        "brief-product",
+        "brief-constraints"
+      ],
+      "limitations": [
+        "露玛ABV未定；不提前写低度承诺，也不计算虚构的每罐酒精单位。"
+      ]
+    },
+    {
+      "id": "opp-host",
+      "kind": "analysis",
+      "text": "围绕小聚备饮建立系列：保持口味间易区分，准备步骤短，信息便于主人向客人说明。",
+      "premiseIds": [
+        "home-context",
+        "funkin-offer",
+        "brief-audience",
+        "brief-deliverables"
+      ],
+      "limitations": [
+        "需验证真实备饮任务；不能把酒精与社交成功、健康或放松治疗绑定。"
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "id": "bring",
+      "title": "临时带饮到访者",
+      "task": "赴约途中在冷柜中快速选一罐，拿到就能带走。",
+      "barrier": "时间短，饮品身份、口味和强度容易混淆。",
+      "packaging": "口味名、酒类身份和ABV同屏可读；250ml容量明确。",
+      "premiseIds": [
+        "same-day-young",
+        "brief-audience"
+      ],
+      "test": "观察目标年龄的冷柜找到率与误认原因。"
+    },
+    {
+      "id": "host",
+      "title": "小聚备饮主理人",
+      "task": "为成年朋友备好容易说明、即开即饮的多种口味。",
+      "barrier": "备饮步骤多，跨口味系列难分辨。",
+      "packaging": "统一品牌骨架，口味色带或原料图形形成系列。",
+      "premiseIds": [
+        "home-context",
+        "funkin-offer",
+        "brief-audience"
+      ],
+      "test": "核对口味组合、备饮数量及替换现有酒水的意愿。"
+    },
+    {
+      "id": "check",
+      "title": "份量与预算核对者",
+      "task": "决定是否喝、喝多少，并核对每份花费。",
+      "barrier": "同样是罐装，容量与ABV差距大。",
+      "packaging": "真实酒精度、容量、产品身份清楚；售价确定后再比较价格。",
+      "premiseIds": [
+        "budget-young",
+        "moth-abv",
+        "gordons-abv",
+        "brief-product"
+      ],
+      "test": "验证信息理解和真实价格接受度，不用推测代替支付意愿测试。"
+    }
+  ],
+  "products": [
+    {
+      "id": "moth",
+      "name": "MOTH Margarita",
+      "type": "高酒精度鸡尾酒",
+      "sourceId": "P1",
+      "url": "https://www.tesco.com/shop/en-GB/products/311690697",
+      "availability": "页面列示",
+      "visual": "黑色大块与成分大字，14.9%信息占显著一行，侧边亮绿。",
+      "signal": "鸡尾酒配方与强度",
+      "caveat": "网页图片无法确认表面光泽或实际印刷质感。",
+      "datumIds": {
+        "volume": "moth-volume",
+        "abv": "moth-abv",
+        "price": "moth-price",
+        "unit-price": "moth-unit-price"
+      },
+      "image": "/research-case/luma-uk-20261109/moth-margarita.jpg",
+      "observationId": "visual-moth"
+    },
+    {
+      "id": "funkin",
+      "name": "FUNKIN Passion Fruit Martini",
+      "type": "水果鸡尾酒",
+      "sourceId": "P2",
+      "url": "https://www.tesco.com/shop/en-GB/products/304413254",
+      "availability": "页面列示",
+      "visual": "洋红底、黄色口味名、酒杯与百香果图形；底部标200ml、5%。",
+      "signal": "口味与氮气口感",
+      "caveat": "观察所选200ml商品图，不能推及所有系列。",
+      "datumIds": {
+        "volume": "funkin-volume",
+        "abv": "funkin-abv",
+        "price": "funkin-price",
+        "unit-price": "funkin-unit-price"
+      },
+      "image": "/research-case/luma-uk-20261109/funkin-passionfruit-pack.jpg",
+      "observationId": "visual-funkin"
+    },
+    {
+      "id": "gordons",
+      "name": "Gordon's Gin & Tonic",
+      "type": "传统金汤力",
+      "sourceId": "P3",
+      "url": "https://www.tesco.com/shop/en-GB/products/285490057",
+      "availability": "页面列示",
+      "visual": "大幅手写品牌、白色品牌横带、绿色主体和GIN & TONIC品类名。",
+      "signal": "熟悉品牌与经典配方",
+      "caveat": "当前参考图含活动促销，版次可能变化；本角度未见的信息不等于包装上没有。",
+      "datumIds": {
+        "volume": "gordons-volume",
+        "abv": "gordons-abv",
+        "price": "gordons-price",
+        "unit-price": "gordons-unit-price"
+      },
+      "image": "/research-case/luma-uk-20261109/gordons-tonic.jpg",
+      "observationId": "visual-gordons"
+    },
+    {
+      "id": "whiteclaw",
+      "name": "White Claw Natural Lime",
+      "type": "酒精气泡水",
+      "sourceId": "P4",
+      "url": "https://www.tesco.com/shop/en-GB/products/306821194",
+      "availability": "页面标示缺货",
+      "visual": "白底大幅海浪标识、青柠色口味横条、圆形4.5%标记及330ml容量。",
+      "signal": "气泡品类与口味色带",
+      "caveat": "价格为缺货页面的列示记录，不保证当前可购。",
+      "datumIds": {
+        "volume": "whiteclaw-volume",
+        "abv": "whiteclaw-abv",
+        "price": "whiteclaw-price",
+        "unit-price": "whiteclaw-unit-price"
+      },
+      "image": "/research-case/luma-uk-20261109/white-claw-lime.jpg",
+      "observationId": "visual-whiteclaw"
+    },
+    {
+      "id": "gordons-zero",
+      "name": "Gordon's 0.0% & Tonic",
+      "type": "无酒精替代",
+      "sourceId": "P5",
+      "url": "https://www.tesco.com/shop/en-GB/products/317994645",
+      "availability": "页面标示缺货",
+      "visual": "绿色品牌体系，中段蓝色无酒精标识与醒目的0.0圆标。",
+      "signal": "无酒精身份区分",
+      "caveat": "仅是替代选择，不表示露玛将成为无酒精产品；页面标示缺货。",
+      "datumIds": {
+        "volume": "gordons-zero-volume",
+        "abv": "gordons-zero-abv",
+        "price": "gordons-zero-price",
+        "unit-price": "gordons-zero-unit-price"
+      },
+      "image": "/research-case/luma-uk-20261109/gordons-zero.jpg",
+      "observationId": "visual-gordons-zero"
+    }
+  ],
+  "sections": [
+    {
+      "id": "market",
+      "title": "行业与市场",
+      "headlineId": "market-conclusion",
+      "summary": "英国RTD并非单向增长：2023年销量+2%，2024年初步未增长，2025年又被列入主要增长市场。高于5%ABV的新品占比在2021–2024年上升，2024年较高价格带新品占74%。",
+      "findingIds": [
+        "market-update",
+        "market-update-2025"
+      ],
+      "figures": [
+        {
+          "id": "market-growth",
+          "kind": "signed-bars",
+          "title": "2023年英国：即饮酒增长，其他主要酒类回落",
+          "description": "同一地区、同一年份、相同销量口径。",
+          "unit": "销量同比（%）",
+          "datumIds": [
+            "growth-rtd",
+            "growth-spirits",
+            "growth-wine",
+            "growth-beer",
+            "growth-all"
+          ],
+          "min": -6,
+          "max": 3,
+          "note": "历史数据，2023对2022。2024年英国RTD初步未增长，2025年列入主要增长市场；后两年英国精确增幅未披露，不能把全球增幅填入本图。"
+        },
+        {
+          "id": "new-launch-strength",
+          "kind": "bars",
+          "title": "高于5%ABV的新品占比：53% → 72%",
+          "description": "英国RTD新品的数量结构变化。",
+          "unit": "%新品数",
+          "datumIds": [
+            "launch-2021",
+            "launch-2024"
+          ],
+          "max": 100,
+          "note": "分母是当年新品数，不是市场份额或消费者偏好。2024年较高价格带新品占74%，也不能据此确定露玛定价。"
+        }
+      ],
+      "callouts": [
+        {
+          "text": "2024年较高价格带新品占比",
+          "datumId": "launch-premium-2024"
+        }
+      ]
+    },
+    {
+      "id": "segments",
+      "title": "人群细分",
+      "headlineId": "segments-conclusion",
+      "summary": "用可观察的购买任务组织人群。先看相邻年龄的公开行为，再提出露玛需要验证的三个需求情境。",
+      "findingIds": [],
+      "figures": [
+        {
+          "id": "same-day",
+          "kind": "bars",
+          "title": "最近一次商店买酒后，当天稍后饮用的比例",
+          "description": "18–34岁32%，55岁以上14%；2025年英国饮酒者，所有酒类。",
+          "unit": "%该年龄饮酒者",
+          "datumIds": [
+            "same-day-young",
+            "same-day-older"
+          ],
+          "max": 100,
+          "note": "目标25–34岁只是18–34岁的一部分，不能直接套用32%。全体饮酒者样本6074人，在线加权自报调查。"
+        },
+        {
+          "id": "need-states",
+          "kind": "segments",
+          "title": "露玛的三个需求情境",
+          "description": "案例分析，可重叠，不代表测量得到的人群份额。",
+          "segmentIds": [
+            "bring",
+            "host",
+            "check"
+          ],
+          "note": "三个情境来自任务卡与公开资料推演，后续要用目标年龄的真实观察验证。"
+        }
+      ]
+    },
+    {
+      "id": "competitors",
+      "title": "竞品分析",
+      "headlineId": "competition-conclusion",
+      "summary": "挑选英国零售中五款有明确规格的SKU，覆盖直接竞品和相邻替代；比较实际价格与酒精度。",
+      "findingIds": [],
+      "figures": [
+        {
+          "id": "price-abv",
+          "kind": "scatter",
+          "title": "同为一罐，价格与酒精度差异很大",
+          "description": "横轴为单罐页面标价，纵轴为商品标示酒精度。",
+          "xLabel": "单罐标价（英镑）",
+          "yLabel": "酒精度（% ABV）",
+          "xMax": 5,
+          "yMax": 16,
+          "productIds": [
+            "moth",
+            "funkin",
+            "gordons",
+            "whiteclaw",
+            "gordons-zero"
+          ],
+          "note": "2026-11-09 Tesco公开标价，不计会员促销。不同罐容量详见表；White Claw和Gordon’s 0.0页面标示缺货。露玛售价与ABV待定，不画推测点。"
+        },
+        {
+          "id": "product-comparison",
+          "kind": "products",
+          "title": "规格与价格对照",
+          "description": "每100ml价格由同一单罐标价与容量计算。",
+          "productIds": [
+            "moth",
+            "funkin",
+            "gordons",
+            "whiteclaw",
+            "gordons-zero"
+          ],
+          "note": "计算式：单罐标价 ÷ 容量ml × 100。容量差异、配方和饮用份量同时考虑，不将单位价格作为质量或健康评分。"
+        }
+      ]
+    },
+    {
+      "id": "product-packaging",
+      "title": "产品与包装",
+      "headlineId": "packaging-conclusion",
+      "summary": "直接看所选SKU的罐身，再把观察转成露玛的信息层级要求。",
+      "findingIds": [],
+      "figures": [
+        {
+          "id": "pack-references",
+          "kind": "references",
+          "title": "五款真实包装参考",
+          "description": "已检查商品图；图片保留原样，版权属于各品牌与零售商。",
+          "productIds": [
+            "moth",
+            "funkin",
+            "gordons",
+            "whiteclaw",
+            "gordons-zero"
+          ],
+          "note": "点击可查看大图和来源。网页商品图不能代替真实冷柜、臂长识读或印刷打样。"
+        },
+        {
+          "id": "pack-codes",
+          "kind": "packaging-matrix",
+          "title": "包装如何传达饮品身份与口味",
+          "description": "对所选实物图的视觉观察，不是主观高端感评分。",
+          "productIds": [
+            "moth",
+            "funkin",
+            "gordons",
+            "whiteclaw",
+            "gordons-zero"
+          ],
+          "note": "色彩和图形按已检查参考图描述，不推测材料、表面工艺或全部系列的统一外观。"
+        },
+        {
+          "id": "luma-hierarchy",
+          "kind": "hierarchy",
+          "title": "露玛建议共用的信息骨架",
+          "description": "设计建议，尚未形成包装成稿。",
+          "steps": [
+            {
+              "label": "品牌与酒类身份",
+              "text": "露玛 / 气泡烈酒，避免误认成普通汽水。",
+              "premiseIds": [
+                "brief-product",
+                "competition-conclusion"
+              ]
+            },
+            {
+              "label": "清楚的口味名称",
+              "text": "以口味名配合原料图形或色带，形成系列区分。",
+              "premiseIds": [
+                "visual-funkin",
+                "visual-whiteclaw",
+                "brief-questions"
+              ]
+            },
+            {
+              "label": "真实ABV与250ml",
+              "text": "酒精度待配方确认；保持稳定位置，不写虚构低度承诺。",
+              "premiseIds": [
+                "brief-product",
+                "brief-constraints",
+                "launch-2024"
+              ]
+            }
+          ],
+          "note": "铝罐和无塑料套标来自任务卡。此处是信息层级建议，不声称臂长可读或材料可行性已通过测试。"
+        }
+      ]
+    },
+    {
+      "id": "breakthrough",
+      "title": "突破口",
+      "headlineId": "opportunity-conclusion",
+      "summary": "把市场、购买情境、真实竞品和包装观察接起来，提出一个优先验证的核心方向，以及三条视觉表达路线。",
+      "findingIds": [
+        "opp-flavour",
+        "opp-strength",
+        "opp-host"
+      ],
+      "figures": [
+        {
+          "id": "opportunity-chain",
+          "kind": "chain",
+          "title": "从研究发现到包装突破口",
+          "description": "每一步都有明确前提，结论为案例分析。",
+          "steps": [
+            {
+              "label": "观察",
+              "text": "即饮竞品已同时覆盖经典配方、果味、气泡水与无酒精替代，强度从0.0%到14.9%。",
+              "premiseIds": [
+                "moth-abv",
+                "funkin-abv",
+                "gordons-abv",
+                "whiteclaw-abv",
+                "gordons-zero-abv"
+              ]
+            },
+            {
+              "label": "张力",
+              "text": "露玛要传达轻松，但罐装外形不能说明酒精度；临时购买还需要快速识别口味。",
+              "premiseIds": [
+                "brief-product",
+                "same-day-young",
+                "competition-conclusion",
+                "packaging-conclusion"
+              ]
+            },
+            {
+              "label": "突破口",
+              "text": "做一套口味好选、强度清楚、适合备饮的信息系统，再验证哪种视觉风格最有效。",
+              "premiseIds": [
+                "opportunity-conclusion",
+                "opp-flavour",
+                "opp-strength",
+                "opp-host"
+              ]
+            }
+          ],
+          "note": "这是由本案材料推出的候选，不是消费者已验证结论，也不是独占市场空白。"
+        },
+        {
+          "id": "directions",
+          "kind": "directions",
+          "title": "三个包装方向，验证同一个信息骨架",
+          "description": "进入后续策略与视觉阶段的候选，不代表已批准成稿。",
+          "items": [
+            {
+              "id": "ingredient",
+              "title": "清爽原料感",
+              "visual": "清楚口味名配合克制的原料图形；品牌和ABV保留固定位置。",
+              "because": "FUNKIN已有果实线索，露玛要比较的是识别效率，不能只以加水果图案作为差异。",
+              "premiseIds": [
+                "visual-funkin",
+                "opp-flavour"
+              ],
+              "test": "在真实竞品旁做限时找物与酒类误认测试。"
+            },
+            {
+              "id": "table",
+              "title": "成熟餐桌感",
+              "visual": "以文字和留白组织品类、口味与真实强度，形成适合餐桌陈列的系列。",
+              "because": "MOTH证明配方大字是一种现成表达；本方向需检验露玛是否能被清楚区分。",
+              "premiseIds": [
+                "visual-moth",
+                "brief-audience",
+                "opp-host"
+              ],
+              "test": "比较口味理解、系列辨识和小聚备饮任务。"
+            },
+            {
+              "id": "code",
+              "title": "直接口味编码",
+              "visual": "大口味名与稳定色带做系列区分，保留明显的气泡烈酒身份和ABV。",
+              "because": "White Claw用色带标口味；借鉴信息组织而不复制品牌外观。",
+              "premiseIds": [
+                "visual-whiteclaw",
+                "opp-strength",
+                "opp-flavour"
+              ],
+              "test": "比较冷柜识别、ABV读取和与汽水混淆的情况。"
+            }
+          ],
+          "note": "没有偏好得分或胜出排名。配方、定价、目标市场和真实25–34岁研究需另行确认。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {buildDeck} from './index.mjs';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+const [style,output]=process.argv.slice(2);
+if(!['editorial','stage','evidence'].includes(style)||!output)throw new Error('Usage: controlled-export.mjs editorial|stage|evidence NEW_OUTPUT_DIRECTORY');
+const inputs=Object.fromEntries(['ledger','brand','assets'].map(name=>[name,path.join(root,'evidence/controlled-input',`${name}.json`)]));
+const result=await buildDeck({...inputs,style,output:path.resolve(output)});
+const files=[result.deckPath,result.manifestPath,result.validationPath,result.objectCoveragePath,...result.renderPaths];
+const receipt={schemaVersion:'controlled-edition-receipt-v1',authority:'Controlled local technical evidence only. No client, project, final review or delivery approval.',style,inputs,result,files:await Promise.all(files.map(async file=>{const raw=await fs.readFile(file);return {file,sha256:createHash('sha256').update(raw).digest('hex'),byteCount:raw.length};}))};
+await fs.writeFile(path.join(path.resolve(output),'controlled-edition-receipt.json'),JSON.stringify(receipt,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));

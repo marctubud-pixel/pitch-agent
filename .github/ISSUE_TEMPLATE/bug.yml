@@ -1,0 +1,20 @@
+name: 缺陷
+description: 可复现的页面、业务或工程问题
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现与证据
+      description: 提交SHA、对象版本、入口、步骤、实际与预期；页面附视口及截图，保留原回执。
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 影响范围
+      description: 所属岗位、页面、规范ID，是否影响历史、权限、导出或正式状态。
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收与限制
+      description: 可观察的完成条件、已知未验项及暂停边界。

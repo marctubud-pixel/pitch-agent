@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {acquisitionFixture} from './research-acquisition-fixture.mjs';
+import {verifyResearchAcquisitionOriginal} from './research-acquisition-original.mjs';
+async function run(f){const continuation=await f.executor.continueResearch('p',f.request());for(let n=0;n<8;n++){const status=f.executor.researchStatus('p');for(const id of status.queuedJobIds)await f.executor.execute('p',id);await f.executor.advanceResearch('p');if(!f.executor.researchStatus('p').queuedJobIds.length)break;}return f.executor.researchStatus('p');}
+for(const adapter of ['json-http-v1','ddg-lite-v1'])test(`${adapter} executes bounded plan, four branches, physical admission and research producer`,async t=>{
+ const f=await acquisitionFixture({adapter});t.after(()=>f.close());const status=await run(f),p=f.store.read('p');assert.equal(status.state,'sealed',JSON.stringify(status));assert.equal(p.jobs.length,6);assert.ok(p.jobs.every(j=>j.status==='succeeded'),JSON.stringify(p.jobs.map(j=>({purpose:j.purpose,status:j.status,error:j.error}))));assert.equal(f.calls.length,2);assert.equal(p.researchAcquisitions[0].admission.sourceRecords.length,1);assert.equal(p.researchAcquisitions[0].admission.edges.length,16);assert.equal(p.researchAcquisitions[0].admission.edges.filter(e=>e.status==='duplicate').length,4);const ref=p.jobs.at(-1).task.researchDataBasis.acquisition;await verifyResearchAcquisitionOriginal(p,ref,{executionRoot:f.root,historical:false});
+});
+test('unconfirmed task blocks before any planner, search, capture or extraction action',async t=>{const f=await acquisitionFixture({confirmed:false});t.after(()=>f.close());await assert.rejects(()=>f.executor.continueResearch('p',f.request()),/confirmed task card/i);assert.equal(f.calls.length,0);assert.equal(f.tools.length,0);assert.equal(f.store.read('p').jobs.length,0);});

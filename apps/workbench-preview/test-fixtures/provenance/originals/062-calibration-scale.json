@@ -1,0 +1,10 @@
+{
+  "model": "gpt-6.1-terra",
+  "role": "user",
+  "understands_4_vs_5": true,
+  "distinction": "4达到阶段基准，可有非关键优化；5须有对照、指出具体优于基准之处及取舍。完全正确本身不等于质量5。",
+  "neutral_baseline_scores": {"fact_match": 4, "direct_understanding": 4, "brand_product_link": 4},
+  "reason": "中性句准确、易懂，且已确认的工艺和配料属于句中品牌产品，达到给定基准；没有更优对照，也未证明情绪或传播效果。",
+  "prior_answer_qualification": "先前事实匹配与直接理解的5表达对给定资料的匹配和字面清晰程度，不是正式内部质量5；按补充尺度两项均为4。原答卷保留。",
+  "limitation": "虚构案例只校准内部边界，不证明模型评分等同真实人类审美。"
+}

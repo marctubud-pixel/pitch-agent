@@ -1,0 +1,1575 @@
+diff -ruN proposal-workbench/src/i18n/messages/en.ts /home/claude/proposal-workbench/src/i18n/messages/en.ts
+--- proposal-workbench/src/i18n/messages/en.ts	2026-11-03 06:14:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/en.ts	2026-11-03 08:08:20.883754882 +0800
+@@ -1099,6 +1099,69 @@
+   "pw.contrib.send": "Add to this stage",
+   "pw.contrib.sent": "Added. The agents will take it into account.",
+   "pw.contrib.note": "Your input is a suggestion for the agents. Facts still need evidence: a preference cannot make an unsupported claim true.",
++  "wb.hide": "Hide WorkBot",
++  "wb.show": "Show WorkBot",
++  "pw.rev.previous": "Previous",
++  "pw.rev.current": "Current",
++  "pw.rev.title": "Revision record: {from} → {to}",
++  "pw.rev.request": "Request",
++  "pw.rev.challenge": "Independent challenge to {v}:",
++  "pw.rev.ruleFailed": "{v} did not meet the acceptance rule.",
++  "pw.rev.noRequest": "The data does not record why {v} was replaced.",
++  "pw.rev.unmetList": "Not met in that version: {list}.",
++  "pw.rev.response": "Response",
++  "pw.rev.noResponse": "No response is recorded.",
++  "pw.rev.changed": "Changed",
++  "pw.rev.changedArt": "Refined artwork {from} → {to}.",
++  "pw.rev.seeCurrent": "See {v}",
++  "pw.rev.reqAdded": "check added in this version ({state})",
++  "pw.rev.reqChange": "{from} → {to}",
++  "pw.rev.noDiff": "Only the requirement results and the agents’ description of each version are recorded; there is no detailed list of visual changes.",
++  "pw.rev.review": "Independent review",
++  "pw.rev.noScore": "no scores recorded",
++  "pw.rev.avg": "average {avg}",
++  "pw.rev.meets": "meets the acceptance rule",
++  "pw.rev.notMeets": "does not meet the acceptance rule",
++  "pw.rev.open": "Still open",
++  "pw.rev.noneRecorded": "Nothing recorded as open for {v}.",
++  "pw.rev.compare": "Compare {from} and {to}",
++  "pw.rev.passages_one": "{count} passage changed by the review",
++  "pw.rev.passages_other": "{count} passages changed by the review",
++  "pw.rev.noReason": "no reason recorded",
++  "pw.rev.checksNotLinked_one": "The review lists {count} revised check above; the data does not link checks to passages.",
++  "pw.rev.checksNotLinked_other": "The review lists {count} revised checks above; the data does not link checks to passages.",
++  "pw.rev.yourIdea": "Your idea",
++  "pw.rev.usedIn": "See where it is used: direction {id}, copy lines",
++  "pw.rev.yourRequest": "Your revision request",
++  "pw.rev.notConnected": "Revision results are not connected in this prototype. The stage comes back to you for a decision (simulated).",
++  "pw.rev.noRecords": "No revision records are available yet.",
++  "pw.rev.version": "Version",
++  "pw.rev.stageVersion": "stage version v{v}",
++  "pw.rev.noVersion": "No new version recorded yet.",
++  "pw.rev.locationUnknown": "Where the work changed is not recorded.",
++  "pw.rev.demoArtwork": "This demonstrates the revision state only; the artwork has not changed.",
++  "pw.rev.demoContent": "This demonstrates the revision state only; the content has not changed.",
++  "pw.o.jumpLabel": "Shortcuts",
++  "pw.o.jumpPending": "Handle pending tasks",
++  "pw.o.jumpResults": "View current results",
++  "pw.o.confirmItems_one": "item still needs your confirmation",
++  "pw.o.confirmItems_other": "items still need your confirmation",
++  "pw.o.part.brief": "the task card to confirm",
++  "pw.o.part.decide_one": "{count} decision to make",
++  "pw.o.part.decide_other": "{count} decisions to make",
++  "pw.o.part.revise_one": "{count} stage being revised",
++  "pw.o.part.revise_other": "{count} stages being revised",
++  "pw.o.part.unknowns_one": "1 list of {count} open fact",
++  "pw.o.part.unknowns_other": "1 list of {count} open facts",
++  "pw.o.partsNote": "Open facts count as one item.",
++  "pw.o.keyConstraints": "Key constraints",
++  "pw.o.moreConstraints_one": "+{count} more in the full brief",
++  "pw.o.moreConstraints_other": "+{count} more in the full brief",
++  "pw.o.stillUnknown": "Still unknown",
++  "pw.o.noneUnknown": "Nothing recorded as unknown",
++  "pw.o.fullBrief": "Show the full brief",
++  "pw.o.briefLoading": "Loading the brief…",
++  "pw.o.briefError": "The brief could not be loaded.",
+   "pw.contrib.destLabel": "Adds to",
+   "pw.contrib.sendTo": "Add to {stage}",
+   "pw.contrib.sentTo": "Added to {stage}. The agents will take it into account.",
+diff -ruN proposal-workbench/src/i18n/messages/es.ts /home/claude/proposal-workbench/src/i18n/messages/es.ts
+--- proposal-workbench/src/i18n/messages/es.ts	2026-11-03 06:14:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/es.ts	2026-11-03 08:08:20.918558129 +0800
+@@ -1082,6 +1082,69 @@
+   "pw.contrib.send": "Añadir a esta etapa",
+   "pw.contrib.sent": "Añadido. Los agentes lo tendrán en cuenta.",
+   "pw.contrib.note": "Tu aporte es una sugerencia para los agentes. Los hechos siguen necesitando evidencia: una preferencia no vuelve cierta una afirmación sin respaldo.",
++  "wb.hide": "Ocultar WorkBot",
++  "wb.show": "Mostrar WorkBot",
++  "pw.rev.previous": "Anterior",
++  "pw.rev.current": "Actual",
++  "pw.rev.title": "Registro de revisión: {from} → {to}",
++  "pw.rev.request": "Solicitud",
++  "pw.rev.challenge": "Objeción independiente a la {v}:",
++  "pw.rev.ruleFailed": "La {v} no cumplía la regla de aceptación.",
++  "pw.rev.noRequest": "Los datos no registran por qué se sustituyó la {v}.",
++  "pw.rev.unmetList": "No cumplido en esa versión: {list}.",
++  "pw.rev.response": "Respuesta",
++  "pw.rev.noResponse": "No hay respuesta registrada.",
++  "pw.rev.changed": "Cambio",
++  "pw.rev.changedArt": "Arte refinado {from} → {to}.",
++  "pw.rev.seeCurrent": "Ver la {v}",
++  "pw.rev.reqAdded": "control añadido en esta versión ({state})",
++  "pw.rev.reqChange": "{from} → {to}",
++  "pw.rev.noDiff": "Solo se registran los resultados de los requisitos y la descripción de cada versión de los agentes; no hay una lista detallada de cambios visuales.",
++  "pw.rev.review": "Revisión independiente",
++  "pw.rev.noScore": "sin puntuaciones registradas",
++  "pw.rev.avg": "media {avg}",
++  "pw.rev.meets": "cumple la regla de aceptación",
++  "pw.rev.notMeets": "no cumple la regla de aceptación",
++  "pw.rev.open": "Aún abierto",
++  "pw.rev.noneRecorded": "No hay nada registrado como abierto para la {v}.",
++  "pw.rev.compare": "Comparar la {from} y la {to}",
++  "pw.rev.passages_one": "{count} pasaje cambiado por la revisión",
++  "pw.rev.passages_other": "{count} pasajes cambiados por la revisión",
++  "pw.rev.noReason": "sin motivo registrado",
++  "pw.rev.checksNotLinked_one": "La revisión de arriba incluye {count} control revisado; los datos no vinculan los controles con los pasajes.",
++  "pw.rev.checksNotLinked_other": "La revisión de arriba incluye {count} controles revisados; los datos no vinculan los controles con los pasajes.",
++  "pw.rev.yourIdea": "Tu idea",
++  "pw.rev.usedIn": "Ver dónde se usa: dirección {id}, textos",
++  "pw.rev.yourRequest": "Tu solicitud de revisión",
++  "pw.rev.notConnected": "Los resultados de revisión no están conectados en este prototipo. La etapa vuelve a ti para que decidas (simulado).",
++  "pw.rev.noRecords": "Aún no hay registros de revisión disponibles.",
++  "pw.rev.version": "Versión",
++  "pw.rev.stageVersion": "versión de la etapa v{v}",
++  "pw.rev.noVersion": "Aún no se ha registrado una nueva versión.",
++  "pw.rev.locationUnknown": "No se registra dónde cambió el trabajo.",
++  "pw.rev.demoArtwork": "Esto solo muestra el estado de revisión; el arte no ha cambiado.",
++  "pw.rev.demoContent": "Esto solo muestra el estado de revisión; el contenido no ha cambiado.",
++  "pw.o.jumpLabel": "Accesos directos",
++  "pw.o.jumpPending": "Atender las tareas pendientes",
++  "pw.o.jumpResults": "Ver los resultados actuales",
++  "pw.o.confirmItems_one": "elemento aún necesita tu confirmación",
++  "pw.o.confirmItems_other": "elementos aún necesitan tu confirmación",
++  "pw.o.part.brief": "la ficha de tarea por confirmar",
++  "pw.o.part.decide_one": "{count} decisión por tomar",
++  "pw.o.part.decide_other": "{count} decisiones por tomar",
++  "pw.o.part.revise_one": "{count} etapa en revisión",
++  "pw.o.part.revise_other": "{count} etapas en revisión",
++  "pw.o.part.unknowns_one": "1 lista de {count} dato por confirmar",
++  "pw.o.part.unknowns_other": "1 lista de {count} datos por confirmar",
++  "pw.o.partsNote": "Los datos por confirmar cuentan como un solo elemento.",
++  "pw.o.keyConstraints": "Restricciones clave",
++  "pw.o.moreConstraints_one": "+{count} más en el brief completo",
++  "pw.o.moreConstraints_other": "+{count} más en el brief completo",
++  "pw.o.stillUnknown": "Aún desconocido",
++  "pw.o.noneUnknown": "No hay nada registrado como desconocido",
++  "pw.o.fullBrief": "Mostrar el brief completo",
++  "pw.o.briefLoading": "Cargando el brief…",
++  "pw.o.briefError": "No se pudo cargar el brief.",
+   "pw.contrib.destLabel": "Se añade a",
+   "pw.contrib.sendTo": "Añadir a {stage}",
+   "pw.contrib.sentTo": "Añadido a {stage}. Los agentes lo tendrán en cuenta.",
+diff -ruN proposal-workbench/src/i18n/messages/fr.ts /home/claude/proposal-workbench/src/i18n/messages/fr.ts
+--- proposal-workbench/src/i18n/messages/fr.ts	2026-11-03 06:14:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/fr.ts	2026-11-03 08:08:20.910249091 +0800
+@@ -1082,6 +1082,69 @@
+   "pw.contrib.send": "Ajouter à cette étape",
+   "pw.contrib.sent": "Ajouté. Les agents en tiendront compte.",
+   "pw.contrib.note": "Votre apport est une suggestion pour les agents. Les faits restent à prouver : une préférence ne rend pas vraie une affirmation non étayée.",
++  "wb.hide": "Masquer WorkBot",
++  "wb.show": "Afficher WorkBot",
++  "pw.rev.previous": "Précédente",
++  "pw.rev.current": "Actuelle",
++  "pw.rev.title": "Historique de révision : {from} → {to}",
++  "pw.rev.request": "Demande",
++  "pw.rev.challenge": "Objection indépendante à la {v} :",
++  "pw.rev.ruleFailed": "La {v} ne respectait pas la règle d’acceptation.",
++  "pw.rev.noRequest": "Les données n’indiquent pas pourquoi la {v} a été remplacée.",
++  "pw.rev.unmetList": "Non rempli dans cette version : {list}.",
++  "pw.rev.response": "Réponse",
++  "pw.rev.noResponse": "Aucune réponse n’est consignée.",
++  "pw.rev.changed": "Modifié",
++  "pw.rev.changedArt": "Visuel affiné {from} → {to}.",
++  "pw.rev.seeCurrent": "Voir la {v}",
++  "pw.rev.reqAdded": "contrôle ajouté dans cette version ({state})",
++  "pw.rev.reqChange": "{from} → {to}",
++  "pw.rev.noDiff": "Seuls les résultats des exigences et la description de chaque version par les agents sont consignés ; il n’existe pas de liste détaillée des changements visuels.",
++  "pw.rev.review": "Examen indépendant",
++  "pw.rev.noScore": "aucune note consignée",
++  "pw.rev.avg": "moyenne {avg}",
++  "pw.rev.meets": "respecte la règle d’acceptation",
++  "pw.rev.notMeets": "ne respecte pas la règle d’acceptation",
++  "pw.rev.open": "Encore ouvert",
++  "pw.rev.noneRecorded": "Rien n’est consigné comme ouvert pour la {v}.",
++  "pw.rev.compare": "Comparer la {from} et la {to}",
++  "pw.rev.passages_one": "{count} passage modifié par la revue",
++  "pw.rev.passages_other": "{count} passages modifiés par la revue",
++  "pw.rev.noReason": "aucune raison consignée",
++  "pw.rev.checksNotLinked_one": "La revue ci-dessus compte {count} contrôle révisé ; les données ne relient pas les contrôles aux passages.",
++  "pw.rev.checksNotLinked_other": "La revue ci-dessus compte {count} contrôles révisés ; les données ne relient pas les contrôles aux passages.",
++  "pw.rev.yourIdea": "Votre idée",
++  "pw.rev.usedIn": "Voir où elle est utilisée : piste {id}, accroches",
++  "pw.rev.yourRequest": "Votre demande de révision",
++  "pw.rev.notConnected": "Les résultats de révision ne sont pas connectés dans ce prototype. L’étape revient vers vous pour décision (simulé).",
++  "pw.rev.noRecords": "Aucun historique de révision n’est encore disponible.",
++  "pw.rev.version": "Version",
++  "pw.rev.stageVersion": "version de l’étape v{v}",
++  "pw.rev.noVersion": "Aucune nouvelle version consignée pour l’instant.",
++  "pw.rev.locationUnknown": "L’endroit où le travail a changé n’est pas consigné.",
++  "pw.rev.demoArtwork": "Ceci montre seulement l’état de révision ; le visuel n’a pas changé.",
++  "pw.rev.demoContent": "Ceci montre seulement l’état de révision ; le contenu n’a pas changé.",
++  "pw.o.jumpLabel": "Raccourcis",
++  "pw.o.jumpPending": "Traiter les tâches en attente",
++  "pw.o.jumpResults": "Voir les résultats actuels",
++  "pw.o.confirmItems_one": "élément attend encore votre confirmation",
++  "pw.o.confirmItems_other": "éléments attendent encore votre confirmation",
++  "pw.o.part.brief": "la fiche de mission à confirmer",
++  "pw.o.part.decide_one": "{count} décision à prendre",
++  "pw.o.part.decide_other": "{count} décisions à prendre",
++  "pw.o.part.revise_one": "{count} étape en révision",
++  "pw.o.part.revise_other": "{count} étapes en révision",
++  "pw.o.part.unknowns_one": "1 liste de {count} fait à confirmer",
++  "pw.o.part.unknowns_other": "1 liste de {count} faits à confirmer",
++  "pw.o.partsNote": "Les faits à confirmer comptent pour un seul élément.",
++  "pw.o.keyConstraints": "Contraintes clés",
++  "pw.o.moreConstraints_one": "+{count} autre dans le brief complet",
++  "pw.o.moreConstraints_other": "+{count} autres dans le brief complet",
++  "pw.o.stillUnknown": "Encore inconnu",
++  "pw.o.noneUnknown": "Rien n’est consigné comme inconnu",
++  "pw.o.fullBrief": "Afficher le brief complet",
++  "pw.o.briefLoading": "Chargement du brief…",
++  "pw.o.briefError": "Le brief n’a pas pu être chargé.",
+   "pw.contrib.destLabel": "Ajouté à",
+   "pw.contrib.sendTo": "Ajouter à {stage}",
+   "pw.contrib.sentTo": "Ajouté à {stage}. Les agents en tiendront compte.",
+diff -ruN proposal-workbench/src/i18n/messages/ja.ts /home/claude/proposal-workbench/src/i18n/messages/ja.ts
+--- proposal-workbench/src/i18n/messages/ja.ts	2026-11-03 06:14:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/ja.ts	2026-11-03 08:08:20.892040135 +0800
+@@ -1082,6 +1082,69 @@
+   "pw.contrib.send": "このステージに追加",
+   "pw.contrib.sent": "追加しました。エージェントが考慮します。",
+   "pw.contrib.note": "入力はエージェントへの提案です。事実には引き続き根拠が必要で、好みによって裏付けのない主張が真になることはありません。",
++  "wb.hide": "WorkBot を隠す",
++  "wb.show": "WorkBot を表示",
++  "pw.rev.previous": "以前",
++  "pw.rev.current": "現在",
++  "pw.rev.title": "修正の記録：{from} → {to}",
++  "pw.rev.request": "依頼",
++  "pw.rev.challenge": "{v} への独立した反論：",
++  "pw.rev.ruleFailed": "{v} は受け入れ基準を満たしませんでした。",
++  "pw.rev.noRequest": "{v} が置き換えられた理由はデータに記録されていません。",
++  "pw.rev.unmetList": "その版で未達：{list}。",
++  "pw.rev.response": "対応",
++  "pw.rev.noResponse": "対応は記録されていません。",
++  "pw.rev.changed": "変更箇所",
++  "pw.rev.changedArt": "仕上げビジュアル {from} → {to}。",
++  "pw.rev.seeCurrent": "{v} を見る",
++  "pw.rev.reqAdded": "この版で追加されたチェック（{state}）",
++  "pw.rev.reqChange": "{from} → {to}",
++  "pw.rev.noDiff": "記録されているのは各版の要件結果とエージェントの説明のみで、視覚的な変更の詳細な一覧はありません。",
++  "pw.rev.review": "独立レビュー",
++  "pw.rev.noScore": "スコアの記録なし",
++  "pw.rev.avg": "平均 {avg}",
++  "pw.rev.meets": "受け入れ基準を満たす",
++  "pw.rev.notMeets": "受け入れ基準を満たさない",
++  "pw.rev.open": "未解決",
++  "pw.rev.noneRecorded": "{v} に未解決として記録された項目はありません。",
++  "pw.rev.compare": "{from} と {to} を比較",
++  "pw.rev.passages_one": "レビューで変更された段落：{count}",
++  "pw.rev.passages_other": "レビューで変更された段落：{count}",
++  "pw.rev.noReason": "理由の記録なし",
++  "pw.rev.checksNotLinked_one": "上のレビューには修正済みチェックが {count} 件ありますが、データはチェックと段落を関連付けていません。",
++  "pw.rev.checksNotLinked_other": "上のレビューには修正済みチェックが {count} 件ありますが、データはチェックと段落を関連付けていません。",
++  "pw.rev.yourIdea": "あなたのアイデア",
++  "pw.rev.usedIn": "使われている場所を見る：方向 {id} のコピー",
++  "pw.rev.yourRequest": "あなたの修正依頼",
++  "pw.rev.notConnected": "このプロトタイプでは修正結果は接続されていません。ステージは決定のためにあなたに戻ります（シミュレーション）。",
++  "pw.rev.noRecords": "利用できる修正記録はまだありません。",
++  "pw.rev.version": "版",
++  "pw.rev.stageVersion": "ステージ版 v{v}",
++  "pw.rev.noVersion": "新しい版はまだ記録されていません。",
++  "pw.rev.locationUnknown": "作品のどこが変わったかは記録されていません。",
++  "pw.rev.demoArtwork": "これは修正の状態を示すデモです。作品は変わっていません。",
++  "pw.rev.demoContent": "これは修正の状態を示すデモです。内容は変わっていません。",
++  "pw.o.jumpLabel": "ショートカット",
++  "pw.o.jumpPending": "保留中のタスクに対応",
++  "pw.o.jumpResults": "現在の成果を見る",
++  "pw.o.confirmItems_one": "件があなたの確認待ち",
++  "pw.o.confirmItems_other": "件があなたの確認待ち",
++  "pw.o.part.brief": "確認待ちのタスクカード",
++  "pw.o.part.decide_one": "決定 {count} 件",
++  "pw.o.part.decide_other": "決定 {count} 件",
++  "pw.o.part.revise_one": "修正中のステージ {count} 件",
++  "pw.o.part.revise_other": "修正中のステージ {count} 件",
++  "pw.o.part.unknowns_one": "未確認の事実 {count} 件のリスト 1 件",
++  "pw.o.part.unknowns_other": "未確認の事実 {count} 件のリスト 1 件",
++  "pw.o.partsNote": "未確認の事実はまとめて 1 件と数えます。",
++  "pw.o.keyConstraints": "主な制約",
++  "pw.o.moreConstraints_one": "全文にさらに {count} 件",
++  "pw.o.moreConstraints_other": "全文にさらに {count} 件",
++  "pw.o.stillUnknown": "まだ不明",
++  "pw.o.noneUnknown": "不明として記録された項目はありません",
++  "pw.o.fullBrief": "ブリーフ全文を表示",
++  "pw.o.briefLoading": "ブリーフを読み込み中…",
++  "pw.o.briefError": "ブリーフを読み込めませんでした。",
+   "pw.contrib.destLabel": "追加先",
+   "pw.contrib.sendTo": "{stage}に追加",
+   "pw.contrib.sentTo": "{stage}に追加しました。エージェントが考慮に入れます。",
+diff -ruN proposal-workbench/src/i18n/messages/ko.ts /home/claude/proposal-workbench/src/i18n/messages/ko.ts
+--- proposal-workbench/src/i18n/messages/ko.ts	2026-11-03 06:14:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/ko.ts	2026-11-03 08:08:20.899375406 +0800
+@@ -1082,6 +1082,69 @@
+   "pw.contrib.send": "이 단계에 추가",
+   "pw.contrib.sent": "추가했습니다. 에이전트가 반영을 검토합니다.",
+   "pw.contrib.note": "입력은 에이전트에 대한 제안입니다. 사실에는 여전히 근거가 필요하며, 선호가 근거 없는 주장을 사실로 만들지 않습니다.",
++  "wb.hide": "WorkBot 숨기기",
++  "wb.show": "WorkBot 보이기",
++  "pw.rev.previous": "이전",
++  "pw.rev.current": "현재",
++  "pw.rev.title": "수정 기록: {from} → {to}",
++  "pw.rev.request": "요청",
++  "pw.rev.challenge": "{v}에 대한 독립 반론:",
++  "pw.rev.ruleFailed": "{v}는 수용 기준을 충족하지 못했습니다.",
++  "pw.rev.noRequest": "{v}가 교체된 이유는 데이터에 기록되어 있지 않습니다.",
++  "pw.rev.unmetList": "해당 버전에서 미충족: {list}.",
++  "pw.rev.response": "대응",
++  "pw.rev.noResponse": "기록된 대응이 없습니다.",
++  "pw.rev.changed": "변경",
++  "pw.rev.changedArt": "정교화된 아트워크 {from} → {to}.",
++  "pw.rev.seeCurrent": "{v} 보기",
++  "pw.rev.reqAdded": "이 버전에서 추가된 확인({state})",
++  "pw.rev.reqChange": "{from} → {to}",
++  "pw.rev.noDiff": "각 버전의 요건 결과와 에이전트 설명만 기록되어 있으며, 시각적 변경의 상세 목록은 없습니다.",
++  "pw.rev.review": "독립 검토",
++  "pw.rev.noScore": "기록된 점수 없음",
++  "pw.rev.avg": "평균 {avg}",
++  "pw.rev.meets": "수용 기준 충족",
++  "pw.rev.notMeets": "수용 기준 미충족",
++  "pw.rev.open": "남은 문제",
++  "pw.rev.noneRecorded": "{v}에 미해결로 기록된 항목이 없습니다.",
++  "pw.rev.compare": "{from}와 {to} 비교",
++  "pw.rev.passages_one": "검토로 변경된 단락 {count}개",
++  "pw.rev.passages_other": "검토로 변경된 단락 {count}개",
++  "pw.rev.noReason": "기록된 이유 없음",
++  "pw.rev.checksNotLinked_one": "위 검토에 수정된 확인이 {count}개 있지만, 데이터는 확인과 단락을 연결하지 않습니다.",
++  "pw.rev.checksNotLinked_other": "위 검토에 수정된 확인이 {count}개 있지만, 데이터는 확인과 단락을 연결하지 않습니다.",
++  "pw.rev.yourIdea": "내 아이디어",
++  "pw.rev.usedIn": "사용된 곳 보기: 방향 {id}의 카피",
++  "pw.rev.yourRequest": "내 수정 요청",
++  "pw.rev.notConnected": "이 프로토타입에는 수정 결과가 연결되어 있지 않습니다. 단계는 결정을 위해 다시 돌아옵니다(시뮬레이션).",
++  "pw.rev.noRecords": "아직 사용할 수 있는 수정 기록이 없습니다.",
++  "pw.rev.version": "버전",
++  "pw.rev.stageVersion": "단계 버전 v{v}",
++  "pw.rev.noVersion": "아직 새 버전이 기록되지 않았습니다.",
++  "pw.rev.locationUnknown": "작업의 어느 부분이 바뀌었는지는 기록되어 있지 않습니다.",
++  "pw.rev.demoArtwork": "수정 상태만 보여 주는 데모입니다. 아트워크는 바뀌지 않았습니다.",
++  "pw.rev.demoContent": "수정 상태만 보여 주는 데모입니다. 내용은 바뀌지 않았습니다.",
++  "pw.o.jumpLabel": "바로가기",
++  "pw.o.jumpPending": "대기 중인 작업 처리",
++  "pw.o.jumpResults": "현재 결과 보기",
++  "pw.o.confirmItems_one": "개 항목이 확인을 기다립니다",
++  "pw.o.confirmItems_other": "개 항목이 확인을 기다립니다",
++  "pw.o.part.brief": "확인할 작업 카드",
++  "pw.o.part.decide_one": "결정 {count}건",
++  "pw.o.part.decide_other": "결정 {count}건",
++  "pw.o.part.revise_one": "수정 중인 단계 {count}개",
++  "pw.o.part.revise_other": "수정 중인 단계 {count}개",
++  "pw.o.part.unknowns_one": "미확인 사실 {count}개가 담긴 목록 1개",
++  "pw.o.part.unknowns_other": "미확인 사실 {count}개가 담긴 목록 1개",
++  "pw.o.partsNote": "미확인 사실은 하나의 항목으로 셉니다.",
++  "pw.o.keyConstraints": "핵심 제약",
++  "pw.o.moreConstraints_one": "전체 브리프에 {count}개 더",
++  "pw.o.moreConstraints_other": "전체 브리프에 {count}개 더",
++  "pw.o.stillUnknown": "아직 모름",
++  "pw.o.noneUnknown": "모름으로 기록된 항목 없음",
++  "pw.o.fullBrief": "전체 브리프 보기",
++  "pw.o.briefLoading": "브리프를 불러오는 중…",
++  "pw.o.briefError": "브리프를 불러오지 못했습니다.",
+   "pw.contrib.destLabel": "추가 위치",
+   "pw.contrib.sendTo": "{stage}에 추가",
+   "pw.contrib.sentTo": "{stage}에 추가했습니다. 에이전트가 반영합니다.",
+diff -ruN proposal-workbench/src/i18n/messages/zh-CN.ts /home/claude/proposal-workbench/src/i18n/messages/zh-CN.ts
+--- proposal-workbench/src/i18n/messages/zh-CN.ts	2026-11-03 06:14:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/i18n/messages/zh-CN.ts	2026-11-03 08:08:20.887664581 +0800
+@@ -1082,6 +1082,69 @@
+   "pw.contrib.send": "添加到此阶段",
+   "pw.contrib.sent": "已添加，智能体会加以考虑。",
+   "pw.contrib.note": "你的输入是给智能体的建议。事实仍需证据：个人偏好不能让无依据的说法成立。",
++  "wb.hide": "隐藏 WorkBot",
++  "wb.show": "显示 WorkBot",
++  "pw.rev.previous": "之前",
++  "pw.rev.current": "当前",
++  "pw.rev.title": "修改记录：{from} → {to}",
++  "pw.rev.request": "请求",
++  "pw.rev.challenge": "对 {v} 的独立质疑：",
++  "pw.rev.ruleFailed": "{v} 未达到验收规则。",
++  "pw.rev.noRequest": "数据中没有记录 {v} 被替换的原因。",
++  "pw.rev.unmetList": "该版本未满足：{list}。",
++  "pw.rev.response": "回应",
++  "pw.rev.noResponse": "没有记录回应。",
++  "pw.rev.changed": "改动",
++  "pw.rev.changedArt": "精修视觉 {from} → {to}。",
++  "pw.rev.seeCurrent": "查看 {v}",
++  "pw.rev.reqAdded": "此版本新增的检查（{state}）",
++  "pw.rev.reqChange": "{from} → {to}",
++  "pw.rev.noDiff": "只记录了各版本的要求结果和智能体的描述，没有详细的视觉改动清单。",
++  "pw.rev.review": "独立评审",
++  "pw.rev.noScore": "没有记录分数",
++  "pw.rev.avg": "平均 {avg}",
++  "pw.rev.meets": "达到验收规则",
++  "pw.rev.notMeets": "未达到验收规则",
++  "pw.rev.open": "仍待解决",
++  "pw.rev.noneRecorded": "{v} 没有记录待解决的问题。",
++  "pw.rev.compare": "比较 {from} 和 {to}",
++  "pw.rev.passages_one": "评审改动了 {count} 段",
++  "pw.rev.passages_other": "评审改动了 {count} 段",
++  "pw.rev.noReason": "没有记录原因",
++  "pw.rev.checksNotLinked_one": "上方评审列出 {count} 项已修改的检查；数据没有把检查与段落关联。",
++  "pw.rev.checksNotLinked_other": "上方评审列出 {count} 项已修改的检查；数据没有把检查与段落关联。",
++  "pw.rev.yourIdea": "你的想法",
++  "pw.rev.usedIn": "查看使用位置：方向 {id} 的文案",
++  "pw.rev.yourRequest": "你的修改请求",
++  "pw.rev.notConnected": "此原型未接入修改结果。该阶段会回到你这里等待决定（模拟）。",
++  "pw.rev.noRecords": "目前没有可用的修改记录。",
++  "pw.rev.version": "版本",
++  "pw.rev.stageVersion": "阶段版本 v{v}",
++  "pw.rev.noVersion": "还没有记录新版本。",
++  "pw.rev.locationUnknown": "没有记录作品改动的位置。",
++  "pw.rev.demoArtwork": "这里只演示修改状态；作品本身没有改变。",
++  "pw.rev.demoContent": "这里只演示修改状态；内容本身没有改变。",
++  "pw.o.jumpLabel": "快捷入口",
++  "pw.o.jumpPending": "处理待办事项",
++  "pw.o.jumpResults": "查看当前成果",
++  "pw.o.confirmItems_one": "项仍需你确认",
++  "pw.o.confirmItems_other": "项仍需你确认",
++  "pw.o.part.brief": "待确认的任务卡",
++  "pw.o.part.decide_one": "{count} 个待做的决定",
++  "pw.o.part.decide_other": "{count} 个待做的决定",
++  "pw.o.part.revise_one": "{count} 个阶段正在修改",
++  "pw.o.part.revise_other": "{count} 个阶段正在修改",
++  "pw.o.part.unknowns_one": "1 份清单，含 {count} 项待确认事实",
++  "pw.o.part.unknowns_other": "1 份清单，含 {count} 项待确认事实",
++  "pw.o.partsNote": "待确认事实合计为一项。",
++  "pw.o.keyConstraints": "关键约束",
++  "pw.o.moreConstraints_one": "完整简报中还有 {count} 条",
++  "pw.o.moreConstraints_other": "完整简报中还有 {count} 条",
++  "pw.o.stillUnknown": "仍未知",
++  "pw.o.noneUnknown": "没有记录未知事项",
++  "pw.o.fullBrief": "显示完整简报",
++  "pw.o.briefLoading": "正在加载简报…",
++  "pw.o.briefError": "简报未能加载。",
+   "pw.contrib.destLabel": "添加到",
+   "pw.contrib.sendTo": "添加到{stage}",
+   "pw.contrib.sentTo": "已添加到{stage}。智能体会参考它。",
+diff -ruN proposal-workbench/src/proposal/revisions.test.ts /home/claude/proposal-workbench/src/proposal/revisions.test.ts
+--- proposal-workbench/src/proposal/revisions.test.ts	1970-01-01 08:00:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/revisions.test.ts	2026-11-03 08:10:05.628601418 +0800
+@@ -0,0 +1,68 @@
++import { describe, expect, it } from 'vitest';
++import { MockWorkbenchService } from '../services/mock/MockWorkbenchService';
++import { memoryStore } from '../services/mock/storage';
++import { MockProposalService } from '../services/proposal/MockProposalService';
++import { artworkRevision, ideaUsedIn, latestRevisionRequest } from './revisions';
++
++async function load(id: string, agentDelay = 0) {
++  const store = memoryStore();
++  const workbench = new MockWorkbenchService({ store, latency: { read: 0, write: 0 }, autoTick: false });
++  const proposals = new MockProposalService(workbench, store, { latency: 0, agentDelay });
++  return { proposals, p: (await proposals.findByWorkbenchId(id))! };
++}
++
++describe('artworkRevision', () => {
++  it('describes a recorded revision only from recorded data', async () => {
++    const { p } = await load('northline');
++    const b = p.visual!.branches.find((x) => x.directionId === 'B')!;
++    const r = artworkRevision(b)!;
++    expect(r.previous.version).toBe(1);
++    expect(r.current.version).toBe(2);
++    expect(r.request.challenge).toMatch(/season lives only in the headline/);
++    expect(r.response).toMatch(/put the cold into the terrain/);
++    expect(r.requirementChanges).toEqual([{ text: 'Season shown inside the image', before: false, after: true }]);
++    expect(r.review.previous.meetsRule).toBe(false);
++    expect(r.review.current.meetsRule).toBe(true);
++    expect(r.open).toEqual([]);
++  });
++
++  it('reports a check that only exists in the new version as added, not as changed', async () => {
++    const { p } = await load('northline');
++    const c = artworkRevision(p.visual!.branches.find((x) => x.directionId === 'C')!)!;
++    expect(c.requirementChanges).toEqual([{ text: 'Distinct from the other directions', before: null, after: true }]);
++  });
++
++  it('returns nothing when there is no previous version (no empty panel)', async () => {
++    const { p } = await load('northline');
++    expect(artworkRevision(p.visual!.branches.find((x) => x.directionId === 'A')!)).toBeNull();
++    const plum = (await load('plumtide')).p;
++    expect(plum.visual!.branches.map(artworkRevision)).toEqual([null, null, null]);
++  });
++});
++
++describe('ideaUsedIn', () => {
++  it('finds an idea that appears word for word in a direction', async () => {
++    const { p } = await load('northline');
++    expect(ideaUsedIn(p, p.contributions[0])).toEqual({ directionId: 'C' });
++    expect(ideaUsedIn(p, { ...p.contributions[0], text: 'Not in any direction' })).toBeNull();
++  });
++});
++
++describe('latestRevisionRequest', () => {
++  it('is empty without a request, and follows a request through the simulated round', async () => {
++    const { proposals, p } = await load('plumtide', 40);
++    expect(latestRevisionRequest(p, 'visual')).toBeNull();
++    const asked = await proposals.decide(p.id, 'visual', { kind: 'request_revision', comment: 'Make the knot real' });
++    const s1 = latestRevisionRequest(asked, 'visual')!;
++    expect(s1.request.comment).toBe('Make the knot real');
++    expect(s1.versions).toEqual([]);
++    await new Promise((r) => setTimeout(r, 120));
++    const back = (await proposals.getProposal(p.id))!;
++    const s2 = latestRevisionRequest(back, 'visual')!;
++    expect(back.stages.visual.status).toBe('waiting_for_you');
++    expect(s2.versions.length).toBe(1);
++    expect(s2.reviews[0].verdict).toMatch(/content unchanged/);
++    const approved = await proposals.decide(p.id, 'visual', { kind: 'approve', comment: '' });
++    expect(latestRevisionRequest(approved, 'visual')).toBeNull();
++  });
++});
+diff -ruN proposal-workbench/src/proposal/revisions.ts /home/claude/proposal-workbench/src/proposal/revisions.ts
+--- proposal-workbench/src/proposal/revisions.ts	1970-01-01 08:00:00.000000000 +0800
++++ /home/claude/proposal-workbench/src/proposal/revisions.ts	2026-11-03 08:05:02.892753543 +0800
+@@ -0,0 +1,87 @@
++import type { Contribution, HumanDecision, Proposal, RefinedVisual, ReviewRecord, StageId, VersionRecord, VisualBranch } from '../domain/proposal';
++import { latestRefined } from './pending';
++
++/**
++ * Read-only views of revision records, built only from what the data holds. Nothing here infers a
++ * change, a review pass or a new artwork the data does not state; where the data is silent the
++ * result says so (`null` / empty), and the UI words it as "not recorded", never as "no change".
++ */
++
++const avgOf = (r: RefinedVisual) => (r.scores.length ? Math.round((r.scores.reduce((s, x) => s + x.score, 0) / r.scores.length) * 10) / 10 : null);
++const meetsRule = (r: RefinedVisual) => {
++  const a = avgOf(r);
++  return a !== null && a >= 4 && r.requirements.every((q) => q.met);
++};
++
++/** One revision of a direction's refined artwork: the version before and the current one. */
++export interface ArtworkRevision {
++  previous: RefinedVisual;
++  current: RefinedVisual;
++  /** Why the previous version did not stand, as recorded: its upheld challenge and/or its failed acceptance rule. */
++  request: { challenge: string | null; unmet: string[]; average: number | null; belowAverage: boolean };
++  /** The recorded response to that challenge (its resolution), if any. */
++  response: string | null;
++  /** Requirement results that differ between the two versions, and checks added in the current one. */
++  requirementChanges: Array<{ text: string; before: boolean | null; after: boolean }>;
++  review: { previous: { average: number | null; meetsRule: boolean; status: RefinedVisual['status'] }; current: { average: number | null; meetsRule: boolean; status: RefinedVisual['status'] } };
++  /** Open points recorded against the current version. */
++  open: Array<{ kind: 'requirement'; text: string } | { kind: 'below'; average: number } | { kind: 'challenge'; text: string; outcome: 'upheld' | 'partly_upheld' }>;
++}
++
++export function artworkRevision(b: VisualBranch): ArtworkRevision | null {
++  const current = latestRefined(b);
++  if (!current) return null;
++  const i = b.refined.indexOf(current);
++  if (i < 1) return null;
++  const previous = b.refined[i - 1];
++  const ch = previous.challenge && previous.challenge.outcome !== 'rejected' ? previous.challenge : null;
++  const pAvg = avgOf(previous);
++  const before = new Map(previous.requirements.map((r) => [r.text, r.met]));
++  const requirementChanges = current.requirements
++    .filter((r) => !before.has(r.text) || before.get(r.text) !== r.met)
++    .map((r) => ({ text: r.text, before: before.has(r.text) ? (before.get(r.text) as boolean) : null, after: r.met }));
++  const cAvg = avgOf(current);
++  const open: ArtworkRevision['open'] = [];
++  for (const r of current.requirements) if (!r.met) open.push({ kind: 'requirement', text: r.text });
++  if (cAvg !== null && cAvg < 4) open.push({ kind: 'below', average: cAvg });
++  if (current.challenge && current.challenge.outcome !== 'rejected') open.push({ kind: 'challenge', text: current.challenge.challenge, outcome: current.challenge.outcome });
++  return {
++    previous,
++    current,
++    request: { challenge: ch?.challenge ?? null, unmet: previous.requirements.filter((r) => !r.met).map((r) => r.text), average: pAvg, belowAverage: pAvg !== null && pAvg < 4 },
++    response: ch?.resolution ?? null,
++    requirementChanges,
++    review: { previous: { average: pAvg, meetsRule: meetsRule(previous), status: previous.status }, current: { average: cAvg, meetsRule: meetsRule(current), status: current.status } },
++    open,
++  };
++}
++
++/** Where an idea the person gave ended up, when the data shows it word for word in a direction's copy. */
++export function ideaUsedIn(p: Proposal, c: Contribution): { directionId: string } | null {
++  const text = c.text.trim();
++  if (!text) return null;
++  const d = p.themes?.directions.find((x) => x.slogan.trim() === text || x.copyLines.some((l) => l.trim() === text));
++  return d ? { directionId: d.id } : null;
++}
++
++/** The person's latest revision request for a stage, with what the data recorded after it. */
++export interface RevisionRequestState {
++  request: HumanDecision;
++  /** Version records of this stage made after the request. */
++  versions: VersionRecord[];
++  /** Review records of this stage made after the request. */
++  reviews: ReviewRecord[];
++}
++
++export function latestRevisionRequest(p: Proposal, stage: StageId): RevisionRequestState | null {
++  const req = [...p.decisions].reverse().find((d) => d.stage === stage && d.kind === 'revision_requested');
++  if (!req) return null;
++  // A later approval of the stage closes the request; it is then history, not something pending.
++  const closed = p.decisions.some((d) => d.stage === stage && d.kind !== 'revision_requested' && d.at > req.at);
++  if (closed) return null;
++  return {
++    request: req,
++    versions: p.versions.filter((v) => v.stage === stage && v.at > req.at),
++    reviews: p.reviews.filter((r) => r.stage === stage && r.at > req.at),
++  };
++}
+diff -ruN proposal-workbench/src/styles/refine.css /home/claude/proposal-workbench/src/styles/refine.css
+--- proposal-workbench/src/styles/refine.css	2026-11-03 06:34:31.000000000 +0800
++++ /home/claude/proposal-workbench/src/styles/refine.css	2026-11-03 08:09:29.196769373 +0800
+@@ -1322,3 +1322,147 @@
+   .pw-checkpoint .cluster .btn { white-space: normal; text-align: left; }
+ }
+ .pw-cp-target > div > * { min-width: 0; overflow-wrap: anywhere; }
++
++/* ---- F05: revision records (read-only) ---- */
++.pw-rev {
++  display: grid;
++  gap: 10px;
++  margin: 14px 0;
++  padding: 14px 16px;
++  border: 1px solid var(--rule);
++  border-radius: 18px;
++  background: var(--surface);
++  font-size: var(--t-small);
++}
++.pw-rev__steps {
++  display: grid;
++  gap: 8px;
++  margin: 0;
++  padding: 0;
++  list-style: none;
++}
++.pw-rev__steps > li {
++  display: grid;
++  grid-template-columns: minmax(7.5rem, 9rem) 1fr;
++  gap: 4px 14px;
++  align-items: baseline;
++  padding-top: 8px;
++  border-top: 1px solid var(--rule);
++}
++.pw-rev__steps > li:first-child { border-top: 0; padding-top: 0; }
++.pw-rev__k {
++  font-size: var(--t-label);
++  font-weight: 600;
++  letter-spacing: 0.06em;
++  text-transform: uppercase;
++  color: var(--ink-2);
++}
++.pw-rev__reqs { margin: 6px 0 0; padding-left: 1.1em; }
++.pw-rev__limit { display: block; margin-top: 6px; }
++.pw-rev__list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
++.pw-rev__list .text-link { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; text-align: left; }
++.pw-rev__demo {
++  margin: 0;
++  padding: 10px 12px;
++  border-radius: 12px;
++  background: var(--sunken);
++  font-weight: 600;
++  color: var(--ink);
++}
++.pw-rev > .btn { justify-self: start; }
++.pw-checkpoint .pw-rev { margin: 0 0 14px; background: transparent; }
++@media (max-width: 640px) {
++  .pw-rev__steps > li { grid-template-columns: 1fr; }
++}
++.pw-compare {
++  display: grid;
++  grid-template-columns: repeat(2, minmax(0, 1fr));
++  gap: 16px;
++  margin: 0 0 16px;
++}
++.pw-compare figure { display: grid; gap: 8px; margin: 0; align-content: start; }
++.pw-copylines li[data-yours] { font-weight: 600; }
++.pw-copylines__yours { margin-left: 6px; }
++.pw-passage.is-flash { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 12px; }
++
++/* ---- F07: overview shortcuts, count composition, brief summary ---- */
++.ov-jump {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 8px;
++  margin: 0 0 14px;
++}
++.ov-jump__btn {
++  display: inline-flex;
++  align-items: center;
++  gap: 8px;
++  min-height: 36px;
++  padding: 6px 14px;
++  border: 1px solid var(--rule);
++  border-radius: 999px;
++  background: var(--surface);
++  color: var(--ink);
++  font: inherit;
++  font-size: var(--t-small);
++  font-weight: 600;
++  cursor: pointer;
++}
++.ov-jump__btn:hover { border-color: var(--ink); }
++.ov-jump__btn[data-tone='attention'] > svg { color: var(--o-600); }
++.ov-jump__n {
++  min-width: 1.5em;
++  padding: 1px 7px;
++  border-radius: 999px;
++  background: var(--sunken);
++  text-align: center;
++}
++.ov-jump__btn[data-tone='attention'] .ov-jump__n { background: var(--o-100); color: var(--o-800); }
++@media (prefers-color-scheme: dark) {
++  :root:not([data-theme='light']) .ov-jump__btn[data-tone='attention'] .ov-jump__n { background: var(--o-900); color: var(--o-200); }
++  :root:not([data-theme='light']) .ov-jump__btn[data-tone='attention'] > svg { color: var(--o-400); }
++}
++:root[data-theme='dark'] .ov-jump__btn[data-tone='attention'] .ov-jump__n { background: var(--o-900); color: var(--o-200); }
++:root[data-theme='dark'] .ov-jump__btn[data-tone='attention'] > svg { color: var(--o-400); }
++#ov-confirm-tile,
++#ov-made-tile { scroll-margin-top: calc(var(--topbar, 56px) + 16px); }
++#ov-confirm-tile:focus,
++#ov-made-tile:focus { outline: 2px solid var(--focus); outline-offset: 4px; }
++.ov-parts {
++  margin: 6px 0 0;
++  font-size: var(--t-small);
++  color: var(--ink-2);
++}
++.ov-parts__note { display: block; margin-top: 2px; }
++.ov-clamp {
++  display: -webkit-box;
++  -webkit-line-clamp: 4;
++  -webkit-box-orient: vertical;
++  overflow: hidden;
++}
++.ov-lines { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
++.ov-problem .pw-more { margin-top: 10px; }
++.ov-fullbrief {
++  display: grid;
++  gap: 10px;
++  margin: 8px 0 0;
++}
++.ov-fullbrief > div {
++  display: grid;
++  grid-template-columns: minmax(8rem, 11rem) 1fr;
++  gap: 4px 14px;
++  padding-top: 10px;
++  border-top: 1px solid var(--rule);
++}
++.ov-fullbrief dt {
++  font-size: var(--t-label);
++  font-weight: 600;
++  letter-spacing: 0.06em;
++  text-transform: uppercase;
++  color: var(--ink-2);
++}
++.ov-fullbrief dd { margin: 0; }
++@media (max-width: 640px) {
++  .ov-fullbrief > div { grid-template-columns: 1fr; }
++}
++.pw-compare figure { justify-items: center; }
++.pw-compare .art-frame { width: min(100%, calc(52dvh * var(--r))); height: auto; }
+diff -ruN proposal-workbench/src/styles/workbot.css /home/claude/proposal-workbench/src/styles/workbot.css
+--- proposal-workbench/src/styles/workbot.css	2026-10-25 23:46:29.000000000 +0800
++++ /home/claude/proposal-workbench/src/styles/workbot.css	2026-11-03 08:13:26.818077037 +0800
+@@ -1024,3 +1024,71 @@
+     transition: none;
+   }
+ }
++
++/* ---------------------------------------------------------------- phones: dock and restore */
++/*
++ * On phones WorkBot can be docked to the right edge (a slim tab with its face peeking out) and
++ * brought back from there. The hide control sits on the character's top-left corner.
++ */
++.workbot-hide,
++.workbot-tab {
++  position: fixed;
++  z-index: 61;
++  display: grid;
++  place-items: center;
++  padding: 0;
++  cursor: pointer;
++}
++.workbot-hide[hidden],
++.workbot-tab[hidden] {
++  display: none;
++}
++.workbot-hide {
++  right: calc(max(20px, env(safe-area-inset-right, 0px)) + 78px);
++  bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 52px);
++  width: 30px;
++  height: 30px;
++  border: 1px solid var(--rule);
++  border-radius: 999px;
++  background: var(--surface);
++  color: var(--ink-2);
++  box-shadow: 0 2px 8px rgb(16 17 20 / 0.12);
++}
++.workbot-hide:hover {
++  color: var(--ink);
++}
++.workbot-tab {
++  right: 0;
++  bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
++  width: 30px;
++  height: 44px;
++  overflow: hidden;
++  border: 1px solid var(--rule);
++  border-right: 0;
++  border-radius: 22px 0 0 22px;
++  background: var(--surface);
++  box-shadow: -4px 2px 12px rgb(16 17 20 / 0.12);
++}
++.workbot-tab__figure {
++  /* The face peeks out from the edge. */
++  transform: translateX(12px);
++}
++.workbot-tab__dot {
++  position: absolute;
++  top: 5px;
++  left: 5px;
++  width: 8px;
++  height: 8px;
++  border-radius: 999px;
++  background: var(--warm);
++}
++.workbot-hide:focus-visible,
++.workbot-tab:focus-visible {
++  outline: 3px solid var(--focus);
++  outline-offset: 2px;
++}
++
++/* Never on top of a dialog: while a modal is open (an enlarged view, a drawer), WorkBot steps out. */
++:root:has(dialog:modal) :is(.workbot-launcher, .workbot-hide, .workbot-tab) {
++  display: none;
++}
+diff -ruN proposal-workbench/src/views/project/OverviewArea.tsx /home/claude/proposal-workbench/src/views/project/OverviewArea.tsx
+--- proposal-workbench/src/views/project/OverviewArea.tsx	2026-10-25 23:04:53.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/project/OverviewArea.tsx	2026-11-03 08:22:03.429699816 +0800
+@@ -12,13 +12,14 @@
+  */
+ import type { CSSProperties, ReactNode } from 'react';
+ import { ArrowRight, ArrowUpRight, CircleAlert, CircleHelp, Hand, LoaderCircle, MessageSquarePlus, RotateCcw } from 'lucide-react';
++import { useServiceQuery } from '../../app/query';
+ import { Link, projectPath } from '../../app/router';
+-import type { ProjectOverview } from '../../domain/models';
++import type { Brief, ProjectOverview } from '../../domain/models';
+ import { STAGES, type Proposal } from '../../domain/proposal';
+ import { useT } from '../../i18n';
+ import { needsYou, nextAction, nextActionPath, producedOutputs, type Produced } from '../../proposal/derive';
+ import { Slide } from '../../proposal/Slide';
+-import { Backed, DirectionMark, STAGE_ICON, StatusPill } from '../../proposal/ui';
++import { Backed, DirectionMark, More, STAGE_ICON, StatusPill } from '../../proposal/ui';
+ import { ArtFrame, naturalRatio } from '../../ui/art/ArtFrame';
+ import { Time } from '../../ui/kit';
+ import { deckContext } from '../stages/LayoutStage';
+@@ -47,11 +48,38 @@
+   // The task card is already the problem tile at the top, so the shelf starts from research.
+   const produced = producedOutputs(p).filter((x) => x.kind !== 'task');
+   const inputArt = p.task.inputs.find((x) => x.art)?.art ?? null;
++  // The working brief (the same record the Brief stage reads): key constraints and open questions.
++  const briefQ = useServiceQuery(`brief:${pid}`, (s) => s.getBriefHistory(pid), { projectId: pid });
++  const brief = briefQ.data?.current ?? null;
++  // A long brief reads as a summary first (objective, output, key constraints, what is unknown),
++  // with everything else one click away. A short one is shown whole, as before.
++  const briefLength = [p.task.output, p.task.occasion ?? '', ...p.task.scope, ...(brief?.constraints ?? []), brief?.audience ?? '', brief?.brand ?? ''].join(' ').length;
++  const longBrief = briefLength > 260;
++  const counts = needsParts(needs);
++  // In-page shortcuts to the two things people come here for.
++  const jump = (id: string) => {
++    const el = document.getElementById(id);
++    el?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
++    el?.focus({ preventScroll: true });
++  };
+ 
+   return (
+     <div className="page pw-page pw-overview bx ov">
+       <h1 className="sr-only">{t('pw.area.overview')}</h1>
+ 
++      <div className="ov-jump" role="group" aria-label={t('pw.o.jumpLabel')}>
++        {confirm > 0 && (
++          <button type="button" className="ov-jump__btn" data-tone="attention" onClick={() => jump('ov-confirm-tile')}>
++            <Hand size={14} aria-hidden="true" /> {t('pw.o.jumpPending')} <span className="ov-jump__n">{confirm}</span>
++          </button>
++        )}
++        {produced.length > 0 && (
++          <button type="button" className="ov-jump__btn" onClick={() => jump('ov-made-tile')}>
++            {t('pw.o.jumpResults')} <span className="ov-jump__n">{produced.length}</span>
++          </button>
++        )}
++      </div>
++
+       {/* 1. The problem being solved. */}
+       <section className="bx-tile bx-tile--white ov-problem" aria-labelledby="ov-problem">
+         <div className="ov-problem__text">
+@@ -59,6 +87,50 @@
+           <h2 id="ov-problem" className="ov-problem__title">
+             {p.task.assignment || t('pw.brief.noAssignment')}
+           </h2>
++          {longBrief ? (
++            <>
++              <dl className="ov-facts ov-facts--summary">
++                <div>
++                  <dt>{t('pw.brief.output')}</dt>
++                  <dd className="ov-clamp">{p.task.output || <span className="muted">{t('pw.brief.notSet')}</span>}</dd>
++                </div>
++                <div>
++                  <dt>{t('pw.o.keyConstraints')}</dt>
++                  <dd>
++                    {briefQ.status === 'loading' ? (
++                      <span className="muted">{t('pw.o.briefLoading')}</span>
++                    ) : briefQ.status === 'error' ? (
++                      <span className="muted">{t('pw.o.briefError')}</span>
++                    ) : brief && brief.constraints.length ? (
++                      <ul className="ov-lines">
++                        {brief.constraints.slice(0, 2).map((x) => (
++                          <li key={x}>{x}</li>
++                        ))}
++                        {brief.constraints.length > 2 && <li className="muted">{t('pw.o.moreConstraints', { count: brief.constraints.length - 2 })}</li>}
++                      </ul>
++                    ) : (
++                      <span className="muted">{t('pw.brief.notStated')}</span>
++                    )}
++                  </dd>
++                </div>
++                <div>
++                  <dt>{t('pw.o.stillUnknown')}</dt>
++                  <dd>
++                    {unknowns.length ? (
++                      <Link className="text-link" to={projectPath(pid, 'proposal', { stage: 'brief', focus: 'unknowns' })}>
++                        {unknowns.map((u) => u.topic).join(' · ')}
++                      </Link>
++                    ) : (
++                      <span className="muted">{t('pw.o.noneUnknown')}</span>
++                    )}
++                  </dd>
++                </div>
++              </dl>
++              <More label={t('pw.o.fullBrief')}>
++                <FullBrief proposal={p} brief={brief} />
++              </More>
++            </>
++          ) : (
+           <dl className="ov-facts">
+             <div>
+               <dt>{t('pw.brief.output')}</dt>
+@@ -83,6 +155,7 @@
+               </dd>
+             </div>
+           </dl>
++          )}
+           <Link className="bx-chip-link ov-problem__link" to={projectPath(pid, 'proposal', { stage: 'brief' })}>
+             {t('pw.o.taskCard')} <ArrowUpRight size={14} aria-hidden="true" />
+           </Link>
+@@ -141,12 +214,25 @@
+       </section>
+ 
+       {/* 3. What still needs confirmation, with the one next action. */}
+-      <section className="bx-tile bx-tile--dark ov-confirm" aria-labelledby="ov-confirm">
++      <section className="bx-tile bx-tile--dark ov-confirm" id="ov-confirm-tile" tabIndex={-1} aria-labelledby="ov-confirm">
+         <div className="bx-big">
+           <span className="bx-big__n">{confirm}</span>
+           <h2 id="ov-confirm" className="bx-big__label">
+-            {t('pw.o.confirm')}
++            {t('pw.o.confirmItems', { count: confirm })}
+           </h2>
++          {confirm > 0 && (
++            <p className="ov-parts">
++              {[
++                counts.brief ? t('pw.o.part.brief') : null,
++                counts.decide ? t('pw.o.part.decide', { count: counts.decide }) : null,
++                counts.revise ? t('pw.o.part.revise', { count: counts.revise }) : null,
++                counts.facts !== null ? t('pw.o.part.unknowns', { count: counts.facts }) : null,
++              ]
++                .filter(Boolean)
++                .join(' · ')}
++              {counts.facts !== null && counts.facts > 1 && <span className="ov-parts__note">{t('pw.o.partsNote')}</span>}
++            </p>
++          )}
+         </div>
+         <div className="ov-confirm__body">
+           {confirm === 0 ? (
+@@ -178,7 +264,7 @@
+       </section>
+ 
+       {/* 4. What has been produced so far, in stage order. */}
+-      <section className="bx-tile bx-tile--sage ov-made" aria-labelledby="ov-made">
++      <section className="bx-tile bx-tile--sage ov-made" id="ov-made-tile" tabIndex={-1} aria-labelledby="ov-made">
+         <div className="ov-made__head">
+           <h2 id="ov-made" className="bx-title">
+             {t('pw.o.produced')}
+@@ -367,3 +453,61 @@
+     </li>
+   );
+ }
++
++/** What the shared "needs you" items are made of, for wording the count (proposal/needs.ts decides the count). */
++function needsParts(needs: ReturnType<typeof needsYou>) {
++  let brief = false;
++  let decide = 0;
++  let revise = 0;
++  let facts: number | null = null;
++  for (const x of needs) {
++    if (x.kind === 'brief') brief = true;
++    else if (x.kind === 'decide') decide += 1;
++    else if (x.kind === 'revise') revise += 1;
++    else facts = x.count;
++  }
++  return { brief, decide, revise, facts };
++}
++
++/** The whole brief, read-only: the task extras and the working brief's own fields, where set. */
++function FullBrief({ proposal: p, brief }: { proposal: Proposal; brief: Brief | null }) {
++  const t = useT();
++  const rows: Array<{ key: string; label: string; value: ReactNode }> = [];
++  const add = (key: string, label: string, v: string | string[] | null | undefined) => {
++    if (Array.isArray(v) ? v.length === 0 : !v) return;
++    rows.push({
++      key,
++      label,
++      value: Array.isArray(v) ? (
++        <ul className="ov-lines">
++          {v.map((x) => (
++            <li key={x}>{x}</li>
++          ))}
++        </ul>
++      ) : (
++        v
++      ),
++    });
++  };
++  add('output', t('pw.brief.output'), p.task.output);
++  add('occasion', t('pw.brief.occasion'), p.task.occasion);
++  add('scope', t('pw.brief.scope'), p.task.scope);
++  add('objectives', t('taskField.objectives'), brief?.objectives);
++  add('audience', t('taskField.audience'), brief?.audience);
++  add('brand', t('taskField.brand'), brief?.brand);
++  add('constraints', t('taskField.constraints'), brief?.constraints);
++  add('deliverables', t('taskField.deliverables'), brief?.deliverables);
++  add('timeline', t('taskField.timeline'), brief?.timeline);
++  add('budget', t('taskField.budget'), brief?.budget);
++  add('openQuestions', t('taskField.openQuestions'), brief?.openQuestions);
++  return (
++    <dl className="ov-fullbrief">
++      {rows.map((r) => (
++        <div key={r.key}>
++          <dt>{r.label}</dt>
++          <dd>{r.value}</dd>
++        </div>
++      ))}
++    </dl>
++  );
++}
+diff -ruN proposal-workbench/src/views/project/ProposalArea.tsx /home/claude/proposal-workbench/src/views/project/ProposalArea.tsx
+--- proposal-workbench/src/views/project/ProposalArea.tsx	2026-11-03 07:16:02.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/project/ProposalArea.tsx	2026-11-03 08:06:18.946997730 +0800
+@@ -5,11 +5,13 @@
+ import { useEffect, useState } from 'react';
+ import { ArrowDown, ArrowLeft, ArrowRight, Hand, MessageSquarePlus } from 'lucide-react';
+ import { useProposalAction } from '../../app/proposalQuery';
++import { useServiceContext } from '../../app/services';
+ import { Link, projectPath, useRouter } from '../../app/router';
+ import { STAGES, type Contribution, type Proposal, type StageId } from '../../domain/proposal';
+ import { useT } from '../../i18n';
+ import { clearIfUnchanged, draftKey, pendingDrafts, readDraft, snapshotDraft, useIdeaDraft } from '../../proposal/drafts';
+ import { pendingVisuals } from '../../proposal/pending';
++import { ideaUsedIn, latestRevisionRequest } from '../../proposal/revisions';
+ import { Backed, STAGE_ICON, STATUS_ICON, StatusPill } from '../../proposal/ui';
+ import { Action, Time } from '../../ui/kit';
+ import { BriefStage } from '../stages/BriefStage';
+@@ -141,6 +143,7 @@
+         </section>
+ 
+         {state.status === 'waiting_for_you' && <CheckpointPanel proposal={p} stage={stage} />}
++        {state.status === 'needs_revision' && <RevisionStatus proposal={p} stage={stage} />}
+ 
+         <div className="pw-stage__body" id="stage-work">
+           {stage === 'brief' && <BriefStage proposal={p} />}
+@@ -304,6 +307,8 @@
+         )}
+       </dl>
+ 
++      <RevisionStatus proposal={p} stage={stage} />
++
+       <label htmlFor="cp-comment" className="field__label">
+         {t('pw.cp.comment')}
+       </label>
+@@ -333,6 +338,62 @@
+   );
+ }
+ 
++/**
++ * What happened to the person's own revision request for this stage, read-only and only from
++ * recorded data: the request, the recorded response, and the stage version it produced. When the
++ * prototype only simulates the revision round (the content is not regenerated), it says so plainly.
++ */
++function RevisionStatus({ proposal: p, stage }: { proposal: Proposal; stage: StageId }) {
++  const t = useT();
++  const { proposals } = useServiceContext();
++  const st = latestRevisionRequest(p, stage);
++  if (!st) return null;
++  const status = p.stages[stage].status;
++  const returned = status === 'waiting_for_you' && st.versions.length > 0;
++  const review = st.reviews[st.reviews.length - 1] ?? null;
++  const version = st.versions[st.versions.length - 1] ?? null;
++  // The prototype's revision round changes only the state and version number, and records that.
++  const simulatedOnly = proposals.backing === 'prototype' && returned && review !== null;
++  return (
++    <section className="pw-rev pw-rev--request" aria-labelledby={`rq-${stage}`}>
++      <p className="pw-label" id={`rq-${stage}`}>
++        {t('pw.rev.yourRequest')}
++      </p>
++      <ol className="pw-rev__steps">
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.request')}</span>
++          <span>
++            “{st.request.comment}” <span className="small muted">· {st.request.by} · <Time iso={st.request.at} relative /></span>
++          </span>
++        </li>
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.response')}</span>
++          <span>
++            {review ? (
++              <>
++                “{review.verdict}” <span className="small muted">· {review.evaluator}</span>
++              </>
++            ) : (
++              <span className="muted">{proposals.backing === 'prototype' ? t('pw.rev.notConnected') : t('pw.rev.noRecords')}</span>
++            )}
++          </span>
++        </li>
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.version')}</span>
++          <span>{version ? t('pw.rev.stageVersion', { v: version.version }) : <span className="muted">{t('pw.rev.noVersion')}</span>}</span>
++        </li>
++        {returned && !simulatedOnly && (
++          <li>
++            <span className="pw-rev__k">{t('pw.rev.changed')}</span>
++            <span className="muted">{t('pw.rev.locationUnknown')}</span>
++          </li>
++        )}
++      </ol>
++      {simulatedOnly && <p className="pw-rev__demo">{stage === 'visual' ? t('pw.rev.demoArtwork') : t('pw.rev.demoContent')}</p>}
++    </section>
++  );
++}
++
+ const KINDS: Contribution['kind'][] = ['comment', 'slogan', 'reference', 'theme'];
+ 
+ /**
+@@ -407,6 +468,17 @@
+                 </p>
+               )}
+               {c.response && <p className="small muted">↳ {c.response}</p>}
++              {(() => {
++                // Where the idea ended up, when the data shows it word for word in a direction's copy.
++                const used = ideaUsedIn(p, c);
++                return used ? (
++                  <p className="small">
++                    <Link className="text-link" to={projectPath(p.workbenchId, 'proposal', { stage: 'themes', focus: `copy-${used.directionId}` })}>
++                      {t('pw.rev.usedIn', { id: used.directionId })}
++                    </Link>
++                  </p>
++                ) : null;
++              })()}
+               <p className="small muted">
+                 {c.by} · <Time iso={c.at} relative /> · {t(`pw.contrib.status.${c.status}`)}
+               </p>
+diff -ruN proposal-workbench/src/views/stages/ContentReviewStage.tsx /home/claude/proposal-workbench/src/views/stages/ContentReviewStage.tsx
+--- proposal-workbench/src/views/stages/ContentReviewStage.tsx	2026-10-25 15:52:36.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/ContentReviewStage.tsx	2026-11-03 08:05:36.166153543 +0800
+@@ -30,6 +30,7 @@
+       </section>
+       <section aria-labelledby="cr-narrative">
+         <SectionHead id="cr-narrative" title={t('pw.cr.narrative')} kicker={t('pw.cr.narrativeKicker')} />
++        <ChangedPassages proposal={p} />
+         <ol className="pw-narrative">
+           {cr.narrative.map((n, i) => (
+             <Passage key={n.id} n={n} index={i} proposalId={p.id} />
+@@ -40,13 +41,49 @@
+   );
+ }
+ 
++/**
++ * An index of the passages the review changed, read-only: what changed it (the recorded reason)
++ * and a link to the passage itself, where the earlier wording is shown struck through. Only shown
++ * when the data records changed passages; the review's checks are not linked to passages in the data.
++ */
++function ChangedPassages({ proposal: p }: { proposal: Proposal }) {
++  const t = useT();
++  const cr = p.contentReview!;
++  const changed = cr.narrative.map((n, i) => ({ n, i })).filter((x) => x.n.before);
++  if (changed.length === 0) return null;
++  const revisedChecks = cr.checks.filter((c) => c.outcome === 'revised').length;
++  const go = (id: string) => {
++    const el = document.getElementById(`cr-p-${id}`);
++    el?.scrollIntoView({ block: 'center' });
++    el?.focus({ preventScroll: true });
++    el?.classList.add('is-flash');
++    window.setTimeout(() => el?.classList.remove('is-flash'), 1800);
++  };
++  return (
++    <div className="pw-rev pw-rev--passages">
++      <p className="pw-label">{t('pw.rev.passages', { count: changed.length })}</p>
++      <ul className="pw-rev__list">
++        {changed.map(({ n, i }) => (
++          <li key={n.id}>
++            <button type="button" className="text-link" onClick={() => go(n.id)}>
++              {i + 1}. {n.title}
++            </button>
++            <span className="small">{n.changeReason ? ` — ${n.changeReason}` : <span className="muted"> — {t('pw.rev.noReason')}</span>}</span>
++          </li>
++        ))}
++      </ul>
++      {revisedChecks > 0 && <p className="small muted">{t('pw.rev.checksNotLinked', { count: revisedChecks })}</p>}
++    </div>
++  );
++}
++
+ function Passage({ n, index, proposalId }: { n: NarrativeSection; index: number; proposalId: string }) {
+   const t = useT();
+   const { run, pending, error } = useProposalAction();
+   const [editing, setEditing] = useState(false);
+   const [text, setText] = useState(n.text);
+   return (
+-    <li className="pw-passage" data-changed={n.before ? true : undefined}>
++    <li className="pw-passage" id={`cr-p-${n.id}`} tabIndex={-1} data-changed={n.before ? true : undefined}>
+       <span className="pw-passage__n">{index + 1}</span>
+       <div className="pw-passage__body">
+         <p className="pw-passage__title">{n.title}</p>
+diff -ruN proposal-workbench/src/views/stages/ThemesStage.tsx /home/claude/proposal-workbench/src/views/stages/ThemesStage.tsx
+--- proposal-workbench/src/views/stages/ThemesStage.tsx	2026-10-25 23:26:26.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/ThemesStage.tsx	2026-11-03 08:05:53.215050085 +0800
+@@ -12,6 +12,7 @@
+  */
+ import { Award, UserCheck } from 'lucide-react';
+ import type { CSSProperties } from 'react';
++import { useRouter } from '../../app/router';
+ import type { Direction, Proposal } from '../../domain/proposal';
+ import { useT } from '../../i18n';
+ import { ChallengeCard, DirectionMark, More, Scores, SectionHead } from '../../proposal/ui';
+@@ -22,6 +23,11 @@
+ 
+ export function ThemesStage({ proposal: p }: { proposal: Proposal }) {
+   const t = useT();
++  // A link from one of your ideas (`?focus=copy-C`) opens that direction's copy lines.
++  const { params } = useRouter();
++  const focus = params.get('focus');
++  // Copy lines that are word for word one of your ideas are marked as yours.
++  const yours = new Set(p.contributions.map((c) => c.text.trim()).filter(Boolean));
+   const th = p.themes;
+   if (!th) return <StageEmpty proposal={p} stage="themes" />;
+   const rec = th.directions.find((d) => d.id === th.recommendation.id);
+@@ -143,12 +149,15 @@
+               <tr>
+                 <th scope="row">{t('pw.th.lines')}</th>
+                 {th.directions.map((d) => (
+-                  <td key={d.id}>
++                  <td key={d.id} data-focus={`copy-${d.id}`} tabIndex={-1}>
+                     {d.copyLines.length > 0 ? (
+-                      <More label={t('pw.th.copyLines', { count: d.copyLines.length })}>
++                      <More label={t('pw.th.copyLines', { count: d.copyLines.length })} forceOpen={focus === `copy-${d.id}`}>
+                         <ul className="pw-copylines">
+                           {d.copyLines.map((l) => (
+-                            <li key={l}>{l}</li>
++                            <li key={l} data-yours={yours.has(l.trim()) || undefined}>
++                              {l}
++                              {yours.has(l.trim()) && <span className="pw-tag pw-copylines__yours">{t('pw.rev.yourIdea')}</span>}
++                            </li>
+                           ))}
+                         </ul>
+                       </More>
+diff -ruN proposal-workbench/src/views/stages/VisualStage.tsx /home/claude/proposal-workbench/src/views/stages/VisualStage.tsx
+--- proposal-workbench/src/views/stages/VisualStage.tsx	2026-11-03 06:12:49.000000000 +0800
++++ /home/claude/proposal-workbench/src/views/stages/VisualStage.tsx	2026-11-03 08:05:23.734107507 +0800
+@@ -19,6 +19,7 @@
+ import { ArtFrame, naturalRatio } from '../../ui/art/ArtFrame';
+ import { inkOn } from '../../proposal/color';
+ import { latestRefined, pendingVisuals } from '../../proposal/pending';
++import { artworkRevision, type ArtworkRevision } from '../../proposal/revisions';
+ import { Modal } from '../../ui/Modal';
+ import { StageEmpty } from './StageEmpty';
+ 
+@@ -142,6 +143,8 @@
+   const refined = latestRefined(b);
+   const earlier = b.refined.filter((r) => r !== refined);
+   const [big, setBig] = useState<number | null>(null);
++  const revision = artworkRevision(b);
++  const [showEarlier, setShowEarlier] = useState(false);
+   const bigView = big !== null ? b.views[big] : null;
+   return (
+     <div className="pw-branch-body">
+@@ -266,8 +269,30 @@
+             </div>
+           </div>
+         )}
++        {revision && (
++          <RevisionRecord
++            revision={revision}
++            onCompare={() => {
++              setShowEarlier(true);
++              requestAnimationFrame(() => document.getElementById(`vis-compare-${b.directionId}`)?.scrollIntoView({ block: 'center' }));
++            }}
++          />
++        )}
+         {earlier.length > 0 && (
+-          <More label={t('pw.vis.earlier', { count: earlier.length })}>
++          <More label={t('pw.vis.earlier', { count: earlier.length })} forceOpen={showEarlier}>
++            {/* Previous and current side by side, only when a previous version exists. */}
++            {revision && (
++              <div className="pw-compare" id={`vis-compare-${b.directionId}`}>
++                {[revision.previous, revision.current].map((r, n) => (
++                  <figure key={r.version}>
++                    <ArtFrame spec={r.art} title={`v${r.version}`} />
++                    <figcaption className="small">
++                      <span className="pw-label">{n === 0 ? t('pw.rev.previous') : t('pw.rev.current')}</span> v{r.version} · {t(`pw.vis.refined.${r.status}`)}
++                    </figcaption>
++                  </figure>
++                ))}
++              </div>
++            )}
+             <ul className="pw-earlier">
+               {earlier.map((r) => (
+                 <li key={r.version}>
+@@ -361,6 +386,93 @@
+     </section>
+   );
+ }
++
++/**
++ * What happened to a revised artwork, read-only and only from recorded data: why the earlier
++ * version did not stand (its upheld challenge or failed acceptance rule), the recorded response,
++ * what changed (versions and requirement results), both review results and what is still open.
++ */
++function RevisionRecord({ revision: r, onCompare }: { revision: ArtworkRevision; onCompare: () => void }) {
++  const t = useT();
++  const v = (n: number) => `v${n}`;
++  const rule = (x: ArtworkRevision['review']['previous']) =>
++    `${x.average === null ? t('pw.rev.noScore') : t('pw.rev.avg', { avg: x.average.toFixed(1) })} · ${x.meetsRule ? t('pw.rev.meets') : t('pw.rev.notMeets')} · ${t(`pw.vis.refined.${x.status}`)}`;
++  return (
++    <section className="pw-rev" aria-labelledby={`rev-${r.current.version}`}>
++      <p className="pw-label" id={`rev-${r.current.version}`}>
++        {t('pw.rev.title', { from: v(r.previous.version), to: v(r.current.version) })}
++      </p>
++      <ol className="pw-rev__steps">
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.request')}</span>
++          <span>
++            {r.request.challenge ? (
++              <>
++                {t('pw.rev.challenge', { v: v(r.previous.version) })} “{r.request.challenge}”
++              </>
++            ) : r.request.unmet.length || r.request.belowAverage ? (
++              t('pw.rev.ruleFailed', { v: v(r.previous.version) })
++            ) : (
++              <span className="muted">{t('pw.rev.noRequest', { v: v(r.previous.version) })}</span>
++            )}
++            {r.request.unmet.length > 0 && <span className="small muted"> {t('pw.rev.unmetList', { list: r.request.unmet.join('; ') })}</span>}
++          </span>
++        </li>
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.response')}</span>
++          <span>{r.response ? `“${r.response}”` : <span className="muted">{t('pw.rev.noResponse')}</span>}</span>
++        </li>
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.changed')}</span>
++          <span>
++            {t('pw.rev.changedArt', { from: v(r.previous.version), to: v(r.current.version) })}{' '}
++            <a
++              href="#vis-refined"
++              className="text-link"
++              onClick={(e) => {
++                e.preventDefault();
++                document.querySelector('.pw-refined__art')?.scrollIntoView({ block: 'center' });
++              }}
++            >
++              {t('pw.rev.seeCurrent', { v: v(r.current.version) })}
++            </a>
++            {r.requirementChanges.length > 0 && (
++              <ul className="pw-rev__reqs">
++                {r.requirementChanges.map((c) => (
++                  <li key={c.text}>
++                    {c.text}: {c.before === null ? t('pw.rev.reqAdded', { state: c.after ? t('pw.vis.met') : t('pw.vis.notMet') }) : t('pw.rev.reqChange', { from: c.before ? t('pw.vis.met') : t('pw.vis.notMet'), to: c.after ? t('pw.vis.met') : t('pw.vis.notMet') })}
++                  </li>
++                ))}
++              </ul>
++            )}
++            <span className="small muted pw-rev__limit">{t('pw.rev.noDiff')}</span>
++          </span>
++        </li>
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.review')}</span>
++          <span>
++            {v(r.previous.version)}: {rule(r.review.previous)}
++            <br />
++            {v(r.current.version)}: {rule(r.review.current)}
++          </span>
++        </li>
++        <li>
++          <span className="pw-rev__k">{t('pw.rev.open')}</span>
++          <span>
++            {r.open.length === 0 ? (
++              <span className="muted">{t('pw.rev.noneRecorded', { v: v(r.current.version) })}</span>
++            ) : (
++              r.open.map((x) => (x.kind === 'requirement' ? t('pw.cp.unmet', { text: x.text }) : x.kind === 'below' ? t('pw.cp.below', { avg: x.average.toFixed(1) }) : `${t(`pw.challenge.${x.outcome}`)}: ${x.text}`)).join(' · ')
++            )}
++          </span>
++        </li>
++      </ol>
++      <button type="button" className="btn btn--secondary btn--sm" onClick={onCompare}>
++        {t('pw.rev.compare', { from: v(r.previous.version), to: v(r.current.version) })}
++      </button>
++    </section>
++  );
++}
+ 
+ function Verdict({ v }: { v: 'selected' | 'rejected' }) {
+   const t = useT();
+diff -ruN proposal-workbench/src/workbot/WorkBot.tsx /home/claude/proposal-workbench/src/workbot/WorkBot.tsx
+--- proposal-workbench/src/workbot/WorkBot.tsx	2026-10-25 21:14:15.000000000 +0800
++++ /home/claude/proposal-workbench/src/workbot/WorkBot.tsx	2026-11-03 08:13:26.816917720 +0800
+@@ -1,5 +1,5 @@
+ import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+-import { ArrowUpRight, CircleAlert, History, RotateCcw, Send, X } from 'lucide-react';
++import { ArrowUpRight, ChevronsRight, CircleAlert, History, RotateCcw, Send, X } from 'lucide-react';
+ import { useServiceQuery } from '../app/query';
+ import { projectPath, useRouter } from '../app/router';
+ import { useAssistant } from '../app/services';
+@@ -70,6 +70,87 @@
+   return { act, bubble };
+ }
+ 
++/** True while a media query matches (phones, for the launcher's reading and typing behaviour). */
++function useMedia(query: string) {
++  const get = () => (typeof window !== 'undefined' && window.matchMedia ? window.matchMedia(query).matches : false);
++  const [match, setMatch] = useState(get);
++  useEffect(() => {
++    const mq = window.matchMedia?.(query);
++    if (!mq) return;
++    const on = () => setMatch(mq.matches);
++    on();
++    mq.addEventListener('change', on);
++    return () => mq.removeEventListener('change', on);
++  }, [query]);
++  return match;
++}
++
++const EDITABLE = 'input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=range]), textarea, select, [contenteditable="true"]';
++
++/** True while the person is typing in a field on the page (not in WorkBot's own panel). */
++function useTyping(enabled: boolean) {
++  const [typing, setTyping] = useState(false);
++  useEffect(() => {
++    if (!enabled) {
++      setTyping(false);
++      return;
++    }
++    const check = () => {
++      const el = document.activeElement;
++      setTyping(Boolean(el && el.matches(EDITABLE) && !el.closest('.workbot')));
++    };
++    const off = () => window.setTimeout(check, 0);
++    document.addEventListener('focusin', check);
++    document.addEventListener('focusout', off);
++    check();
++    return () => {
++      document.removeEventListener('focusin', check);
++      document.removeEventListener('focusout', off);
++    };
++  }, [enabled]);
++  return typing;
++}
++
++/** True while the page is being scrolled, and for a moment after: the person is reading. */
++function useReading(enabled: boolean) {
++  const [reading, setReading] = useState(false);
++  useEffect(() => {
++    if (!enabled) {
++      setReading(false);
++      return;
++    }
++    let timer = 0;
++    const on = () => {
++      setReading(true);
++      window.clearTimeout(timer);
++      timer = window.setTimeout(() => setReading(false), 1500);
++    };
++    window.addEventListener('scroll', on, { passive: true });
++    return () => {
++      window.removeEventListener('scroll', on);
++      window.clearTimeout(timer);
++    };
++  }, [enabled]);
++  return reading;
++}
++
++const DOCK_KEY = 'pw.workbot.docked';
++const readDocked = () => {
++  try {
++    return sessionStorage.getItem(DOCK_KEY) === '1';
++  } catch {
++    return false;
++  }
++};
++const saveDocked = (v: boolean) => {
++  try {
++    if (v) sessionStorage.setItem(DOCK_KEY, '1');
++    else sessionStorage.removeItem(DOCK_KEY);
++  } catch {
++    /* the choice still holds for this visit */
++  }
++};
++
+ /** The DOT button and the side panel. Mounted once in the shell so it survives navigation. */
+ export function WorkBot() {
+   const { open, setOpen } = useWorkBot();
+@@ -80,19 +161,40 @@
+   const wasOpen = useRef(open);
+   const returning = useRef(false);
+   const [near, setNear] = useState(false);
+-  const idle = useIdleLife(!open && !near && life.mood === 'idle' && !life.pending);
++  // On phones WorkBot keeps out of the way: the person can dock it to the screen edge, it steps
++  // aside while they type in a field, and its bubble stays in while they scroll and read. The
++  // panel stays mounted throughout, so a conversation and anything typed in it are never cleared.
++  const phone = useMedia('(max-width: 640px)');
++  const [docked, setDockedState] = useState(readDocked);
++  const typing = useTyping(phone);
++  const reading = useReading(phone);
++  const tab = useRef<HTMLButtonElement>(null);
++  const isDocked = phone && docked;
++  const away = phone && (docked || typing);
++  const setDocked = (v: boolean) => {
++    setDockedState(v);
++    saveDocked(v);
++    // Focus follows, without counting as the person reaching for WorkBot (which would pin the bubble).
++    requestAnimationFrame(() => {
++      returning.current = true;
++      (v ? tab.current : launcher.current)?.focus();
++      returning.current = false;
++    });
++  };
++  const idle = useIdleLife(!open && !near && !away && life.mood === 'idle' && !life.pending);
+   // States that matter (an answer waiting, a request running, an error) keep the bubble out.
+   const status = life.pending || life.mood === 'error' || life.unread;
+-  const showBubble = status || near || idle.bubble;
++  const showBubble = !away && (status || ((near || idle.bubble) && !reading));
+ 
+   useEffect(() => {
+     document.documentElement.dataset.workbot = open ? 'open' : 'closed';
+     if (wasOpen.current && !open) {
+       returning.current = true;
+-      launcher.current?.focus();
++      (isDocked ? tab.current : launcher.current)?.focus();
+       returning.current = false;
+     }
+     wasOpen.current = open;
++    // Focus only follows the panel closing; the docked state is read at that moment.
+   }, [open]);
+ 
+   return (
+@@ -103,7 +205,7 @@
+         className="workbot-launcher"
+         aria-expanded={open}
+         aria-controls={panelId}
+-        hidden={open}
++        hidden={open || away}
+         data-mood={life.mood}
+         onClick={() => setOpen(true)}
+         onPointerEnter={() => setNear(true)}
+@@ -123,6 +225,14 @@
+         </span>
+         <WorkBotCharacter mood={life.mood} act={idle.act} height={64} className="workbot-launcher__figure" />
+       </button>
++      {/* Phones: dock WorkBot to the edge, and bring it back from there. */}
++      <button type="button" className="workbot-hide" hidden={!phone || open || away} onClick={() => setDocked(true)} aria-label={t('wb.hide')} title={t('wb.hide')}>
++        <ChevronsRight size={14} aria-hidden="true" />
++      </button>
++      <button ref={tab} type="button" className="workbot-tab" hidden={!isDocked || open || typing} onClick={() => setDocked(false)} aria-label={t('wb.show')} title={t('wb.show')}>
++        <WorkBotCharacter mood={life.mood} act={null} height={30} className="workbot-tab__figure" />
++        {status && <span className="workbot-tab__dot" aria-hidden="true" />}
++      </button>
+       <WorkBotPanel id={panelId} onLifecycle={setLife} />
+     </>
+   );

@@ -1,0 +1,17 @@
+{
+  "model": "gpt-6.1-terra",
+  "role": "user",
+  "method": "普通中文读者的中性首读，仅据给定主副文，不限时；未评分。",
+  "inputs_seen": [
+    {"path": ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION.md", "sha256": "9daea2e3cca39b478107cf7a5137a7553e9fb46594baaf66e43c4c90b8edf870"},
+    {"path": ".scratch/qingyu-copy-full-20261110/inputs/CALIBRATION-ADDENDUM.md", "sha256": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc"},
+    {"path": ".scratch/qingyu-copy-full-20261110/packets/r1/first-user.md", "sha256": "13ff05859a69e5defe32a7f6bedda21b98069fa01a6ad1788cfbd62ca91e8866"}
+  ],
+  "objects": [
+    {"id": "v2", "product": "瓶装无糖茶", "brand": "青屿", "natural_meaning": "有人帮了忙，请对方喝一瓶特意选的茶表示感谢；这款茶用了虎跑泉水。", "memory_cue": "谢你搭把手，我请你喝茶。", "uncertainty": "主文先读时不知道品牌与具体茶种；‘用到了’没有说明泉水在配方中的占比。"},
+    {"id": "n7", "product": "瓶装无糖茶", "brand": "青屿", "natural_meaning": "青屿做茶时连用水都说出具体名字，配方里有虎跑泉水。", "memory_cue": "水也有名有姓。", "uncertainty": "‘有名有姓’强调水的具体名称，不说明水占多少；不了解虎跑的人未必知道它是什么地方。"},
+    {"id": "k4", "product": "瓶装无糖茶", "brand": "青屿", "natural_meaning": "在工位喝茶歇时，通过瓶中虎跑泉水联想到虎跑，像是去了一趟。", "memory_cue": "工位茶歇，去趟虎跑。", "uncertainty": "主文单独看可能以为真的要去虎跑；副文才表明是在工位开茶的想象。不了解虎跑的人可能不知道地点及其与泉水的关系。"}
+  ],
+  "group_differences": "v2先读到感谢与请客的人际场景；n7聚焦用水的名称与配方；k4把工位茶歇和虎跑的地点联想连起来。三组都在副文交代青屿无糖茶与虎跑泉水。",
+  "limitation": "这是模型模拟的首读记录，不代表真实消费者反应。"
+}

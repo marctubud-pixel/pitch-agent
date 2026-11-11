@@ -1,0 +1,32 @@
+name: Application baseline
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: application-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Install locked preview dependencies
+        run: npm run setup:frontend
+      - name: Check repository and source identities
+        run: npm run check:repository
+      - name: Typecheck and test current application
+        run: npm run typecheck && npm run test:frontend
+      - name: Test portable domain and storage boundaries
+        run: npm run test:core
+      - name: Build current application
+        run: npm run build

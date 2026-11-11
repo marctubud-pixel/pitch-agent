@@ -1,0 +1,33 @@
+{
+  "command": [
+    "node",
+    "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/scripts/check-stage.mjs",
+    "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/WORK-PACKAGE.json"
+  ],
+  "startedAtISO": "2026-11-10T12:56:32.902204Z",
+  "completedAtISO": "2026-11-10T12:56:33.054621Z",
+  "exitCode": 0,
+  "result": {
+    "decision": "record_only",
+    "reasons": [
+      "Intake evidence is bound to the recorded input and authorization; no aesthetic approval"
+    ]
+  },
+  "workPackage": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/WORK-PACKAGE.json",
+    "sha256": "b4d537f41df25f9a70d88c79965247d256d3a669e396e096eadfc7cdfe976621"
+  },
+  "checker": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-final/visual-development-lead/scripts/check-stage.mjs",
+    "sha256": "e989e82288e1ee4b8b873ec409c061a734e0881cce37ffb9b0597e54ad796dd4"
+  },
+  "stdout": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/CHECK-STDOUT.json",
+    "sha256": "074e0bfcd88dad3776c04e9706686bb3d181bd4a3875b54dd33ac565adaef0a0"
+  },
+  "stderr": {
+    "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/owner-r2/CHECK-STDERR.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "只证明本地证据和流程结构；不是审美、真实身份、真实授权有效性或后续准入证明。"
+}

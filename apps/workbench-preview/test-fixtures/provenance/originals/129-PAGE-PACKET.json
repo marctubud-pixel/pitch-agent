@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "id": "visual-intake-qingyu-20261110-01-page-packet-v1",
+  "skill": {
+    "name": "visual-development-lead",
+    "version": "1.0.0",
+    "manifestSha256": "8bf6da565da5a14b8efcd53b0d7580e499f1d5aaef257607eaf258b7687fd22d"
+  },
+  "input": {
+    "referenceSetId": "qingyu-packaging-references-20261110-v1",
+    "bundleId": "qingyu-copy-full-r2-20261110",
+    "roundId": "r2",
+    "directionIds": [
+      "n7",
+      "k4",
+      "v2"
+    ],
+    "copySha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+    "researchSha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+  },
+  "authorization": {
+    "through": "reference_intake"
+  },
+  "result": {
+    "kind": "collected_unreviewed",
+    "reviewCount": 0,
+    "artworkCount": 0
+  },
+  "directions": [
+    {
+      "id": "n7",
+      "visualQuestion": "在包装实际展示面上，既有信息组织参考对辨认青屿的品牌身份、无糖茶品类和虎跑泉水的用料身份能提供哪些可核线索；哪些证据仍不足以排除“两张名片”被理解为附卡？",
+      "focus": [
+        "两个名字各自的身份与阅读顺序",
+        "主副文共同呈现时的完整理解",
+        "保留与原地茶歇、共同旧游两案的机制差异"
+      ],
+      "limits": [
+        "沿用当前r2文案，不新增文案或具体画面方案",
+        "只收集参考，主/辅/备用均未选定",
+        "品牌身份、茶种和工艺不能从参考移入青屿"
+      ],
+      "gaps": [
+        "青屿具体茶种/SKU、瓶型、正标尺寸与展示面待补",
+        "实际文字长度与两行分离后的理解未核",
+        "让茶微字受原图分辨率限制"
+      ],
+      "referenceIds": [
+        "two-name-rangcha",
+        "two-name-chun"
+      ]
+    },
+    {
+      "id": "k4",
+      "visualQuestion": "既有地域表达参考对“人在工位喝茶即算到虎跑”的主副文关系有哪些可借线索和证据缺口，怎样核查它们不会把虚构的原地茶歇读成真实出游或把参考地域认作虎跑？",
+      "focus": [
+        "原地喝茶与想象抵达之间的理解",
+        "地名与配方用水依据的关系",
+        "现有地域意象的借鉴边界"
+      ],
+      "limits": [
+        "参考图中的柳鸟、东北虎均不等于虎跑实景",
+        "不迁移跨品类价位、口感或购买效果",
+        "本轮不确定视觉主角、草图构图或造型"
+      ],
+      "gaps": [
+        "地域参考对工位茶歇机制的适用性尚未评审",
+        "主副文在实际瓶标同读时的理解未核",
+        "青屿展示面、尺寸及品牌图形资产待补"
+      ],
+      "referenceIds": [
+        "trip-longjing",
+        "trip-changbai"
+      ]
+    },
+    {
+      "id": "v2",
+      "visualQuestion": "既有称呼和相伴关系参考对“认出虎跑名字、想起曾同行的人、因此捎茶”这条现有文案因果链能提供哪些待核线索，如何区分关系表达与已证实的赠礼/社交效果？",
+      "focus": [
+        "看见地名与想起特定对象的因果关系",
+        "主副文及既有随茶留言的用途差别",
+        "称呼、相伴关系作为局部借鉴的范围"
+      ],
+      "limits": [
+        "不把参考称呼、卡通人物或兔群直接当作青屿方案",
+        "不借用促销字样或纪念瓶材质/成本/销售模式",
+        "共同到访经历为虚构情景，非消费者证据"
+      ],
+      "gaps": [
+        "共同经历这一窄适用前提及文案自然度未核",
+        "分享瓶近景无瓶底，另附全图本轮未查看",
+        "青屿单瓶/其他包材的实际交付范围待补"
+      ],
+      "referenceIds": [
+        "memory-coke",
+        "memory-rabbit"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/intake/REQUEST.json",
+      "sha256": "ad33eef169e1c565228df076df3172fa7aa885c8c73caa5e2c582d61f8c4840e"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/SKILL-MANIFEST.json",
+      "sha256": "8bf6da565da5a14b8efcd53b0d7580e499f1d5aaef257607eaf258b7687fd22d"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/SKILL.md",
+      "sha256": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/kv.md",
+      "sha256": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/packaging.md",
+      "sha256": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/records.md",
+      "sha256": "6cb5d794a79eb68961ae8372e9931aa39ce821cdf9553afe4030ee1d141354dd"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/references/stage-review.md",
+      "sha256": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/scripts/check-stage.mjs",
+      "sha256": "8186a2c46497f38c46edd46789c352f33957d6d2affcc356b48f321e7051fb5f"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-visual-workflow-20261110/skill-candidate/visual-development-lead/tests/check-stage.test.mjs",
+      "sha256": "c6b5c3e17ec939bd9d2fba70a75239c1ec0de50661e2b4e00539ec06f2ca011f"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/src/proposal/qingyu-themes/reviewed-copy.json",
+      "sha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-packaging-references-20261110/references-editorial.json",
+      "sha256": "0d44eaf83ced56b6d9bc517bbf4b629d24adae2696fa1bacbf4d38f6238d3b14"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/qingyu-copy-full-20261110/inputs/research-r4.json",
+      "sha256": "f784b423d412484e8323e7bb12033ab18198ff3e59634c34b86d1c2e67cbea8d"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/rangcha-detail.png",
+      "sha256": "758174696b7d17a79ce1c3c93a519525663d91df08d930df275e17ae2dc61b9a"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-r3-20261109/chun-moli.png",
+      "sha256": "e7467012723450125db84945164bf60ae94520e8da9d69a57cdd6c897c7ed54b"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/oriental-longjing.png",
+      "sha256": "df27729ed779264c5a18f81505220225f524f012470b16cb2c8ffc93c9fa91a4"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/changbai-snow.png",
+      "sha256": "e734eefeb5199d0d8ff46f8f20702a16e9a6a5e867fea0cf6a15504a4c24a222"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/coke-share-02.jpg",
+      "sha256": "828c6b208afe9eace44289592df186ff8f6b9a69d52817412f37834d1b9eddc7"
+    },
+    {
+      "path": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/frontend-ui-optimization-20261108/source/proposal-workbench/public/research-case/qingyu-packrefs-20261110/nongfu-rabbit.png",
+      "sha256": "1eef17132f995f2fd6199906eeb35f3d30544c328957f1ba5d19c1504450b9e0"
+    }
+  ],
+  "performedAt": "2026-11-10T12:23:22Z"
+}

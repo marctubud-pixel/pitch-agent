@@ -1,6 +1,6 @@
 # 首次GitHub纳管准备
 
-目的仓库、所属账号／组织及可见性尚未指定；无remote，gh未安装。本文件是准备记录，非远程创建、推送或PR回执。
+历史准备记录，非远程创建、推送或PR回执。2026-11-11再次核查，本地已有规范提交，origin已配置为 `git@github.com:marctubud-pixel/pitch-agent.git`；此前“无remote”不再是现状。远程可见性、推送、PR、CI与分支保护本轮未核，实际范围见[Git纳管边界](repository-scope.md)。以下PR草稿保留首次整理范围。
 
 首批文件按 `scripts/spec-upload-files.json` 明确列出。规范、方法、固定截图和治理工具可形成可回退本地提交；源码纳管另开后续PR，现有客户PDF、业务库、原图池与临时结果原位保留。
 
@@ -16,4 +16,4 @@
 
 ## CI依据与范围
 
-已准备只读权限的规范工作流，运行Python标准库检查，不执行模型或业务服务。checkout 固定到 [actions/checkout v7.0.1的实际提交](https://github.com/actions/checkout/commit/3d3c42e5aac5ba805825da76410c181273ba90b1)，用法核对其[官方说明](https://github.com/actions/checkout)。远程分支保护、必要审批和实际CI需要仓库建立后配置；目前均未生效。
+已准备只读权限的规范工作流，运行Python标准库检查，不执行模型或业务服务。checkout 固定到 [actions/checkout v7.0.1的实际提交](https://github.com/actions/checkout/commit/3d3c42e5aac5ba805825da76410c181273ba90b1)，用法核对其[官方说明](https://github.com/actions/checkout)。远程分支保护、必要审批和实际CI需要单独核验；本地模板不证明它们已生效。

@@ -1,0 +1,240 @@
+{
+  "stage": "slogan",
+  "sameDraftSha256": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+  "model_id": "gpt-6-astra",
+  "scope": "r1；独立创意总监对虚构青屿同组三套包装文字概念的改稿裁决。只评完整主副文、主张与机制，未改任何岗位原分。",
+  "decision": "revise",
+  "adjudications": [
+    {
+      "sourceRole": "copy",
+      "issueId": "n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "完整两句已报出水名及其配方身份。名气、追溯联想和泉名熟悉度留待版面/真人验证；文案保持不承诺名气或可追溯。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "n7-I1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "完整两句已报出水名及其配方身份。名气、追溯联想和泉名熟悉度留待版面/真人验证；文案保持不承诺名气或可追溯。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "完整两句已报出水名及其配方身份。名气、追溯联想和泉名熟悉度留待版面/真人验证；文案保持不承诺名气或可追溯。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "copy",
+      "issueId": "k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "单独展示主文可能被读成旅游邀请，青屿要靠副文认出。现有完整两句给出原地开瓶；做瓶标或拆句投放时另验。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "k4-I1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "单独展示主文可能被读成旅游邀请，青屿要靠副文认出。现有完整两句给出原地开瓶；做瓶标或拆句投放时另验。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-k4-i2",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "单独展示主文可能被读成旅游邀请，青屿要靠副文认出。现有完整两句给出原地开瓶；做瓶标或拆句投放时另验。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "单独展示主文可能被读成旅游邀请，青屿要靠副文认出。现有完整两句给出原地开瓶；做瓶标或拆句投放时另验。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "k4-I2",
+      "itemId": "k4",
+      "disposition": "accepted_later",
+      "reason": "“瓶里就有”未明说全部用水。改稿继续限定为配方使用，实际用水情况和供应凭据由产品方核实。",
+      "owner": "产品核验负责人"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "v2-I1",
+      "itemId": "v2",
+      "disposition": "accepted_later",
+      "reason": "完整主副文已明确产品归属。主文独用和人际场景接受度另验。",
+      "owner": "后续包装设计与验证负责人"
+    },
+    {
+      "sourceRole": "copy",
+      "issueId": "v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "“这瓶茶，我请”可直接对人说；“里面用到了”突然像在读背标。重做两句衔接，使它们能由同一个人自然说完。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "copy",
+      "issueId": "v2-i2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "“特意挑了”提示有选择，却只把配方事实贴在谢意后面。原句要让人听懂此时为何提到这项细节。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-k4-i1",
+      "itemId": "k4",
+      "disposition": "accepted_now",
+      "reason": "人在工位、地名来自泉水已成立；具体茶歇意义仍押在听者对地名的联想上。实际句子应让不识虎跑的人也明白此刻想做什么、这瓶茶如何参与。无需说明旅游价值。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "采纳与选茶任务的连接须写得更具体：目前足以读出为什么请人，难读出为什么递的是这瓶。只因欠缺赠茶偏好研究而退稿的理由不采纳；任务没有限定自饮。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "user",
+      "issueId": "u-v2-i2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "陌生泉名不妨碍读懂请茶，但削弱“特意”一词的支撑。按文案已列阻断一并处理；真实选茶动机另验。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "n7-i1",
+      "itemId": "n7",
+      "disposition": "accepted_now",
+      "reason": "其他两副文都能给“有名有姓”填上泉名。重做命名动作在两句中的分工，不让报出任何水名就等价。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "v2-i1",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "换成中性配方说明，谢人、请茶仍成立，虽失去主动挑选与青屿名，但产品事实在答谢动作中的作用仍不充分。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "comms",
+      "issueId": "v2-i2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "能记得“这瓶茶，我请”不一定带得回青屿与它选水的动作。让关系成为原句里能复述的一部分，不靠真实记忆率作证。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "brand",
+      "issueId": "SET-BRAND-I1",
+      "itemId": "set",
+      "disposition": "accepted_now",
+      "reason": "三种场景成立，但不能用角色不同、换句后没提品牌或不再写工位，统一宣称三种机制均断裂。修原句并实际双向互换，记录每一向保留及损失。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "user-counter",
+      "clarificationId": "cu-r1-k4-scope",
+      "itemId": "k4",
+      "disposition": "accepted_now",
+      "reason": "区分“地名转换能否理解”“这次茶歇具体意味什么”和“读者向往虎跑吗”。只补第二项，第三项留待调研。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "user-counter",
+      "clarificationId": "cu-r1-v2-scope",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "赠茶可作普通虚构子场景，不必先证明大众需求。要改的是主副文之间的选择逻辑与声口，不是证明受赠者喜欢名泉。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "brand-counter",
+      "clarificationId": "coverage.scope_clarifications",
+      "itemId": "set",
+      "disposition": "accepted_now",
+      "reason": "不把品牌在换句后消失误记成地点隐喻失效；不把个别方向互换成功抹掉。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "comms-counter",
+      "clarificationId": "pairwise_check:n7/v2",
+      "itemId": "set",
+      "disposition": "accepted_now",
+      "reason": "换句还会丢主动挑选和说话视角，不仅是语气变化；仍不足以消除报水名与中性尾注共用的问题。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "copy-counter",
+      "clarificationId": "coverage.scope_observation_mapping:v2",
+      "itemId": "v2",
+      "disposition": "accepted_now",
+      "reason": "“特意挑了”确已暗示送茶人选过；可理解这个意思与一口气自然说完、记得为何挑这款是不同判断，文案两项原阻断保留。",
+      "owner": "创作者；新版由对应原岗位复核"
+    },
+    {
+      "sourceRole": "comms-counter",
+      "clarificationId": "coverage:n7",
+      "itemId": "n7",
+      "disposition": "accepted_later",
+      "reason": "离开副文时只知水被命名，不知泉名；设计打样需验证同读，不能凭此断言受众记不住。",
+      "owner": "后续包装设计与验证负责人"
+    }
+  ],
+  "revisionBrief": [
+    {
+      "itemId": "n7",
+      "problem": "本案独立可懂，放回整组，另外两条副文也能替它报名。",
+      "evidence": "“有名有姓”接 k4 的“瓶里就有虎跑泉水”仍给出水名与品牌；接 v2 的“里面用到了虎跑泉水”同样给出答案。",
+      "requiredOutcome": "保留具体产品知识的收获，改实际主文与副文的问答关系，使读者能从这对句子看出青屿用了什么以及这一对如何特有地交代该选择。至少改动承担该关系的实句；只改方向说明、换品牌位置或补品名不算。无须编出第二条产品事实。",
+      "doNotInvent": "完整追溯、名泉带来好味、独家用水。"
+    },
+    {
+      "itemId": "k4",
+      "problem": "地点双关清楚，茶歇意义还倚赖地名自带吸引力。",
+      "evidence": "“去趟虎跑／工位上拧开”建立原地出发；“瓶里就有虎跑泉水”解释去处来自哪，未进一步给陌生读者一个清楚的茶歇时刻。",
+      "requiredOutcome": "调整主张到原句实际承得住的茶歇动作或感受，并至少改一条实句：不认识虎跑的人也能说出这次小停顿具体做了什么、产品在其中如何起作用。保留同读能解实地出游歧义的优点。若更换机制，新方案仍须与另两案不同。",
+      "doNotInvent": "放松疗效、名胜景物或游览卖点、对虎跑的普遍向往。"
+    },
+    {
+      "itemId": "v2",
+      "problem": "“我请”说清为何请茶；配方尾注未说清为何这一瓶适合出现在这次对话。",
+      "evidence": "“特意挑了……里面用到了……”两句相邻可暗示挑中了水源，却从当面道谢转向配方介绍。即使用 n7 中性副文，谢意仍完整。",
+      "requiredOutcome": "重做主张与实际主副文。保留赠茶则让选这瓶的动作、说这个细节的人和说给谁听，在对话内互相需要。单靠“特意”、因果连词或补一句卖点不算。若没有自然的连接，允许换掉赠茶方向，改成另一种在选茶或饮茶语境可复述、由配方选择支撑的创意机制。",
+      "doNotInvent": "礼品溢价、对方特别喜欢这水、谢礼代表大众用途、泉水能提高品质。"
+    }
+  ],
+  "setDifferenceRequirements": [
+    "n7/k4：n7主＋k4副照样报水名；反向仍解释虎跑为何能作去处，却失去青屿名称及人在工位开瓶的揭晓。不是双向失效。",
+    "n7/v2：n7主＋v2副仍给出水名，说话者转换可被听成另一人接话；反向仍是请茶并介绍配方，却失去青屿名称及主动挑的动作。并非毫无损失，但两套文案都可以用“产品介绍”补尾。",
+    "k4/v2：k4主＋v2副仍像为目的地茶歇挑茶，但不再出现工位原地出发；反向仍能请同事在工位喝并介绍用水，不必然人称冲突，失去的是送茶人的选茶动作。",
+    "新版三案各写明读者得到什么、由哪两步文字动作完成、如何延展；用三对六向真实换句列出留下什么、失去哪一步。每一对须有真实的机制、关系或读者收获损失，允许不对称；不要求六组语法都错。只改口吻、靠缺了品牌名制造失败、或依靠作者说明才显出不同，均不足。"
+  ],
+  "recommendation": null,
+  "unresolved": [
+    "新版是否达到四岗各项门槛及整组差异要求，待封存重审。"
+  ],
+  "limits": [
+    "15条肯定获配对保留；用户对抗另有2项已覆盖的范围澄清。四组均为0新增有效阻断，只表示没有额外发现，原岗阻断和分数全部保留。",
+    "具体茶种、完整配方、用水比例及来源凭据待补；不能把“配方使用”扩大。茶种未定不代填，正式呈现需与无糖共同清楚。",
+    "实际消费者是否关心水源、向往地点、愿意赠茶，是否记住或购买均未知。没有验证版面、正式上市、真实消费者或客户接受情况。",
+    "新版主副文封存后四岗位独立重评、配对核验，再裁决；不沿用本轮通过项、平均分或历史分，不依据本裁决展示推荐。"
+  ]
+}

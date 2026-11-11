@@ -1,0 +1,46 @@
+[
+  {
+    "file": "moth-margarita.jpg",
+    "url": "https://digitalcontent.api.tesco.com/v2/media/ghs/fc40a979-d477-46b0-87d8-e36d0753d949/b69bbb32-ee12-420b-aa3a-4f46580090af_432083774.jpeg?h=960&w=960",
+    "sha256": "139e6dd771f33b2cffc297f3af6b8efe9cafd7e54ae10047f1d8d95f4a3b078e",
+    "bytes": 148232,
+    "type": "image/jpeg",
+    "retrieved": "2026-11-09",
+    "rightsNote": "Tesco product image. Included as attributed desk-research reference only. All trademarks and image rights belong to their owners. Not Luma artwork."
+  },
+  {
+    "file": "gordons-tonic.jpg",
+    "url": "https://digitalcontent.api.tesco.com/v2/media/ghs/f96487c2-239e-427b-9613-a13d759b0d51/a374c877-7879-4584-af84-91d86e80e9ad_146703017.jpeg?h=960&w=960",
+    "sha256": "52cae5a8166dfaebb3584ce4ca4aa8a592e416a9acc0e4903ee5b449594c6b01",
+    "bytes": 71226,
+    "type": "image/jpeg",
+    "retrieved": "2026-11-09",
+    "rightsNote": "Tesco product image. Included as attributed desk-research reference only. All trademarks and image rights belong to their owners. Not Luma artwork."
+  },
+  {
+    "file": "white-claw-lime.jpg",
+    "url": "https://digitalcontent.api.tesco.com/v2/media/ghs/40f93cdf-f820-4bfa-8433-01523842808b/9c1a1132-f2de-4f30-9efa-b9bc1b54e4f2_769236762.jpeg?h=960&w=960",
+    "sha256": "a44334b33a725b5b1e58ebfd0ab5309c90aad189086c72a01382a9078c908616",
+    "bytes": 118589,
+    "type": "image/jpeg",
+    "retrieved": "2026-11-09",
+    "rightsNote": "Tesco product image. Included as attributed desk-research reference only. All trademarks and image rights belong to their owners. Not Luma artwork."
+  },
+  {
+    "file": "gordons-zero.jpg",
+    "url": "https://digitalcontent.api.tesco.com/v2/media/ghs/0cfe9c86-2401-4873-8df3-07be3bdd3965/931ca675-2480-4e3e-878f-b5fc2b751271_801027040.jpeg?h=960&w=960",
+    "sha256": "f4ef9a216df42fc3ae5cf183ce86eadcae335663b0122b77edf6f36d81c3c231",
+    "bytes": 84879,
+    "type": "image/jpeg",
+    "retrieved": "2026-11-09",
+    "rightsNote": "Tesco product image. Included as attributed desk-research reference only. All trademarks and image rights belong to their owners. Not Luma artwork."
+  },
+  {
+    "file": "funkin-passionfruit-pack.jpg",
+    "url": "https://digitalcontent.api.tesco.com/v2/media/ghs/8f4ca352-d85a-4f8f-a25e-18a6f78e6fea/105dd468-9383-4102-81f6-bd8fba4d2a35_1680969173.jpeg?h=960&w=960",
+    "sha256": "7017e8bb59b8e530d0c09f91a2f2c1a606f146aca84a1d873a6107f97881aea4",
+    "bytes": 68826,
+    "retrieved": "2026-11-09",
+    "rightsNote": "Tesco product image. Included as attributed desk-research reference only. All trademarks and image rights belong to their owners. Not Luma artwork."
+  }
+]

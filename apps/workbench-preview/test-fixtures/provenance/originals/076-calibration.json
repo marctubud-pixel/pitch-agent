@@ -1,0 +1,36 @@
+{
+  "reviewer_role": "independent_communications_judge",
+  "stage": "internal_boundary_and_scale_calibration",
+  "source_scope": ["inputs/CALIBRATION.md", "inputs/CALIBRATION-ADDENDUM.md"],
+  "quality_scale": {"1": "严重不成立", "2": "有想法但重大差距", "3": "意思可讲清但完成度低于本阶段基准", "4": "达到本地文字概念基准，可有非关键优化", "5": "有对照且具体超过基准，须说明增益与取舍"},
+  "items": [
+    {
+      "id": 1,
+      "judgment": "资料中的产品、冷泡时长和配料项数与句子对应。中性说明达到已给基准。",
+      "fact_support": {"status": "fully_supported_in_control_material", "basis": "控制题明确确认松涧冷泡茶、冷泡12小时、配料三项。"},
+      "quality_scores": {"factual_fit": 4, "direct_comprehension": 4, "grounded_brand_product_link": 4},
+      "basis": "产品名之后直接给出两项已确认信息，意思清楚，工艺和配料确实指向句中品牌产品。",
+      "limits": "没有超过该基准的对照，不给5分。未提供情绪感染、分享动力或实际传播效果证据，不据事实正确为这些维度加分。"
+    },
+    {
+      "id": 2,
+      "judgment": "当前不能使用喝三天改善睡眠的承诺，应硬退修改。",
+      "fact_support": {"status": "unsupported", "basis": "资料只有冷泡时长和配料项数，没有支持三天内改善睡眠的健康或试验资料。"},
+      "status": "hard_return_current_claim",
+      "quality_scores": {"factual_fit": 1, "direct_comprehension": 4},
+      "basis": "承诺内容明确，读者能直接理解，但承诺成立与句子易懂是两个问题。缺乏支持足以使当前承诺退回，不抹掉其语言可理解性。",
+      "limits": "这是本题给定证据下的使用判断，不是法律认定，也不是证明产品永远不可能有该效果。其他语言维度仍可各自评价，不能抵消事实硬退。"
+    },
+    {
+      "id": 3,
+      "judgment": "两句没有形成两个创意方向。",
+      "status": "insufficient_direction_separation",
+      "quality_scores": {"within_set_direction_difference": 1},
+      "basis": "两句均以一口清凉触发忙碌暂停。利益主张、场景和情绪机制相同，差别只有语序与近义措辞。",
+      "brand_portability": {"alone_is_fatal": false, "basis": "可换品牌提示专属性薄弱，仍须检查是否有已确认产品依据、品牌语义联系和本组方向区别。它不能单独证明方向失效。"},
+      "limits": "只判断本组两句差异，不声称市场绝对不独创，也不预测实际受众反应。"
+    }
+  ],
+  "independence": "本阶段未读其他源文件、候选稿、旧评审或作者说明，未搜索产品。仅按指定虚构控制题校准。",
+  "global_limit": "本文件是模型内部文字概念判断，不能证明评分等同人类审美，不能当作真实消费者研究或实测传播效果。"
+}

@@ -1,6 +1,6 @@
 # 首页 · 页面开发规格
 
-规范版本：1.0.1。页面ID：`home`。状态：已确认要求汇编；本次整理待核对。负责人见[ui-review-owner](../agents/ui-review-owner.md)。
+规范版本：1.0.2。页面ID：`home`。状态：已确认要求汇编；本次整理待核对。项目状态内容由[比稿Agent](../agents/proposal-director.md)提供，展示由[工作台UI负责人](../agents/workbench-ui-owner.md)维护；独立[UI审核者](../agents/ui-review-owner.md)负责复验。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 

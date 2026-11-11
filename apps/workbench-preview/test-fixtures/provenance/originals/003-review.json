@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "brand",
+  "packet_version": "r1",
+  "draft_sha256": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+  "score_report_id": "qingyu-copy-full-20261110-r1-brand-score",
+  "first_read_path": "critics/r1-brand/first.json",
+  "first_read_sha256": "e4df955bbd8c448847586ca266ac49348585b437cf6011d15cf0675fc148598f",
+  "paired_score_path": "reviews/r1-brand/score.json",
+  "paired_score_sha256": "abf92720bd3f603e46227976196f1a9b83c6d91f7def0ef16feeefd492d1a4f2",
+  "challenges": [],
+  "retained_claims": [
+    {
+      "item_id": "n7",
+      "claim_id": "n7-P1",
+      "claim_text": "青屿与配方用水形成有据语义联系，归属可直接读出。",
+      "evidence": "主文以青屿为做茶主体，副文将虎跑泉水放入这瓶无糖茶配方，联系和归属在两句同读时可直接由文字建立。"
+    },
+    {
+      "item_id": "k4",
+      "claim_id": "k4-P1",
+      "claim_text": "工位开瓶与具体水源连接，使地点想象具有产品依据。",
+      "evidence": "主文指向虎跑，副文将工位开瓶与瓶中的虎跑泉水相连，地点想象有配方基础；未证明受众真的产生该想象。"
+    },
+    {
+      "item_id": "v2",
+      "claim_id": "v2-P1",
+      "claim_text": "特意挑选的品牌和能介绍的配方细节明确相邻，答谢与产品对象均可读出。",
+      "evidence": "主文说请茶答谢，副文紧接“特意挑了青屿无糖茶”与用到虎跑泉水，文字中答谢、产品对象和配方细节可辨。"
+    }
+  ],
+  "coverage": {
+    "positive_claim_count": 3,
+    "retained_count": 3,
+    "challenged_count": 0,
+    "first_risk": "首查 set:n7-k4 已由原评审 pairwise n7/k4 双向互换及 SET-BRAND-I1 覆盖：前向保留命名与归属，反向保留配方与目的地联系但失去工位开瓶和青屿名称。原评审进一步把整组互换问题列为阻断；首查的非阻断判断并不消解这一既有问题。",
+    "new_evidence_backed": "无新增挑战。",
+    "scope_clarifications": [
+      "反向互换事实联系仍在，不代表完整品牌归属仍在：主文“今天的茶歇，去趟虎跑”加 n7 副文未出现青屿。工位开瓶消失意味着具体表达焦点和场景呈现变化，不必然证明目的地隐喻失效。",
+      "本核验肯定的是具体文字关系，并非证明消费者注意、理解或偏好。"
+    ],
+    "preferences": "无以个人偏好提出的挑战。"
+  },
+  "limits": [
+    "仅阅读指定配对品牌评分及本轮先前封存的指定输入；未读取其他岗位评审、对抗或推荐。",
+    "无新增挑战不等于完整认证；真实水源凭据、配方、受众反应及商业效果未知。"
+  ]
+}

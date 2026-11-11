@@ -1,0 +1,527 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "brand",
+  "model_id": "gpt-6.1-sol",
+  "packet_version": "r2",
+  "report_id": "qingyu-copy-full-20261110-r2-brand-score-independent",
+  "input_hashes": {
+    "packets/r2/SCORE-INSTRUCTIONS.md": "d984dcfbd88420cc6ced1608897b4d8b6632947d7ab6d063c3cd5862fcd1d787",
+    "packets/r2/FACTS.md": "2b4cda986d14436cc033e27b40a771d73ccdeb0af959f41ffeb5762e93c0d184",
+    "packets/r2/first-brand.md": "aa089e0e433afe44d5822bf45859671a65cdca215d085ef291ca26c14f0ed423",
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50",
+    "v2/RESPONSE.json": "1943ed32123471d74e9614b6f15431032fbc964c0933d66422041700ca26a504",
+    "reviews/r1-brand/score.json": "abf92720bd3f603e46227976196f1a9b83c6d91f7def0ef16feeefd492d1a4f2",
+    "reviews/r2-brand/first-read.json": "8bb14f463d4e859afb88d6bab0ebc3bc792102e419592c79725526e7dd708546",
+    "reviews/r2-brand/first-read.md": "2db251a8eef5fe9b36d2838673afcba574985b4303375a27e1b0ef2f5d0fa5ad",
+    "inputs/CALIBRATION.md": "9daea2e3cca39b478107cf7a5137a7553e9fb46594baaf66e43c4c90b8edf870",
+    "inputs/CALIBRATION-ADDENDUM.md": "fa725a8cead85b2d0fa1ea502edeb60aac028b10ee2c66287bbea0bfb1c543fc"
+  },
+  "seal_verification": {
+    "draft_matches": true,
+    "first_brand_packet_matches": true
+  },
+  "first_read": {
+    "reference": "reviews/r2-brand/first-read.json",
+    "sha256": "8bb14f463d4e859afb88d6bab0ebc3bc792102e419592c79725526e7dd708546",
+    "markdown_reference": "reviews/r2-brand/first-read.md",
+    "markdown_sha256": "2db251a8eef5fe9b36d2838673afcba574985b4303375a27e1b0ef2f5d0fa5ad",
+    "preserved": true,
+    "comparison_after_facts": "首读已辨认三案品牌、无糖品类和所用泉水，也读到身份介绍、工位小休息和旧游带茶的差别。核验后确认这些与给定产品设定相容；未用作者解释改写原首读。"
+  },
+  "items": [
+    {
+      "id": "n7",
+      "scores": [
+        {
+          "dimension_id": "brand.direction.strategy_product",
+          "group": "direction",
+          "dimension": "策略及产品关联",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "一瓶无糖茶，两张名片。",
+              "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+            ],
+            "reason": "“一瓶无糖茶”先交代品类，副文以两次身份介绍把品牌与配方用水连接，符合现有策略。达到有据产品信息文字概念基准，未证明茶种或口味优势。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "brand.direction.semantic_link",
+          "group": "direction",
+          "dimension": "品牌语义联系",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "一瓶无糖茶，两张名片。",
+              "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+            ],
+            "reason": "“青屿，是茶的牌子”与“虎跑泉水，是这瓶茶用到的水”将品牌作为这瓶产品的所属者，将泉水作为它用到的材料，联系来自明确关系而不只是品牌露字。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "brand.copy.fact_boundary",
+          "group": "copy",
+          "dimension": "事实边界",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+            ],
+            "reason": "“用到的水”只说使用，不声称全部用水、独家、好喝、龙井或健康作用；与虚构设定相容。没有完成真实来源和配方凭据核验。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "brand.copy.attribution",
+          "group": "copy",
+          "dimension": "品牌/产品归属清楚",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+            ],
+            "reason": "主文给出无糖茶，副文逐项解释青屿为茶品牌、虎跑泉水为用水，不易把水名误认为另一茶品牌。首读即读出了这两个身份。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "k4",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "r2-brand-n7-P1",
+          "claim": "品牌与用水各有明确身份，能够直接读出同一瓶无糖茶的品牌及用料关系。",
+          "evidence": [
+            "一瓶无糖茶，两张名片。",
+            "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+          ]
+        }
+      ],
+      "issues": [],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "品牌岗位，基于已给虚构设定的主副文完整同呈文字概念。",
+      "reason": "四项均达到阶段基准；未证明具体高于基准，故均为4而非5。",
+      "limits": [
+        "具体茶种尚未给出，正式包装须补足明确茶种与无糖信息；本轮不代填。",
+        "真实配方、用水比例、供应凭据、目标受众偏好及传播购买效果尚未验证。"
+      ]
+    },
+    {
+      "id": "k4",
+      "scores": [
+        {
+          "dimension_id": "brand.direction.strategy_product",
+          "group": "direction",
+          "dimension": "策略及产品关联",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "鼠标放一放，去趟虎跑。",
+              "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+            ],
+            "reason": "“鼠标放一放”关联设定中的办公时刻，“茶里用到了虎跑泉水”给“去趟虎跑”提供产品依据，主张不需要凭空借用无关地点。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "brand.direction.semantic_link",
+          "group": "direction",
+          "dimension": "品牌语义联系",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "鼠标放一放，去趟虎跑。",
+              "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+            ],
+            "reason": "青屿是工位上被拧开的产品，产品所用泉水让“喝一口就算到了”的地点想象有具体桥梁。这个联系有据，尚不构成独占或已建立的品牌资产。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "brand.copy.fact_boundary",
+          "group": "copy",
+          "dimension": "事实边界",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+            ],
+            "reason": "“茶里用到了”保持使用范围；“工位上”和“喝一口就算到了”把抵达写作想象而非实际旅行或已证实放松效果。与允许的文字概念边界相容。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        },
+        {
+          "dimension_id": "brand.copy.attribution",
+          "group": "copy",
+          "dimension": "品牌/产品归属清楚",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+            ],
+            "reason": "“工位上拧开青屿无糖茶”直接交代品牌、品类及饮用对象，后句用水归属指向该茶。首读合读能够识别，但主文单独没有品牌，结论限于完整同呈。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "v2"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "r2-brand-k4-P1",
+          "claim": "工位喝青屿与想象抵达虎跑之间，有茶中用到虎跑泉水的明确文字依据。",
+          "evidence": [
+            "鼠标放一放，去趟虎跑。",
+            "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "id": "r2-brand-k4-I1",
+          "evidence": [
+            "鼠标放一放，去趟虎跑。",
+            "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+            "品牌与无糖品类只在副文明确。"
+          ],
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "suggested_action": "呈现时保留主副文同读；如计划仅用主文，应另行评估品牌产品归属。此项是适用条件，当前完整文字概念不因此阻断。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "品牌岗位，基于已给虚构设定的主副文完整同呈文字概念。",
+      "reason": "四项均达到阶段基准；未证明具体高于基准，故均为4而非5。",
+      "limits": [
+        "具体茶种尚未给出，正式包装须补足明确茶种与无糖信息；本轮不代填。",
+        "真实配方、用水比例、供应凭据、目标受众偏好及传播购买效果尚未验证。"
+      ]
+    },
+    {
+      "id": "v2",
+      "scores": [
+        {
+          "dimension_id": "brand.direction.strategy_product",
+          "group": "direction",
+          "dimension": "策略及产品关联",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "上回你带我去虎跑，这回换我给你带茶。",
+              "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+            ],
+            "reason": "主文的“上回你带我去虎跑”与副文“用到了虎跑泉水”共享具体地点，为这次带茶提供可理解的产品理由，符合放大配方选择的策略。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "brand.direction.semantic_link",
+          "group": "direction",
+          "dimension": "品牌语义联系",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "上回你带我去虎跑，这回换我给你带茶。",
+              "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+            ],
+            "reason": "“这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你”把品牌产品中的水名连接到两人的旧游，品牌作为被带去的这瓶茶进入关系。联系不依赖名泉更体面或水质更好的无据推论。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "brand.copy.fact_boundary",
+          "group": "copy",
+          "dimension": "事实边界",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+            ],
+            "reason": "“用到了虎跑泉水”没有新增比例、产地或效果承诺；“上回”“想起你”读作虚构人物的具体经历与感受，不把它泛化为消费者研究结论。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        },
+        {
+          "dimension_id": "brand.copy.attribution",
+          "group": "copy",
+          "dimension": "品牌/产品归属清楚",
+          "score": 4,
+          "status": "scored",
+          "required": true,
+          "evidence": {
+            "quotes": [
+              "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+            ],
+            "reason": "“这瓶青屿无糖茶”明确捎带产品的品牌及品类，紧随的泉水是该茶用料，不会读成另带一瓶水。主文独立仍不署品牌，本结论限完整两句。"
+          },
+          "comparison_scope": "same_set",
+          "comparison_ids": [
+            "n7",
+            "k4"
+          ]
+        }
+      ],
+      "positive_claims": [
+        {
+          "id": "r2-brand-v2-P1",
+          "claim": "这次给特定对象带青屿的理由由共同旧游与配方水名接起，不需补成名泉带来品质优势。",
+          "evidence": [
+            "上回你带我去虎跑，这回换我给你带茶。",
+            "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "id": "r2-brand-v2-I1",
+          "evidence": [
+            "上回你带我去虎跑，这回换我给你带茶。",
+            "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。",
+            "品牌与无糖品类只在副文明确。"
+          ],
+          "severity": "minor",
+          "blocking": false,
+          "stage": "slogan",
+          "suggested_action": "呈现时保留主副文同读；如计划仅用主文，应另行评估品牌产品归属。此项是适用条件，当前完整文字概念不因此阻断。"
+        }
+      ],
+      "hard_rejects": [],
+      "decision": "pass",
+      "scope": "品牌岗位，基于已给虚构设定的主副文完整同呈文字概念。",
+      "reason": "四项均达到阶段基准；未证明具体高于基准，故均为4而非5。",
+      "limits": [
+        "具体茶种尚未给出，正式包装须补足明确茶种与无糖信息；本轮不代填。",
+        "真实配方、用水比例、供应凭据、目标受众偏好及传播购买效果尚未验证。",
+        "共同去过虎跑是本案虚构关系前提，不是目标办公人群普遍经历或偏好的证据。"
+      ]
+    }
+  ],
+  "previous_issues": [
+    {
+      "issue_id": "n7-I1",
+      "item_id": "n7",
+      "status": "closed",
+      "evidence": [
+        "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。"
+      ],
+      "reason": "“有名有姓”已删除，文字只给身份与使用关系，当前没有完整追溯或名泉品质承诺。关闭文字歧义，不代表真实来源凭据已核实。"
+    },
+    {
+      "issue_id": "k4-I1",
+      "item_id": "k4",
+      "status": "retained",
+      "current_issue_id": "r2-brand-k4-I1",
+      "evidence": [
+        "鼠标放一放，去趟虎跑。",
+        "工位上拧开青屿无糖茶。"
+      ],
+      "reason": "副文品牌清楚，主文仍不署品牌。作为同呈条件保留非阻断问题；不把后续单独投放未知当当前失败。"
+    },
+    {
+      "issue_id": "k4-I2",
+      "item_id": "k4",
+      "status": "closed",
+      "evidence": [
+        "茶里用到了虎跑泉水"
+      ],
+      "reason": "已用明确“用到了”替换“瓶里就有”，不外推原样泉水或全部用水。比例、供应凭据仍在正式呈现前待核范围。"
+    },
+    {
+      "issue_id": "v2-I1",
+      "item_id": "v2",
+      "status": "retained",
+      "current_issue_id": "r2-brand-v2-I1",
+      "evidence": [
+        "上回你带我去虎跑，这回换我给你带茶。",
+        "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+      ],
+      "reason": "副文归属条件仍需要保留；旧泛化答谢已改为共同旧游的特定捎茶情境，作为虚构关系可理解，不证明目标人群普遍接受。"
+    },
+    {
+      "issue_id": "SET-BRAND-I1",
+      "item_id": "set",
+      "status": "closed",
+      "evidence": [
+        "一瓶无糖茶，两张名片。",
+        "鼠标放一放，去趟虎跑。",
+        "茶里用到了虎跑泉水，喝一口就算到了。",
+        "上回你带我去虎跑，这回换我给你带茶。",
+        "看见这名字，就想起你。"
+      ],
+      "reason": "根据当前三对六向实句复核，身份题、原地抵达和见名想人的协作已有具体差异。部分互换仍保留品牌事实或捎茶理由，已明确记录；关闭不以作者addressed_in_draft为依据，也不要求全部互换造成品牌缺失或语法失败。"
+    }
+  ],
+  "pairwise": [
+    {
+      "comparison_ids": [
+        "n7",
+        "k4"
+      ],
+      "mechanisms": "n7用两次身份介绍让读者分辨牌子与用水；k4把放下鼠标、工位开瓶与喝一口写成原地短途。首读已分别读出认身份和工位小休息。",
+      "evidence": [
+        "一瓶无糖茶，两张名片。",
+        "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+        "鼠标放一放，去趟虎跑。",
+        "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。"
+      ],
+      "main_sub_swap": [
+        {
+          "main_id": "n7",
+          "sub_id": "k4",
+          "preserved": "青屿无糖茶与所用虎跑泉水仍清楚，读者能自行将两个名字对应品牌与水，不能说完全认不出两张名片。",
+          "lost": "“喝一口就算到了”的目的地预告被“两张名片”取代，抵达不再承接主文的去处；两次逐项报名也被动作叙述取代。",
+          "result": "仍可读懂产品，动作揭晓却换到了身份题里，协作机制发生具体变化。"
+        },
+        {
+          "main_id": "k4",
+          "sub_id": "n7",
+          "preserved": "青屿、无糖茶和水名仍可辨，虎跑泉水能解释主文地点为何相关。",
+          "lost": "只剩放下鼠标与身份介绍，没有工位开瓶和“喝一口就算到了”，这次去处如何在原地完成须自行补足。",
+          "result": "不是语法失败，而是动作的原地抵达揭晓缺失。"
+        }
+      ],
+      "judgment": "身份认知与原地短途的收获不同，存在有实句支撑的协作损失，差异达到本轮概念要求。"
+    },
+    {
+      "comparison_ids": [
+        "n7",
+        "v2"
+      ],
+      "mechanisms": "n7对陌生读者解释两个名字是什么，v2对有共同旧游的特定对象说为何带这瓶茶，读者得到的关系信息不同。",
+      "evidence": [
+        "一瓶无糖茶，两张名片。",
+        "青屿，是茶的牌子。虎跑泉水，是这瓶茶用到的水。",
+        "上回你带我去虎跑，这回换我给你带茶。",
+        "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+      ],
+      "main_sub_swap": [
+        {
+          "main_id": "n7",
+          "sub_id": "v2",
+          "preserved": "青屿无糖茶和虎跑泉水的产品关系仍清楚，两个名称仍在。",
+          "lost": "“看见这名字，就想起你”的你没有共同经历铺垫；副文没有逐项介绍两张名片，忽然转成对人的留言。",
+          "result": "身份题转向无来由的私人联想，出现关系及信息分工的实质跳转。"
+        },
+        {
+          "main_id": "v2",
+          "sub_id": "n7",
+          "preserved": "上回虎跑与茶所用虎跑泉水仍能让读者推知带茶缘由，不能断言理由全失。",
+          "lost": "说话者见名想人的自述被客观身份介绍替代，少了此刻认出名字并想到对方的明确回接。",
+          "result": "仍可作为带茶留言，但主副文共同完成的个人触发经过减弱；损失小于反向互换。"
+        }
+      ],
+      "judgment": "面对陌生人的身份介绍与面对旧游同伴的带茶留言可分，换句诊断呈非对称损失，不要求两向都不通。"
+    },
+    {
+      "comparison_ids": [
+        "k4",
+        "v2"
+      ],
+      "mechanisms": "k4是当下办公动作触发的原地短途，v2是共同旧游被产品名称唤回后向对方带茶；前者喝到即抵达，后者见名想起人。",
+      "evidence": [
+        "鼠标放一放，去趟虎跑。",
+        "工位上拧开青屿无糖茶。茶里用到了虎跑泉水，喝一口就算到了。",
+        "上回你带我去虎跑，这回换我给你带茶。",
+        "这瓶青屿无糖茶用到了虎跑泉水。看见这名字，就想起你。"
+      ],
+      "main_sub_swap": [
+        {
+          "main_id": "k4",
+          "sub_id": "v2",
+          "preserved": "目的地虎跑与泉水关系还在，青屿无糖茶仍署名。",
+          "lost": "“去趟”后接“想起你”转向私人回忆，你没有关系铺垫，工位开瓶与喝到即抵达的落点缺失。",
+          "result": "办公短途不再获得动作上的回应，关系叙述缺少前因。"
+        },
+        {
+          "main_id": "v2",
+          "sub_id": "k4",
+          "preserved": "仍能读成给旧游同伴带一瓶青屿，并在工位喝茶；“喝一口就算到了”还能构成同游的玩笑，不存在必然指代矛盾。",
+          "lost": "原副文“看见这名字，就想起你”明确交代的见名想人时刻消失，替换成喝一口抵达；动机仍能推知但触发机制改变。",
+          "result": "可形成另一段通顺情境，不能称语法断裂；它保留捎茶，却换掉原稿的见名触发过程。"
+        }
+      ],
+      "judgment": "原稿在时间起点、对象和产品参与方式上有具体差异。互换后仍可通顺的一向照实保留，不能据此抹平另一向及原稿的机制差异。"
+    }
+  ],
+  "set_issues": [],
+  "set_decision": "pass",
+  "set_reason": "品牌岗位四项逐案均达到4，未新增无据产品承诺。首读和实际互换均支持三种具体不同的读者收获及协作机制。当前没有必评不足4、关键unknown、硬退或整组阻断；部分换句可通顺不被假称失败。此结论不承担其他岗位评分或推荐权。",
+  "scope_limit": "模型内部品牌岗位判断，仅签虚构设定下的文字概念，不是客户批准、消费者研究、市场独创性判断或正式产品批准。",
+  "unresolved": [
+    "茶种、完整配料、用水比例、供应和水源凭据仍待产品方补足。",
+    "实际版面是否让主副文同读、目标人群是否熟悉虎跑、是否接受想象短途或共同旧游场景均未知。",
+    "真实记忆、传播、选择与购买效果未测，不计为质量优势。"
+  ]
+}

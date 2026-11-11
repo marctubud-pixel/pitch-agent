@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>提案排版室 · 自动排版工作台</title>
+<style>
+:root{--ink:#20312f;--muted:#69746e;--line:#d9ddd4;--paper:#f7f7f1;--green:#304b40}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}button,input,select,textarea{font:inherit}button,a,input,select,textarea{outline-offset:4px}button{cursor:pointer}button:disabled{cursor:wait;opacity:.5}header{padding:26px 38px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:end}.eyebrow{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted)}h1{font-family:Georgia,"Songti SC",serif;font-weight:500;font-size:30px;margin:4px 0 0}header p{margin:0;color:var(--muted)}main{display:grid;grid-template-columns:344px minmax(0,1fr);min-height:calc(100vh - 108px)}aside{padding:26px 24px;border-right:1px solid var(--line)}section+section{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}h2{font-size:15px;margin:0 0 15px;font-weight:600}.number{color:#829184;font-size:11px;letter-spacing:1px;margin-right:10px}.styles{display:grid;gap:8px}.style{background:transparent;text-align:left;border:1px solid var(--line);padding:12px 14px;color:var(--ink);border-radius:6px}.style[aria-pressed=true]{border-color:var(--green);background:#e8eee5;box-shadow:inset 3px 0 var(--green)}.style strong{display:block;font-size:14px}.style span{font-size:12px;color:var(--muted)}label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px}input[type=text],select,textarea{width:100%;background:#fff;border:1px solid var(--line);padding:8px 10px;border-radius:4px;color:var(--ink)}textarea{resize:vertical;min-height:64px;line-height:1.55}.colors{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.colors label{font-size:10px;text-align:center}.colors input{display:block;padding:2px;border:1px solid var(--line);width:100%;height:31px;background:transparent;cursor:pointer}.hint{color:var(--muted);font-size:12px;line-height:1.7}.primary{width:100%;border:0;background:var(--green);color:#fff;padding:13px;margin-top:22px;border-radius:4px}.workspace{padding:27px 36px;min-width:0}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px}.toolbar select{max-width:380px}.download{color:var(--green);text-decoration:none;border-bottom:1px solid var(--green);white-space:nowrap}.status{font-size:12px;padding:10px 13px;border:1px solid var(--line);background:#fff;margin-bottom:18px;border-radius:4px}.status[data-error=true]{color:#983d33;border-color:#d8aaa2}.canvas{background:#e9ebe4;padding:24px;min-height:320px;display:grid;place-items:center;border-radius:5px}.canvas img{width:100%;height:auto;box-shadow:0 6px 24px #24382a19}.canvas img[hidden]{display:none}.empty{color:var(--muted);text-align:center}.pager{display:flex;align-items:center;justify-content:center;gap:16px;margin:18px 0}.pager button{border:1px solid var(--line);background:transparent;padding:6px 15px;border-radius:4px;color:var(--ink)}.pager select{width:90px}.meta{display:flex;justify-content:space-between;gap:16px;font-size:11px;color:var(--muted)}.caption{margin-top:24px;max-width:700px;color:var(--muted);font-size:12px}.body-fields label{margin-top:10px}.busy{animation:pulse 1.8s infinite}@keyframes pulse{50%{opacity:.55}}@media(max-width:950px){main{grid-template-columns:290px minmax(0,1fr)}.workspace{padding:24px 20px}.toolbar{align-items:start;flex-direction:column}.canvas{padding:12px}}@media(max-width:700px){header{padding:22px}header p{display:none}main{display:flex;flex-direction:column}aside{border-right:0;border-bottom:1px solid var(--line)}.workspace{order:-1}.canvas{min-height:180px}.styles{grid-template-columns:repeat(3,1fr)}.style{padding:10px}.style span{display:none}}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">Proposal layout studio / Local workspace</div><h1>提案排版室</h1></div><p>保留内容与证据，让版式回应表达。</p></header>
+<main>
+<aside>
+<section><h2><span class="number">01</span>选择表达方式</h2><div class="styles" id="styles"><button class="style" data-style="editorial" aria-pressed="true"><strong>编辑式 Editorial</strong><span>留白、图文节奏与杂志感</span></button><button class="style" data-style="stage" aria-pressed="false"><strong>舞台式 Stage</strong><span>品牌色场、大字与视觉聚焦</span></button><button class="style" data-style="evidence" aria-pressed="false"><strong>证据式 Evidence</strong><span>信息分区、论证与清晰层级</span></button></div></section>
+<section><h2><span class="number">02</span>品牌设定</h2><label for="brandName">品牌名称</label><input id="brandName" type="text" maxlength="200"><div id="colors" class="colors"></div><p class="hint">配色与名称作用于提案版面，不会重绘海报或改写研究内容。字体使用当前品牌配置。</p></section>
+<section><h2><span class="number">03</span>编辑原文</h2><label for="sourcePage">内容页</label><select id="sourcePage"></select><div id="fields" class="body-fields"></div><p class="hint">仅编辑标题与正文。案例、来源、证据引用与资产保持固定；新增的场景应用页由资产清单提供。</p></section>
+<button id="build" class="primary" disabled>生成此风格的 PPT</button><p class="hint">生成可能需要数分钟。运行中可查看已有成品，完成后自动切换至新版本。</p>
+</aside>
+<div class="workspace">
+<div class="toolbar"><div><div class="eyebrow">Completed editions</div><select id="runs" aria-label="已完成版本"><option>正在读取成品…</option></select></div><a id="download" class="download" hidden>下载可编辑 PPT ↗</a></div>
+<div id="status" class="status" role="status" aria-live="polite">正在载入原文与已有成品…</div>
+<div class="canvas"><img id="preview" alt="当前幻灯片预览" hidden><div id="empty" class="empty">选择已有成品，或生成一个新版本。</div></div>
+<div class="pager"><button id="prev" aria-label="上一页">←</button><select id="page" aria-label="预览页码"></select><span id="count">/ 0</span><button id="next" aria-label="下一页">→</button></div>
+<div class="meta"><span id="meta">预览来自实际导出的页面</span><span id="edition"></span></div>
+<p class="caption">版式预览与 PPT 来自同一份布局计划。正文保留为可编辑文字，图片为独立对象。<strong>海报及案例图中的文字属于位图例外</strong>，不会转为可编辑文字。自动检查覆盖结构、文字与几何边界，不代表审美评分或原生 PowerPoint 渲染验证。</p>
+</div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const names = {editorial:'编辑式',stage:'舞台式',evidence:'证据式'};
+const state = {style:'editorial',sample:null,runs:[],run:null,page:0,busy:false,lastJob:null};
+async function api(url,options) { const response=await fetch(url,options); const result=await response.json(); if(!response.ok)throw Error(result.error||'请求失败'); return result; }
+function status(message,error=false) { $('status').textContent=message; $('status').dataset.error=String(error); }
+function updateBusy(busy) { state.busy=busy; $('build').disabled=busy||!state.sample; $('build').textContent=busy?'正在生成，请稍候…':'生成此风格的 PPT'; $('build').classList.toggle('busy',busy); }
+function preview() {
+ const run=state.run; $('preview').hidden=!run; $('empty').hidden=Boolean(run); $('download').hidden=!run;
+ $('page').replaceChildren();
+ if(!run){$('count').textContent='/ 0';$('prev').disabled=true;$('next').disabled=true;$('meta').textContent='当前风格暂无有效成品';$('edition').textContent='';return;}
+ state.page=Math.max(0,Math.min(state.page,run.renders.length-1));
+ run.renders.forEach((_,i)=>{const option=new Option(String(i+1),String(i));$('page').add(option);});
+ $('page').value=String(state.page);$('count').textContent=`/ ${run.renders.length}`;$('preview').src=run.renders[state.page];$('preview').alt=`${names[run.style]}第 ${state.page+1} 页`;
+ $('download').href=run.deck;$('prev').disabled=state.page===0;$('next').disabled=state.page===run.renders.length-1;
+ $('meta').textContent=`${run.manifest.width} × ${run.manifest.height} · ${run.manifest.fontFamily} · ${run.manifest.slideCount} 页`;
+ $('edition').textContent=names[run.style]+' · 已完成结构校验';
+}
+function chooseRun(id) {
+ const candidates=state.runs.filter(run=>run.style===state.style);$('runs').replaceChildren();
+ candidates.forEach(run=>$('runs').add(new Option(`${run.id} · ${run.manifest.slideCount} 页`,run.id)));
+ state.run=candidates.find(run=>run.id===id)||candidates[0]||null;
+ if(state.run)$('runs').value=state.run.id;else $('runs').add(new Option('此风格暂无已完成版本',''));
+ preview();
+}
+function chooseStyle(style,id) { state.style=style;document.querySelectorAll('[data-style]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.style===style)));chooseRun(id); }
+async function refreshRuns(id) { state.runs=(await api('/api/runs')).runs;chooseRun(id||state.run?.id); }
+function field(label,value,onChange,multiline=true) {
+ const wrap=document.createElement('label');wrap.textContent=label;const control=document.createElement(multiline?'textarea':'input');control.value=value;if(!multiline)control.type='text';control.maxLength=20000;control.addEventListener('input',()=>onChange(control.value));wrap.append(control);$('fields').append(wrap);
+}
+function editPage() {
+ const page=state.sample.ledger.pages[Number($('sourcePage').value)];$('fields').replaceChildren();
+ if(page.kind==='kvfull'){const p=document.createElement('p');p.className='hint';p.textContent='此页为图文一体海报，可在PPT中整体替换。修改主题需要先更新海报资产。';$('fields').append(p);return;}
+ for(const [key,label] of Object.entries({title:'标题',section:'章节',sub:'正文',takeaway:'小结',note:'注释'}))if(typeof page[key]==='string')field(label,page[key],value=>{page[key]=value;});
+ if(page.items)page.items.forEach((row,i)=>row.forEach((cell,j)=>field(`正文 ${i+1} · ${j+1}`,cell,value=>{page.items[i][j]=value;})));
+}
+async function pollJob() {
+ try {
+  const job=await api('/api/job');updateBusy(job.status==='running');
+  if(job.status==='running')status(job.message);
+  else if(job.id&&state.lastJob!==job.id){state.lastJob=job.id;if(job.status==='failed')status(`生成失败：${job.error}`,true);else if(job.status==='completed'){state.style=job.style;await refreshRuns(job.runId);chooseStyle(job.style,job.runId);status('新版本已生成，可翻页检查并下载 PPT。');}}
+ }catch(error){status(`服务连接失败：${error.message}`,true);}
+}
+$('styles').addEventListener('click',event=>{const button=event.target.closest('[data-style]');if(button)chooseStyle(button.dataset.style);});
+$('runs').addEventListener('change',()=>chooseRun($('runs').value));$('page').addEventListener('change',()=>{state.page=Number($('page').value);preview();});
+$('prev').onclick=()=>{state.page--;preview();};$('next').onclick=()=>{state.page++;preview();};$('sourcePage').onchange=editPage;
+$('build').onclick=async()=>{
+ updateBusy(true);status('正在提交生成任务…');
+ try{state.sample.brand.name=$('brandName').value;const job=await api('/api/build',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({style:state.style,...state.sample})});status(job.message);}
+ catch(error){updateBusy(false);status(error.message,true);await pollJob();}
+};
+(async()=>{
+ try {
+ state.sample=await api('/api/sample');$('brandName').value=state.sample.brand.name;
+ const labels={primary:'主色',accent:'强调',paper:'纸色',ink:'正文',muted:'辅助'};
+ for(const [key,value] of Object.entries(state.sample.brand.colors)){const label=document.createElement('label');label.textContent=labels[key];const input=document.createElement('input');input.type='color';input.value=value;input.setAttribute('aria-label',labels[key]);input.oninput=()=>{state.sample.brand.colors[key]=input.value;};label.append(input);$('colors').append(label);}
+ state.sample.ledger.pages.forEach((page,i)=>$('sourcePage').add(new Option(`${String(i+1).padStart(2,'0')}  ${page.title.replaceAll('\\n',' ').replaceAll('\n',' ')}`,String(i))));editPage();await refreshRuns();updateBusy(false);status('选择风格对照已有成品，或编辑原文后生成新版本。');await pollJob();setInterval(pollJob,2500);
+ }catch(error){status(`加载失败：${error.message}`,true);}
+})();
+</script>
+</body></html>

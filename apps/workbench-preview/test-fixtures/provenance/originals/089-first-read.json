@@ -1,0 +1,31 @@
+{
+  "role": "user",
+  "model": "gpt-6.1-terra",
+  "packet": "r2-first",
+  "packet_sha256": "91b6fc838e0147e1a2223f0a7de5f33128a17dc6948fe24d91d22569e62e2434",
+  "entries": [
+    {
+      "id": "n7",
+      "natural_understanding": "一瓶无糖茶同时介绍青屿和虎跑泉水，像展示两张名片。",
+      "speaker_and_recipient": "像产品介绍者对看到文案的人说，没有明确具体对象。",
+      "read_facts": ["青屿是茶的牌子", "这瓶是无糖茶", "茶用到了虎跑泉水"],
+      "difficulty_or_possible_misreading": "‘两张名片’起初不确定指谁，看副文才知道指青屿和虎跑泉水；水为什么也算名片需要自己联想。"
+    },
+    {
+      "id": "v2",
+      "natural_understanding": "说话者想起对方曾带自己去虎跑，于是带一瓶用了虎跑泉水的茶给对方，以此回应共同经历。",
+      "speaker_and_recipient": "一个人与熟悉的‘你’说话，‘你’曾带说话者去虎跑，也是茶的接收对象。",
+      "read_facts": ["青屿是这瓶无糖茶的名称或品牌", "茶用到了虎跑泉水"],
+      "difficulty_or_possible_misreading": "‘看见这名字’可能指虎跑，也可能指虎跑泉水；‘带茶’读作将茶送给对方，具体是赠送还是顺手带来未明说。"
+    },
+    {
+      "id": "k4",
+      "natural_understanding": "工作时放下鼠标，打开一瓶用了虎跑泉水的茶，借喝茶想象自己去了虎跑。",
+      "speaker_and_recipient": "像文案对坐在工位、使用鼠标的读者说话。",
+      "read_facts": ["青屿是这瓶无糖茶的名称或品牌", "茶用到了虎跑泉水"],
+      "difficulty_or_possible_misreading": "‘喝一口就算到了’是夸张说法；读者需自行把泉水与到虎跑的感受联系起来，喝茶并非真的到达。"
+    }
+  ],
+  "comparison": "三案有差别。n7 以两张名片介绍茶与用水；v2 以共同去过虎跑及带茶回应的关系展开；k4 以工位暂歇和想象去虎跑展开。三案都提到青屿无糖茶和虎跑泉水。",
+  "scope": "匿名文字首次阅读记录，未评分，不是真实消费者研究。"
+}

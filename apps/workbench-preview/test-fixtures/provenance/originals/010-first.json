@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "role": "brand",
+  "model_id": "gpt-6.1-terra",
+  "packet_version": "r2-first",
+  "candidate_version": "qingyu-copy-reviewed-r2",
+  "input_hashes": {
+    "inputs/SOURCE-BRIEF.md": "6a7354da4d21764067083c33736c5025ef1fb236982394a7298a8f2496e9ab46",
+    "inputs/REVIEW-PROTOCOL.md": "8aee424ddf50f4b42bac650a6ddac9b352b3b62fd3047d0f0bd11b732ba88be2",
+    "v2/draft.json": "819d8ce9f235b395680f0159c9a1014b537c5aeedce4a27a2715b733c88fcb93",
+    "v2/SEAL.json": "997dcb6307ded3ce21933ce5bbf299bca5302bfc9d629651a1ffe97b17187c50"
+  },
+  "independent_risks": [
+    {
+      "id": "brand-r2-01",
+      "candidate": "n7",
+      "evidence": "虎跑泉水，是这瓶茶用到的水。",
+      "risk": "这里把虎跑泉水称为这瓶茶用到的水，未明说全部用水，但定冠式的身份介绍可能被部分读者理解为这瓶茶的水全部来自虎跑；已知前提只支持配方使用，比例未定。",
+      "consequence": "如果正式包装的整体表述或配料信息强化了唯一水源的印象，可能超出已给事实。单凭这句话不能断定必然产生该误读。",
+      "severity": "minor",
+      "blocking": false,
+      "suggested_action": "可考虑改成‘青屿，是茶的牌子。配方里用到了虎跑泉水。’，并在正式呈现时结合完整配料和版面核对。"
+    }
+  ],
+  "limits": [
+    "三案主副文同读时均能识别青屿为茶的品牌、虎跑泉水为用料；未发现明确声称独家水源、全部用水、茶叶产地或品质优势。",
+    "k4的‘喝一口就算到了’是紧接泉水事实的想象表达，不足以认定为真实到达或产地声明；实际脱离上下文的版面理解待验证。",
+    "v2的共同虎跑经历是明确限定的虚构情景，不能据此推断目标人群普遍到访过虎跑或存在已证实情绪。",
+    "茶种、用水比例和水源使用凭据尚未提供。正式产品呈现需补齐并核验，但这些未知本身不是本次概念稿已作虚假承诺的证据。",
+    "本包未查看本职评分、其他评审、旧稿、作者回应或总监意见；不判断覆盖关系，不评分、不推荐。"
+  ]
+}

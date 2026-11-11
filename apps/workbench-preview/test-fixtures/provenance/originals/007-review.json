@@ -1,0 +1,110 @@
+{
+  "schema_version": 2,
+  "run_id": "qingyu-copy-full-20261110",
+  "stage": "slogan",
+  "role": "copy",
+  "packet_version": "r1",
+  "report_id": "r1-copy-counter-review",
+  "candidate_version": "qingyu-copy-reviewed-r1",
+  "draft_sha256": "15b7760a4b4e1c1ffa0c8ef29a523ef18c3aaed24549900375529365711382c7",
+  "score_report_id": "r1-copy",
+  "first_read_path": ".scratch/qingyu-copy-full-20261110/critics/r1-copy/first.json",
+  "first_read_hash": "5c7669b11953f64e747a7729c944fd6696d317c16453572010cd8e2c21e835ef",
+  "paired_score_path": ".scratch/qingyu-copy-full-20261110/reviews/r1-copy/score.json",
+  "paired_score_hash": "2c4d12f468730f20f5f5b4d30076a478ca8bcf7b1677fc05f8f685ebad593c23",
+  "challenges": [],
+  "retained_claims": [
+    {
+      "item_id": "n7",
+      "claim_id": "n7-p1",
+      "claim_text": "报名字的问答能完成",
+      "evidence": [
+        "青屿做茶，水也有名有姓。",
+        "虎跑泉水，在这瓶无糖茶的配方里。"
+      ],
+      "verification": "“有名有姓”给出名字预期，副文紧接着提供“虎跑泉水”并限定在“配方里”；原句足以支持“报名字的问答能完成”。此处保留的是文字结构结论，未独立查证评分者的封存首读过程。"
+    },
+    {
+      "item_id": "k4",
+      "claim_id": "k4-p1",
+      "claim_text": "地名的两层意思能在原句完成转换",
+      "evidence": [
+        "今天的茶歇，去趟虎跑。",
+        "工位上拧开青屿无糖茶，瓶里就有虎跑泉水。"
+      ],
+      "verification": "“去趟”先把虎跑当去处，“工位上”把人留在原地，“瓶里”及“泉水”将虎跑解释为产品用料；原句支持两层读法的转换。该保留不外推为真实受众均会完成转换。"
+    },
+    {
+      "item_id": "v2",
+      "claim_id": "v2-p1",
+      "claim_text": "谢意与递茶的关系清楚",
+      "evidence": [
+        "谢你搭把手。这瓶茶，我请。",
+        "特意挑了青屿无糖茶，里面用到了虎跑泉水。"
+      ],
+      "verification": "“谢你搭把手”明确因对方帮助而答谢，“我请”把这瓶茶作为答谢动作；原句支持“谢意与递茶的关系清楚”。这项窄肯定不等于副文的口吻和选茶理由已充分成立，与评分中的v2-i1、v2-i2可并存。"
+    }
+  ],
+  "coverage": {
+    "positive_claims_total": 3,
+    "retained_claim_ids": [
+      "n7-p1",
+      "k4-p1",
+      "v2-p1"
+    ],
+    "challenged_claim_ids": [],
+    "independent_risks_count": 0,
+    "new_valid_blockers_count": 0,
+    "first_risk_mapping": [],
+    "scope_observation_mapping": [
+      {
+        "item_id": "n7",
+        "first_observation": "单读“有名有姓”可能侧重名泉名气，但副文已经指回配方。",
+        "paired_coverage": [
+          "n7-i1",
+          "n7.limits"
+        ],
+        "status": "already_covered",
+        "new_issue": false
+      },
+      {
+        "item_id": "k4",
+        "first_observation": "主文可读成实地出游，主副同读已提供原地茶歇解释。",
+        "paired_coverage": [
+          "k4-i1",
+          "k4.limits"
+        ],
+        "status": "already_covered",
+        "new_issue": false
+      },
+      {
+        "item_id": "v2",
+        "first_observation": "真实收茶人是否接受这个细节未知；文字已暗示一个选择理由。",
+        "paired_coverage": [
+          "v2.limits",
+          "limits"
+        ],
+        "status": "already_covered",
+        "new_issue": false,
+        "note": "评分也明确“特意”与配方相邻已经暗示理由；其v2-i1、v2-i2评价的是说话节奏及因果表达力度。独立首查未报这两项，保留原件；本轮不将评分者发现倒写成独立新增。"
+      },
+      {
+        "item_id": "set",
+        "first_observation": "三案动作、说话者、情境可区分；部分副文可互换不自动否决。",
+        "paired_coverage": [
+          "pairwise",
+          "set_reason"
+        ],
+        "status": "already_covered",
+        "new_issue": false
+      }
+    ],
+    "result": "3条具体肯定均有原文支持，0条挑战。首查无独立风险可映射；既有范围观察均已覆盖，不新增阻断，不改原评分和整组待修结论。"
+  },
+  "limits": [
+    "对应评分阶段只新增读取reviews/r1-copy/score.json；未读其他评分、对抗或推荐，未修改first或score。",
+    "保留肯定以候选原句为证；评分中有关其封存首读的自述未另读原首读核验，不能当作本对抗独立重现的消费者或评审实验。",
+    "本次仅文字概念与同组三案核对，没有真实受众偏好、传播、购买或市场独创证明。",
+    "无新增挑战不代表四岗位通过；原COPY对v2的两项阻断和整组revise原样保留，须依原流程改稿复核。"
+  ]
+}
