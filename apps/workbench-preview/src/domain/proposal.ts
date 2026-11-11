@@ -533,7 +533,7 @@ export interface Proposal {
   brandResources?: BrandResource[];
   type: ProposalType;
   summary: string;
-  cover: ArtSpec;
+  cover: ArtSpec | null;
   mode: ProductionMode;
   checkpoints: CheckpointStage[];
   currentStage: StageId;
@@ -563,7 +563,7 @@ export interface ProposalSummary {
   presentationLocalTime?: string;
   type: ProposalType;
   summary: string;
-  cover: ArtSpec;
+  cover: ArtSpec | null;
   mode: ProductionMode;
   currentStage: StageId;
   currentStatus: StageStatus;

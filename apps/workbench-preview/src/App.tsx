@@ -1,3 +1,4 @@
+import {BriefRecoveryPanel} from './app/BriefRecoveryPanel';
 import { useEffect, useRef } from 'react';
 import { CloudOff, Sun } from 'lucide-react';
 import type { Services } from './services';
@@ -106,6 +107,7 @@ function Shell() {
         </p>
       )}
       <main id="main" ref={mainRef} tabIndex={-1} className="main">
+        <BriefRecoveryPanel />
         {route.name === 'dashboard' && <HomeView />}
         {route.name === 'dev' && <DevView />}
         {route.name === 'new' && (can({ kind: 'manage' }) ? <NewProjectView /> : <div className="page"><h1>新建提案</h1><PermissionNotice action={{ kind: 'manage' }} /><Link className="btn btn--secondary" to="/">返回全部提案</Link></div>)}

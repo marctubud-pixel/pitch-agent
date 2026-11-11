@@ -773,6 +773,8 @@ export interface MutationResult<T> {
 }
 
 export interface CreateProjectInput {
+  checkpoints?: import('./proposal').CheckpointStage[];
+  presentationLocalTime?: string;
   name: string;
   client: string;
   summary: string;

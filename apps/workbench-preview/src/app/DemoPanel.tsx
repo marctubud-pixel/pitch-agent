@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, useSyncExternalStore } from 'react';
 import { FlaskConical, RotateCcw } from 'lucide-react';
 import { useT } from '../i18n';
 import { SCENARIOS } from '../services/demo';
@@ -15,8 +15,13 @@ import { useServiceContext } from './services';
 export function DemoIndicator() {
   const { demo, demoState, service } = useServiceContext();
   const t = useT();
+  const environment = useSyncExternalStore(
+    listener => service.subscribe(() => listener()),
+    () => service.environment,
+    () => service.environment,
+  );
   if (!demo || !demoState) {
-    return <span className="env-pill">{service.environment.kind === 'live' ? t('demo.live') : service.environment.label}</span>;
+    return <span className="env-pill">{environment.label}</span>;
   }
   return (
     <Link to="/dev" className="demo-pill" title={t('pw.dev.title')}>

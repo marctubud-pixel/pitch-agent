@@ -15,6 +15,8 @@ npm run dev
 
 打开 http://127.0.0.1:4420/ 。默认本地演示不需要密钥或业务后端。青屿终审位于 `#/p/qingyu/proposal/delivery`。完整操作见[使用说明](docs/usage/README.md)。
 
+本地简报真实读写已接通：按[HTTP启动与范围](docs/development/http-brief.md)运行`npm run dev:brief`和`npm run dev:http`，使用独立SQLite；后续生产阶段仍待接线。
+
 ## 开发与协作
 
 - [开发入口](docs/development/README.md)：安装、启动、目录和验证命令。

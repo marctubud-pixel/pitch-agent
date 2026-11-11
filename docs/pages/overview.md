@@ -1,6 +1,6 @@
 # 项目概览 · 页面开发规格
 
-规范版本：1.0.1。页面ID：`overview`。状态：已确认要求汇编；本次整理待核对。负责人见[proposal-director](../agents/proposal-director.md)。
+规范版本：1.0.2。页面ID：`overview`。状态：已确认要求汇编；本次整理待核对。负责人见[proposal-director](../agents/proposal-director.md)。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 
@@ -52,3 +52,7 @@ final-overview.png。既有界面留档，不证明所有现行要求已实现�
 ## 来源与版本
 
 要求来源：现有[用户决定索引](../specs/decisions.md)、[版本沿革](../handoffs/提案工作台_版本沿革与已确认要求_20261111.md)及本次[来源清单](../specs/source-provenance.json)。图像是证据，不覆盖当前文字要求。新需求通过[变更与PR规则](../specs/change-control.md)更新本文件版本。
+
+## 当前HTTP接入边界
+
+HTTP项目概览与任务卡取同一真实快照，没有研究、创意或交付产物时保持空态；确认只更新简报状态和下一步导航，不启动任务。完整合同见[本地简报HTTP](../development/http-brief.md)。本轮简报范围实际UI见[核验](../development/http-brief-verification-20261111.md)，旧基线截图保留原身份。

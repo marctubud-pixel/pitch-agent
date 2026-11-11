@@ -306,7 +306,7 @@ function OutputSheet({ s, p }: { s: ProposalSummary; p: Proposal | null }) {
   return (
     <Link to={to} className="sheet sheet--art" style={{ '--i': 1 } as CSSProperties}>
       <span className="sheet__label">{out ? t(`pw.output.${out.kind}`) : t('xp.coverPreview')}</span>
-      <ArtFrame spec={art} ratio={[1, 1]} className="sheet__art" />
+      {art ? <ArtFrame spec={art} ratio={[1, 1]} className="sheet__art" /> : <div className="sheet__art muted">尚无提案封面</div>}
       {out && <span className="sheet__caption sheet__lines--text">{out.title}</span>}
     </Link>
   );

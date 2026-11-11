@@ -1998,12 +1998,44 @@
       "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
     },
     "apps/workbench-preview/src/domain/service.ts": {
-      "reason": "环境增加unavailable表示占位HTTP适配，避免配置地址冒充已接通",
-      "sha256": "426f10178b81ba83046afb07bab40a80932c2ada44d03143431c7401125a6377"
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "01cfaf3f37b3183042d10fa5ff6fa99f22a3c6bf7931238e2fdf477e027dcc15"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "reason": "当前占位HTTP服务准确报告未接通，错误中文化，不增加真实API调用",
-      "sha256": "17ee80aa4f72686142caa97550e3e6b9f3ad91ac041f4fba48341f14bf3c5f02"
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "0cc39e901891b8958c42f6e13d565f381033403241ee326ff59889b645a149f3"
+    },
+    "apps/workbench-preview/src/App.tsx": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "988ac2ad62f1b4d6c5c6bcd654afb6d6b71fff6e6968f695b8c8e71393fc8bfc"
+    },
+    "apps/workbench-preview/src/app/DemoPanel.tsx": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "5af8ad8684f2e4a8a3956b6429fda5a9c6047d54defcdf9801ea2625aa88fbad"
+    },
+    "apps/workbench-preview/src/collaboration/protectServices.ts": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "30f98b11f60dc2ecbe8a91b2a3df4fc4f151d0a009f3b671f3b139a35a40a963"
+    },
+    "apps/workbench-preview/src/domain/models.ts": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "52aa8f529087f9c777905b810111b3db09aa5dcb1a1eb86d4b7903696631b69f"
+    },
+    "apps/workbench-preview/src/domain/proposal.ts": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "6e8145eb77781c3a4f7e7eef6061f6e516d4442153680a34f447d1395bba9a2a"
+    },
+    "apps/workbench-preview/src/services/index.ts": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "bade9bcf19d1850eee693bd58170a3b4137a432a7489537e90e93b1a5a510cd9"
+    },
+    "apps/workbench-preview/src/views/HomeView.tsx": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "0584636369f247b2615ea60a31337314e0224b2e0bc83aff21379981f06f0d1a"
+    },
+    "apps/workbench-preview/src/views/NewProjectView.tsx": {
+      "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
+      "sha256": "87e5aef36f092c67a654b995c636adf762659f2afc006fc893cf1373500f33a1"
     }
   }
 }
