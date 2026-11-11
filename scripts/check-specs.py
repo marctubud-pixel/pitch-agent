@@ -102,6 +102,10 @@ def compare_base(current, base):
         raise ValueError('--base must be a commit SHA')
     result = subprocess.run(['git', 'show', base + ':' + LOCK], cwd=ROOT, capture_output=True, text=True)
     if result.returncode:
+        commit = subprocess.run(['git', 'cat-file', '-e', base + '^{commit}'], cwd=ROOT, capture_output=True)
+        registry = subprocess.run(['git', 'cat-file', '-e', base + ':' + REGISTRY], cwd=ROOT, capture_output=True)
+        if commit.returncode == 0 and registry.returncode != 0:
+            return 'bootstrap'
         raise ValueError('Cannot read the base specification lock; verify the base commit')
     previous = json.loads(result.stdout)
     for identifier, old in previous['entries'].items():
@@ -119,6 +123,7 @@ def compare_base(current, base):
                 raise ValueError('Changed screenshot requires a higher page version: ' + identifier)
     if current != previous and version(current['baselineVersion']) <= version(previous['baselineVersion']):
         raise ValueError('Changed baseline requires a higher baselineVersion and CHANGELOG entry')
+    return 'versioned'
 
 
 def main():
@@ -131,14 +136,14 @@ def main():
     if '## ' + registry['baselineVersion'] + ' ·' not in (ROOT / 'docs/specs/CHANGELOG.md').read_text():
         raise ValueError('Missing current baseline CHANGELOG entry')
     current = snapshot(registry, freezing=args.freeze)
-    if args.base:
-        compare_base(current, args.base)
+    base_mode = compare_base(current, args.base) if args.base else None
     if args.freeze:
         (ROOT / LOCK).write_text(json.dumps(current, ensure_ascii=False, indent=2) + '\n')
     elif not (ROOT / LOCK).is_file() or load(LOCK) != current:
         raise ValueError('Lock differs: inspect changes, update versions/CHANGELOG, then use --freeze')
     print(json.dumps({'result': 'PASS', 'specifications': len(current['entries']), 'screenshots': len(current['screenshots']),
                       'baselineVersion': current['baselineVersion'], 'baseChecked': args.base,
+                      'baseMode': base_mode,
                       'scope': '规范字节、引用、版本、方法与截图身份；不是业务或审美通过'}, ensure_ascii=False))
 
 

@@ -22,3 +22,5 @@ jobs:
           else
             python3 scripts/check-specs.py
           fi
+      - name: Exercise specification drift guards
+        run: python3 scripts/check-specs.test.py

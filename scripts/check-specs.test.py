@@ -78,6 +78,15 @@ class SpecificationChecks(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('higher version: page.brief', result.stderr)
 
+    def test_initial_specs_accept_a_real_bootstrap_commit(self):
+        for args in [('init', '-q'), ('-c', 'user.name=Spec Test', '-c', 'user.email=spec-test@invalid', 'commit', '--allow-empty', '-qm', 'fixture bootstrap')]:
+            result = subprocess.run(['git', *args], cwd=self.root, env=self.env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        result = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=self.root, env=self.env, capture_output=True, text=True)
+        result = self.run_check('--base', result.stdout.strip())
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)['baseMode'], 'bootstrap')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
