@@ -1,3 +1,5 @@
+import {createWorkflow, assertWorkflowStage, requireResearchWorkflow} from './seven-stage-workflow.mjs';
+import {researchMethodIdentity, applyResearchMethod} from './research-method.mjs';
 import {layoutCommandWitness,layoutWitnessMatches} from './layout-command-witness.mjs';
 import {splitExecutionCommand,validateSplitExecution} from './readiness-split-runtime.mjs';
 import {currentCapturedTextSources} from './captured-text-evidence.mjs';
@@ -82,11 +84,12 @@ function policy(mode = 'assisted', humanGates, version = 1, authorizedThrough = 
   requireValue(Object.hasOwn(STAGES, authorizedThrough), 'INVALID_ENDPOINT', 'Known authorization endpoint required');
   return {version, mode, authorizedThrough, humanGates: [...new Set(gates)]};
 }
-export function createProject({id, name, brief, mode, humanGates, authorizedThrough}, context) {
+export function createProject({id, name, brief, mode, humanGates, authorizedThrough, workflowVersion}, context) {
   identity(context);
   requireValue(id && name && brief, 'INVALID_PROJECT', 'ID, name and brief are required');
-  return freeze({id, name, revision: 0, taskCards: [{id: `${id}:scope:1`, brief, createdBy: context.actorId}],
-    activeTaskCardId: `${id}:scope:1`, confirmations: [], visualAuthorizations: [], policies: [policy(mode, humanGates, 1, authorizedThrough)],
+  if(workflowVersion!==undefined){createWorkflow(workflowVersion);requireValue(authorizedThrough===undefined||authorizedThrough==='research','SEVEN_STAGE_AUTHORIZATION_REQUIRED','Only research execution is currently supported');requireValue(humanGates===undefined||Array.isArray(humanGates)&&humanGates.every(stage=>['strategy','copy','visual','final_review'].includes(stage)),'INVALID_GATES','Current seven-stage manual gates required');}
+  return freeze({id, name, ...(workflowVersion===undefined?{}:{workflow:createWorkflow(workflowVersion)}), revision: 0, taskCards: [{id: `${id}:scope:1`, brief, createdBy: context.actorId}],
+    activeTaskCardId: `${id}:scope:1`, confirmations: [], visualAuthorizations: [], policies: [policy(mode, workflowVersion===undefined?humanGates:humanGates??[], 1, workflowVersion===undefined?authorizedThrough:'research')],
     jobs: [], humanFeedback: [], feedbackReviews: [], sourceCaptures: [], sourceEntries: [], caseIdentityReviews: [], imageAssets: [], imageObservations: [], observationReviews: [], artifacts: [], verifications: [], readinessReports: [], readinessResolutions: [], handoffReports: [], panels: [], reviews: [], decisions: [], acknowledgments: [], releases: [], activeByStage: {}, audit: [], processedCommands: {}});
 }
 const currentPolicy = p => p.policies.at(-1);
@@ -131,6 +134,7 @@ function handoffReadyWithin(evaluation, p, id, nextStage) {
   return ['producer', 'consumer'].every(side => p.acknowledgments.some(a => a.artifactId === id && a.nextStage === nextStage && a.side === side));
 }
 function inputsForWithin(evaluation, p, stage, binding) {
+  assertWorkflowStage(p,stage);
   requireValue(!['content_review','layout','final_review'].includes(stage),'CONTENT_DEDICATED_ROUTE_REQUIRED','Complete proposal and layout require dedicated immutable content contracts');
   requireValue(stage!=='sketch','REVIEWED_SKETCH_REQUIRED','Sketch requires the dedicated reviewed generation authority');
   requireValue(Object.keys(STAGES).indexOf(stage) <= Object.keys(STAGES).indexOf(currentPolicy(p).authorizedThrough), 'AUTHORIZATION_ENDPOINT', 'Stage exceeds authorized endpoint');
@@ -407,7 +411,8 @@ function researchProductionReceipt(p,job,attempt,receipt){
  if(job.task?.researchContractVersion===undefined)return;
  requireResearchBasis(p,job);
  const inputArtifacts=job.task.revisionInputArtifacts??[];
- const request=buildStageRequest({stage:'research',brief:job.task.brief,inputArtifacts,sourceRecords:job.task.sourceRecords??[],visualCatalogue:job.task.visualCatalogue??[],revisionInput:job.task.revisionInput,correctionInput:job.task.correctionInput,researchRevision:job.task.researchRevision,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis});
+ let request=buildStageRequest({stage:'research',brief:job.task.brief,inputArtifacts,sourceRecords:job.task.sourceRecords??[],visualCatalogue:job.task.visualCatalogue??[],revisionInput:job.task.revisionInput,correctionInput:job.task.correctionInput,researchRevision:job.task.researchRevision,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis});
+ if(job.task.researchMethod)request=applyResearchMethod(request,job.task.researchMethod);
  const materials=(job.task.correctionInput??job.task.revisionInput)?.materials;
  requireValue(receipt.inputPacketHash===hash(JSON.stringify({runId:attempt.id,model:job.binding.model,...request,...(materials?.length?{images:materials}:{})}))&&receipt.runId===attempt.id&&receipt.requestedModel===job.binding.model&&receipt.model===job.binding.model&&ordinarySuccessfulStatus(receipt)&&ordinaryHasContext(receipt)&&['signal','reason','error'].every(k=>receipt[k]==null),'INVALID_EXECUTION_RECEIPT','Exact original numerical research invocation required');
  let parsed;try{parsed=JSON.parse(receipt.responseText);}catch{fail('INVALID_EXECUTION_RECEIPT','Original research response required');}
@@ -1053,7 +1058,12 @@ export function validateResearchDeclarationInput(input) {
   requireValue(input.decision==='returned'||input.permittedUses.length,'INVALID_RESEARCH_DECLARATION','Positive declarations require requested bounded uses');
 }
 function researchOwnerPending(p,a) { return p.jobs.some(j=>j.purpose==='handoff'&&j.targetArtifactId===a.id&&['queued','running','awaiting_reconciliation'].includes(j.status)); }
-export function researchWorkflowView(p,{bindings={},providers={}}={}) { return researchWorkflowViewWithin(new WeakMap(), p, {bindings, providers}); }
+export function researchWorkflowView(p,{bindings={},providers={}}={}) {
+ const current=researchWorkflowViewWithin(new WeakMap(), p, {bindings, providers});
+ if(!p.workflow)return current;
+ const reason='固定r7独立读者回环尚未接入，不能签研究交接或正式放行。';
+ return {...current,checks:[...current.checks,{id:'reader_loop',label:'独立读者回环',passed:false,detail:reason,fix:null}],canDeliver:{allowed:false,reason},canAccept:{allowed:false,reason},canRelease:{allowed:false,reason},eligible:false,summary:reason};
+}
 function researchWorkflowViewWithin(evaluation, p,{bindings={},providers={}}={}) {
   const a=artifact(p,p.activeByStage.research),check=(id,run)=>{try{run();return {id,label:id,passed:true,detail:'Current backend validation passed',fix:null};}catch(e){return {id,label:id,passed:false,detail:e.code??'RESEARCH_REQUIRED',fix:null};}};
   const current=()=>{requireValue(a&&freshWithin(evaluation, p,a.id),'STALE_ARTIFACT','Current research required');return a;};
@@ -1441,6 +1451,7 @@ export function applyCommand(project, command, context) {
   if(INTAKE_COMMANDS.includes(c.kind)){try{reduceIntake(p,c,context);}catch(e){fail(e.code??'INTAKE_INVALID',e.message);}}
   switch (c.kind) {
     case 'record-research-handoff': {
+      requireValue(!p.workflow||c.request?.input?.decision==='returned','RESEARCH_R7_READER_REQUIRED','Current r7 reader-loop proof required before positive handoff');
       human(context);const a=targetWithin(new WeakMap(), p,c.request.artifactId);validateResearchDeclarationInput(c.request.input);
       requireValue(c.request.contentHash===a.contentHash,'STALE_ARTIFACT','Observed research bytes changed');
       requireSourceDeliveryPrerequisitesWithin(new WeakMap(), p,a,{skipResearchHumanGate:true});
@@ -1470,6 +1481,7 @@ export function applyCommand(project, command, context) {
       break;
     }
     case 'release-research': {
+      requireValue(!p.workflow,'RESEARCH_R7_READER_REQUIRED','Current r7 reader-loop proof required before release');
       human(context);const a=targetWithin(new WeakMap(), p,c.request.artifactId);
       requireValue(a.contentHash===c.request.contentHash&&currentPolicy(p).version===c.request.policyVersion,'STALE_ARTIFACT','Observed research or policy changed');
       requireSourceDeliveryPrerequisitesWithin(new WeakMap(), p,a,{skipResearchHumanGate:true});requireResearchHandoffWithin(new WeakMap(), p,a);const state=requireResearchOperatorPairWithin(new WeakMap(), p,a);
@@ -1645,6 +1657,7 @@ export function applyCommand(project, command, context) {
       requireValue(targetWithin(new WeakMap(), p, c.sketchArtifactId).stage === 'sketch' && c.reason, 'INVALID_AUTHORIZATION', 'Exact sketch and authorization reason required');
       p.visualAuthorizations.push({sketchArtifactId: c.sketchArtifactId, actorId: context.actorId, reason: c.reason}); break;
     case 'set-policy':
+      requireValue(!p.workflow,'SEVEN_STAGE_ROUTE_REQUIRED','Current protocol policy updates require their own authorized route');
       human(context); p.policies.push(policy(c.mode, c.humanGates, currentPolicy(p).version + 1, c.authorizedThrough ?? currentPolicy(p).authorizedThrough)); break;
     case 'request-case-identity': {
       requireValue(context.actorType === 'agent' && nonempty(c.jobId) && !p.jobs.some(job => job.id === c.jobId), 'INVALID_JOB', 'Trusted unique identity job required');
@@ -1889,6 +1902,7 @@ export function applyCommand(project, command, context) {
       job.status = 'succeeded'; job.outputVersionIds = [c.reportId]; break;
     }
     case 'request-stage': {
+      if(p.workflow){requireResearchWorkflow(p);assertWorkflowStage(p,c.stage);if(c.stage==='research')requireValue(isDeepStrictEqual(c.task?.researchMethod,researchMethodIdentity()),'RESEARCH_METHOD_REQUIRED','Current fixed research method required');}
       requireValue(!['layout','final_review'].includes(c.stage),'LAYOUT_EXECUTION_UNAVAILABLE','Project layout and final stages require the dedicated unavailable runtime');
       requireValue(Object.hasOwn(STAGES, c.stage) && nonempty(c.jobId) && !p.jobs.some(j => j.id === c.jobId), 'INVALID_JOB', 'Unique job and known stage required');
       const inputVersionIds = inputsForWithin(new WeakMap(), p, c.stage, c.binding);
@@ -2316,6 +2330,7 @@ export function applyCommand(project, command, context) {
       requireValue(creatorRuns.every(author => !intersectsLineage(author, context)), 'SELF_ADJUDICATION', 'Adjudicator must be independent of creation lineage');
       p.decisions.push({...(subject.stage==='sketch'?{sketchGeneration:structuredClone(subject.sketchGeneration)}:{}),kind: c.kind, human: context.actorType === 'human', outcome: c.kind === 'adopt-creative' ? 'adopt_creative' : c.outcome, evidenceRefs: c.evidenceRefs ?? [], artifactId: c.artifactId, actorId: context.actorId, reason: c.reason, policyVersion: currentPolicy(p).version, reviewIds: p.reviews.filter(r => r.artifactId === c.artifactId).map(r => r.id), creativePanelId:(p.creativePanels??[]).filter(x=>x.packet.artifactId===c.artifactId&&x.packet.policyVersion===currentPolicy(p).version&&x.packet.feedbackHash===feedbackHash(stageFeedback(p,subject.stage))).at(-1)?.id, correctionReviewIds:(p.correctionReviews??[]).filter(r=>r.artifactId===c.artifactId).map(r=>r.id), feedbackReviewIds: (p.feedbackReviews ?? []).filter(r => r.artifactId === c.artifactId).map(r => r.id)}); break;
     case 'acknowledge-handoff': {
+      requireValue(!p.workflow,'SEVEN_STAGE_ROUTE_REQUIRED','Current workflow requires actual versioned owner reception');
       const a = targetWithin(new WeakMap(), p, c.artifactId);
       requireValue(!['layout','final_review'].includes(a.stage),'LAYOUT_FINAL_AUTHORITY_UNAVAILABLE','Metadata acknowledgments cannot grant layout or delivery authority');
       requireValue(a.sketchGeneration?.protocol!==REVIEW_PROTOCOL,'REVIEW_HANDOFF_REQUIRED','Actual refinement producer and consumer required');
@@ -2326,6 +2341,7 @@ export function applyCommand(project, command, context) {
       p.acknowledgments.push({artifactId: a.id, side: c.side, nextStage: c.nextStage, actorId: context.actorId}); break;
     }
     case 'release-stage': {
+      requireValue(!p.workflow,'RESEARCH_R7_READER_REQUIRED','Current workflow cannot use legacy generic release');
       const a = targetWithin(new WeakMap(), p, c.artifactId);
       eligibleWithin(new WeakMap(), p, a);
       if(usesResearchOperatorWorkflow(p)&&a.stage==='research'&&a.provenance==='provider_execution')requireResearchOperatorReleaseWithin(new WeakMap(), p,a);

@@ -15,11 +15,12 @@
     "test:core": "node --test tools/workbench/store-codec.test.mjs tools/workbench/case-identity.test.mjs tools/workbench/schema-enum-partition.test.mjs tools/local-acceptance/client-flow.test.mjs tools/local-acceptance/browser-pending.test.mjs tools/local-acceptance/reference-input-controller.test.mjs tools/auto-layout/native-charts/chart-data.test.mjs",
     "test:backend:legacy": "npm run test:domain",
     "build": "npm --prefix apps/workbench-preview run build",
-    "check": "npm run check:specs && npm run check:repository && npm run typecheck && npm run test:frontend && npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:dependency && npm run build",
+    "check": "npm run check:specs && npm run check:repository && npm run typecheck && npm run test:frontend && npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:dependency && npm run build",
     "test:domain": "node --test tools/workbench/project.test.mjs",
     "test:dependency": "node scripts/check-pptx-dependency.mjs",
     "dev:brief": "node tools/workbench/brief-server.mjs --db .data/brief-workbench.sqlite --port 4182 --origin http://127.0.0.1:4420",
     "dev:http": "node scripts/dev-http.mjs",
-    "test:brief-http": "node --test tools/workbench/brief-server.test.mjs"
+    "test:brief-http": "node --test tools/workbench/brief-server.test.mjs",
+    "test:research-contract": "node --test tools/workbench/seven-stage-workflow.test.mjs tools/workbench/research-method.test.mjs tools/workbench/research-service.test.mjs"
   }
 }

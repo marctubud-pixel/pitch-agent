@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.1.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。
+规范版本：1.2.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。
 
 ```mermaid
 flowchart LR
@@ -49,3 +49,7 @@ flowchart LR
 业务内容、阶段承接、代码实现、实际UI、排版后终审、人类决定各有证据与权限。[交接合同](../specs/handoff.md)要求同版输入、产物、真实签收与退修范围，[终审协议](../specs/final-review.md)限定实际看图及五职责独立关系。
 
 源码进入Git只增加可审查与回退能力，不恢复得闲旧run、付费服务、外部通知或在线PPT编辑保存。模型实际接入、真实账号、无人值守调度和正式全链路仍是后续工作。
+
+## 新七阶段协议
+
+`seven-stage-workflow.mjs`定义proposal-seven-v1身份与只读状态；project保留旧STAGES并对新协议另设执行守卫。`research-method.mjs`绑定实际r7方法字节，executor和原生回执核同一请求。`research-service.mjs`只处理指定研究任务，无全库恢复或续接；brief-server增加受限研究路由。当前HTTP研究读取使用researchProjection和R7ResearchView，默认执行关闭。reader_loop未满足时拒正向交接和正式放行，详见[运行合同](../specs/seven-stage-runtime.md)。

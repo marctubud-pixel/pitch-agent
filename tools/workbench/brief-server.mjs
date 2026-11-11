@@ -1,10 +1,12 @@
+import {WORKFLOW_VERSION, workflowView, requireResearchWorkflow} from './seven-stage-workflow.mjs';
+import {createResearchService} from './research-service.mjs';
 import http from 'node:http';
 import {randomUUID, createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {resolve} from 'node:path';
 import {openStore} from './store.mjs';
 import {layoutPublicProject} from './layout-boundary.mjs';
-import {DomainError, projectView} from './project.mjs';
+import {DomainError, projectView, researchWorkflowView} from './project.mjs';
 
 const MAX_BODY_BYTES = 128 * 1024;
 const commandFields = {'revise-task-card': ['taskCardId', 'brief'], 'confirm-task-card': ['taskCardId']};
@@ -38,7 +40,7 @@ function response(res, status, body) {
   res.end(JSON.stringify(body));
 }
 const humanContext = () => ({actorType: 'human', actorId: 'local-operator', runId: `human:${randomUUID()}`, contextId: `local-ui:${randomUUID()}`, now: new Date().toISOString()});
-const result = project => ({project: layoutPublicProject(project), view: projectView(project)});
+
 function frontendOrigin(value) {
   if (value === undefined) return;
   let url;
@@ -47,11 +49,17 @@ function frontendOrigin(value) {
   return value;
 }
 
-export function createBriefServer({dbPath, port = 4182, origin} = {}) {
+export function createBriefServer({dbPath, port = 4182, origin, researchOptions} = {}) {
   if (typeof dbPath !== 'string' || !dbPath.trim()) throw new Error('An explicit dbPath is required');
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('port must be between 1 and 65535');
   const allowedOrigin = frontendOrigin(origin);
   const store = openStore(dbPath);
+  let research;
+  try {research = createResearchService({rootDir: resolve(`${dbPath}.research`), ...researchOptions, store});} catch(error) {store.close();throw error;}
+  const result = project => {
+    const native = projectView(project), rw = project.workflow ? researchWorkflowView(project, researchOptions) : null;
+    return {project: layoutPublicProject(project), view: {...native, proposalWorkflow: workflowView(project,{researchWorkflow:rw}), researchWorkflow:rw}};
+  };
   const requests = new Set();
   let closing = false, shutdown, closeResult;
   const drain = async () => { while (requests.size) await Promise.allSettled([...requests]); };
@@ -76,8 +84,9 @@ export function createBriefServer({dbPath, port = 4182, origin} = {}) {
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
         res.setHeader('Vary', 'Origin');
       }
-      const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/commands)?$/.exec(url.pathname);
-      const methods = url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [projectMatch[2] ? 'POST' : 'GET'] : [];
+      const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/(?:commands|sources|research-workflow|research-jobs|research-verification|research-readiness|research-handoffs|research-release)|\/artifacts\/([A-Za-z0-9:._%-]+)\/content)?$/.exec(url.pathname);
+      const resource = projectMatch?.[2];
+      const methods = url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
       if (!methods.length) throw new HttpError(404, 'NOT_FOUND', 'Route not found');
       const revision = url.searchParams.get('revision');
       const targetMethod = req.method === 'OPTIONS' ? req.headers['access-control-request-method'] : req.method;
@@ -90,7 +99,7 @@ export function createBriefServer({dbPath, port = 4182, origin} = {}) {
       }
       if (!methods.includes(req.method)) throw new HttpError(405, 'METHOD_NOT_ALLOWED', 'Method not allowed');
       if (url.pathname === '/api/v1/capabilities') {
-        response(res, 200, {apiVersion: 'v1', surface: 'brief-v1', executionAvailable: false, commands: Object.keys(commandFields)}); return;
+        response(res, 200, {apiVersion: 'v1', surface: research.capability().executionAllowed ? 'research-v1' : 'brief-v1', workflowVersion:WORKFLOW_VERSION, executionAvailable: research.capability().executionAllowed, research:research.capability(), commands: Object.keys(commandFields)}); return;
       }
       if (url.pathname === '/api/v1/projects' && req.method === 'GET') {
         response(res, 200, {projects: store.list().map(({id}) => { const p = store.read(id); return {id, name: p.name, revision: p.revision}; })}); return;
@@ -103,7 +112,7 @@ export function createBriefServer({dbPath, port = 4182, origin} = {}) {
         string(body, 'name'); string(body, 'brief'); string(body, 'commandId', false);
         if (body.commandId === '__proto__') invalid('Reserved commandId');
         const id = body.commandId ? `project-${createHash('sha256').update(body.commandId).digest('hex')}` : randomUUID();
-        const input = {id, name: body.name.trim(), brief: body.brief, mode: body.mode ?? 'assisted', humanGates: body.humanGates ?? [], authorizedThrough: 'research'};
+        const input = {id, name: body.name.trim(), brief: body.brief, mode: body.mode ?? 'assisted', humanGates: body.humanGates ?? [], authorizedThrough: 'research', workflowVersion:WORKFLOW_VERSION};
         try { response(res, 201, result(store.create(input, humanContext()))); }
         catch (error) {
           if (error.code !== 'PROJECT_EXISTS' || !body.commandId) throw error;
@@ -114,6 +123,25 @@ export function createBriefServer({dbPath, port = 4182, origin} = {}) {
         return;
       }
       if (!projectMatch[2]) { response(res, 200, result(store.read(projectMatch[1], revision === null ? undefined : Number(revision)))); return; }
+      if (resource !== '/commands') {
+        const id = projectMatch[1], p = store.read(id); requireResearchWorkflow(p);
+        if (resource === '/research-workflow') {response(res,200,{workflow:research.workflow(id), capability:research.capability()}); return;}
+        if (projectMatch[3]) {response(res,200,await research.content(id,decodeURIComponent(projectMatch[3])));return;}
+        const body = await jsonBody(req), common = ['commandId','expectedRevision'];
+        const extra = {'/sources':['input'], '/research-jobs':['sourceEntryIds'], '/research-verification':['artifactId'], '/research-readiness':['artifactId'], '/research-handoffs':['artifactId','contentHash','basisHash','input'], '/research-release':['artifactId','contentHash','basisHash','policyVersion']}[resource];
+        fields(body,[...common,...extra]); string(body,'commandId');
+        if (body.commandId==='__proto__' || !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision<0) invalid('Valid command ID and revision required');
+        let receipt, replayed=Object.hasOwn(p.processedCommands,body.commandId);
+        if(resource==='/sources') {
+          const after=store.command(id,{kind:'register-research-source',source:body.input,...Object.fromEntries(common.map(k=>[k,body[k]]))},humanContext());
+          const source=after.sourceEntries.find(x=>x.id===`source-${createHash('sha256').update(JSON.stringify([id,body.commandId])).digest('hex')}`);
+          receipt={sourceId:source.id};
+        } else {
+          const method={'/research-jobs':'generate','/research-verification':'verify','/research-readiness':'assess','/research-handoffs':'handoff','/research-release':'release'}[resource];
+          receipt=await research[method](id,body,humanContext());
+        }
+        response(res,200,{...result(store.read(id)),receipt:{...receipt,commandId:body.commandId,replayed}});return;
+      }
       const body = await jsonBody(req);
       if (!body || typeof body.kind !== 'string' || !Object.hasOwn(commandFields, body.kind)) throw new HttpError(403, 'COMMAND_FORBIDDEN', 'Only Brief revisions and confirmations are supported');
       fields(body, ['kind', 'commandId', 'expectedRevision', ...commandFields[body.kind]]);
@@ -123,7 +151,7 @@ export function createBriefServer({dbPath, port = 4182, origin} = {}) {
       const project = store.command(projectMatch[1], body, humanContext());
       response(res, 200, {...result(project), receipt: {commandId: body.commandId, replayed}});
     } catch (error) {
-      const status = error.status ?? (error instanceof DomainError ? error.code === 'NOT_FOUND' ? 404 : ['REVISION_CONFLICT', 'COMMAND_ID_REUSED', 'PROJECT_EXISTS'].includes(error.code) ? 409 : 422 : 500);
+      const status = error.status ?? (error.code==='SOURCE_ENTRY_INVALID' ? 422 : error instanceof DomainError ? error.code === 'NOT_FOUND' ? 404 : ['REVISION_CONFLICT', 'COMMAND_ID_REUSED', 'PROJECT_EXISTS'].includes(error.code) ? 409 : 422 : 500);
       response(res, status, {error: {code: status === 500 ? 'INTERNAL_ERROR' : error.code, message: status === 500 ? 'Brief service could not complete the request' : error.message}});
     }
   };
@@ -151,16 +179,27 @@ export function createBriefServer({dbPath, port = 4182, origin} = {}) {
   return server;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+async function main() {
   try {
     const options = {}, args = process.argv.slice(2);
     for (let i = 0; i < args.length; i += 2) {
-      if (!['--db', '--port', '--origin'].includes(args[i]) || args[i + 1] === undefined || Object.hasOwn(options, args[i])) throw new Error('Use --db PATH [--port PORT] [--origin HTTP_LOOPBACK_ORIGIN]');
+      if (!['--db', '--port', '--origin', '--research-config', '--research-execution'].includes(args[i]) || args[i + 1] === undefined || Object.hasOwn(options, args[i])) throw new Error('Use --db PATH [--port PORT] [--origin HTTP_LOOPBACK_ORIGIN]');
       options[args[i]] = args[i + 1];
     }
-    const server = createBriefServer({dbPath: options['--db'], port: options['--port'] === undefined ? 4182 : Number(options['--port']), origin: options['--origin']});
+    let researchOptions;
+    if(options['--research-execution']!==undefined && !['enabled','disabled'].includes(options['--research-execution'])) throw new Error('Use --research-execution enabled or disabled');
+    if(options['--research-execution']==='enabled'&&!options['--research-config'])throw new Error('Explicit research configuration required');
+    if(options['--research-config']){
+      const {loadLaunchSettings,buildLaunchOptions}=await import('./launch-config.mjs');
+      const configured=buildLaunchOptions(await loadLaunchSettings({configPath:options['--research-config']}));
+      if(resolve(configured.dbPath)!==resolve(options['--db']))throw new Error('Research configuration must name the same explicit isolated database');
+      researchOptions={...configured,executionAllowed:options['--research-execution']==='enabled'};
+    }
+    const server = createBriefServer({researchOptions,dbPath: options['--db'], port: options['--port'] === undefined ? 4182 : Number(options['--port']), origin: options['--origin']});
     server.once('error', error => { console.error(error.message); server.close(() => { process.exitCode = 1; }); });
     server.listen(() => console.log(`Brief service available at http://127.0.0.1:${server.address().port}`));
     for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => server.close(error => { if (error) process.exitCode = 1; }));
   } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) void main();

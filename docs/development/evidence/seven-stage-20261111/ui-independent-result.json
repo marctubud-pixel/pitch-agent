@@ -1,0 +1,34 @@
+{
+  "light": {
+    "width": 1280,
+    "scroll": 1280,
+    "note": [
+      {
+        "text": "研究生成、证据核验、独立读者复核、负责人接收和正式放行分别记录。独立读者回环尚未接入，当前不会标记研究交接通过。",
+        "color": "rgb(100, 101, 108)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "12px",
+        "parent": "rgba(0, 0, 0, 0)",
+        "body": "rgb(241, 241, 238)"
+      }
+    ]
+  },
+  "dark": {
+    "width": 910,
+    "scroll": 910,
+    "topbar": 0,
+    "note": [
+      {
+        "color": "rgb(156, 156, 150)",
+        "fontSize": "12px",
+        "parent": "rgba(0, 0, 0, 0)",
+        "body": "rgb(11, 11, 10)"
+      }
+    ]
+  },
+  "generateDisabled": true,
+  "sourceDefault": "unclassified",
+  "attachDisabled": true,
+  "errors": [],
+  "writes": []
+}

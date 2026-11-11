@@ -1,3 +1,4 @@
+import type {PendingWriteKind} from '../domain/service';
 import type { StageId } from '../domain/proposal';
 
 export type HumanRole = 'pitch_owner' | 'operator' | 'visual_lead' | 'designer' | 'guest';
@@ -51,4 +52,11 @@ export interface TeamSnapshot {
   actor: HumanActor; projectId: string | null; pendingWrites: number;
   members: readonly HumanActor[]; presence: MemberPresence[]; notifications: TeamNotification[];
   completionAlerts: boolean; persistence: 'local' | 'memory';
+}
+
+export function pendingWriteAction(kind: PendingWriteKind): TeamAction {
+  if (kind === 'create_project') return {kind: 'manage'};
+  if (kind === 'save_brief') return {kind: 'edit_brief'};
+  if (kind === 'add_source') return {kind: 'edit_research'};
+  return {kind: 'workflow'};
 }

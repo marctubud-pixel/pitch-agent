@@ -1,3 +1,5 @@
+import {useServiceContext} from '../../app/services';
+import {R7ResearchView} from '../../proposal/research-method/R7ResearchView';
 import { selectionKeys } from '../../ui/selectionKeys';
 /**
  * B. Research, as a visual workspace: four sections of short findings, image walls of case
@@ -39,6 +41,7 @@ const SUPPORT_TONE: Record<SupportStatus, string> = { supported: 'ok', partial: 
 export function ResearchStage({ proposal: p }: { proposal: Proposal }) {
   const t = useT();
   const pid = p.workbenchId;
+  const connected = useServiceContext().proposals.backing === 'connected';
   const { params, setParams } = useRouter();
   const ws = useServiceQuery(`research:${pid}`, (s) => s.getResearchWorkspace(pid), { projectId: pid });
   const caseHistory = useServiceQuery(`research-case-briefs:${pid}`, (s) => (pid === 'luma' || pid === 'qingyu') ? s.getBriefHistory(pid) : Promise.resolve(undefined), { projectId: pid });
@@ -139,7 +142,7 @@ export function ResearchStage({ proposal: p }: { proposal: Proposal }) {
         {qingyuCase && <QingyuReportRevisions key={`${pid}:${data.artifact?.id ?? 'none'}:${data.artifact?.version ?? 0}:${caseHistory.data?.current?.version ?? 0}`} result={qingyuCase} recheck={{ pending: ws.refreshing || caseHistory.refreshing, run: () => { ws.refetch(); caseHistory.refetch(); } }} />}
         {authoredCase && <AuthoredCaseSlot key={`${pid}:${data.artifact?.id ?? 'none'}:${data.artifact?.version ?? 0}:${caseHistory.data?.current?.version ?? 0}`} result={authoredCase} recheck={{ pending: ws.refreshing || caseHistory.refreshing, run: () => { ws.refetch(); caseHistory.refetch(); } }} />}
       </>}
-      {!isAuthoredCase && data && <ResearchMethodView key={`${pid}:${data.artifact?.id ?? 'none'}`} workspace={data} onClaim={openClaim} onOpenChecks={() => setParams({ checks: 'research', claim: null })} />}
+      {!isAuthoredCase && data && (connected ? <R7ResearchView workspace={data} onClaim={openClaim} onOpenChecks={() => setParams({checks:'research',claim:null})}/> : <ResearchMethodView key={`${pid}:${data.artifact?.id ?? 'none'}`} workspace={data} onClaim={openClaim} onOpenChecks={() => setParams({ checks: 'research', claim: null })} />)}
 
       <details className="rm-legacy" open={legacyOpen} onToggle={event => setLegacyOpen(event.currentTarget.open)}>
       <summary>{isAuthoredCase ? (isLumaCase ? '既有研究与核验记录' : '研究与核验记录') : '既有研究板 · 案例、图表与原报告'}</summary>

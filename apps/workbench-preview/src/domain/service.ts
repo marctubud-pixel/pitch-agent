@@ -37,7 +37,8 @@ import type {
  * The only way components talk to data. The demo uses MockWorkbenchService; a real backend
  * gets an HttpWorkbenchService implementing the same interface (src/services/http).
  */
-export interface PendingBriefWrite {path: string; body: string; commandId: string; label: string}
+export type PendingWriteKind = 'create_project' | 'save_brief' | 'confirm_brief' | 'add_source' | 'generate_research' | 'verify_research' | 'review_readiness' | 'record_handoff' | 'release_research';
+export interface PendingBriefWrite {kind: PendingWriteKind; path: string; body: string; commandId: string; label: string}
 export interface BriefRecovery {
   getPending(): PendingBriefWrite | null;
   retry(): Promise<string>;

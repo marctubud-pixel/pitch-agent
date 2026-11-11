@@ -69,6 +69,8 @@ function Research({ data }: { data: ResearchWorkspace }) {
   const claimId = params.get('claim');
   const claim = claims.find((c) => c.id === claimId) ?? null;
   const { command, exec } = useWorkflowCommand();
+  const capabilities = useServiceQuery('research-capability',s=>s.getCapabilities());
+  const unavailable = capabilities.data?.research && !capabilities.data.research.configured;
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const baseId = useId();
 
@@ -88,8 +90,8 @@ function Research({ data }: { data: ResearchWorkspace }) {
                 variant="primary"
                 icon={<Play size={16} aria-hidden="true" />}
                 onClick={() => void exec('generate_research', project)}
-                disabled={!briefConfirmed || generating}
-                reason={generating ? t('res.generating') : t('res.confirmFirst')}
+                disabled={!briefConfirmed || generating || Boolean(unavailable)}
+                reason={unavailable ? capabilities.data?.research?.reason : generating ? t('res.generating') : t('res.confirmFirst')}
                 pending={command.pending}
               />
               <CommandFeedback command={command} />

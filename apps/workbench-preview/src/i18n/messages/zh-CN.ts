@@ -64,6 +64,7 @@ export const zhCN = {
   'topic.competitor': '竞品',
   'topic.cultural': '文化背景',
   'topic.production': '制作',
+  'topic.unclassified': '未分类',
 
   'common.tryAgain': '重试',
   'common.dismiss': '关闭',

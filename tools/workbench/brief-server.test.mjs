@@ -81,14 +81,14 @@ test('create, immutable save, confirm and refresh persist with native identity a
   assert.equal((await app.request('/api/v1/projects', {...create, humanGates: []})).status, 409);
   assert.deepEqual((await app.request('/api/v1/projects')).body.projects, [{id: p.id, name: p.name, revision: 2}]);
 });
-test('only the Brief surface is exposed; execution, policy and fabricated identity are rejected', async t => {
+test('restricted surface exposes no generic execution, policy or fabricated identity', async t => {
   const app = await fixture(t);
   const caps = await app.request('/api/v1/capabilities');
   assert.equal(caps.body.surface, 'brief-v1');
   assert.equal(caps.body.executionAvailable, false);
   const p = (await app.request('/api/v1/projects', create)).body.project;
   const route = `/api/v1/projects/${p.id}`;
-  for (const suffix of ['/jobs', '/final-review-continuations', '/final-review-status', '/assistant', '/research-continuations', '/sources', '/continuations']) assert.equal((await app.request(route + suffix, {})).status, 404, suffix);
+  for (const suffix of ['/jobs', '/final-review-continuations', '/final-review-status', '/assistant', '/research-continuations', '/continuations']) assert.equal((await app.request(route + suffix, {})).status, 404, suffix);
   for (const kind of ['set-policy', 'request-stage', 'complete-stage', 'release-stage', 'assistant', 'adopt-creative', 'confirm-task-card-v1', '__proto__']) assert.equal((await app.request(`${route}/commands`, {kind, commandId: 'bad', expectedRevision: 0})).status, 403, kind);
   for (const extra of [{actorId: 'agent'}, {actorType: 'agent'}, {context: {actorId: 'agent'}}, {authorizedThrough: 'final_review'}, {executor: true}]) {
     assert.equal((await app.request('/api/v1/projects', {...create, ...extra})).status, 400);
@@ -196,4 +196,38 @@ test('browser historical reads allow preflight only for valid revision queries',
   assert.equal((await app.request(`${route}?revision=0`, undefined, {origin})).status, 200);
   for (const suffix of ['?revision=-1', '?revision=0&revision=1', '?unknown=0']) assert.equal((await app.request(route + suffix, undefined, headers, 'OPTIONS')).status, 400);
   assert.equal((await app.request(`${route}/commands?revision=0`, undefined, {...headers, 'access-control-request-method': 'POST'}, 'OPTIONS')).status, 400);
+});
+
+test('new projects persist seven-stage protocol and current r7 capability without enabling execution', async t => {
+  const app=await fixture(t), created=await app.request('/api/v1/projects',create), p=created.body.project;
+  assert.equal(p.workflow.version,'proposal-seven-v1');
+  assert.deepEqual(p.workflow.stages,['brief','research','strategy','themes','visual','layout','delivery']);
+  const caps=(await app.request('/api/v1/capabilities')).body;
+  assert.equal(caps.research.executionAllowed,false); assert.equal(caps.research.configured,false);
+  assert.equal(caps.research.method.version,'r7-20261109'); assert.match(caps.research.method.sha256,/^[a-f0-9]{64}$/);
+  const workflow=(await app.request(`/api/v1/projects/${p.id}/research-workflow`)).body.workflow;
+  assert.equal(workflow.artifactId,null);assert.equal(workflow.eligible,false);
+  await app.reopen();assert.equal((await app.request(`/api/v1/projects/${p.id}`)).body.project.workflow.version,'proposal-seven-v1');
+});
+test('registered sources retain original task and unverified identity with exact replay',async t=>{
+  const app=await fixture(t),p=(await app.request('/api/v1/projects',create)).body.project,route=`/api/v1/projects/${p.id}`;
+  const input={title:'Synthetic supplied source',publisher:'Test author',url:'https://example.test/input',excerpt:'Test source excerpt, not actual market evidence.',intendedUse:'category',attachToClaimId:null};
+  const request={input,commandId:'source-one',expectedRevision:0};
+  const saved=await app.request(route+'/sources',request);assert.equal(saved.status,200,JSON.stringify(saved.body));
+  assert.equal(saved.body.project.sourceEntries[0].verificationStatus,'unverified');assert.equal(saved.body.project.sourceEntries[0].taskCardId,p.activeTaskCardId);
+  assert.equal((await app.request(route+'/sources',request)).body.receipt.replayed,true);
+  assert.equal((await app.request(route+'/sources',{...request,input:{...input,excerpt:'changed'}})).status,409);
+  assert.equal((await app.request(route+'/sources',{...request,actorId:'invented'})).status,400);
+  assert.equal((await app.request(route)).body.project.sourceEntries.length,1);
+});
+test('unconfirmed and unconfigured research writes never create jobs or advance strategy',async t=>{
+  const app=await fixture(t),p=(await app.request('/api/v1/projects',create)).body.project,route=`/api/v1/projects/${p.id}`;
+  const body={sourceEntryIds:[],commandId:'research',expectedRevision:0};
+  assert.equal((await app.request(route+'/research-jobs',body)).body.error.code,'SCOPE_UNCONFIRMED');
+  await app.request(route+'/commands',{kind:'confirm-task-card',taskCardId:p.activeTaskCardId,commandId:'confirm',expectedRevision:0});
+  const result=await app.request(route+'/research-jobs',{...body,expectedRevision:1});
+  assert.equal(result.status,422);assert.equal(result.body.error.code,'RESEARCH_EXECUTION_UNAVAILABLE');
+  const current=(await app.request(route)).body;
+  assert.equal(current.project.jobs.length,0);assert.equal(current.view.proposalWorkflow.research.status,'not_started');
+  assert.equal((await app.request(route+'/research-release',{artifactId:'missing',contentHash:'0'.repeat(64),basisHash:'0'.repeat(64),policyVersion:1,commandId:'release',expectedRevision:1})).status,422);
 });

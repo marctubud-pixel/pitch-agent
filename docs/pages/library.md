@@ -1,6 +1,6 @@
 # 资料库 · 页面开发规格
 
-规范版本：1.0.1。页面ID：`library`。状态：部分要求已确认；完整页面待细化。负责人见[brief-owner](../agents/brief-owner.md)。
+规范版本：1.0.2。页面ID：`library`。状态：部分要求已确认；完整页面待细化。负责人见[brief-owner](../agents/brief-owner.md)。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 
@@ -46,3 +46,9 @@ library-materials.png。既有界面留档，不证明所有现行要求已实�
 ## 来源与版本
 
 要求来源：现有[用户决定索引](../specs/decisions.md)、[版本沿革](../handoffs/提案工作台_版本沿革与已确认要求_20261111.md)及本次[来源清单](../specs/source-provenance.json)。图像是证据，不覆盖当前文字要求。新需求通过[变更与PR规则](../specs/change-control.md)更新本文件版本。
+
+## 当前受限来源接入
+
+新协议项目的来源原文登记与读取已接SQLite，来源绑定本版任务卡并保留未核实身份。Brief改版不会自动把旧卡来源当成本版；品牌原文件持久化及其他素材写入仍待接，不以来源文本保存冒充原文件存储。范围见[接续](../development/seven-stage-research.md)。
+
+未决提交存在时先处理全局核对，添加来源弹窗不会盖住该入口；输入仍保留在恢复记录。HTTP默认用途为未分类，原Mock默认不变。

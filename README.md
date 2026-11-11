@@ -40,3 +40,5 @@ npm run check
 当前开发入口是 `apps/workbench-preview`，由原活跃scratch前端按字节导入。较早的 `apps/proposal-workbench`、三组tools源码、测试、必要夹具和既有文档分别保留。详见[纳管边界](docs/specs/repository-scope.md)、[源码与资源](docs/development/resources.md)。
 
 数据库、原业务run、失败原件、外部PDF和完整交付池保持本地原位，不整体上传。Git保护明示纳管的源码和文档，不能恢复未纳管运行数据或重建此前未提交历史。研究参照、品牌图片、生成试稿及第三方代码保留各自来源和权利，未新授予统一开源许可。
+
+七阶段运行协议与受限研究接入见[当前接续](docs/development/seven-stage-research.md)。新项目与旧记录隔离，完整研究交接仍等待r7独立读者回环和真实运行条件。

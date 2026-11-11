@@ -1,3 +1,4 @@
+import {pendingWriteAction} from '../collaboration/types';
 import type { AssistantService } from '../domain/assistant';
 import type { BriefIntakeService } from '../domain/intake';
 import type { ProposalService } from '../domain/proposal';
@@ -39,7 +40,7 @@ export function createServices(): Services {
   const persistence = browserStore();
   const proposalOptions = { brandResources: new IndexedDBBrandResourceRepository(), metadataPersistence: persistence.persistence };
   if (baseUrl) {
-    const workbench = new HttpWorkbenchService({ baseUrl, recovery: {actorKey: () => team.getActor().id, storage: () => sessionStorage, authorize: label => {team.require({kind: label === '新建提案' ? 'manage' : label === '保存简报' ? 'edit_brief' : 'workflow'});}} });
+    const workbench = new HttpWorkbenchService({ baseUrl, recovery: {actorKey: () => team.getActor().id, storage: () => sessionStorage, authorize: kind => {team.require(pendingWriteAction(kind));}} });
     // HTTP mode reads actual project snapshots; unsupported stages never synthesize results.
     return { ...protectServices({ workbench, intake: new LocalIntakeService(), assistant: new HttpAssistantService({ baseUrl }), proposals: new HttpProposalService(workbench) }, team), team };
   }
