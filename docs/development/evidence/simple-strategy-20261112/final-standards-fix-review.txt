@@ -1,0 +1,19 @@
+# Standards revalidation — blocked strategy diagnostic
+
+Scope: frozen `6766324502ce6c82a3b060f1ecb24acd61aaf22a...52a95ca4870873e1abe221daca76bf3d244d6055`. Incremental Standards axis only; original report remains unchanged. Static inspection, no services, databases, model calls, tests or Git mutations.
+
+## Documented hard violations
+
+**P3 — Translate native errors before showing the main alert.** `apps/workbench-preview/src/proposal/SimpleStrategyPanel.tsx:24` newly renders `data.failure.message` directly. `tools/workbench/simple-strategy-service.mjs:33` copies the original job error verbatim, and `executor.mjs:940` persists native `error.message` verbatim. Consequently a schema-invalid model response can display English validator text such as “Quote not found at original source location”; original IO errors can also contain local paths. This conflicts with `docs/specs/ui-system.md:24`: “错误使用面向使用者的中文，不显示源码路径” and its Chinese desktop interface rule.
+
+The existing actual-handler unknown-producer test (`simpleStrategyHttp.test.ts:48–51`) supplies an English native error and reaches this same failure branch; it is not merely an unreachable interface shape. No additional reproduction was run. Map failure codes to concise Chinese user guidance with a Chinese fallback; preserve the native failure and original receipts unchanged in their evidence records. Do not change job state or retry behavior.
+
+No P1/P2 Standards finding identified. The blocked diagnostic remains separate from artifacts; the new reads verify original invocation, normalized bytes and SHA, and do not relax completion/release guards. Contract version, registry, lock and changelog are updated. Runtime and independent UI completion remain subject to their own final receipts.
+
+## Optional heuristic observations
+
+No new independent smell worth widening this patch. The original report’s nonblocking **Mysterious Name** observation on the recovered-original validator remains unchanged and outside this narrow fix.
+
+## Evidence and limits
+
+Reviewed frozen diff, new backend/frontend blocked-result tests, diagnostic projection, strategy panel, contract/version updates and copied-evidence narrative. Parent-reported R8/R4 results and ongoing full check/UI review were not independently rerun. Immutable text log whitespace is not a source-style finding; original log bytes must remain intact. This review does not certify business Spec, remote CI, owner-to-copy or the full goal.

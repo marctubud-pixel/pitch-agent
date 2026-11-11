@@ -1,0 +1,274 @@
+{
+  "time": "2026-11-11T20:37:39.227Z",
+  "handle": {
+    "pid": 10265,
+    "backendPort": 4196,
+    "frontendPort": 4440,
+    "projectId": "project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+    "dbPath": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-o7YCCi/db",
+    "rootDir": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-o7YCCi",
+    "modelEndpoint": "http://127.0.0.1:49425/model",
+    "url": "http://127.0.0.1:4440/#/p/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/proposal/strategy",
+    "scope": "New isolated synthetic strategy UI fixture, actual r7/reader/facts/readiness/semantic/owner/engineering release; NOT complete packaging/KV from-Brief acceptance or business/customer approval",
+    "baseline": {
+      "revision": 34,
+      "modelCalls": 7,
+      "releases": 1,
+      "strategyJobs": 0
+    }
+  },
+  "creatorReceipt": {
+    "scope": "New isolated synthetic strategy UI fixture, actual r7/reader/facts/readiness/semantic/owner/engineering release; NOT complete packaging/KV from-Brief acceptance or business/customer approval",
+    "result": "Actual typed blocked original: retained conclusions and gaps, null artifact, no verification/copy/release; reload readonly",
+    "projectId": "project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+    "revision": 41,
+    "jobId": "job-9d9a0293b97e13aec56a954b335954b761eca2d65752df672482ac067f9b47a9",
+    "jobStatus": "blocked",
+    "attempts": 1,
+    "strategyArtifacts": 0,
+    "copyJobs": 0,
+    "refreshPostCount": 0,
+    "errors": [],
+    "trace": [
+      {
+        "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/simple-strategy/continue",
+        "body": "{\"commandId\":\"cmd-69f77642-91f6-455c-8fc3-6b4932192af6\",\"expectedRevision\":34,\"artifactId\":\"d789092d-80cb-4fb6-b08f-45bb4a491cf4\",\"policyVersion\":1}"
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "blocked-1280-light",
+      "url": "http://127.0.0.1:4440/#/p/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/proposal/strategy",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n全部提案\n\n合成工程 · 主视觉 / 海报\n\n策略KV · 合成工程R4\n\n汇报时间待定\n确认负责人：林予 · 比稿负责人\n自动\n哪些是真实的？\n概览\n1\n提案\n资料库\n流程与历史\n交付\n\n第 3/7 阶段 ·\n\n策略\n需要修改\n本地操作\n: 策略正文与核验记录来自本地服务；负责人接收与后续文案尚待接线。\n阶段说明与评审\n\n要解决的问题、品类·品牌·受众的交汇点，以及由此而来的机会。\n\n策略生成、全文核验与负责人接收分别记录。\n\n1\n简报与任务\n: 完成\n2\n研究\n: 完成\n3\n策略\n: 需要修改\n4\n文案与主题\n: 未开始\n5\n视觉开发\n: 未开始\n6\n版式\n: 未开始\n7\n终审与交付\n: 未开始\n\n策略 · 依据与方向\n\n有界蓝色方向\n\n研究和原任务连接。\n\n当前受阻策略结果\n受阻\n\n研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。\n\n此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。\n\n研究结论\n\n研究推论 只在现有资料范围探索蓝色产品，不推断真实偏好。\n\n引用原文与适用依据 · 1项\n方向交叉点\n产品\n人群\n竞争\n分析关系示意；不表示统计面积或已验证人群重合。\n\n关键依据待补，尚未提出方向交叉点。\n\n策略发力点\n\n尚无有据的优先发力方向。\n\n关键依据待补\n缺少产品特质资料，请向任务负责人补充。\nSynthetic test only.\nSynthetic reader; no real consumers.\n不得从颜色推断偏好。\n原稿、独立全文核验与原结果\n你对此阶段的想法\n添加想法\n\n任何阶段都可以添加意见、文案、主题或参考。\n\n上一步\n研究\n下一步\n文案与主题\n问问 工作助手\n: 打开 工作助手 助手",
+      "overflow": []
+    },
+    {
+      "name": "blocked-expanded-1280-light",
+      "url": "http://127.0.0.1:4440/#/p/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/proposal/strategy",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n全部提案\n\n合成工程 · 主视觉 / 海报\n\n策略KV · 合成工程R4\n\n汇报时间待定\n确认负责人：林予 · 比稿负责人\n自动\n哪些是真实的？\n概览\n1\n提案\n资料库\n流程与历史\n交付\n\n第 3/7 阶段 ·\n\n策略\n需要修改\n本地操作\n: 策略正文与核验记录来自本地服务；负责人接收与后续文案尚待接线。\n阶段说明与评审\n\n要解决的问题、品类·品牌·受众的交汇点，以及由此而来的机会。\n\n策略生成、全文核验与负责人接收分别记录。\n\n1\n简报与任务\n: 完成\n2\n研究\n: 完成\n3\n策略\n: 需要修改\n4\n文案与主题\n: 未开始\n5\n视觉开发\n: 未开始\n6\n版式\n: 未开始\n7\n终审与交付\n: 未开始\n\n策略 · 依据与方向\n\n有界蓝色方向\n\n研究和原任务连接。\n\n当前受阻策略结果\n受阻\n\n研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。\n\n此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。\n\n研究结论\n\n研究推论 只在现有资料范围探索蓝色产品，不推断真实偏好。\n\n引用原文与适用依据 · 1项\n\nSynthetic package is blue.\n\nresearch:d789092d-80cb-4fb6-b08f-45bb4a491cf4 · /summary\n方向交叉点\n产品\n人群\n竞争\n分析关系示意；不表示统计面积或已验证人群重合。\n\n关键依据待补，尚未提出方向交叉点。\n\n策略发力点\n\n尚无有据的优先发力方向。\n\n关键依据待补\n缺少产品特质资料，请向任务负责人补充。\nSynthetic test only.\nSynthetic reader; no real consumers.\n不得从颜色推断偏好。\n原稿、独立全文核验与原结果\n\n生成、核验、负责人接收与后续文案分别记录。\n\n受阻原结果与SHA\n\n原尝试 f812eaa8-f7a8-4513-bddc-1c03848fd37c · SHA256 ad40e32384e26b61257d8681c80b6798491d4449eca6700550437897f8f2e70e\n\n{\n  \"strategyContractVersion\": \"proposal-simple-strategy-v1\",\n  \"strategyBasisHash\": \"1dc004edbc4029348c72bc3569269513aeb3d71d79ac14772d40e1aa4df06f17\",\n  \"outputKind\": \"strategy\",\n  \"status\": \"blocked\",\n  \"title\": \"有界蓝色方向\",\n  \"summary\": \"研究和原任务连接。\",\n  \"strategy\": {\n    \"researchConclusions\": [\n      {\n        \"id\": \"research\",\n        \"text\": \"只在现有资料范围探索蓝色产品，不推断真实偏好。\",\n        \"kind\": \"inference\",\n        \"refs\": [\n          {\n            \"sourceId\": \"research:d789092d-80cb-4fb6-b08f-45bb4a491cf4\",\n            \"location\": \"/summary\",\n            \"quote\": \"Synthetic package is blue.\"\n          }\n        ],\n        \"limitations\": []\n      }\n    ],\n    \"intersection\": null,\n    \"focus\": null\n  },\n  \"gaps\": [\n    \"缺少产品特质资料，请向任务负责人补充。\"\n  ],\n  \"limitations\": [\n    \"Synthetic test only.\",\n    \"Synthetic reader; no real consumers.\",\n    \"不得从颜色推断偏好。\"\n  ]\n}\n你对此阶段的想法\n添加想法\n\n任何阶段都可以添加意见、文案、主题或参考。\n\n上一步\n研究\n下一步\n文案与主题\n问问 工作助手\n: 打开 工作助手 助手",
+      "overflow": []
+    },
+    {
+      "name": "blocked-expanded-910-dark",
+      "url": "http://127.0.0.1:4440/#/p/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/proposal/strategy",
+      "width": 910,
+      "scrollWidth": 910,
+      "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n全部提案\n\n合成工程 · 主视觉 / 海报\n\n策略KV · 合成工程R4\n\n汇报时间待定\n确认负责人：林予 · 比稿负责人\n自动\n哪些是真实的？\n概览\n1\n提案\n资料库\n流程与历史\n交付\n\n第 3/7 阶段 ·\n\n策略\n需要修改\n本地操作\n: 策略正文与核验记录来自本地服务；负责人接收与后续文案尚待接线。\n阶段说明与评审\n\n要解决的问题、品类·品牌·受众的交汇点，以及由此而来的机会。\n\n策略生成、全文核验与负责人接收分别记录。\n\n简报与任务\n: 完成\n研究\n: 完成\n策略\n: 需要修改\n文案与主题\n: 未开始\n视觉开发\n: 未开始\n版式\n: 未开始\n终审与交付\n: 未开始\n\n策略 · 依据与方向\n\n有界蓝色方向\n\n研究和原任务连接。\n\n当前受阻策略结果\n受阻\n\n研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。\n\n此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。\n\n研究结论\n\n研究推论 只在现有资料范围探索蓝色产品，不推断真实偏好。\n\n引用原文与适用依据 · 1项\n\nSynthetic package is blue.\n\nresearch:d789092d-80cb-4fb6-b08f-45bb4a491cf4 · /summary\n方向交叉点\n产品\n人群\n竞争\n分析关系示意；不表示统计面积或已验证人群重合。\n\n关键依据待补，尚未提出方向交叉点。\n\n策略发力点\n\n尚无有据的优先发力方向。\n\n关键依据待补\n缺少产品特质资料，请向任务负责人补充。\nSynthetic test only.\nSynthetic reader; no real consumers.\n不得从颜色推断偏好。\n原稿、独立全文核验与原结果\n\n生成、核验、负责人接收与后续文案分别记录。\n\n受阻原结果与SHA\n\n原尝试 f812eaa8-f7a8-4513-bddc-1c03848fd37c · SHA256 ad40e32384e26b61257d8681c80b6798491d4449eca6700550437897f8f2e70e\n\n{\n  \"strategyContractVersion\": \"proposal-simple-strategy-v1\",\n  \"strategyBasisHash\": \"1dc004edbc4029348c72bc3569269513aeb3d71d79ac14772d40e1aa4df06f17\",\n  \"outputKind\": \"strategy\",\n  \"status\": \"blocked\",\n  \"title\": \"有界蓝色方向\",\n  \"summary\": \"研究和原任务连接。\",\n  \"strategy\": {\n    \"researchConclusions\": [\n      {\n        \"id\": \"research\",\n        \"text\": \"只在现有资料范围探索蓝色产品，不推断真实偏好。\",\n        \"kind\": \"inference\",\n        \"refs\": [\n          {\n            \"sourceId\": \"research:d789092d-80cb-4fb6-b08f-45bb4a491cf4\",\n            \"location\": \"/summary\",\n            \"quote\": \"Synthetic package is blue.\"\n          }\n        ],\n        \"limitations\": []\n      }\n    ],\n    \"intersection\": null,\n    \"focus\": null\n  },\n  \"gaps\": [\n    \"缺少产品特质资料，请向任务负责人补充。\"\n  ],\n  \"limitations\": [\n    \"Synthetic test only.\",\n    \"Synthetic reader; no real consumers.\",\n    \"不得从颜色推断偏好。\"\n  ]\n}\n你对此阶段的想法\n添加想法\n\n任何阶段都可以添加意见、文案、主题或参考。\n\n上一步\n研究\n下一步\n文案与主题\n问问 工作助手\n: 打开 工作助手 助手",
+      "overflow": []
+    },
+    {
+      "name": "blocked-910-dark",
+      "url": "http://127.0.0.1:4440/#/p/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/proposal/strategy",
+      "width": 910,
+      "scrollWidth": 910,
+      "body": "跳到主要内容\n提案工作台\n林\n林予 · 比稿负责人\n本地演示 · 1人在线\n颜色模式\n跟随系统\n浅色\n深色\n本地简报与研究服务\n全部提案\n\n合成工程 · 主视觉 / 海报\n\n策略KV · 合成工程R4\n\n汇报时间待定\n确认负责人：林予 · 比稿负责人\n自动\n哪些是真实的？\n概览\n1\n提案\n资料库\n流程与历史\n交付\n\n第 3/7 阶段 ·\n\n策略\n需要修改\n本地操作\n: 策略正文与核验记录来自本地服务；负责人接收与后续文案尚待接线。\n阶段说明与评审\n\n要解决的问题、品类·品牌·受众的交汇点，以及由此而来的机会。\n\n策略生成、全文核验与负责人接收分别记录。\n\n简报与任务\n: 完成\n研究\n: 完成\n策略\n: 需要修改\n文案与主题\n: 未开始\n视觉开发\n: 未开始\n版式\n: 未开始\n终审与交付\n: 未开始\n\n策略 · 依据与方向\n\n有界蓝色方向\n\n研究和原任务连接。\n\n当前受阻策略结果\n受阻\n\n研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。\n\n此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。\n\n研究结论\n\n研究推论 只在现有资料范围探索蓝色产品，不推断真实偏好。\n\n引用原文与适用依据 · 1项\n\nSynthetic package is blue.\n\nresearch:d789092d-80cb-4fb6-b08f-45bb4a491cf4 · /summary\n方向交叉点\n产品\n人群\n竞争\n分析关系示意；不表示统计面积或已验证人群重合。\n\n关键依据待补，尚未提出方向交叉点。\n\n策略发力点\n\n尚无有据的优先发力方向。\n\n关键依据待补\n缺少产品特质资料，请向任务负责人补充。\nSynthetic test only.\nSynthetic reader; no real consumers.\n不得从颜色推断偏好。\n原稿、独立全文核验与原结果\n你对此阶段的想法\n添加想法\n\n任何阶段都可以添加意见、文案、主题或参考。\n\n上一步\n研究\n下一步\n文案与主题\n问问 工作助手\n: 打开 工作助手 助手",
+      "overflow": []
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4196/api/v1/capabilities",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/simple-strategy",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/simple-strategy",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/capabilities",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/simple-strategy",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/simple-strategy",
+      "method": "GET"
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "httpErrors": [],
+  "blockedMutations": [],
+  "keyboard": {
+    "outerOpen": true,
+    "originalOpen": true,
+    "nextFocus": {
+      "tag": "BUTTON",
+      "text": " 添加想法",
+      "outline": "rgb(10, 56, 184) solid 2px"
+    }
+  },
+  "originalJSON": "{\n  \"strategyContractVersion\": \"proposal-simple-strategy-v1\",\n  \"strategyBasisHash\": \"1dc004edbc4029348c72bc3569269513aeb3d71d79ac14772d40e1aa4df06f17\",\n  \"outputKind\": \"strategy\",\n  \"status\": \"blocked\",\n  \"title\": \"有界蓝色方向\",\n  \"summary\": \"研究和原任务连接。\",\n  \"strategy\": {\n    \"researchConclusions\": [\n      {\n        \"id\": \"research\",\n        \"text\": \"只在现有资料范围探索蓝色产品，不推断真实偏好。\",\n        \"kind\": \"inference\",\n        \"refs\": [\n          {\n            \"sourceId\": \"research:d789092d-80cb-4fb6-b08f-45bb4a491cf4\",\n            \"location\": \"/summary\",\n            \"quote\": \"Synthetic package is blue.\"\n          }\n        ],\n        \"limitations\": []\n      }\n    ],\n    \"intersection\": null,\n    \"focus\": null\n  },\n  \"gaps\": [\n    \"缺少产品特质资料，请向任务负责人补充。\"\n  ],\n  \"limitations\": [\n    \"Synthetic test only.\",\n    \"Synthetic reader; no real consumers.\",\n    \"不得从颜色推断偏好。\"\n  ]\n}",
+  "originalMatches": true,
+  "originalHashVisible": true,
+  "buttons": [],
+  "noVerifyOrReleaseButtons": true,
+  "circles": 3,
+  "labels": [
+    "产品",
+    "人群",
+    "竞争"
+  ],
+  "styles": [
+    {
+      "tag": "P",
+      "text": "研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。",
+      "color": "rgb(156, 156, 150)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "lineHeight": "20.4px"
+    },
+    {
+      "tag": "P",
+      "text": "此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。",
+      "color": "rgb(156, 156, 150)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "lineHeight": "20.4px"
+    },
+    {
+      "tag": "SECTION",
+      "text": "关键依据待补缺少产品特质资料，请向任务负责人补充。Synthetic test only.Synthetic reader; no real consumers.不得从颜色推断偏好。",
+      "color": "rgb(246, 165, 108)",
+      "background": "rgb(58, 34, 19)",
+      "fontSize": "12px",
+      "lineHeight": "20.4px"
+    },
+    {
+      "tag": "H3",
+      "text": "关键依据待补",
+      "color": "rgb(246, 165, 108)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "17px",
+      "lineHeight": "25.5px"
+    },
+    {
+      "tag": "LI",
+      "text": "缺少产品特质资料，请向任务负责人补充。",
+      "color": "rgb(246, 165, 108)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "lineHeight": "20.4px"
+    },
+    {
+      "tag": "LI",
+      "text": "Synthetic test only.",
+      "color": "rgb(246, 165, 108)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "lineHeight": "20.4px"
+    },
+    {
+      "tag": "LI",
+      "text": "Synthetic reader; no real consumers.",
+      "color": "rgb(246, 165, 108)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "lineHeight": "20.4px"
+    },
+    {
+      "tag": "LI",
+      "text": "不得从颜色推断偏好。",
+      "color": "rgb(246, 165, 108)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "lineHeight": "20.4px"
+    }
+  ],
+  "reloadText": "策略 · 依据与方向\n\n有界蓝色方向\n\n研究和原任务连接。\n\n当前受阻策略结果\n受阻\n\n研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。\n\n此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。\n\n研究结论\n\n研究推论 只在现有资料范围探索蓝色产品，不推断真实偏好。\n\n引用原文与适用依据 · 1项\n方向交叉点\n产品\n人群\n竞争\n分析关系示意；不表示统计面积或已验证人群重合。\n\n关键依据待补，尚未提出方向交叉点。\n\n策略发力点\n\n尚无有据的优先发力方向。\n\n关键依据待补\n缺少产品特质资料，请向任务负责人补充。\nSynthetic test only.\nSynthetic reader; no real consumers.\n不得从颜色推断偏好。\n原稿、独立全文核验与原结果",
+  "projectUnchanged": true,
+  "revision": 41,
+  "jobCount": 8,
+  "postCount": 0
+}

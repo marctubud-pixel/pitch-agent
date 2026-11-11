@@ -41,4 +41,8 @@
 
 独立同原R8案只读复验：revision41、原body、1attempt、空artifact与80份原件SHA均不变，现可读已有结论与具体gap；内存篡改SHA、basis和packet均被拒。新受阻HTTP及前端专项各1项通过，核原请求重放零新调用、坏normalized拒绝和坏投影SHA拒绝。
 
-另建具名结构化KV工程案R4，实际Chrome明确continue一次后显示具体缺项、保留结论及“不是完成稿”。revision41，策略任务blocked/1attempt，策略artifact、核验和copy均为0；刷新0POST且project完全相同。当前独立R4 UI与修后整套检查尚待最终回执；它不能替代真实研究、双owner、客户批准或完整两案。
+另建具名结构化KV工程案R4，实际Chrome明确continue一次后显示具体缺项、保留结论及“不是完成稿”。revision41，策略任务blocked/1attempt，策略artifact、核验和copy均为0；刷新0POST且project完全相同。独立R4 UI四个浅深主体/展开状态通过：0POST/错误/横溢，原project相等，revision41/8jobs不变，见[受阻UI报告](evidence/simple-strategy-20261112/blocked-ui-review.txt)。它不能替代真实研究、双owner、客户批准或完整两案。
+
+修复提交`52a95ca4870873e1abe221daca76bf3d244d6055`的[整套检查](evidence/simple-strategy-20261112/final-root-check.txt)退出0：763前端/1既有跳过、78核心、26域、57简报/PDF、80研究、61采集、26策略，类型与构建通过；当时1703纳管，393导入、147封存不变。独立[初始Spec](evidence/simple-strategy-20261112/final-spec-review.txt)与[修后复验](evidence/simple-strategy-20261112/final-spec-fix-review.txt)分开保留，最终无未解决P1/P2。
+
+增量Standards另指出主提示直显原生英文/路径的P3规范违例；仅UI改为面向使用者的中文提示，原job.error与回执不变。该最后文案类型和构建通过，原R2合成失败案只读重开后独立实际UI补验通过：准确中文主提示、不显示原Quote英文/路径，原错误仍保留，原project相等、unknown/空artifact保持，0POST；见[独立窄补验](evidence/simple-strategy-20261112/failure-ui-review.txt)。准确head远程CI按随后回执补记。原始日志按字节保留其空白，不为diff格式重写证据。

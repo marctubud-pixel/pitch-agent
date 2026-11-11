@@ -1,0 +1,17 @@
+# Final Spec review — frozen 6766324502ce6c82a3b060f1ecb24acd61aaf22a
+
+Base: `359650601f992086b0825e9efc5d5d268dbfa387`; reviewed three-dot diff independently of Standards. Current registry baseline 1.10.0; scope is research release → SIMPLE production → independent whole-text verification → current UI/original request recovery. The named `simple-strategy-http-integration.md` does not exist; read actual `strategy-http-integration.md` and `simple-strategy-integration-seams.md` instead, alongside current runtime, strategy owner/page, workflow and development contracts.
+
+## Findings
+
+**[P2] Missing/partial: blocked strategy gaps and retained conclusions never reach the workspace.** Spec `docs/development/simple-strategy.md:24`: “缺关键依据时输出blocked及具体gaps，保留已有结论”; page `docs/pages/strategy.md`: “说明优先放大什么、为什么，缺关键依据就地标明。” The integration seam explicitly permits retaining blocked output only as an attempt, but requires readable failure/gaps. `executor.mjs:935` correctly leaves blocked output outside artifacts. However `simple-strategy-service.mjs:29–34` exposes only artifact content, omits job error/blocked diagnostic output and even reports pending verification/owner acceptance. `SimpleStrategyPanel.tsx` therefore renders generic empty text; its concrete gaps branch is unreachable for this valid output. This prevents users identifying the missing input or reading already established conclusions.
+
+Independent retained **actual local HTTP** reproduction (`design/simple-strategy-spec-blocked-http.log`, exit 0): POST and GET both return HTTP200, producer blocked, one attempt, content/artifact null, no gaps, current=true. Native error is `STAGE_INPUT_GAP: Product feature is missing: ask the task owner.` Valid original normalized output contains retained research conclusions, null intersection/focus and that specific gap. Root `/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-R8qSEr`; normalized `37c8d8ae-cc3d-4d92-b22b-d86896b5cad9/output.json` SHA `658bcc4ad859199d52e20c3e1a84211c495e05470dc2498dfd9db7f367d7850d`. No existing run/database modified; no screenshot claim for this state.
+
+Fix as a separately verified blocked diagnostic projection. Preserve blocked status, artifact=null, original attempt/IO and zero redispatch; never relax complete-stage or HARD_BLOCKER. Verify refresh displays exact gap/conclusions/limits, unavailable/corrupt IO fails closed, guests remain read-only and no verification/release becomes available.
+
+## Remaining axes
+
+No demonstrated scope creep or additional incorrectly implemented requirement. Dual-owner-to-copy, strategy revisions, copy/visual/PPT and complete end-to-end production are explicit exclusions, not missing requirements of this slice. Root check log and four final HTTP frontend test passes inspected; successful-state independent UI evidence does not cover blocked state. Source-only conclusions for other states retain that limitation.
+
+**Spec result: 1 P2; 0 P1.**

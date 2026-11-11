@@ -21,7 +21,7 @@ function StrategyContents({data,simple}:{data:SimpleStrategyWorkspace;simple:Sim
   {!data.producerJobId&&<Action permission={{kind:'workflow'}} label="明确从研究继续策略" variant="primary" pending={pending} disabled={!data.canContinue} reason={!data.available?data.reason:data.continueReason} onClick={continueResearch}/>}
   <p className="rm-note">研究到策略须由人明确继续。策略稿保存不表示事实核验通过、双方负责人接收、文案执行或客户批准。</p>
   {data.blockedOutput&&<p className="rm-note">此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。</p>}
-  {data.failure&&!data.blockedOutput&&<p className="rm-alert" role="alert">本次策略受阻：{data.failure.message}</p>}
+  {data.failure&&!data.blockedOutput&&<p className="rm-alert" role="alert">本次策略未完成。请核对原任务、研究依据与服务配置，并保留原提交记录。</p>}
   {s?<>
    <section className="rm-questions"><h3>研究结论</h3>{s.strategy.researchConclusions.length?s.strategy.researchConclusions.map(p=><Point key={p.id} point={p}/>):<p>尚无可登记的研究结论。</p>}</section>
    <section className="rm-questions"><h3>方向交叉点</h3><div className="pw-venn-grid">

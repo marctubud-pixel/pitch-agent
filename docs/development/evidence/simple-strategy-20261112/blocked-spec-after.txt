@@ -1,0 +1,80 @@
+(node:10417) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "scope": "Read-only current status handler; no HTTP POST, no UI, no provider execution",
+  "id": "project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+  "root": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-R8qSEr",
+  "originalProjectEqual": true,
+  "originalFilesEqual": true,
+  "originalFileCount": 80,
+  "originalRequest": {
+    "commandId": "spec-http-blocked",
+    "expectedRevision": 34,
+    "artifactId": "802107a4-968d-4264-842d-15e530fa44b0",
+    "policyVersion": 1
+  },
+  "blockedOutput": {
+    "attemptId": "37c8d8ae-cc3d-4d92-b22b-d86896b5cad9",
+    "contentHash": "658bcc4ad859199d52e20c3e1a84211c495e05470dc2498dfd9db7f367d7850d",
+    "content": {
+      "strategyContractVersion": "proposal-simple-strategy-v1",
+      "strategyBasisHash": "4a2cbc41b06e376f11068862ae371195598065fc01e2157e250b0794fad3bcb0",
+      "outputKind": "strategy",
+      "status": "blocked",
+      "title": "有界蓝色方向",
+      "summary": "研究和原任务连接。",
+      "strategy": {
+        "researchConclusions": [
+          {
+            "id": "research",
+            "text": "只在现有资料范围探索蓝色产品，不推断真实偏好。",
+            "kind": "inference",
+            "refs": [
+              {
+                "sourceId": "research:802107a4-968d-4264-842d-15e530fa44b0",
+                "location": "/summary",
+                "quote": "Synthetic package is blue."
+              }
+            ],
+            "limitations": []
+          }
+        ],
+        "intersection": null,
+        "focus": null
+      },
+      "gaps": [
+        "Product feature is missing: ask the task owner."
+      ],
+      "limitations": [
+        "Synthetic test only.",
+        "Synthetic reader; no real consumers.",
+        "不得从颜色推断偏好。"
+      ]
+    }
+  },
+  "failure": {
+    "code": "STAGE_INPUT_GAP",
+    "message": "Product feature is missing: ask the task owner."
+  },
+  "reason": "关键依据待补；保留已有结论，不是完成稿或可交接策略。",
+  "revision": 41,
+  "attempts": 1,
+  "artifact": null,
+  "negativeChecks": [
+    {
+      "kind": "normalizedHash",
+      "code": "SIMPLE_BLOCKED_ORIGINAL_INVALID",
+      "message": "SIMPLE_BLOCKED_ORIGINAL_INVALID"
+    },
+    {
+      "kind": "basis",
+      "code": "INVALID_SIMPLE_STRATEGY",
+      "message": "Strategy basis changed"
+    },
+    {
+      "kind": "frozenPacket",
+      "code": "STAGE_ORIGINAL_INVALID",
+      "message": "Exact independently rebuilt frozen HTTP domain packet required"
+    }
+  ]
+}

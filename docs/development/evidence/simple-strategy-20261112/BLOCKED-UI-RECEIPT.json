@@ -1,0 +1,19 @@
+{
+  "scope": "New isolated synthetic strategy UI fixture, actual r7/reader/facts/readiness/semantic/owner/engineering release; NOT complete packaging/KV from-Brief acceptance or business/customer approval",
+  "result": "Actual typed blocked original: retained conclusions and gaps, null artifact, no verification/copy/release; reload readonly",
+  "projectId": "project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b",
+  "revision": 41,
+  "jobId": "job-9d9a0293b97e13aec56a954b335954b761eca2d65752df672482ac067f9b47a9",
+  "jobStatus": "blocked",
+  "attempts": 1,
+  "strategyArtifacts": 0,
+  "copyJobs": 0,
+  "refreshPostCount": 0,
+  "errors": [],
+  "trace": [
+    {
+      "url": "http://127.0.0.1:4196/api/v1/projects/project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b/simple-strategy/continue",
+      "body": "{\"commandId\":\"cmd-69f77642-91f6-455c-8fc3-6b4932192af6\",\"expectedRevision\":34,\"artifactId\":\"d789092d-80cb-4fb6-b08f-45bb4a491cf4\",\"policyVersion\":1}"
+    }
+  ]
+}

@@ -1,3 +1,9 @@
+# 简洁策略本地验收收束 · 2026-11-12
+
+功能67663245、受阻诊断修复52a95ca4及中文失败提示已完成；最终完整check763前端/1既有skip、78核心、26域、57简报/PDF、80研究、61采集、26策略全部通过，类型构建通过。独立Spec原P2、UI实证和Standards中文P3均已修，原件/失败/同案复验见[核验](../docs/development/simple-strategy-verification-20261112.md)。规范1.10.1，57项及16固定截图、393导入/147封存保持。
+
+[PR #8](https://github.com/marctubud-pixel/pitch-agent/pull/8)已创建草稿，最终准确head CI和合并尚待真实回执；此处不提前签远程成功或七阶段完整闭环。copy前后端候选在隔离WT已专项通过并保留恢复身份，根尚未采用。空间恢复检查点保留，最新约48GiB，不能将系统增加全部算清理收益。以下历史节点保留。
+
 # 策略受阻结果纠错 · 2026-11-12
 
 固定67663245独立两轴：Standards无硬违例/无P1/P2，Spec实证blocked原结论与gaps在页面不可达的P2。已按独立诊断补齐，保持job blocked/空artifact/无下游放行；同原案80原件SHA及project未变、篡改拒绝，具名typed R4真实Chrome通过受阻态专项。规范1.10.1；独立R4 UI、修后整套检查及远程回执继续中，见[核验](../docs/development/simple-strategy-verification-20261112.md)。以下原节点保留。

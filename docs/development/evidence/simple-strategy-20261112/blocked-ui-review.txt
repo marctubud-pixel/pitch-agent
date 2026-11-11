@@ -1,0 +1,63 @@
+# 简洁策略受阻状态 · 独立只读UI审核
+
+2026-11-12。结论：新R4真实受阻结果在1280浅色与910深色桌面中可读，已有结论、具体缺项与非完成稿身份可达，原JSON可键盘展开。实际检查范围内无新增UI阻断。本审核只签真实界面范围，不代签生产正确性、负责人接收或客户批准。
+
+## 对象、依据与独立边界
+
+依据项目固定`skills/ui-review/SKILL.md`及20项原则、`docs/pages/strategy.md`、`docs/specs/ui-system.md`与`docs/development/simple-strategy.md`当前受阻诊断合同。既有三板块与三环视觉基线不重做。
+
+输入为`../simple-strategy-r4/HANDLE.json`及已存在的`UI-RECEIPT.json`。对象仅新typed KV合成工程案`project-32c24591c858d51f9210ad80d9349e938dd1bee7da5b62415758b78c67177c5b`，API4196/Vite4440。未改变R3或青屿。
+
+开发统筹创建样本、首次明确continue并修复受阻诊断读取，属于其creator范围。独立审核在creator回执已出后才开始，只GET现有snapshot/workspace、打开独立临时Google Chrome context并展开页面；未创fixture/run、未POST、未重放continue、未碰生产、未签接收/放行、未Git或启停服务。本审核未参与对应实现。
+
+同案baseline为revision41、8个job：7个研究相关任务加1个blocked策略producer。workspace实际producer blocked、attemptCount1，artifactId/content/contentHash均null；blockedOutput只保存原尝试诊断，verification=null。项目仅1份研究artifact，策略artifact0、策略核验job0、copy job0，不把研究工程release写成策略release。
+
+## 实测结果与证据
+
+审核脚本[`check.mjs`](../simple-strategy-blocked-independent/check.mjs)通过，退出0。Chrome locale zh-CN，DPR1、默认缩放，1280×1000浅色/910×1000深色；每次等待networkidle/document.fonts.ready，截图前回页面顶部。四个状态分别为浅/深色主体与原结果展开。所有业务请求设只读守卫，本次没有触发任何被拦截动作。
+
+| 任务与位置 | 观察事实 | 实际结果与原始证据 |
+| --- | --- | --- |
+| 识别状态 | 页面显示“当前受阻策略结果 / 受阻”，顶部需要修改；专门提示“此结果因关键依据不足而停止，保留已有结论供补充资料；不是完成稿，不能核验放行或交接下游。” | 受阻缺证被明确识别，非泛空态或完成稿。见[浅色主体](../simple-strategy-blocked-independent/blocked-1280-light.png)、[深色主体](../simple-strategy-blocked-independent/blocked-910-dark.png)。 |
+| 阅读保留结论 | 研究结论保留“只在现有资料范围探索蓝色产品，不推断真实偏好。”，类型为研究推论，引用原句与JSON Pointer可展开。 | 与workspace blockedOutput原文一致，不升级研究推论为事实。 |
+| 识别空交叉点和发力点 | 方向交叉点显示“关键依据待补，尚未提出方向交叉点。”；策略发力点显示“尚无有据的优先发力方向。” | 三板块及产品/人群/竞争三环保留，无模板补齐。图注明确三环不是统计面积或已验证人群重合。 |
+| 找具体补项与限制 | 橙框“关键依据待补”，具体显示“缺少产品特质资料，请向任务负责人补充。”并保留三条原限制，包括Synthetic test only、无真实消费者、不得从颜色推断偏好。 | 缺项就地可读，不只在JSON中可达。深色计算样式文字rgb246/165/108，框底rgb58/34/19，12px/20.4px；亮度对比7.416257037886416:1。原始样式见[result.json](../simple-strategy-blocked-independent/result.json)。 |
+| 防误核验/放行 | 当前简洁策略region内实际button列表为空，即无核验、放行、生成、接收/继续按钮。原结果折叠内只有说明与诊断JSON。 | 本次检查没有点击写操作。页面其他区域“添加想法”与下一阶段导航是既有入口，不把它们声明为策略已放行。 |
+| 键盘原JSON展开 | 在“原稿、独立全文核验与原结果”summary按Enter，再在“受阻原结果与SHA”按Enter，两层open=true；显示原attemptId及SHA256。 | [浅色展开](../simple-strategy-blocked-independent/blocked-expanded-1280-light.png)、[深色展开](../simple-strategy-blocked-independent/blocked-expanded-910-dark.png)。JSON解析后与workspace.blockedOutput.content完全一致，SHA文本与原诊断contentHash相等，均由脚本实际断言。 |
+| 键盘焦点 | Tab从展开原件后进入“添加想法”；实际outline为rgb(10,56,184) solid 2px。 | 焦点可见，未激活按钮。深色折叠图也保留summary焦点轮廓。 |
+| 布局/错误/刷新 | 四状态document.scrollWidth等于1280/910，main右侧越界列表均空。刷新后受阻内容仍可见。 | 0POST、0被拦截变更、0pageerror、0console error、0HTTP≥400。snapshot.project前后JSON完整相等，revision41、8jobs保持。见[snapshot-before](../simple-strategy-blocked-independent/snapshot-before.json)、[snapshot-after](../simple-strategy-blocked-independent/snapshot-after.json)。 |
+
+独立证据命令：`node .scratch/seven-stage-static-goal-20261111/simple-strategy-blocked-independent/check.mjs`。结果以`result.json`的实际检查值为准；截图是实际Chrome渲染，没有生成替代效果图。
+
+## 20项原则处置
+
+| # | 处置 | 本次依据或限制 |
+| --- | --- | --- |
+| 01 气质一致 | 已满足 | 沿研究蓝色标题带、三块与三环；本地操作标签保留。 |
+| 02 灰度布局 | 无法验证 | 本次未生成灰度诊断图，不折算为通过。 |
+| 03 文字层级 | 已满足 | 标题、板块、正文、缺项和原件入口在真实截图中层级清楚。 |
+| 04 减少竞争 | 已满足 | 当前策略蓝色导航与文字并存；缺项橙框局部突出，原JSON折叠。 |
+| 05 冗余标签 | 已满足 | 推论类型、原attempt与SHA均有身份用途，无建议删除。 |
+| 06 操作层级 | 已满足 | 当前受阻策略区没有可执行生成/核验/接收/放行动作。 |
+| 07 留白分组 | 已满足 | 受阻说明、三个板块和缺项分组清楚，原件展开仍可读。 |
+| 08 内容宽度 | 已满足 | 1280及910主体/展开均无横溢。 |
+| 09 信息归属 | 已满足 | 引用归已有结论、缺项归橙框，空交叉点说明在图右侧。 |
+| 10 桌面边界 | 已满足 | 1280浅色/910深色实际检查；项目无手机模式，不扩手机验收。 |
+| 11 行长行高 | 已满足 | 当前中文缺项12px/20.4px，JSON及长SHA实际换行；未验200%放大。 |
+| 12 混排对齐 | 已满足 | 实际类型标签/正文、状态/身份标签未见遮挡错位。 |
+| 13 色阶语义 | 已满足 | 沿既有浅深主题、蓝导航及橙色缺项框，无新共享变量。 |
+| 14 对比度 | 已满足（局部） | 深色缺项框实测颜色组合通过普通文本阈值；非整页WCAG声明。 |
+| 15 非颜色状态 | 已满足 | 受阻、需要修改、关键依据待补及非完成稿都有可见文字。 |
+| 16 局部边界 | 已满足 | 缺项橙框已有左侧边界及标题，未额外改版。 |
+| 17 图片叠字 | 不适用 | 无照片/视频叠字，本页三环是原生SVG分析示意。 |
+| 18 最终素材尺寸 | 已满足 | 实际910/1280原生三环与标签可辨认，不表示人群统计。 |
+| 19 分割和焦点 | 已满足 | 分组边界保留，键盘焦点可见。 |
+| 20 状态区分 | 已满足（受阻态） | 保留已有结论及空方向说明、具体补项、原结果诊断；不是泛空白。 |
+
+## 未覆盖与结论边界
+
+本次没有复做原R3成功态、青屿标签与此前7个状态，未检查未知结果/历史卡/坏IO/缺文件/failure无blockedOutput等其他分支。原IO与normalized文件的字节身份由实现及独立Spec复核承担，本审核只确认当前真实GET投影、页面原文/SHA对应；没有把看见SHA当成自行审计所有原件。
+
+未实际执行策略核验、owner、copy、release、真实模型或后续PPT生产。策略继续生成是creator先前实际操作，不计为本审核执行；工程合成案不能替代真实消费者研究或客户批准。
+
+复盘：受阻业务状态需要保留可读结论与具体缺项，空artifact不等于无诊断可读。本次真实界面证实新诊断可达且未开放完成稿后续动作；无需改既有视觉基线或Skill规则。

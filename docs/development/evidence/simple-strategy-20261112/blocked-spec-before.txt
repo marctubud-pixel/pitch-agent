@@ -1,0 +1,127 @@
+(node:4991) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "root": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-R8qSEr",
+  "id": "project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799",
+  "path": "/api/v1/projects/project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799/simple-strategy",
+  "body": {
+    "commandId": "spec-http-blocked",
+    "expectedRevision": 34,
+    "artifactId": "802107a4-968d-4264-842d-15e530fa44b0",
+    "policyVersion": 1
+  },
+  "postStatus": 200,
+  "postWorkspace": {
+    "protocolVersion": "simple-strategy-workspace-v1",
+    "taskCardId": "project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799:scope:1",
+    "researchArtifactId": "802107a4-968d-4264-842d-15e530fa44b0",
+    "policyVersion": 1,
+    "producerJobId": "job-203ca657db001733e92d6119e921ff7d08ca63890b9a0e6143c2659b4d9af7e7",
+    "producerStatus": "blocked",
+    "attemptCount": 1,
+    "artifactId": null,
+    "contentHash": null,
+    "content": null,
+    "current": true,
+    "history": [],
+    "verification": null,
+    "unknownJobs": [],
+    "reason": "策略仍需独立全文核验和下游负责人接收。"
+  },
+  "getStatus": 200,
+  "getWorkspace": {
+    "protocolVersion": "simple-strategy-workspace-v1",
+    "taskCardId": "project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799:scope:1",
+    "researchArtifactId": "802107a4-968d-4264-842d-15e530fa44b0",
+    "policyVersion": 1,
+    "producerJobId": "job-203ca657db001733e92d6119e921ff7d08ca63890b9a0e6143c2659b4d9af7e7",
+    "producerStatus": "blocked",
+    "attemptCount": 1,
+    "artifactId": null,
+    "contentHash": null,
+    "content": null,
+    "current": true,
+    "history": [],
+    "verification": null,
+    "unknownJobs": [],
+    "reason": "策略仍需独立全文核验和下游负责人接收。"
+  },
+  "error": {
+    "code": "STAGE_INPUT_GAP",
+    "message": "Product feature is missing: ask the task owner."
+  },
+  "receipt": {
+    "provider": "workbench-model-http-v1",
+    "protocol": "workbench-model-http-original-v2",
+    "attemptId": "37c8d8ae-cc3d-4d92-b22b-d86896b5cad9",
+    "runId": "37c8d8ae-cc3d-4d92-b22b-d86896b5cad9",
+    "requestedModel": "synthetic",
+    "reportedModel": "synthetic",
+    "inputPacketHash": "5e42bf120ec63c34367c2cb7e81a5b056db9761441d8610b80d37ebb1bb4a32b",
+    "runtimePacketHash": "e3a6b123f21d88b79b9e119c325f801ff91d8076be85fb8c627dd29dee92a2b8",
+    "wireRequestHash": "dc6e335fe7a57767b0fe7ef720fe55b190e81dd2549da5200fb4f690fc7b3382",
+    "responseText": "{\"strategyContractVersion\":\"proposal-simple-strategy-v1\",\"strategyBasisHash\":\"4a2cbc41b06e376f11068862ae371195598065fc01e2157e250b0794fad3bcb0\",\"outputKind\":\"strategy\",\"status\":\"blocked\",\"title\":\"有界蓝色方向\",\"summary\":\"研究和原任务连接。\",\"strategy\":{\"researchConclusions\":[{\"id\":\"research\",\"text\":\"只在现有资料范围探索蓝色产品，不推断真实偏好。\",\"kind\":\"inference\",\"refs\":[{\"sourceId\":\"research:802107a4-968d-4264-842d-15e530fa44b0\",\"location\":\"/summary\",\"quote\":\"Synthetic package is blue.\"}],\"limitations\":[]}],\"intersection\":null,\"focus\":null},\"gaps\":[\"Product feature is missing: ask the task owner.\"],\"limitations\":[\"Synthetic test only.\",\"Synthetic reader; no real consumers.\",\"不得从颜色推断偏好。\"]}",
+    "origin": {
+      "serviceIdentity": "reader-owner-engineering-strategist",
+      "configurationHash": "57f13ead82c4f341b7856339db45a437332a98a561e404f6953372225b746521",
+      "invocationId": "ea6074ad-c69f-41f5-bc2b-61c88eca93e9"
+    },
+    "original": {
+      "rootRelativePath": "46bd23d61a2e4e120c93293ca50ca588fec657d4db35599906a251461aa3ed87/bounded-json-v1",
+      "manifestHash": "33a8bfae059dc6319c07ccdb01a385e0d012b7acf061d84c7ac113d30a9b1b43"
+    },
+    "context": {
+      "kind": "isolated-http-call",
+      "namespace": "reader-owner-engineering-strategist",
+      "invocationId": "ea6074ad-c69f-41f5-bc2b-61c88eca93e9",
+      "requestHash": "dc6e335fe7a57767b0fe7ef720fe55b190e81dd2549da5200fb4f690fc7b3382",
+      "isolation": "stateless-v1"
+    },
+    "usage": {
+      "inputTokens": null,
+      "outputTokens": null
+    },
+    "cost": null,
+    "providerExecution": {
+      "provider": "workbench-model-http-v1",
+      "protocol": "workbench-model-http-original-v2",
+      "attemptId": "37c8d8ae-cc3d-4d92-b22b-d86896b5cad9",
+      "runId": "37c8d8ae-cc3d-4d92-b22b-d86896b5cad9",
+      "requestedModel": "synthetic",
+      "reportedModel": "synthetic",
+      "inputPacketHash": "5e42bf120ec63c34367c2cb7e81a5b056db9761441d8610b80d37ebb1bb4a32b",
+      "runtimePacketHash": "e3a6b123f21d88b79b9e119c325f801ff91d8076be85fb8c627dd29dee92a2b8",
+      "wireRequestHash": "dc6e335fe7a57767b0fe7ef720fe55b190e81dd2549da5200fb4f690fc7b3382",
+      "responseText": "{\"strategyContractVersion\":\"proposal-simple-strategy-v1\",\"strategyBasisHash\":\"4a2cbc41b06e376f11068862ae371195598065fc01e2157e250b0794fad3bcb0\",\"outputKind\":\"strategy\",\"status\":\"blocked\",\"title\":\"有界蓝色方向\",\"summary\":\"研究和原任务连接。\",\"strategy\":{\"researchConclusions\":[{\"id\":\"research\",\"text\":\"只在现有资料范围探索蓝色产品，不推断真实偏好。\",\"kind\":\"inference\",\"refs\":[{\"sourceId\":\"research:802107a4-968d-4264-842d-15e530fa44b0\",\"location\":\"/summary\",\"quote\":\"Synthetic package is blue.\"}],\"limitations\":[]}],\"intersection\":null,\"focus\":null},\"gaps\":[\"Product feature is missing: ask the task owner.\"],\"limitations\":[\"Synthetic test only.\",\"Synthetic reader; no real consumers.\",\"不得从颜色推断偏好。\"]}",
+      "origin": {
+        "serviceIdentity": "reader-owner-engineering-strategist",
+        "configurationHash": "57f13ead82c4f341b7856339db45a437332a98a561e404f6953372225b746521",
+        "invocationId": "ea6074ad-c69f-41f5-bc2b-61c88eca93e9"
+      },
+      "original": {
+        "rootRelativePath": "46bd23d61a2e4e120c93293ca50ca588fec657d4db35599906a251461aa3ed87/bounded-json-v1",
+        "manifestHash": "33a8bfae059dc6319c07ccdb01a385e0d012b7acf061d84c7ac113d30a9b1b43"
+      },
+      "context": {
+        "kind": "isolated-http-call",
+        "namespace": "reader-owner-engineering-strategist",
+        "invocationId": "ea6074ad-c69f-41f5-bc2b-61c88eca93e9",
+        "requestHash": "dc6e335fe7a57767b0fe7ef720fe55b190e81dd2549da5200fb4f690fc7b3382",
+        "isolation": "stateless-v1"
+      },
+      "usage": {
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      "cost": null
+    },
+    "model": "synthetic",
+    "providerId": "strategist",
+    "role": "strategy-lead",
+    "taskId": "job-203ca657db001733e92d6119e921ff7d08ca63890b9a0e6143c2659b4d9af7e7",
+    "validatedOutputPath": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-R8qSEr/37c8d8ae-cc3d-4d92-b22b-d86896b5cad9/output.json",
+    "validatedOutputHash": "658bcc4ad859199d52e20c3e1a84211c495e05470dc2498dfd9db7f367d7850d"
+  },
+  "normalizedSha": "658bcc4ad859199d52e20c3e1a84211c495e05470dc2498dfd9db7f367d7850d",
+  "calls": 8
+}
