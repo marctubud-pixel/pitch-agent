@@ -1,6 +1,6 @@
 # 配置与服务边界
 
-规范版本：1.6.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.7.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
@@ -28,7 +28,7 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略生产与全文核验另按[策略合同](simple-strategy.md)接线，后续生产仍未完成；默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略按[策略合同](simple-strategy.md)接线，双负责人接收、三方向文案及独立评审按[文案接续合同](simple-copy.md)接线；视觉至交付仍待迁移，默认不执行模型。
 
 ## PDF原件配置
 
@@ -55,6 +55,12 @@ PDF可选运行依赖固定在`tools/workbench/requirements-pdf.txt`，包含实
 
 ## 简洁策略与新建授权
 
-`creationAuthorizedThrough`是服务器创建配置，默认research。程序化`createBriefServer`和launch JSON的`server.creationAuthorizedThrough`都按既有STAGES枚举验证；本轮新隔离整链配置显式选final_review。CLI由research配置映射此字段，公共新建body不能上传，旧项目和set-policy不升级。授权终点不等于文案至终审路由开放。
+`creationAuthorizedThrough`是服务器创建配置，默认research。程序化`createBriefServer`和launch JSON的`server.creationAuthorizedThrough`都按既有STAGES枚举验证；本轮新隔离整链配置显式选final_review。CLI由research配置映射此字段，公共新建body不能上传，旧项目和set-policy不升级。授权终点不等于任意阶段路由开放，文案仅通过受限接续接口执行。
 
 简洁策略另需strategy和verification绑定、执行开关及当前原研究放行。其capability只检查配置形状，不完整probe HTTP凭据或远端在线。默认没有执行器；付费/真实模型及旧run保持暂停。请求、固定任务及unknown恢复见[策略合同](simple-strategy.md)。
+
+## 文案与四岗配置
+
+受限copy复用同一research配置和执行器。available要求strategy、copy、verification、creative_director及copy、brand、user、communication四岗各自creative_score和creative_opposition绑定；每个binding必须对应已配置provider和同名model。原生评审继续要求真实校准证据，available不证明校准、网络或质量通过。
+
+默认research终点不提升，显式final_review只作用新案。strategy人工节点通过单独confirm采用当前稿，不能改policy绕过。接口与固定任务见[文案合同](simple-copy.md)；本包不提供任意阶段或下游unknown恢复开关。

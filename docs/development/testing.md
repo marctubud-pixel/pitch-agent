@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.7.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.8.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -35,7 +35,7 @@
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略生产与全文核验另按[策略合同](simple-strategy.md)接线，后续生产仍未完成；默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略按[策略合同](simple-strategy.md)接线，双负责人接收、三方向文案及独立评审按[文案接续合同](simple-copy.md)接线；视觉至交付仍待迁移，默认不执行模型。
 
 ## PDF原件子路径
 
@@ -72,4 +72,18 @@ PITCH_PDF_TEST_PYTHON=/absolute/path/to/python3 npm run test:brief-http
 
 纯协议`seven-stage-strategy.test.mjs`检查三板块、真实原句定位、事实/要求/假设性质及限制继承。`simple-strategy-runtime.test.mjs`核原研究continuation及实际全文核验，HARD_BLOCKER不能因空claims而删除。`simple-strategy-http.test.mjs`和`simple-strategy-configuration.test.mjs`使用新隔离SQLite、本机合成模型HTTP，分别核原job/回执/当前性、创建授权/原终点重放、producer与verification原IO恢复，以及历史unknown拒绝。
 
-当前源码专项、完整门禁、真实UI、独立审查和策略双owner-to-copy必须分别留证，先前候选日志不证明后来字节已验。各专项最终字节的实际结果以本轮原生回执为准。磁盘不足期间只保存小文档和静态审查，不能用它们代替暂缓的运行验收。具体合同见[简洁策略](simple-strategy.md)。
+当前源码专项、完整门禁、真实UI、独立审查及文案接续必须分别留证，先前候选日志不证明后来字节已验。各专项最终字节的实际结果以本轮原生回执为准。磁盘不足期间只保存小文档和静态审查，不能用它们代替暂缓的运行验收。具体合同见[简洁策略](simple-strategy.md)。
+
+## 文案接续专项
+
+当前源码有simple-copy-runtime、simple-copy-http、simple-copy-negative和simple-copy-scope四组专项。可直接串行执行：
+
+```sh
+node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs
+```
+
+这些测试使用新SQLite和本机合成HTTP，覆盖实际双负责人、唯一copy、全文核验、17节点、明确人工策略checkpoint、固定集合重放、unknown及上游变化拒绝。已核回SIMPLE专项另核原作者、原attempt、原IO文件身份在下游执行前后保持。工程IO证明不能代替原生校准、真实语义异议处理或客户批准。
+
+前端copyWorkflowHttp、copyCreativeProjection及既有恢复、权限测试核正文SHA、原回执、17节点完整packet/phase/inputs与合法历史可读。copyCreativeProjection默认读取仓库内明确合成的原生快照，原packet/17节点反例与合法历史测试不再依赖个人.scratch环境或静默skip；可显式PITCH_COPY_PROJECTION_SNAPSHOT覆盖为另一实际快照。快照来源和SHA记录在test-fixtures/simple-copy/origin.json；纯投影不代表CI实际访问了历史原件文件。
+
+`npm run test:simple-copy`已按上述四文件串行集合加入根check及Application CI。实际原生双owner与17评审有真实IO成本，Application job上限由15分钟调为30分钟，不降低任何测试断言或业务门槛。候选owner测试和独立反例只支持其冻结字节与具体范围。当前根typecheck已有通过记录，最终check、实际UI和PR #9仍待真实回执。不得用旧候选自述签根验收，也不把合成空异议票称为真实质量通过。

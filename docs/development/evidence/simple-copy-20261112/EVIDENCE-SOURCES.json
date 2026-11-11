@@ -1,0 +1,131 @@
+{
+  "scope": "原回执字节副本；候选、根实跑及各时点独立结论分别保留。完整DB、native快照、原IO与失败保留本地，不整体上传。",
+  "files": [
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-independent-review.md",
+      "file": "backend-independent.txt",
+      "sha256": "4e7657404b5a11e898d568e0d14feb1edc6e1201e87b5136a53810a11f40e7b4",
+      "bytes": 6856
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-recovered-identity-independent.md",
+      "file": "recovered-identity-independent.txt",
+      "sha256": "e57f9610de65eb24515cd15f8df45c959fdb22e71db8252b4b30ff0e91eb081b",
+      "bytes": 7020
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-frontend-independent.md",
+      "file": "frontend-independent.txt",
+      "sha256": "c19deffff8640a0b3c1a6ebc45ad9a8bdb9e89d5496ea183185a8d6140f75f67",
+      "bytes": 7965
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-frontend-r2-owner.md",
+      "file": "frontend-r2-owner.txt",
+      "sha256": "52cdf4f2cbd4aa842e3a414d58c12faa9b0848fe5a8d58e258dc95a2f7dca76d",
+      "bytes": 2888
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-frontend-original-tool-receipts.md",
+      "file": "frontend-original-tool-receipts.txt",
+      "sha256": "5c92b1d9a7b39e855470caed513eb71812ffefd1aef956544ff76119574ccb1b",
+      "bytes": 1674
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-r1/FINAL-SUMMARY.json",
+      "file": "creator-final-summary.json",
+      "sha256": "a6fc22e67d1625db3cbea5679da496d4fca0925e1e435a9e60aa34e01716e858",
+      "bytes": 730
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-r1/UI-RECEIPT.json",
+      "file": "creator-ui-receipt.json",
+      "sha256": "9c0be228ea45c3705090b168979ee24fc7d05d2c309378281d7b3062131b41e5",
+      "bytes": 7863
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-r1/OWNER-NOTES.md",
+      "file": "creator-owner-notes.txt",
+      "sha256": "e03619bd12249a38f5ae32ebeab8df506adc708b6ec26f3fd8bb82c976a0f292",
+      "bytes": 3523
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-r1/REJECTED-COMMAND-CHECK.json",
+      "file": "rejected-command-check.json",
+      "sha256": "449a37aa769f46eb1bdd17b66d5f125a7b51be654b1d106d0ff7f58db21befe5",
+      "bytes": 896
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-r1/fixture-adaptation.json",
+      "file": "creator-fixture-adaptation.json",
+      "sha256": "56b5109c03b8b276a48ae2d0c60d58ecd37952f3f44d193429df8fe3dd473122",
+      "bytes": 367
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-r1/SOURCE-SHA.txt",
+      "file": "creator-source-sha.txt",
+      "sha256": "14849889d2937be7f5be0b4b38ddc43ffb11bbcabf7432df351ae67cbe501841",
+      "bytes": 629
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-r1/AFTER-FIX-SOURCE-SHA.txt",
+      "file": "creator-after-fix-source-sha.txt",
+      "sha256": "ca2bda95d73b5816437eb86d9293775eaf7ef56b87587085dd4491299a3323af",
+      "bytes": 244
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-independent/refresh-settled-result.json",
+      "file": "independent-refresh-settled.json",
+      "sha256": "db87d800c8dc57a1a16ba9ee98169703731f026606c7b12c6c6e547d728d1661",
+      "bytes": 1000
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-independent/final-result.json",
+      "file": "independent-final-result.json",
+      "sha256": "1a2b780cf186ad4935bfde3159155c58d8264eb11fbbd31ea2ff4cfe55f82634",
+      "bytes": 8084
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-root-http.log",
+      "file": "root-http.txt",
+      "sha256": "6b15298ab3fab506323dbda7cb207ec487fbb04900d7930cf2c906dcd987b795",
+      "bytes": 455
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-root-boundaries.log",
+      "file": "root-boundaries.txt",
+      "sha256": "7ec13bb7dda9eb7f0134efe038236c97f3ff351cfdfdef07e4524b7cf40359b2",
+      "bytes": 2545
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-final-state-typecheck.log",
+      "file": "root-typecheck.txt",
+      "sha256": "59fe8ee59be22c5bf840a143255819a3f99edb807f2328dbaa21a3d7075a92ac",
+      "bytes": 54
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-independent-ui.md",
+      "file": "independent-ui.txt",
+      "sha256": "634a554a8903a3aa9647081465d540bf3eb9461779aca8866a2635d2ec88b9f6",
+      "bytes": 13786
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-independent/readback-result.json",
+      "file": "independent-readback-result.json",
+      "sha256": "d48a46af9ce06b5c17791ce5195ed0631f9c3ba7542e1fb8a3272cfca1d581d3",
+      "bytes": 6639
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-independent/readback-header-explanation-1280-light.png",
+      "file": "readback-1280-light.png",
+      "sha256": "ef4d8ac59a509104b0e0a5975fc8695c07266e4052f6d745d0c14b80bc0391d5",
+      "bytes": 36463
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-independent/readback-910-dark-initial.png",
+      "file": "readback-910-dark.png",
+      "sha256": "5be0de366b5ec11a6e0e86a0daa2ecae0e1b9490fe184846d2bf455cd73b1889",
+      "bytes": 114725
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "scope": "New isolated synthetic strategy UI fixture, actual r7/reader/facts/readiness/semantic/owner/engineering release; NOT complete packaging/KV from-Brief acceptance or business/customer approval",
+  "result": "Actual UI owner handoff, unique copy, dropped saved step response + exact-body reload recovery, explicit verification and fixed 17-node review",
+  "recoveredUrl": "http://127.0.0.1:4444/#/p/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/proposal/themes",
+  "navigationPostCount": 0,
+  "refreshPostCount": 0,
+  "copyJobs": 1,
+  "copyAttempts": 1,
+  "ownerReports": 2,
+  "creativeReports": 17,
+  "allExecutedJobsOneAttempt": true,
+  "humanDecisions": 0,
+  "syntheticDirectorDecisions": 1,
+  "errors": [],
+  "trace": [
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/strategy-continuations",
+      "body": "{\"commandId\":\"cmd-3702d8ca-0896-4803-9cec-0a1438785935\",\"expectedRevision\":46,\"artifactId\":\"0e3b8554-af0e-45b6-b819-a4d46fafef14\"}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-5c805f42-6c27-46a5-a443-93b7475da3c6\",\"expectedRevision\":49,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16-producer\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-3f5bc9fb-794c-4dc1-8a3b-d5c4bee7f72d\",\"expectedRevision\":55,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16-consumer-f4859f8909b43b0dff903d9c119510ea137af516cf50d81a8db142dbd69ab558\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-f23f4dbb-28fe-471a-8871-4b6d7b334cba\",\"expectedRevision\":61,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"copy-owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-f23f4dbb-28fe-471a-8871-4b6d7b334cba\",\"expectedRevision\":61,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"copy-owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/verify",
+      "body": "{\"commandId\":\"cmd-b5528863-ec50-45d0-931d-364708e388de\",\"expectedRevision\":65,\"artifactId\":\"c4fdfc28-3fdb-435b-818c-c63c7c3a6309\"}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-e1ca9366-a7df-45ec-ad92-c8950211cd4a\",\"expectedRevision\":67,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"job-37cc4ea7a5334e073fff7320b429b41e706534c1105b1e91eec0b542b567485c\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/review",
+      "body": "{\"commandId\":\"cmd-1e71a723-1feb-4337-b7a8-5634df65e7fa\",\"expectedRevision\":71,\"artifactId\":\"c4fdfc28-3fdb-435b-818c-c63c7c3a6309\"}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-c16d92e1-ee30-4967-98d6-a215b1d5fe03\",\"expectedRevision\":81,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"creative-job-d99bba88d4e49950e75e05de06101aa6f8d24c03d2ce1048cc3dfc1c3f9cf147\",\"creative-job-d7f4ac32baafb2d9953a8f410b0976f39fe98b8945f5221f4122817e2ace94a2\",\"creative-job-02fa2cc4f8d5c17a0bca551be89ee20eb5c00258314291b6e5062e57d5f18504\",\"creative-job-aa2827fb8e6cb3dcbf767391580b27da6315c723af21d51be18f922b253a979b\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-1ab9a937-9d7e-42f1-962f-dec1e97c3428\",\"expectedRevision\":82,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"creative-job-d99bba88d4e49950e75e05de06101aa6f8d24c03d2ce1048cc3dfc1c3f9cf147\",\"creative-job-d7f4ac32baafb2d9953a8f410b0976f39fe98b8945f5221f4122817e2ace94a2\",\"creative-job-02fa2cc4f8d5c17a0bca551be89ee20eb5c00258314291b6e5062e57d5f18504\",\"creative-job-aa2827fb8e6cb3dcbf767391580b27da6315c723af21d51be18f922b253a979b\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-a93c680e-8ff8-40e5-8a31-0003b594c0d7\",\"expectedRevision\":100,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"creative-job-e8186989a486a690f01bfc93ce3a179951d39c71ecfa718bedac486fb306957b\",\"creative-job-62accce455a26ca4385b87102cb12452d320946768537e5552dbc38451f23f66\",\"creative-job-4625268be40c94ec2fdde0be3fb9f46383fdf0fc50d3b535357f0d4035b01e83\",\"creative-job-dc9745d7e73f0657b94b2361059c6167c84c437febb25d65135f6b47986bf6de\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-686f2045-5020-43f4-a491-d9179bf894bf\",\"expectedRevision\":119,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"creative-job-fc09856a8f9c5f4d4bc2bcb6b549cc27caafc3d15c6e47a12ff17016281d0b49\",\"creative-job-817128e812e5a92c9fb6ea943ea4b5bde2d8e7bedabdf9c1b3b6c4d2dbd56740\",\"creative-job-f20837a49de4ed02c99c4996723bfc000c98b94b20a70a13ba154a3147776f5c\",\"creative-job-f1a9a273b64a7359dda9c55908d170362081585e784ca5e64ea5b5e254133809\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-fde5e5b1-c984-40a6-8eeb-a908c0ffc310\",\"expectedRevision\":140,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"creative-job-7e52e33efd03577ef74e34f347744929a9d98fd4adc3f37b83af5fc6c24dbb37\",\"creative-job-a017a4da031f060d3386928b2dfae60720708b046032bfbf1634a547b1d48aa4\",\"creative-job-52f8b67a5dfc243cca6aa7cd7d753e4e3637e43b59f81f25311c2ee2cf47cd4d\",\"creative-job-c2ff5f4551edae7e15f22428d2fbbb93ee300e4a51176b4e36cba66d7d995b54\"]}"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow/step",
+      "body": "{\"commandId\":\"cmd-657d3e7c-4f9b-4340-875c-486fd29322b3\",\"expectedRevision\":158,\"edgeId\":\"owner-8cee51bfa3ffd40f0cc951e9f6c4676e76cb71b5b5c2d9635347d5c33aa3df16\",\"jobIds\":[\"creative-job-c10390937dfb2d8496dd1022ea5d223574372af1967cfa418454cb80ed53c702\"]}"
+    }
+  ]
+}

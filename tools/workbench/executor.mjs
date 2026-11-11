@@ -194,15 +194,15 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       const p=store.read(projectId),prior=(p.ownerIntents??[]).find(i=>i.id===request.commandId);
       if(prior&&!isDeepStrictEqual(prior.request,request))throw new DomainError('COMMAND_ID_REUSED','Continuation intent ID reused');
       if(!prior)store.command(projectId,{kind:'request-strategy-continuation',artifactId:request.artifactId,request:structuredClone(request),commandId:request.commandId,expectedRevision:request.expectedRevision},{actorType:'agent',actorId:'owner-edge-coordinator',runId:randomUUID(),contextId:randomUUID()});
-      await runtime.advanceOwnerEdges(projectId,{explicitArtifactId:prior?undefined:request.artifactId});
+      await runtime.advanceOwnerEdges(projectId,{explicitArtifactId:prior?undefined:request.artifactId,onlyArtifactId:request.artifactId});
       const current=store.read(projectId),edges=(current.ownerEdges??[]).filter(e=>e.envelope.source.artifactId===request.artifactId);
       return {artifactId:request.artifactId,edges:edges.map(e=>({edgeId:e.id,...ownerEdgeState(current,e)})),...(!edges.length?{status:'waiting_source',blockedReason:await runtime.ownerWaitingReason(projectId,request.artifactId)}:{})};
     },
     async ownerWaitingReason(projectId,artifactId){try{const p=store.read(projectId);strategyDeliveryEnvelope(p,artifactId,await ownerSourceContents(p,artifactId),bindings.copy);return null;}catch(error){return error.code??'SOURCE_NOT_READY';}},
-    async advanceOwnerEdges(projectId,{explicitArtifactId}={}){
+    async advanceOwnerEdges(projectId,{explicitArtifactId,onlyArtifactId}={}){
       await verifyOrdinaryProject(store.read(projectId),{executionRoot:root});
       let p=store.read(projectId);const queued=[];
-      const sourceId=explicitArtifactId??p.activeByStage.strategy;
+      const sourceId=explicitArtifactId??onlyArtifactId??p.activeByStage.strategy;
       const requested=explicitArtifactId||(p.ownerIntents??[]).some(i=>i.artifactId===sourceId)||p.policies.at(-1).mode==='auto';
       if(sourceId&&requested){
         try{
@@ -214,7 +214,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
           }
         }catch(error){if(!['OWNER_BLOCKED','HUMAN_GATE','HARD_BLOCKER','CREATIVE_PANEL_REQUIRED','CREATIVE_PANEL_INCOMPLETE','CREATIVE_PANEL_NOT_PASSED','OWNER_REQUIRED','DEPENDENCY_BLOCKED','AUTHORIZATION_ENDPOINT','PROVIDER_MISSING','INVALID_BINDING','FEEDBACK_REVIEW_REQUIRED','CORRECTION_REVIEW_REQUIRED','INVALID_OWNER_EDGE','STALE_ARTIFACT'].includes(error.code))throw error;}
       }
-      for(const edge of store.read(projectId).ownerEdges??[]){
+      for(const edge of (store.read(projectId).ownerEdges??[]).filter(e=>!onlyArtifactId||e.envelope.source.artifactId===onlyArtifactId)){
         p=store.read(projectId);const state=ownerEdgeState(p,edge);if(state.status==='blocked'&&['PROVIDER_MISSING','MODEL_BINDING_MISMATCH','OWNER_BINDING_CHANGED'].includes(state.blockedReason)){try{ownerRuntimeBinding(edge);send(projectId,{kind:'resume-owner-job',jobId:state.jobId},{actorType:'agent',actorId:'owner-edge-coordinator',runId:randomUUID(),contextId:randomUUID()});}catch{}}if(['stale','blocked','committed'].includes(state.status))continue;
         try{
           ownerRuntimeBinding(edge);
@@ -222,7 +222,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
           if(state.status==='ready_to_commit')send(projectId,{kind:'commit-owner-edge',edgeId:edge.id,task:ownerCopyTask(p,edge),binding:edge.envelope.consumerBinding},{actorType:'agent',actorId:'owner-edge-coordinator',runId:randomUUID(),contextId:randomUUID()});
         }catch(error){continue;}
       }
-      p=store.read(projectId);for(const job of p.jobs)if(job.status==='queued'&&(job.purpose==='owner_acceptance'||job.task?.ownerEdgeId))queued.push(job.id);return queued;
+      p=store.read(projectId);for(const job of p.jobs)if(job.status==='queued'&&(job.purpose==='owner_acceptance'||job.task?.ownerEdgeId)&&(!onlyArtifactId||job.targetArtifactId===onlyArtifactId||job.inputVersionIds.includes(onlyArtifactId)))queued.push(job.id);return queued;
     },
     researchWorkflow(projectId) { return researchWorkflowView(store.read(projectId),{bindings,providers}); },
     async recordResearchHandoff(projectId,request,humanDecision) {
@@ -477,9 +477,9 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         {actorType:'agent',actorId:'creative-panel-coordinator',runId:randomUUID(),contextId:randomUUID(),now:new Date().toISOString()});
       return id;
     },
-    advanceCreativePanels(projectId) {
+    advanceCreativePanels(projectId,{artifactId}={}) {
       const queued=[];
-      for(const panel of store.read(projectId).creativePanels??[])for(const node of panel.nodes){
+      for(const panel of (store.read(projectId).creativePanels??[]).filter(p=>!artifactId||p.packet.artifactId===artifactId))for(const node of panel.nodes){
         const p=store.read(projectId),existing=p.jobs.find(j=>j.id===node.jobId);
         if(existing){if(existing.status==='queued')queued.push(existing.id);continue;}
         if(!node.dependencies.every(key=>(p.creativeReports??[]).some(r=>r.panelId===panel.id&&r.nodeKey===key)))continue;
@@ -737,7 +737,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       store.command(projectId,{kind:'request-handoff',artifactId,side,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,handoffInput,request},commandId:commandId??randomUUID(),expectedRevision:expectedRevision??project.revision},context);
       return jobId;
     },
-    async execute(projectId,jobId,{retry=false,acquisitionAdmission,simpleStrategyAdmission}={}) {
+    async execute(projectId,jobId,{retry=false,acquisitionAdmission,simpleStrategyAdmission,copyHttpAdmission}={}) {
       const admission=store.read(projectId),isReference=admission.jobs.find(j=>j.id===jobId)?.purpose==='reference';
       if(!isReference)await verifyOrdinaryProject(admission,{executionRoot:root});
       const project=isReference?admission:store.read(projectId),job=project.jobs.find(item=>item.id===jobId);
@@ -778,7 +778,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         if(job.purpose==='handoff'&&project.workflow)await verifyCurrentResearchReaders(store.read(projectId),{executionRoot:root,artifactId:job.targetArtifactId});
         await verifyRegistered(store.read(projectId),job);
         const failureWitness=await diagnosticWitness(store.read(projectId),job);
-        if(simpleStrategyAdmission)store.command(projectId,{kind:'start-job',jobId,attemptId,simpleStrategyHttpRequestId:simpleStrategyAdmission.requestId,commandId:`simple-job-start-${hash(JSON.stringify([projectId,simpleStrategyAdmission.requestId,jobId]))}`,expectedRevision:simpleStrategyAdmission.expectedRevision},{...context,now:new Date().toISOString()});else if(acquisitionAdmission)store.command(projectId,{kind:'start-job',jobId,attemptId,acquisitionHttpRequestId:acquisitionAdmission.requestId,commandId:`acquisition-job-start-${hash(JSON.stringify([projectId,acquisitionAdmission.requestId,jobId]))}`,expectedRevision:acquisitionAdmission.expectedRevision},{...context,now:new Date().toISOString()});else send(projectId,{kind:retry?'retry-job':'start-job',jobId,attemptId,...(failureWitness?{failureWitness}:{})},context);
+        if(copyHttpAdmission)store.command(projectId,{kind:'start-job',jobId,attemptId,copyHttpRequestId:copyHttpAdmission.requestId,commandId:`copy-http-start-${hash(JSON.stringify([projectId,copyHttpAdmission.requestId,jobId]))}`,expectedRevision:copyHttpAdmission.expectedRevision},{...context,now:new Date().toISOString()});else if(simpleStrategyAdmission)store.command(projectId,{kind:'start-job',jobId,attemptId,simpleStrategyHttpRequestId:simpleStrategyAdmission.requestId,commandId:`simple-job-start-${hash(JSON.stringify([projectId,simpleStrategyAdmission.requestId,jobId]))}`,expectedRevision:simpleStrategyAdmission.expectedRevision},{...context,now:new Date().toISOString()});else if(acquisitionAdmission)store.command(projectId,{kind:'start-job',jobId,attemptId,acquisitionHttpRequestId:acquisitionAdmission.requestId,commandId:`acquisition-job-start-${hash(JSON.stringify([projectId,acquisitionAdmission.requestId,jobId]))}`,expectedRevision:acquisitionAdmission.expectedRevision},{...context,now:new Date().toISOString()});else send(projectId,{kind:retry?'retry-job':'start-job',jobId,attemptId,...(failureWitness?{failureWitness}:{})},context);
       }
       catch(error) {
         if(!(error instanceof DomainError)||store.read(projectId).jobs.find(j=>j.id===jobId)?.status!=='queued')throw error;

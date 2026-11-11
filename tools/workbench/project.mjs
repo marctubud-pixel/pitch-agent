@@ -1,3 +1,4 @@
+import {reduceCopyHttp,requireCopyHttpJob} from './simple-copy-http.mjs';
 import {reduceSimpleHttp,requireSimpleHttpJob} from './simple-strategy-http.mjs';
 import {requireAcquisitionHttpJob} from './research-acquisition.mjs';
 import {SIMPLE_STRATEGY_VERSION,createSimpleStrategyBasis} from './seven-stage-strategy.mjs';
@@ -1296,7 +1297,9 @@ function deliveryEnvelopeWithin(evaluation, p,artifactId,sourceContents,consumer
  const lineage=creationLineage(p,a),ids=new Set(lineage.map(x=>x.id)),researchInputs=inputLineage(p,a).filter(item=>item.stage==='research');
  const loaded=id=>{const item=sourceContents.find(x=>x.artifactId===id),ref=artifact(p,id);requireValue(item&&hash(item.contentText)===ref.contentHash,'CONTENT_HASH_MISMATCH','Original source bytes required');let parsed;try{parsed=JSON.parse(item.contentText);}catch{fail('INVALID_OWNER_EDGE','Original source JSON required');}requireValue((parsed.strategyContractVersion===SIMPLE_STRATEGY_VERSION&&ref.claims.length===0&&parsed.claims===undefined)||isDeepStrictEqual(parsed.claims,ref.claims.map(({verification,...c})=>c))||isDeepStrictEqual(parsed.claims,ref.claims),'CONTENT_HASH_MISMATCH','Original source claims changed');return {artifactId:id,contentText:item.contentText,content:parsed,contentHash:ref.contentHash};};
  const source=loaded(a.id),original=p.jobs.find(j=>j.outputVersionIds?.includes(a.id)&&(!j.purpose||j.purpose==='stage'));
- const attempt=original?.attempts.find(t=>t.status==='succeeded'&&isDeepStrictEqual(t.receipt,a.executionReceipt));
+ const recovered=a.strategyContract?.version===SIMPLE_STRATEGY_VERSION&&a.reconciliationId?(p.reconciliations??[]).find(r=>r.id===a.reconciliationId&&r.artifactId===a.id&&r.jobId===original?.id&&r.validatedOutputHash===a.contentHash&&r.originalReceiptHash===hash(JSON.stringify(a.executionReceipt))&&r.rawOutputHash===hash(a.executionReceipt.responseText)&&r.inputPacketHash===a.executionReceipt.inputPacketHash):null;
+ if(a.reconciliationId){requireValue(recovered,'INVALID_OWNER_EDGE','Exact SIMPLE original recovery required');const commands=Object.values(p.processedCommands).map(raw=>JSON.parse(raw)).filter(c=>c.kind==='reconcile-stage'&&c.reconciliationId===recovered.id);requireValue(commands.length===1&&commands[0].artifactId===a.id&&commands[0].jobId===original.id&&commands[0].attemptId===recovered.attemptId&&commands[0].contentHash===a.contentHash&&commands[0].payloadRef===a.payloadRef&&p.audit.some(x=>x.commandId===commands[0].commandId&&x.kind==='reconcile-stage'&&x.actorId===recovered.context.actorId),'INVALID_OWNER_EDGE','Original recovery command and audit required');}
+ const attempt=original?.attempts.find(t=>(t.status==='succeeded'||recovered&&t.status==='awaiting_reconciliation'&&t.id===recovered.attemptId)&&isDeepStrictEqual(t.receipt,a.executionReceipt));
  requireValue(original?.status==='succeeded'&&attempt&&sameExecutor(attempt.executor,a.author)&&isDeepStrictEqual(original.inputVersionIds,a.inputVersionIds),'INVALID_OWNER_EDGE','Exact successful author attempt and input dependencies required');
  checkReceipt(original,attempt,a.executionReceipt);
  const originalInputs=original.inputVersionIds.map(id=>({id,stage:artifact(p,id).stage,content:loaded(id).content,...(original.task.upstreamReviewConstraints?.[id]?{reviewConstraints:original.task.upstreamReviewConstraints[id]}:{})}));
@@ -1654,6 +1657,7 @@ export function applyCommand(project, command, context) {
     case 'commit-owner-edge': {
       const edge=p.ownerEdges.find(e=>e.id===c.edgeId);requireValue(edge&&context.actorType==='agent','INVALID_OWNER_EDGE','Trusted registered edge required');if(edge.commit)break;
       ownerEdgeCurrentWithin(new WeakMap(), p,edge);const a=targetWithin(new WeakMap(), p,edge.envelope.source.artifactId);eligibleWithin(new WeakMap(), p,a);requireValue(requireStrategyOwnersWithin(new WeakMap(), p,a).id===edge.id,'STALE_OWNER_EDGE','Exact accepted generation required');
+      if(p.workflow)requireValue(a.strategyContract?.version===SIMPLE_STRATEGY_VERSION&&Object.keys(STAGES).indexOf(currentPolicy(p).authorizedThrough)>=Object.keys(STAGES).indexOf('copy'),'SIMPLE_COPY_AUTHORIZATION_REQUIRED','Only current explicitly authorized SIMPLE owner commit may queue copy');
       const jobId=`copy-${edge.id}`,task=ownerCopyTask(p,edge),binding=structuredClone(edge.envelope.consumerBinding);
       requireValue(isDeepStrictEqual(c.task,task)&&isDeepStrictEqual(c.binding,binding),'INVALID_OWNER_EDGE','Exact frozen copy job specification required');
       buildStageRequest({stage:'copy',brief:task.brief,inputArtifacts:[{id:a.id,stage:'strategy',content:edge.envelope.source.content,reviewConstraints:task.upstreamReviewConstraints[a.id]}],sourceRecords:task.sourceRecords,visualCatalogue:task.visualCatalogue,copyContractVersion:COPY_CONTRACT_VERSION});
@@ -2140,10 +2144,12 @@ export function applyCommand(project, command, context) {
       requireValue(context.actorType==='agent'&&!['layout','final_review'].includes(job.stage)&&validOrdinaryHttpLocator(c.locator,attempt.id)&&!attempt.httpAttemptLocator,'INVALID_HTTP_LOCATOR','Exact unique internal HTTP attempt locator required');
       attempt.httpAttemptLocator=structuredClone(c.locator);break;
     }
+    case 'copy-http-request': reduceCopyHttp(p,c,context);break;
     case 'simple-strategy-http-request': reduceSimpleHttp(p,c,context);break;
     case 'start-job':
     case 'retry-job': {
       const job = p.jobs.find(j => j.id === c.jobId);
+      if(c.copyHttpRequestId)requireCopyHttpJob(p,c.copyHttpRequestId,job);
       if(c.simpleStrategyHttpRequestId)requireSimpleHttpJob(p,c.simpleStrategyHttpRequestId,job);
       if(c.acquisitionHttpRequestId)requireAcquisitionHttpJob(p,c.acquisitionHttpRequestId,job);
       requireValue(job?.purpose!==LAYOUT_PURPOSE&&!['layout','final_review'].includes(job?.stage),'LAYOUT_EXECUTION_UNAVAILABLE','Dedicated native executor is not implemented; generic dispatch cannot replace it');

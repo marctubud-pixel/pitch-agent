@@ -19,7 +19,7 @@ export function requireResearchWorkflow(project) {
 export function assertWorkflowStage(project, backendStage) {
  if (!project?.workflow) return; // Existing snapshots retain their existing domain guards.
  requireResearchWorkflow(project);
- if (backendStage!=='research'&&!(backendStage==='strategy'&&project.policies?.at(-1)?.authorizedThrough&&project.policies.at(-1).authorizedThrough!=='research')) fail('SEVEN_STAGE_ROUTE_REQUIRED', 'This workflow currently permits research production only');
+ if (backendStage!=='research'&&!(backendStage==='copy'&&(project.ownerEdges??[]).some(e=>e.commit&&e.envelope.source.artifactId===project.activeByStage.strategy&&e.envelope.source.content.strategyContractVersion===SIMPLE_STRATEGY_VERSION))&&!(backendStage==='strategy'&&project.policies?.at(-1)?.authorizedThrough&&project.policies.at(-1).authorizedThrough!=='research')) fail('SEVEN_STAGE_ROUTE_REQUIRED', 'This workflow currently permits research production only');
 }
 export function workflowView(project, {researchWorkflow} = {}) {
  let supported = false;

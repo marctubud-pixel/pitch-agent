@@ -1,0 +1,29 @@
+{
+  "rejectedCommandId": "cmd-1ab9a937-9d7e-42f1-962f-dec1e97c3428",
+  "notRegistered": true,
+  "oldJobs": [
+    {
+      "id": "creative-job-d99bba88d4e49950e75e05de06101aa6f8d24c03d2ce1048cc3dfc1c3f9cf147",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "creative-job-d7f4ac32baafb2d9953a8f410b0976f39fe98b8945f5221f4122817e2ace94a2",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "creative-job-02fa2cc4f8d5c17a0bca551be89ee20eb5c00258314291b6e5062e57d5f18504",
+      "status": "succeeded",
+      "attempts": 1
+    },
+    {
+      "id": "creative-job-aa2827fb8e6cb3dcbf767391580b27da6315c723af21d51be18f922b253a979b",
+      "status": "succeeded",
+      "attempts": 1
+    }
+  ],
+  "unknown0": true,
+  "nativeRevision": 100,
+  "note": "New browser has no retained old tab session journal; no injection or replay. Original failure preserved."
+}

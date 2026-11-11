@@ -1,0 +1,101 @@
+# 三方向文案 · 独立UI审核
+
+2026-11-12。最终独立UI复验完成：系统角色/phase中文标题及评审待完成误译两项已修复复验，三卡视觉基线保持。以下分别保存before、真实排队暂停窗口与17报告终态；不把4份首读、模型评分或截图写成质量通过、人类选案或客户批准。
+
+## 输入与独立范围
+
+规范基线1.11.0，themes页面1.1.0、copy-owner1.0.1、simple-copy合同1.0.0及项目固定`skills/ui-review/SKILL.md`与20原则。已读取当前CopyWorkflowPanel及相关HTTP阶段投影。
+
+唯一对象为`../simple-copy-r1/HANDLE.json`指定新包装合成工程R1，API4200/Vite4444，项目`project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689`。before revision100，23jobs。creator执行策略双owner、copy生成/全文核验、原body丢回执核回与部分评审；独立审核未参与创作/实现/生产，只有GET和独立临时Chrome读取、details展开及主题切换。
+
+1280×1000浅色、910×1000深色，DPR1、默认缩放、locale zh-CN，networkidle/font ready后截图；禁止业务POST的路由守卫实际拦截数0。未改源码/DB/Git或启停服务，未点击执行、核回、人工gate或选案。
+
+## before实证与退修
+
+| 问题、位置及影响 | 原则 | 证据与动作条件 | 状态 |
+| --- | --- | --- | --- |
+| 原报告summary为`copy · score_first_read`、`brand · score_first_read`及对应`opposition_first_read`，系统标题仍英文enum，用户难以识别四岗职责与评审阶段。原件英文内容应保留身份。 | 01、03、05 | `before-result.json.summaries`和`before-themes-expanded-1280-light.png`，开发映射已知role/phase为中文而不改原报告。 | 已修复，revision140及163独立复验 |
+| stage header与overview为“需要修改”，native copy却为awaiting_release、仅CREATIVE_PANEL_INCOMPLETE，creativeDecision=pending/Panel phases incomplete。未完成评审不能直接推出稿件需改。 | 15、20 | `before-workspace.json.view.stages`与主体/概览图；区分评审待完成与真实需修，不放松原生门禁。 | 已修复，在仍有真实queued的revision140实证进行中 |
+
+before实际creativeReports四份为文案(copy)与品牌(brand)的score_first_read、opposition_first_read各一份，排队任务6；不是17份完成，creator遇422后的后续执行不由独立审核重派。
+
+## 已测基线
+
+三卡均有方向名、区别说明、主副文；原英文合成稿保持原文。三组策略推导与依据可展开，原稿、双负责人2份、全文核验报告及四份原评可读。主层任务ID已收在“本轮任务记录”里，没有发现rawjob技术流占据主层，暂不建议重设计。
+
+当前阶段为第4/7文案与主题，本地操作身份与非客户批准提示存在，overview也正确定位文案。顶部策略仍进行中是否需业务完成由原合同判，本审核不自行设done。
+
+1280浅色主体/展开、910深色展开、overview四个状态document.scrollWidth均等于视口，main越界列表为空。0POST/被拦截变更/pageerror/console error/HTTP≥400；before两次snapshot.project完全相等，revision100/23jobs不变。Enter可展开原件，Tab到“文案原稿”summary，outline为rgb(10,56,184) solid 2px。
+
+Action设计使用aria-disabled保持键盘可达，不能把DOM.disabled=false解释为可执行。本次看到核验/登记按钮灰禁与说明，继续独立评审入口可用；独立没有点击，排程422的原因/修复由开发及creator承担。
+
+证据目录`../simple-copy-independent/`；脚本`check.mjs`实际退出0，before文件单独保存，后续after不覆盖它。实际截图：[浅色主体](../simple-copy-independent/before-themes-1280-light.png)、[浅色展开](../simple-copy-independent/before-themes-expanded-1280-light.png)、[深色展开](../simple-copy-independent/before-themes-expanded-910-dark.png)、[概览](../simple-copy-independent/before-overview-1280-light.png)。
+
+## 20项原则基线处置
+
+| # | 处置 | 依据/限制 |
+| --- | --- | --- |
+| 01 | 需修复 | 系统role/phase标题英文，原稿英文保留。 |
+| 02 | 无法验证 | 本次未生成灰度诊断图。 |
+| 03 | 需修复 | 三卡主副文层级明确；报告阶段标题待中文映射。 |
+| 04 | 已满足 | 当前文案导航蓝色，原报告与依据默认折叠。 |
+| 05 | 需修复 | 系统enum标签需中文，并保留原报告身份。 |
+| 06 | 已满足（已测） | 继续独立评审是当前动作；重复登记灰禁，实际未执行。 |
+| 07 | 已满足 | 三卡分组与留白沿现有tokens，主层未被原JSON淹没。 |
+| 08 | 已满足 | 目标桌面及910边界无横溢。 |
+| 09 | 已满足 | 三组依据分别归属对应方向。 |
+| 10 | 已满足 | 中文桌面1280与910实测，不扩手机模式。 |
+| 11 | 已满足（样本） | 当前主副文可读，原JSON换行未丢失；放大及超长真实稿未验。 |
+| 12 | 已满足 | 当前方向编号、标题与原件summary未见错位遮挡。 |
+| 13 | 已满足 | 原研究蓝色标题带与三卡主题体系保持。 |
+| 14 | 无法验证（数值） | 当前人审可读，after待补正文/背景局部颜色，不写整页合规。 |
+| 15 | 需修复 | CREATIVE_PANEL_INCOMPLETE误译需要修改。 |
+| 16 | 不适用 | 既有导航和限制边界充分，无需增强调线。 |
+| 17 | 不适用 | 无照片/视频叠字。 |
+| 18 | 不适用 | 三张为原生文字卡，无待选择位图素材。 |
+| 19 | 已满足 | 原边界未过度更改，summary键盘焦点可见。 |
+| 20 | 需修复 | 评审待完成应与内容需修分开；未知/历史/人工gate未触发，不算通过。 |
+
+未验证完整17节点后的最终状态、真实异议解决、校准质量、原票逐份物理重验、人类选案、人工gate、unknown/历史、视觉至PPT与客户批准。GET `originalsVerified:false`不能冒称原票全量物理验证。
+
+## 同案排队窗口复验 · revision140
+
+creator完成当前实际POST后明确暂停自有驱动，flight为空，12份creativeReports、4个queued、unknown0。独立仅读取暂停窗口，没有自行暂停/恢复服务或creator。本轮project前后完全相等，revision140/29jobs。
+
+`queued-after-labels.json`及`queued-after-labels-1280-light.png`实际显示文案/品牌/目标用户模拟/传播的独立首读、评分、异议方首读中文summary；原报告内容保持原文。Stage header为进行中/本地操作，CREATIVE_PANEL_INCOMPLETE不再误译需改。已核两项UI修正，但12份不等于17完成。
+
+另实跑缓存返回刷新探针：先打开当前文案页，再去概览后返回，原GET只延迟1000ms，不改响应JSON。`refresh-settled-result.json`及`refresh-settled-*.png`证实“继续独立评审”稳定时aria-disabled不存在，GET在途期间全部写按钮aria-disabled=true，原GET消费和投影完成后该当前入口恢复可用，其他重复登记保持true。0POST、0变更拦截、0pageerror，同案project前后相等。
+
+第一次`refresh-result.json`仅在response事件后即采样，因此afterButtons仍true；响应到达不等于query完成。原证据保留，补正探针明确等待可用状态，最终结论以上述settled结果为准。此为采样时机补正，不是另一次源码修复。首次/补正探针各只延迟一次原GET，均未发POST。未触发refreshError分支，不宣称失败刷新后的行为已实测。
+
+## 最终同案只读after · revision163
+
+creator完成原剩余任务并明确停止业务写入后，独立脚本`final.mjs`做窄复验。首轮Chrome `goto(networkidle)`30秒超时，属于等待障碍，未形成UI失败结论；改为DOMContentLoaded加真实文案region可见、字体ready后完成。未重新生产、重派或改JSON。最终脚本退出0。
+
+- `final-workspace.json`为17份creativeReports、queued0、unknown0；`final-result.json.summaries`实际显示文案/品牌/目标用户模拟/传播四岗各自独立首读、评分、异议方首读、对应异议，以及原裁定报告。系统标题全中文，原件正文保留原语言。
+- [最终1280浅色主层和报告分区](../simple-copy-independent/final-17-themes-1280-light.png)显示三卡与原稿/SHA、双方负责人2份、全文核验、17节点分区。文案原稿用键盘Enter展开后实际读取，与当前workspace.content完全一致，再折叠；复制/人类选案未在本次窄复验执行。
+- 三卡artifactId `c4fdfc28-3fdb-435b-818c-c63c7c3a6309`、SHA256 `5b15a316efe64c4305c44fd80c3c43fbec0f458bcf2b13fa030c415bc5073130`与before完全相等，content也相等；creator后续评审没有改写三方向。这里不是把不同稿件当同条件样式改善。
+- [最终910深色三卡局部](../simple-copy-independent/final-17-cards-910-dark.png)原文完整可读；主副文实际色rgb237/237/234、卡内背景rgb11/26/82，局部文字对比13.944783192701276:1。主文26px/27.3px、副文14px/18.9px。1280主层和910局部页面scrollWidth分别等于视口，无横向溢出；非整页WCAG声明。
+- 当前页是第4/7文案与主题、本地操作、未选案。最终header显示“需要修改”，native copy为awaiting_release、blockedReasons为REFERENCE_OWNERS_REQUIRED，此时已不是before的CREATIVE_PANEL_INCOMPLETE。报告原样保留该最终业务状态，不自行改done或宣称后续owner已完成。
+- native creativeDecision.status为pass；原project.decisions同时保留human=false、outcome=reject、creativeStatus=pass、groupVerdict=pass。17份执行完成、原生综合字段与实际decision outcome分别记录，不以评分/截图覆盖reject，不把原AI裁定记作人类选择。
+- final pass内project前后完全相等，revision163/30jobs；0POST、0变更拦截、0pageerror、0console error、0HTTP≥400。见`final-snapshot-before.json`、`final-snapshot-after.json`。before100→暂停140→最终163的变化来自creator实际推进，不冒称跨生产全过程project不变。
+
+20原则最终处置增量：01/03/05的中文系统标题问题已修复并复验；15/20在仍有queued的revision140已证明进行中/评审待完成，最终另保留REFERENCE_OWNERS_REQUIRED状态；14补充上述三卡局部实测对比达标。其余原则沿基线证据，不重做整套检查。02灰度、refreshError、unknown/历史/人工gate、200%放大、真实消费者/客户批准、视觉至PPT和原票逐份物理重验继续未验证。
+
+复盘：本轮两项页面问题均由当前真实UI及native状态共同证实；采用中文系统标签与区分评审pending即可保留既有三卡。延迟GET必须等query消费/投影完成再断言按钮恢复，response头到达不足以证明状态已稳定。未扩视觉改版或Skill规则。
+
+## 最后窄复验 · 原R1只读重开与状态文案修正
+
+开发统筹重新以原数据库/原件启动4200/4444，`simple-copy-r1/READBACK-HANDLE.json`明确execution关闭、无新fixture/run/job。独立只读GET及Chrome窄复验，未操作服务、数据库或生产。`readback.mjs`与`readback-header.mjs`均退出0；新证据使用`readback-*`，此前needs_revision/REFERENCE_OWNERS_REQUIRED观察及截图全部保留，不倒写历史。
+
+实际[展开的阶段说明截图](../simple-copy-independent/readback-header-explanation-1280-light.png)显示当前第4/7文案与主题“进行中／本地操作”，说明精确为“文案与独立评审记录已保存，待交接到视觉开发。”七阶段导航的策略现为“完成”、视觉为“未开始”。这是对原native released策略和REFERENCE_OWNERS_REQUIRED的展示修正，未改native门槛或签视觉交接。
+
+全文核验及独立评审两按钮均aria-disabled=true，当前实际可见禁用原因分别为“本版全文核验报告已保存，可在原件记录中阅读。”与“本版独立评审已完成，可在原件记录中阅读。”不再用缺配置作为已完成动作的默认解释。见[1280浅色读回图](../simple-copy-independent/readback-corrected-1280-light.png)及`readback-result.json.body/buttons`。原17报告中文分区保持。
+
+`readback-snapshot-before.json`、`readback-snapshot-after.json`的project完全相等，且与前次`final-workspace.json.project`也完全相等：revision163、30jobs。17份creativeReports内容、三方向原稿artifactId/SHA/content均与前次final完全一致。当前capability.executionAllowed=false如实记录，不冒称原创作执行服务仍live。独立本次0POST、0被拦截变更、0pageerror/console error/HTTP≥400，910页面scrollWidth=910。
+
+### 910 WorkBot客观位置
+
+浮动WorkBot未隐藏，也未点击关闭或改样式。在默认深色910×1000、scrollY=0时，第三卡标题“A conversation break”的视口矩形为x628.65625..876、y770.0625..835.0625；实际可见launcher及子元素与该标题的交集为空。对三卡执行正常`scrollIntoViewIfNeeded`后scrollY=203，标题y567.0625..632.0625，交集仍为空。两张真实视口图分别为[初始位置](../simple-copy-independent/readback-910-dark-initial.png)、[自然阅读位置](../simple-copy-independent/readback-910-dark-cards-natural.png)。WorkBot在卡片右下部仍可见，不能把“标题未遮挡”扩大为任意滚动位置、鼠标悬停提示气泡或其他内容永不遮挡；本次只客观记录这两个实际状态。
+
+最新结论：本次三项展示修正已在原case独立真实复验。旧最终“需要修改／策略进行中”的截图属于修正前观察；最新展示以本节证据为准。native原decision中reject/pass字段差异与human=false保持，UI修正不构成人类选案、质量批准或业务放行。

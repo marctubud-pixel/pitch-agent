@@ -1,0 +1,164 @@
+{
+  "time": "2026-11-11T21:45:28.914Z",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4200/api/v1/capabilities",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow",
+      "method": "GET"
+    }
+  ],
+  "mutations": [],
+  "errors": [],
+  "consoleErrors": [],
+  "httpErrors": [],
+  "summaries": [
+    "策略推导与依据",
+    "策略推导与依据",
+    "策略推导与依据",
+    "原稿、双负责人和独立核验记录",
+    "文案原稿",
+    "负责人原报告 1",
+    "负责人原报告 2",
+    "文案全文核验原报告",
+    "文案 · 独立首读",
+    "品牌 · 独立首读",
+    "目标用户模拟 · 独立首读",
+    "传播 · 独立首读",
+    "文案 · 评分",
+    "品牌 · 评分",
+    "目标用户模拟 · 评分",
+    "传播 · 评分",
+    "文案 · 异议方首读",
+    "品牌 · 异议方首读",
+    "目标用户模拟 · 异议方首读",
+    "传播 · 异议方首读",
+    "文案 · 对应异议",
+    "品牌 · 对应异议",
+    "目标用户模拟 · 对应异议",
+    "传播 · 对应异议",
+    "原裁定报告",
+    "原生综合门槛判断（不代表人类选案）"
+  ],
+  "header": "第 4/7 阶段 ·\n\n文案与主题\n需要修改\n本地操作\n: 文案正文、核验与评审记录来自本地服务；模拟评审不代表客户批准。\n阶段说明与评审\n\n三个机制不同的方向，各由一句文案引领，并经独立评估。\n\n文案原稿、全文核验、四岗评分、异议与裁定分别保存；未选案。\n\n1\n简报与任务\n: 完成\n2\n研究\n: 完成\n3\n策略\n: 进行中\n4\n文案与主题\n: 需要修改\n5\n视觉开发\n: 未开始\n6\n版式\n: 未开始\n7\n终审与交付\n: 未开始",
+  "cards": [
+    "方向 1A quiet tableDifferent expression mechanism 0Sit togetherLeave space around the table for conversation.策略推导与依据Bounded exploratory phrasing.A proposed creative mechanism, never an efficacy claim.引用身份：无外部事实引用；不据此声明效果。",
+    "方向 2A carried invitationDifferent expression mechanism 1Bring a momentUse a carried invitation as a creative metaphor.策略推导与依据Bounded exploratory phrasing.A proposed creative mechanism, never an efficacy claim.引用身份：无外部事实引用；不据此声明效果。",
+    "方向 3A conversation breakDifferent expression mechanism 2Leave time to talkImagine a pause that makes room to talk.策略推导与依据Bounded exploratory phrasing.A proposed creative mechanism, never an efficacy claim.引用身份：无外部事实引用；不据此声明效果。"
+  ],
+  "cardCount": 3,
+  "original": "{\n  \"outputKind\": \"copy\",\n  \"status\": \"complete\",\n  \"title\": \"Synthetic bounded strategy\",\n  \"summary\": \"An exploratory visual direction.\",\n  \"sections\": [\n    {\n      \"heading\": \"Direction\",\n      \"body\": \"Explore a quiet shared table as a creative hypothesis. Consumer preference remains unknown.\",\n      \"evidenceIds\": []\n    }\n  ],\n  \"claims\": [],\n  \"gaps\": [\n    \"No consumer validation.\"\n  ],\n  \"directions\": [\n    {\n      \"id\": \"steady\",\n      \"title\": \"A quiet table\",\n      \"slogan\": \"Sit together\",\n      \"supportingCopy\": \"Leave space around the table for conversation.\",\n      \"creativeExplanation\": \"A proposed creative mechanism, never an efficacy claim.\",\n      \"rationale\": \"Bounded exploratory phrasing.\",\n      \"differentiation\": \"Different expression mechanism 0\",\n      \"evidenceIds\": []\n    },\n    {\n      \"id\": \"product\",\n      \"title\": \"A carried invitation\",\n      \"slogan\": \"Bring a moment\",\n      \"supportingCopy\": \"Use a carried invitation as a creative metaphor.\",\n      \"creativeExplanation\": \"A proposed creative mechanism, never an efficacy claim.\",\n      \"rationale\": \"Bounded exploratory phrasing.\",\n      \"differentiation\": \"Different expression mechanism 1\",\n      \"evidenceIds\": []\n    },\n    {\n      \"id\": \"user\",\n      \"title\": \"A conversation break\",\n      \"slogan\": \"Leave time to talk\",\n      \"supportingCopy\": \"Imagine a pause that makes room to talk.\",\n      \"creativeExplanation\": \"A proposed creative mechanism, never an efficacy claim.\",\n      \"rationale\": \"Bounded exploratory phrasing.\",\n      \"differentiation\": \"Different expression mechanism 2\",\n      \"evidenceIds\": []\n    }\n  ]\n}",
+  "originalMatches": true,
+  "lightLayout": {
+    "width": 1280,
+    "scrollWidth": 1280
+  },
+  "darkLayout": {
+    "width": 910,
+    "scrollWidth": 910
+  },
+  "styles": [
+    {
+      "text": "Sit together",
+      "color": "rgb(237, 237, 234)",
+      "background": "rgb(11, 26, 82)",
+      "fontSize": "26px",
+      "lineHeight": "27.3px"
+    },
+    {
+      "text": "Leave space around the table for conversation.",
+      "color": "rgb(237, 237, 234)",
+      "background": "rgb(11, 26, 82)",
+      "fontSize": "14px",
+      "lineHeight": "18.9px"
+    },
+    {
+      "text": "Bring a moment",
+      "color": "rgb(237, 237, 234)",
+      "background": "rgb(11, 26, 82)",
+      "fontSize": "26px",
+      "lineHeight": "27.3px"
+    },
+    {
+      "text": "Use a carried invitation as a creative metaphor.",
+      "color": "rgb(237, 237, 234)",
+      "background": "rgb(11, 26, 82)",
+      "fontSize": "14px",
+      "lineHeight": "18.9px"
+    },
+    {
+      "text": "Leave time to talk",
+      "color": "rgb(237, 237, 234)",
+      "background": "rgb(11, 26, 82)",
+      "fontSize": "26px",
+      "lineHeight": "27.3px"
+    },
+    {
+      "text": "Imagine a pause that makes room to talk.",
+      "color": "rgb(237, 237, 234)",
+      "background": "rgb(11, 26, 82)",
+      "fontSize": "14px",
+      "lineHeight": "18.9px"
+    }
+  ],
+  "projectUnchanged": true,
+  "revision": 163,
+  "jobCount": 30,
+  "postCount": 0,
+  "reviewCount": 17,
+  "queued": 0,
+  "unknown": 0,
+  "creativeDecision": {
+    "status": "pass",
+    "reasons": []
+  },
+  "artifactId": "c4fdfc28-3fdb-435b-818c-c63c7c3a6309",
+  "contentHash": "5b15a316efe64c4305c44fd80c3c43fbec0f458bcf2b13fa030c415bc5073130",
+  "sameOriginalAsBefore": true
+}

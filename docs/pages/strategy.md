@@ -1,6 +1,6 @@
 # 策略 · 页面开发规格
 
-规范版本：1.1.0。页面ID：`strategy`。状态：已确认要求汇编；本次整理待核对。负责人见[strategy-owner](../agents/strategy-owner.md)。
+规范版本：1.2.0。页面ID：`strategy`。状态：已确认要求汇编；本次整理待核对。负责人见[strategy-owner](../agents/strategy-owner.md)。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 
@@ -61,4 +61,10 @@
 
 未配置、默认research授权、研究未放行、历史及原件错误均显示原因。只有当前研究全部前置、原release与显式创建授权成立，才允许策略页明确生成。导航只读，不自动生成；游客不能执行或恢复写操作。报告保存保持待核验/待接收，原生`needs_acceptance`不表示stage complete或客户批准。
 
-原body待核、native unknown和已核历史分别呈现。策略及核验原结果只恢复仍当前的已保存IO，历史或缺IO不重派。当前未完成策略双owner到copy及策略修订，不能以保存按钮签通过。接口、创建授权及原件边界见[简洁策略运行合同](../development/simple-strategy.md)。实际UI范围另按原生核验记录登记。
+原body待核、native unknown和已核历史分别呈现。策略及核验原结果只恢复仍当前的已保存IO，历史或缺IO不重派。策略双负责人到copy已按受限接口接线，策略修订仍待接，不能以保存按钮签通过。接口、创建授权及原件边界见[简洁策略运行合同](../development/simple-strategy.md)。实际UI范围另按原生核验记录登记。
+
+## 显式交给文案负责人
+
+当前已核SIMPLE可在本页提交双方负责人接收，后续按当前工作阶段继续交接与文案生产。双方原报告保留在详情，不由保存稿件或导航自动生成接受。
+
+若项目要求strategy人工节点，先显示**人工采用当前策略**。具有`decide/strategy`权限的人填写理由，明确采用已核同版artifact及SHA后才可继续。该记录调用原生adopt-creative，不是release-stage，不表示客户批准。游客只读。当前文案接续及unknown边界见[文案运行合同](../development/simple-copy.md)。

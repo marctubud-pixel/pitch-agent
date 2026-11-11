@@ -45,4 +45,4 @@ npm run check
 
 七阶段运行协议与受限研究接入见[当前接续](docs/development/seven-stage-research.md)。新项目与旧记录隔离；r7方法和局部读者实践已存在，当前同版正文首读、实际修订复查及研究交接已接入，见[读者合同](docs/development/research-reader.md)。[自动采集](docs/development/research-acquisition.md)已接受限HTTP和当前研究页，实际范围见[本轮核验](docs/development/research-acquisition-verification-20261112.md)；后续仍继续接线，不要求重做旧研究或Skill。
 
-已放行研究到[简洁三板块策略](docs/development/simple-strategy.md)、独立全文核验与原请求恢复已受限接线，实际页面、失败和范围见[本轮核验](docs/development/simple-strategy-verification-20261112.md)。双负责人到文案、视觉至PPT及两整链继续分包推进，默认不执行模型。
+已放行研究到[简洁三板块策略](docs/development/simple-strategy.md)、独立全文核验与原请求恢复已受限接线，实际页面、失败和范围见[策略核验](docs/development/simple-strategy-verification-20261112.md)。[文案接续](docs/development/simple-copy.md)现接实际双负责人、唯一三方向文案、全文核验和原17节点评审，见[文案核验](docs/development/simple-copy-verification-20261112.md)。视觉至PPT及包装/KV两整链继续分包推进，默认不执行模型。

@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {prepare} from './simple-copy-http-fixture.mjs';
+test('explicit owner source restriction never substitutes the later active strategy',async t=>{const f=await prepare(t);try{await f.executor.advanceOwnerEdges(f.id,{onlyArtifactId:'not-the-current-strategy'});}catch(error){assert.equal(typeof error.code,'string');}assert.equal(f.store.read(f.id).ownerEdges?.length??0,0);assert.equal(f.packets.length,0);});

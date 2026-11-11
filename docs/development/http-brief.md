@@ -1,6 +1,6 @@
 # 本地简报HTTP合同与联调
 
-规范版本：1.5.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
+规范版本：1.6.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
 
 ## 启动与数据
 
@@ -21,7 +21,7 @@ npm run dev:http
 
 前端先验证受支持的brief-v1默认模式或显式research-v1能力才写入，实际握手前显示未接通。项目、概览、任务卡及七阶段状态从同一后端快照投影；没有封面就显示空态，没有研究或创意产物就保持未开始。确认简报会使导航指向研究，但不创建研究任务。当前七阶段项目允许已接研究记录及严格绑定bridge的本地PDF job（默认queued零尝试，显式解析后按真实attempt及原件身份投影）；采集任务仅按技术账本、原generation与固定任务集合窄投影；其他旧生产链仍拒绝映射，避免把旧执行显示为当前七阶段。
 
-旧项目继续保留无workflow的历史身份，新建项目使用proposal-seven-v1，研究原件及来源接入范围见上述接续。此为单机开发服务，原生记录作者固定`local-operator`，不是前端所选人类或Agent身份，也不是生产账号鉴权。前端本地游客权限仍生效，服务端多用户授权另行实现。助手、协作写入、模式更新和后续生产动作明确未接入。Brief文本提取沿用本地实际解析能力。
+旧项目继续保留无workflow的历史身份，新建项目使用proposal-seven-v1，研究原件及来源接入范围见上述接续。此为单机开发服务，原生记录作者固定`local-operator`，不是前端所选人类或Agent身份，也不是生产账号鉴权。前端本地游客权限仍生效，服务端多用户授权另行实现。助手、协作写入、模式更新及视觉至交付生产动作未接入。Brief文本提取沿用本地实际解析能力。
 
 ## 同版与重试
 
@@ -65,3 +65,9 @@ GET `projects/:id/research-acquisition`及POST其`start`、`step`、`reconcile`�
 GET `projects/:id/simple-strategy`和POST其`continue`、`verify`、`reconcile`继续使用128KiB、严格字段、方法、Host、Origin及query守卫。技术账本绑定原body、唯一job与当前卡/policy/研究release/问题计划和binding；actual claim核捕获revision，不重派unknown。正文读取仅额外开放SIMPLE合同策略，不放开任意stage。
 
 服务器创建授权默认research，可显式为新工程项目选择final_review，公共创建body无此字段。当前原IO恢复与recoveredBy、历史/缺IO拒绝及同revision包络见[简洁策略合同](simple-strategy.md)。保存稿件不签策略双方接收或copy完成。
+
+## 策略至文案六接口
+
+当前新增GET `projects/:id/copy-workflow`，及POST `strategy-continuations`、`simple-strategy/confirm`、`copy-workflow/step`、`copy-workflow/verify`和`copy-workflow/review`。严格字段与128KiB、Host、Origin、query、同revision包络继续沿用。固定step只执行原1至4个job，unknown不重派。
+
+人工confirm单独使用当前策略artifact、contentHash和reason，服务端humanContext调用adopt-creative，前端decide/strategy与workflow权限分开。GET报告明确originalsVerified=false。完整字段、journal重放、17节点绑定及未接范围见[文案运行合同](simple-copy.md)。

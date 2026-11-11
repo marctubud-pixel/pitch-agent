@@ -1,0 +1,172 @@
+{
+  "time": "2026-11-11T22:14:08.253Z",
+  "handle": {
+    "pid": 24792,
+    "backendPort": 4200,
+    "frontendPort": 4444,
+    "projectId": "project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+    "dbPath": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-FyRazA/db",
+    "rootDir": "/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-FyRazA",
+    "scope": "Read-only final UI correction on original completed synthetic copy R1; execution disabled, no new fixture/run/job."
+  },
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4200/api/v1/capabilities",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4200/api/v1/projects/project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689/copy-workflow",
+      "method": "GET"
+    }
+  ],
+  "mutations": [],
+  "errors": [],
+  "consoleErrors": [],
+  "httpErrors": [],
+  "overlapStates": [
+    {
+      "name": "readback-910-dark-initial",
+      "scrollY": 0,
+      "viewport": {
+        "width": 910,
+        "height": 1000
+      },
+      "title": {
+        "x": 628.65625,
+        "y": 770.0625,
+        "width": 247.34375,
+        "height": 65,
+        "top": 770.0625,
+        "right": 876,
+        "bottom": 835.0625,
+        "left": 628.65625
+      },
+      "text": "A conversation break",
+      "overlaps": [],
+      "botVisible": true,
+      "scrollWidth": 910
+    },
+    {
+      "name": "readback-910-dark-cards-natural",
+      "scrollY": 203,
+      "viewport": {
+        "width": 910,
+        "height": 1000
+      },
+      "title": {
+        "x": 628.65625,
+        "y": 567.0625,
+        "width": 247.34375,
+        "height": 65,
+        "top": 567.0625,
+        "right": 876,
+        "bottom": 632.0625,
+        "left": 628.65625
+      },
+      "text": "A conversation break",
+      "overlaps": [],
+      "botVisible": true,
+      "scrollWidth": 910
+    }
+  ],
+  "header": "第 4/7 阶段 ·\n\n文案与主题\n进行中\n本地操作\n: 文案正文、核验与评审记录来自本地服务；模拟评审不代表客户批准。\n阶段说明与评审\n1\n简报与任务\n: 完成\n2\n研究\n: 完成\n3\n策略\n: 完成\n4\n文案与主题\n: 进行中\n5\n视觉开发\n: 未开始\n6\n版式\n: 未开始\n7\n终审与交付\n: 未开始",
+  "buttons": [
+    {
+      "text": "登记文案全文核验",
+      "ariaDisabled": "true",
+      "description": "_r_a_"
+    },
+    {
+      "text": "登记四岗独立评审",
+      "ariaDisabled": "true",
+      "description": "_r_b_"
+    }
+  ],
+  "body": "文案与主题\n\nSynthetic bounded strategy\n\nAn exploratory visual direction.\n\n当前任务与策略对应。已保存不代表客户批准或人类选案。四岗为AI独立模拟，不是真实客户或消费者研究。\n\n方向 1\n\nA quiet table\n\nDifferent expression mechanism 0\n\nSit together\n\nLeave space around the table for conversation.\n\n策略推导与依据\n\n方向 2\n\nA carried invitation\n\nDifferent expression mechanism 1\n\nBring a moment\n\nUse a carried invitation as a creative metaphor.\n\n策略推导与依据\n\n方向 3\n\nA conversation break\n\nDifferent expression mechanism 2\n\nLeave time to talk\n\nImagine a pause that makes room to talk.\n\n策略推导与依据\n依据与适用限制\nNo consumer validation.\n登记文案全文核验\n\n本版全文核验报告已保存，可在原件记录中阅读。\n\n登记四岗独立评审\n\n本版独立评审已完成，可在原件记录中阅读。\n\n原稿、双负责人和独立核验记录",
+  "summaries": [
+    "策略推导与依据",
+    "策略推导与依据",
+    "策略推导与依据",
+    "原稿、双负责人和独立核验记录",
+    "文案原稿",
+    "负责人原报告 1",
+    "负责人原报告 2",
+    "文案全文核验原报告",
+    "文案 · 独立首读",
+    "品牌 · 独立首读",
+    "目标用户模拟 · 独立首读",
+    "传播 · 独立首读",
+    "文案 · 评分",
+    "品牌 · 评分",
+    "目标用户模拟 · 评分",
+    "传播 · 评分",
+    "文案 · 异议方首读",
+    "品牌 · 异议方首读",
+    "目标用户模拟 · 异议方首读",
+    "传播 · 异议方首读",
+    "文案 · 对应异议",
+    "品牌 · 对应异议",
+    "目标用户模拟 · 对应异议",
+    "传播 · 对应异议",
+    "原裁定报告",
+    "原生综合门槛判断（不代表人类选案）"
+  ],
+  "projectUnchanged": true,
+  "projectSameAsPriorFinal": true,
+  "revision": 163,
+  "jobCount": 30,
+  "postCount": 0,
+  "reports": 17,
+  "sameOriginal": true,
+  "sameReports": true,
+  "capability": {
+    "protocolVersion": "simple-copy-workspace-v1",
+    "available": false,
+    "executionAllowed": false,
+    "reason": "需完整文案与四岗配置、真实校准和当前SIMPLE双owner；不启动视觉。"
+  }
+}

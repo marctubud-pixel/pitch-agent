@@ -1,0 +1,25 @@
+(node:59935) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"mode":"unknown","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-lAnddl","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves unknown boundary without another dispatch (30001.901541ms)
+{"mode":"questions","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-FcG03u","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves questions boundary without another dispatch (26139.438292ms)
+{"mode":"card","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-Vgahfg","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves card boundary without another dispatch (23716.784875ms)
+{"mode":"policy","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-ue4AoX","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves policy boundary without another dispatch (24437.668417ms)
+{"mode":"binding","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-aFwTrA","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves binding boundary without another dispatch (24674.477125ms)
+{"mode":"tampered","projectId":"project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-QTspk7","scope":"Retained synthetic negative fixture only"}
+✔ fixed copy HTTP preserves tampered boundary without another dispatch (25069.735958ms)
+(node:62660) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ explicit owner source restriction never substitutes the later active strategy (13825.769791ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 168270.215875

@@ -1,0 +1,52 @@
+{
+  "time": "2026-11-11T21:36:22.871Z",
+  "mutations": [],
+  "errors": [],
+  "delayedReads": 1,
+  "stableButtons": [
+    {
+      "text": "继续独立评审",
+      "ariaDisabled": null
+    },
+    {
+      "text": "登记文案全文核验",
+      "ariaDisabled": "true"
+    },
+    {
+      "text": "登记四岗独立评审",
+      "ariaDisabled": "true"
+    }
+  ],
+  "refreshButtons": [
+    {
+      "text": "继续独立评审",
+      "ariaDisabled": "true"
+    },
+    {
+      "text": "登记文案全文核验",
+      "ariaDisabled": "true"
+    },
+    {
+      "text": "登记四岗独立评审",
+      "ariaDisabled": "true"
+    }
+  ],
+  "refreshAllDisabled": true,
+  "afterButtons": [
+    {
+      "text": "继续独立评审",
+      "ariaDisabled": null
+    },
+    {
+      "text": "登记文案全文核验",
+      "ariaDisabled": "true"
+    },
+    {
+      "text": "登记四岗独立评审",
+      "ariaDisabled": "true"
+    }
+  ],
+  "projectUnchanged": true,
+  "revision": 140,
+  "jobCount": 29
+}

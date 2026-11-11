@@ -1,0 +1,53 @@
+# SIMPLE copy 冻结候选提前独立审查
+
+2026-11-12。独立只读代码／证据审查，不是根采用后的最终两轴审查、整UI验收、PPT或业务批准。
+
+> 2026-11-12补核：本报告所留“最终recovered身份实际复验”缺口已由 [recovered身份补充独立核验](simple-copy-recovered-identity-independent.md) 关闭。新总patch为 `5b77d7e00614dd45ce288fddf3375d672cb2653bcfb89fe209efca3225af056c`；仅现有runtime test新增断言，原13份生产／其他文件after保持。下文保留首次审查时点的原结论及范围，不能再将该项当作仍未补证；其他未验范围不变。
+
+
+## 固定身份与结论
+
+审查补丁 `simple-copy-backend.patch` SHA256：`3d16d488bfd7006db7bbfd877e8ed4eb3462ee039c0fe4f60d2105bb3fbb4ee7`。
+
+独立用 SHA256 核对 `simple-copy-backend-hashes.json`：14份根 before 与实际候选 WT after 全部一致，7份新增在根不存在。WT 为 `.scratch/seven-stage-static-goal-20261111/worktrees/simple-strategy-rebased`；以下源码行号均属于这个 WT。根尚未采用本包。
+
+本限定范围内未发现可证 P1/P2。实际 claim 负例证明门槛不止 enqueue；最终seams有3/3实际日志。恢复身份未在最终SHA重新实跑，不能以早期2/2替代；这一项保留为证据缺口，不声称已完成最终恢复验收。
+
+## 核验依据与结果
+
+- 读取根 AGENTS、docs/specs/README.md（1.10.0）、现行工作流（1.0.1）、strategy-owner（1.0.0）、copy-owner（1.0.1）及工具边界。三方向、四岗原票／异议／裁定与人工决定分离沿用。
+- recovered SIMPLE：project.mjs:1300–1315 仅对 SIMPLE 原 reconciliation 允许原 attempt 保持 awaiting_reconciliation；检查 reconciliation 的原job/artifact/receipt/raw/packet/hash、唯一原reconcile命令与audit，继续核作者、inputs、原实际请求和normalize正文。project.mjs:2266–2279 创建恢复产物时 author 仍为原 executor、恢复者记于 reconciliation.context，改job状态但不改原attempt。该补丁不重写这些历史身份。不把普通旧协议或任意未知attempt放开。
+- actual copy claim：project.mjs:1657–1668 的 commit 仍需同版双owner及当前SIMPLE/copy授权；project.mjs:1408–1420 重建原owner task及原binding；project.mjs:2149–2154 和 :2190 在 start/retry 再次检查，而非仅建队列。七阶段 generic copy 没有原commit仍被拒。
+- 固定step：simple-copy-http.mjs:4–6 保存原 jobIds、原绑定及任务卡／policy／研究／问题／策略快照；simple-copy-service.mjs:20–25 仅执行原列表中 queued 且零attempt的jobs，claim带原requestId与捕获revision，project.mjs:2152在原子命令内复验。成功原step重放可以推进原来源节点的建队列，不把后来eligible替换为本次执行集合；running/awaiting_reconciliation不重派。
+- human adopt 与隔离：simple-copy-service.mjs:19 校验当前实际SHA和同版核验，再使用服务端 humanContext 调 native adopt-creative。project.mjs:2363–2370 要求human身份；:1264仍执行原人工关口。executor.mjs:194–225 的 onlyArtifactId同时约束建edge来源和遍历；advanceCreativePanels增加artifactId过滤。未把导航或“交给文案”变成人工采用。
+- 全文／硬阻断：project.mjs:1231–1265仍调用现有feedback、creative panel、inputs及blockers门槛。copy contract、creative-panel.mjs:109–122 的三方向比较、适用必评>=4、unknown、校准和逐项异议裁定未被本补丁修改；不借视觉平均分规则。GET引用native creativeDecision且 originalsVerified=false，不代签原票物理复验或人类选定。
+- 未启动visual：HTTP路由仅指定continue/confirm/step/verify/review；step受原owner edge关联限制，七阶段assertWorkflowStage仍未开放references/visual。既有最终seams主链断言无references job。
+
+## 本审查实际执行的廉价反例
+
+从早期保留的真实工程case `/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-HYLUvs/db` 用 `DatabaseSync(...,{readOnly:true})` 读head revision 61及原semantic_configuration，解压snapshot；只在内存克隆上调用当前冻结WT的 applyCommand(start-job)。未打开可写store、未dispatch provider、未写原DB/原件。
+
+原case queued copy为 `copy-owner-c65267a4a0542ce87095c227debe57a6d67fc641f272411f4dbc629f9bfde5d5`，有两份原owner报告，零attempt。
+
+| 内存变体 | 最终SHA实际返回 |
+| --- | --- |
+| 原基线，绑定原semantic reader配置 | running |
+| 仅改copy task.brief | STALE_OWNER_EDGE |
+| 仅改copy binding.model | OWNER_BINDING_CHANGED |
+| 仅移除原edge.commit | SEVEN_STAGE_ROUTE_REQUIRED |
+| 仅移除原ownerReports | INVALID_OWNER_EDGE |
+
+最初直接解压后未附原semantic reader的试探统一返回OWNER_REQUIRED；该结果没有有效基线，不作claim证明。按store原配置形状（epoch、configurationHash）补齐内存读取上下文后，上表基线与四负例才成立。所有操作始终无DB写入。
+
+## 读取的实际日志及身份限制
+
+日志位于上述WT根；不是design目录。
+
+- `simple-copy-final-seams.log`:3、4、7 三个最终seams分别通过；:8–13 为3 tests、3 pass、0 fail/skip。实际包含HTTP完整主链、显式current确认和onlyArtifact来源限制。独立读回日志，并核当前14份after一致；本审查没有重新运行两大案例。
+- `simple-copy-final.log`:3–23 为21项既有message/workflow合同；后接2项HTTP与6项负例，尾部29/29。属于作者已声明的较早源码执行证据，不能独自签当前最终SHA全组。
+- `simple-copy-native-first.log`:3–4 正常及recovered原生案例通过，共2/2。当前simple-copy-runtime.test.mjs:4–10能看到实际原IO核回并继续双owner与17原票的测试路线，但无原attempt状态／author／reconciliation.context的明确前后不变断言；早期临时正例未retain，本审查没有可读回的该最终恢复案DB。因此恢复身份结论限于源码检查和早期日志，不称最终实际恢复复验。
+- `simple-copy-http.test.mjs`:2–7 保留原step回放零新增调用、17原报告、current confirm错SHA拒与human确认；`simple-copy-negative.test.mjs`:2–10 记录unknown/questions/card/policy/binding/篡改六负例。异议票为合成空异议，只证明原节点/门槛沿用，不证明真实语义异议处理质量。
+
+## 未验范围
+
+没有新建完整case、启动旧run／付费模型／视觉／Deck、修改源码／DB／规范／Git。只写本报告。没有执行下游unknown恢复、copy改稿及同版异议再评、完整旧suite、实际UI、原生PPT、PR/CI或根最终两轴。下一步如需签最终recovered身份，应保留明确断言与该次最终SHA实际回执；不能追认早期通过。

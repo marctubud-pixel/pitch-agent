@@ -1,0 +1,6 @@
+{
+  "path": "apps/workbench-preview/src/test-support/simpleCopyFixture.mjs",
+  "before": "3931dc50b8b0c68e11b609ad2104035e55ef680e75ddca995679fe2b85b3c11b",
+  "after": "3391994d000de860dd7eb76968c343e38a426360f876cb825b469d968c3df83d",
+  "scope": "Only optional projectName/createCommandId passthrough; defaults/retain/humanGates/brief and original logic preserved"
+}

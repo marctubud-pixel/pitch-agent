@@ -1,0 +1,61 @@
+# recovered SIMPLE 原身份实跑补充独立核验
+
+2026-11-12。仅补原 `simple-copy-independent-review.md` 的最终 recovered 身份证据缺口；不重新审查全部14文件，不扩展为根采用／两轴／UI／PPT验收。copy仍隔离未采用。
+
+## 结论与冻结身份
+
+该缺口可关闭。本次独立从保留案例原SQLite历史与物理IO核对，不仅引用作者evidence或日志。未发现本次证据矛盾或可证P1/P2。
+
+- test-only patch SHA256：`577f096bb9cf6c7627f3359ed8e676877a80de3e43d4bdec844b36f11d060ca6`。
+- 新总patch SHA256：`5b77d7e00614dd45ce288fddf3375d672cb2653bcfb89fe209efca3225af056c`。
+- 独立比较before-identity与当前manifest，仅 `tools/workbench/simple-copy-runtime.test.mjs` 的after变化；其余13份after未变。当前WT全部14份与新manifest匹配。
+- 已审旧patch仍原样保留为 `simple-copy-backend-before-identity.patch`，独立SHA为 `3d16d488bfd7006db7bbfd877e8ed4eb3462ee039c0fe4f60d2105bb3fbb4ee7`。不把根后续fixture blockedStrategy选项纳入本copy审查或覆盖它。
+
+以上源码WT均为 `.scratch/seven-stage-static-goal-20261111/worktrees/simple-strategy-rebased`。
+
+## 真实来源及方法
+
+保留根 `/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-xbpQCV`，数据库 `db`，证据 `recovered-owner-identity-evidence.json`（独立SHA256 `543d4f1093eeca62790d0b5cbb85840baacf25c1206ecc31be1ec5fe712fb3dc`）。project为 `project-fa8847b0c33183273f5945508b31c3208a9e4ece58ca47233a05628d8dba3799`。
+
+使用SQLite DatabaseSync的readOnly:true读取revisions与semantic_configuration；直接解压原snapshot，未调用可写openStore。物理文件用readFile读取。少量ownerEdgeState判断在读取的内存snapshot上附原semantic reader配置，无持久化。未运行测试／模型／新案例、未改DB或原件。
+
+独立读取WT `simple-copy-recovered-identity.log`:3–4对应上述retain案例，:5–10为1 tests、1 pass、0 fail/skip；用例97603.691709ms。它是作者这次实际单案执行回执，本审查做其保留证据复核，没有另一次模型调用。
+
+## 数据库历史核对
+
+原strategy job：`job-203ca657db001733e92d6119e921ff7d08ca63890b9a0e6143c2659b4d9af7e7`；唯一原attempt：`7b8bdc7e-1197-4c28-9909-03415cc67d3e`。
+
+| revision | 原job／attempt | 原生事实 |
+| --- | --- | --- |
+| 41 | awaiting_reconciliation／awaiting_reconciliation | finish-job-error；原attempt唯一，executor与locator等于evidence.origin；此时尚无receipt |
+| 43 | awaiting_reconciliation／awaiting_reconciliation | restore-ordinary-http-attempt补回原receipt；整个attempt等于evidence.origin.restoredAttempt |
+| 44 | succeeded／awaiting_reconciliation | reconcile-stage；恢复产物作者仍为原executor，恢复者另存reconciliation.context |
+| 154 | succeeded／awaiting_reconciliation | complete-creative-node；同一attempt与reconciliation保持完整相等，两个原owner报告、copy三方向和17份原评审已经存在，edge为committed |
+| 155（head） | succeeded／awaiting_reconciliation | register-research-questions；身份与原IO仍保持，Q变更令edge变为stale |
+
+没有把revision41到43补回receipt的合法动作称为“整个attempt从失败起完全不变”。确认完全相等的范围是原receipt已恢复的revision43起，经reconcile、双owner、copy及17评审至head；原executor、attempt ID、状态与locator在revision41即一致。
+
+恢复产物 `artifact-recovery-7a475ac5b4547e19e1ee896c3a725e35ed7645e448add265c36d27a772b30ea5` 的author与原attempt.executor逐字段相等；不是恢复者。恢复者在 `reconciliation.context`，evidence.after.recoveredBy是这一context的显式副本，不是声称产物上另有recoveredBy字段。
+
+原author、recovery context在actorId/runId/contextId三项均不同；两owner context及copy作者加入后，五组身份的这三项也分别无重复。两owner报告均指向同一恢复策略；copy产物为 `c0616e92-8d27-48c2-92c3-fbece8d5118c`，物理正文确有三方向。此为合成工程中的独立执行身份，不是不同模型或真实客户／消费者独立评审。
+
+## 原IO与评审原件
+
+独立重新计算locator目录 `ordinary-model-http/cc9a7b117077e6cb2f8faf2691b5e6b9cdb4d47cfb7f9b146f37b66012501f48/bounded-json-v1` 中的9份文件，以及原attempt目录 `7b8bdc7e-1197-4c28-9909-03415cc67d3e/packet.json`，共10个SHA。文件名集合及每个hash与evidence.origin.originalFiles、after.originalFiles完全相等：intent、logical、manifest、output、response.bin、runtime、status、unknown、wire及domain/packet.json。
+
+- logical文件hash等于原receipt.inputPacketHash `e2b368282c16ed782cfb060b2315230eee0cb2153adfa91e9f09633aadcd54ae`。
+- runtime与domain packet hash均为 `c3e51ec5584555b1dd3aad8aab64615fc246bd5e3313b80933424192f015b481`，对应receipt.runtimePacketHash。
+- wire hash对应receipt.wireRequestHash；manifest hash对应receipt.original.manifestHash。
+- output.json按原格式解析为响应字符串，逐字等于原receipt.responseText。
+- revision44/154/155的artifact.executionReceipt整体hash均为 `d59889c4c599eaa9789ff7d323d9db7cefacafc7fc24db2342ef7de572d28da3`，与reconciliation.originalReceiptHash及evidence一致。
+- 策略物理正文hash为 `f1fa3e6df8b6d4a282aea74fac0bc18f08fff2e5fce60be740cb97f3a788310d`，对应artifact.contentHash及reconciliation.validatedOutputHash。
+
+两个ownerReportIds及17个creativeReportIds与revision154逐项相等；进一步逐份读这19份payloadRef，其物理文件hash均等于数据库reportHash。17份为8个first-read、4个score、4个opposition、1个director。仍为合成票与合成空异议，不据此签真实创意质量。整个head无references job。
+
+## 新断言对应与当前状态限制
+
+`tools/workbench/simple-copy-runtime.test.mjs`:3 的savedOriginalHashes直接读取原locator文件及domain packet，不是只比较内存hash。:5在reconcile前断言唯一原attempt未知、捕获原executor/locator/IO；reconcile后检查job成功但原attempt仍未知、author等于原executor、恢复身份三项独立、原IO不变。:9 retain此恢复案例；:10检查两owner及真实copy；:11在17评审后比较整个attempt／author／reconciliation／receipt／原正文与IO并写evidence，然后执行原Q变更负例。这些断言与上述数据库实际字段和原件相符。
+
+head revision155虽保留activeByStage策略／copy ID及17原报告，但新问题为 `Changed original questions`，ownerEdgeState实际返回 `stale`，blockedReason=`OPERATOR_DECLARATION_REQUIRED`。revision154的有效交接证明不转成revision155当前放行；这是原Q负例预期失效，不是恢复身份丢失。
+
+此补核仅关闭原报告“最终SHA recovered身份实际复验缺口”。其余未验范围与独立审查边界照旧：不签根采用、全部旧suite、copy异议改稿再评、下游unknown恢复、UI／视觉／PPT或PR／CI。

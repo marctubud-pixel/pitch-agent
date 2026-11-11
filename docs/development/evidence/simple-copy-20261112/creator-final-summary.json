@@ -1,0 +1,27 @@
+{
+  "revision": 163,
+  "queued": 0,
+  "unknown": 0,
+  "creativeReports": 17,
+  "phases": {
+    "score_first_read": 4,
+    "opposition_first_read": 4,
+    "score": 4,
+    "opposition": 4,
+    "director": 1
+  },
+  "copyModelInvocations": 21,
+  "uniqueModelInvocationIds": 21,
+  "expected": {
+    "owner": 2,
+    "copy": 1,
+    "verification": 1,
+    "creative": 17
+  },
+  "researchStrategyModelInvocations": 9,
+  "humanDecisions": 0,
+  "actualJobs": 30,
+  "allExecutedOneAttempt": true,
+  "copyContentSHA": "5b15a316efe64c4305c44fd80c3c43fbec0f458bcf2b13fa030c415bc5073130",
+  "scope": "Synthetic engineering creator UI only; not independent UI approval, real semantic quality, client approval or full packaging from-Brief chain."
+}

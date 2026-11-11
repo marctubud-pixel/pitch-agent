@@ -10,6 +10,8 @@
  * - the "The opportunity" slide → the recommendation as a headline with one highlighted phrase;
  * - the comparison rows are a plain side-by-side table, so each direction answers the same questions.
  */
+import {useService,useServiceContext} from '../../app/services';
+import {CopyWorkflowPanel} from '../../proposal/CopyWorkflowPanel';
 import { Award, UserCheck } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { useRouter } from '../../app/router';
@@ -30,7 +32,9 @@ export function ThemesStage({ proposal: p }: { proposal: Proposal }) {
   // Arriving from "Find matching text" (`?match=<idea id>`): highlight the identical line, neutrally.
   // Identical text says nothing about who wrote the line or whether the idea was adopted.
   const match = p.contributions.find((c) => c.id === params.get('match'))?.text.trim() ?? null;
+  const connected=useServiceContext().proposals.backing==='connected',copy=useService().copyWorkflow;
   const th = p.themes;
+  if(connected&&copy&&p.workbenchId!=='qingyu'&&p.workbenchId!=='luma')return <CopyWorkflowPanel projectId={p.workbenchId}/>;
   if (p.id === 'qingyu-pack' && p.workbenchId === 'qingyu' && p.type === 'packaging' && th === null) return <QingyuThemesPreview proposal={p} />;
   if (!th) return <StageEmpty proposal={p} stage="themes" />;
   const rec = th.directions.find((d) => d.id === th.recommendation.id);
