@@ -1,0 +1,15 @@
+# Standards 审查命令与证据
+
+审查者未参与实现；本轮不修改产品/Git，不运行旧run、旧scheduler、真实或付费模型。固定diff：`git diff a532697ea11df445cb5257006b5392f28078e03b...e3d6680f5aae72d4b365c42de79b59794952ac66`。读取根、tools、应用AGENTS、CONTRIBUTING、规范入口、testing/configuration/http-brief/research-acquisition及相关diff；工具已强制的规则不列重复风格发现。
+
+- `python3 scripts/check-specs.py --base a532697ea11df445cb5257006b5392f28078e03b`：PASS，56规范/16截图/1.9.0；原日志`/tmp/acquisition-final-standards-specs.log`。
+- `npm run check:repository`：主核PASS(1663纳管/393导入/147封存)，4隔离反例OK；原日志`/tmp/acquisition-final-standards-repo.log`。
+- 独立Python逐项比较base/head source-import.files：完全一致；没有重置原导入身份。两改动旧测试提取平衡括号的assert调用字串列表：boundary 134/134、selection 36/36，逐字及次序相等。仅fixture拦截方式改变，不放宽守卫。
+- EVIDENCE-SOURCES 10条选录SHA均符合清单；9条与原路径同字节。ui-result与UI-RECEIPT的scope说明不同，其余URL/postCount/errors/measurements/jobs/acquisitionJobs/pdfJobs/artifacts/releases逐键完全相等。独立后端、前端修前/修后、fixture、UI报告分别存在；保留失败证据，不用作者自测替代本轮复核。
+- `npm --prefix apps/workbench-preview run test -- --run src/services/http/researchAcquisitionHttp.test.ts src/collaboration/protectServices.test.ts`：2文件，18通过/1既有跳过；日志`/tmp/acquisition-final-standards-frontend.log`。
+- `PITCH_PDF_TEST_PYTHON=/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 npm run test:research-acquisition`：实际Node测试汇总59项，56通过/3失败/0跳过。失败原件`/tmp/acquisition-final-standards-tests.log`保留；manifest明确ENOSPC；boundary是SQLite `cannot rollback - no transaction is active`，与盘满同时出现但未独证其根因；PDFcap在沙箱不可用。shell为了打印tail返回0，不能据此改记测试通过。未重跑大文件集合。
+- `df -h /private/tmp`：180MiB余量。沙箱`/bin/ps`实际EPERM；同解释器包导入正常。随后仅只读PDFcap探针在沙箱外available=true，4次RSS采样，Python3.12.14/pypdf6.10.0/pdfplumber0.11.9；未运行完整PDF生成链。
+- 本地`npm run setup:workbench`：ENOTFOUND registry.npmjs.org，无新安装成功声明；日志`/tmp/acquisition-final-standards-setup.log`。本机Node v24.13.0与`.node-version`相同，直接该Node执行已装pnpm.mjs显示11.25.0。
+- 读取根已从真实API获取的`../ACQUISITION-CI-APPLICATION-JOB.json`：head_sha精确匹配本轮head，job130683262522、run43066646933，completed/success。逐步核Install locked workbench dependencies、explicit PDF runtime、identity、typecheck/frontend、portable domain/storage、build全部success。workflow使用`.node-version`24.13.0，package脚本明确npx pnpm@11.25.0 frozen-lockfile/ignore-scripts；因此CI所用Node的真实锁安装有证据，而非推测兼容。
+
+审查结论仅限当前diff的工程规范与上述证据；未签业务批准、全状态UI、新真实消费者研究或完整七阶段交付。Fowler仅记录字段表重复的非阻断判断；未将领域编排、边界校验、可选服务接缝或已有模块密集格式当硬禁令。

@@ -1,0 +1,9 @@
+# 最终独立 Standards 审查
+
+base `a532697`；head `e3d6680f`，三点diff共61路径。
+
+**硬问题：未发现。** 冻结来源不变；170条旧断言及次序相同；选录原件一致（UI仅scope变化）。规范跨base、纳管通过；当前head真实CI锁安装、PDF、测试、构建success。
+
+**判断：** 可能Duplicated Code：`research-acquisition-service.mjs:35`与`brief-server.mjs:150`重复字段表，可共用声明；非阻断。
+
+**实测：** 前端18通过/1跳过；采集56通过/3失败（盘满、SQLite回滚、沙箱PDF监测），保留失败。沙箱外PDF探针通过。npm下载ENOTFOUND，CI锁安装成功补足。完整SHA、规则及[日志](acquisition-final-standards-detail.md)。

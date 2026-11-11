@@ -21,3 +21,11 @@
 [来源身份清单](evidence/research-acquisition-20261112/EVIDENCE-SOURCES.json)只选录本轮合成证据，不上传原生数据库、完整项目回包或上传body。独立[后端报告](evidence/research-acquisition-20261112/backend-review.txt)、[前端原失败](evidence/research-acquisition-20261112/frontend-review-initial.txt)和[修复复验](evidence/research-acquisition-20261112/frontend-review-fix.txt)分开保留。
 
 历史producer原结果恢复仍未支持；死亡owner接管、外部真实搜索/模型质量及所有崩溃点未验。只读UI没有实际触发unknown/历史/缺配置等状态，相关合同测试不代签真实界面。共享机器人遮挡部分原工作区按钮属既有现象，已单列，没有扩大改造。后续仍需简洁三板块策略、文案视觉、Deck/终审及包装和KV完整两案例，不以此子包冒称全目标通过。PR/CI以实际回执登记。
+
+## 固定提交复核与远程CI
+
+功能提交`e3d6680f5aae72d4b365c42de79b59794952ac66`已完成独立[Spec](evidence/research-acquisition-20261112/final-spec-review.txt)与[Standards](evidence/research-acquisition-20261112/final-standards-review.txt)两轴审查：无可证实P1/P2或硬标准违例；重复字段表为非阻断维护建议。Standards本地复验56通过/3失败（ENOSPC、SQLite回滚、沙箱PDF监测拒绝），没有计为通过；详细失败保留。Spec独立后端17与前端19项实际通过。
+
+该准确功能head的[application CI](https://github.com/marctubud-pixel/pitch-agent/actions/runs/43066646933/job/130683262522)及[specifications CI](https://github.com/marctubud-pixel/pitch-agent/actions/runs/43066647131/job/130683264067)均成功。实际job步骤已读回：冻结workbench安装、显式PDF环境、身份检查、类型/前端、全部受限后端及采集、构建均completed/success。后续文档补记不改变该源码审查身份。
+
+本机磁盘当时约172MiB，低于大运行3GiB门槛；新的本地整链验收暂停，等待空间恢复，不修改旧数据库、原件或回执来绕过。空间问题不改变本包准确head远程成功记录，也不把全目标标完成。

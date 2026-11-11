@@ -2,7 +2,7 @@
 
 PDF包[PR #6](https://github.com/marctubud-pixel/pitch-agent/pull/6)准确8404d26a双CI及显式venv步骤成功，已合并a532697e。当前采集分支复用四分支/封口/唯一r7生产者，严格原body与固定job、actual claim卡/问题/CAS守卫、partial PDF共根资格和原IO核回；默认执行仍关闭。[合同](../docs/development/research-acquisition.md)及[本轮核验](../docs/development/research-acquisition-verification-20261112.md)分别说明规则与实际范围。
 
-新合成包装R1真实Chrome走到1份r7稿，6采集研究+1PDF任务各1attempt、0release；原初脚本计数错误保留，正确只读复验刷新0POST。独立前端换Q误判P2及UI覆盖详情/冻结资料回显两项P2已修并独立复验。完整根check755前端/1既有skip+78核心+26域+57Brief/PDF+80研究+61采集通过；其后局部UI改动类型及19项受影响验证通过。规范1.9.0/56项，16固定截图、393导入及147封存保持。最终双轴复核、PR/CI按实际回执继续。
+新合成包装R1真实Chrome走到1份r7稿，6采集研究+1PDF任务各1attempt、0release；原初脚本计数错误保留，正确只读复验刷新0POST。独立前端换Q误判P2及UI覆盖详情/冻结资料回显两项P2已修并独立复验。完整根check755前端/1既有skip+78核心+26域+57Brief/PDF+80研究+61采集通过；其后局部UI改动类型及19项受影响验证通过。规范1.9.0/56项，16固定截图、393导入及147封存保持。固定功能e3d6680f双轴无P1/P2/硬违例，PR #7准确head双CI与全部安装/测试步骤成功；文档补记及合并按实际回执继续。本机仅约172MiB，新的大运行暂停等空间，原件/数据库保留。
 
 完整目标active；简洁策略9文件已正确重合流并专项通过，尚未采用到根或接当前页，文案视觉、同版Deck终审和包装/KV整链仍待完成。旧run/数据库、付费/真实模型、生产账号、通知、云部署和在线编辑保存暂停范围保持。以下历史记录保留各自当时身份。
 

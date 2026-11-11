@@ -51,6 +51,21 @@
       "selected": "docs/development/evidence/research-acquisition-20261112/ui-result.json",
       "sha256": "19c809e9b2b8a526b74105cdb8989b203db63957a57a16c2af197ab254e97a15",
       "selection": "Only actual UI readback; raw full project/upload bodies and DB remain local."
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-final-spec-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/final-spec-review.txt",
+      "sha256": "d3128ca4470b4ad18c09009ad5b71873291c133b326e8003c11ac09662c299bb"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-final-standards-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/final-standards-review.txt",
+      "sha256": "40a9180199ae0e89290594b0464608a5c4612b992454abe1649521f98a17a832"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-final-standards-detail.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/final-standards-detail.txt",
+      "sha256": "35a216ed1d69f34299d11ad144294b94ac42f279a8bc542679a19f70f41751e4"
     }
   ]
 }

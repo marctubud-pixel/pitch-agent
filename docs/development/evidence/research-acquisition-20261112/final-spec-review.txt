@@ -1,0 +1,54 @@
+# 最终独立 Spec 审查
+
+审查日期：2026-11-12。固定 base `a532697ea11df445cb5257006b5392f28078e03b`，固定 head `e3d6680f5aae72d4b365c42de79b59794952ac66`，命令 `git diff base...head`（使用上述完整 SHA）；两提交15776db6、e3d6680f，共61路径。实际工作区HEAD已核等于审查head。仅保存本报告，未改实现或Git。
+
+## 正文（400字内）
+
+(a) 本包未发现可证实的P1/P2缺失或部分实现。固定原body/job集合、实际claim卡/问题登记/CAS、两层unknown、PDF共根与partial资格均有源码和实际测试支持。后续策略至交付仍未完成，合同已明确排除本包验收。
+
+(b) 未发现可证实的P1/P2范围外行为；默认零执行、旧run及付费/生产暂停保持。
+
+(c) 未发现可证实的P1/P2实现错误。三项既有P2修复在最终head保留；独立实跑后端17项、前端19项通过，证据选录10份SHA匹配。实际UI沿用独立留档，未把合同测试签成完整界面覆盖、真实研究或客户批准。
+
+## 验证附录
+
+### 实际运行
+
+1. 提升权限运行（仅新临时SQLite、本机合成模型HTTP、注入搜索、真实已装PDF工具）：
+
+   ```sh
+   PITCH_PDF_TEST_PYTHON=/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 node --test tools/workbench/research-acquisition-service.test.mjs tools/workbench/research-acquisition-bridge-http.test.mjs
+   ```
+
+   17 passed、0 failed、0 skipped，退出0，5237ms。含默认零执行、固定集合重放、丢回包、问题计划与卡/CAS变化、历史branch核原IO、PDF共根/损坏拒绝、当前producer核原IO及历史producer拒绝。
+
+2. 前端专项：
+
+   ```sh
+   PITCH_PDF_TEST_PYTHON=/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 npm --prefix apps/workbench-preview test -- src/services/http/researchAcquisitionHttp.test.ts src/collaboration/protectServices.test.ts
+   ```
+
+   首次沙箱内18通过、1失败，失败为PDF capability不可用，消息“本地PDF解析尚未配置，本次未发送”；未修改代码或断言。相同命令提升权限复跑：2 files passed、19 tests passed，退出0，3010ms。包括错receipt保持journal、原body恢复、HTTP已知/业务unknown分离、同卡Q2历史判断、来源及policy身份、workflow游客保护与真实partial PDF。
+
+3. 只读SHA核对 `docs/development/evidence/research-acquisition-20261112/EVIDENCE-SOURCES.json` 所列10个selected文件，10/10匹配。未启动旧完整scheduler、外部搜索、真实/付费模型、原生PPT或生产账号。获知磁盘不足后未再启动写入测试；没有因环境问题改变断言。
+
+### 合同原句与实现复核
+
+| 合同原句（docs/development/research-acquisition.md） | 最终head复核位置 |
+| --- | --- |
+| 第32行：“每次`step`只处理其原集合中仍queued且零attempt的任务。同body重放不会替换为后来产生的分支或研究生产者。” | `tools/workbench/research-acquisition-service.mjs:37` 比较原body，`:57` 固定row.jobIds过滤；`:64`只在全成功且当前时推进。 |
+| 第32行：“实际原生claim再次核固定成员、原卡、原问题登记与预先捕获的revision” | `tools/workbench/research-acquisition.mjs:101`，`research-acquisition-runtime.mjs:92`，`executor.mjs:780`，`project.mjs:2132`；上述实际换卡/换计划/CAS测试无模型派发。 |
+| 第38行：“选入PDF要求显式研究执行根等于同一新SQLite的`${dbPath}.originals`。”第40行：“具备部分正文的`partial`结果可选入” | `tools/workbench/brief-server.mjs:87`固定originalsRoot；`research-acquisition-service.mjs:28`逐件核原件/抽取；`apps/workbench-preview/src/services/http/HttpWorkbenchService.ts:328`核partial正文资格。 |
+| 第48行：“HTTP提交已知，传输日志可以结束。业务结果仍未知，自动链停止” | `apps/workbench-preview/src/services/http/researchAcquisitionProjection.ts:77`核receipt终态，`:73`补producer待核；`HttpWorkbenchService.ts:344`验证后结束journal；`ResearchAcquisitionPanel.tsx:35`、`:39`停链。 |
+| 第50行：“历史生产者返回`ACQUISITION_PRODUCER_HISTORY_UNSUPPORTED`，保留unknown，不能制造历史研究稿。” | `tools/workbench/research-acquisition.mjs:114`；实际合成HTTP原producer结果测试保留unknown、0artifact且无新调用。前端 `ResearchAcquisitionPanel.tsx:57`禁用历史producer入口并解释。 |
+| 第60行：“三个写入口及待核提交均按workflow权限保护，游客不能执行或恢复写操作。” | `apps/workbench-preview/src/collaboration/protectServices.ts:34`、`:42`；权限专项实际通过。 |
+| 第70行：“当前采集的资料复选框回显原请求冻结的选择；刷新后仍按原集合显示并锁定。” | `ResearchAcquisitionPanel.tsx:21`、`:48`、`:52`，投影使用envelope原materialIds；既有独立UI修复留档保留。 |
+| 第70行：“四分支先显示原记录的摘录与来源站点数量，完整范围和限制原文保留在二级原始记录中” | `ResearchAcquisitionPanel.tsx:54`保留真实计数、限制与完整二级JSON；没有改为充分性判断。 |
+
+同卡Q2变化的既有P2：`researchAcquisitionProjection.ts:29`起核冻结输入与当前问题登记，`:65`对current双向校验；两条实际Q2/历史恢复测试均通过。另两项UI P2以上述冻结选择与覆盖详情代码核对，未仅依赖旧评审结论。
+
+### 证据边界
+
+已读AGENTS、规范入口、现行workflow、采集合同、研究页规格、integration设计和原文件票。以本包受限HTTP接缝作为审查范围，没有要求恢复旧复杂策略，也没有把未完成全目标当成本包新缺陷。
+
+`docs/development/research-acquisition-verification-20261112.md:23`明确：“只读UI没有实际触发unknown/历史/缺配置等状态，相关合同测试不代签真实界面。”留档局限与实际测试范围一致。本审查没有新开浏览器或重新签署UI通过，没有证明外部来源真实性、市场研究充分性、消费者/客户批准、死亡owner恢复或七阶段整链完成。PR/CI需各自实际回执。
