@@ -2076,10 +2076,6 @@
     "apps/workbench-preview/src/proposal/BrandResources.tsx": {
       "sha256": "d38e98eb0a5fb56210a882cf44f173c4a9581e9bbd8648c55f68a4c1875cbddb",
       "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
-    },
-    "apps/workbench-preview/src/services/http/HttpProposalService.ts": {
-      "sha256": "4b0385c46b9fa4453257e078f9f060dcfb8ae59004d38dc236a1eff9e706a27c",
-      "reason": "当前HTTP PDF原件接入和真实能力说明；不再将已接原件与研究误称仅Brief，不改旧内容或批准"
     }
   }
 }
