@@ -57,14 +57,14 @@ export async function mapHttpError(response: Response | null, cause?: unknown): 
   }
 }
 
-function notConnected(operation: string): Promise<never> {
+function notConnected(_operation: string): Promise<never> {
   return Promise.reject(
-    new ServiceError('unavailable', `“${operation}” is not connected to the backend yet. Implement it in src/services/http/HttpWorkbenchService.ts.`),
+    new ServiceError('unavailable', '后端尚未接通，暂时无法执行此操作。'),
   );
 }
 
 export class HttpWorkbenchService implements WorkbenchService {
-  readonly environment: EnvironmentInfo = { kind: 'live', label: 'Connected' };
+  readonly environment: EnvironmentInfo = { kind: 'unavailable', label: '后端未接通' };
   private listeners = new Set<ServiceListener>();
   private locale = 'zh-CN';
 

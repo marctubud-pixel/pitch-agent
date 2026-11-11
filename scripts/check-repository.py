@@ -3,6 +3,7 @@
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,6 +28,17 @@ def main():
     if len(files) != len(set(files)):
         raise ValueError('Duplicate repository file')
     selected = set(files)
+    git_checked = (ROOT / '.git').exists()
+    if git_checked:
+        result = subprocess.run(['git', '-C', str(ROOT), 'ls-files', '-z'], capture_output=True)
+        if result.returncode:
+            raise ValueError('Cannot verify Git file selection')
+        tracked = set(result.stdout.decode('utf-8').split('\0')) - {''}
+        if tracked != selected:
+            raise ValueError('Git selection differs: ' + json.dumps({
+                'unlistedTracked': sorted(tracked - selected),
+                'selectedNotTracked': sorted(selected - tracked),
+            }, ensure_ascii=False))
     for name in files:
         path = local(name)
         if any(part in {'node_modules', '__pycache__', '.data', '.audit', 'dist', 'dist-single', '.git'} for part in Path(name).parts):
@@ -79,6 +91,7 @@ def main():
                 raise ValueError('Nonportable engineering link: ' + name + ': ' + target)
             local(str(resolved.relative_to(ROOT)))
     print(json.dumps({'result': 'PASS', 'repositoryFiles': len(files), 'importedFiles': len(imported['files']),
+                      'gitSelectionChecked': git_checked,
                       'preservedProofs': len(proofs), 'scope': '明示源码、文档和原件身份；不代表正式业务或原生运行时通过'}, ensure_ascii=False))
 
 

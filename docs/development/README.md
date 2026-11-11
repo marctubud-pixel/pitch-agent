@@ -1,6 +1,6 @@
 # 开发、运行与使用
 
-规范版本：1.0.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
+规范版本：1.1.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
 
 ## 本地启动
 
@@ -21,7 +21,7 @@ npm run dev
 npm run check
 ```
 
-命令包含规范及隔离反例、仓库清单与原件身份、前端类型与测试、明示核心域测试、前端构建。实际UI操作、原生PPT和业务放行单独验收，详见[验证范围](testing.md)。
+命令包含规范及隔离反例、Git与清单对账及原件身份、前端类型与测试、明示核心和域测试、依赖恶意输入回归、前端构建。实际UI操作、原生PPT和业务放行单独验收，详见[验证范围](testing.md)。
 
 ## 目录与入口
 
@@ -40,3 +40,5 @@ npm run check
 `.scratch`、`.data`、`output`和旧预览继续原位保留，未整体上传。新应用来自活跃源的字节导入，来源、适配及测试原件见[源码与资源](resources.md)。规范提交、源码提交和运行数据恢复范围分别记录。
 
 继续阅读[运行架构](../architecture/runtime.md)、[配置与服务边界](configuration.md)、[提交与回退](git-and-recovery.md)。后续改进见[已知问题](../../status/issues/README.md)。
+
+本轮已修与真实生产能力缺口见[后续调整顺序](remaining-work.md)。不要将域测试转绿当作真实七阶段生产链完成。

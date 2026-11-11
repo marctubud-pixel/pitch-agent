@@ -1,24 +1,26 @@
 # 验证范围与已知失败
 
-规范版本：1.0.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.1.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
 | `npm run check:specs` | 规范、引用、版本、固定方法及截图，另含隔离反例 |
-| `npm run check:repository` | 明示文件、导入身份及封存证据字节，不访问原scratch |
+| `npm run check:repository` | 明示文件与Git受控集合、导入和封存证据，含真实隔离Git反例；无Git时明确只核清单 |
 | `npm run typecheck` | 当前预览应用TypeScript |
 | `npm run test:frontend` | 当前应用共置测试，含案例、哈希绑定、权限与导出结构 |
 | `npm run test:core` | 明示的存储、身份、枚举分区、客户端恢复和图表证据测试 |
 | `npm run build` | 当前应用生产构建 |
-| `npm run test:backend:legacy` | 旧project测试诊断入口，已有失败，不属于默认通过范围 |
+| `npm run test:domain` | 已修的26项域合同与专用权限拒绝；不证明正式生成链成功 |
+| `npm run test:dependency` | 恶意图片终止、正常PNG和PPTX图片原字节；子进程隔离超时 |
+| `npm run test:backend:legacy` | 兼容旧命令，现转到test:domain |
 
-默认命令集合写在根package.json，CI执行同一套入口。锁定安装实际报告的image-size公告见[005](../../status/issues/005-dependency-advisory.md)，本轮未声称安全检查清零。新增测试依赖先确认它是否需要真实服务、预算、个人运行库或旧案例资产，避免通配运行所有旧脚本。
+默认命令集合写在根package.json，CI执行同一套入口。锁定安装曾报告、现已修复的image-size公告见[005](../../status/issues/005-dependency-advisory.md)，两更新锁审计已零公告，冻结历史环境另记。新增测试依赖先确认它是否需要真实服务、预算、个人运行库或旧案例资产，避免通配运行所有旧脚本。
 
-## 已知历史失败
+## 历史失败及本轮修复
 
-本轮实际运行包含`tools/workbench/project.test.mjs`的8文件集合，100项中90通过、10失败。失败均遇到当前域模型要求的`REVIEWED_SKETCH_REQUIRED`，旧夹具仍尝试用旧通用授权推进草图。未修改业务守卫，也未删除失败测试；问题见[001](../../status/issues/001-backend-fixture-drift.md)。后端其余全套测试尚未在此干净检出基线中验证。
+原project测试22项中10项依赖旧通用成功夹具，遇到当前专用授权拒绝。现有26项保持生产守卫、按当前合同重建实际成功和拒绝边界，已纳入默认检查；覆盖见[映射](backend-fixture-coverage.md)。
 
-`test:core`是独立声明的7文件范围，不能称为“后端全量通过”。原始失败输出留在本地本轮验收目录，Git中的问题文档保留触发命令和实际结论。
+当前78项核心测试与26项域测试是明示集合，不能称后端全量通过。正式后半生产链和原生成功仍在002、003，不因测试转绿而关闭。
 
 ## 实际界面与产物
 

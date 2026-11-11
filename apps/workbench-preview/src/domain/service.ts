@@ -85,7 +85,7 @@ export interface WorkbenchService {
 }
 
 export interface EnvironmentInfo {
-  kind: 'demo' | 'live';
+  kind: 'demo' | 'live' | 'unavailable';
   label: string;
 }
 

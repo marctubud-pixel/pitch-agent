@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.2.1",
+  "baselineVersion": "1.3.0",
   "date": "2026-11-11",
-  "status": "按用户授权建立应用与Agent仓库工程；实际提交、推送和运行分别留证",
+  "status": "维护回合：依赖与验证修复，准确区分占位适配和生产缺口",
   "workflow": [
     "brief",
     "research",
@@ -409,7 +409,7 @@
       "kind": "contract",
       "title": "中文桌面UI基线",
       "path": "docs/specs/ui-system.md",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "lifecycle": "current",
       "dependsOn": [
         "method.ui"
@@ -526,7 +526,7 @@
       "kind": "contract",
       "title": "开发启动与工程入口",
       "path": "docs/development/README.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -535,7 +535,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -544,7 +544,7 @@
       "kind": "contract",
       "title": "配置与服务边界",
       "path": "docs/development/configuration.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -553,7 +553,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -571,7 +571,7 @@
       "kind": "contract",
       "title": "源码资源及导入身份",
       "path": "docs/development/resources.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -583,6 +583,18 @@
       "version": "1.0.0",
       "lifecycle": "current",
       "dependsOn": []
+    },
+    {
+      "id": "contract.remaining-work",
+      "kind": "contract",
+      "title": "Pitch Agent后续调整顺序",
+      "path": "docs/development/remaining-work.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.runtime",
+        "contract.testing"
+      ]
     }
   ],
   "entryDocuments": [

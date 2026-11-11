@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.2.1",
-  "registrySha256": "927272a7025b04d3a7f64ab49964db433717b025920375daf2c4be9c3a693379",
+  "baselineVersion": "1.3.0",
+  "registrySha256": "8786ce34f6c7784c83c22b934ca12d432f1766d7ba0d34197d6db84a11db9fd5",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -234,10 +234,10 @@
       }
     },
     "contract.ui": {
-      "version": "1.1.1",
+      "version": "1.1.2",
       "lifecycle": "current",
       "files": {
-        "docs/specs/ui-system.md": "3c0093557f64506155ff0e0fbc420aa11c90d5eea07d23819649e35875cd0ef6"
+        "docs/specs/ui-system.md": "56c3d261ee13d5c9eb7fbadc6b4c62e483b799d0a5d5647a952b2c3c8a339ae6"
       }
     },
     "contract.workflow": {
@@ -311,31 +311,31 @@
       }
     },
     "contract.development": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/README.md": "45088f641a0591a819145358305c69d9624b7a9ee219ddd59ee993a219b63150"
+        "docs/development/README.md": "e0f8fd2fe7e4dc72f9748f327a114c27fb5080b9aaa364a3b2766e535db03862"
       }
     },
     "contract.runtime": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/architecture/runtime.md": "9385e5a48a4f887994321d160a00190438c1e0cf689c5770fef24d475874c306"
+        "docs/architecture/runtime.md": "858962174a0f859aa49e4df47c01914c7fab2c849116dcaf29c326d4281f0fca"
       }
     },
     "contract.configuration": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/configuration.md": "1850beb051e07833908605c950dd3dc3ed5c8127a704bc8fc47559c14c032160"
+        "docs/development/configuration.md": "e5423c1287af432c1f4f5fbd3b579c47115ba2767a684ad2ba5794cda5767cbd"
       }
     },
     "contract.testing": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "9f07f083313a4044c65ddf7809b6ac1874aedd60ad848b542ca28e9cd111b655"
+        "docs/development/testing.md": "dac0a86c323b279c77ae2d4c6333fda0468d037426e11a039b5608f18e245814"
       }
     },
     "contract.git": {
@@ -346,10 +346,10 @@
       }
     },
     "contract.resources": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/resources.md": "6156dba7324637524a4bfa8892e0c3c23efa4a5e902bb71216157531b174b296"
+        "docs/development/resources.md": "327ecf8239b83192e834990e402bb7cbe06d4cc035f1d295303bada705422506"
       }
     },
     "contract.usage": {
@@ -357,6 +357,13 @@
       "lifecycle": "current",
       "files": {
         "docs/usage/README.md": "79658466b65539b87423b75ce7936a2f3db4d616198a654c3cbb07c7cbe85881"
+      }
+    },
+    "contract.remaining-work": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/remaining-work.md": "8189682de07c71d43f26c2153a86d5508795f836679905ae547374498c86f560"
       }
     }
   },
@@ -367,8 +374,8 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "1c648304f660e0c9ade0982b7b80364baff2fc5cbcf971904ea4dcaca5fa1e33",
-    "docs/specs/README.md": "85d36b37bb4094d18277d8b2845f3e1e9050ad5ec5c61b58f33c284bafd3d289",
-    "CONTRIBUTING.md": "0480c0c35c588a8b57cf62b47d39a9145b445f3c683d20c376d4bed8cd84a493",
+    "docs/specs/README.md": "dd937fed4251cc2c58d5d6aca32b5e4c37d75c0941c4b9fe74a701db937df690",
+    "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "543c10128101add3f7df08dfa8c971c77c7295fbe67f65d7fe5852953fe09921"
   },

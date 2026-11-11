@@ -2,13 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createProject, applyCommand, projectView, releaseReadiness, STAGES, REVIEW_ROLES} from './project.mjs';
 import {createHash} from 'node:crypto';
+import {deriveSketchReviewOutcome, CONDITIONS} from './sketch-review-v2.mjs';
 import {COPY_CONTRACT_VERSION, validateStageOutput} from './stage-content.mjs';
 // All runs, evidence and receipts here are synthetic fixtures, never real provider calls.
 const ctx = (actorId = 'human', actorType = 'human') => ({actorId, actorType, runId: `${actorId}-run`, contextId: `${actorId}-context`, modelId: 'synthetic', parentRunIds: [], ancestorActorIds: [], inputPacketHash: 'synthetic-packet', exposedReviewIds: [], authorRecommendations: [], priorScores: []});
 function fixture(options = {}) {
   let p = createProject({id: 'p', name: 'Synthetic project', brief: 'Synthetic brief', mode: 'auto', ...options}, ctx());
   let serial = 0;
-  return {get p() { return p; }, restoreValidatedCopySnapshot(id, raw) {
+  return {get p() { return p; }, restoreLegacyNativeMetadata(stage) {
+    // An explicitly imported old snapshot exercises refusal, never a new successful native execution.
+    p = structuredClone(p);
+    const artifact = {...structuredClone(p.artifacts[0]), id: `legacy-${stage}`, stage, technicalReceipts: structuredClone(receipts)};
+    p.artifacts.push(artifact); p.activeByStage[stage] = artifact.id;
+    return artifact.id;
+  }, restoreLegacyInFlightJob(stage) {
+    p = structuredClone(p);
+    const job = {...structuredClone(p.jobs[0]), id: `legacy-job-${stage}`, stage, status: 'requested', outputVersionIds: []};
+    p.jobs.push(job);
+    return job.id;
+  }, restoreValidatedCopySnapshot(id, raw) {
     const content = validateStageOutput('copy', raw, {copyContractVersion: COPY_CONTRACT_VERSION}).content;
     const contentHash = createHash('sha256').update(JSON.stringify(content, null, 2)).digest('hex');
     p = structuredClone(p);
@@ -44,25 +56,26 @@ function handoff(f, id, stage, onlyStage) {
 function release(f, stage, options = {}) {
   const id = produce(f, stage, options);
   if (stage === 'copy') f.restoreValidatedCopySnapshot(id, {outputKind: 'copy', status: 'draft', title: 'Synthetic full copy', summary: 'Synthetic complete message fixture', sections: [{heading: 'Copy', body: 'Synthetic public copy', evidenceIds: []}], claims: [], gaps: [], directions: ['steady', 'product', 'user'].map((direction, index) => ({id: direction, title: `Direction ${index}`, slogan: `Headline ${index}`, supportingCopy: `Supporting public message ${index}`, creativeExplanation: `Private mechanism explanation ${index}`, rationale: `Strategy rationale ${index}`, differentiation: `Difference ${index}`, evidenceIds: []}))});
-  if (stage !== 'research' && stage !== 'layout') review(f, id);
+  if (stage !== 'research') review(f, id);
   handoff(f, id, stage);
   f.send({kind: 'release-stage', artifactId: id});
   return id;
 }
 const receipts = Object.fromEntries(['package', 'layout', 'import', 'render'].map(key => [key, {status: 'pass', ref: `synthetic://${key}`} ]));
-test('synthetic full sequence requires scope, independent content review, handoffs and rendered technical receipts', () => {
+test('synthetic generic sequence requires scope and independent handoffs, stopping at dedicated sketch authority', () => {
   const f = fixture();
-  assert.throws(() => produce(f, 'research'), {code: 'SCOPE_UNCONFIRMED'});
-  confirm(f);
-  for (const stage of Object.keys(STAGES)) {
-    const before = f.p;
-    release(f, stage, stage === 'layout' ? {technicalReceipts: receipts} : {});
-    assert.equal(before.revision < f.p.revision, true);
-    assert.equal(Object.isFrozen(before), true);
+  assert.throws(() => produce(f, 'research'), {code: 'SCOPE_UNCONFIRMED'}); confirm(f);
+  for (const stage of ['research', 'strategy', 'copy', 'references']) {
+    const before = f.p; release(f, stage);
+    assert.equal(before.revision < f.p.revision, true); assert.equal(Object.isFrozen(before), true);
+    assert.equal(projectView(f.p).stages.find(s => s.stage === stage).status, 'released');
   }
-  assert.equal(projectView(f.p).complete, true);
-  assert.equal(f.p.audit.length, f.p.revision);
+  const before = f.p;
+  assert.throws(() => produce(f, 'sketch'), {code: 'REVIEWED_SKETCH_REQUIRED'});
+  assert.strictEqual(f.p, before); assert.equal(f.p.jobs.some(j => j.stage === 'sketch'), false);
+  assert.equal(projectView(f.p).complete, false); assert.equal(f.p.audit.length, f.p.revision);
 });
+
 test('metadata-only copy cannot release through manual review or human adoption, even with forged completeness receipts', () => {
   const f = fixture(); confirm(f); release(f, 'research'); release(f, 'strategy');
   const forged = {version: COPY_CONTRACT_VERSION, status: 'complete', contentHash: 'forged'};
@@ -126,13 +139,17 @@ test('scope edit invalidates descendants and old in-flight completion stays hist
   assert.equal(projectView(f.p).stages.find(s => s.stage === 'strategy').status, 'stale');
   assert.throws(() => produce(f, 'research'), {code: 'SCOPE_UNCONFIRMED'});
 });
-test('layout cannot release from an exported file or state flag without actual rendering receipt', () => {
+test('generic content and native stages reject exported-file flags and technical receipts before job creation', () => {
   const f = fixture(); confirm(f);
-  ['research', 'strategy', 'copy', 'references', 'sketch', 'visual', 'content_review'].forEach(s => release(f, s));
-  const id = produce(f, 'layout', {technicalReceipts: {...receipts, render: undefined}}); handoff(f, id, 'layout');
-  assert.throws(() => f.send({kind: 'release-stage', artifactId: id, completed: true}), {code: 'TECHNICAL_RECEIPTS_REQUIRED'});
-  assert.throws(() => produce(f, 'final_review'), {code: 'DEPENDENCY_BLOCKED'});
+  ['research', 'strategy', 'copy', 'references'].forEach(s => release(f, s));
+  for (const stage of ['content_review', 'layout', 'final_review']) {
+    const before = f.p;
+    assert.throws(() => f.send({kind: 'request-stage', stage, jobId: `forged-${stage}`, completed: true, technicalReceipts: receipts}), {code: stage === 'content_review' ? 'CONTENT_DEDICATED_ROUTE_REQUIRED' : 'LAYOUT_EXECUTION_UNAVAILABLE'});
+    assert.strictEqual(f.p, before); assert.equal(f.p.jobs.some(j => j.stage === stage), false);
+  }
+  assert.equal(projectView(f.p).complete, false);
 });
+
 test('optimistic conflict, immutable input and idempotent command replay', () => {
   const f = fixture(); const initial = f.p;
   const command = {kind: 'confirm-task-card', taskCardId: initial.activeTaskCardId, commandId: 'fixed', expectedRevision: 0};
@@ -150,40 +167,53 @@ test('human may adopt creative rejection without rewriting original independent 
   assert.equal(f.p.reviews.find(r => r.reviewType === 'score').verdict, 'reject');
   assert.equal(projectView(f.p).stages.find(s => s.stage === 'strategy').status, 'released');
 });
-test('updated copy invalidates content freeze, layout and final acceptance transitively', () => {
+test('updated copy invalidates released references and retains original artifacts and releases', () => {
   const f = fixture(); confirm(f);
-  Object.keys(STAGES).forEach(stage => release(f, stage, stage === 'layout' ? {technicalReceipts: receipts} : {}));
-  const oldVisual = f.p.activeByStage.visual;
-  release(f, 'copy');
-  const view = projectView(f.p);
-  for (const stage of ['references', 'sketch', 'visual', 'content_review', 'layout', 'final_review']) assert.equal(view.stages.find(s => s.stage === stage).status, 'stale');
-  assert.equal(view.complete, false);
-  assert.equal(f.p.artifacts.some(a => a.id === oldVisual), true);
+  ['research', 'strategy', 'copy', 'references'].forEach(stage => release(f, stage));
+  const oldCopy = f.p.activeByStage.copy, oldReference = f.p.activeByStage.references;
+  release(f, 'copy'); assert.notEqual(f.p.activeByStage.copy, oldCopy);
+  assert.equal(projectView(f.p).stages.find(s => s.stage === 'references').status, 'stale');
+  assert.equal(projectView(f.p).complete, false);
+  assert.equal(f.p.artifacts.some(a => a.id === oldReference), true);
+  assert.equal(f.p.releases.some(r => r.artifactId === oldReference), true);
+  assert.throws(() => f.send({kind: 'release-stage', artifactId: oldReference}), {code: 'STALE_ARTIFACT'});
 });
-test('content-review release and optional selected sketch authorization cannot be skipped', () => {
+
+test('generic content review and unreviewed sketch cannot skip dedicated authority', () => {
   const f = fixture(); confirm(f);
-  ['research', 'strategy', 'copy', 'references', 'sketch'].forEach(s => release(f, s));
+  ['research', 'strategy', 'copy', 'references'].forEach(s => release(f, s));
   assert.equal(f.p.visualAuthorizations.length, 0);
-  release(f, 'visual');
-  assert.throws(() => f.send({kind: 'request-stage', stage: 'layout', jobId: 'premature'}), {code: 'DEPENDENCY_BLOCKED'});
-  const id = produce(f, 'content_review'); handoff(f, id, 'content_review');
-  assert.throws(() => f.send({kind: 'release-stage', artifactId: id}), {code: 'REVIEW_REQUIRED'});
+  assert.throws(() => produce(f, 'sketch'), {code: 'REVIEWED_SKETCH_REQUIRED'});
+  assert.throws(() => produce(f, 'visual'), {code: 'DEPENDENCY_BLOCKED'});
+  assert.throws(() => produce(f, 'content_review'), {code: 'CONTENT_DEDICATED_ROUTE_REQUIRED'});
+  assert.throws(() => f.send({kind: 'authorize-visual', sketchArtifactId: f.p.activeByStage.references, reason: 'Reference is not a sketch'}), {code: 'INVALID_AUTHORIZATION'});
+  assert.equal(f.p.visualAuthorizations.length, 0);
 });
-test('new blocking rejection revokes completed release and downstream use transitively', () => {
+
+test('new blocking rejection revokes current release and downstream use transitively', () => {
   const f = fixture(); confirm(f);
-  Object.keys(STAGES).forEach(stage => release(f, stage, stage === 'layout' ? {technicalReceipts: receipts} : {}));
-  const id = f.p.activeByStage.strategy;
+  ['research', 'strategy', 'copy', 'references'].forEach(stage => release(f, stage));
+  const id = f.p.activeByStage.strategy, originals = structuredClone(f.p.reviews);
   f.send({kind: 'record-review', artifactId: id, reviewId: 'late-hard', role: 'strategy', reviewType: 'opposition', pairedReviewId: f.p.reviews.find(r => r.artifactId === id && r.reviewType === 'score').id, firstReadRef: 'late-first-read', verdict: 'reject', findings: [{category: 'factual', blocking: true, severity: 'major', evidenceRefs: ['source'], requirement: 'Correct contradicted assertion'}]}, ctx('late-reviewer', 'agent'));
   assert.equal(projectView(f.p).complete, false);
-  assert.equal(projectView(f.p).stages.find(s => s.stage === 'final_review').status, 'awaiting_release');
+  assert.equal(projectView(f.p).stages.find(s => s.stage === 'strategy').status, 'awaiting_release');
+  assert.equal(releaseReadiness(f.p, id).eligible, false);
   assert.throws(() => produce(f, 'copy'), {code: 'DEPENDENCY_BLOCKED'});
+  assert.throws(() => produce(f, 'references'), {code: 'DEPENDENCY_BLOCKED'});
+  assert.deepEqual(f.p.reviews.slice(0, originals.length), originals);
 });
+
 test('each consuming edge needs its own two-owner handoff', () => {
   const f = fixture(); confirm(f); release(f, 'research');
-  const id = produce(f, 'strategy'); review(f, id); handoff(f, id, 'strategy', 'copy'); f.send({kind: 'release-stage', artifactId: id});
-  release(f, 'copy'); release(f, 'references'); release(f, 'sketch'); release(f, 'visual');
-  assert.throws(() => produce(f, 'content_review'), {code: 'HANDOFF_REQUIRED'});
+  const id = produce(f, 'strategy'); review(f, id);
+  handoff(f, id, 'strategy', 'content_review'); f.send({kind: 'release-stage', artifactId: id});
+  assert.throws(() => produce(f, 'copy'), {code: 'HANDOFF_REQUIRED'});
+  f.send({kind: 'acknowledge-handoff', artifactId: id, side: 'producer', nextStage: 'copy'}, ctx('strategy-author', 'agent'));
+  assert.throws(() => produce(f, 'copy'), {code: 'HANDOFF_REQUIRED'});
+  f.send({kind: 'acknowledge-handoff', artifactId: id, side: 'consumer', nextStage: 'copy'}, ctx('copy-owner', 'agent'));
+  produce(f, 'copy');
 });
+
 test('older same-input completion is historical after newer request', () => {
   const f = fixture(); confirm(f);
   for (const jobId of ['old', 'new']) f.send({kind: 'request-stage', stage: 'research', jobId});
@@ -200,23 +230,26 @@ test('panel cannot collapse seats or waive new dissent with an earlier decision'
   f.send({kind: 'release-stage', artifactId: id});
   assert.equal(f.p.reviews.find(r => r.id === 'late-preference').verdict, 'reject');
 });
-test('endpoint limits auto authorization and selected sketch gate requires exact authorization', () => {
-  const f = fixture({authorizedThrough: 'sketch'}); confirm(f);
-  ['research', 'strategy', 'copy', 'references', 'sketch'].forEach(s => release(f, s));
+test('endpoint limits generic authorization and selected gates require current human adoption', () => {
+  const f = fixture({authorizedThrough: 'references'}); confirm(f);
+  ['research', 'strategy', 'copy', 'references'].forEach(s => release(f, s));
   assert.throws(() => produce(f, 'visual'), {code: 'AUTHORIZATION_ENDPOINT'});
-  const g = fixture({humanGates: ['sketch']}); confirm(g);
-  ['research', 'strategy', 'copy', 'references'].forEach(s => release(g, s));
-  const id = produce(g, 'sketch'); review(g, id); handoff(g, id, 'sketch'); g.send({kind: 'adopt-creative', artifactId: id, reason: 'Selected sketch'}); g.send({kind: 'release-stage', artifactId: id});
-  assert.throws(() => produce(g, 'visual'), {code: 'VISUAL_AUTHORIZATION_REQUIRED'});
-  g.send({kind: 'authorize-visual', sketchArtifactId: id, reason: 'Draw this version'}); produce(g, 'visual');
+  const g = fixture({humanGates: ['references']}); confirm(g);
+  ['research', 'strategy', 'copy'].forEach(s => release(g, s));
+  const id = produce(g, 'references'); review(g, id); handoff(g, id, 'references');
+  assert.throws(() => g.send({kind: 'release-stage', artifactId: id}), {code: 'HUMAN_GATE'});
+  g.send({kind: 'adopt-creative', artifactId: id, reason: 'Selected synthetic reference gate'}); g.send({kind: 'release-stage', artifactId: id});
+  assert.equal(projectView(g.p).stages.find(s => s.stage === 'references').status, 'released');
+  assert.throws(() => produce(g, 'sketch'), {code: 'REVIEWED_SKETCH_REQUIRED'});
 });
-test('visual mean uses four original scores; reference fit uses separate criteria', () => {
+
+test('reference fit uses separate criteria even with four high original scores', () => {
   const f = fixture(); confirm(f); ['research', 'strategy', 'copy'].forEach(s => release(f, s));
-  const ref = produce(f, 'references'); review(f, ref, {referenceFit: undefined}); handoff(f, ref, 'references');
+  const ref = produce(f, 'references'); review(f, ref, {score: 5, referenceFit: undefined}); handoff(f, ref, 'references');
   assert.throws(() => f.send({kind: 'release-stage', artifactId: ref}), {code: 'REFERENCE_FIT_REQUIRED'});
-  release(f, 'references'); const sketch = produce(f, 'sketch'); review(f, sketch, {score: 3.99}); handoff(f, sketch, 'sketch');
-  assert.throws(() => f.send({kind: 'release-stage', artifactId: sketch}), {code: 'SCORE_THRESHOLD'});
+  assert.deepEqual(f.p.reviews.filter(r => r.artifactId === ref && r.reviewType === 'score').map(r => r.score), [5, 5, 5, 5]);
 });
+
 test('minor actionable observations do not become hard blockers', () => {
   const f = fixture(); confirm(f); release(f, 'research'); const id = produce(f, 'strategy');
   review(f, id, {findings: [{category: 'structure', severity: 'minor', blocking: false, requirement: 'Consider shortening heading'}]}); handoff(f, id, 'strategy');
@@ -227,28 +260,29 @@ test('empty rejection stays unresolved and a single visual role cannot fill the 
   const f = fixture(); confirm(f); release(f, 'research'); const id = produce(f, 'strategy');
   review(f, id, {verdict: 'reject'}); handoff(f, id, 'strategy');
   assert.throws(() => f.send({kind: 'release-stage', artifactId: id}), {code: 'REVIEW_REQUIRED'});
-  const g = fixture(); confirm(g); ['research', 'strategy', 'copy', 'references'].forEach(s => release(g, s));
-  const sketch = produce(g, 'sketch'); handoff(g, sketch, 'sketch');
+  const g = fixture(); confirm(g); ['research', 'strategy', 'copy'].forEach(s => release(g, s));
+  const reference = produce(g, 'references'); handoff(g, reference, 'references');
   const shared = ctx('shared-execution', 'agent');
-  g.send({kind: 'assign-panel', artifactId: sketch, seats: REVIEW_ROLES.sketch.map(role => ({role, ...(role === 'visual' ? shared : ctx(`assigned-${role}`, 'agent'))}))});
-  g.send({kind: 'record-review', artifactId: sketch, reviewId: 'visual-seat', role: 'visual', verdict: 'pass', findings: [], score: 5}, shared);
-  assert.throws(() => g.send({kind: 'record-review', artifactId: sketch, reviewId: 'brand-seat', role: 'brand', verdict: 'pass', findings: [], score: 5}, shared), {code: 'REVIEW_SEAT_REUSED'});
-  assert.throws(() => g.send({kind: 'release-stage', artifactId: sketch}), {code: 'REVIEW_REQUIRED'});
+  g.send({kind: 'assign-panel', artifactId: reference, seats: REVIEW_ROLES.references.map(role => ({role, ...(role === 'visual' ? shared : ctx(`assigned-${role}`, 'agent'))}))});
+  g.send({kind: 'record-review', artifactId: reference, reviewId: 'visual-seat', role: 'visual', verdict: 'pass', findings: [], score: 5}, shared);
+  assert.throws(() => g.send({kind: 'record-review', artifactId: reference, reviewId: 'brand-seat', role: 'brand', verdict: 'pass', findings: [], score: 5}, shared), {code: 'REVIEW_SEAT_REUSED'});
+  assert.throws(() => g.send({kind: 'release-stage', artifactId: reference}), {code: 'REVIEW_REQUIRED'});
 });
-test('artifact panel is frozen before scores and cannot be replaced to raise a failing mean', () => {
-  const f = fixture(); confirm(f); ['research', 'strategy', 'copy', 'references'].forEach(s => release(f, s));
-  const id = produce(f, 'sketch');
-  const seats = REVIEW_ROLES.sketch.map(role => ({role, ...ctx(`seat-${id}-${role}`, 'agent')}));
+test('four-role panel is frozen before scores and original low scores cannot be replaced', () => {
+  const f = fixture(); confirm(f); ['research', 'strategy', 'copy'].forEach(s => release(f, s));
+  const id = produce(f, 'references');
+  const seats = REVIEW_ROLES.references.map(role => ({role, ...ctx(`seat-${id}-${role}`, 'agent')}));
   const scoreCommand = {kind: 'record-review', artifactId: id, reviewId: 'premature', role: 'visual', verdict: 'pass', findings: [], score: 5};
   assert.throws(() => f.send(scoreCommand, seats[0]), {code: 'PANEL_REQUIRED'});
-  assert.throws(() => f.send({kind: 'assign-panel', artifactId: id, seats: seats.map(seat => seat.role === 'visual' ? {...seat, ...ctx('sketch-author', 'agent')} : seat)}), {code: 'SELF_REVIEW'});
+  assert.throws(() => f.send({kind: 'assign-panel', artifactId: id, seats: seats.map(seat => seat.role === 'visual' ? {...seat, ...ctx('references-author', 'agent')} : seat)}), {code: 'SELF_REVIEW'});
   assert.throws(() => f.send({kind: 'assign-panel', artifactId: id, seats: seats.map(seat => ({...seat, actorId: 'same'}))}), {code: 'REVIEW_SEAT_REUSED'});
   f.send({kind: 'assign-panel', artifactId: id, seats});
   assert.throws(() => f.send(scoreCommand, ctx('unassigned', 'agent')), {code: 'UNASSIGNED_REVIEWER'});
   assert.throws(() => f.send({kind: 'assign-panel', artifactId: id, seats: seats.map(seat => ({...seat, actorId: `replacement-${seat.role}`}))}), {code: 'PANEL_FROZEN'});
-  review(f, id, {score: 3}); handoff(f, id, 'sketch');
-  for (const role of REVIEW_ROLES.sketch) assert.throws(() => f.send({...scoreCommand, reviewId: `replacement-${role}`, role}, ctx(`replacement-${role}`, 'agent')), {code: 'SCORE_ALREADY_RECORDED'});
-  assert.throws(() => f.send({kind: 'release-stage', artifactId: id}), {code: 'SCORE_THRESHOLD'});
+  review(f, id, {score: 3}); handoff(f, id, 'references');
+  for (const role of REVIEW_ROLES.references) assert.throws(() => f.send({...scoreCommand, reviewId: `replacement-${role}`, role}, ctx(`replacement-${role}`, 'agent')), {code: 'SCORE_ALREADY_RECORDED'});
+  // Reference applicability is separate from sketch score thresholds.
+  f.send({kind: 'release-stage', artifactId: id});
   assert.deepEqual(f.p.reviews.filter(r => r.artifactId === id && r.reviewType === 'score').map(r => r.score), [3, 3, 3, 3]);
 });
 test('human disposition outcomes never satisfy a selected gate and adoption binds current reviews', () => {
@@ -284,4 +318,64 @@ test('pending or deferred criticism cannot resolve a rejection and hard findings
   f.send({kind: 'record-review', artifactId: id, reviewId: 'hard-opposition', role: 'strategy', reviewType: 'opposition', pairedReviewId: 'original', firstReadRef: 'hard-first-read', verdict: 'reject', findings: [{category: 'factual', blocking: true, severity: 'major', evidenceRefs: ['source'], requirement: 'Correct false assertion'}]}, ctx('hard-opponent', 'agent'));
   f.send({kind: 'record-disposition', artifactId: id, outcome: 'reject', reason: 'Attempt to dismiss blocker', evidenceRefs: ['packet']}, ctx('director', 'agent'));
   assert.throws(() => f.send({kind: 'release-stage', artifactId: id}), {code: 'HARD_BLOCKER'});
+});
+
+test('legacy native metadata cannot release or gain authority even with all technical receipts', () => {
+  const f = fixture(); confirm(f); release(f, 'research');
+  for (const stage of ['layout', 'final_review']) {
+    const id = f.restoreLegacyNativeMetadata(stage), before = f.p;
+    assert.deepEqual(releaseReadiness(f.p, id), {eligible: false, blockedReasons: ['LAYOUT_FINAL_AUTHORITY_UNAVAILABLE']});
+    assert.throws(() => f.send({kind: 'release-stage', artifactId: id, completed: true}), {code: 'LAYOUT_FINAL_AUTHORITY_UNAVAILABLE'});
+    assert.throws(() => f.send({kind: 'acknowledge-handoff', artifactId: id, side: 'producer', nextStage: 'delivery'}), {code: 'LAYOUT_FINAL_AUTHORITY_UNAVAILABLE'});
+    assert.strictEqual(f.p, before); assert.equal(projectView(f.p).complete, false);
+    assert.equal(f.p.releases.some(r => r.artifactId === id), false);
+  }
+});
+
+// This is the current review outcome algorithm's report seam. These constructed reports
+// carry no provider originals or authority and are never registered as project artifacts.
+function scoreOutcome(scores) {
+  const cohorts = ['a', 'b', 'c'].map(id => ({id, candidates: [{candidateId: id, directionId: id, imageId: `image-${id}`, sha256: `hash-${id}`}], images: [{imageId: `image-${id}`, sha256: `hash-${id}`}]}));
+  const nodes = cohorts.flatMap(c => [...REVIEW_ROLES.sketch.map(role => ({key: `${c.id}-score-${role}`, cohortId: c.id, phase: 'score', role})), {key: `${c.id}-director`, cohortId: c.id, phase: 'director'}]);
+  const reports = nodes.map(node => {
+    const c = cohorts.find(c => c.id === node.cohortId), candidate = c.candidates[0];
+    const evidence = [{imageId: candidate.imageId, sha256: candidate.sha256, region: 'whole synthetic image', observation: 'Constructed report algorithm fixture only'}];
+    return {id: node.key, nodeKey: node.key, phase: node.phase, valid: true,
+      slots: node.phase === 'score' ? [{candidateId: candidate.candidateId, status: 'valid', entry: {score: scores[REVIEW_ROLES.sketch.indexOf(node.role)], findings: []}}] : [],
+      raw: {findings: [], dispositions: [], comparisons: [], conditions: CONDITIONS.map(name => ({candidateId: candidate.candidateId, name, status: 'pass', evidence}))}};
+  });
+  return {cohorts, nodes, reports};
+}
+test('current sketch algorithm preserves four original scores and rejects an unrounded mean below four', () => {
+  for (const scores of [[4, 4, 4, 4], [5, 3, 4, 4], [4, 4, 4, 3.996]]) {
+    const run = scoreOutcome(scores), before = structuredClone(run), result = deriveSketchReviewOutcome({}, run);
+    const mean = scores.reduce((sum, score) => sum + score, 0) / 4;
+    assert.equal(result.status, mean >= 4 ? 'selection_ready' : 'blocked');
+    for (const direction of result.directions) {
+      assert.equal(direction.outcomes[0].mean, mean);
+      assert.deepEqual(direction.outcomes[0].votes.map(v => v.score), scores);
+      assert.equal(direction.outcomes[0].eligible, mean >= 4);
+    }
+    assert.deepEqual(run, before);
+  }
+});
+test('current sketch algorithm requires all original votes and keeps unknown necessary conditions blocked', () => {
+  const missing = scoreOutcome([5, 5, 5, 5]); missing.reports[0].slots[0].status = 'invalid';
+  const incomplete = deriveSketchReviewOutcome({}, missing);
+  assert.equal(incomplete.status, 'blocked'); assert.equal(incomplete.directions[0].reason, 'original_vote_missing');
+  const unknown = scoreOutcome([5, 5, 5, 5]); unknown.reports.find(r => r.phase === 'director').raw.conditions[0].status = 'unknown';
+  const blocked = deriveSketchReviewOutcome({}, unknown);
+  assert.equal(blocked.status, 'blocked'); assert.equal(blocked.directions[0].outcomes[0].eligible, false);
+});
+
+test('generic completion cannot convert old in-flight sketch or native jobs into current authority', () => {
+  const f = fixture(); confirm(f); release(f, 'research');
+  for (const stage of ['sketch', 'layout', 'final_review']) {
+    const jobId = f.restoreLegacyInFlightJob(stage), before = f.p;
+    assert.throws(() => f.send({kind: 'complete-stage', jobId, artifactId: `forged-${stage}`, payloadRef: 'synthetic://exported-file', contentHash: 'forged', completed: true, technicalReceipts: receipts}, ctx(`${stage}-author`, 'agent')),
+      {code: stage === 'sketch' ? 'REVIEWED_SKETCH_REQUIRED' : 'LAYOUT_FINAL_AUTHORITY_UNAVAILABLE'});
+    assert.strictEqual(f.p, before);
+    assert.equal(f.p.artifacts.some(a => a.id === `forged-${stage}`), false);
+    assert.equal(f.p.jobs.find(j => j.id === jobId).status, 'requested');
+  }
 });

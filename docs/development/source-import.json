@@ -1984,6 +1984,26 @@
     "apps/workbench-preview/src/proposal/qingyu-visual/workflow-intake.test.ts": {
       "reason": "历史绝对路径只作身份，实际原件从仓库内映射读取",
       "sha256": "356ff846670bcf96e199ec21192212562a6cf58f9345e3c2a28b362765303764"
+    },
+    "apps/workbench-preview/package.json": {
+      "reason": "按005为PptxGenJS限定image-size修复版，显式声明测试所需Node类型，不升级PptxGenJS",
+      "sha256": "7e6fe17f53368c2b87d3aa69ca76fc034327cc72d812682626c81402d914bb7e"
+    },
+    "apps/workbench-preview/package-lock.json": {
+      "reason": "锁定image-size 2.0.3及显式Node类型，保留原导入身份",
+      "sha256": "4d72dc2d5248ad153f1004bd158c8e60ba5243d06e6ef1bf4b6b6e271bbbed02"
+    },
+    "apps/workbench-preview/tsconfig.json": {
+      "reason": "显式加载测试实际使用的Node类型，移除间接依赖类型泄漏",
+      "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
+    },
+    "apps/workbench-preview/src/domain/service.ts": {
+      "reason": "环境增加unavailable表示占位HTTP适配，避免配置地址冒充已接通",
+      "sha256": "426f10178b81ba83046afb07bab40a80932c2ada44d03143431c7401125a6377"
+    },
+    "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
+      "reason": "当前占位HTTP服务准确报告未接通，错误中文化，不增加真实API调用",
+      "sha256": "17ee80aa4f72686142caa97550e3e6b9f3ad91ac041f4fba48341f14bf3c5f02"
     }
   }
 }

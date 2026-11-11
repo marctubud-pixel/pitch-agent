@@ -30,8 +30,14 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
     "vite-plugin-singlefile": "^2.3.4",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "@types/node": "24.19.2"
   },
   "private": true,
-  "type": "module"
+  "type": "module",
+  "overrides": {
+    "pptxgenjs": {
+      "image-size": "2.0.3"
+    }
+  }
 }

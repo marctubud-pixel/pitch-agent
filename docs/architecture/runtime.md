@@ -1,13 +1,13 @@
 # 应用与Agent运行架构
 
-规范版本：1.0.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。
+规范版本：1.0.1。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。
 
 ```mermaid
 flowchart LR
   U[中文桌面浏览器] --> F[React与Vite应用]
   F --> S[Services接口]
   S --> M[本地模拟与浏览器存储]
-  S -.部分HTTP适配.-> H[Node工作台服务]
+  S -.占位HTTP边界.-> H[Node工作台服务]
   F --> D[同版Deck预览与PPTX导出]
   H --> B[SQLite快照与执行记录]
   H -.按配置与授权.-> P[模型及图像供应商]
@@ -18,7 +18,7 @@ flowchart LR
 
 `apps/workbench-preview/src/App.tsx`装配应用、路由、服务、主题、人类协作和WorkBot。`src/app/router.tsx`负责hash路由，`views/ProjectWorkspace.tsx`装配五项目区域；`ProposalArea.tsx`装配七生产阶段。页面ID与实际路由映射见[页面索引](../pages/README.md)。
 
-`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台和助手为Mock，本地Brief解析另有实际提取能力；HTTP地址只切换已存在的适配。提案生产阶段目前仍使用MockProposalService，设置地址不代表七阶段已接真实后端。
+`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台和助手为Mock，本地Brief解析另有实际提取能力；HTTP地址只选择当前占位适配，不能当作连接成功；旧正式前端的实际HTTP与mapper是后续可复用能力。提案生产阶段目前仍使用MockProposalService，设置地址不代表七阶段已接真实后端。
 
 `src/services/proposal`及`collaboration`负责本地提案、角色、修订和草稿保护。本地权限矩阵不等于生产身份服务；浏览器持久化不是远程数据库。案例投影在`src/proposal/qingyu-*`，依输入、版本与哈希守卫只读显示原稿和原评，不能反写正式阶段通过。
 
