@@ -204,3 +204,7 @@ R4 发布器另提供折叠的工程参考记录统计，数据来自同一案�
 ## 当前PDF解析接缝
 
 本地HTTP的指定PDF解析继续复用旧intake，服务端原claim与实际原件/抽取JSON保持同一store；当前应用资料行的可选originalDocuments接口显示分页结果和缺能力/历史/未知状态，不创建新的业务阶段。合同见[本地解析](../development/brief-extraction.md)，模型读取、人工采用和自动采集分别接入。
+
+## 当前研究自动采集接缝 · 2026-11-12
+
+受限brief-server现通过research-acquisition-service复用旧四分支runtime、封口及唯一r7生产者；技术请求账本冻结原body与所选job，actual claim再核当前卡、原问题计划与revision。前端optional researchAcquisition保留原页面结构，单次显式有限推进、刷新不续跑。新隔离配置显式共根才允许当前PDF输入；原件和历史unknown继续留存。接口、恢复限制及当前未验范围见[采集运行合同](../development/research-acquisition.md)。旧模块地图和旧运行记录保留各自时点身份。

@@ -1,0 +1,18 @@
+# 自动采集前端P2独立复验
+
+2026-11-12，根已采用r2两文件；本审查仅只读/执行新隔离工程测试。原报告 `acquisition-frontend-independent-review.md` 与失败日志r1/r2/r3保持，不覆盖。r2增量patch SHA与两根文件after SHA独立核对均与 `acquisition-ui-r2-manifest.json` 一致，回执为 `acquisition-frontend-independent-fix-hashes.json`。
+
+## 结论
+
+原P2在当前根源码关闭：同卡重新预登记Q2时，采集GET可显示原generation/current=false；planner已完成但响应丢失后，另一操作者登记Q2，重放精确原body可识别历史并清journal，返回conflict/outcomeUnknown=false，仍只有1次既有planner、0工具调用。未删除严格原请求/receipt/job/plan/envelope/producer/current=true绑定来放宽。
+
+源码核对 `currentAcquisitionInputs` 与原生 `acquisitionCurrent/acquisitionInput` 的适用性组成：完整任务卡、确认集合、最新完整问题登记及哈希、所选来源原记录哈希、完整所选PDF document与采用记录、最新policy；generation必须最新。当前性更改不改写原报告或历史ledger。现有测试中Q2/source/policy变化仍伪current=true时均拒绝。
+
+## 本次实际运行
+
+1. 独立原probe文件未改断言或改为匹配失败；仅使用根修后源码重跑 `acquisition-frontend-independent-vitest.config.mjs`：8 passed/0 failed/0 skip，exit0。它包括修前确实失败的两条独立反例，以及6条既有真实集成/PDF保护路径。日志 `acquisition-frontend-independent-fix-original-probes.log`。
+2. 根 `researchAcquisitionHttp.test.ts` 加 `protectServices.test.ts`：19 passed/0 failed/0 skip，exit0，含真实mixed.pdf部分文本原件资格→r7 producer，以及Q2/source/policy伪currenttrue和guest三个写入口/恢复保护。日志 `acquisition-frontend-independent-fix-target.log`。
+
+两命令均显式 `PITCH_ACQUISITION_TEST_SERVER="$PWD/tools/workbench/brief-server.mjs"`，`PITCH_PDF_TEST_PYTHON=/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3`，使用原生新SQLite和本机注入式合成provider/search transport；允许自有Python RSS检查。没有旧业务、外网研究或收费模型。修复不是作者自测替签，本报告由原独立发现者重新执行，原失败仍在。
+
+实际Chrome、响应式/主题/键盘和全链路未在本审查运行；此结论仅关闭这项前端协议P2，不签ui-review、研究业务通过或完整目标完成。

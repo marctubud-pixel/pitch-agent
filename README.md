@@ -10,6 +10,7 @@
 git clone git@github.com:marctubud-pixel/pitch-agent.git
 cd pitch-agent
 npm run setup:frontend
+npm run setup:workbench
 npm run dev
 ```
 
@@ -42,4 +43,4 @@ npm run check
 
 数据库、原业务run、失败原件、外部PDF和完整交付池保持本地原位，不整体上传。Git保护明示纳管的源码和文档，不能恢复未纳管运行数据或重建此前未提交历史。研究参照、品牌图片、生成试稿及第三方代码保留各自来源和权利，未新授予统一开源许可。
 
-七阶段运行协议与受限研究接入见[当前接续](docs/development/seven-stage-research.md)。新项目与旧记录隔离；r7方法和局部读者实践已存在，当前同版正文首读、实际修订复查及研究交接已接入，见[读者合同](docs/development/research-reader.md)。自动采集与后续仍待接，不要求重做旧研究或Skill。
+七阶段运行协议与受限研究接入见[当前接续](docs/development/seven-stage-research.md)。新项目与旧记录隔离；r7方法和局部读者实践已存在，当前同版正文首读、实际修订复查及研究交接已接入，见[读者合同](docs/development/research-reader.md)。[自动采集](docs/development/research-acquisition.md)已接受限HTTP和当前研究页，实际范围见[本轮核验](docs/development/research-acquisition-verification-20261112.md)；后续仍继续接线，不要求重做旧研究或Skill。

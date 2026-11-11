@@ -1,6 +1,6 @@
 # 配置与服务边界
 
-规范版本：1.4.1。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.5.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
@@ -12,7 +12,7 @@
 
 当前已验入口为根`npm run dev:brief`，显式指定新SQLite与loopback来源，要求Node 24且无供应商配置。下述完整业务入口继续作为历史能力保留，不随本轮简报接线启动。
 
-`tools/workbench`要求Node `>=24.13.0 <25`；parse5依赖由该目录package.json和pnpm-lock.yaml固定，可使用其声明的pnpm版本安装。默认开发命令不自动启动它。
+`tools/workbench`要求Node `>=24.13.0 <25`；parse5依赖由该目录package.json和pnpm-lock.yaml固定。根`npm run setup:workbench`使用pnpm 11.25.0、冻结锁及禁用安装脚本安装；Application CI显式执行此命令。安装不启动服务或采集。
 
 配置读取由`tools/workbench/launch-config.mjs`负责。旧环境入口支持`PORT`、`WORKBENCH_DB`、`WORKBENCH_EXECUTIONS`、`WORKBENCH_MODEL`、`WORKBENCH_IMAGE_CONFIG`及`WORKBENCH_MAX_CONCURRENT_JOBS`。默认端口4181，数据库与执行路径属于运行数据。
 
@@ -28,7 +28,7 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集和后续生产仍未完成；默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，后续生产仍未完成；默认不执行模型。
 
 ## PDF原件配置
 
@@ -39,7 +39,7 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 
 现有显式研究配置另需`bindings.reader`及匹配provider/model/role。未配置时只允许读取和问题登记，不创建读者任务。reader scope为saved-report-prose，没有图像输入；recheckAvailable按实际配置返回。恢复保存的HTTP结果无需重开provider或凭据，也不派发新调用。
 
-程序化本地验收可显式给provider `testOnly:true`，新生产和读者任务会保存合成工程标签；该标签不放宽任何资格。CLI供应商、服务端账号或付费授权未由此启用。测试的明确工程操作员只覆盖人工节点接线，不代表真实客户批准。PDF默认根与研究默认根分别保留；解析/采集将按新的隔离配置对齐，不移动旧原件。
+程序化本地验收可显式给provider `testOnly:true`，新生产和读者任务会保存合成工程标签；该标签不放宽任何资格。CLI供应商、服务端账号或付费授权未由此启用。测试的明确工程操作员只覆盖人工节点接线，不代表真实客户批准。PDF默认根与研究默认根分别保留。新采集配置只有显式将`server.executionRoot`设为同一新SQLite的`${dbPath}.originals`，才允许选入PDF；`materialsRootShared`如实显示共根资格，不移动旧原件。
 
 ## 显式本地PDF解析
 
@@ -48,3 +48,7 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 PDF可选运行依赖固定在`tools/workbench/requirements-pdf.txt`，包含实际已测的两个解析包及所需传递依赖。服务不会自行安装；Application CI使用独立venv和binary wheel显式安装、pip check后运行真实解析专项，不触系统环境或旧业务。远程安装和测试是否成功以本次PR实际CI为准。
 
 普通symlink虚拟环境按所配置的Python路径启动；解析器不会将它替换为基础解释器。物理realpath/SHA仍核验，运行中路径或二进制变化将停止采用结果。历史提取JSON保留原实际工具身份，不据配置修复重新解析旧原件。
+
+## 自动采集配置
+
+`--research-config`沿用经过验证的launch配置，另需`researchAcquisition`、其指定的`searchProviders`和实际`research_planner`/`research`绑定。缺搜索、模型适配器或预算时显示不可用；设置开关不证明外部服务在线或获准付费。空来源可以自动取证，选择PDF另需实际当前bridge原件、已核抽取及显式共根。字段、默认零执行和恢复限制见[采集合同](research-acquisition.md)。

@@ -1,0 +1,71 @@
+{
+  "scope": "Selected synthetic engineering evidence; no native DB/upload body/full business originals",
+  "files": [
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-backend-independent-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/backend-review.txt",
+      "sha256": "dafb290ca06f9f5a9f62155d5ad3320e86558d8630c33c7c85e0216f3bba638f"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-frontend-independent-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/frontend-review-initial.txt",
+      "sha256": "84b61380af9e47fb5c70bab855c8a1963b50336be1736cbd5430af0cfb572b78"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-frontend-independent-fix-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/frontend-review-fix.txt",
+      "sha256": "72bedf107629c8ee41f6e28c10d1e48b8fc0505e514d1b42f6371fa66c2f026e"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-fixture-independent-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/fixture-review.txt",
+      "sha256": "d2a775c523822deb8e63654e9a3061736d3613cdc07cbde96b3821ebc820e91c"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-ui-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/ui-review.txt",
+      "sha256": "5f0f92c0d9c1577dd81b088050c92e51cd99a3ff067fd7632441c115b79fc06e"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/acquisition-r1/independent-1280-light-after-expanded.png",
+      "selected": "docs/development/evidence/research-acquisition-20261112/ui-1280-light.png",
+      "sha256": "d4093a0f6b82eab109a8fb9bfa537cb499e25280567ed47a06528435eaa03d25"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/acquisition-r1/independent-910-dark-after-expanded.png",
+      "selected": "docs/development/evidence/research-acquisition-20261112/ui-910-dark.png",
+      "sha256": "45fe993de211a575dd099e232c2d7008d993990b0f71c292155461a575d4fa5e"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/acquisition-r1/independent-1280-light-coverage-viewport.png",
+      "selected": "docs/development/evidence/research-acquisition-20261112/ui-before-coverage.png",
+      "sha256": "bdd298123e41ff4b2e7bdb58e4178e77cfe464aa5ac071e8615b5e6f9c0aa06d"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/acquisition-r1/UI-CHECK-INITIAL-FAILURE.txt",
+      "selected": "docs/development/evidence/research-acquisition-20261112/initial-functional-script-failure.txt",
+      "sha256": "d6d71ed84e115cf6622f3b2736474d9715cb2758ec3670f88bddb26a9c678180"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/acquisition-r1/UI-RECEIPT.json",
+      "selected": "docs/development/evidence/research-acquisition-20261112/ui-result.json",
+      "sha256": "19c809e9b2b8a526b74105cdb8989b203db63957a57a16c2af197ab254e97a15",
+      "selection": "Only actual UI readback; raw full project/upload bodies and DB remain local."
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-final-spec-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/final-spec-review.txt",
+      "sha256": "d3128ca4470b4ad18c09009ad5b71873291c133b326e8003c11ac09662c299bb"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-final-standards-review.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/final-standards-review.txt",
+      "sha256": "40a9180199ae0e89290594b0464608a5c4612b992454abe1649521f98a17a832"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/acquisition-final-standards-detail.md",
+      "selected": "docs/development/evidence/research-acquisition-20261112/final-standards-detail.txt",
+      "sha256": "35a216ed1d69f34299d11ad144294b94ac42f279a8bc542679a19f70f41751e4"
+    }
+  ]
+}

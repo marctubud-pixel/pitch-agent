@@ -33,15 +33,15 @@ test('explicit fresh generation preserves the previous envelope and originals wi
 });
 
 test('new generation registration rejects forged ancestry even with a rehashed envelope',async t=>{
- const f=await acquisitionFixture();t.after(()=>f.close());await planAcquisition(f);await finishAcquisition(f);
- const old=f.store.command.bind(f.store),before=f.store.read('p');
- f.store.command=(id,c,context)=>{
-  if(c.kind==='research-acquisition-request'){
+ let armed=false;
+ const f=await acquisitionFixture({commandHook:(c,next)=>{
+  if(armed&&c.kind==='research-acquisition-request'){
    const envelope={...c.envelope,parentGenerationId:'acquisition-unregistered'};delete envelope.envelopeHash;envelope.envelopeHash=hash(envelope);
-   return old(id,{...c,envelope},context);
+   return next({...c,envelope});
   }
-  return old(id,c,context);
- };
+  return next();
+ }});t.after(()=>f.close());await planAcquisition(f);await finishAcquisition(f);
+ const before=f.store.read('p');armed=true;
  await assert.rejects(()=>f.executor.continueResearch('p',f.request()),e=>e.code==='ACQUISITION_ORIGINAL_INVALID');
  assert.deepEqual(f.store.read('p'),before);
  assert.equal(f.calls.length,2);

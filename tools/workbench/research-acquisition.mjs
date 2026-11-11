@@ -1,11 +1,13 @@
 import {createHash} from 'node:crypto';
 import {isDeepStrictEqual as equal} from 'node:util';
 import {registeredSources} from './research-sources.mjs';
+import {cardHash} from './intake-contract.mjs';
+import {researchQuestionRegistration} from './research-reader-state.mjs';
 import {researchDataBasis} from './research-chart-data.mjs';
 export const ACQUISITION_PROTOCOL='research-acquisition-v1';
 export const ACQUISITION_BRANCHES=Object.freeze(['professional_reports','brand_product','same_purpose_competitors','users_scenes']);
 export const ACQUISITION_PURPOSES=Object.freeze(['research_acquisition_plan','research_acquisition_branch']);
-export const ACQUISITION_COMMANDS=Object.freeze(['research-acquisition-cancel','research-acquisition-request','research-acquisition-start','research-acquisition-plan-dispatch','research-acquisition-plan-result','research-acquisition-plan-complete','research-acquisition-tool-claim','research-acquisition-tool-result','research-acquisition-branch-complete','research-acquisition-fail','research-acquisition-seal']);
+export const ACQUISITION_COMMANDS=Object.freeze(['research-acquisition-http-request','research-acquisition-cancel','research-acquisition-request','research-acquisition-start','research-acquisition-plan-dispatch','research-acquisition-plan-result','research-acquisition-plan-complete','research-acquisition-tool-claim','research-acquisition-tool-result','research-acquisition-branch-complete','research-acquisition-fail','research-acquisition-seal']);
 export const ACQUISITION_LIMITS=Object.freeze({queries:8,resultsPerQuery:5,pageAttempts:12,pdfAttempts:4,imageAttempts:4,admittedRecords:12,admittedTextBytes:131072,searchBytes:1048576,captureBytes:2097152,extractionBytes:32768,totalSearchBytes:8388608,totalCaptureBytes:25165824,totalExtractionBytes:393216,timeoutMs:10000,elapsedMs:300000,maxParallelBranches:4,planOutputBytes:65536});
 export const acquisitionHash=value=>createHash('sha256').update(typeof value==='string'||value instanceof Uint8Array?value:JSON.stringify(value)).digest('hex');
 export const acquisitionNeed=(value,code,message)=>{if(!value)throw Object.assign(new Error(message),{code,status:['REVISION_CONFLICT','COMMAND_ID_REUSED'].includes(code)?409:422});};
@@ -44,6 +46,8 @@ export function freezeAcquisition(p,request,{configuration,searchIdentity,planne
 export function acquisitionCurrent(p,g,{historical=false}={}){
  const {envelopeHash,...data}=g.envelope;need(acquisitionHash(data)===envelopeHash,'ACQUISITION_ORIGINAL_INVALID','Frozen envelope identity changed');
  if(historical)return;
+ const origin=(p.researchAcquisitionHttpRequests??[]).find(r=>r.operation==='start'&&r.generationId===g.envelope.id);
+ if(origin)need(equal(origin.questionRegistration,researchQuestionRegistration(p)),'RESEARCH_QUESTIONS_CHANGED','Acquisition must retain its original preregistered question plan');
  const current=acquisitionInput(p,g.envelope.request);
  need(equal(current,{taskCard:g.envelope.taskCard,confirmations:g.envelope.confirmations,manualSources:g.envelope.manualSources,materials:g.envelope.materials,policy:g.envelope.policy}),'STALE_ACQUISITION','Confirmed task, decisions, source selection, materials or policy changed');
 }
@@ -94,7 +98,24 @@ export function resolveAcquisition(p,ref,{historical=false}={}){
  const g=(p.researchAcquisitions??[]).find(g=>g.envelope.id===ref?.generationId);need(g&&equal(acquisitionReference(g),ref)&&equal(acquisitionAdmission(g),g.admission),'ACQUISITION_ORIGINAL_INVALID','Exact registered ancestral acquisition admission required');acquisitionCurrent(p,g,{historical});return g;
 }
 const jobFor=(e,purpose,kind)=>({id:`${e.id}:${kind??'plan'}`,purpose,stage:'research',status:'queued',binding:copy(purpose==='research_acquisition_plan'?e.plannerBinding:{providerId:'local-research-tools',model:'bounded-public-capture-v1',role:kind}),task:{id:`${e.id}:${kind??'plan'}`,owner:kind??e.plannerBinding.role,parentId:e.id,generationId:e.id,...(kind?{branchKind:kind}:{})},inputVersionIds:[e.taskCard.id],attempts:[]});
+export function requireAcquisitionHttpJob(p,requestId,job){
+ const row=(p.researchAcquisitionHttpRequests??[]).find(r=>r.request.commandId===requestId);
+ need(job&&row?.operation==='step'&&row.jobIds.includes(job.id)&&(job.task.generationId===row.generationId||job.task.researchDataBasis?.acquisition?.generationId===row.generationId),'INVALID_JOB','Actual claim must belong to the original HTTP job set');
+ const card=p.taskCards.find(c=>c.id===p.activeTaskCardId);need(card?.id===row.request.taskCardId&&cardHash(card)===row.request.taskCardHash&&equal(row.questionRegistration,researchQuestionRegistration(p)),'STALE_ACQUISITION','Actual claim requires original confirmed card and question plan');
+}
 export function reduceAcquisition(p,c,context){
+ if(c.kind==='research-acquisition-http-request'){
+  need(context.actorType==='agent'&&context.actorId==='research-acquisition-runtime','EXECUTOR_REQUIRED','Technical acquisition admission only');
+  const r=c.request,generation=(p.researchAcquisitions??[]).find(g=>g.envelope.id===c.generationId),historical=c.operation==='reconcile',card=historical?generation?.envelope.taskCard:p.taskCards.find(x=>x.id===p.activeTaskCardId),origin=(p.researchAcquisitionHttpRequests??[]).find(r=>r.operation==='start'&&r.generationId===c.generationId),registration=historical?origin?.questionRegistration:researchQuestionRegistration(p);
+  need(p.workflow?.version==='proposal-seven-v1'&&card&&card.id===r.taskCardId&&cardHash(card)===r.taskCardHash&&(historical||p.confirmations.some(x=>x.taskCardId===card.id))&&registration,'STALE_ACQUISITION','Current confirmed task and preregistered questions required');
+  need(['start','step','reconcile'].includes(c.operation)&&r.commandId===c.commandId&&r.expectedRevision===c.expectedRevision&&Array.isArray(c.jobIds)&&new Set(c.jobIds).size===c.jobIds.length&&c.jobIds.length<=4,'INVALID_REQUEST','Exact bounded technical request required');
+  if(c.operation!=='start'){
+   need(generation&&(historical||p.researchAcquisitions.at(-1)===generation),'STALE_ACQUISITION','Selected generation must be current');if(!historical)acquisitionCurrent(p,generation);
+   for(const id of c.jobIds){const j=p.jobs.find(j=>j.id===id);need(j&&(j.task.generationId===c.generationId||j.task.researchDataBasis?.acquisition?.generationId===c.generationId),'INVALID_JOB','Only exact selected generation jobs');if(c.operation==='step')need(j.status==='queued'&&j.attempts.length===0,'UNSAFE_RETRY','Step only claims fresh queued jobs');else {need(j.status==='awaiting_reconciliation','ACQUISITION_RECONCILIATION_UNAVAILABLE','Only saved unknown originals can be reconciled');if(!ACQUISITION_PURPOSES.includes(j.purpose)){need(j.stage==='research'&&(!j.purpose||j.purpose==='stage')&&j.id===`job-${acquisitionHash([p.id,`${c.generationId}:producer`])}`,'INVALID_JOB','Only the unique registered producer can use stage recovery');need(p.activeTaskCardId===generation.envelope.taskCard.id&&p.researchAcquisitions.at(-1)===generation,'ACQUISITION_PRODUCER_HISTORY_UNSUPPORTED','Historical producer results remain pending without a new artifact');acquisitionCurrent(p,generation);}}}
+  }
+  p.researchAcquisitionHttpRequests??=[];p.researchAcquisitionHttpRequests.push({operation:c.operation,request:copy(r),generationId:c.generationId,jobIds:copy(c.jobIds),requestedBy:copy(c.requester??null),questionRegistration:copy(registration)});return;
+ }
+
  if(c.kind==='research-acquisition-cancel'){
   need(context.actorType==='human','HUMAN_REQUIRED','Human acquisition cancellation required');const g=(p.researchAcquisitions??[]).find(g=>g.envelope.id===c.request?.generationId);need(g&&!g.admission,'ACQUISITION_NOT_CANCELLABLE','Unsealed generation required');g.cancellation={request:copy(c.request),actorId:context.actorId,createdAt:context.now};for(const job of p.jobs.filter(j=>j.task?.generationId===g.envelope.id&&j.status==='queued'))job.status='cancelled';g.state=p.jobs.some(j=>j.task?.generationId===g.envelope.id&&['running','awaiting_reconciliation'].includes(j.status))?'cancelling':'cancelled';return;
  }
@@ -112,6 +133,7 @@ export function reduceAcquisition(p,c,context){
  const job=p.jobs.find(j=>j.id===c.jobId),attempt=job?.attempts.at(-1);
  need(ACQUISITION_PURPOSES.includes(job?.purpose)&&job.task.generationId===g.envelope.id,'INVALID_JOB','Exact acquisition job required');
  if(c.kind==='research-acquisition-start'){
+  if(c.httpRequestId)requireAcquisitionHttpJob(p,c.httpRequestId,job);
   acquisitionCurrent(p,g);need(job.status==='queued'&&job.attempts.length===0&&Date.parse(context.now)<Date.parse(g.envelope.deadline),'ACQUISITION_DEADLINE','Only fresh queued work within persisted deadline can start');
   need(job.purpose!=='research_acquisition_branch'||p.jobs.filter(j=>j.purpose==='research_acquisition_branch'&&j.task.generationId===g.envelope.id&&j.status==='running').length<g.envelope.limits.maxParallelBranches,'ACQUISITION_CONCURRENCY','Branch concurrency allowance exhausted');
   job.status='running';job.attemptId=c.attemptId;job.attempts.push({id:c.attemptId,status:'running',dispatchStarted:false,executor:copy(context),startedAt:context.now});return;

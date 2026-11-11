@@ -736,13 +736,13 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       store.command(projectId,{kind:'request-handoff',artifactId,side,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,handoffInput,request},commandId:commandId??randomUUID(),expectedRevision:expectedRevision??project.revision},context);
       return jobId;
     },
-    async execute(projectId,jobId,{retry=false}={}) {
+    async execute(projectId,jobId,{retry=false,acquisitionAdmission}={}) {
       const admission=store.read(projectId),isReference=admission.jobs.find(j=>j.id===jobId)?.purpose==='reference';
       if(!isReference)await verifyOrdinaryProject(admission,{executionRoot:root});
       const project=isReference?admission:store.read(projectId),job=project.jobs.find(item=>item.id===jobId);
       if(!job)throw new Error('Job not found');
       if(job.purpose==='research_reader'&&retry)throw new DomainError('RESEARCH_READER_RETRY_CLOSED','Reconcile the saved reader attempt; never retry an unknown call');
-      if(ACQUISITION_PURPOSES.includes(job.purpose))return acquisition.execute(projectId,jobId,{retry});
+      if(ACQUISITION_PURPOSES.includes(job.purpose))return acquisition.execute(projectId,jobId,{retry,admission:acquisitionAdmission});
       if(job.task?.researchDataBasis?.acquisition){try{await acquisition.verifyProducer(projectId,job.task.researchDataBasis.acquisition);}catch(error){if(job.status!=='queued')throw error;send(projectId,{kind:'block-queued-job',jobId,error:{code:error.code??'ACQUISITION_ORIGINAL_INVALID',message:error.message}},{actorType:'agent',actorId:'research-acquisition-original-admission',runId:randomUUID(),contextId:randomUUID()});return store.read(projectId).jobs.find(j=>j.id===jobId);}}
       if(INTAKE_PURPOSES.includes(job.purpose))return intake.execute(projectId,jobId,{retry});
       try{await intake.verifyCard(projectId);}catch(error){if(job.status!=='queued')throw error;send(projectId,{kind:'block-queued-job',jobId,error:{code:error.code??'DOCUMENT_CORRUPT',message:error.message}},{actorType:'agent',actorId:'intake-original-admission',runId:randomUUID(),contextId:randomUUID()});return store.read(projectId).jobs.find(j=>j.id===jobId);}
@@ -777,7 +777,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
         if(job.purpose==='handoff'&&project.workflow)await verifyCurrentResearchReaders(store.read(projectId),{executionRoot:root,artifactId:job.targetArtifactId});
         await verifyRegistered(store.read(projectId),job);
         const failureWitness=await diagnosticWitness(store.read(projectId),job);
-        send(projectId,{kind:retry?'retry-job':'start-job',jobId,attemptId,...(failureWitness?{failureWitness}:{})},context);
+        if(acquisitionAdmission)store.command(projectId,{kind:'start-job',jobId,attemptId,acquisitionHttpRequestId:acquisitionAdmission.requestId,commandId:`acquisition-job-start-${hash(JSON.stringify([projectId,acquisitionAdmission.requestId,jobId]))}`,expectedRevision:acquisitionAdmission.expectedRevision},{...context,now:new Date().toISOString()});else send(projectId,{kind:retry?'retry-job':'start-job',jobId,attemptId,...(failureWitness?{failureWitness}:{})},context);
       }
       catch(error) {
         if(!(error instanceof DomainError)||store.read(projectId).jobs.find(j=>j.id===jobId)?.status!=='queued')throw error;

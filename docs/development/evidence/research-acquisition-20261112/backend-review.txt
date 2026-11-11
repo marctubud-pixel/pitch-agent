@@ -1,0 +1,38 @@
+# 自动采集受限桥独立复核
+
+2026-11-12。独立审核者：acquisition_backend_independent。只读审核候选，不修改实现、规范、纳管清单或旧运行；仅新增本报告、独立探针和测试日志。候选为 `worktrees/acquisition-http`，基线 a532697e；冻结交付的9份源码／测试 SHA 全部与 `acquisition-http-hashes.json` 的 after 值一致。本报告不代替根集成后的最终两轴审查与真实 UI 审核。
+
+## 结论
+
+本次未发现有实证支持的 P1/P2。技术账本、实际 claim、原件资格与有限执行范围符合 `acquisition-integration.md` 所述接缝；没有由采集结果提升研究充分性、事实或人工批准。现行正式规范尚未纳入该候选合同，根合流后仍须更新对应合同与锁，不能把候选设计当成已发布规范。
+
+## 独立执行证据
+
+在候选工作目录执行：
+
+```sh
+PITCH_PDF_TEST_PYTHON=/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 node --test tools/workbench/research-acquisition-service.test.mjs tools/workbench/research-acquisition-bridge-http.test.mjs
+```
+
+结果：17 passed，0 failed，0 skipped，退出0。实际新临时SQLite、已装Python解析夹具及仅127.0.0.1合成模型HTTP；注入式搜索／捕获没有访问外部业务网站。日志：`../acquisition-backend-independent-tests.log`。worktree已有的 node_modules 链接指向根的已安装依赖，未安装、替换或纳管任何依赖。
+
+另外新增并执行 `acquisition-independent-probe.mjs`，退出0，3项独立断言组通过：
+
+- 真实queued planner被配上另一 generationId时拒绝 STALE_ACQUISITION，revision不变，0模型／工具调用。
+- 原planner step已完成后，关闭执行配置重放完全相同body仍能读取已知回执；revision不变，不拿新分支替换原selected job。
+- 关闭配置重放原start返回原回执，不派发已新增分支。探针累计1次planner、0工具、0产物、0release。
+
+日志：`acquisition-independent-probe.log`。没有执行旧完整HTTP scheduler、付费或真实模型、旧业务／数据库、原生PPT或在线编辑。
+
+## 核对的边界
+
+- `research-acquisition-service.mjs` 的技术请求先保存原operation/body/card/question registration/selected jobs，重放先比较原body。每次step只能执行原集合中零attempt的queued job。
+- `research-acquisition.mjs` 的 `requireAcquisitionHttpJob` 进入实际store claim，验证原selected membership、generation、完整当前卡hash与问题计划。runtime和executor使用捕获revision及派生稳定claim ID；变化时保守拒绝，不换head重新授权。
+- start/step严格同版；历史plan/branch恢复核冻结generation和已保存IO，不重新搜索／捕获。未知原件缺失保持unknown。唯一producer恢复复用原模型HTTP结果；历史producer明确拒绝并保持未知、0新增artifact／调用。
+- 选入PDF须显式共根，并由bridge实际原件／解析读回逐件核对；共根不成立或文件篡改阻止进入研究。partial文本不等于事实有效或完整覆盖。
+- 新HTTP路由复用128KiB、Host/Origin/query/方法／字段限制；默认状态读取不启动队列。原旧 `research-acquisition-http.test.mjs` 不在交付差异内，新测试是唯一的 `research-acquisition-bridge-http.test.mjs`。
+- 采集成功只保存原件和r7 producer产物，独立reader、事实、readiness、semantic、owner及人类放行未被跳过；实际正例release均为0。
+
+## 验证上限
+
+未审核或签署真实UI、外部来源真实性、真实研究质量、消费者／客户批准、生产多用户鉴权、历史producer接管、死亡owner自动接管、策略后续或完整可编辑PPT闭环。native状态的producerStatus独立呈现，前端投影另行补入producer unknown的核回入口；本报告没有以状态计数代替真实界面观察。

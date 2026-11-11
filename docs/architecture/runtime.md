@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.4.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.5.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -68,3 +68,9 @@ brief-server复用brief-intake-service→旧intake-runtime/intake-document-store
 ## 指定PDF的本地解析
 
 brief-intake-service复用intake-runtime→intake-pdf旧工具，显式extraction路由只处理原bridge对应的本地PDF job。首claim冻结原请求到原processedCommands；原件、分页JSON、工具身份及同revision快照分别核对，不建第二状态库。WorkbenchService可选originalDocuments及原资料行副层读取实际状态/正文；Mock不补此能力。缺能力、历史和unknown与模型/人类采用分开，详见[解析合同](../development/brief-extraction.md)。
+
+## 研究自动采集bridge
+
+`research-acquisition-service.mjs`复用原`research-acquisition-runtime`及executor，受限HTTP增加读取、start、step和reconcile。`researchAcquisitionHttpRequests`保存原技术请求及固定任务集合，actual claim核完整卡、问题计划和CAS；不建立新调度器或人类批准记录。计划、四分支、封口和唯一r7生产者继续使用原存储与实际文件。
+
+前端可选`researchAcquisition`由严格HTTP投影和workflow权限保护，Mock不补此能力。HTTP传输待核与原生unknown分开，刷新不续跑；历史计划/分支可核原IO，历史研究生产者未支持。新配置显式共根才允许选入PDF。详细模块合同见[采集运行合同](../development/research-acquisition.md)。

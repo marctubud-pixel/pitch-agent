@@ -1998,12 +1998,12 @@
       "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
     },
     "apps/workbench-preview/src/domain/service.ts": {
-      "sha256": "e24b75aba29121dd2820e9412394e39956251086ca47f0174e5ea3c9aec759b1",
-      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
+      "sha256": "fb028a07feee02ba36bef87c5baa8f56afc903ceb16a9a6c652b601c90a32e8b",
+      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "sha256": "1d4d7674508291685ca3872d31aa2074fec3a74d8861f93295bc76acb112f658",
-      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
+      "sha256": "fc4ece77a03c910dd0b7d231724b71deadbacbda7b28715e229f20451b7b12d2",
+      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
@@ -2014,8 +2014,8 @@
       "sha256": "5af8ad8684f2e4a8a3956b6429fda5a9c6047d54defcdf9801ea2625aa88fbad"
     },
     "apps/workbench-preview/src/collaboration/protectServices.ts": {
-      "sha256": "1da760bd5e13f12328362f0ccc782aa4e60b912405a508a0b54cbd5feb9689d4",
-      "reason": "指定PDF本地解析、真实原件/本地job状态和原请求恢复接入；保留原导入、Mock、旧方法及批准身份"
+      "sha256": "3dcb992e7d19a9016db0d9e91248c30eed3cb1fec48a22cb0168f60caa45f689",
+      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
     },
     "apps/workbench-preview/src/domain/models.ts": {
       "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
@@ -2058,8 +2058,8 @@
       "sha256": "dd5719dc8de0a1db70b286b0ef27f864a975e5f22312d749f52320a620b18e82"
     },
     "apps/workbench-preview/src/views/ResearchView.tsx": {
-      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
-      "sha256": "c2a6cee5c49020c4c1ec3963e70f847402a2bd0dcb9c4d531bb29a80d7365fe0"
+      "sha256": "a611ff2df857a55484cbdf67448be1f26f2a8bfad1e9b843a877eb17bd0ce888",
+      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
     },
     "apps/workbench-preview/src/views/SourcesView.tsx": {
       "reason": "按1.5.0维护受限研究、未分类原件投影及未决提交优先核对；原导入身份保留",
@@ -2070,8 +2070,8 @@
       "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
     },
     "apps/workbench-preview/src/collaboration/protectServices.test.ts": {
-      "sha256": "82da007f936e72b6cb79ff18104f1cd8f7025e24a0eef93543be47bfa8bc554a",
-      "reason": "当前研究独立正文读者、同版修订复查和原命令恢复接入；保留原导入身份/Mock/中文桌面基线，不改变旧稿或批准"
+      "sha256": "5f0cbf831929e3f46ea60d1880379f724dd3441064b958423f5d5eca77e77268",
+      "reason": "当前七阶段自动采集受限HTTP接线、固定原请求恢复与workflow权限；原导入身份保留。"
     },
     "apps/workbench-preview/src/proposal/BrandResources.tsx": {
       "sha256": "9e77e09648b6e26120afbfd034929b32167d0217c6bdb3b2c12b95a1a6bfad2b",

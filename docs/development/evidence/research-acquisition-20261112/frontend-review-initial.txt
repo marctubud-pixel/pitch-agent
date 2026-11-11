@@ -1,0 +1,21 @@
+# 自动采集前端独立审查
+
+2026-11-12；只读审查根已采用14文件，对照 a532697e 的 `acquisition-ui.patch`。14个根源码 SHA 均与冻结 `acquisition-ui-manifest.json` 一致，独立清单为 `acquisition-frontend-independent-hashes.json`。未改产品源码、规范、旧运行或数据库。报告是代码/协议审查，不签真实UI、业务研究充分性、人工批准或全目标通过。
+
+## 发现：1项P2
+
+**同卡更新问题登记后，合法历史采集被前端当成未知响应，历史原请求也不能清理。** 位置：`apps/workbench-preview/src/services/http/researchAcquisitionProjection.ts:38`，`expectedCurrent`仅根据最新generation和当前卡ID推断true。原生 `acquisitionCurrent` 还核原start的完整questionRegistration与当前最新预登记是否相同；同卡合法登记Q2后，后端正确返回current=false，前端却在此调用bad抛 `response_lost/outcomeUnknown=true`。
+
+独立真实新SQLite/实际brief-server复现：确认卡→登记Q1→start→同卡登记Q2→GET acquisition，预期显示历史，实际抛response_lost。第二条：planner step实际成功但浏览器响应丢失→另一操作者在原生store登记Q2→刷新重放精确原step，后端已知原ledger且没有重调，但前端仍抛response_lost，原journal保持，不能完成历史核对。它违反接缝中“旧卡/旧plan已知结果可清原未决后显示历史原内容”。同根因合并为一项，不重复计数。
+
+建议按完整当前绑定判断（至少最新当前问题登记、完整卡/冻结选择与原生合同一致），保留原current=true证据要求；正确接受合法current=false并显示历史/清已知提交。不要删除receipt、generation/plan/producer、原件或selected集合守卫来绕过。
+
+## 实际验证
+
+- `./apps/workbench-preview/node_modules/.bin/vitest run --root apps/workbench-preview src/collaboration/protectServices.test.ts`：10 passed，exit0，日志 `acquisition-frontend-independent-protection.log`。可选能力包装保留，guest三个写入口及pending恢复按workflow受限。
+- `PITCH_ACQUISITION_TEST_SERVER="$PWD/tools/workbench/brief-server.mjs" PITCH_PDF_TEST_PYTHON=<已装PDF Python> ./apps/workbench-preview/node_modules/.bin/vitest run --config .scratch/seven-stage-static-goal-20261111/design/acquisition-frontend-independent-vitest.config.mjs`：8项中6通过/2新增反例失败，exit1，`acquisition-frontend-independent-probe-r3.log`。6通过包括固定集合完整链、原体丢/错receipt恢复、默认0执行、换卡历史核回、native unknown清传输journal/显式reconcile不重派，以及真实mixed.pdf部分文本进入r7 producer。两项失败精确覆盖上述同一卡的新问题登记。所有provider均本机合成/注入工具，真实Python仅本地PDF，不访问真实外部研究或付费模型。
+- r1 probe自身错误地把数组交给object guard而失败，日志保留，不作为产品证据；修正仅.scratch断言后r2确证产品line38，r3增加历史journal影响反例。
+
+## 其他审查范围
+
+核过严格原command body、operation、project、固定jobIds与native job状态、generation envelope/plan/admission/hash、producer r7问题绑定；HTTP transport未知与native awaiting_reconciliation分层、固定最多6step及每次selected job全部成功才继续；刷新不续跑；真实PDF partial/current/rootShared原件资格；历史producer入口明确禁用。除上项外未发现可实证P1/P2。UI组件源码中的交互停止条件已读，但实际桌面、深浅色、键盘和真实DOM未运行，此报告不能替代ui-review。owner正在隔离WT修复，修后应独立重跑上述反例并保留原失败。

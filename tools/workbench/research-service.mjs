@@ -1,3 +1,4 @@
+import {createAcquisitionService} from './research-acquisition-service.mjs';
 import {researchWorkflowWithReaderOriginals} from './research-reader-workflow.mjs';
 import {APPLICABILITY_PROTOCOL} from './research-applicability.mjs';
 import {createHash} from 'node:crypto';
@@ -50,8 +51,10 @@ export function createResearchService({store, rootDir, executionAllowed = false,
     }
     return execute(id, jobId);
   };
+  const acquisition=createAcquisitionService({store,rootDir,executionAllowed,executor,...options});
   return {
-    capability,
+    acquisitionStatus:acquisition.status,acquisitionStart:acquisition.start,acquisitionStep:acquisition.step,acquisitionReconcile:acquisition.reconcile,
+    capability:()=>({...capability(),acquisition:acquisition.capability()}),
     async readerReport(id, reportId) {
       const p=project(id),report=(p.researchReaderReports??[]).find(r=>r.id===reportId);
       need(report,'NOT_FOUND','没有该项目的独立读者报告。');

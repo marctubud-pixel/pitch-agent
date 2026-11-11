@@ -1,13 +1,13 @@
 # 七阶段与研究入口接续
 
-规范版本：1.1.0。当前应用沿用已认可页面和旧业务模块。运行规则见[七阶段合同](../specs/seven-stage-runtime.md)，既有成果见[六线对账](capability-reconciliation-20261111.md)。
+规范版本：1.2.0。当前应用沿用已认可页面和旧业务模块。运行规则见[七阶段合同](../specs/seven-stage-runtime.md)，既有成果见[六线对账](capability-reconciliation-20261111.md)。
 
 ## 启动本地入口
 
 1. 运行`npm run dev:brief`和`npm run dev:http`。
 2. 在当前应用新建并确认简报。
 3. 在研究页展开**研究问题与独立读者**，先登记问题及读者数量。
-4. 登记本版来源。品牌PDF可按[原件说明](brief-originals.md)保存，保存不代表已抽取或采用。
+4. 若使用已登记来源，登记本版来源。自动采集可不手填来源；品牌PDF按[原件说明](brief-originals.md)保存并显式解析后，还需共根和当前性资格才能选入。
 
 默认执行关闭。未配置时显示原因，不创建模型job。显式执行仍使用同一隔离数据库的`--research-config PATH --research-execution enabled`；reader另需独立岗位binding。配置参考[读者合同](research-reader.md)，不因开关存在就授权真实费用。
 
@@ -29,4 +29,10 @@
 
 [PR #1](https://github.com/marctubud-pixel/pitch-agent/pull/1)和[PR #2](https://github.com/marctubud-pixel/pitch-agent/pull/2)分别接Brief与受限研究，PDF原件经[PR #4](https://github.com/marctubud-pixel/pitch-agent/pull/4)双CI成功合并。当前读者包的Git/PR/CI按最终原生回执登记，不提前签发布。
 
-自动采集、PDF解析/模型提取、简洁策略及后续仍待接。原得闲/青屿、旧数据库、真实模型、费用、生产账号、通知、云部署和已暂缓在线编辑不在本轮恢复范围。
+自动采集与指定PDF本地解析已接；任务卡模型提取、简洁策略及后续仍待接。原得闲/青屿、旧数据库、真实模型、费用、生产账号、通知、云部署和已暂缓在线编辑不在本轮恢复范围。
+
+## 采集并生成本版研究
+
+先登记本轮问题和读者计划。显式采集配置可用时，展开**资料选择、四分支状态与原结果**，按需选入来源和已核PDF，再点击**采集并生成研究**。来源可为空，由既有搜索与四分支取证。页面只在所选任务全部成功后继续，单次最多六步，刷新不自动续跑。
+
+unknown、冲突、原件错误或缺能力时先核原记录。历史采集核回不提升当前研究资格，历史研究生成结果仍未支持恢复。研究稿保存后继续原事实核验、独立阅读和交接流程。接口与限制见[采集合同](research-acquisition.md)。

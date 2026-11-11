@@ -1,3 +1,11 @@
+# 目标模式：研究自动采集接线 · 2026-11-12
+
+PDF包[PR #6](https://github.com/marctubud-pixel/pitch-agent/pull/6)准确8404d26a双CI及显式venv步骤成功，已合并a532697e。当前采集分支复用四分支/封口/唯一r7生产者，严格原body与固定job、actual claim卡/问题/CAS守卫、partial PDF共根资格和原IO核回；默认执行仍关闭。[合同](../docs/development/research-acquisition.md)及[本轮核验](../docs/development/research-acquisition-verification-20261112.md)分别说明规则与实际范围。
+
+新合成包装R1真实Chrome走到1份r7稿，6采集研究+1PDF任务各1attempt、0release；原初脚本计数错误保留，正确只读复验刷新0POST。独立前端换Q误判P2及UI覆盖详情/冻结资料回显两项P2已修并独立复验。完整根check755前端/1既有skip+78核心+26域+57Brief/PDF+80研究+61采集通过；其后局部UI改动类型及19项受影响验证通过。规范1.9.0/56项，16固定截图、393导入及147封存保持。固定功能e3d6680f双轴无P1/P2/硬违例，PR #7准确head双CI与全部安装/测试步骤成功；文档补记及合并按实际回执继续。本机仅约172MiB，新的大运行暂停等空间，原件/数据库保留。
+
+完整目标active；简洁策略9文件已正确重合流并专项通过，尚未采用到根或接当前页，文案视觉、同版Deck终审和包装/KV整链仍待完成。旧run/数据库、付费/真实模型、生产账号、通知、云部署和在线编辑保存暂停范围保持。以下历史记录保留各自当时身份。
+
 # 目标模式：PDF本地解析接线 · 2026-11-11
 
 读者[PR #5](https://github.com/marctubud-pixel/pitch-agent/pull/5)准确head cac8e589双CI成功，已合并97f13ab5。新分支codex/brief-extraction-20261111继续原件票的本地解析子路径；复用旧parser，不执行任务卡模型或采用。三文件候选独立24+3通过后定点采用，根实际Python16/16；默认无环境11通过/5专项明确跳过，给错显式环境应失败。HTTP与资料副层已从两个独立worktree合流，真实Chrome新案3份结果/原字节下载/丢响应刷新同body恢复，3job各1attempt、0确认/模型/采用。retry实际start竞态P2及0页入口P3已修并独立复验，完整check exit0：745前端/1既有skip、78核心、26域、51Brief HTTP、80研究合同；固定5af651db两轴Spec通过、Standards发现venv配置环境P2；已修且独立21项/原旧新probe通过，修后完整check57BriefHTTP，其余计数不变。规范1.8.1；Git/CI按实际回执登记。

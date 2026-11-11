@@ -28,6 +28,7 @@ export interface Snapshot {
   textReports: { verification: Record<string, unknown>[]; readiness: Record<string, unknown>[]; handoff: Record<string, unknown>[]; correction: Record<string, unknown>[] };
   readinessResolutions: Record<string, unknown>[];
   stageAssessments: Record<string, { body: string; currentId: string | null }>;
+  acquisitions?: Record<string, unknown>[]; acquisitionRequests?: Record<string, unknown>[];
   readerDispositions?: Record<string, unknown>[];
   readerPlans?: Record<string, unknown>[]; readerReports?: Record<string, unknown>[];
   jobs: Record<string, unknown>[]; artifacts: Record<string, unknown>[];
@@ -51,6 +52,7 @@ export function parseSnapshot(value: unknown): Snapshot {
     readinessResolutions: records(p.readinessResolutions),
     stageAssessments: Object.fromEntries(records(view.stages).filter((stage) => stage.researchAssessment !== undefined).map((stage) => [text(stage.stage), { body: JSON.stringify(stage.researchAssessment), currentId: stage.researchAssessment && object(stage.researchAssessment).current === true ? text(object(stage.researchAssessment).assessmentId) || null : null }])),
     intakeDocuments: records(p.intakeDocuments), intakeOperations: records(p.intakeOperations),
+    acquisitions: records(p.researchAcquisitions), acquisitionRequests: records(p.researchAcquisitionHttpRequests),
     readerDispositions: records(p.researchReaderDispositions),
     readerPlans: records(p.researchQuestionRegistrations), readerReports: records(p.researchReaderReports),
     jobs: records(p.jobs), artifacts: records(p.artifacts),
