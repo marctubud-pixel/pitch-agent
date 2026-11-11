@@ -1,6 +1,6 @@
 # 本地简报HTTP合同与联调
 
-规范版本：1.2.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
+规范版本：1.3.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
 
 ## 启动与数据
 
@@ -19,7 +19,7 @@ npm run dev:http
 
 `brief-server.mjs`复用业务域和SQLite存储，单独提供`/api/v1/capabilities`、项目列表／单项及历史修订读取、新建项目、`revise-task-card`和`confirm-task-card`。请求字段白名单、普通Brief请求128 KiB上限、loopback Host和明确来源共同限制本地入口；PDF上传按专用原件合同预算。默认不创建执行器或供应商，不恢复、派发或推进任何已有job；显式研究配置仅允许当前请求指定的研究任务；写入旧完整服务前必须另行验收，不能以其通用入口代替本服务。
 
-前端先验证受支持的brief-v1默认模式或显式research-v1能力才写入，实际握手前显示未接通。项目、概览、任务卡及七阶段状态从同一后端快照投影；没有封面就显示空态，没有研究或创意产物就保持未开始。确认简报会使导航指向研究，但不创建研究任务。当前七阶段项目允许已接研究记录及严格绑定bridge的PDF解析queued零尝试job；其他旧生产链仍拒绝映射，避免把旧执行显示为当前七阶段。
+前端先验证受支持的brief-v1默认模式或显式research-v1能力才写入，实际握手前显示未接通。项目、概览、任务卡及七阶段状态从同一后端快照投影；没有封面就显示空态，没有研究或创意产物就保持未开始。确认简报会使导航指向研究，但不创建研究任务。当前七阶段项目允许已接研究记录及严格绑定bridge的本地PDF job（默认queued零尝试，显式解析后按真实attempt及原件身份投影）；其他旧生产链仍拒绝映射，避免把旧执行显示为当前七阶段。
 
 旧项目继续保留无workflow的历史身份，新建项目使用proposal-seven-v1，研究原件及来源接入范围见上述接续。此为单机开发服务，原生记录作者固定`local-operator`，不是前端所选人类或Agent身份，也不是生产账号鉴权。前端本地游客权限仍生效，服务端多用户授权另行实现。助手、协作写入、模式更新和后续生产动作明确未接入。Brief文本提取沿用本地实际解析能力。
 
@@ -45,9 +45,13 @@ Brief附件目前只保存原文和元数据，`fileAvailable: false`，不提�
 
 ## PDF原件接入
 
-新增受限documents上传/列表/原字节读取，当前PDF/12MiB，复用旧intake和同项目store；没有启动解析或旧队列。仅原件上传路由扩展base64体积预算，其余入口128KiB不变。前端capability预检、保存/未知重放与当前项目下载见[PDF原件合同](brief-originals.md)。
+新增受限documents上传/列表/原字节读取，当前PDF/12MiB，复用旧intake和同项目store；该保存子路径不启动解析或旧队列；显式本地解析走独立extraction路由。仅原件上传路由扩展base64体积预算，其余入口128KiB不变。前端capability预检、保存/未知重放与当前项目下载见[PDF原件合同](brief-originals.md)。
 
 
 ## 研究读者接口
 
 预登记、正文阅读、实际修订、逐项处理、复查与原件getter按[读者合同](research-reader.md)开放受限路由。新接口继续按JSON字段、原请求、revision、同源和本地角色控制；默认不执行模型。HTTP快照异步核当前读者文件，文件损坏不以metadata标签保持可交接。历史原件和旧协议不升级，完整七阶段后续仍待接。
+
+## 指定原件的本地解析
+
+可选`intakeConfiguration`或CLI`--pdf-python ABS_PATH`独立于研究开关，默认关闭。GET/POST `documents/:documentId/extraction`沿普通128KiB与原Host/Origin/白名单；先实际probe再公布cap。原claim、同体恢复、同修订文件与project、状态及未接管running限制见[解析合同](brief-extraction.md)。只允许对应bridge的本地PDF任务，不解封intake_taskcard或旧队列。

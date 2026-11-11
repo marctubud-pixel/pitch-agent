@@ -1,3 +1,9 @@
+# 目标模式：PDF本地解析接线 · 2026-11-11
+
+读者[PR #5](https://github.com/marctubud-pixel/pitch-agent/pull/5)准确head cac8e589双CI成功，已合并97f13ab5。新分支codex/brief-extraction-20261111继续原件票的本地解析子路径；复用旧parser，不执行任务卡模型或采用。三文件候选独立24+3通过后定点采用，根实际Python16/16；默认无环境11通过/5专项明确跳过，给错显式环境应失败。HTTP与资料副层已从两个独立worktree合流，真实Chrome新案3份结果/原字节下载/丢响应刷新同body恢复，3job各1attempt、0确认/模型/采用。retry实际start竞态P2及0页入口P3已修并独立复验，完整check exit0：745前端/1既有skip、78核心、26域、51Brief HTTP、80研究合同；规范1.8.0。固定提交两轴复核与Git/CI按实际回执登记。
+
+完整七阶段目标active；自动采集、简洁策略至PPT及包装/KV整链仍待接。旧run/DB和付费/真实模型、生产账号、通知、云部署及在线编辑暂停范围保持。下面记录按当时实际身份保留。
+
 # 目标模式：研究独立读者与交接接线 · 2026-11-11
 
 完整七阶段本地静态闭环目标保持active。PDF原件经[PR #4](https://github.com/marctubud-pixel/pitch-agent/pull/4)双CI通过合并44c495b1；本轮在新分支接r7问题预登记、独立正文阅读、旧typed引擎实际修订、逐项处理、独立复查和原件核对。研究声明basis及owner原始packet绑定全部同版席位和原报告，原事实/readiness/semantic/人类与授权条件保留。默认不执行模型，不开放旧复杂策略。

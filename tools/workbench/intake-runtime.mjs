@@ -119,10 +119,25 @@ export function createIntakeRuntime({store,root,providers,bindings,imageStore,ac
    const p=store.read(projectId),job=p.jobs.find(j=>j.id===request.jobId);need(job?.purpose==='intake_taskcard'&&job.status==='awaiting_reconciliation'&&job.attempts.at(-1)?.id===request.attemptId,'INVALID_JOB','Exact unresolved model attempt required');intakeCurrent(p,job);await verifyInput(projectId,job.task.input);const missingResult=!job.attempts.at(-1).resultEvidence,output=await savedOutput(projectId,job),current=store.read(projectId),savedAttempt=current.jobs.find(j=>j.id===job.id).attempts.at(-1);need(current.revision===p.revision+(missingResult?1:0),'REVISION_CONFLICT','Project changed during intake original recovery');
    store.command(projectId,{kind:'intake-complete',jobId:job.id,attemptId:request.attemptId,output,resultEvidence:savedAttempt.resultEvidence,recover:true,request,commandId:request.commandId,expectedRevision:current.revision},localContext());return {jobId:job.id};
   },
-  async execute(projectId,jobId,{retry=false}={}){
+  async execute(projectId,jobId,{retry=false,localRequest,localAdmissionRevision}={}){
    let p=store.read(projectId),job=p.jobs.find(j=>j.id===jobId);need(INTAKE_PURPOSES.includes(job?.purpose),'INVALID_JOB','Intake job required');need(!retry,'UNSAFE_RETRY','Use explicit local retry or saved-result recovery');if(job.status!=='queued')return job;
+   let localStartId,localStartRevision;
+   if(localRequest){
+    const retryRequest=localRequest.action==='retry_local';
+    need(job.purpose==='intake_document'&&job.task.kind==='pdf'&&job.documentId===localRequest.documentId&&['extract','retry_local'].includes(localRequest.action),'INVALID_REQUEST','Frozen request only supports the selected local PDF parser');
+    if(retryRequest){
+     const prior=Object.hasOwn(p.processedCommands,localRequest.commandId)?JSON.parse(p.processedCommands[localRequest.commandId]):null;
+     need(prior?.kind==='intake-retry-local'&&equal(prior.request,{...localRequest,jobId}),'COMMAND_ID_REUSED','Original human local retry request required');
+     need(Number.isSafeInteger(localAdmissionRevision)&&localAdmissionRevision>=0,'INVALID_REQUEST','Explicit local retry admission revision required');
+     localStartId=`local-start-${digest([projectId,jobId,localRequest.commandId])}`;localStartRevision=localAdmissionRevision;
+    }else{
+     need(localAdmissionRevision===undefined,'INVALID_REQUEST','Initial extraction uses its original revision');localStartId=localRequest.commandId;localStartRevision=localRequest.expectedRevision;
+    }
+    need(p.revision===localStartRevision,'REVISION_CONFLICT','Project changed before local parsing');
+    const card=p.taskCards.find(c=>c.id===p.activeTaskCardId);need(card?.id===localRequest.taskCardId&&cardHash(card)===localRequest.taskCardHash,'STALE_TASK_CARD','Exact task card required before local parsing');
+   }
    const attemptId=randomUUID(),context=localContext();context.runId=attemptId;
-   try{send(projectId,{kind:'intake-start',jobId,attemptId},context);}catch(error){send(projectId,{kind:'block-queued-job',jobId,error:{code:error.code??'INTAKE_BLOCKED',message:error.message}},context);return store.read(projectId).jobs.find(j=>j.id===jobId);}
+   try{if(localRequest)store.command(projectId,{kind:'intake-start',jobId,attemptId,request:structuredClone(localRequest),commandId:localStartId,expectedRevision:localStartRevision},{...context,now:new Date().toISOString()});else send(projectId,{kind:'intake-start',jobId,attemptId},context);}catch(error){if(localRequest)throw error;send(projectId,{kind:'block-queued-job',jobId,error:{code:error.code??'INTAKE_BLOCKED',message:error.message}},context);return store.read(projectId).jobs.find(j=>j.id===jobId);}
    try{
     if(job.purpose==='intake_document'){
      let d=document(store.read(projectId),job.documentId),bytes,capture,imageAsset,verifiedCapture;

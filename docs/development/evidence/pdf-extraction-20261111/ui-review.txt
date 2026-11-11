@@ -1,0 +1,78 @@
+# PDF本地解析页面独立UI审核
+
+2026-11-11。最终真实只读UI范围内未发现未解决问题；原PDFUI-01/P3入口语义已窄修并独立实测解决，修前证据保留。审核者未参与该实现、未修改source/git/规范。本报告不签解析业务、恢复竞态、模型读取、人类采用或研究通过。
+
+## 依据与入口
+
+采用项目固定 `skills/ui-review/SKILL.md`、20原则与verification，读取 `docs/pages/brief.md` 1.1.0、`docs/development/brief-extraction.md` 1.0.0及本轮root [UI-RECEIPT](../pdf-r1/UI-RECEIPT.json)，只读核当前 `OriginalDocumentPanel.tsx`，沿用已读typescript-best-practices/type-system-discipline。
+
+独立执行 `node .scratch/seven-stage-static-goal-20261111/pdf-independent-ui.mjs`，使用已装Playwright、系统Google Chrome headless、新临时profile/context，经沙箱升级。入口仅 `http://127.0.0.1:4432/#/p/project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963/proposal/brief`；API仅GET读取4186当前隔离案。阻断所有非GET/HEAD/OPTIONS请求，实际**POST0、修改尝试0、pageerror0、HTTP错误0**。未上传、解析、重试、确认、采纳、运行模型或访问旧项目/DB。下载为可选，本审核未再次下载；root逐字节下载结果只引用原回执，不冒称独立执行。
+
+root回执记录partial/password_required/invalid、3job各1attempt、confirmation0/model0/adoption0及响应截断后同体恢复。本次仅查看这些已有结果，不以只读界面核查代替后台fresh/queued retry竞态修复或恢复验证。
+
+## 实际UI检查
+
+[原始DOM/请求/键盘/复制回执](../pdf-independent-ui.json)保留当前状态和计算样式。1280×1000浅色与910×1000深色，中文、DPR1、默认缩放，等待字体与页面稳定后截图，toast数始终0。
+
+- [1280初始副层](../pdf-independent-collapsed-1280-light.png)：品牌资料仍在更多信息内，三个原件各有名称、大小、下载与独立解析结果；分页/诊断默认收起，主任务卡未被重画。partial文字、需可读原件、PDF结构无效三类状态明确，没有以job成功代替文字提取成功，也未出现可误点的解析/重试按钮。
+- [1280展开](../pdf-independent-expanded-1280-light.png)、[910深色展开](../pdf-independent-expanded-910-dark.png)：实际第1页正文完整，第2页明确“本页没有可抽取文字”，没有将空页裁去制造完整；无页结果展开有“本次未保存可阅读的页面文字”，工具身份/原诊断能继续展开。PdfReadError保留为工具原件诊断；主说明为中文。路径/hash仅位于主动展开的工具身份内，不要求用户填路径或hash。
+- 3处分页入口与3处工具诊断均通过键盘Space成功打开，summary实际focus outline为2px solid。第一页实际文字选中并Meta+C，浏览器clipboard读回与原页面正文逐字一致；没有改英文PDF原文为中文伪原件。
+- scrollWidth为1280/910，与viewport相同，无本轮横向溢出；长工具路径/hash按原pre-wrap/anywhere换行。未发现这些实际状态的正文遮挡或重复状态需删除。三个工具身份属于各自文件原结果，即使内容相似也不当作冗余删除。
+- “本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口”常显；解析、模型、人类采用边界未被前台合并成通过。
+
+附加-detail图片是浏览器对长元素截图，截图自动滚动可能把固定顶栏截进元素中部；它不是实际内容盖住的证据。本报告布局判断以同名不带-detail的页首全页截图与DOM为准，不把此截图工具效应当成产品回归。
+
+## 唯一发现
+
+**PDFUI-01／历史P3，最终已修复并验证：零页结果入口仍称已保存正文。** 需密码与invalid两份结果实际pages=[]，初始入口却均为“查看已保存正文 · 0页”。展开后才解释没有可读文字。源码所有state.result共用正文summary，真实DOM与初始截图均可复现。
+
+影响：用户看到“查看已保存正文”会预期有正文可读，实际这里只能查看无文字原因及诊断；状态虽已在上方说明，不应让入口反向暗示有正文。对应原则03/15/20。建议仅按pages.length切换summary：有页保留“查看已保存正文 · N页”，0页用“查看解析结果与诊断”或明确“未提取到正文 · 查看诊断”。保留空态说明、诊断和下载，不隐藏0页记录，不更改原状态或启动动作。
+
+复验预期：password_required/invalid零页结果入口不再声称有正文，第1/2页和空页仍完整，键盘可展开；两主题无溢出且POST0。已即时通知开发统筹，审核者不改代码。
+
+## 20原则处置
+
+“已满足”只限定本次观察到的状态。
+
+|原则|处置|证据或限制|
+|---|---|---|
+|01气质|已满足|原资料下载行、btn、配色与副层沿用|
+|02灰度|无法验证|未做灰度截图|
+|03文字层级|已满足（修后）|PDFUI-01已解决；名称/状态/正文/诊断可区分|
+|04重点竞争|已满足|诊断默认折叠，未压主任务卡|
+|05冗余标签|已满足|各文件独立状态必要，原工具身份按文件保留|
+|06操作层级|已满足（已见状态）|终态仅下载入口，未伪造重试；未运行按钮|
+|07留白|已满足|当前资料行与分页无拥挤重叠发现|
+|08宽度|已满足|1280/910无横向滚动|
+|09归属|已满足|每份正文/诊断归属对应文件|
+|10桌面边界|已满足|1280浅/910深，其他设备未验|
+|11行长|已满足（实际内容）|正文/长工具身份换行，极长页面/200%未验|
+|12混排|已满足|名称/大小/下载与页码可辨|
+|13色阶|无法验证|未枚举全部交互状态|
+|14对比度|无法验证|有计算前景字号记录，未算全组合，不签WCAG|
+|15非颜色状态|已满足（修后）|0页入口与实际状态一致，partial/加密/invalid均有文字|
+|16边界|已满足|原分行与summary焦点保留|
+|17图片叠字|不适用|本副层为文字提取与工具诊断|
+|18素材尺寸|已满足（现有图标）|文件/下载图标在实际尺寸可辨；无新主位图|
+|19焦点与复制|已满足（展开路径）|6处summary键盘可开，正文真实复制；未做完整Tab顺序/高对比|
+|20空态|已满足（已见修后状态）|0页入口与无页说明匹配；其他异常未验|
+
+## 未覆盖与结论边界
+
+未测fresh/queued retry竞态、running/unknown恢复、failed/blocked显式重试、no_text/limit_exceeded、未配置能力、历史卡只读、其他角色/服务权限、100页长文、复制巨大文本、所有滚动容器键盘可达、读屏、200%或完整对比度。没有重跑parser、HTTP同体恢复或模型，不以本页面检查签业务采用、正式Brief、研究充分或批准。
+
+本次证据支持保留原页面版式与资料副层；一处0页summary文案需要局部纠正。无理由扩大视觉改造或改Skill规则。
+
+
+## PDFUI-01修后最终只读复验
+
+root仅按pages.length切summary，有页保留正文/页数，零页改“查看解析结果与诊断”；未改结果、诊断、下载按钮或命令。修前所有截图、[原回执](../pdf-independent-ui.json)及发现段落保持，不能称原零页入口此前已满足。
+
+独立执行 `node .scratch/seven-stage-static-goal-20261111/pdf-independent-after-ui.mjs`，同一4432工程案、独立临时Chrome、1280×1000浅色/910×1000深色、DPR1与原只读拦截条件，未重跑parser或执行业务。[修后DOM/键盘/复制回执](../pdf-independent-after-ui.json)记录POST0、修改尝试0、pageerror0、HTTP错误0、toast0。
+
+- [1280修后初始副层](../pdf-independent-after-collapsed-1280-light.png)和[近景](../pdf-independent-after-collapsed-1280-light-detail.png)确认password_required和invalid两份零页结果入口均改为“查看解析结果与诊断”；partial仍显示“查看已保存正文 · 2页”。
+- [1280修后展开](../pdf-independent-after-expanded-1280-light.png)、[910深色修后展开](../pdf-independent-after-expanded-910-dark.png)保留第1页原正文、第2页“本页没有可抽取文字”、零页结果的无可读正文说明、原始诊断和完整工具身份。没有新增重试或采用操作。
+- 三结果入口和三诊断入口仍可用Space展开，focus outline仍2px solid；第1页正文实际选中、Meta+C并读回clipboard，与修前和当前正文均逐字相同。
+- 1280/910实测scrollWidth分别1280/910，无横向溢出。没有新增可操作UI问题；PDFUI-01现**已修复并验证**，20原则03/15/20已更新为已满足，其他未验范围不变。
+
+本次已在root重载4186后台retry修复前完成，未触发retry、不依赖该分支；随后已通知root本审核不再占用原服务。后台竞态与恢复是否通过继续由独立业务/工程证据判断，本报告不代签。

@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.3.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.4.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -64,3 +64,7 @@ brief-server复用brief-intake-service→旧intake-runtime/intake-document-store
 `research-reader-loop`承载盲读packet/输出，`research-reader-state`承载预登记、席位、修订处置和当前证明；两者是纯域，不证明磁盘原件。既有executor/ordinary HTTP保存真实调用，`research-reader-original`核生产/读者原文及递归修订链，`research-reader-workflow`核本版预定席位的实际文件。brief-server的异步快照及正向交接/放行均经过原件核对。
 
 读者报告通过correction adapter进入旧typed修订引擎，不新增第二修订器。readerEvidence及hash进入声明basis与owner原packet，原事实/充分性/semantic/人工/授权分别保留。HTTP恢复只核同一已保存调用，已核历史结果与真正unknown分开。详细字段见[读者合同](../development/research-reader.md)。
+
+## 指定PDF的本地解析
+
+brief-intake-service复用intake-runtime→intake-pdf旧工具，显式extraction路由只处理原bridge对应的本地PDF job。首claim冻结原请求到原processedCommands；原件、分页JSON、工具身份及同revision快照分别核对，不建第二状态库。WorkbenchService可选originalDocuments及原资料行副层读取实际状态/正文；Mock不补此能力。缺能力、历史和unknown与模型/人类采用分开，详见[解析合同](../development/brief-extraction.md)。

@@ -1,0 +1,87 @@
+# PDF后端独立复核
+
+日期：2026-11-11。范围：codex/brief-extraction-20261111，基线97f13ab562b231f689afb9536e658a2cd3c2558c；只审本轮3个后端模块及2个测试，不审前端。已读取根/tools AGENTS、规范入口、brief-originals、尚未登记的brief-extraction合同、本轮spec及design/brief-extraction-integration。未改产品源码、Git或规范。
+
+## 结论
+
+发现1项P2，暂不建议关闭本地解析后端验收。29项候选测试全部通过，但独立反例证实fresh retry在人工重试登记后、实际parser claim前换卡，仍可启动旧卡原件解析。其余所测边界成立；本报告不是全崩溃恢复、前端验收或真实业务批准。
+
+## [P2] retry提交后缺少实际claim时的卡/修订守卫
+
+位置：tools/workbench/brief-intake-service.mjs:143–144；关联intake-runtime.mjs:122–130。
+
+fresh retry_local先核当前卡和请求修订，再await intake.humanAction登记queued；随后调用不带localRequest的intake.execute。document类runtime不会执行intakeCurrent卡检查，send又读取最新revision，因此两步间的合法换卡不会阻止新attempt。相同初次extract路径有localRequest守卫，而这条新retry路径没有。
+
+独立可复跑证据：brief-extraction-independent-retry-race.mjs。仅新临时SQLite，先登记一个本地failed attempt；在真实intake-retry-local提交后，用store wrapper确定性插入真实revise-task-card命令，再让产品代码继续。此注入用于排定并发写入先后，不改产品代码或数据库字节。实际Python结果：
+
+```json
+{"result":"reproduced","claims":[{"active":"next-card","kind":"intake-start"}],"isCurrent":false,"status":"partial","attempts":2}
+```
+
+即实际新claim发生时active已是next-card，但旧原件仍被解析。可由其他进程对同一明确数据库的合法编辑造成。应在实际start时对当前卡及预期revision做与初次extract同强度的校验；retry ledger已登记可以保留为queued待核，不能因为登记成功而越过换卡。
+
+同一问题也影响已commit queued retry的重放分支（brief-intake-service.mjs:130–131）：cap await后的revision检查与execute内真正start之间，runtime仍按新读head发送。独立脚本brief-extraction-independent-queued-retry-race.mjs保留原retry ledger，使用read wrapper在runtime execute首次读取时确定性排定另一写入；不伪造存储字节或原request。真实Python输出：
+
+```json
+{"result":"queued-replay-reproduced","claims":[{"active":"next-card","kind":"intake-start"}],"isCurrent":false,"status":"partial","attempts":2}
+```
+
+fresh retry与queued恢复应共同修复实际claim守卫，不能只在service层提前检查。
+
+## 实际运行
+
+- 明确已装Python：PITCH_PDF_TEST_PYTHON=/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3，运行两个指定测试文件：29 pass、0 fail、0 skip，exit 0。只新临时SQLite，实际本地PDF、ps/RSS按授权提升权限。
+- 未设该环境变量：17 pass、12明确专项skip、0 fail，exit 0。默认能力、缺配置、原件与unknown边界仍测。
+- 指向/definitely-missing/independent-python：17 pass、12 fail、0 skip，exit 1。没有将显式坏配置跳过或算通过。
+- 独立真实loopback脚本brief-extraction-independent-loopback.mjs：127.0.0.1:49187，真实fetch HTTP与已装Python，exit 0。实际cap成功、默认execution/model仍false；mixed PDF=partial；project/view/revision一致；真实下载字节一致；重启关闭解析配置后原body重放仍只有1 attempt；同command换action拒绝COMMAND_ID_REUSED；同长度原件字节篡改后GET及同body POST均拒绝DOCUMENT_CORRUPT。
+- loopback脚本首版在关闭/重启HTTP服务后复用了fetch旧keepalive连接，出现ECONNRESET；脚本使用Connection: close后上述复跑通过。此为证据脚本连接生命周期问题，未改产品。
+
+## 已核边界与保留限制
+
+候选测试及实现读查覆盖原件SHA/长度/项目归属、精确job绑定、真实cap、claim原body、同体重放、换卡历史、解析JSON篡改、同revision读写冲突、human重试及保留首失败attempt、running未知不自动重发。真实partial/text_extracted/no_text/password_required/invalid/limit_exceeded保留自身语义，ready/succeeded未代替读懂或采用。默认providers/bindings为空，HTTP只选择本地PDF；没有调用任务卡模型或研究。
+
+首claim永久中断的running仍未知且拒绝retry，符合本轮明确未接管范围。未测试跨机器、恶意数据库全量重写、全部资源极限、所有进程崩溃点；未接旧run/DB、不安装、不访问外部模型或付费服务。前端错回执/journal/实际UI属于另行审查范围。
+
+## 复跑命令
+
+```sh
+PITCH_PDF_TEST_PYTHON=/absolute/installed/python3 node --test tools/workbench/brief-intake-service.test.mjs tools/workbench/brief-extraction-http.test.mjs
+PITCH_PDF_TEST_PYTHON=/absolute/installed/python3 node .scratch/seven-stage-static-goal-20261111/design/brief-extraction-independent-retry-race.mjs
+PITCH_PDF_TEST_PYTHON=/absolute/installed/python3 node .scratch/seven-stage-static-goal-20261111/design/brief-extraction-independent-loopback.mjs
+```
+
+独立脚本import明确本仓库绝对路径，端口49187；运行需本机listen和ps/RSS权限，只操作新建临时目录并自行删除。当前记录模块SHA256：
+
+```json
+{
+  "tools/workbench/brief-intake-service.mjs": "92010d585a4029172c5a7b43a1a7acd92750ffcd3c18cc6b7c8866908402644e",
+  "tools/workbench/intake-runtime.mjs": "df14c13bba9fd61001b6b494983306fca2fc8b3806ad663aa477616f8a662c5b",
+  "tools/workbench/brief-server.mjs": "7bb5b333e42af40643b1be3ca3cdb8a683f8f6f34fffda86fbcab794b5d34938",
+  "tools/workbench/brief-intake-service.test.mjs": "dcc1cdf1650b1d9a00342547f753c3d54a80a052658acfc87cbeb448b4e837e9",
+  "tools/workbench/brief-extraction-http.test.mjs": "4fee84bafbbf1068a5c95a09ad267f9f8c9f65d988f8b353a68c3b49a8d0a50e"
+}
+```
+
+
+## 修后独立复验（保留上方原P2与先失败证据）
+
+根已采用brief-extraction-retry-fix.patch，三个after SHA与manifest逐一重新核对一致：service 5aee24accd8e188d5a9875a65db543bff4fb6f9fd66250c0b602db8f1e0c5683、runtime 240d3e8d142660c84a929be0492fb9746ef8c9050d6043ce9ed3b51f31f61aa6、service test 09f89bd0ebfc7806cc1f5889c492c29eb874d9b20b669e1e2df26cd7378dc5c5。
+
+独立重新编写/tmp变体并保存为brief-extraction-independent-fixed-verification.mjs，使用assert.rejects判断正确拒绝，没有运行旧“应复现”断言后将拒绝误标成新故障。明确相同已装Python下真实运行exit 0，9 pass / 0 fail：
+
+1. fresh/queued × 换卡/无关revision × runtime准入/真实store.command提交前，共8种排定并发：均在实际claim前拒绝，成功的新start计数0，状态仍queued，只有原failed attempt，未生成extraction，原human retry ledger请求保持一致。
+2. 上述换卡分支再次提交原body仍STALE_TASK_CARD且不新增attempt；无关revision分支用同body安全核回原retry，解析恰执行一次，再次同body状态不变。没有要求用户造新请求绕过未决。
+3. 第9项独立计算SHA(projectId, jobId, retry commandId)核稳定local-start命令，核实际传入store.command的expectedRevision=原retry expectedRevision+1及对应audit修订，完整retry request不变、原human账本和actor不被parser start覆盖。
+4. 在上述真实start已commit后故意抛出丢返回错误，重开同一新临时SQLite并关闭parser配置，连续两次同body都只核回running未知、null结果；完整project与丢返回后快照一致，仅两次既有attempt，没有再次dispatch/start。
+
+源码复读核localRequest的retry分支必须对应原human retry账本，runtime先核准入revision与完整cardHash，并以同一修订CAS提交actual start；fresh固定retry.expectedRevision+1，queued固定预检前捕获revision，未在await后拿新head替代准入。未知running不进入queued分派分支。
+
+独立重跑受影响4文件：brief-intake-service.test.mjs、brief-extraction-http.test.mjs、intake-local-recovery.test.mjs、intake-pdf.test.mjs，46 pass / 0 fail / 0 skip，exit 0。该结果是本审查者实际运行，非转述owner的46项；仍只有新临时SQLite、本地夹具/合成采集依赖和已装Python，无外部网络、旧DB或模型。
+
+修后结论：本报告原P2已独立验证修复，所审PDF后端范围未发现剩余可操作P1/P2。允许在本地PDF接入范围继续验收；不签前端/实际UI、正式人类采用、全面崩溃恢复或总目标完成。原running永久中断仍维持待核边界。
+
+复跑新增独立脚本：
+
+```sh
+PITCH_PDF_TEST_PYTHON=/absolute/installed/python3 node .scratch/seven-stage-static-goal-20261111/design/brief-extraction-independent-fixed-verification.mjs
+```

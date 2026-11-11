@@ -1,0 +1,342 @@
+{
+  "url": "http://127.0.0.1:4432/#/p/project-7a7e2daebb09904a7f5854abcfe23d8270a30456b2937346668419c37883f963/proposal/brief",
+  "postCount": 0,
+  "blockedMutations": [],
+  "errors": [],
+  "httpErrors": [],
+  "states": [
+    {
+      "name": "pdf-independent-after-collapsed-1280-light",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "body": "品牌资料\n\n保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口。\n\n本地演练-部分文字.pdf 2 KB\n\n本地PDF解析 · 部分文字已抽取，仍有缺口\n\n查看已保存正文 · 2 页\n下载原件\n\n本地演练-需密码.pdf 2 KB\n\n本地PDF解析 · 文件加密，需要可读取的原件\n\n查看解析结果与诊断\n下载原件\n\n本地演练-无效PDF.pdf 1 KB\n\n本地PDF解析 · PDF结构无效\n\n查看解析结果与诊断\n下载原件",
+      "summaries": [
+        "查看已保存正文 · 2 页",
+        "解析工具与原始诊断",
+        "查看解析结果与诊断",
+        "解析工具与原始诊断",
+        "查看解析结果与诊断",
+        "解析工具与原始诊断"
+      ],
+      "buttons": [
+        "下载原件",
+        "下载原件",
+        "下载原件"
+      ],
+      "paragraphs": [
+        {
+          "text": "保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-部分文字.pdf 2 KB",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · 部分文字已抽取，仍有缺口",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "Packaging\nExplore blue packaging\nAge 25\nLight style",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本页没有可抽取文字。",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-需密码.pdf 2 KB",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · 文件加密，需要可读取的原件",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本次未保存可阅读的页面文字，请检查文件与上述解析状态。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-无效PDF.pdf 1 KB",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · PDF结构无效",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本次未保存可阅读的页面文字，请检查文件与上述解析状态。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        }
+      ],
+      "toasts": 0
+    },
+    {
+      "name": "pdf-independent-after-expanded-1280-light",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "body": "品牌资料\n\n保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口。\n\n本地演练-部分文字.pdf 2 KB\n\n本地PDF解析 · 部分文字已抽取，仍有缺口\n\n查看已保存正文 · 2 页\n第 1 页\n\nPackaging\nExplore blue packaging\nAge 25\nLight style\n\n第 2 页\n\n本页没有可抽取文字。\n\n解析工具与原始诊断\n\n此记录仅说明本地工具与抽取范围。\n\n{\n  \"binary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"configuredBinary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3\",\n  \"binarySha256\": \"9d1335796350848c36dc2711a3298e096deebee18c85f1ab36edd8747fdf85eb\",\n  \"scriptSha256\": \"6668e034a5b2deacb1d732f01380dd5aeac2e994b9a4dafaf383fd74d32826a4\",\n  \"python\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"pythonVersion\": \"3.12.14\",\n  \"pypdf\": \"6.10.0\",\n  \"pdfplumber\": \"0.11.9\",\n  \"memoryLimit\": [\n    9223372036854776000,\n    9223372036854776000\n  ],\n  \"hardAddressSpaceLimit\": false,\n  \"memoryEnforcement\": \"rss_watchdog\"\n}\n下载原件\n\n本地演练-需密码.pdf 2 KB\n\n本地PDF解析 · 文件加密，需要可读取的原件\n\n查看解析结果与诊断\n\n本次未保存可阅读的页面文字，请检查文件与上述解析状态。\n\n解析工具与原始诊断\n\n此记录仅说明本地工具与抽取范围。\n\n{\n  \"binary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"configuredBinary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3\",\n  \"binarySha256\": \"9d1335796350848c36dc2711a3298e096deebee18c85f1ab36edd8747fdf85eb\",\n  \"scriptSha256\": \"6668e034a5b2deacb1d732f01380dd5aeac2e994b9a4dafaf383fd74d32826a4\",\n  \"python\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"pythonVersion\": \"3.12.14\",\n  \"pypdf\": \"6.10.0\",\n  \"pdfplumber\": \"0.11.9\",\n  \"memoryLimit\": [\n    9223372036854776000,\n    9223372036854776000\n  ],\n  \"hardAddressSpaceLimit\": false,\n  \"memoryEnforcement\": \"rss_watchdog\"\n}\n下载原件\n\n本地演练-无效PDF.pdf 1 KB\n\n本地PDF解析 · PDF结构无效\n\n查看解析结果与诊断\n\n本次未保存可阅读的页面文字，请检查文件与上述解析状态。\n\n解析工具与原始诊断\n\n此记录仅说明本地工具与抽取范围。\n\nPdfReadError\n{\n  \"binary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"configuredBinary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3\",\n  \"binarySha256\": \"9d1335796350848c36dc2711a3298e096deebee18c85f1ab36edd8747fdf85eb\",\n  \"scriptSha256\": \"6668e034a5b2deacb1d732f01380dd5aeac2e994b9a4dafaf383fd74d32826a4\",\n  \"python\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"pythonVersion\": \"3.12.14\",\n  \"pypdf\": \"6.10.0\",\n  \"pdfplumber\": \"0.11.9\",\n  \"memoryLimit\": [\n    9223372036854776000,\n    9223372036854776000\n  ],\n  \"hardAddressSpaceLimit\": false,\n  \"memoryEnforcement\": \"rss_watchdog\"\n}\n下载原件",
+      "summaries": [
+        "查看已保存正文 · 2 页",
+        "解析工具与原始诊断",
+        "查看解析结果与诊断",
+        "解析工具与原始诊断",
+        "查看解析结果与诊断",
+        "解析工具与原始诊断"
+      ],
+      "buttons": [
+        "下载原件",
+        "下载原件",
+        "下载原件"
+      ],
+      "paragraphs": [
+        {
+          "text": "保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-部分文字.pdf 2 KB",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · 部分文字已抽取，仍有缺口",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "Packaging\nExplore blue packaging\nAge 25\nLight style",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本页没有可抽取文字。",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-需密码.pdf 2 KB",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · 文件加密，需要可读取的原件",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本次未保存可阅读的页面文字，请检查文件与上述解析状态。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-无效PDF.pdf 1 KB",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · PDF结构无效",
+          "color": "rgb(16, 17, 20)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本次未保存可阅读的页面文字，请检查文件与上述解析状态。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(100, 101, 108)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        }
+      ],
+      "toasts": 0
+    },
+    {
+      "name": "pdf-independent-after-expanded-910-dark",
+      "width": 910,
+      "scrollWidth": 910,
+      "body": "品牌资料\n\n保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口。\n\n本地演练-部分文字.pdf 2 KB\n\n本地PDF解析 · 部分文字已抽取，仍有缺口\n\n查看已保存正文 · 2 页\n第 1 页\n\nPackaging\nExplore blue packaging\nAge 25\nLight style\n\n第 2 页\n\n本页没有可抽取文字。\n\n解析工具与原始诊断\n\n此记录仅说明本地工具与抽取范围。\n\n{\n  \"binary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"configuredBinary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3\",\n  \"binarySha256\": \"9d1335796350848c36dc2711a3298e096deebee18c85f1ab36edd8747fdf85eb\",\n  \"scriptSha256\": \"6668e034a5b2deacb1d732f01380dd5aeac2e994b9a4dafaf383fd74d32826a4\",\n  \"python\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"pythonVersion\": \"3.12.14\",\n  \"pypdf\": \"6.10.0\",\n  \"pdfplumber\": \"0.11.9\",\n  \"memoryLimit\": [\n    9223372036854776000,\n    9223372036854776000\n  ],\n  \"hardAddressSpaceLimit\": false,\n  \"memoryEnforcement\": \"rss_watchdog\"\n}\n下载原件\n\n本地演练-需密码.pdf 2 KB\n\n本地PDF解析 · 文件加密，需要可读取的原件\n\n查看解析结果与诊断\n\n本次未保存可阅读的页面文字，请检查文件与上述解析状态。\n\n解析工具与原始诊断\n\n此记录仅说明本地工具与抽取范围。\n\n{\n  \"binary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"configuredBinary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3\",\n  \"binarySha256\": \"9d1335796350848c36dc2711a3298e096deebee18c85f1ab36edd8747fdf85eb\",\n  \"scriptSha256\": \"6668e034a5b2deacb1d732f01380dd5aeac2e994b9a4dafaf383fd74d32826a4\",\n  \"python\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"pythonVersion\": \"3.12.14\",\n  \"pypdf\": \"6.10.0\",\n  \"pdfplumber\": \"0.11.9\",\n  \"memoryLimit\": [\n    9223372036854776000,\n    9223372036854776000\n  ],\n  \"hardAddressSpaceLimit\": false,\n  \"memoryEnforcement\": \"rss_watchdog\"\n}\n下载原件\n\n本地演练-无效PDF.pdf 1 KB\n\n本地PDF解析 · PDF结构无效\n\n查看解析结果与诊断\n\n本次未保存可阅读的页面文字，请检查文件与上述解析状态。\n\n解析工具与原始诊断\n\n此记录仅说明本地工具与抽取范围。\n\nPdfReadError\n{\n  \"binary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"configuredBinary\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3\",\n  \"binarySha256\": \"9d1335796350848c36dc2711a3298e096deebee18c85f1ab36edd8747fdf85eb\",\n  \"scriptSha256\": \"6668e034a5b2deacb1d732f01380dd5aeac2e994b9a4dafaf383fd74d32826a4\",\n  \"python\": \"/Users/marc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\",\n  \"pythonVersion\": \"3.12.14\",\n  \"pypdf\": \"6.10.0\",\n  \"pdfplumber\": \"0.11.9\",\n  \"memoryLimit\": [\n    9223372036854776000,\n    9223372036854776000\n  ],\n  \"hardAddressSpaceLimit\": false,\n  \"memoryEnforcement\": \"rss_watchdog\"\n}\n下载原件",
+      "summaries": [
+        "查看已保存正文 · 2 页",
+        "解析工具与原始诊断",
+        "查看解析结果与诊断",
+        "解析工具与原始诊断",
+        "查看解析结果与诊断",
+        "解析工具与原始诊断"
+      ],
+      "buttons": [
+        "下载原件",
+        "下载原件",
+        "下载原件"
+      ],
+      "paragraphs": [
+        {
+          "text": "保存在当前项目的原始参考资料。资料内容与用途说明不自动成为已确认的任务要求。本地文字抽取不代表模型读取或人类采用，扫描页与图表可能仍有缺口。",
+          "color": "rgb(156, 156, 150)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-部分文字.pdf 2 KB",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · 部分文字已抽取，仍有缺口",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "Packaging\nExplore blue packaging\nAge 25\nLight style",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本页没有可抽取文字。",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(156, 156, 150)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-需密码.pdf 2 KB",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · 文件加密，需要可读取的原件",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本次未保存可阅读的页面文字，请检查文件与上述解析状态。",
+          "color": "rgb(156, 156, 150)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(156, 156, 150)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本地演练-无效PDF.pdf 1 KB",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "15px",
+          "lineHeight": "23.25px"
+        },
+        {
+          "text": "本地PDF解析 · PDF结构无效",
+          "color": "rgb(237, 237, 234)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "本次未保存可阅读的页面文字，请检查文件与上述解析状态。",
+          "color": "rgb(156, 156, 150)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        },
+        {
+          "text": "此记录仅说明本地工具与抽取范围。",
+          "color": "rgb(156, 156, 150)",
+          "fontSize": "13px",
+          "lineHeight": "20.15px"
+        }
+      ],
+      "toasts": 0
+    }
+  ],
+  "resultsCount": 3,
+  "keyboard": {
+    "resultsOpen": 3,
+    "diagnosticsOpen": 3,
+    "focus": {
+      "tag": "SUMMARY",
+      "text": "解析工具与原始诊断",
+      "outline": "rgb(10, 56, 184) solid 2px"
+    }
+  },
+  "copy": {
+    "originalText": "Packaging\nExplore blue packaging\nAge 25\nLight style",
+    "copied": "Packaging\nExplore blue packaging\nAge 25\nLight style",
+    "same": true
+  }
+}

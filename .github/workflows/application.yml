@@ -12,6 +12,8 @@ jobs:
   application:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      PITCH_PDF_TEST_PYTHON: ${{ github.workspace }}/.scratch/pdf-test-runtime/bin/python
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -22,6 +24,11 @@ jobs:
           package-manager-cache: false
       - name: Install locked preview dependencies
         run: npm run setup:frontend
+      - name: Install explicit local PDF test runtime
+        run: |
+          python3 -m venv .scratch/pdf-test-runtime
+          "$PITCH_PDF_TEST_PYTHON" -m pip install --only-binary=:all: --no-input -r tools/workbench/requirements-pdf.txt
+          "$PITCH_PDF_TEST_PYTHON" -m pip check
       - name: Check repository and source identities
         run: npm run check:repository
       - name: Typecheck and test current application

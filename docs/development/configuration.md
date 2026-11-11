@@ -1,6 +1,6 @@
 # 配置与服务边界
 
-规范版本：1.3.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.4.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
@@ -24,7 +24,7 @@
 
 前端Deck导出依赖应用锁文件中的PptxGenJS和fflate，本地可直接验证。后端原生排版另依赖`@oai/artifact-tool`、`@napi-rs/canvas`、字体及Python原生工具，当前部分文件静态引用本机专用路径。它们是明确的移植待办，不属于根`npm run check`的承诺范围。
 
-PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillow、pypdfium2、LibreOffice、Poppler和Fontconfig，实际需要随选定工具判断；本轮未安装或运行这些旧能力。不得把本机路径统一替换成另一台机器的路径来伪造可移植性。
+PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillow、pypdfium2、LibreOffice、Poppler和Fontconfig，实际需要随选定工具判断；依赖需按实际配置核实；不因源码存在就声称这些能力全部已安装或运行。不得把本机路径统一替换成另一台机器的路径来伪造可移植性。
 
 ## 当前七阶段与研究接入
 
@@ -32,7 +32,7 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 
 ## PDF原件配置
 
-默认本地服务无需模型配置即可保存当前项目PDF，原件位于SQLite路径旁的.originals/intake受控目录，必须随运行数据保留。当前HTTP只支持12MiB内PDF，不因此启用解析/图像或Office品牌文件；sessionStorage无法保留原请求时发送前拒绝。边界见[PDF原件合同](brief-originals.md)。
+默认本地服务无需模型配置即可保存当前项目PDF，原件位于SQLite路径旁的.originals/intake受控目录，必须随运行数据保留。当前HTTP只支持12MiB内PDF，显式`--pdf-python ABS_PATH`仅启用本地PDF解析，不启用图像或Office品牌文件；sessionStorage无法保留原请求时发送前拒绝。边界见[PDF原件合同](brief-originals.md)。
 
 
 ## 独立读者配置
@@ -40,3 +40,9 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 现有显式研究配置另需`bindings.reader`及匹配provider/model/role。未配置时只允许读取和问题登记，不创建读者任务。reader scope为saved-report-prose，没有图像输入；recheckAvailable按实际配置返回。恢复保存的HTTP结果无需重开provider或凭据，也不派发新调用。
 
 程序化本地验收可显式给provider `testOnly:true`，新生产和读者任务会保存合成工程标签；该标签不放宽任何资格。CLI供应商、服务端账号或付费授权未由此启用。测试的明确工程操作员只覆盖人工节点接线，不代表真实客户批准。PDF默认根与研究默认根分别保留；解析/采集将按新的隔离配置对齐，不移动旧原件。
+
+## 显式本地PDF解析
+
+配置与能力按[本地解析合同](brief-extraction.md)。服务端程序化`intakeConfiguration`默认为null；CLI只有明确`--pdf-python`才选用相应绝对路径。actual probe核Python、worker、包和RSS监测，失败如实不可用；不自动安装或启用任务卡模型。测试专用`PITCH_PDF_TEST_PYTHON`只用于真实PDF专项，不是业务开关；指定错误环境必须失败。原件保存仍默认queued零attempt。
+
+PDF可选运行依赖固定在`tools/workbench/requirements-pdf.txt`，包含实际已测的两个解析包及所需传递依赖。服务不会自行安装；Application CI使用独立venv和binary wheel显式安装、pip check后运行真实解析专项，不触系统环境或旧业务。远程安装和测试是否成功以本次PR实际CI为准。

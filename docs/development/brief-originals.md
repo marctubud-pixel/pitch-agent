@@ -1,6 +1,6 @@
 # 当前项目的PDF原件保存
 
-规范版本：1.0.0。沿用当前Brief HTTP与旧intake原件存储，为新七阶段项目接入品牌PDF保存、下载和未决恢复。这是[静态闭环对账](capability-reconciliation-20261111.md)中输入接入的一条已实现路径，不代表采集、解析、r7读者运行或整案已完成。
+规范版本：1.1.0。沿用当前Brief HTTP与旧intake原件存储，为新七阶段项目接入品牌PDF保存、下载和未决恢复。这是[静态闭环对账](capability-reconciliation-20261111.md)中输入接入的一条已实现路径，不代表采集、解析、r7读者运行或整案已完成。
 
 ## 使用与支持范围
 
@@ -29,7 +29,7 @@ metadata可含clientResourceId、declaredMediaType、lastModified和note。带�
 
 `brief-intake-service.mjs`调用旧createIntakeRuntime.upload和checkedDocument，原件由intake-document-store受控目录、SHA/大小、符号链接和读中变化检查保护。项目登记及原请求保存在既有intakeDocuments/intakeOperations，不另建业务状态数据库。
 
-PDF上传附带旧本地解析器queued job，零attempt；这条入口不execute、schedule或recover它。当前前端只窄允许与bridge登记一一对应的intake_document/PDF queued零尝试job，不因此开放旧intake模型或其他生产。
+PDF上传附带旧本地解析器queued job，零attempt；上传入口不execute、schedule或recover它。[显式解析](brief-extraction.md)另指向该原件的本地job；当前前端仅窄允许与bridge登记及实际本地attempt一一对应的intake_document/PDF状态，不因此开放旧intake模型或其他生产。
 
 前端保留原生完整任务卡计算原cardHash，不从丢字段DTO重建。选择时client UUID和服务端document ID分开；投影核原文件与操作/项目/原SHA/元数据，下载再核真实字节、长度、PDF头和SHA。HTTP原件保存在当前项目，不误称只在浏览器。
 
@@ -39,4 +39,4 @@ PDF上传附带旧本地解析器queued job，零attempt；这条入口不execut
 
 原件对象位于显式SQLite路径旁的`.originals/intake`目录，和SQLite/旁文件一起按运行数据保留；Git只保护源码和文档，不能恢复未纳管原件。新服务不接旧数据库，不启动旧得闲或旧serve，也不因这条接线恢复付费模型或在线PPT编辑。
 
-实际验证见[原件接入核验](brief-originals-verification-20261111.md)。研究采集、PDF解析/模型提取、其他品牌格式HTTP存储和正式采用仍需后续接入，原件保存不能签这些能力已完成。
+实际验证见[原件接入核验](brief-originals-verification-20261111.md)。本地PDF解析另按独立合同接入；研究采集、模型提取、其他品牌格式HTTP存储和正式采用仍需后续接入，原件保存不能签这些能力已完成。
