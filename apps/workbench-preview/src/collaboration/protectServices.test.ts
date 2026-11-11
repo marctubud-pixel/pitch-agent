@@ -217,3 +217,13 @@ it('protects optional acquisition start, fixed step and reconcile as workflow co
  team.selectActor('human-owner');await expect(api.step('p',{...target,generationId:'g',jobIds:['job']},meta)).rejects.toThrow('reached acquisition boundary');expect(calls[0][2]).toMatchObject({actor:{id:'human-owner'}});
  }finally{team.destroy();}
 });
+
+it('requires workflow permission for optional SIMPLE continuation, verification and original reconciliation',async()=>{
+ const {raw,team}=setup(),calls:unknown[][]=[];
+ const stop=async(...args:unknown[]):Promise<never>=>{calls.push(args);throw Error('SIMPLE boundary');};
+ const simple={get:stop,continue:stop,verify:stop,reconcile:stop} satisfies import('../domain/simpleStrategy').SimpleStrategyService;
+ const api=protectServices({...raw,workbench:Object.assign(raw.workbench,{simpleStrategy:simple})},team).workbench.simpleStrategy;if(!api)throw Error('Missing SIMPLE service');
+ try{team.selectActor('human-guest');await expect(api.continue('p',{artifactId:'released-research',policyVersion:1},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(api.verify('p',{artifactId:'strategy'},meta)).rejects.toMatchObject({kind:'forbidden'});await expect(api.reconcile('p',{jobId:'fixed-original'},meta)).rejects.toMatchObject({kind:'forbidden'});expect(calls).toEqual([]);
+ team.selectActor('human-owner');await expect(api.continue('p',{artifactId:'released-research',policyVersion:1},meta)).rejects.toThrow('SIMPLE boundary');expect(calls[0][2]).toMatchObject({actor:{id:'human-owner'}});
+ }finally{team.destroy();}
+});

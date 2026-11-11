@@ -1,3 +1,4 @@
+import {SIMPLE_STRATEGY_VERSION} from './seven-stage-strategy.mjs';
 import {applyResearchMethod} from './research-method.mjs';
 import {ordinaryOriginMatches} from './ordinary-model-claims.mjs';
 import {reopenOrdinary,isOrdinaryHttp,ordinarySuccessfulStatus,ordinaryHasContext} from './ordinary-model.mjs';
@@ -90,7 +91,7 @@ export async function verifyStageOriginal(project,artifact,{executionRoot}) {
  need(await text(executionRoot,file)===raw&&equal(artifact.claims,output.claims),'Original normalized artifact or claims changed');
  need(equal(artifact.technicalReceipts,{sourceCatalogue:{version:1,records:job.task.sourceRecords??[]},visualCatalogue:[]}),'Original source catalogue provenance changed');
  if(job.task.researchContractVersion)need(equal(artifact.researchData,researchChartMetadata(job,output,artifact.contentHash).researchData),'Original research data metadata changed');
- if(job.task.strategyContractVersion)need(equal(artifact.strategyContract,{version:job.task.strategyContractVersion,basisHash:job.task.strategyBasis.basisHash,contentHash:artifact.contentHash,status:output.strategy.answer.decision}),'Original strategy contract changed');
+ if(job.task.strategyContractVersion)need(equal(artifact.strategyContract,{version:job.task.strategyContractVersion,basisHash:job.task.strategyBasis.basisHash,contentHash:artifact.contentHash,status:job.task.strategyContractVersion===SIMPLE_STRATEGY_VERSION?output.status:output.strategy.answer.decision}),'Original strategy contract changed');
  if(job.stage==='copy')need(equal(artifact.copyContract,{version:job.task.copyContractVersion??'copy-message-v1',status:job.task.copyContractVersion==='copy-message-v2'?'complete':'missing_required_parts',contentHash:artifact.contentHash}),'Original copy contract changed');
  const completions=[],registrations=[],claims=[];let commandBytes=0;
  need(Number.isSafeInteger(project.revision)&&project.revision>=1,'Valid project revision required');

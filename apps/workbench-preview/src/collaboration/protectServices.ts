@@ -25,6 +25,7 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const recovery = service.briefRecovery;
   const reader = service.researchReader;
   const acquisition = service.researchAcquisition;
+  const simple = service.simpleStrategy;
   const originals = service.originalDocuments;
   const recoveryAction = (): TeamAction => {
     const pending = recovery?.getPending();
@@ -39,6 +40,12 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const workbench: WorkbenchService = {
     get environment() { return service.environment; },
     briefRecovery,
+    simpleStrategy:simple?{
+      get:id=>simple.get(id),
+      continue:(id,input,meta)=>store.run({kind:'workflow'},actor=>simple.continue(id,input,{...meta,actor})),
+      verify:(id,input,meta)=>store.run({kind:'workflow'},actor=>simple.verify(id,input,{...meta,actor})),
+      reconcile:(id,input,meta)=>store.run({kind:'workflow'},actor=>simple.reconcile(id,input,{...meta,actor})),
+    }:undefined,
     researchAcquisition: acquisition ? {
       get:id=>acquisition.get(id),
       start:(id,input,meta)=>store.run({kind:'workflow'},actor=>acquisition.start(id,input,{...meta,actor})),

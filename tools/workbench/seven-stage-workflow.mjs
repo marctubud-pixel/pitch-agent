@@ -1,3 +1,4 @@
+import {SIMPLE_STRATEGY_VERSION} from './seven-stage-strategy.mjs';
 export const WORKFLOW_VERSION = 'proposal-seven-v1';
 export const WORKFLOW_STAGES = Object.freeze(['brief', 'research', 'strategy', 'themes', 'visual', 'layout', 'delivery']);
 const VISUAL_STEPS = Object.freeze(['references', 'sketch', 'visual']);
@@ -18,7 +19,7 @@ export function requireResearchWorkflow(project) {
 export function assertWorkflowStage(project, backendStage) {
  if (!project?.workflow) return; // Existing snapshots retain their existing domain guards.
  requireResearchWorkflow(project);
- if (backendStage !== 'research') fail('SEVEN_STAGE_ROUTE_REQUIRED', 'This workflow currently permits research production only');
+ if (backendStage!=='research'&&!(backendStage==='strategy'&&project.policies?.at(-1)?.authorizedThrough&&project.policies.at(-1).authorizedThrough!=='research')) fail('SEVEN_STAGE_ROUTE_REQUIRED', 'This workflow currently permits research production only');
 }
 export function workflowView(project, {researchWorkflow} = {}) {
  let supported = false;
@@ -44,6 +45,7 @@ export function workflowView(project, {researchWorkflow} = {}) {
    if (stage === 'brief') return {stage, status: !supported ? 'historical' : confirmed ? 'complete' : 'in_progress', artifactId: activeTask?.id ?? null};
    if (stage === 'research') return {stage, status, artifactId};
    const id = project.activeByStage?.[BACKEND_STAGES[stage]] ?? null;
+   if(stage==='strategy'&&id){const a=project.artifacts.find(a=>a.id===id);const live=supported&&current&&status==='released'&&a?.strategyContract?.version===SIMPLE_STRATEGY_VERSION&&a.strategyContract.contentHash===a.contentHash&&a.inputVersionIds?.includes(artifactId);return {stage,status:live?'needs_acceptance':'historical',artifactId:id};}
    return {stage, status: id ? 'historical' : 'not_started', artifactId: id};
  });
  return {version: project.workflow?.version ?? null, supported, stages,

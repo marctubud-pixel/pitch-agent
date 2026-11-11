@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {resolve} from 'node:path';
 import {openStore} from './store.mjs';
 import {layoutPublicProject} from './layout-boundary.mjs';
-import {DomainError, projectView} from './project.mjs';
+import {DomainError, projectView, STAGES} from './project.mjs';
 
 const MAX_BODY_BYTES = 128 * 1024;
 const commandFields = {'revise-task-card': ['taskCardId', 'brief'], 'confirm-task-card': ['taskCardId']};
@@ -77,9 +77,10 @@ function frontendOrigin(value) {
   return value;
 }
 
-export function createBriefServer({dbPath, port = 4182, origin, researchOptions, intakeConfiguration = null} = {}) {
+export function createBriefServer({dbPath, port = 4182, origin, researchOptions, intakeConfiguration = null, creationAuthorizedThrough = 'research'} = {}) {
   if (typeof dbPath !== 'string' || !dbPath.trim()) throw new Error('An explicit dbPath is required');
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('port must be between 1 and 65535');
+  if(typeof creationAuthorizedThrough!=='string'||!Object.hasOwn(STAGES,creationAuthorizedThrough))throw new Error('Invalid creation authorization endpoint');
   const allowedOrigin = frontendOrigin(origin);
   const store = openStore(dbPath);
   let research, intake;
@@ -124,10 +125,11 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions,
       }
       const projectMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)(\/(?:commands|sources|research-workflow|research-jobs|research-verification|research-readiness|research-handoffs|research-release|research-questions|research-readers|research-reader-reconciliations|research-reader-dispositions|research-revisions)|\/artifacts\/([A-Za-z0-9:._%-]+)\/content)?$/.exec(url.pathname);
       const documentMatch = /^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/documents(?:\/([A-Za-z0-9-]+)\/(original|extraction))?$/.exec(url.pathname);
+      const simpleMatch=/^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/simple-strategy(?:\/(continue|verify|reconcile))?$/.exec(url.pathname);
       const acquisitionMatch=/^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/research-acquisition(?:\/(start|step|reconcile))?$/.exec(url.pathname);
       const readerMatch=/^\/api\/v1\/projects\/([A-Za-z0-9-]+)\/research-reader-reports\/([A-Za-z0-9-]+)$/.exec(url.pathname);
       const resource = projectMatch?.[2];
-      const methods = acquisitionMatch ? [acquisitionMatch[2]?'POST':'GET'] : readerMatch ? ['GET'] : documentMatch ? documentMatch[3] === 'original' ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
+      const methods = simpleMatch ? [simpleMatch[2]?'POST':'GET'] : acquisitionMatch ? [acquisitionMatch[2]?'POST':'GET'] : readerMatch ? ['GET'] : documentMatch ? documentMatch[3] === 'original' ? ['GET'] : ['GET','POST'] : url.pathname === '/api/v1/capabilities' ? ['GET'] : url.pathname === '/api/v1/projects' ? ['GET', 'POST'] : projectMatch ? [!resource || resource === '/research-workflow' || projectMatch[3] ? 'GET' : 'POST'] : [];
       if (!methods.length) throw new HttpError(404, 'NOT_FOUND', 'Route not found');
       const revision = url.searchParams.get('revision');
       const targetMethod = req.method === 'OPTIONS' ? req.headers['access-control-request-method'] : req.method;
@@ -143,6 +145,7 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions,
         await intake.extractionCapability();
         response(res, 200, {apiVersion: 'v1', surface: research.capability().executionAllowed ? 'research-v1' : 'brief-v1', workflowVersion:WORKFLOW_VERSION, executionAvailable: research.capability().executionAllowed, research:research.capability(), originals:intake.capability(), commands: Object.keys(commandFields)}); return;
       }
+      if(simpleMatch){const id=simpleMatch[1],operation=simpleMatch[2];let payload;if(!operation)payload=await research.simpleStrategyStatus(id);else{const body=await jsonBody(req);fields(body,['commandId','expectedRevision',...({continue:['artifactId','policyVersion'],verify:['artifactId'],reconcile:['jobId']}[operation])]);payload=await research[{continue:'simpleStrategyContinue',verify:'simpleStrategyVerify',reconcile:'simpleStrategyReconcile'}[operation]](id,body);}const p=store.read(id);if(p.revision!==payload.revision)throw new HttpError(409,'REVISION_CONFLICT','Project changed');const snapshot=await result(p);if(store.read(id).revision!==p.revision)throw new HttpError(409,'REVISION_CONFLICT','Project changed');response(res,200,{...snapshot,...payload});return;}
       if(acquisitionMatch){
         const id=acquisitionMatch[1],operation=acquisitionMatch[2];let payload;
         if(!operation)payload=await research.acquisitionStatus(id);
@@ -190,7 +193,7 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions,
         string(body, 'name'); string(body, 'brief'); string(body, 'commandId', false);
         if (body.commandId === '__proto__') invalid('Reserved commandId');
         const id = body.commandId ? `project-${createHash('sha256').update(body.commandId).digest('hex')}` : randomUUID();
-        const input = {id, name: body.name.trim(), brief: body.brief, mode: body.mode ?? 'assisted', humanGates: body.humanGates ?? [], authorizedThrough: 'research', workflowVersion:WORKFLOW_VERSION};
+        const input = {id, name: body.name.trim(), brief: body.brief, mode: body.mode ?? 'assisted', humanGates: body.humanGates ?? [], authorizedThrough: creationAuthorizedThrough, workflowVersion:WORKFLOW_VERSION};
         try { response(res, 201, await result(store.create(input, humanContext()))); }
         catch (error) {
           if (error.code !== 'PROJECT_EXISTS' || !body.commandId) throw error;
@@ -265,17 +268,18 @@ async function main() {
       if (!['--db', '--port', '--origin', '--research-config', '--research-execution', '--pdf-python'].includes(args[i]) || args[i + 1] === undefined || Object.hasOwn(options, args[i])) throw new Error('Use --db PATH [--port PORT] [--origin HTTP_LOOPBACK_ORIGIN] [--pdf-python ABS_PATH]');
       options[args[i]] = args[i + 1];
     }
-    let researchOptions;
+    let researchOptions,creationAuthorizedThrough='research';
     if(options['--research-execution']!==undefined && !['enabled','disabled'].includes(options['--research-execution'])) throw new Error('Use --research-execution enabled or disabled');
     if(options['--research-execution']==='enabled'&&!options['--research-config'])throw new Error('Explicit research configuration required');
     if(options['--research-config']){
       const {loadLaunchSettings,buildLaunchOptions}=await import('./launch-config.mjs');
       const configured=buildLaunchOptions(await loadLaunchSettings({configPath:options['--research-config']}));
       if(resolve(configured.dbPath)!==resolve(options['--db']))throw new Error('Research configuration must name the same explicit isolated database');
+      creationAuthorizedThrough=configured.creationAuthorizedThrough??'research';
       researchOptions={...configured,executionAllowed:options['--research-execution']==='enabled'};
     }
     const intakeConfiguration=options['--pdf-python']===undefined?null:{pythonBinary:options['--pdf-python']};
-    const server = createBriefServer({researchOptions,intakeConfiguration,dbPath: options['--db'], port: options['--port'] === undefined ? 4182 : Number(options['--port']), origin: options['--origin']});
+    const server = createBriefServer({researchOptions,intakeConfiguration,creationAuthorizedThrough,dbPath: options['--db'], port: options['--port'] === undefined ? 4182 : Number(options['--port']), origin: options['--origin']});
     server.once('error', error => { console.error(error.message); server.close(() => { process.exitCode = 1; }); });
     server.listen(() => console.log(`Brief service available at http://127.0.0.1:${server.address().port}`));
     for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => server.close(error => { if (error) process.exitCode = 1; }));

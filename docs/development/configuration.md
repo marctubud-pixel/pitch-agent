@@ -1,6 +1,6 @@
 # 配置与服务边界
 
-规范版本：1.5.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.6.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
@@ -28,7 +28,7 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，后续生产仍未完成；默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略生产与全文核验另按[策略合同](simple-strategy.md)接线，后续生产仍未完成；默认不执行模型。
 
 ## PDF原件配置
 
@@ -52,3 +52,9 @@ PDF可选运行依赖固定在`tools/workbench/requirements-pdf.txt`，包含实
 ## 自动采集配置
 
 `--research-config`沿用经过验证的launch配置，另需`researchAcquisition`、其指定的`searchProviders`和实际`research_planner`/`research`绑定。缺搜索、模型适配器或预算时显示不可用；设置开关不证明外部服务在线或获准付费。空来源可以自动取证，选择PDF另需实际当前bridge原件、已核抽取及显式共根。字段、默认零执行和恢复限制见[采集合同](research-acquisition.md)。
+
+## 简洁策略与新建授权
+
+`creationAuthorizedThrough`是服务器创建配置，默认research。程序化`createBriefServer`和launch JSON的`server.creationAuthorizedThrough`都按既有STAGES枚举验证；本轮新隔离整链配置显式选final_review。CLI由research配置映射此字段，公共新建body不能上传，旧项目和set-policy不升级。授权终点不等于文案至终审路由开放。
+
+简洁策略另需strategy和verification绑定、执行开关及当前原研究放行。其capability只检查配置形状，不完整probe HTTP凭据或远端在线。默认没有执行器；付费/真实模型及旧run保持暂停。请求、固定任务及unknown恢复见[策略合同](simple-strategy.md)。

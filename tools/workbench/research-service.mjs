@@ -1,3 +1,5 @@
+import {createSimpleStrategyService} from './simple-strategy-service.mjs';
+import {SIMPLE_STRATEGY_VERSION} from './seven-stage-strategy.mjs';
 import {createAcquisitionService} from './research-acquisition-service.mjs';
 import {researchWorkflowWithReaderOriginals} from './research-reader-workflow.mjs';
 import {APPLICABILITY_PROTOCOL} from './research-applicability.mjs';
@@ -52,9 +54,11 @@ export function createResearchService({store, rootDir, executionAllowed = false,
     return execute(id, jobId);
   };
   const acquisition=createAcquisitionService({store,rootDir,executionAllowed,executor,...options});
+  const simple=createSimpleStrategyService({store,rootDir,executor,executionAllowed,bindings,providers});
   return {
+    simpleStrategyStatus:simple.status,simpleStrategyContinue:simple.continue,simpleStrategyVerify:simple.verify,simpleStrategyReconcile:simple.reconcile,
     acquisitionStatus:acquisition.status,acquisitionStart:acquisition.start,acquisitionStep:acquisition.step,acquisitionReconcile:acquisition.reconcile,
-    capability:()=>({...capability(),acquisition:acquisition.capability()}),
+    capability:()=>({...capability(),acquisition:acquisition.capability(),simpleStrategy:simple.capability()}),
     async readerReport(id, reportId) {
       const p=project(id),report=(p.researchReaderReports??[]).find(r=>r.id===reportId);
       need(report,'NOT_FOUND','没有该项目的独立读者报告。');
@@ -87,7 +91,7 @@ export function createResearchService({store, rootDir, executionAllowed = false,
     async reconcileReader(id, request) {project(id); const reader=executor??createExecutor({store,rootDir});const job=await reader.reconcileResearchReader(id,request.jobId,request);return {jobId:job.id};},
     workflow: id => {const p = project(id); return executor ? executor.researchWorkflow(id) : researchWorkflowView(p);},
     workflowSnapshot: p => researchWorkflowWithReaderOriginals(p,researchWorkflowView(p,{bindings,providers}),{executionRoot:rootDir}),
-    content: (id, artifactId) => {const p = project(id), a = p.artifacts.find(item => item.id === artifactId); need(a?.stage === 'research', 'RESEARCH_ROUTE_REQUIRED', '本入口只读取研究原件。'); return readArtifactContent(p, artifactId, rootDir);},
+    content: (id, artifactId) => {const p = project(id), a = p.artifacts.find(item => item.id === artifactId); need(a?.stage === 'research'||a?.stage==='strategy'&&a.strategyContract?.version===SIMPLE_STRATEGY_VERSION, 'RESEARCH_ROUTE_REQUIRED', '本入口只读取研究原件。'); return readArtifactContent(p, artifactId, rootDir);},
     async generate(id, request) {
       const p = ready(id);
       const sourceRecords = registeredSources(p, request.sourceEntryIds, 'http://127.0.0.1');

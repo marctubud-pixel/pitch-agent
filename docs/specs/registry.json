@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.9.0",
+  "baselineVersion": "1.10.0",
   "date": "2026-11-12",
-  "status": "受限研究自动采集接线；默认零执行，后续生产与完整两案例继续目标模式",
+  "status": "简洁三板块策略生成/全文核验接线；默认research授权，双owner到copy及整链继续目标模式",
   "workflow": [
     "brief",
     "research",
@@ -216,7 +216,7 @@
       "kind": "page",
       "title": "策略",
       "path": "docs/pages/strategy.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.strategy-owner",
@@ -526,7 +526,7 @@
       "kind": "contract",
       "title": "开发启动与工程入口",
       "path": "docs/development/README.md",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -535,7 +535,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -544,7 +544,7 @@
       "kind": "contract",
       "title": "配置与服务边界",
       "path": "docs/development/configuration.md",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -553,7 +553,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -580,7 +580,7 @@
       "kind": "contract",
       "title": "工作台操作说明",
       "path": "docs/usage/README.md",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -589,7 +589,7 @@
       "kind": "contract",
       "title": "Pitch Agent后续调整顺序",
       "path": "docs/development/remaining-work.md",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
@@ -601,7 +601,7 @@
       "kind": "contract",
       "title": "本地简报HTTP合同与联调",
       "path": "docs/development/http-brief.md",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
@@ -614,7 +614,7 @@
       "title": "七阶段运行合同",
       "kind": "contract",
       "path": "docs/specs/seven-stage-runtime.md",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.workflow",
@@ -627,7 +627,7 @@
       "title": "七阶段研究入口接续",
       "kind": "contract",
       "path": "docs/development/seven-stage-research.md",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.workflow",
@@ -686,6 +686,20 @@
         "contract.http-brief",
         "contract.brief-extraction",
         "method.research"
+      ]
+    },
+    {
+      "id": "contract.simple-strategy",
+      "kind": "contract",
+      "title": "简洁三板块策略运行合同",
+      "path": "docs/development/simple-strategy.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.seven-stage-runtime",
+        "contract.http-brief",
+        "contract.research-reader",
+        "agent.strategy-owner"
       ]
     }
   ],

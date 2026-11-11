@@ -1,6 +1,6 @@
 # 开发、运行与使用
 
-规范版本：1.6.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
+规范版本：1.7.0。此目录是应用工程入口。业务方法和页面要求仍以[规范基线](../specs/README.md)为准，Agent分工见[岗位组织](../agents/README.md)。
 
 ## 本地启动
 
@@ -18,7 +18,7 @@ npm run dev
 
 ## 连接本地简报服务
 
-新建、读取、保存与确认已接入独立SQLite服务。按[简报HTTP合同](http-brief.md)在两个终端运行`npm run dev:brief`和`npm run dev:http`；当前还可登记来源、读取研究原件及检查。默认不启动模型，显式研究配置可启用指定研究任务，策略及后续生产未开放，详见[研究接续](seven-stage-research.md)。默认演示入口保持。
+新建、读取、保存与确认已接入独立SQLite服务。按[简报HTTP合同](http-brief.md)在两个终端运行`npm run dev:brief`和`npm run dev:http`；当前还可登记来源、读取研究原件及检查。默认不启动模型，显式研究配置可启用指定研究任务，简洁策略需显式创建授权与原研究放行，其他后续生产未开放，详见[研究接续](seven-stage-research.md)。默认演示入口保持。
 
 ## 日常验证
 
@@ -50,7 +50,7 @@ npm run check
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，后续生产仍未完成；默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略生产与全文核验另按[策略合同](simple-strategy.md)接线，后续生产仍未完成；默认不执行模型。
 
 ## PDF原件输入
 

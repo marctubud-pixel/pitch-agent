@@ -1,3 +1,13 @@
+# 目标接续：空间恢复与简洁策略 · 2026-11-12
+
+采集[PR #7](https://github.com/marctubud-pixel/pitch-agent/pull/7)准确最终head双CI与实际安装/测试步骤成功，已合并35965060。当前`codex/simple-strategy-20261112`采用三板块策略、受限HTTP与当前策略页，尚未提交或签最终UI通过；研究r7及既有页面方法沿用，不重跑旧业务。
+
+用户授权空间处理已完成，27处可重建派生产物删除；源码、资料、数据库和原回执保持。后续同字节副本采用同路径APFS写时复制并经独立核对，见[空间检查点](checkpoints/2026-11-12-space-recovery.json)。最新约48GiB可用；后续系统级增加不全部归因本次清理。保留至少3GiB运行门槛。
+
+策略纯协议44项、原生运行7项、受限HTTP与配置9项、unknown新命令拒绝及相邻接口均已专项验证；前端真实HTTP4项通过，随后结构化KV任务卡与ProposalService正例单独通过。真实UI R1缺提案类型、R2合成引用路径不适配均被原守卫拦下，原失败保留；只修测试夹具。具名R3已真实保存唯一策略稿，全文核验/恢复与独立UI仍在核对。最终门禁、锁、两轴与PR按完成回执另记，不以专项替代全链。
+
+完整七阶段本地工程目标仍未完成：策略双owner到三方向文案在隔离候选并行验证，视觉、同版Deck、终审和包装/KV整链尚待串联。旧run、原数据库、付费/真实模型、生产账号、外部通知、云部署及在线编辑保存暂停边界保持。以下为当时历史节点。
+
 # 目标模式：研究自动采集接线 · 2026-11-12
 
 PDF包[PR #6](https://github.com/marctubud-pixel/pitch-agent/pull/6)准确8404d26a双CI及显式venv步骤成功，已合并a532697e。当前采集分支复用四分支/封口/唯一r7生产者，严格原body与固定job、actual claim卡/问题/CAS守卫、partial PDF共根资格和原IO核回；默认执行仍关闭。[合同](../docs/development/research-acquisition.md)及[本轮核验](../docs/development/research-acquisition-verification-20261112.md)分别说明规则与实际范围。

@@ -1,5 +1,11 @@
 # 规范变更记录
 
+## 1.10.0 · 2026-11-12
+
+新增简洁策略运行合同1.0.0与策略页1.1.0，复用原研究continuation及独立全文核验，只输出研究结论、方向交叉点和策略发力点。保留r7/reader/事实/readiness/semantic/研究双owner和显式release、完整原件限制与HARD_BLOCKER，不恢复旧复杂策略Skill。默认创建授权research，服务器显式终点仅作用新建，公共body及旧项目不升级。
+
+四受限接口保存原body/唯一job/binding和完整当前快照，actual claim核CAS；producer及verification仅核仍当前的原保存HTTP结果，恢复者recoveredBy与原executor分开，历史或缺IO保持待核。页面三环仅作关系示意，保存稿件保持needs_acceptance。开发/config/HTTP/testing/usage/runtime及导航同步，策略双owner到copy、修订、后续整链和真实UI/最终门禁按实际范围继续，不提前签PR或客户批准。
+
 ## 1.9.0 · 2026-11-12
 
 新增研究自动采集运行合同1.0.0，复用既有四分支、原件封口和唯一r7研究生产者。受限HTTP明确原body、固定任务集合、实际claim的卡/问题登记/CAS，以及技术账本与人工批准的区分。研究页1.2.0沿原主操作与折叠副层接入，限定单次六步、刷新不续跑和workflow权限。HTTP传输未知与原生unknown分别处理；历史计划/分支可核原IO，历史研究生产者仍未支持。

@@ -1,0 +1,316 @@
+{
+  "date": "2026-11-12",
+  "recordedUtc": "2026-11-11T19:26:55.726181+00:00",
+  "authorization": "用户明确授权：你帮我处理吧，清掉不必要的文件",
+  "scope": "本项目已核可重建派生产物；不扩展全局缓存、其他项目或Git历史",
+  "removedDirectories": [
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/worktrees/extraction-ui/apps/workbench-preview/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/seven-stage-static-goal-20261111/worktrees/extraction-ui/apps/workbench-preview ci --ignore-scripts && npm --prefix .scratch/seven-stage-static-goal-20261111/worktrees/extraction-ui/apps/workbench-preview run build",
+      "files": 58,
+      "allocatedBytes": 63492096,
+      "logicalBytes": 63393544
+    },
+    {
+      "path": ".scratch/qingyu-visual-layout-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-visual-layout-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-visual-layout-20261110/candidate run build",
+      "files": 38,
+      "allocatedBytes": 29630464,
+      "logicalBytes": 29561901
+    },
+    {
+      "path": ".scratch/qingyu-layout-ui-r4-20261111/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-layout-ui-r4-20261111/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-layout-ui-r4-20261111/candidate run build",
+      "files": 58,
+      "allocatedBytes": 62513152,
+      "logicalBytes": 62412147
+    },
+    {
+      "path": ".scratch/qingyu-layout-ui-r5-20261111/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-layout-ui-r5-20261111/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-layout-ui-r5-20261111/candidate run build",
+      "files": 58,
+      "allocatedBytes": 62513152,
+      "logicalBytes": 62412233
+    },
+    {
+      "path": ".scratch/qingyu-strategy-r3-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-strategy-r3-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-strategy-r3-20261110/candidate run build",
+      "files": 38,
+      "allocatedBytes": 29310976,
+      "logicalBytes": 29243554
+    },
+    {
+      "path": ".scratch/qingyu-research-r4-20261109/writer-source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-research-r4-20261109/writer-source ci --ignore-scripts && npm --prefix .scratch/qingyu-research-r4-20261109/writer-source run build",
+      "files": 40,
+      "allocatedBytes": 28913664,
+      "logicalBytes": 28838528
+    },
+    {
+      "path": ".scratch/strategy-owner-simple-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/strategy-owner-simple-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/strategy-owner-simple-20261110/candidate run build",
+      "files": 38,
+      "allocatedBytes": 29315072,
+      "logicalBytes": 29243773
+    },
+    {
+      "path": ".scratch/qingyu-strategy-rejection-20261110/implementation/source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-strategy-rejection-20261110/implementation/source ci --ignore-scripts && npm --prefix .scratch/qingyu-strategy-rejection-20261110/implementation/source run build",
+      "files": 38,
+      "allocatedBytes": 29294592,
+      "logicalBytes": 29224040
+    },
+    {
+      "path": ".scratch/qingyu-research-r3-20261109/writer-source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-research-r3-20261109/writer-source ci --ignore-scripts && npm --prefix .scratch/qingyu-research-r3-20261109/writer-source run build",
+      "files": 39,
+      "allocatedBytes": 28794880,
+      "logicalBytes": 28724497
+    },
+    {
+      "path": ".scratch/strategy-rings-copy-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/strategy-rings-copy-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/strategy-rings-copy-20261110/candidate run build",
+      "files": 38,
+      "allocatedBytes": 29323264,
+      "logicalBytes": 29253370
+    },
+    {
+      "path": ".scratch/qingyu-strategy-skill-20261109/writer-source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-strategy-skill-20261109/writer-source ci --ignore-scripts && npm --prefix .scratch/qingyu-strategy-skill-20261109/writer-source run build",
+      "files": 39,
+      "allocatedBytes": 29261824,
+      "logicalBytes": 29190744
+    },
+    {
+      "path": ".scratch/content-review-page-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/content-review-page-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/content-review-page-20261110/candidate run build",
+      "files": 58,
+      "allocatedBytes": 62554112,
+      "logicalBytes": 62454323
+    },
+    {
+      "path": ".scratch/content-review-page-20261110/candidate-r2/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/content-review-page-20261110/candidate-r2 ci --ignore-scripts && npm --prefix .scratch/content-review-page-20261110/candidate-r2 run build",
+      "files": 58,
+      "allocatedBytes": 62554112,
+      "logicalBytes": 62456343
+    },
+    {
+      "path": ".scratch/content-review-page-20261110/r3/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/content-review-page-20261110/r3/candidate ci --ignore-scripts && npm --prefix .scratch/content-review-page-20261110/r3/candidate run build",
+      "files": 58,
+      "allocatedBytes": 62554112,
+      "logicalBytes": 62456373
+    },
+    {
+      "path": ".scratch/qingyu-visual-layout-repair-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-visual-layout-repair-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-visual-layout-repair-20261110/candidate run build",
+      "files": 43,
+      "allocatedBytes": 33361920,
+      "logicalBytes": 33289428
+    },
+    {
+      "path": ".scratch/qingyu-packaging-references-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-packaging-references-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-packaging-references-20261110/candidate run build",
+      "files": 43,
+      "allocatedBytes": 33337344,
+      "logicalBytes": 33266371
+    },
+    {
+      "path": ".scratch/qingyu-copy-full-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-copy-full-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-copy-full-20261110/candidate run build",
+      "files": 38,
+      "allocatedBytes": 29609984,
+      "logicalBytes": 29541676
+    },
+    {
+      "path": ".scratch/package-results-workbench-20261109/writer-source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/package-results-workbench-20261109/writer-source ci --ignore-scripts && npm --prefix .scratch/package-results-workbench-20261109/writer-source run build",
+      "files": 28,
+      "allocatedBytes": 10883072,
+      "logicalBytes": 10826698
+    },
+    {
+      "path": ".scratch/qingyu-strategy-r2-20261109/implementation/source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-strategy-r2-20261109/implementation/source ci --ignore-scripts && npm --prefix .scratch/qingyu-strategy-r2-20261109/implementation/source run build",
+      "files": 39,
+      "allocatedBytes": 29315072,
+      "logicalBytes": 29244643
+    },
+    {
+      "path": ".scratch/luma-research-report-20261109/writer-source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/luma-research-report-20261109/writer-source ci --ignore-scripts && npm --prefix .scratch/luma-research-report-20261109/writer-source run build",
+      "files": 23,
+      "allocatedBytes": 4497408,
+      "logicalBytes": 4452003
+    },
+    {
+      "path": ".scratch/qingyu-research-rerun-20261109/writer-source/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-research-rerun-20261109/writer-source ci --ignore-scripts && npm --prefix .scratch/qingyu-research-rerun-20261109/writer-source run build",
+      "files": 36,
+      "allocatedBytes": 22339584,
+      "logicalBytes": 22274679
+    },
+    {
+      "path": ".scratch/qingyu-visual-workflow-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-visual-workflow-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-visual-workflow-20261110/candidate run build",
+      "files": 43,
+      "allocatedBytes": 33357824,
+      "logicalBytes": 33285579
+    },
+    {
+      "path": ".scratch/qingyu-visual-ui-fill-20261110/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-visual-ui-fill-20261110/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-visual-ui-fill-20261110/candidate run build",
+      "files": 58,
+      "allocatedBytes": 62492672,
+      "logicalBytes": 62396808
+    },
+    {
+      "path": ".scratch/qingyu-visual-ui-fill-20261110/r2/candidate/dist",
+      "reason": "inactive rebuildable frontend dist; retained source/public/package-lock",
+      "rebuild": "npm --prefix .scratch/qingyu-visual-ui-fill-20261110/r2/candidate ci --ignore-scripts && npm --prefix .scratch/qingyu-visual-ui-fill-20261110/r2/candidate run build",
+      "files": 58,
+      "allocatedBytes": 62492672,
+      "logicalBytes": 62396864
+    },
+    {
+      "path": "apps/proposal-workbench/node_modules/.vitest-cache",
+      "reason": "Vitest fsModuleCache, generated automatically by retained pinned Vitest",
+      "rebuild": "Next normal test run recreates this compiler cache",
+      "files": 6155,
+      "allocatedBytes": 353513472,
+      "logicalBytes": 340050727
+    },
+    {
+      "path": "apps/workbench-preview/node_modules/.vitest-cache",
+      "reason": "Vitest fsModuleCache, generated automatically by retained pinned Vitest",
+      "rebuild": "Next normal test run recreates this compiler cache",
+      "files": 1501,
+      "allocatedBytes": 79044608,
+      "logicalBytes": 75928962
+    },
+    {
+      "path": "sites/light-baijiu-research/node_modules",
+      "reason": "inactive rebuildable dependencies; static dist/public/source retained",
+      "rebuild": "npm --prefix sites/light-baijiu-research ci",
+      "files": 15741,
+      "allocatedBytes": 297234432,
+      "logicalBytes": 252287822
+    }
+  ],
+  "removedAllocatedBytes": 1661505536,
+  "observedAvailableChanges": {
+    "derivedCleanupBefore": 1448136704,
+    "derivedCleanupAfter": 3102793728,
+    "sourceCowBefore": 3091877888,
+    "sourceCowAfter": 3865296896,
+    "smallWorktreeCowBefore": 2761089024,
+    "smallWorktreeCowAfter": 2964221952,
+    "assetCopyCowBefore": 2954600448,
+    "assetCopyCowAfter": 5243707392
+  },
+  "currentAvailableBytes": 51812478976,
+  "fullRunMinimumBytes": 3221225472,
+  "retainedSourceFilesShaVerified": 1679,
+  "samePathCowCopies": 934,
+  "samePathCowScope": "Per-round counts preserve their original scope; identical copies retain every path and byte. No database/provider original/archive/Git cleanup. Active apps and original UI/output roots are protected canonical-only for the asset round.",
+  "preserved": [
+    "全部源码/public/锁",
+    "业务数据库与WAL/SHM",
+    "旧原件/回执/失败及独立报告",
+    "Git对象/历史",
+    "活动依赖及预览入口资源",
+    "恢复档与1723归档blob"
+  ],
+  "independentPostReview": ".scratch/seven-stage-static-goal-20261111/design/cleanup-redundancy-audit-20261112.md",
+  "evidenceRoot": ".scratch/space-recovery-20261112/",
+  "limits": [
+    "物理可用空间同时受其他进程影响，不把逻辑去重字节当物理释放量",
+    "未独立重哈希全部历史归档；第三cold clone缺独立清理前全SHA，只核存在/尺寸及操作排除",
+    "934目标xattr由执行器前后逐件核相等，独立后验没有清理前xattr快照，不扩大签署",
+    "旧4415当前拒连且无清前HTTP证据，不归因清理；依暂停边界没有重开旧serve"
+  ],
+  "entryReadback": {
+    "readOnlyEntryChecks": [
+      {
+        "port": 4415,
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      },
+      {
+        "port": 4420,
+        "status": 200,
+        "html": true
+      },
+      {
+        "port": 4430,
+        "status": 200,
+        "html": true
+      },
+      {
+        "port": 4432,
+        "status": 200,
+        "html": true
+      },
+      {
+        "port": 4434,
+        "status": 200,
+        "html": true
+      }
+    ],
+    "acquisitionOriginalProject": {
+      "sameRevision": 50,
+      "jobs": 7,
+      "artifacts": 1,
+      "releases": 0
+    },
+    "postRequests": 0
+  },
+  "updatedUtc": "2026-11-11T20:07:32.204648+00:00",
+  "currentAvailableObservedUtc": "2026-11-11T20:07:32.204648+00:00",
+  "samePathCowCopiesByRound": {
+    "qualifiedSourcePublic": 934,
+    "smallWorktreeSourceDocsFixtures": 9372,
+    "identicalAssetCopies": 4754
+  },
+  "laterCowIndependentVerification": {
+    "source": ".scratch/space-recovery-20261112/independent-later-cow-verification.json",
+    "copies": 14126,
+    "checks": [
+      "source/target SHA256",
+      "size",
+      "mtime",
+      "mode",
+      "protected paths not targets",
+      "canonical/target disjoint"
+    ],
+    "xattrScope": "Execution-time comparison only; no independent pre-cleanup xattr snapshot."
+  },
+  "spaceAttribution": "Final observed available space is about 48 GiB. The later system-wide increase is not attributed to this cleanup; do not sum logical clone bytes or observed differences as physical savings.",
+  "unexecutedPlans": [
+    "dependency-cow-plan",
+    "additional-source-cow-plan"
+  ]
+}

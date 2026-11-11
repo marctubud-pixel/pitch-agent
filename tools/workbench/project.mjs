@@ -1,4 +1,6 @@
+import {reduceSimpleHttp,requireSimpleHttpJob} from './simple-strategy-http.mjs';
 import {requireAcquisitionHttpJob} from './research-acquisition.mjs';
+import {SIMPLE_STRATEGY_VERSION,createSimpleStrategyBasis} from './seven-stage-strategy.mjs';
 import {researchReaderEvidence,validateStoredResearchReader} from './research-reader-state.mjs';
 import {buildResearchReaderRequest,validateResearchReaderOutput} from './research-reader-loop.mjs';
 import {RESEARCH_READER_COMMANDS,reduceResearchReaderCommand,researchReaderTarget,researchQuestionRegistration} from './research-reader-state.mjs';
@@ -92,9 +94,9 @@ function policy(mode = 'assisted', humanGates, version = 1, authorizedThrough = 
 export function createProject({id, name, brief, mode, humanGates, authorizedThrough, workflowVersion}, context) {
   identity(context);
   requireValue(id && name && brief, 'INVALID_PROJECT', 'ID, name and brief are required');
-  if(workflowVersion!==undefined){createWorkflow(workflowVersion);requireValue(authorizedThrough===undefined||authorizedThrough==='research','SEVEN_STAGE_AUTHORIZATION_REQUIRED','Only research execution is currently supported');requireValue(humanGates===undefined||Array.isArray(humanGates)&&humanGates.every(stage=>['strategy','copy','visual','final_review'].includes(stage)),'INVALID_GATES','Current seven-stage manual gates required');}
+  if(workflowVersion!==undefined){createWorkflow(workflowVersion);requireValue(authorizedThrough===undefined||Object.hasOwn(STAGES,authorizedThrough),'SEVEN_STAGE_AUTHORIZATION_REQUIRED','Only research execution is currently supported');requireValue(humanGates===undefined||Array.isArray(humanGates)&&humanGates.every(stage=>['strategy','copy','visual','final_review'].includes(stage)),'INVALID_GATES','Current seven-stage manual gates required');}
   return freeze({id, name, ...(workflowVersion===undefined?{}:{workflow:createWorkflow(workflowVersion)}), revision: 0, taskCards: [{id: `${id}:scope:1`, brief, createdBy: context.actorId}],
-    activeTaskCardId: `${id}:scope:1`, confirmations: [], visualAuthorizations: [], policies: [policy(mode, workflowVersion===undefined?humanGates:humanGates??[], 1, workflowVersion===undefined?authorizedThrough:'research')],
+    activeTaskCardId: `${id}:scope:1`, confirmations: [], visualAuthorizations: [], policies: [policy(mode, workflowVersion===undefined?humanGates:humanGates??[], 1, workflowVersion===undefined?authorizedThrough:authorizedThrough??'research')],
     jobs: [], humanFeedback: [], feedbackReviews: [], sourceCaptures: [], sourceEntries: [], caseIdentityReviews: [], imageAssets: [], imageObservations: [], observationReviews: [], artifacts: [], verifications: [], readinessReports: [], readinessResolutions: [], handoffReports: [], panels: [], reviews: [], decisions: [], acknowledgments: [], releases: [], activeByStage: {}, audit: [], processedCommands: {}});
 }
 const currentPolicy = p => p.policies.at(-1);
@@ -254,7 +256,7 @@ function validateStoredReviewWithin(evaluation, p,kind,report) {
   if(input.sourceRecords)requireValue(isDeepStrictEqual(input.sourceRecords,a.technicalReceipts?.sourceCatalogue?.records??[]),'INVALID_CORRECTION_SOURCE','Original report evidence catalogue changed');
   if(input.visualCatalogue)requireValue(isDeepStrictEqual(input.visualCatalogue,a.technicalReceipts?.visualCatalogue??[]),'INVALID_CORRECTION_SOURCE','Original report visual catalogue changed');
   const targetContent=input.content??panelPacket?.content;
-  if(targetContent)requireValue(hash(JSON.stringify(targetContent,null,2))===a.contentHash,'INVALID_CORRECTION_SOURCE','Original reviewed content changed');
+  if(targetContent){const original=kind==='verification'&&a.strategyContract?.version===SIMPLE_STRATEGY_VERSION?(({claims,...raw})=>{requireValue(Array.isArray(claims)&&claims.length===0,'INVALID_CORRECTION_SOURCE','Exact simple verification projection required');return raw;})(targetContent):targetContent;requireValue(hash(JSON.stringify(original,null,2))===a.contentHash,'INVALID_CORRECTION_SOURCE','Original reviewed content changed');}
   if(kind==='correction_review'&&[COMPLETE_CORRECTION_REVIEW_PROTOCOL,APPLICABILITY_HANDLING].includes(input.reviewProtocolVersion))requireValue(isDeepStrictEqual(input.context,correctionHandlingContext(p,a.id)),'INVALID_CORRECTION_SOURCE','Original correction handling context changed');
   const request=adapter.build(input),validated=adapter.validate(report.rawReport,input),receipt=report.executionReceipt;
   if(kind!=='creative_panel')requireValue(Object.entries(validated).every(([k,v])=>isDeepStrictEqual(v,report[k])),
@@ -476,19 +478,26 @@ function strategyBasisForWithin(evaluation, p,binding,{sourceRecords=[],visualCa
  const reviewConstraints={...((p.coverageChallenges??[]).some(r=>r.artifactId===a.id)?{semantic:(p.coverageChallenges??[]).filter(r=>r.artifactId===a.id).map(r=>({reportId:r.id,...reviewContextReport(p,r)}))}:{}),readiness:(p.readinessReports??[]).filter(r=>r.artifactId===a.id).map(r=>({reportId:r.id,...reviewContextReport(p,r)})),handoffs:(p.handoffReports??[]).filter(r=>r.artifactId===a.id).map(r=>({reportId:r.id,...reviewContextReport(p,r)})),...(usesResearchOperatorWorkflow(p)?{operatorHandoff:researchOperatorConstraintsWithin(evaluation, p,a.id)}:{})};
  const chartAdmission=hasResearchData(p,a)?requireResearchChartAdmissionWithin(evaluation, p,a.id):null;
  const data={...(chartAdmission?{researchChartAdmission:chartAdmission}:{}),version:STRATEGY_CONTRACT_VERSION,reviewConstraints,taskCard:structuredClone(taskCard),confirmations:structuredClone(confirmations),policy:structuredClone(currentPolicy(p)),binding:structuredClone(binding),research:[{artifactId:a.id,contentHash:a.contentHash,claimManifest:evidenceClaimManifest({claims:a.claims}),artifact:structuredClone(a),authority:structuredClone(authority)}],sourceRecords:structuredClone(sourceRecords),visualCatalogue:structuredClone(visualCatalogue)};
+ if(p.workflow){
+  const contentText=JSON.stringify(requireResearchOriginal(p,a).output.content,null,2);
+  const handoff={...data,version:SIMPLE_STRATEGY_VERSION};
+  const limitations=[...new Set((p.handoffReports??[]).filter(r=>r.artifactId===a.id).flatMap(r=>r.rawReport.limitations??[]))];
+  return createSimpleStrategyBasis({projectId:p.id,taskCard,research:{artifactId:a.id,contentHash:a.contentHash,contentText},limitations,handoff});
+ }
  return {...data,basisHash:evidenceStateHash(data)};
 }
 function requireStrategyBasisWithin(evaluation, p,job) {
  if(job.stage!=='strategy'||job.purpose&&job.purpose!=='stage'||job.task?.strategyContractVersion===undefined)return;
- requireValue(job.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION&&isDeepStrictEqual(job.task.strategyBasis,strategyBasisForWithin(evaluation, p,job.binding,job.task))&&isDeepStrictEqual(job.task.upstreamReviewConstraints?.[p.activeByStage.research],job.task.strategyBasis.reviewConstraints),'STALE_STRATEGY_BASIS','Strategy task, research evidence, authority or binding changed');
+ requireValue(job.task.strategyContractVersion===(p.workflow?SIMPLE_STRATEGY_VERSION:STRATEGY_CONTRACT_VERSION)&&isDeepStrictEqual(job.task.strategyBasis,strategyBasisForWithin(evaluation, p,job.binding,job.task))&&isDeepStrictEqual(job.task.upstreamReviewConstraints?.[p.activeByStage.research],(job.task.strategyBasis.handoff??job.task.strategyBasis).reviewConstraints),'STALE_STRATEGY_BASIS','Strategy task, research evidence, authority or binding changed');
 }
 function strategyMetadata(job,output,contentHash){
+ if(job.task?.strategyContractVersion===SIMPLE_STRATEGY_VERSION)return {strategyContract:{version:SIMPLE_STRATEGY_VERSION,basisHash:job.task.strategyBasis.basisHash,contentHash,status:output.status}};
  if(job.task?.strategyContractVersion!==STRATEGY_CONTRACT_VERSION)return {};
  requireValue(output,'INVALID_STAGE_OUTPUT','Validated actual strategy output required');
  return {strategyContract:{version:STRATEGY_CONTRACT_VERSION,basisHash:job.task.strategyBasis.basisHash,contentHash,status:output.strategy.answer.decision}};
 }
 function strategyProductionReceiptWithin(evaluation, p,job,attempt,receipt){
- if(job.task?.strategyContractVersion!==STRATEGY_CONTRACT_VERSION)return;
+ if(![STRATEGY_CONTRACT_VERSION,SIMPLE_STRATEGY_VERSION].includes(job.task?.strategyContractVersion))return;
  requireStrategyBasisWithin(evaluation, p,job);
  const inputArtifacts=job.task.revisionInputArtifacts??job.task.strategyInputArtifacts;
  requireValue(inputArtifacts,'INVALID_EXECUTION_RECEIPT','Exact original strategy input required');
@@ -679,6 +688,7 @@ function verificationTargetWithin(evaluation, p, job) {
     && p.confirmations.some(item => item.taskCardId === card.id), 'INVALID_VERIFICATION_INPUT', 'Verification requires the actual confirmed task card');
   requireValue(isDeepStrictEqual(input.content?.claims, a.claims) && isDeepStrictEqual(input.sourceRecords ?? [], a.technicalReceipts.sourceCatalogue?.records ?? []),
     'INVALID_VERIFICATION_INPUT', 'Claim manifest and sources must match the frozen artifact');
+  if(a.strategyContract?.version===SIMPLE_STRATEGY_VERSION){const {claims,...original}=input.content;requireValue(Array.isArray(claims)&&claims.length===0&&hash(JSON.stringify(original,null,2))===a.contentHash,'INVALID_VERIFICATION_INPUT','Simple strategy verification must read exact original three-block content');}
   if(evidenceProtocolCapabilities(evidenceReviewProtocol(input)).fullTaskCard)requireValue(isDeepStrictEqual(input.taskCard,card),'INVALID_VERIFICATION_INPUT','Full current task card required');
   if(a.stage==='research'&&hasResearchData(p,a)){const producer=p.jobs.find(j=>j.outputVersionIds?.includes(a.id));requireValue(evidenceReviewProtocol(input)===NUMERICAL_REVIEW_PROTOCOL&&isDeepStrictEqual(input.researchDataBasis,producer.task.researchDataBasis)&&hash(JSON.stringify(input.content,null,2))===a.contentHash,'INVALID_VERIFICATION_INPUT','Numerical review requires original complete research and basis');}
   artifactVisualCatalogue(p, a, input.visualCatalogue ?? []);
@@ -1198,6 +1208,7 @@ function creativeReceiptWithin(evaluation, p,job,attempt,receipt,raw) {
  return validateCreativeOutput(raw,input);
 }
 function requireCreativePanelWithin(evaluation, p,a) {
+ if(a.strategyContract?.version===SIMPLE_STRATEGY_VERSION)return;
  if(a.provenance!=='provider_execution'||!['strategy','copy'].includes(a.stage))return;
  const panels=(p.creativePanels??[]).filter(x=>x.packet.artifactId===a.id);
  const panel=panels.at(-1);requireValue(panel,'CREATIVE_PANEL_REQUIRED','Actual independent creative panel required');creativeTargetWithin(evaluation, p,panel);
@@ -1222,7 +1233,7 @@ function requireSourceDeliveryPrerequisitesWithin(evaluation, p, a, {skipResearc
   requireValue(!['layout','final_review'].includes(a.stage),'LAYOUT_FINAL_AUTHORITY_UNAVAILABLE','Dedicated native layout and final delivery authority are not implemented');
   if(a.stage==='content_review'){try{requireCompleteContent(p,a,(p, contents, options) => contentSourceEnvelopeWithin(evaluation, p, contents, options));return;}catch(e){fail(e.code??'CONTENT_AUTHORITY_REQUIRED',e.message);}}
   if (a.stage === 'copy') requireValue(a.copyContract?.version === COPY_CONTRACT_VERSION && a.copyContract.status === 'complete' && a.copyContract.contentHash === a.contentHash, 'COPY_MESSAGE_INCOMPLETE', 'Complete headline, supporting copy and creative explanation required for current copy delivery');
-  if(p.jobs.some(j=>j.outputVersionIds?.includes(a.id)&&j.task?.strategyContractVersion)){const job=p.jobs.find(j=>j.outputVersionIds?.includes(a.id));requireStrategyBasisWithin(evaluation, p,job);requireValue(a.strategyContract?.version===STRATEGY_CONTRACT_VERSION&&a.strategyContract.basisHash===job.task.strategyBasis.basisHash&&a.strategyContract.contentHash===a.contentHash&&a.strategyContract.status!=='blocked','STRATEGY_INCOMPLETE','Actual complete strategy contract required');}
+  if(p.jobs.some(j=>j.outputVersionIds?.includes(a.id)&&j.task?.strategyContractVersion)){const job=p.jobs.find(j=>j.outputVersionIds?.includes(a.id));requireStrategyBasisWithin(evaluation, p,job);requireValue(a.strategyContract?.version===job.task.strategyContractVersion&&a.strategyContract.basisHash===job.task.strategyBasis.basisHash&&a.strategyContract.contentHash===a.contentHash&&a.strategyContract.status!=='blocked','STRATEGY_INCOMPLETE','Actual complete strategy contract required');}
   artifactVisualCatalogue(p, a);
   requireFeedbackReviewWithin(evaluation, p, a);
   requireCreativePanelWithin(evaluation, p,a);
@@ -1283,7 +1294,7 @@ function deliveryEnvelopeWithin(evaluation, p,artifactId,sourceContents,consumer
  requireValue(Object.keys(STAGES).indexOf(currentPolicy(p).authorizedThrough)>=Object.keys(STAGES).indexOf(nextStage),'AUTHORIZATION_ENDPOINT','Copy exceeds authorization');
  requireValue(consumerBinding?.role===`${nextStage}-lead`&&['providerId','model'].every(k=>nonempty(consumerBinding[k])),'INVALID_BINDING','Configured copy owner required');
  const lineage=creationLineage(p,a),ids=new Set(lineage.map(x=>x.id)),researchInputs=inputLineage(p,a).filter(item=>item.stage==='research');
- const loaded=id=>{const item=sourceContents.find(x=>x.artifactId===id),ref=artifact(p,id);requireValue(item&&hash(item.contentText)===ref.contentHash,'CONTENT_HASH_MISMATCH','Original source bytes required');let parsed;try{parsed=JSON.parse(item.contentText);}catch{fail('INVALID_OWNER_EDGE','Original source JSON required');}requireValue(isDeepStrictEqual(parsed.claims,ref.claims.map(({verification,...c})=>c))||isDeepStrictEqual(parsed.claims,ref.claims),'CONTENT_HASH_MISMATCH','Original source claims changed');return {artifactId:id,contentText:item.contentText,content:parsed,contentHash:ref.contentHash};};
+ const loaded=id=>{const item=sourceContents.find(x=>x.artifactId===id),ref=artifact(p,id);requireValue(item&&hash(item.contentText)===ref.contentHash,'CONTENT_HASH_MISMATCH','Original source bytes required');let parsed;try{parsed=JSON.parse(item.contentText);}catch{fail('INVALID_OWNER_EDGE','Original source JSON required');}requireValue((parsed.strategyContractVersion===SIMPLE_STRATEGY_VERSION&&ref.claims.length===0&&parsed.claims===undefined)||isDeepStrictEqual(parsed.claims,ref.claims.map(({verification,...c})=>c))||isDeepStrictEqual(parsed.claims,ref.claims),'CONTENT_HASH_MISMATCH','Original source claims changed');return {artifactId:id,contentText:item.contentText,content:parsed,contentHash:ref.contentHash};};
  const source=loaded(a.id),original=p.jobs.find(j=>j.outputVersionIds?.includes(a.id)&&(!j.purpose||j.purpose==='stage'));
  const attempt=original?.attempts.find(t=>t.status==='succeeded'&&isDeepStrictEqual(t.receipt,a.executionReceipt));
  requireValue(original?.status==='succeeded'&&attempt&&sameExecutor(attempt.executor,a.author)&&isDeepStrictEqual(original.inputVersionIds,a.inputVersionIds),'INVALID_OWNER_EDGE','Exact successful author attempt and input dependencies required');
@@ -1295,7 +1306,7 @@ function deliveryEnvelopeWithin(evaluation, p,artifactId,sourceContents,consumer
  requireValue(receipt.runId===attempt.id&&receipt.requestedModel===original.binding.model&&receipt.inputPacketHash===hash(originalPacket)&&ordinarySuccessfulStatus(receipt)&&ordinaryHasContext(receipt)&&['signal','reason','error'].every(k=>receipt[k]==null),'INVALID_EXECUTION_RECEIPT','Exact original strategy production packet required');
  let originalRaw;try{originalRaw=JSON.parse(receipt.responseText);}catch{fail('INVALID_EXECUTION_RECEIPT','Original strategy response required');}
  const normalized=validateStageOutput(sourceStage,originalRaw,{sourceRecords:original.task.sourceRecords??[],visualCatalogue:original.task.visualCatalogue??[],revisionInput:original.task.revisionInput,correctionInput:original.task.correctionInput,copyContractVersion:original.task.copyContractVersion,strategyContractVersion:original.task.strategyContractVersion,strategyBasis:original.task.strategyBasis,researchContractVersion:original.task.researchContractVersion,researchDataBasis:original.task.researchDataBasis});
- if(original.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION)requireValue(isDeepStrictEqual(a.strategyContract,strategyMetadata(original,normalized,a.contentHash).strategyContract),'STRATEGY_INCOMPLETE','Strategy metadata must match actual response');
+ if(original.task.strategyContractVersion)requireValue(isDeepStrictEqual(a.strategyContract,strategyMetadata(original,normalized,a.contentHash).strategyContract),'STRATEGY_INCOMPLETE','Strategy metadata must match actual response');
  requireValue(isDeepStrictEqual(normalized.content,source.content),'CONTENT_HASH_MISMATCH','Exact original strategy output required');
  if(receipt.providerExecution)requireValue(Object.entries(receipt.providerExecution).every(([k,v])=>isDeepStrictEqual(v,receipt[k])),'INVALID_EXECUTION_RECEIPT','Strategy provider receipt changed');
 
@@ -1320,8 +1331,8 @@ function deliveryEnvelopeWithin(evaluation, p,artifactId,sourceContents,consumer
   requireValue(loaded(item.id).contentText===JSON.stringify(historical.output.content,null,2),'INVALID_RESEARCH_ORIGINAL','Historical research bytes must match their original producer');
  }
  const chartAdmissions=researchInputs.filter(item=>hasResearchData(p,item)).map(item=>requireResearchChartAdmissionWithin(evaluation, p,item.id,sourceContents));
- if(sourceStage==='strategy'&&(chartAdmissions.length||original.task.strategyBasis?.researchChartAdmission)){
-  const admission=original.task.strategyBasis?.researchChartAdmission;
+ if(sourceStage==='strategy'&&(chartAdmissions.length||(original.task.strategyBasis?.handoff??original.task.strategyBasis)?.researchChartAdmission)){
+  const admission=(original.task.strategyBasis?.handoff??original.task.strategyBasis)?.researchChartAdmission;
   requireValue(chartAdmissions.length===1&&original.inputVersionIds.includes(admission?.artifactId)&&isDeepStrictEqual(admission,chartAdmissions.find(item=>item.artifactId===admission?.artifactId)),'STALE_RESEARCH_CHART_ADMISSION','Strategy must consume the exact admission for its bound research input');
  }
  if(sourceStage==='copy'){const inherited=Object.values(original.task.upstreamReviewConstraints??{}).flatMap(c=>c.envelope?.researchChartAdmissions??[]);requireValue(isDeepStrictEqual(inherited,chartAdmissions),'STALE_RESEARCH_CHART_ADMISSION','Copy must consume exact numerical lineage and restrictions');}
@@ -1930,13 +1941,13 @@ export function applyCommand(project, command, context) {
         ...(c.binding ? {binding: structuredClone(c.binding), task: structuredClone(c.task)} : {}), attempts: []};
       if(c.stage==='research'&&c.binding)requireValue(c.task.researchContractVersion===RESEARCH_DATA_VERSION,'RESEARCH_V2_REQUIRED','New research requires research-data-v2');
       requireResearchBasis(p,job);
-      if(c.stage==='strategy'&&c.binding)requireValue(c.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION,'STRATEGY_V2_REQUIRED','New strategy production requires strategy-v2');
+      if(c.stage==='strategy'&&c.binding)requireValue(c.task.strategyContractVersion===(p.workflow?SIMPLE_STRATEGY_VERSION:STRATEGY_CONTRACT_VERSION),'STRATEGY_V2_REQUIRED','New strategy production requires strategy-v2');
       requireStrategyBasisWithin(new WeakMap(), p,job);requireResearchStrategyJobWithin(new WeakMap(), p,job);requireOwnerCopyJobWithin(new WeakMap(), p,job);validateJobRevisionWithin(new WeakMap(), p, job); p.jobs.push(job); break;
     }
     case 'freeze-strategy-inputs': {
       const job=p.jobs.find(j=>j.id===c.jobId);
-      requireValue(job?.task?.strategyContractVersion===STRATEGY_CONTRACT_VERSION&&job.status==='running','INVALID_JOB','Running strategy-v2 required');
-      runningAttempt(job,c,context);requireStrategyBasisWithin(new WeakMap(), p,job);requireStrategyInputs(job.task.strategyBasis,c.inputArtifacts);
+      requireValue([STRATEGY_CONTRACT_VERSION,SIMPLE_STRATEGY_VERSION].includes(job?.task?.strategyContractVersion)&&job.status==='running','INVALID_JOB','Running strategy-v2 required');
+      runningAttempt(job,c,context);requireStrategyBasisWithin(new WeakMap(), p,job);if(job.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION)requireStrategyInputs(job.task.strategyBasis,c.inputArtifacts);else requireValue(c.inputArtifacts.length===1&&hash(JSON.stringify(c.inputArtifacts[0].content,null,2))===job.task.strategyBasis.sources[1].contentHash,'INVALID_STRATEGY_INPUT','Exact simple research original required');
       requireValue(isDeepStrictEqual(c.inputArtifacts.map(x=>x.id),job.inputVersionIds)&&c.inputArtifacts.every(x=>isDeepStrictEqual(x.reviewConstraints,job.task.upstreamReviewConstraints?.[x.id])),'INVALID_STRATEGY_INPUT','Original input identity and restrictions required');
       requireValue(!job.task.strategyInputArtifacts||isDeepStrictEqual(job.task.strategyInputArtifacts,c.inputArtifacts),'INVALID_STRATEGY_INPUT','Frozen strategy inputs cannot change');
       job.task.strategyInputArtifacts=structuredClone(c.inputArtifacts);break;
@@ -1952,12 +1963,15 @@ export function applyCommand(project, command, context) {
       p.jobs.push(job);
       break;
     }
+    case 'reconcile-simple-strategy-verification':
     case 'complete-verification': {
       const job = p.jobs.find(item => item.id === c.jobId);
       requireValue(job?.purpose === 'verification', 'INVALID_JOB', 'Verification job required');
-      const attempt = runningAttempt(job, c, context);
+      const recovering=c.kind==='reconcile-simple-strategy-verification',originalAttempt=job.attempts.at(-1);
+      if(recovering){const artifact=p.artifacts.find(a=>a.id===job.targetArtifactId);requireValue(artifact?.strategyContract?.version===SIMPLE_STRATEGY_VERSION&&job.status==='awaiting_reconciliation'&&originalAttempt?.status==='awaiting_reconciliation'&&originalAttempt.id===c.attemptId&&isOrdinaryHttp(originalAttempt.receipt)&&context.actorType==='agent'&&!sameExecutor(originalAttempt.executor,context),'INVALID_RECONCILIATION','Current simple verification original required');const producer=p.jobs.find(j=>j.outputVersionIds?.includes(artifact.id)&&j.task?.strategyContractVersion===SIMPLE_STRATEGY_VERSION);requireStrategyBasisWithin(new WeakMap(),p,producer);requireValue(isDeepStrictEqual(c.executionReceipt,{...originalAttempt.receipt,validatedOutputPath:c.payloadRef,validatedOutputHash:c.contentHash}),'INVALID_RECONCILIATION','Exact original verification receipt required');}
+      const attempt = recovering?originalAttempt:runningAttempt(job, c, context),reviewContext=recovering?attempt.executor:context;
       const a = verificationTargetWithin(new WeakMap(), p, job);
-      independentVerifier(p, a, context);
+      independentVerifier(p, a, reviewContext);
       verificationReceipt(p, a, job, attempt, c.executionReceipt, undefined, c.rawReport);
       p.verifications ??= [];
       requireValue(nonempty(c.reportId) && !p.verifications.some(report => report.id === c.reportId) && nonempty(c.payloadRef) && /^[a-f0-9]{64}$/.test(c.contentHash),
@@ -1966,7 +1980,7 @@ export function applyCommand(project, command, context) {
       if (evidenceProtocolCapabilities(evidenceReviewProtocol(job.task.verificationInput)).catalogueState) requireValue(c.contentHash === hash(JSON.stringify(validated, null, 2)),
         'INVALID_VERIFICATION', 'V3 verification saved report must bind normalized bytes');
       p.verifications.push({...validated, id: c.reportId, jobId: job.id, attemptId: attempt.id, rawReport: structuredClone(c.rawReport),
-        payloadRef: c.payloadRef, reportHash: c.contentHash, executionReceipt: structuredClone(c.executionReceipt), context: structuredClone(context),
+        payloadRef: c.payloadRef, reportHash: c.contentHash, executionReceipt: structuredClone(c.executionReceipt), context: structuredClone(reviewContext), ...(recovering?{recoveredBy:structuredClone(context)}:{}),
         createdAt: context.now ?? null, simulationLabel: 'independent model excerpt-support review; not website truth or consumer research'});
       attempt.status = 'succeeded'; attempt.receipt = structuredClone(c.executionReceipt); attempt.finishedAt = context.now ?? null;
       job.status = 'succeeded'; job.outputVersionIds = [c.reportId];
@@ -2126,9 +2140,11 @@ export function applyCommand(project, command, context) {
       requireValue(context.actorType==='agent'&&!['layout','final_review'].includes(job.stage)&&validOrdinaryHttpLocator(c.locator,attempt.id)&&!attempt.httpAttemptLocator,'INVALID_HTTP_LOCATOR','Exact unique internal HTTP attempt locator required');
       attempt.httpAttemptLocator=structuredClone(c.locator);break;
     }
+    case 'simple-strategy-http-request': reduceSimpleHttp(p,c,context);break;
     case 'start-job':
     case 'retry-job': {
       const job = p.jobs.find(j => j.id === c.jobId);
+      if(c.simpleStrategyHttpRequestId)requireSimpleHttpJob(p,c.simpleStrategyHttpRequestId,job);
       if(c.acquisitionHttpRequestId)requireAcquisitionHttpJob(p,c.acquisitionHttpRequestId,job);
       requireValue(job?.purpose!==LAYOUT_PURPOSE&&!['layout','final_review'].includes(job?.stage),'LAYOUT_EXECUTION_UNAVAILABLE','Dedicated native executor is not implemented; generic dispatch cannot replace it');
       requireValue(job && (c.kind === 'start-job' ? job.status === 'queued' : ['failed', 'blocked'].includes(job.status)), 'INVALID_JOB', 'Job is not eligible for this transition');
@@ -2278,12 +2294,12 @@ export function applyCommand(project, command, context) {
         if(job.task.correctionInput||job.task.researchContractVersion===RESEARCH_DATA_VERSION)requireValue(c.technicalReceipts?.sourceCatalogue?.version===1
           &&isDeepStrictEqual(c.technicalReceipts.sourceCatalogue.records,job.task.sourceRecords??[]),
           'INVALID_REVISION_OUTPUT','Correction must retain its exact frozen source catalogue');
-        if (job.task.researchContractVersion===RESEARCH_DATA_VERSION || job.task.visualCatalogue?.length || job.task.revisionInput || job.task.correctionInput || job.task.copyContractVersion === COPY_CONTRACT_VERSION || job.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION) {
+        if (job.task.researchContractVersion===RESEARCH_DATA_VERSION || job.task.visualCatalogue?.length || job.task.revisionInput || job.task.correctionInput || job.task.copyContractVersion === COPY_CONTRACT_VERSION || [STRATEGY_CONTRACT_VERSION,SIMPLE_STRATEGY_VERSION].includes(job.task.strategyContractVersion)) {
           let raw; try { raw = JSON.parse(c.executionReceipt.responseText); } catch { fail('INVALID_STAGE_OUTPUT', 'Original stage response required'); }
           const output = validateStageOutput(job.stage, raw, {sourceRecords: job.task.sourceRecords ?? [], visualCatalogue: job.task.visualCatalogue ?? [], revisionInput: job.task.revisionInput, correctionInput:job.task.correctionInput, copyContractVersion: job.task.copyContractVersion,strategyContractVersion:job.task.strategyContractVersion,strategyBasis:job.task.strategyBasis,researchContractVersion:job.task.researchContractVersion,researchDataBasis:job.task.researchDataBasis,researchRevision:job.task.researchRevision});
           validatedOutput = output;
-          if(job.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION)requireValue(output.status!=='blocked','STAGE_INPUT_GAP','Blocked strategy cannot complete as an artifact');
-          if (job.task.researchContractVersion===RESEARCH_DATA_VERSION || job.task.copyContractVersion === COPY_CONTRACT_VERSION || job.task.strategyContractVersion===STRATEGY_CONTRACT_VERSION) requireValue(c.contentHash === hash(JSON.stringify(output.content, null, 2)), 'CONTENT_HASH_MISMATCH', 'Complete copy content must match validated provider response');
+          if([STRATEGY_CONTRACT_VERSION,SIMPLE_STRATEGY_VERSION].includes(job.task.strategyContractVersion))requireValue(output.status!=='blocked','STAGE_INPUT_GAP','Blocked strategy cannot complete as an artifact');
+          if (job.task.researchContractVersion===RESEARCH_DATA_VERSION || job.task.copyContractVersion === COPY_CONTRACT_VERSION || [STRATEGY_CONTRACT_VERSION,SIMPLE_STRATEGY_VERSION].includes(job.task.strategyContractVersion)) requireValue(c.contentHash === hash(JSON.stringify(output.content, null, 2)), 'CONTENT_HASH_MISMATCH', 'Complete copy content must match validated provider response');
           requireValue(isDeepStrictEqual(c.claims ?? [], output.claims), 'INVALID_CLAIMS', 'Output claims must match validated provider response');
           if(job.task.correctionInput)requireValue(c.contentHash===hash(JSON.stringify(output.content,null,2))&&isDeepStrictEqual(c.revisionResponses,output.revisionResponses),
             'INVALID_REVISION_OUTPUT','Correction content and responses require exact original output');
