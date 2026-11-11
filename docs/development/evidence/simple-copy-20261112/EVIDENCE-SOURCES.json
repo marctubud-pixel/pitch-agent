@@ -222,6 +222,30 @@
       "file": "stop-frontend-http.txt",
       "sha256": "648a09bf85525dee1498e97de54312754b5775bfeed8bda1df427d089385c405",
       "bytes": 455
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/SIMPLE-COPY-PR-APPLICATION-ANNOTATIONS.json",
+      "file": "ci-b1ef-failure-annotations.json",
+      "sha256": "797b09a0cd5799a42ee797ee90a5569ec3516077689e48fd9dc8da0392940d87",
+      "bytes": 1698
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-ci-timeout-fix.json",
+      "file": "ci-timeout-fix.json",
+      "sha256": "289ea0255f4a08b18aeb85531f0e902d5656398e85563bc371401a0b7f5700a0",
+      "bytes": 634
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/simple-copy-ci-timeout-local.log",
+      "file": "ci-timeout-local.txt",
+      "sha256": "3b756c2855110479f37fe52b21b2a3f24ede34e433fab962b148f6d43ae78cb7",
+      "bytes": 456
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-ci-timeout-independent.md",
+      "file": "ci-timeout-independent.txt",
+      "sha256": "2cde52e168a3f0d65331a89c4eb4866135c49a184907a426783549a4580833e3",
+      "bytes": 1918
     }
   ]
 }
