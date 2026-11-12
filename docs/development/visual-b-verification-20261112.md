@@ -10,3 +10,5 @@
 
 
 本地首次全`npm run check`的规范、纳管和类型检查通过；前端787通过、1首129映射超时、1既有skip，因此该命令退出1，后续部分当时未执行。[原运行](evidence/visual-workflow-20261112/b-root-check-first.txt)与[独立诊断](evidence/visual-workflow-20261112/b-reference-timeout-diagnosis.txt)保留。仅首测试外层5000ms改30秒，全部断言不变；[修后该文件5项](evidence/visual-workflow-20261112/b-reference-timeout-fixed.txt)通过。随后以配置PDF环境顺序执行core/domain/Brief/research/acquisition/SIMPLE/COPY/image/visual/dependency/build，整体退出0；其中visual现含103项（原42+B61）全过。该后半命令输出以工具流返回，末段另存本地，不能冒称本地保存了整份完整原日志。远程准确head的完整CI仍须按实际回执核验。
+
+PR #13准确14de首CI规范success；应用在首采集完整HTTP用例5000ms外层超时，其余787通过、1既有skip，后端/图片/构建在该次CI跳过。原采集文件单跑8通过、1未配置PDF的skip，修改仅该用例外层30秒后同样8通过、1环境skip；生产期限和断言不改。失败原回执和预算核验见证据目录b-ci-first-failure、b-acquisition-default-budget及b-test-budget-premise，后续准确head CI继续实核。

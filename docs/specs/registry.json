@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.15.0",
+  "baselineVersion": "1.15.1",
   "date": "2026-11-12",
   "status": "已合并视觉参考接线；新服务签发时间和可选Darwin实际文件核验，完整App草图/v2、B至交付仍未完成",
   "workflow": [
@@ -554,7 +554,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.12.0",
+      "version": "1.12.1",
       "lifecycle": "current",
       "dependsOn": []
     },

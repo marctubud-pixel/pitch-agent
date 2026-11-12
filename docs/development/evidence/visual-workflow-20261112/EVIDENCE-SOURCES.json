@@ -263,6 +263,30 @@
       "sha256": "504b296293b3b1d54d02e384e1fbbf33c34f9ce947eafda4f388a5a7ea942ed4",
       "scope": "实际失败/诊断/修后单文件结果，分别保持其身份，不冒称首次全check成功",
       "transformation": "仅去除末尾空行；原完整日志保留"
+    },
+    {
+      "file": "b-ci-first-failure.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-B-CI-FIRST-FAILED-JOB.log",
+      "sourceSha256": "e27fb7c86216e9d5ed7f75e29ef42b51a37ce38c1c9f55f27a198a14979b44a4",
+      "sha256": "c6be14c8b62004d9424b7ee37c30ddecc909c2050ed4d6f4e517d76489c4ac1b",
+      "transformation": "移除ANSI颜色、各行末尾空白及末尾空行；原日志原位保留，sourceSha256不变",
+      "scope": "准确14de失败与原预算单跑/前提核验，不把跳过的步骤算通过"
+    },
+    {
+      "file": "b-acquisition-default-budget.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ci-timeout-premise/ACQUISITION-ORIGINAL-SINGLE-FILE.txt",
+      "sourceSha256": "909a7672ecedc95221ea5884f178b0a4ff2b52da35027c38bed82b095d1417dd",
+      "sha256": "9672f58df2b82d5eef8abdb3b54852cb023f8ea36806901eedbe38196a313d54",
+      "transformation": "移除ANSI颜色及末尾空行；原日志原位保留",
+      "scope": "准确14de失败与原预算单跑/前提核验，不把跳过的步骤算通过"
+    },
+    {
+      "file": "b-test-budget-premise.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ci-timeout-premise/PREMISE.md",
+      "sourceSha256": "3aeb7d0748759d91a42546d9b8ee31b98a11db453121ee6576ff51bd9bc5c4e0",
+      "sha256": "3aeb7d0748759d91a42546d9b8ee31b98a11db453121ee6576ff51bd9bc5c4e0",
+      "transformation": "移除ANSI颜色及末尾空行；原日志原位保留",
+      "scope": "准确14de失败与原预算单跑/前提核验，不把跳过的步骤算通过"
     }
   ]
 }
