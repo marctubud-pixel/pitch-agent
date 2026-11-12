@@ -12,7 +12,7 @@
     "check:repository": "python3 scripts/check-repository.py && python3 scripts/check-repository.test.py",
     "typecheck": "npm --prefix apps/workbench-preview run typecheck",
     "test:frontend": "npm --prefix apps/workbench-preview test",
-    "test:core": "node --test tools/workbench/store-codec.test.mjs tools/workbench/case-identity.test.mjs tools/workbench/schema-enum-partition.test.mjs tools/local-acceptance/client-flow.test.mjs tools/local-acceptance/browser-pending.test.mjs tools/local-acceptance/reference-input-controller.test.mjs tools/auto-layout/native-charts/chart-data.test.mjs",
+    "test:core": "node --test tools/workbench/store-codec.test.mjs tools/workbench/store-opened-file.test.mjs tools/workbench/case-identity.test.mjs tools/workbench/schema-enum-partition.test.mjs tools/local-acceptance/client-flow.test.mjs tools/local-acceptance/browser-pending.test.mjs tools/local-acceptance/reference-input-controller.test.mjs tools/auto-layout/native-charts/chart-data.test.mjs",
     "test:backend:legacy": "npm run test:domain",
     "build": "npm --prefix apps/workbench-preview run build",
     "check": "npm run check:specs && npm run check:repository && npm run typecheck && npm run test:frontend && npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:simple-copy && npm run test:image-scope && npm run test:visual-workflow && npm run test:dependency && npm run build",

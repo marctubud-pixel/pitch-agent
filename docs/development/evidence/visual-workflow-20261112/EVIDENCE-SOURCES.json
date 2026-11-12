@@ -186,6 +186,24 @@
       "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/closure-receipt.json",
       "sha256": "17a07f8073b940742a66a32bc40a008826952664bbe71aa814e1aac75b184900",
       "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "pr11-final-ci.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-BRIDGE-PR-FINAL-CI.json",
+      "sha256": "e94f6c529a08e0f646e9babce32aa121acf293b9cc6b2699998be62a5fe09182",
+      "scope": "准确head1c5c1091的最终GitHub回执原字节；merge为c434676f"
+    },
+    {
+      "file": "pr11-final-job.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-BRIDGE-PR-FINAL-JOB.json",
+      "sha256": "1b8409f2ee6c4a114a5341dfb5f8d342aefe9bad2953ec9efc32591a4fe361af",
+      "scope": "准确head1c5c1091的最终GitHub回执原字节；merge为c434676f"
+    },
+    {
+      "file": "pr11-merge.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-BRIDGE-PR-MERGE.json",
+      "sha256": "4229ed66694326a178f255dd7404fcbaf3c4cec641515c120c4e55b2557cdd28",
+      "scope": "准确head1c5c1091的最终GitHub回执原字节；merge为c434676f"
     }
   ]
 }

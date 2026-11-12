@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.10.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.11.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -107,3 +107,7 @@ node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs to
 PR #11首个应用CI的完整双owner/copy/17票前端用例在240秒外层超时，其他786项通过；本地相同用例已通过。仅copyWorkflowHttp的该首用例改600秒，第二个恢复用例仍240秒，原assertions/生产deadline及CI job30分钟保持；修后是否通过以准确head的实际CI回执为准。
 
 新增visualAKnownRejection前端测试实际解码原PNG，Application CI前端步骤显式把已配置PDF venv（含固定Pillow）加入PATH，和image/visual专项一致，不依赖runner系统偶然安装Pillow；生产Python默认选择不改。
+
+## 实际打开文件的回归
+
+`test:core`新增store-opened-file四项独立子进程：默认store不授证明；Darwin干净打开及close撤销；路径恢复不能掩盖另一inode的SQLite句柄；其它普通描述符导致明确拒绝。非Darwin实际核拒绝分支，不能把它算Darwin正例。根首次测试缺run/context身份的失败保留，补测试上下文后4项通过，生产guard不改；SIMPLE/COPY新actor签发时间另有13项durable根回归。只使用新测试库，不打开或接管实际主案，不执行模型。详见[身份合同](native-store-identity.md)。
