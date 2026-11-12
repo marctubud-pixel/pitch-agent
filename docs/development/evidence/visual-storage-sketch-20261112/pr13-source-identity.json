@@ -1,0 +1,38 @@
+{
+  "head": "5ed620c4432fdfebd7b802cd488f5f663c6c6fb9",
+  "productionFiles": [
+    {
+      "path": "tools/workbench/brief-server.mjs",
+      "sha256": "4215c62ccfc427eb0737bdf6ea315c0df243dbc28084ea903a8c9795f077b49c"
+    },
+    {
+      "path": "tools/workbench/executor.mjs",
+      "sha256": "464b14f882a1b3ae385178917e3610916a9ddd81ac01422b8a90dececbb7c9cf"
+    },
+    {
+      "path": "tools/workbench/final-visual-runtime.mjs",
+      "sha256": "86bff8d9ea1bf516b74502e98006dbc8cc17c7a48c44c2b4575503725e71fe86"
+    },
+    {
+      "path": "tools/workbench/project.mjs",
+      "sha256": "3bbfaf0d9d60519d6803db9aca9648bf2d9c70c8e822d47e8fa959acc221fd32"
+    },
+    {
+      "path": "tools/workbench/research-service.mjs",
+      "sha256": "915898229457babec3a241980247f30043eaffe84a169566ed8c10675e1dfb58"
+    },
+    {
+      "path": "tools/workbench/visual-b-admission.mjs",
+      "sha256": "adaff84eab9a7270da5aef178145f128457f65c3e4db840c68f36f368406e1d7"
+    },
+    {
+      "path": "tools/workbench/visual-b-http.mjs",
+      "sha256": "51989ad64719f073d800a6b5ba8d8aade4ef0d38e0e2a137ccf73a6c39bfc655"
+    },
+    {
+      "path": "tools/workbench/visual-b-service.mjs",
+      "sha256": "c827e3a604a61d6ab0b214b7183243fb6b4c55c059832c771aa7651b75c6c77e"
+    }
+  ],
+  "allRequiredCiSteps": "success"
+}

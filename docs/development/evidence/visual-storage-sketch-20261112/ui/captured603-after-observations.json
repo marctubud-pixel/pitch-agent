@@ -1,0 +1,5477 @@
+{
+  "requests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@vite/client"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/main.tsx?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@react-refresh"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom_client.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/App.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/index.ts?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/theme.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/fonts.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/app.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/dashboard.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/overview.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/archive.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/modules.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/intake.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/workbot.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/proposal.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/bento.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/cobalt.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/stages.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/slides.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/areas.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/frames.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/palette.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/refine.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/experience.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/workspace-refine.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/collaboration.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react_jsx-dev-runtime.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/vite/dist/client/env.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-Byeoc6PW.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/BriefRecoveryPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/lucide-react.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/confirm.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/DemoPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/feedback.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/router.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/services.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/i18n/index.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/kit.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/DevView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HomeView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/NewProjectView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ProjectWorkspace.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/WorkBot.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/context.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/context.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/TeamTools.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/types.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpAssistantService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpWorkbenchService.ts?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpProposalService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/LocalIntakeService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/MockAssistantService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/MockWorkbenchService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/storage.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/MockProposalService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/BrandResourceRepository.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/LocalTeamStore.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/protectServices.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/assistant.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/rolldown-runtime-BtDSRbSq.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/visualRequirements.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefEnvelope.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/dto.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/service.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom-Dkj9Uhpx.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/Modal.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/demo.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/format.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ui.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/query.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/proposalQuery.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/proposal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/derive.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/tone.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HomeDeadline.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/ArtFrame.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/i18n/messages/zh-CN.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/stageRoute.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/needs.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ConfirmationOwner.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/projectDetails.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/DeliveryArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/LibraryArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/OverviewArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/ProcessArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/ProposalArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/SetupProposal.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/BrandResources.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/brandResources.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/Character.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/commands.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/presentationTime.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ModeFields.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/models.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/MappingBanner.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/IntakeSourcePanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/taskCard.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/TaskCardEditor.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/emptyCard.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/useIntakeRun.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/selectionKeys.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/assistant.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/intakeProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/proposalType.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefModels.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpVisualAService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/visualAJournal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/copyWorkflowProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/simpleStrategyProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchAcquisitionProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/originalDocumentsProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchReaderProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefRecovery.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/briefRequirements.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/i18n.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/rules.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/intake.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/extract.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/headings.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/samples.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/cases/installQingyu.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/demoChinese.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/db.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/fixtures/seed.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/simulation.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/transactions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/helpers.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/luma.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/northline.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/plumtide.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/Art.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/index.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio-ui.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Tabs.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ImagesView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/SourcesView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/AreaHead.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Slide.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/pending.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/LayoutStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/recordTargets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ArtifactsView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/JobsView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/OriginalDocumentPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/contributionTargets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/drafts.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/revisions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/BriefStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/BriefVersionRecords.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/DeliveryStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ResearchStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/StrategyStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ThemesStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/eligibility.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/stageOwners.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/VisualStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/VisualRequirementsEditor.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketchReadback.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/visualAProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/copyCreativeProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/simpleStrategy.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchAcquisition.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/messages/zh-CN.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/cases/qingyuFixture.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/fflate.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/fixtures/placeholders.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchMethod.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/errors.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/proposal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/research.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/prices.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/Viewer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/export.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/deck-studio-ui.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/geometry.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/scenes.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/Inspector.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/image.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/status.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/shared.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/StageEmpty.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/QingyuLayoutPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/preview.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/BriefView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/briefVersions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ReviewRows.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ResearchReaderPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/R7ResearchView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/EvidenceBack.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Drawer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HandoffView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ResearchView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/ResearchMethodView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/researchClaims.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/index.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuReportRevisions.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/binding.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/CopyWorkflowPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/SimpleStrategyPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/QingyuStrategyPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/color.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/QingyuThemesPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@vite/client"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/main.tsx?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@react-refresh"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/vite/dist/client/env.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom_client.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/App.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/index.ts?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/theme.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/fonts.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/app.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/dashboard.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/overview.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/archive.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/modules.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/intake.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/workbot.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/proposal.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/bento.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/cobalt.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/stages.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/slides.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/areas.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/frames.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/palette.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/refine.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/experience.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/workspace-refine.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/collaboration.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react_jsx-dev-runtime.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-Byeoc6PW.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/rolldown-runtime-BtDSRbSq.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom-Dkj9Uhpx.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/BriefRecoveryPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/lucide-react.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/confirm.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/DemoPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/feedback.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/router.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/services.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/i18n/index.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/kit.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/DevView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HomeView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/NewProjectView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ProjectWorkspace.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/WorkBot.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/context.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/context.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/TeamTools.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/types.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpAssistantService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpWorkbenchService.ts?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpProposalService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/LocalIntakeService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/MockAssistantService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/MockWorkbenchService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/storage.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/MockProposalService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/BrandResourceRepository.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/LocalTeamStore.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/protectServices.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/assistant.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/visualRequirements.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefEnvelope.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/dto.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/service.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/Modal.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/demo.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/i18n/messages/zh-CN.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/format.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ui.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/BrandResources.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/brandResources.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/Character.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/commands.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/query.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/presentationTime.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ModeFields.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/models.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/MappingBanner.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/IntakeSourcePanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/taskCard.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/TaskCardEditor.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/emptyCard.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/useIntakeRun.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/stageRoute.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/needs.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/proposalQuery.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/proposal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/tone.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ConfirmationOwner.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/projectDetails.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/DeliveryArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/LibraryArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/OverviewArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/ProcessArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/ProposalArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/SetupProposal.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/selectionKeys.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/assistant.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/derive.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HomeDeadline.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/ArtFrame.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpVisualAService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/visualAJournal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/copyWorkflowProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/simpleStrategyProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchAcquisitionProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/originalDocumentsProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchReaderProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/intakeProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefRecovery.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/briefRequirements.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/proposalType.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefModels.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/intake.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/extract.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/headings.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/samples.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/i18n.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/rules.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/cases/installQingyu.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/demoChinese.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/db.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/fixtures/seed.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/simulation.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/transactions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/helpers.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/luma.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/northline.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/plumtide.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/OriginalDocumentPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/VisualRequirementsEditor.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/index.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio-ui.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Tabs.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ImagesView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/SourcesView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/AreaHead.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Slide.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/pending.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/LayoutStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/recordTargets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ArtifactsView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/JobsView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/contributionTargets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/drafts.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/revisions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/BriefStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/BriefVersionRecords.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/DeliveryStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ResearchStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/StrategyStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ThemesStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/eligibility.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/stageOwners.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/VisualStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/Art.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/visualAProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/copyCreativeProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/simpleStrategy.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchAcquisition.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketchReadback.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/fflate.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/messages/zh-CN.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/cases/qingyuFixture.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/fixtures/placeholders.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchMethod.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/errors.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/proposal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/research.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/prices.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/Viewer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/export.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/Inspector.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/image.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/status.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/deck-studio-ui.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/shared.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/StageEmpty.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/QingyuLayoutPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/preview.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/BriefView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/briefVersions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ReviewRows.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ResearchReaderPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/R7ResearchView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/EvidenceBack.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Drawer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HandoffView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ResearchView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/ResearchMethodView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/researchClaims.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/index.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuReportRevisions.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/binding.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/CopyWorkflowPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/SimpleStrategyPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/QingyuStrategyPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/color.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/QingyuThemesPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/geometry.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/scenes.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sha256.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/inspect.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/artwork.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/engine.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/pptx-r4.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r4.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/ChapterBoards.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r2.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/VisualWorkflowPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/QingyuVisualPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/pptxgenjs.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/chart-layout.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/assemble.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/record.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/FinalReviewSummary.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/layout.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/preview.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/bundle-r4.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/bundle-r2.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/concept-images.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/summary.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/summary.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/intersection-page.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r2.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-prices.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/reviewed-copy.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/concept-images.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-strategy.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-intersection.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-copy.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-concept.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/manifest.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ResearchAcquisitionPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/project.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/research-method.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ResearchReaderRecheck.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/ChangeReview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/CaseSlot.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/report.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuReportView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuR2View.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/bundle-r3.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuR3View.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuR4View.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuStudioView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report-r2.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/figures.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/samples.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/useWorkflowCommand.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/charts.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/preview.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report-r4.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/ClaimRecord.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/strategy.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/content.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/themes.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r3.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/vendor/deck-engine.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/templates.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/json-equal.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/sketch.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/review.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/pptx-r3.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/board-export.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/visual-workflow.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/record.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/sources.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/packaging-references.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/workflow-intake.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/workflow-record.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/visual-preview.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r4.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r2.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/reviewed-copy.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/intersection-page.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/lumaReference.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchReader.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ReaderDispositionHistory.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/charts.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/research-case.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/luma-report.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/binding.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r3.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report-r3.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/model.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r4.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/basis-r4.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/content.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/ordinary.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/panel.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/image.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/workflow-intake-record.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/assemble.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/preview.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/manifest.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r4.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r3.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/engine.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/Viewer.tsx?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/templates.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/research.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/chart-layout.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/export.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/vendor/deck-engine.js?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/draft-r3.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/reviewed-strategy.md?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/identity.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/reviewed-packet.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-500-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/capabilities"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/ba90299e-dd96-4f71-b04d-ae9abd2c03a7"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/e7a3f7c1-537c-47a1-b057-ec852cb3997d"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/488a1f39-3c9e-48cf-a12d-f0a692e7a6da"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/7ab892e1-27fa-45bc-b657-a607e82bebbf"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/46490a26-bbe9-4d39-8301-28b8497e4628"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/d54e8a2f-3d46-4195-ac08-5623ae9315cd"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/a52b866b-63b2-45cf-a1b7-f0a5c815275e"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/c741fda3-dccd-4123-83b5-d9bbbaedf1dd"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/93e5087b-b4bb-4278-b42f-2de9279c7cb1"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/47bc08ad-7a21-49c7-a985-d51a65f5f555"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/fdeb17c7-582c-4f27-99f9-3730f9865a19"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/de26dba1-ba45-4c94-9514-dfbe746fc739"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/ba90299e-dd96-4f71-b04d-ae9abd2c03a7"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/e7a3f7c1-537c-47a1-b057-ec852cb3997d"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/488a1f39-3c9e-48cf-a12d-f0a692e7a6da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/d46908ea-1a77-4b44-a89d-743e9166e6f6"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/c8145ae7-3ece-490a-b801-4576b57c969f"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/ee172fb0-54bd-479e-a85b-40296023b871"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/d46908ea-1a77-4b44-a89d-743e9166e6f6"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/c8145ae7-3ece-490a-b801-4576b57c969f"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/ee172fb0-54bd-479e-a85b-40296023b871"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/f50a17e9-27a8-4aa6-a4b1-1835ab4aef2b"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/105a99c3-ea5a-405e-b89b-5f98ff947a09"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/47b67284-a031-435e-9946-e5e9df8c9fdd"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/f50a17e9-27a8-4aa6-a4b1-1835ab4aef2b"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/105a99c3-ea5a-405e-b89b-5f98ff947a09"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/47b67284-a031-435e-9946-e5e9df8c9fdd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@vite/client"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/main.tsx?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@react-refresh"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom_client.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/App.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/index.ts?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/theme.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/fonts.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/app.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/dashboard.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/overview.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/archive.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/modules.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/intake.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/workbot.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/proposal.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/bento.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/cobalt.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/stages.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/slides.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/areas.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/frames.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/palette.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/refine.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/experience.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/workspace-refine.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/collaboration.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react_jsx-dev-runtime.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/vite/dist/client/env.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-Byeoc6PW.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/types.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpAssistantService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpWorkbenchService.ts?t=1794485756764"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpProposalService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/LocalIntakeService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/MockAssistantService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/MockWorkbenchService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/storage.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/MockProposalService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/BrandResourceRepository.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/LocalTeamStore.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/protectServices.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/assistant.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/BriefRecoveryPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/lucide-react.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/confirm.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/DemoPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/feedback.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/router.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/services.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/i18n/index.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/kit.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/DevView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HomeView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/NewProjectView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ProjectWorkspace.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/WorkBot.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/context.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/context.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/collaboration/TeamTools.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/rolldown-runtime-BtDSRbSq.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/assistant.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/HttpVisualAService.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/visualAJournal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/copyWorkflowProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/simpleStrategyProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchAcquisitionProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/originalDocumentsProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchReaderProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/brandResources.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/intakeProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/researchProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefRecovery.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/service.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/models.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/briefRequirements.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/proposalType.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/presentationTime.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/dto.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefEnvelope.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/briefModels.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/proposal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/i18n.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/rules.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/intake.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/extract.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/headings.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/intake/samples.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/visualRequirements.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/cases/installQingyu.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/demoChinese.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/db.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/fixtures/seed.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/simulation.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/transactions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/demo.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/needs.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/helpers.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/luma.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/northline.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/proposal/fixtures/plumtide.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom-Dkj9Uhpx.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/Modal.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/i18n/messages/zh-CN.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ui.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/format.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/react-dom.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/query.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/proposalQuery.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/derive.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/tone.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HomeDeadline.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/ArtFrame.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/BrandResources.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/workbot/Character.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/app/commands.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ModeFields.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/MappingBanner.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/IntakeSourcePanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/taskCard.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/TaskCardEditor.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/emptyCard.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/useIntakeRun.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/stageRoute.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ConfirmationOwner.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/projectDetails.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/DeliveryArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/LibraryArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/OverviewArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/ProcessArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/ProposalArea.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/SetupProposal.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/selectionKeys.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/copyCreativeProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/simpleStrategy.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/visualAProjection.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchAcquisition.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/messages/zh-CN.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketchReadback.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/fflate.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/cases/qingyuFixture.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchMethod.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/stageOwners.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/mock/fixtures/placeholders.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/Art.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/OriginalDocumentPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/VisualRequirementsEditor.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/index.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio-ui.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Tabs.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ImagesView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/SourcesView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/project/AreaHead.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Slide.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/pending.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/LayoutStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/recordTargets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ArtifactsView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/JobsView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/contributionTargets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/drafts.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/revisions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/BriefStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/BriefVersionRecords.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/DeliveryStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ResearchStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/StrategyStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ThemesStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/eligibility.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/VisualStage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sha256.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/inspect.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/geometry.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/art/scenes.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/errors.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/proposal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/research.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/prices.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/Viewer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/export.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/deck-studio-ui.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/Inspector.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/image.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/status.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/shared.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/StageEmpty.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/QingyuLayoutPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/preview.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/BriefView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/briefVersions.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/stages/ReviewRows.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ResearchReaderPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/R7ResearchView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/EvidenceBack.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/Drawer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/HandoffView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/ResearchView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/ResearchMethodView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/researchClaims.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/index.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuReportRevisions.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/binding.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/CopyWorkflowPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/SimpleStrategyPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/QingyuStrategyPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/color.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/QingyuThemesPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/VisualWorkflowPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/QingyuVisualPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/json-equal.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/sketch.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/review.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/artwork.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/engine.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/pptx-r4.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r4.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/ChapterBoards.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r2.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/.scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/cache/deps/pptxgenjs.js?v=5e1a34ac"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/chart-layout.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/assemble.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/record.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/FinalReviewSummary.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/layout.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/preview.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/bundle-r4.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/bundle-r2.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/concept-images.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/summary.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/summary.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/intersection-page.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r2.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-prices.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/reviewed-copy.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/concept-images.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-strategy.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-intersection.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-copy.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/basis-concept.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/manifest.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/intake/ChangeReview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ResearchReaderRecheck.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ResearchAcquisitionPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/project.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/research-method.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/figures.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/samples.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/ui/charts.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/views/useWorkflowCommand.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuReportView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuR2View.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/bundle-r3.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuR3View.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuR4View.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/QingyuStudioView.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report-r2.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/CaseSlot.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/report.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/content.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/strategy.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/themes.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/visual-workflow.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/preview.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report-r4.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/ClaimRecord.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/ordinary.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/panel.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/services/http/sketch-contracts/image.generated.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/packaging-references.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/workflow-intake.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/workflow-record.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/visual-preview.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/pptx-r3.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r3.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/vendor/deck-engine.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/templates.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/board-export.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r4.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-themes/reviewed-copy.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r2.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/record.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-final-review/sources.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/intersection-page.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/domain/researchReader.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/ReaderDispositionHistory.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/model.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-method/lumaReference.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r3.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/qingyu-report-r3.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/luma-report.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/binding.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/research-case/charts.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/styles/research-case.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r4.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/basis-r4.txt?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/content.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-visual/workflow-intake-record.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/assemble.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/preview.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-layout/manifest.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/report-r4.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-report/content-r3.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/engine.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/Viewer.tsx?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/templates.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/research.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/chart-layout.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/export.ts?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/deck-studio/vendor/deck-engine.js?raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/draft-r3.json?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/reviewed-strategy.md?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/identity.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/src/proposal/qingyu-strategy/reviewed-packet.json?import"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4492/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-500-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/capabilities"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/fa6fefac-e321-4d42-a8f7-7040e9e31d2f"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/502e11f5-00c4-4e9a-b274-d4a590203329"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/8a0fe947-819f-4a8f-8a2e-b9b57cff3d94"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/03775231-8331-46b1-b52d-a55c82b214b1"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/b8c0a522-8b77-4566-9201-17bb491279c1"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/01e24e1b-c9e2-4a8e-bcd7-dadd0aa31585"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/37caeeff-8aab-4a0c-bda2-7cd26afbc847"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/3b33ff9d-bccc-4f69-aa27-a375f4d5a5f8"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/2bff5634-40a0-4f41-b3cf-61a09a273f7e"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/2eba12a0-8c77-4f3f-a7ac-5925924ab0b7"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/9879d8c9-08a9-43fd-966b-a7f538c88d55"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/24fd057a-36ad-41fb-aaad-8582dfad56fd"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/fa6fefac-e321-4d42-a8f7-7040e9e31d2f"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/502e11f5-00c4-4e9a-b274-d4a590203329"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/8a0fe947-819f-4a8f-8a2e-b9b57cff3d94"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/99748b7d-c2db-4dd7-8f5e-25bc917fa662"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/62080554-e817-4bad-ba95-0ffb5028c14c"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/cacf3b41-6174-46d1-82e6-5ee7934fc383"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/99748b7d-c2db-4dd7-8f5e-25bc917fa662"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/62080554-e817-4bad-ba95-0ffb5028c14c"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/cacf3b41-6174-46d1-82e6-5ee7934fc383"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/02da0509-1567-4047-a2cb-e348b2651e2a"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/41282047-e965-4c93-9285-5c49689324c6"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/0ffcb4f2-45d1-4a67-822a-004dc6bf9b10"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/02da0509-1567-4047-a2cb-e348b2651e2a"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/41282047-e965-4c93-9285-5c49689324c6"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:4492/0ffcb4f2-45d1-4a67-822a-004dc6bf9b10"
+    }
+  ],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:4242/api/v1/capabilities",
+      "status": 200,
+      "at": "2026-11-12T12:16:11.585Z",
+      "timing": {
+        "startTime": 1794485771579.573,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.168,
+        "responseStart": 0.988,
+        "responseEnd": 14.324
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c",
+      "status": 200,
+      "at": "2026-11-12T12:16:11.603Z",
+      "timing": {
+        "startTime": 1794485771590.976,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.311,
+        "responseStart": 1.123,
+        "responseEnd": 39.627
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:16:32.899Z",
+      "timing": {
+        "startTime": 1794485792888.8298,
+        "domainLookupStart": 0.309,
+        "domainLookupEnd": 0.473,
+        "connectStart": 0.473,
+        "secureConnectionStart": -1,
+        "connectEnd": 0.977,
+        "requestStart": 1.032,
+        "responseStart": 2.914,
+        "responseEnd": 57.806
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:16:32.931Z",
+      "timing": {
+        "startTime": 1794485792889.747,
+        "domainLookupStart": 2.135,
+        "domainLookupEnd": 2.139,
+        "connectStart": 2.139,
+        "secureConnectionStart": -1,
+        "connectEnd": 8.907,
+        "requestStart": 10.601,
+        "responseStart": 22.739,
+        "responseEnd": 154.922
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:16:32.931Z",
+      "timing": {
+        "startTime": 1794485792899.658,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.43,
+        "responseStart": 14.864,
+        "responseEnd": 182.753
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:16:32.931Z",
+      "timing": {
+        "startTime": 1794485792900.117,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.127,
+        "responseStart": 14.62,
+        "responseEnd": 214.856
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798116.0168,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.205,
+        "responseStart": 1.322,
+        "responseEnd": 1.747
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798116.1208,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.174,
+        "responseStart": 1.497,
+        "responseEnd": 1.957
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798116.4993,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.053,
+        "responseStart": 1.4,
+        "responseEnd": 2.221
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798116.842,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.035,
+        "responseStart": 1.112,
+        "responseEnd": 2.126
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798116.946,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.585,
+        "responseStart": 1.304,
+        "responseEnd": 2.468
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798117.573,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.257,
+        "responseStart": 0.723,
+        "responseEnd": 2.437
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798117.227,
+        "domainLookupStart": 0,
+        "domainLookupEnd": 0,
+        "connectStart": 0,
+        "secureConnectionStart": -1,
+        "connectEnd": 0.368,
+        "requestStart": 0.493,
+        "responseStart": 1.117,
+        "responseEnd": 2.517
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798116.635,
+        "domainLookupStart": 0.604,
+        "domainLookupEnd": 0.607,
+        "connectStart": 0.607,
+        "secureConnectionStart": -1,
+        "connectEnd": 0.962,
+        "requestStart": 1.113,
+        "responseStart": 1.754,
+        "responseEnd": 2.738
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798116.7002,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.462,
+        "responseStart": 2.089,
+        "responseEnd": 3.039
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.145Z",
+      "timing": {
+        "startTime": 1794485798117.873,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.319,
+        "responseStart": 0.968,
+        "responseEnd": 2.859
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798116.7788,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.921,
+        "responseStart": 2.299,
+        "responseEnd": 3.311
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798118.2249,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.499,
+        "responseStart": 0.894,
+        "responseEnd": 3.138
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798118.7761,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.163,
+        "responseStart": 0.391,
+        "responseEnd": 3.136
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798119.06,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.192,
+        "responseStart": 0.409,
+        "responseEnd": 3.315
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798119.3909,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.026,
+        "responseStart": 0.224,
+        "responseEnd": 3.434
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798119.4548,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.082,
+        "responseStart": 0.303,
+        "responseEnd": 3.545
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798119.599,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.079,
+        "responseStart": 0.293,
+        "responseEnd": 3.66
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798119.7412,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.074,
+        "responseStart": 0.293,
+        "responseEnd": 3.774
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798119.898,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.079,
+        "responseStart": 0.294,
+        "responseEnd": 3.877
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798120.0168,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.079,
+        "responseStart": 0.292,
+        "responseEnd": 3.97
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798120.1611,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.076,
+        "responseStart": 0.295,
+        "responseEnd": 4.087
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798120.296,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.078,
+        "responseStart": 0.298,
+        "responseEnd": 4.19
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798120.435,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.078,
+        "responseStart": 0.266,
+        "responseEnd": 4.234
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.146Z",
+      "timing": {
+        "startTime": 1794485798120.584,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.077,
+        "responseStart": 0.298,
+        "responseEnd": 4.451
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.584Z",
+      "timing": {
+        "startTime": 1794485798578.121,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.258,
+        "responseStart": 0.735,
+        "responseEnd": 1.216
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.584Z",
+      "timing": {
+        "startTime": 1794485798578.197,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.228,
+        "responseStart": 0.942,
+        "responseEnd": 1.535
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.585Z",
+      "timing": {
+        "startTime": 1794485798578.531,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.059,
+        "responseStart": 0.69,
+        "responseEnd": 1.604
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.585Z",
+      "timing": {
+        "startTime": 1794485798578.664,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.323,
+        "responseStart": 0.975,
+        "responseEnd": 1.812
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.585Z",
+      "timing": {
+        "startTime": 1794485798578.734,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.629,
+        "responseStart": 0.973,
+        "responseEnd": 1.836
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:38.585Z",
+      "timing": {
+        "startTime": 1794485798578.7903,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.713,
+        "responseStart": 1.117,
+        "responseEnd": 1.95
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:16:39.002Z",
+      "timing": {
+        "startTime": 1794485798996.9438,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.201,
+        "responseStart": 0.647,
+        "responseEnd": 1.186
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:39.002Z",
+      "timing": {
+        "startTime": 1794485798997.005,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.181,
+        "responseStart": 0.686,
+        "responseEnd": 1.254
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:16:39.002Z",
+      "timing": {
+        "startTime": 1794485798997.2483,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.04,
+        "responseStart": 0.89,
+        "responseEnd": 1.538
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:16:39.002Z",
+      "timing": {
+        "startTime": 1794485798997.3508,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.463,
+        "responseStart": 0.872,
+        "responseEnd": 1.565
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:16:39.002Z",
+      "timing": {
+        "startTime": 1794485798997.4119,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.574,
+        "responseStart": 1.076,
+        "responseEnd": 1.728
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:16:39.002Z",
+      "timing": {
+        "startTime": 1794485798997.473,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.86,
+        "responseStart": 1.073,
+        "responseEnd": 1.743
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/capabilities",
+      "status": 200,
+      "at": "2026-11-12T12:16:40.055Z",
+      "timing": {
+        "startTime": 1794485800048.823,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.075,
+        "responseStart": 0.425,
+        "responseEnd": 1.672
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c",
+      "status": 200,
+      "at": "2026-11-12T12:16:40.064Z",
+      "timing": {
+        "startTime": 1794485800061.023,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.055,
+        "responseStart": 0.244,
+        "responseEnd": 24.564
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:17:01.531Z",
+      "timing": {
+        "startTime": 1794485821520.79,
+        "domainLookupStart": 0.362,
+        "domainLookupEnd": 0.517,
+        "connectStart": 0.517,
+        "secureConnectionStart": -1,
+        "connectEnd": 1.058,
+        "requestStart": 1.113,
+        "responseStart": 5.626,
+        "responseEnd": 35.527
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:17:01.531Z",
+      "timing": {
+        "startTime": 1794485821521.804,
+        "domainLookupStart": 4.899,
+        "domainLookupEnd": 4.904,
+        "connectStart": 4.904,
+        "secureConnectionStart": -1,
+        "connectEnd": 7.019,
+        "requestStart": 7.338,
+        "responseStart": 7.611,
+        "responseEnd": 82.381
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:17:01.531Z",
+      "timing": {
+        "startTime": 1794485821529.0808,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.113,
+        "responseStart": 0.667,
+        "responseEnd": 106.505
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/copy-workflow",
+      "status": 200,
+      "at": "2026-11-12T12:17:01.531Z",
+      "timing": {
+        "startTime": 1794485821529.297,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.031,
+        "responseStart": 0.641,
+        "responseEnd": 198.643
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.985Z",
+      "timing": {
+        "startTime": 1794485826963.671,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.497,
+        "responseStart": 3.123,
+        "responseEnd": 4.525
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826964.0508,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.197,
+        "responseStart": 3.223,
+        "responseEnd": 4.814
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826965.7542,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.321,
+        "responseStart": 1.736,
+        "responseEnd": 4.751
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826964.393,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.05,
+        "responseStart": 3.346,
+        "responseEnd": 5.218
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826964.844,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.114,
+        "responseStart": 3.268,
+        "responseEnd": 5.546
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826966.0872,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.533,
+        "responseStart": 2.298,
+        "responseEnd": 5.7
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826964.5632,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 3.307,
+        "responseStart": 3.881,
+        "responseEnd": 6.032
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826965.929,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.494,
+        "responseStart": 2.894,
+        "responseEnd": 6.165
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826965.095,
+        "domainLookupStart": 0.052,
+        "domainLookupEnd": 0.276,
+        "connectStart": 0.276,
+        "secureConnectionStart": -1,
+        "connectEnd": 0.696,
+        "requestStart": 0.724,
+        "responseStart": 3.794,
+        "responseEnd": 6.334
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826964.645,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 3.701,
+        "responseStart": 4.596,
+        "responseEnd": 6.874
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826965.598,
+        "domainLookupStart": 0.046,
+        "domainLookupEnd": 0.049,
+        "connectStart": 0.049,
+        "secureConnectionStart": -1,
+        "connectEnd": 0.364,
+        "requestStart": 0.378,
+        "responseStart": 3.699,
+        "responseEnd": 6.793
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826967.4668,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.293,
+        "responseStart": 1.881,
+        "responseEnd": 6.435
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.986Z",
+      "timing": {
+        "startTime": 1794485826964.7122,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 4.074,
+        "responseStart": 4.684,
+        "responseEnd": 6.985
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826967.122,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 2.053,
+        "responseStart": 2.706,
+        "responseEnd": 6.823
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826967.713,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.49,
+        "responseStart": 2.158,
+        "responseEnd": 6.737
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826966.2737,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 3.463,
+        "responseStart": 3.805,
+        "responseEnd": 7.405
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826967.657,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 2.103,
+        "responseStart": 2.467,
+        "responseEnd": 7.136
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826967.183,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 2.6,
+        "responseStart": 2.986,
+        "responseEnd": 7.249
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826966.3657,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 3.438,
+        "responseStart": 3.845,
+        "responseEnd": 7.51
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826967.241,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 2.789,
+        "responseStart": 3.297,
+        "responseEnd": 7.484
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826966.468,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 3.588,
+        "responseStart": 4.115,
+        "responseEnd": 7.737
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_e417a404-5c9e-4f2d-a280-7a5748c2016e",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826966.53,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 3.968,
+        "responseStart": 4.232,
+        "responseEnd": 7.861
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1b5745e6-be06-4b5b-886b-26d6e46ad4e0",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826966.5972,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 3.925,
+        "responseStart": 4.213,
+        "responseEnd": 7.875
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_19aa455a-baa0-4786-bbbc-c8fb52760a14",
+      "status": 200,
+      "at": "2026-11-12T12:17:06.987Z",
+      "timing": {
+        "startTime": 1794485826966.681,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 4.013,
+        "responseStart": 4.266,
+        "responseEnd": 7.912
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:17:07.839Z",
+      "timing": {
+        "startTime": 1794485827833.514,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.27,
+        "responseStart": 0.812,
+        "responseEnd": 1.435
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:17:07.839Z",
+      "timing": {
+        "startTime": 1794485827833.615,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.251,
+        "responseStart": 0.833,
+        "responseEnd": 1.459
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:07.839Z",
+      "timing": {
+        "startTime": 1794485827833.9387,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.05,
+        "responseStart": 0.945,
+        "responseEnd": 1.695
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_6c7b6e5a-7646-4c9d-859d-14a7ccd655da",
+      "status": 200,
+      "at": "2026-11-12T12:17:07.840Z",
+      "timing": {
+        "startTime": 1794485827834.0562,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.523,
+        "responseStart": 0.889,
+        "responseEnd": 1.715
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7927aa4e-261b-4fdf-9c35-ddb796d97110",
+      "status": 200,
+      "at": "2026-11-12T12:17:07.840Z",
+      "timing": {
+        "startTime": 1794485827834.1091,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.642,
+        "responseStart": 1.074,
+        "responseEnd": 1.801
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_caa33641-291f-46aa-9dc1-001e3a7301fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:07.840Z",
+      "timing": {
+        "startTime": 1794485827834.158,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.881,
+        "responseStart": 1.331,
+        "responseEnd": 2.2
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:17:08.206Z",
+      "timing": {
+        "startTime": 1794485828197.9302,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.177,
+        "responseStart": 0.65,
+        "responseEnd": 1.046
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:08.206Z",
+      "timing": {
+        "startTime": 1794485828197.99,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.216,
+        "responseStart": 0.807,
+        "responseEnd": 1.123
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:17:08.207Z",
+      "timing": {
+        "startTime": 1794485828198.293,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.053,
+        "responseStart": 0.648,
+        "responseEnd": 1.228
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_7c884cc8-e25f-4ee6-9203-9152583bc74a",
+      "status": 200,
+      "at": "2026-11-12T12:17:08.207Z",
+      "timing": {
+        "startTime": 1794485828198.4202,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.279,
+        "responseStart": 0.801,
+        "responseEnd": 1.571
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_122ef2bb-f034-4a78-811d-11093c29d6fd",
+      "status": 200,
+      "at": "2026-11-12T12:17:08.207Z",
+      "timing": {
+        "startTime": 1794485828198.4712,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.398,
+        "responseStart": 0.842,
+        "responseEnd": 1.584
+      }
+    },
+    {
+      "url": "http://127.0.0.1:4242/api/v1/projects/project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c/visual-images/img_1e68ff8e-c90f-4b45-8dd1-d693c3f35b44",
+      "status": 200,
+      "at": "2026-11-12T12:17:08.207Z",
+      "timing": {
+        "startTime": 1794485828198.542,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.484,
+        "responseStart": 1.26,
+        "responseEnd": 1.986
+      }
+    }
+  ],
+  "errors": [
+    {
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "location": {
+        "url": "http://127.0.0.1:4492/favicon.ico",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "observations": [
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "direction": 0,
+      "images": [
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 15981,
+          "sha256": "de786b72b2860ced055db08136d4555ca54724bd9fa54caa54fd208b81d36e51"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 17108,
+          "sha256": "a0c4a27c0dc7ba6a7770d275d41b24d7523f3f07fb47b2d379d641a2f8d04b89"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16604,
+          "sha256": "46726075e6bc817dd53975c38bd36ea295a30dca91c6d81c725e63d538dd4e2d"
+        }
+      ],
+      "scrollWidth": 1280
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "direction": 1,
+      "images": [
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 17234,
+          "sha256": "3d935d984be9cfb4e73df342d03ba0c23465563134c101f2ce10569a1df19a04"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16449,
+          "sha256": "8e94e3b94a53735ec5151666c353c48f1083802aba3af0d32c5c5df73cff0437"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16930,
+          "sha256": "def47052a1073f447f8f15a9d16858b346e4f73434a93057236eba30ab6e7536"
+        }
+      ],
+      "scrollWidth": 1280
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "direction": 2,
+      "images": [
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16143,
+          "sha256": "a8d1bfe4bd5ac67e4eca8676de491cefdf707a3121f40d009e0ab7a624cbb364"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16213,
+          "sha256": "6703982856ccf3e5db81e29ae34f1c374874173bdc950e5f3c07d10f69c84b96"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16888,
+          "sha256": "a893677597693480246e3a28fe9441fd9d868db09370eb8ef0771b0636f6af68"
+        }
+      ],
+      "scrollWidth": 1280
+    },
+    {
+      "width": 910,
+      "colorScheme": "dark",
+      "direction": 0,
+      "images": [
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 15981,
+          "sha256": "de786b72b2860ced055db08136d4555ca54724bd9fa54caa54fd208b81d36e51"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 17108,
+          "sha256": "a0c4a27c0dc7ba6a7770d275d41b24d7523f3f07fb47b2d379d641a2f8d04b89"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16604,
+          "sha256": "46726075e6bc817dd53975c38bd36ea295a30dca91c6d81c725e63d538dd4e2d"
+        }
+      ],
+      "scrollWidth": 910
+    },
+    {
+      "width": 910,
+      "colorScheme": "dark",
+      "direction": 1,
+      "images": [
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 17234,
+          "sha256": "3d935d984be9cfb4e73df342d03ba0c23465563134c101f2ce10569a1df19a04"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16449,
+          "sha256": "8e94e3b94a53735ec5151666c353c48f1083802aba3af0d32c5c5df73cff0437"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16930,
+          "sha256": "def47052a1073f447f8f15a9d16858b346e4f73434a93057236eba30ab6e7536"
+        }
+      ],
+      "scrollWidth": 910
+    },
+    {
+      "width": 910,
+      "colorScheme": "dark",
+      "direction": 2,
+      "images": [
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16143,
+          "sha256": "a8d1bfe4bd5ac67e4eca8676de491cefdf707a3121f40d009e0ab7a624cbb364"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16213,
+          "sha256": "6703982856ccf3e5db81e29ae34f1c374874173bdc950e5f3c07d10f69c84b96"
+        },
+        {
+          "naturalWidth": 1280,
+          "naturalHeight": 840,
+          "bytes": 16888,
+          "sha256": "a893677597693480246e3a28fe9441fd9d868db09370eb8ef0771b0636f6af68"
+        }
+      ],
+      "scrollWidth": 910
+    }
+  ],
+  "scope": "Actual app UI on fixed original603 HTTP captures; no native-currentness/model/approval claim; compare inflight read behavior only"
+}

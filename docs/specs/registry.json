@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.15.1",
+  "baselineVersion": "1.16.0",
   "date": "2026-11-12",
   "status": "已合并视觉参考接线；新服务签发时间和可选Darwin实际文件核验，完整App草图/v2、B至交付仍未完成",
   "workflow": [
@@ -244,7 +244,7 @@
       "kind": "page",
       "title": "视觉开发",
       "path": "docs/pages/visual.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.visual-owner",
@@ -554,7 +554,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.12.1",
+      "version": "1.13.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -734,7 +734,7 @@
       "kind": "contract",
       "title": "视觉参考、草图与成稿受限接线",
       "path": "docs/development/visual-workflow.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.simple-copy",

@@ -1,3 +1,19 @@
+# 视觉存储与只读桥根采用 · 2026-11-12
+
+`codex/visual-storage-sketch-20261112`在main437ab4fa上已采用视觉本地存储、同快照草图只读桥与客户端在途读取合并。规范准备1.16.0；根第二轮完整输出已到构建结束，前端813通过/1既有skip、native九组496通过/0skip，规范、仓库、类型、依赖和构建通过。终端单独exit字段未取回，不补造；准确head远程CI及PR #14尚待。真实UI同212前后及603只读页已复验，细节见[本轮核验](../docs/development/visual-storage-sketch-verification-20261112.md)。14固定方法文件字节不变，旧源码另存，未动旧DB/业务。
+
+同一新包装案已完整保存65份初始参考记录，剩余沿原请求继续，仍未完成129或采用；旧34161保持base437＋unit3-A2缓存运行，root新源码不自动升级它，旧244启动守卫不可跳过。新root上的候选需显式重基、新process及当前资格。草图/image/v2组件原3项P2已在r2独立关闭，未接主案；通用Deck的caller projection缺口已关闭，PPT封存四项P2正修复，真实B、排版前比稿报告、原Chrome producer、App版式/终审仍待实际接线。工程测试不签真实研究/审美/人类批准。以下为前一时点。
+
+# PR #13已合并；同案视觉参考原图已保存 · 2026-11-12
+
+[PR #13](https://github.com/marctubud-pixel/pitch-agent/pull/13)准确head5ed620c4的两项CI及所有必需步骤成功，合并main为437ab4fa。本地从该main继续`codex/visual-storage-sketch-20261112`，根apps/tools仍同字节；B受限后端已纳管，不签实际B图片或完整App闭环。原14de第一次CI的单项默认5秒超时及修复原件保留。
+
+同一个新包装案沿原185保存点接续，未重建/重跑上游。已审storage-only候选在global execution=false下通过原HTTP完成18次精确预存请求，保存9张原PNG和9条借鉴用途至212；原字节、SHA、尺寸、完整原件/回执与无新增模型任务已核回。原应用实际Chrome在1280浅色/910深色三方向各3图，9唯一SHA与全部登记原图一致，0POST、无横向溢出；已知favicon404保留。新的真实physical/r7只读capture、私有登记及一个原生producer请求预检通过，未因此创建129任务或批准。细节与失败在本地目标目录的unit3-r2/unit3-r3/actual-ui原件保留。
+
+存图能力与模型执行分离的4源UI候选已做同212前后真实复验（两保存disabled→enabled，模型仍disabled，0POST、完整native project不变）、完整typecheck/8项边界测试及独立10项和锁矩阵；尚未采用到根。草图只读桥r2原错误requestHash P2已独立关闭，实际9图/54评审/后段仍待验。通用Deck组件虽可出两类37页原生可编辑PPTX，独立发现caller projection能丢待核标签，正在新r2缩窄接口；不采用缺陷版本，不签主案排版/终审。
+
+初始129同案执行控制器unit4的原生listen签名P2已在新r2窄修，5真实生命周期和原23项经独立复验通过；根现在仅获同案新capture、预算129、每次显式selected≤4和未知停止的工程执行范围。实时结果以目标目录检查点与原native回执为准。本段不提前签129、草图、B、终审或任一两案整链完成；付费/真实模型、旧业务、生产和在线编辑保存暂停边界保持。以下保留原时间点。
+
 # PR #12已合并：同案SIMPLE至COPY联调 · 2026-11-12
 
 [PR #12](https://github.com/marctubud-pixel/pitch-agent/pull/12)准确f7400be0的双CI及全部实际步骤成功，main ecf6b47f；本地新分支`codex/visual-final-deck-20261112`接续。B受限后端8源已按双审固定候选采用，根61项边界绿，实际B图片/13评审/前端未验，见[采用核验](../docs/development/visual-b-verification-20261112.md)。

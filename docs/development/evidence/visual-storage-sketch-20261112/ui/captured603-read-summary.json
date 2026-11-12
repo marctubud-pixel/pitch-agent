@@ -1,0 +1,16 @@
+{
+  "scope": "Same captured603 original HTTP bytes, real current app UI; no native-currentness/latency/approval claim",
+  "beforeProjectGET": 20,
+  "afterProjectGET": 2,
+  "viewports": [
+    "1280light",
+    "910dark"
+  ],
+  "directionViews": 6,
+  "uniqueOriginalPNGs": 9,
+  "imageDimensionsAndSHAEqual": true,
+  "horizontalOverflow": false,
+  "POST": 0,
+  "onlyKnownConsoleError": "favicon404",
+  "endToEndLiveLatencyMeasured": false
+}

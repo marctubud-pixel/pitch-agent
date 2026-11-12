@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-12T12:15:56.418308+00:00",
+  "scope": "one production file plus fixture/test; only in-flight GET sharing",
+  "files": [
+    {
+      "path": "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts",
+      "beforeSha256": "ed37f18fe95805d18af9e3d4f200f8673d660af9e021506f99ccef2f2974b002",
+      "sha256": "5cbba54d2e66266e8fe46eca0ceb1eaa3386712673f4c99e29ef0f852e93376d"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/snapshotInflight.test.ts",
+      "beforeSha256": null,
+      "sha256": "36675714bedd0567edc28a830ab6a6a0cb2db4159d9203c7adbe77f0bdd481e5"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/snapshot-inflight-fixture.json",
+      "beforeSha256": null,
+      "sha256": "728eaa71ae019ec99de860a77f94ba035290c94e5856372111e990f50890cf98"
+    }
+  ],
+  "DBOrModelWrites": 0,
+  "independentReportSha256": "110f5727bdce7ebc23302c72c2935e5ff5881619d08949e511a595a5f369c147"
+}

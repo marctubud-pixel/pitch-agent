@@ -1,0 +1,183 @@
+{
+  "project": {
+    "id": "snapshot-inflight-project",
+    "name": "快照读取工程测试",
+    "workflow": {
+      "version": "proposal-seven-v1",
+      "stages": [
+        "brief",
+        "research",
+        "strategy",
+        "themes",
+        "visual",
+        "layout",
+        "delivery"
+      ],
+      "internalSteps": {
+        "visual": [
+          "references",
+          "sketch",
+          "visual"
+        ]
+      }
+    },
+    "revision": 0,
+    "taskCards": [
+      {
+        "id": "snapshot-inflight-project:scope:1",
+        "brief": "{\"format\":\"proposal-workbench-brief-v1\",\"savedAt\":\"2026-11-12T00:00:00.000Z\",\"metadata\":{\"client\":\"本机测试\",\"summary\":\"在途读取协议测试\",\"researchOwner\":\"研究\",\"strategyOwner\":\"策略\",\"type\":\"packaging\"},\"fields\":{\"proposalType\":\"packaging\",\"background\":\"仅测试并发快照读取，不执行任何生产任务。\",\"audience\":\"工程测试\",\"objectives\":[],\"deliverables\":[\"包装\"],\"constraints\":[\"没有业务批准\"],\"changeNote\":\"\",\"provenance\":{}}}",
+        "createdBy": "synthetic-test-operator"
+      }
+    ],
+    "activeTaskCardId": "snapshot-inflight-project:scope:1",
+    "confirmations": [],
+    "visualAuthorizations": [],
+    "policies": [
+      {
+        "version": 1,
+        "mode": "assisted",
+        "authorizedThrough": "research",
+        "humanGates": [
+          "strategy"
+        ]
+      }
+    ],
+    "jobs": [],
+    "humanFeedback": [],
+    "feedbackReviews": [],
+    "sourceCaptures": [],
+    "sourceEntries": [],
+    "caseIdentityReviews": [],
+    "imageAssets": [],
+    "imageObservations": [],
+    "observationReviews": [],
+    "artifacts": [],
+    "verifications": [],
+    "readinessReports": [],
+    "readinessResolutions": [],
+    "handoffReports": [],
+    "panels": [],
+    "reviews": [],
+    "decisions": [],
+    "acknowledgments": [],
+    "releases": [],
+    "activeByStage": {},
+    "audit": [],
+    "processedCommands": {}
+  },
+  "view": {
+    "id": "snapshot-inflight-project",
+    "name": "快照读取工程测试",
+    "revision": 0,
+    "references": [],
+    "ownerEdges": [],
+    "ownerIntents": [],
+    "taskCard": {
+      "id": "snapshot-inflight-project:scope:1",
+      "brief": "{\"format\":\"proposal-workbench-brief-v1\",\"savedAt\":\"2026-11-12T00:00:00.000Z\",\"metadata\":{\"client\":\"本机测试\",\"summary\":\"在途读取协议测试\",\"researchOwner\":\"研究\",\"strategyOwner\":\"策略\",\"type\":\"packaging\"},\"fields\":{\"proposalType\":\"packaging\",\"background\":\"仅测试并发快照读取，不执行任何生产任务。\",\"audience\":\"工程测试\",\"objectives\":[],\"deliverables\":[\"包装\"],\"constraints\":[\"没有业务批准\"],\"changeNote\":\"\",\"provenance\":{}}}",
+      "createdBy": "synthetic-test-operator"
+    },
+    "policy": {
+      "version": 1,
+      "mode": "assisted",
+      "authorizedThrough": "research",
+      "humanGates": [
+        "strategy"
+      ]
+    },
+    "jobs": [],
+    "stages": [
+      {
+        "stage": "research",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SCOPE_UNCONFIRMED"
+        ]
+      },
+      {
+        "stage": "strategy",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "copy",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "references",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "sketch",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "visual",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "content_review",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "layout",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "final_review",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      }
+    ],
+    "complete": false
+  }
+}

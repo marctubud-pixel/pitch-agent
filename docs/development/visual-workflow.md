@@ -1,6 +1,6 @@
 # 视觉参考、草图与成稿的受限接线
 
-规范版本：1.1.0。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
+规范版本：1.2.0。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
 
 ## 输入与方法
 
@@ -36,7 +36,7 @@ step只选1至4个已经安排、零attempt的原job。每次派发及实际clai
 
 上传仅本路由接受`X-Workbench-Image-Meta`，最多2048字节base64 JSON，保存commandId、expectedRevision、文件名、说明与原字节SHA。其他JSON仍128KiB，不能借上传放开通用body。原图保存不签用途、适用性、复制许可或采用。
 
-后端原图保存可在无执行器时工作；当前参考UI仍以执行可用性禁用该保存入口。这个能力映射差异尚未解决，不能把后端storage-only测试写成页面默认可上传。
+原图与用途登记复用同一createReferenceMaterialStorage，不构造模型执行器、搜索或advance。GET visual-workflow显式给capability.storage.imageUpload/referenceMaterials；页面分别读取这两个布尔值，旧服务缺此字段则禁用、显式畸形字段拒绝。关闭模型不妨碍明确开放的本地保存；执行、组合和人工采用继续核原executionAllowed及各自配置。当前来源、权限、刷新失败、running/unknown、pending与旧未记录衔接仍锁写。
 
 ## 单次衔接与只读重放
 
@@ -60,7 +60,7 @@ marker后中断、或实际advance后结果保存失败，保持advance_pending�
 
 浏览器仅对HTTP409且code为REVISION_CONFLICT尝试核回：no-store读取同项目visual-workflow，重验原协议、版本和当前状态；完整native快照不得包含原commandId，原job须queued且零attempt，pending、legacy或任何running/unknown均不解除。先以独立诊断键保存并读回原body、图片原bytes、拒绝及核回snapshot SHA，成功后才结束浏览器待核，允许修正重提。配额或删除失败仍保留pending，不造成功回执、不解除native记录。
 
-网络、500、422、其他4xx、COMMAND_ID_REUSED、成功缺回执身份或无法核实未写均保留原请求。当前坏PNG解码错误实际返回500，不能宣称所有已知拒绝都可结束。storage-only真实HTTP已验不代表页面默认可上传。
+网络、500、422、其他4xx、COMMAND_ID_REUSED、成功缺回执身份或无法核实未写均保留原请求。当前坏PNG解码错误实际返回500，不能宣称所有已知拒绝都可结束。storage-only实际HTTP保存与页面按钮前后复验分别留证；页面复验使用GET-only服务，未据此宣称点击写入成功。
 
 ## 明确交付视图
 
@@ -86,3 +86,11 @@ B成稿与样机、通用同版Deck、终审/PPTX及至少两条当前App整链�
 原native返回的`ready_for_content`仅保留内部历史状态名称；此入口不创建独立content_review页面、负责人或调度任务。排版前的比稿Agent检查和排版后终审仍按七阶段规则独立完成。
 
 根61项B便携检查只签路由、metadata、存储归属、时间及父子版本边界，不生成图片、不执行13节点实际评审、不签原件/审美/客户通过。原129阻断案、所有暂停项及默认关闭边界保持。采用与独立证据见[本轮B接线验证](visual-b-verification-20261112.md)。
+
+## 同快照草图只读接缝
+
+canonical项目GET附带sketchSourceReadback，复用已有project原对象；历史revision返回原历史，不为它签当前资格。sketch-native-reader在真实store read-admission内核同revision/snapshot、方法、semantic及原source/IO；metadata-only原件不足返回unsupported。sketch-read-graph从原plan/nodes/bindings/task/attempt重建，unknown image requestHash必须等于该attempt的原native imageTask稳定hash，review原request及已有receipt.inputPacketHash也精确绑定。重排合法JSON键不误拒，零hash/别候选/别attempt不可用重算外层digest掩盖。
+
+前端分别读取完整native原件资格与只读unresolved图谱；unknown仍unknown、physicalIOVerified/writeEligible/appCapabilityGranted保持false，不能成为queued或执行票。当前仍未开启sketchAppSupported/referenceChoiceAppSupported，未签实际九草图、54报告或B页面可用。实际采用、独立反例和UI范围见[本轮核验](visual-storage-sketch-verification-20261112.md)。
+
+A新命令使用实际ISO签发时间，claim开始与完成保留同一claimOwner；旧audit.at=null及旧回执不补时间。源码纳管或Git合并不自动升级已启动的旧Node进程。

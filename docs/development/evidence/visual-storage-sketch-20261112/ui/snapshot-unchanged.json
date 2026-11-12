@@ -1,0 +1,6 @@
+{
+  "revision": 212,
+  "projectEqual": true,
+  "projectSha256": "fee286551248ff96910c987abb545ef73f10ec6aee07f466171e185053b862cd",
+  "basis": "full parsed native project before vs after; no view regeneration equality claim"
+}

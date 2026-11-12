@@ -1,0 +1,288 @@
+{
+  "at": "2026-11-12T11:25:29.818569+00:00",
+  "baseHead": "437ab4fa21377791917b8d71dae7a44298a3fd11",
+  "files": [
+    {
+      "path": "apps/workbench-preview/src/services/http/briefModels.ts",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": "532f08cd224d3013326ed6d90d05be53fd33038bd751216702e424a9d894dbcc",
+      "sha256": "1932e810725947e6efd652ca0fcdc2bcd9513a404304f32f23ea6542e2f39a47"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/dto.ts",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": "19c30ded3276eb4a45e3244b5ed59d965e6a2c515ea105ecf6c94cfa9f7a42f5",
+      "sha256": "c5c366d1ed53b9dc9a72b970a1e8d1ad32f1a73eaf2324549f680ebe1223ad39"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/image.generated.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "197e28d0a721c8dcde0278e010f02be65c0ea11c935b3053316ac7a9c8664c71"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/inspect.d.mts",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "c9e23ace9a5846aa880d1faf4e1677acc0a9c87397ef8ce1478d77250e63d342"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/inspect.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "2c38f2b0560e3eec94a0081a94976e08381a00c8d106f52ff3f4d97b2b5f3920"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/json-equal.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "06df4447d15f907a654ec87b1e6921823cfcff71ab25e44d30d0b4102f805a06"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/ordinary.generated.d.mts",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "ff9384787012cf30af992a426268ef04eeb49abd4fd63274ff25930c5e2e72dc"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/ordinary.generated.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "3ba0e74ab026e5e958640094ac5271862394e751aa5f3d2bcc72b8a70c6cf40c"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/panel.generated.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "c5410cd452a6de4e8c90f50e69d72ba5dc038d64c26703119ab57bb399d03af7"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/review.generated.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "4cb7e2115243aff4b7f13919e3de0420017833f5a69b7477e02968d4e6351c48"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketch-contracts/sketch.generated.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "3691308bac09573f9d2daa244a14df9bc5fd1e477283e5bfc43e2b923be24463"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketchReadback.test.ts",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "b711426e31b10e5f614a6acea815372b963d1cd5f50ebecd6a7fd74177d68652"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/sketchReadback.ts",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "cfd2f6caf0701b6d854547d7d4f1ef427ddaeb9335a6fb954f6feb362713aedb"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/visualAProjection.ts",
+      "origins": [
+        "sketch-bridge-r2",
+        "storage-ui-three-way"
+      ],
+      "baseSha256": "15eda509fde169d3a5f7c3991bd17f57ef80a57f3db1ea2c19fe084a187f38d5",
+      "sha256": "f74d48253e3ea31a5321055e777079082338bcdf3737f703cfc7298f853ea1a5"
+    },
+    {
+      "path": "apps/workbench-preview/test-fixtures/sketch-readback/metadata.json.gz",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "a7432098d0ff26a4ed41886479949bcdf664a8d973ed362bea5f50546d00df40"
+    },
+    {
+      "path": "tools/workbench/brief-server.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": "4215c62ccfc427eb0737bdf6ea315c0df243dbc28084ea903a8c9795f077b49c",
+      "sha256": "3274717c3395ce7151f443bf5d4891d7f447ea4aca3e263bf92909276e26e286"
+    },
+    {
+      "path": "tools/workbench/research-service.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": "915898229457babec3a241980247f30043eaffe84a169566ed8c10675e1dfb58",
+      "sha256": "1bda7f1221223f310611ee234ba9c535941c9464172d0938fa4d867358a85e41"
+    },
+    {
+      "path": "tools/workbench/sketch-native-reader.d.mts",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "9e3ed25d0c53af20faf56d480a08766739ed9fa1d4b606db88fe86d600b8012f"
+    },
+    {
+      "path": "tools/workbench/sketch-native-reader.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "c40ade0265e8b128051e6ce49ad408a16489aebae979ec151fa9ebb115942000"
+    },
+    {
+      "path": "tools/workbench/sketch-read-graph.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": null,
+      "sha256": "ba937f1c902ac0f653969750f69c5e1dae6754e7eee917ab5cd0b6605f195641"
+    },
+    {
+      "path": "tools/workbench/sketch-runtime.mjs",
+      "origins": [
+        "sketch-bridge-r2"
+      ],
+      "baseSha256": "18c8b84b0c6bb50ad7bd4e2b489470302a8114f0e354c35339cce4b484fde031",
+      "sha256": "e3d51d50e399eb11477b5db69846828c186cdb9b5a723c7f95cedf56b4651184"
+    },
+    {
+      "path": "tools/workbench/reference-runtime.mjs",
+      "origins": [
+        "storage-unit3-two-source"
+      ],
+      "baseSha256": "9696951772a8a202c7ff9fde6c11cf35a7d769b045c71d73d1419af9aead87bf",
+      "sha256": "d19ca1344b5b44c1be245a3663243ff5713eb109933c369a5a750e941fef9a9e"
+    },
+    {
+      "path": "tools/workbench/visual-a-service.mjs",
+      "origins": [
+        "storage-unit3-two-source"
+      ],
+      "baseSha256": "29a5f603838dadfa638e21f27b6a7d94d4fed677a79aceb28b73eb7f86d18f6f",
+      "sha256": "c52f9ffad3b9fc19ddfe6ba4841ebea40536430154d004539d38faf3daaf31f4"
+    },
+    {
+      "path": "apps/workbench-preview/src/domain/visualA.ts",
+      "origins": [
+        "storage-ui"
+      ],
+      "baseSha256": "32a529a418343f3807462b9d9d10d2c4ec00e6794170f6f035480d781a0c961d",
+      "sha256": "a38135f0864724eb7230d7be69314094e340a244cbe2da90157c8e42869e64fb"
+    },
+    {
+      "path": "apps/workbench-preview/src/proposal/VisualWorkflowPanel.tsx",
+      "origins": [
+        "storage-ui"
+      ],
+      "baseSha256": "b97a7a69fdf1752400a595ebab314edc9e7842953cbccf53b9a3a7e8423f574d",
+      "sha256": "a38a5ecfe1f641cde5b7351c5131ba7e52029240f69f386a071f4546bc5df555"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/visualA.test.ts",
+      "origins": [
+        "storage-ui"
+      ],
+      "baseSha256": "01f61fe4c604fa4092164a138acb1b520ff457517a19512abcccf005bb7e7049",
+      "sha256": "2fdb9fe5a9e393614b9a9097a84c58cd1debf0d1b2996b510dbc0d68ab7484b2"
+    },
+    {
+      "path": "tools/workbench/sketch-native-reader.test.mjs",
+      "origins": [
+        "r2 backend test portable import + exact same gzip bytes"
+      ],
+      "baseSha256": null,
+      "sha256": "df46863a7f852ccb75bfb01b0afd18ff833ff3eb922fc72322541b456da37132",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/design/sketch-app-root-bridge/r2/tests/readback.test.mjs",
+      "originalSha256": "f6ac4e1783eab646b06b2948759ebfcd33eaa65f25a6d253edf8ffb7f6980503"
+    },
+    {
+      "path": "tools/workbench/sketch-cold-http.test.mjs",
+      "origins": [
+        "r2 backend test portable import + exact same gzip bytes"
+      ],
+      "baseSha256": null,
+      "sha256": "fd75cb9a050a022ba7f0a098fb126838e005d6fef524c9166660447cdf1acc10",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/design/sketch-app-root-bridge/r2/tests/http-cold.test.mjs",
+      "originalSha256": "5aeb58678e34242d2c2c78647c1e1ee207882988e9a55d1e9d8317c61de46686"
+    },
+    {
+      "path": "tools/workbench/sketch-read-graph.test.mjs",
+      "origins": [
+        "r2 backend test portable import + exact same gzip bytes"
+      ],
+      "baseSha256": null,
+      "sha256": "c307adf2fd98439e16c9cb01c68b3faa5d3fe009b36f45ffca79990e2d24f4c2",
+      "originalPath": ".scratch/seven-stage-static-goal-20261111/design/sketch-app-root-bridge/r2/tests/unresolved-graph.test.mjs",
+      "originalSha256": "255dc58eeaafa5191dfe7c065287ffe7458c5569f3ab231f1df6d8dc1a66e8d3"
+    },
+    {
+      "path": "tools/workbench/visual-a-storage.test.mjs",
+      "origins": [
+        "unit3 storage test portable import only; remove unused import"
+      ],
+      "baseSha256": null,
+      "sha256": "64a9ebc136fa1ccf90c79c150801e6c463f11688c0d45d7f31278c6f81e02c99",
+      "originalSha256": "47ecb3231cdd7e630981825a8f239124a8b60c2de0761d445e2053a60bba9811"
+    },
+    {
+      "path": "package.json",
+      "origins": [
+        "append only four portable visual tests to existing explicit check"
+      ],
+      "baseSha256": "b9123ec95feabe10d5af7094f93196939622952e738602a38d2ad8ea8412569d",
+      "sha256": "f2d28d82e3648f123146fba1428f4f81b45be52bf32be30de179c6c1c10c8ec9"
+    }
+  ],
+  "protectedMethodsUnchanged": {
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/visual-development-lead/SKILL.md": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/visual-development-lead/references/packaging.md": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/visual-development-lead/references/stage-review.md": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/visual-development-lead/references/kv.md": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/visual-development-lead/references/records.md": "ee707e90ca10e8ebac767d926091a43c787396d9bb719d8105b9a4fcc7eab155",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/SKILL.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/visual-boards.md": "09210d56294636dc3e9f98622a2134f10a99c8e2e6922468b1fa5beb9087be31",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/contracts.md": "0fd12ab71ceccf16744a12872a6a942a4b0c89bfc9aac768e11f777079ad3003",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/reference-judgment.md": "3782cf1234fef5caa4d3790f74d85db773adeea8ed0a19b3420f86e4698b8f84",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/reader-loop.md": "842f504c542aada5b5f52a5481df72ebe12c0426dc1ad5881b1f7972517a7fe7",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/layout-templates.md": "8dbe10c7e96ce2b959fac502118bcd56b7c30c1f7b918ca192e439659c15bc9b",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/review.md": "cebe32e36290455cebb969111cac57ac3f0de5870dcc8f0ddcd3d42f60fbd75d",
+    "/Users/marc/Documents/ChatGPT/调研agent/skills/design-research-lead/references/task-methods.md": "21e74d769729bf6932caf1b7df46a2b755db865f7752273ab7477cdc4f6078eb"
+  },
+  "nativeCaseUntouched": true,
+  "loadedReferenceProcess": {
+    "pid": 34161,
+    "session": 35968,
+    "revision": 541,
+    "reports": 38,
+    "runtime": "base437+frozen unit3 A2, cached modules, NOT restarted/upgraded",
+    "newProcessOld244Closure": "must reject; do not bypass or recreate old tokens"
+  },
+  "old76572": "untouched; API cachedf740; Vite may HMR changedApp source"
+}
