@@ -1,3 +1,9 @@
+# 本地原图保存与同快照只读图谱 · 2026-11-12
+
+reference-runtime抽出createReferenceMaterialStorage，视觉A只让存图/用途脱离模型执行开关；页面读取独立storage旗标，其他执行与未决锁保留。brief-server canonical GET与research-service调用sketch-native-reader，原store read-admission核当前source/IO；sketch-read-graph保留未知图谱并校验原job/attempt请求，前端sketchReadback和sketch-contracts只读同快照结果，不提升执行资格。新A命令记录实际时间且不回填旧audit。
+
+当前九草图/54报告、B实际原件、排版前比稿检查、通用同Deck及终审/PPTX仍各有接线与实际验证工作，不由只读桥或组件样张签通过。范围和证据见[核验](../development/visual-storage-sketch-verification-20261112.md)。以下保留原时点模块图。
+
 # 当前视觉参考与明确视图接线 · 2026-11-12
 
 当前应用经visual-a-service/http复用原参考、草图与v2 runtime，actual claim核固定技术请求、source/target/binding和未知结果；新marker及claimOwner保存一次衔接的原结果。COPY同类重放修复沿原owner/creative模块，不建新业务状态机。前端严格初始129映射、原图与参考组件见[运行合同](../development/visual-workflow.md)。完整App草图/v2、成稿至交付仍按实际原件继续，不恢复旧run或内容审阅岗位。

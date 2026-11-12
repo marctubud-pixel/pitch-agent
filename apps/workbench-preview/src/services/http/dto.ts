@@ -36,13 +36,14 @@ export interface Snapshot {
   audit: Array<{ commandId: string; kind: string; actorId: string; revision: number; at: string }>;
   processedCommands: Record<string, unknown>;
   native?: Record<string,unknown>;
+  sketchSourceReadback?:unknown;
   complete: boolean;
 }
 export function parseSnapshot(value: unknown): Snapshot {
   const root = object(value), p = object(root.project), view = object(root.view), policy = object(view.policy);
   if (!text(p.id) || !text(p.name) || !['auto', 'assisted'].includes(text(policy.mode))) throw new ServiceError('validation', '简报服务返回的项目身份或工作方式无效。');
   return {
-    native:p,
+    native:p,sketchSourceReadback:root.sketchSourceReadback,
     workflowVersion: p.workflow ? text(object(p.workflow).version) : null, researchWorkflow: view.researchWorkflow ? object(view.researchWorkflow) : null,
     id: text(p.id), name: text(p.name), revision: integer(p.revision), activeTaskCardId: text(p.activeTaskCardId),
     cards: records(p.taskCards).map((c) => ({ id: text(c.id), brief: text(c.brief), createdBy: text(c.createdBy), original: c })),

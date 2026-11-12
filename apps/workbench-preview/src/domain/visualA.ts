@@ -5,6 +5,7 @@ export interface VisualImage {imageId:string;sha256:string;mediaType:'image/png'
 export interface VisualWorkspace {
  advancePending:boolean;unrecordedAdvances:number;advanceResults:string|null;
  projectId:string;revision:number;copyArtifactId:string|null;current:boolean;available:boolean;
+ storage:{imageUpload:boolean;referenceMaterials:boolean};
  target:VisualTarget|null;queuedJobIds:string[];unknownJobs:string[];runningJobs:string[];progress:{referenceReports:number;referencePlanned:number|null;sketchImages:number;sketchPlanned:number|null;reviewReports:number;reviewPlanned:number|null};images:VisualImage[];
  directions:Array<{id:string;title:string}>;referenceStatus:string;referenceChoiceAppSupported:boolean;sketchAppSupported:boolean;referenceStateOriginal:string|null;selectionHash:string|null;
  dossierId:string|null;generationId:string|null;generationHash:string|null;reports:Array<{title:string;body:string}>;

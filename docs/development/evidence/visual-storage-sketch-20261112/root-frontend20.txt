@@ -1,0 +1,8 @@
+
+ RUN  v5.0.5 /Users/marc/Documents/ChatGPT/调研agent/apps/workbench-preview
+
+
+ Test Files  3 passed (3)
+      Tests  20 passed (20)
+   Start at  19:28:58
+   Duration  7.80s (tests 96%, transform 3%, import 1%)

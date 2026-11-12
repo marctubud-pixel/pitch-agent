@@ -1,4 +1,5 @@
 import {createVisualBService} from './visual-b-service.mjs';
+import {createSketchNativeReader} from './sketch-native-reader.mjs';
 import {createVisualAService} from './visual-a-service.mjs';
 import {createSimpleCopyService} from './simple-copy-service.mjs';
 import {createSimpleStrategyService} from './simple-strategy-service.mjs';
@@ -61,8 +62,10 @@ export function createResearchService({store, rootDir, executionAllowed = false,
   const copy=createSimpleCopyService({store,rootDir,executor,executionAllowed,bindings,providers,simple});
   const visual=createVisualAService({store,rootDir,executor,executionAllowed,bindings,providers,imageStore:options.imageStore});
   const visualB=createVisualBService({store,executor,executionAllowed:executionAllowed&&options.visualBExecutionAllowed===true});
+  const nativeSketchReader=createSketchNativeReader({store,rootDir});
   return {
     visualBStatus:visualB.status,visualBContinue:visualB.continuation,visualBStep:visualB.step,visualBAdopt:visualB.adopt,visualBRelease:visualB.release,
+    visualSourceInspection:nativeSketchReader.inspect,visualReadbackEnvelope:nativeSketchReader.envelope,
     visualStatus:visual.status,visualCommand:visual.command,visualStep:visual.step,uploadVisualImage:visual.upload,visualImage:visual.image,
     copyStatus:copy.status,copyCommand:copy.run,
     simpleStrategyStatus:simple.status,simpleStrategyContinue:simple.continue,simpleStrategyVerify:simple.verify,simpleStrategyReconcile:simple.reconcile,

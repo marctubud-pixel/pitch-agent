@@ -179,12 +179,7 @@ export function createReferenceRuntime({store,root,providers,bindings,imageStore
     store.command(projectId,{kind:'recover-reference-result',jobId,attemptId:attempt.id,resultHash:descriptor.sha256,normalizedDescriptor,executionReceipt:saved.executionReceipt,rawReport,payloadRef,contentHash:hash(normalizedBytes),reportId:randomUUID(),reconciliationId:id,request,reason,commandId,expectedRevision},context);
     return store.read(projectId).jobs.find(j=>j.id===jobId);
   }
-  async function submitReferenceMaterial(projectId,request,humanContext){
-    const p=store.read(projectId),prior=p.referenceMaterials?.find(m=>m.id===request.commandId);if(prior){need(isDeepStrictEqual(prior.request,request),'COMMAND_ID_REUSED','Manual material command reused');return prior;}
-    need(humanContext?.actorType==='human','HUMAN_REQUIRED','Actual local human material submission required');
-    const content=await readArtifactContent(p,request.artifactId,root),asset=p.imageAssets.find(a=>a.id===request.imageId);need(asset?.projectId===projectId,'INVALID_REFERENCE_MATERIAL','Registered project image required');await imageStore.read({projectId,imageId:asset.id,expectedHash:asset.sha256});
-    store.command(projectId,{kind:'record-reference-material',request:structuredClone(request),copyContents:content.contentText,commandId:request.commandId,expectedRevision:request.expectedRevision},humanContext);return store.read(projectId).referenceMaterials.find(m=>m.id===request.commandId);
-  }
+  const {submitReferenceMaterial}=createReferenceMaterialStorage({store,root,imageStore});
   async function submitReferenceLibraryMaterial(projectId,request){
     validateReferenceLibrary(library);const entry=referenceLibraryEntry(library,request.libraryEntryId);
     need(request.catalogueDigest===library.catalogueDigest,'REFERENCE_LIBRARY_CHANGED','Exact configured local catalogue required');
@@ -213,4 +208,14 @@ export function createReferenceRuntime({store,root,providers,bindings,imageStore
     catch(error){return {dossier:d,state:{status:'blocked',reason:error.code??'REFERENCE_CAPTURE_CHANGED'}};}
   }
   return {capability:()=>({configured:!!configuration,available:false,executionIntegrated:true,discoveryMode:configuration?.discoveryMode??null,manualSupplied:true,semanticApproval:false,verification:"not_verified",downstream:"sketch production uses separate configuration, image service and reference review gates"}),recoverReferenceResult,checkedSelection,continueCopy,submitReferenceMaterial,submitReferenceLibraryMaterial,advanceReferences,referenceStatus:status,referenceStates,adoptReferences,chooseReferences,reviseReferences,returnReferenceUncertainty,execute};
+}
+
+export function createReferenceMaterialStorage({store,root,imageStore}){
+  async function submitReferenceMaterial(projectId,request,humanContext){
+    const p=store.read(projectId),prior=p.referenceMaterials?.find(m=>m.id===request.commandId);if(prior){need(isDeepStrictEqual(prior.request,request),'COMMAND_ID_REUSED','Manual material command reused');return prior;}
+    need(humanContext?.actorType==='human','HUMAN_REQUIRED','Actual local human material submission required');
+    const content=await readArtifactContent(p,request.artifactId,root),asset=p.imageAssets.find(a=>a.id===request.imageId);need(asset?.projectId===projectId,'INVALID_REFERENCE_MATERIAL','Registered project image required');await imageStore.read({projectId,imageId:asset.id,expectedHash:asset.sha256});
+    store.command(projectId,{kind:'record-reference-material',request:structuredClone(request),copyContents:content.contentText,commandId:request.commandId,expectedRevision:request.expectedRevision},humanContext);return store.read(projectId).referenceMaterials.find(m=>m.id===request.commandId);
+  }
+  return Object.freeze({submitReferenceMaterial});
 }

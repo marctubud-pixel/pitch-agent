@@ -91,7 +91,10 @@ export function createBriefServer({dbPath, port = 4182, origin, researchOptions,
   } catch(error) {store.close();throw error;}
   const result = async project => {
     const native = projectView(project), rw = project.workflow ? await research.workflowSnapshot(project) : null;
-    return {project: layoutPublicProject(project), view: {...native, proposalWorkflow: workflowView(project,{researchWorkflow:rw}), researchWorkflow:rw}};
+    const publicProject=layoutPublicProject(project);
+    // One existing project object, never a second raw snapshot or a hash of a cropped layout view.
+    const sketchSourceReadback=publicProject===project&&project.sketchGenerations?.length?await research.visualReadbackEnvelope(project):null;
+    return {project:publicProject,...(sketchSourceReadback?{sketchSourceReadback}:{}),view:{...native,proposalWorkflow:workflowView(project,{researchWorkflow:rw}),researchWorkflow:rw}};
   };
   const extractionResult = async (id, documentId, receipt = {}) => {
     const p = store.read(id);

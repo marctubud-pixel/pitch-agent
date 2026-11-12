@@ -1,0 +1,279 @@
+{
+  "at": "2026-11-12T11:33:07.021931+00:00",
+  "scope": "Selected engineering metadata/UI and source verification only; main DB/model IO/original task files remain local, not uploaded",
+  "files": [
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/UI-REVIEW.md",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/UI-REVIEW.md",
+      "sourceSha256": "f466c7441e9b6ceae27cd21b27581c059cf23bde5a488996f0f9f75414d404c4",
+      "sha256": "45c5ac2f130c494f0296ace5872d6d968f57fa7865164bc39dbd8132dcc074a8",
+      "transform": "append root603/native and captured603 read-coalescing scope; original local report bytes/sourceSha256 preserved"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/independent-review/REPORT.md",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui-independent.md",
+      "sourceSha256": "3b490f5088b12b5d87de6d9b9408281727743b837ef35236ee4508c8ce9e9f37",
+      "sha256": "3b490f5088b12b5d87de6d9b9408281727743b837ef35236ee4508c8ce9e9f37",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/ROOT-ADOPTION.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/root-adoption.json",
+      "sourceSha256": "b2a215880d2d566c80ae4a6ed6edfe064519267a9f122b5a1be1a38490edc59e",
+      "sha256": "b2a215880d2d566c80ae4a6ed6edfe064519267a9f122b5a1be1a38490edc59e",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-native16.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/root-native16.txt",
+      "sourceSha256": "c93b222beb7e36ca6ba5fb7496755a20c02a7e79b6454fc7e7cf1a8c7873a83b",
+      "sha256": "c93b222beb7e36ca6ba5fb7496755a20c02a7e79b6454fc7e7cf1a8c7873a83b",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-typecheck.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/root-typecheck.txt",
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/before-r2-2026-11-12T10-30-28.455Z-1280-light.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/before-r2-2026-11-12T10-30-28.455Z-1280-light.png",
+      "sourceSha256": "834ba9fc490abba891adfeaa53e82423cc1fb5258e0d1871b2da346bebbedc00",
+      "sha256": "834ba9fc490abba891adfeaa53e82423cc1fb5258e0d1871b2da346bebbedc00",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/before-r2-2026-11-12T10-30-28.455Z-1280-light-gray.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/before-r2-2026-11-12T10-30-28.455Z-1280-light-gray.png",
+      "sourceSha256": "9096cd4923f37465de68aa32375853c6414ef3f6597b09d539dbe8200c7b68fc",
+      "sha256": "9096cd4923f37465de68aa32375853c6414ef3f6597b09d539dbe8200c7b68fc",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/before-r2-2026-11-12T10-30-28.455Z-910-dark.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/before-r2-2026-11-12T10-30-28.455Z-910-dark.png",
+      "sourceSha256": "9e0e9ce78faec7fc5fa78f5925a49aacb8fd7bc8474fc3a4bc50043cd4b87497",
+      "sha256": "9e0e9ce78faec7fc5fa78f5925a49aacb8fd7bc8474fc3a4bc50043cd4b87497",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/before-r2-2026-11-12T10-30-28.455Z-910-dark-gray.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/before-r2-2026-11-12T10-30-28.455Z-910-dark-gray.png",
+      "sourceSha256": "d21a2ca9d7cd7e984eb47b5a5c035a6705ab9cc87a1a8ccb3c7757725229afa1",
+      "sha256": "d21a2ca9d7cd7e984eb47b5a5c035a6705ab9cc87a1a8ccb3c7757725229afa1",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/before-r2-2026-11-12T10-30-28.455Z-observations.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/before-r2-2026-11-12T10-30-28.455Z-observations.json",
+      "sourceSha256": "57ac4047936688811b9198de51fa02367a04fdf4df726aae84c01a14332993d9",
+      "sha256": "57ac4047936688811b9198de51fa02367a04fdf4df726aae84c01a14332993d9",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/after-r2-2026-11-12T10-32-26.520Z-1280-light.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/after-r2-2026-11-12T10-32-26.520Z-1280-light.png",
+      "sourceSha256": "34cc17d671f81bb0adf14a196dd0dee32e2a5be5903735148dc07fb6b604ba09",
+      "sha256": "34cc17d671f81bb0adf14a196dd0dee32e2a5be5903735148dc07fb6b604ba09",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/after-r2-2026-11-12T10-32-26.520Z-1280-light-gray.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/after-r2-2026-11-12T10-32-26.520Z-1280-light-gray.png",
+      "sourceSha256": "1b9d6ebf470361080c8395b48cd2d8237beed6829547de7a57dc1344880882f1",
+      "sha256": "1b9d6ebf470361080c8395b48cd2d8237beed6829547de7a57dc1344880882f1",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/after-r2-2026-11-12T10-32-26.520Z-910-dark.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/after-r2-2026-11-12T10-32-26.520Z-910-dark.png",
+      "sourceSha256": "e81170037be90245a9b27e62bbfe494a46b8927f6cb5bd5e831757e78fe3fe8d",
+      "sha256": "e81170037be90245a9b27e62bbfe494a46b8927f6cb5bd5e831757e78fe3fe8d",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/after-r2-2026-11-12T10-32-26.520Z-910-dark-gray.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/after-r2-2026-11-12T10-32-26.520Z-910-dark-gray.png",
+      "sourceSha256": "e41a69189cb079cc9cd8f688f82ad6384e4e813476fdffdac48945f0ed119303",
+      "sha256": "e41a69189cb079cc9cd8f688f82ad6384e4e813476fdffdac48945f0ed119303",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/after-r2-2026-11-12T10-32-26.520Z-observations.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/after-r2-2026-11-12T10-32-26.520Z-observations.json",
+      "sourceSha256": "0d189afa537232c38d0c592d4b89d0a9664d5e91e7d6d1e0e29e480f2fce75bd",
+      "sha256": "0d189afa537232c38d0c592d4b89d0a9664d5e91e7d6d1e0e29e480f2fce75bd",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-ui/ui/snapshot-unchanged.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/snapshot-unchanged.json",
+      "sourceSha256": "99423f57f2cee8560cff7b46c598b17021899f6597154b3aea32c54594ca40d1",
+      "sha256": "99423f57f2cee8560cff7b46c598b17021899f6597154b3aea32c54594ca40d1",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/sketch-app-root-bridge/independent-spec-r2/REPORT.md",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/sketch-r2-independent.md",
+      "sourceSha256": "665457229b62df672d21627699328404e4b16d05a30e404cf36a3b068096d209",
+      "sha256": "665457229b62df672d21627699328404e4b16d05a30e404cf36a3b068096d209",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-B-PR-MERGE.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/pr13-merge.json",
+      "sourceSha256": "4e343ce567f8d0b41bb0ee7315b81f0d8cd4626eaaf3a0f7b9acce846859515d",
+      "sha256": "4e343ce567f8d0b41bb0ee7315b81f0d8cd4626eaaf3a0f7b9acce846859515d",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-B-PR-FINAL-JOB.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/pr13-final-job.json",
+      "sourceSha256": "3d5e7d33a82d1d4405e1fad9dac706a80fd84359ca91d516e68b7fab7878adf8",
+      "sha256": "3d5e7d33a82d1d4405e1fad9dac706a80fd84359ca91d516e68b7fab7878adf8",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-B-FINAL-SOURCE-IDENTITY.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/pr13-source-identity.json",
+      "sourceSha256": "ff3d92beb43e62d2352df1b730f0f49c5f64349fd50ca1b36a5d06e2a1877753",
+      "sha256": "ff3d92beb43e62d2352df1b730f0f49c5f64349fd50ca1b36a5d06e2a1877753",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-frontend20.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/root-frontend20.txt",
+      "sourceSha256": "d510a965dc73f587181530bde4732d97289c47c28948a0a428d310bc0c0e687d",
+      "sha256": "7947b7b6c1cb2b352e9fe16badb9dd8083a2f42881f87b903016a242cd534ba5",
+      "transform": "strip only final empty LF lines; preserve original local bytes and sourceSha256"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-frontend20-first-config-error.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/root-frontend20-first-config-error.txt",
+      "sourceSha256": "dc742dffd32ba179eed13191b4f96177be1e5d99b2028fe46b633f363c8dc1e5",
+      "sha256": "9bd0488f7318f4a0f483aa44d5bdf67ce6f7df0b7c482b9c95382c383964e13a",
+      "transform": "strip only final empty LF lines; preserve original local bytes and sourceSha256"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/independent-final/REPORT.md",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/integration-independent.md",
+      "sourceSha256": "f21ec2728dc2380ede4d188b992baefda3e196b68f9ec4f17ea65fbb595e79f8",
+      "sha256": "f21ec2728dc2380ede4d188b992baefda3e196b68f9ec4f17ea65fbb595e79f8",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/http-snapshot-inflight-independent/REPORT.md",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/snapshot-independent.md",
+      "sourceSha256": "110f5727bdce7ebc23302c72c2935e5ff5881619d08949e511a595a5f369c147",
+      "sha256": "110f5727bdce7ebc23302c72c2935e5ff5881619d08949e511a595a5f369c147",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/http-snapshot-inflight/ROOT-ADOPTION.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/snapshot-root-adoption.json",
+      "sourceSha256": "958a70beac4c7a01433a30e118e47458858e2267ce9a174977b4dba310c6c177",
+      "sha256": "958a70beac4c7a01433a30e118e47458858e2267ce9a174977b4dba310c6c177",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/http-snapshot-inflight/root-affected40.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/snapshot-root40.txt",
+      "sourceSha256": "417c53f14e21bd7b62c4dd5edd1b8ba4af4e9fad84348fb66f4312e4a43be3cd",
+      "sha256": "a420d2d29d7567d5e84a96d2b8b680b301d83ce9fb0aaa16adb472cdbbfeab30",
+      "transform": "strip only final empty LF lines; original local bytes/sourceSha256 preserved"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/http-snapshot-inflight/root-typecheck.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/snapshot-root-typecheck.txt",
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/capture603-proof.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/live603-proof.json",
+      "sourceSha256": "c23fdb888b48a930d9917d43f85f5e75cb186300f072ede4074b3bf8f196d228",
+      "sha256": "c23fdb888b48a930d9917d43f85f5e75cb186300f072ede4074b3bf8f196d228",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/root31-references603-read-r2-2026-11-12T11-50-39.482Z-1280-light-direction0.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/live603-1280.png",
+      "sourceSha256": "70c6216becb82b7f59dae29d5be1a08044e18492b24bc9f26d81f50fb934332c",
+      "sha256": "70c6216becb82b7f59dae29d5be1a08044e18492b24bc9f26d81f50fb934332c",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/captured603-before-2026-11-12T12-12-25.021Z-observations.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/captured603-before-observations.json",
+      "sourceSha256": "c321961bfc17d35a5fb2bf7852084749fc6db505225102e7ecf5c48ada8fb8a0",
+      "sha256": "c321961bfc17d35a5fb2bf7852084749fc6db505225102e7ecf5c48ada8fb8a0",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/captured603-before-2026-11-12T12-12-25.021Z-1280-light-direction0.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/captured603-before-1280.png",
+      "sourceSha256": "c57dad62eccc3b3bbe6f3477129f0084f44e7da8e75e9943b8a374d705fd3be4",
+      "sha256": "c57dad62eccc3b3bbe6f3477129f0084f44e7da8e75e9943b8a374d705fd3be4",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/captured603-after-2026-11-12T12-16-09.415Z-observations.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/captured603-after-observations.json",
+      "sourceSha256": "85528edb339750df7b8e126437dcde64dca1232cc58d7c0c58b09d71c98b915f",
+      "sha256": "85528edb339750df7b8e126437dcde64dca1232cc58d7c0c58b09d71c98b915f",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/captured603-after-2026-11-12T12-16-09.415Z-1280-light-direction0.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/captured603-after-1280.png",
+      "sourceSha256": "a577f0d1e2e290794a380fff6ca1679867f6d7a11496d10084104db64cacb4d6",
+      "sha256": "a577f0d1e2e290794a380fff6ca1679867f6d7a11496d10084104db64cacb4d6",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-ui/captured603-after-2026-11-12T12-16-09.415Z-910-dark-direction0.png",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/ui/captured603-after-910.png",
+      "sourceSha256": "f9b6f01f9b4d77c74f781d620ad1fbdee3b57da7982114da5dd0da8850c5684c",
+      "sha256": "f9b6f01f9b4d77c74f781d620ad1fbdee3b57da7982114da5dd0da8850c5684c",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-full-check.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/root-full-first.txt",
+      "sourceSha256": "58e9004c53b67891c4dc82e8e571eaa4b816e29693b23580b86d456232c32657",
+      "sha256": "ba12c57dacf75233e956e5cb965584f3da9c54a84cf05dce426fe6d3d98ad8d9",
+      "transform": "strip only final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/full-history-isolated-before.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/history-isolated-before.txt",
+      "sourceSha256": "8698745703671c0a333a5d02f4d573868bf94351cce7ad44a4d668335a31a330",
+      "sha256": "9c56c2719ccecaf3c4ea1d37e92c5ad89cba1bdc384ce92e7586ea880cf79097",
+      "transform": "strip only final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/full-history-isolated-after.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/history-isolated-after.txt",
+      "sourceSha256": "bb3156a7bf196d7e6a591ae5164b8ccd044b74d583a4bc88fb000d5cc216ff44",
+      "sha256": "d81049f3913da23318a9548860e2c7291fc3ad93016c3133e471fb854451da56",
+      "transform": "strip only final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/full-history-test-budget.json",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/history-test-budget.json",
+      "sourceSha256": "4a0480bf7db5421e968fdf2c0967b94b8f7c2d493b6af54fa80f5f63f59da96e",
+      "sha256": "4a0480bf7db5421e968fdf2c0967b94b8f7c2d493b6af54fa80f5f63f59da96e",
+      "transform": "strip only final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-storage-sketch-integration/root-full-check-r2.log",
+      "target": "docs/development/evidence/visual-storage-sketch-20261112/root-full-second.txt",
+      "sourceSha256": "00e04a5be17ee2b3842554e07a2be1c5cc18d96f3ea2192725327e3f28c17f23",
+      "sha256": "8531b98ed87f462b38016a825cf80c691b62c3b59554ea50bc61b0901fb97f6c",
+      "transform": "strip only trailing line spaces/tabs and final empty LF lines; local original retained"
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import {assertStoreReadAdmission} from './store.mjs';
+import {verifySketchReviewOriginal} from './sketch-review-original.mjs';
 import {reopenOrdinaryCompletion} from './ordinary-model-project.mjs';
 import {verifyOrdinaryProject,restoreOrdinaryJob} from './ordinary-model-project.mjs';
 import {invokeOrdinary,reopenOrdinary,isOrdinaryHttp,ordinarySuccessfulStatus,ordinaryHasContext} from './ordinary-model.mjs';
@@ -49,12 +51,25 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
     need(result.state.status==='ready_for_sketch','SKETCH_REFERENCE_REQUIRED',result.state.reason??'Current checked reference selection required');
     const p=store.read(projectId);
     const source=sketchSource(p,result.dossier,result.state);
+    const originalFacts=[];
     if(g) {
       need(equal(source,g.source),'SKETCH_SOURCE_STALE','Checked reference source changed');
       requireCurrentSketchGeneration(p,g,copyDeliveryEnvelope);
-      for(const job of p.jobs.filter(j=>j.generationId===g.id&&j.report))await verifySketchOriginal(p,g,job,{executionRoot:root,imageStore});
+      for(const job of p.jobs.filter(j=>j.generationId===g.id&&j.report))originalFacts.push(await verifySketchOriginal(p,g,job,{executionRoot:root,imageStore}));
     }
-    return {p,source};
+    return {p,source,originalFacts};
+  }
+  // Read entry only: original checked/domain/IO guards, never a continuation or recovery.
+  async function inspectSource(projectId,{generationId,runId=null,complete=false}) {
+    assertStoreReadAdmission(store,projectId);
+    const before=store.read(projectId),g=before.sketchGenerations?.find(g=>g.id===generationId);
+    need(g,'SKETCH_GENERATION_REQUIRED','Registered generation required');
+    need(!before.jobs.some(j=>j.generationId===g.id&&['running','awaiting_reconciliation'].includes(j.status)),'SKETCH_UNRESOLVED','Unresolved original prevents source qualification');
+    const checkedSource=await checked(projectId,g),p=checkedSource.p;
+    requireCurrentSketchGeneration(p,g,copyDeliveryEnvelope,{complete});
+    let packet=null,reviewFacts=null;
+    if(runId){need(p.sketchReviewRuns?.some(r=>r.id===runId&&r.generationId===g.id),'REVIEW_RUN_REQUIRED','Exact generation review run required');packet=await sketchReviewInput(projectId,g.id);reviewFacts=await verifySketchReviewOriginal(store.read(projectId),p.sketchReviewRuns.find(r=>r.id===runId),{executionRoot:root,imageStore});}
+    return {source:checkedSource.source,originalFacts:checkedSource.originalFacts,packet,reviewFacts};
   }
   async function continueSketch(projectId,request,scope={}) {
     need(Object.keys(request).every(k=>['commandId','expectedRevision'].includes(k)),'INVALID_SKETCH_INTENT','Only continuation identity and revision are accepted');
@@ -193,7 +208,7 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
     send(projectId,{kind:'adjust-project-image-allowance',adjustment:structuredClone(adjustment)});return store.read(projectId).imageAllowance;
   }
   function capability(){try{configuredBindings();return {generationIntegrated:true,reviewExecutionIntegrated:false,available:true,liveVerification:'not_verified'};}catch(error){return {generationIntegrated:true,reviewExecutionIntegrated:false,available:false,reason:error.code,liveVerification:'not_verified'};}}
-  return {capability,adjustImageAllowance,continueSketch,advanceSketch,execute,sketchReviewInput,verifyReviewedSketch,registerReviewedSketch};
+  return {inspectSource,capability,adjustImageAllowance,continueSketch,advanceSketch,execute,sketchReviewInput,verifyReviewedSketch,registerReviewedSketch};
 }
 
 export function validateSketchConfiguration(c) {

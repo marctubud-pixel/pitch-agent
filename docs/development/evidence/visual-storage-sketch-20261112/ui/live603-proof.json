@@ -1,0 +1,13 @@
+{
+  "revision": 603,
+  "threeOriginalResponsesSameProject": true,
+  "nineImageHashesExact": true,
+  "firstOriginalReportExactPrettyJSON": true,
+  "mainWrites": 0,
+  "referenceReports": 46,
+  "files": {
+    "project603.json": "bc077a61ddcb7fbf3ea92a220f836f518ae9d6a0455b60bac0fc6484a79da665",
+    "visual603.json": "f7d27173ed05f6b8b489e8b4045d6028f9c01e570baac01437335a3ff45e8211",
+    "copy603.json": "50df28a98dbb28bca16601d363fb462461756b4060f546a41ca0b4a5811f135d"
+  }
+}

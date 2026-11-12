@@ -1,0 +1,36 @@
+(node:96734) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"kind":"unsupported","reason":"SKETCH_REFERENCE_REQUIRED","coldGet":true,"oneProject":true,"models":0}
+✔ canonical cold project GET carries one existing raw project and exact co-snapshot native unsupported qualification, without execution (40.327833ms)
+(node:96737) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+EMPTY_NATIVE_READ {"revision":0,"reason":"SKETCH_GENERATION_REQUIRED","staleReason":"REVISION_CONFLICT","dbWalAndOriginalsUnchanged":true,"commands":0,"images":0,"reads":2}
+✔ new real native store, restricted service false: missing generation and stale revision are zero-write DTO negatives (12.235834ms)
+METADATA_ONLY_READ {"reason":"SKETCH_REFERENCE_REQUIRED","coverage":{"images":[],"source":{"verifier":"sketch-runtime.inspectSource -> original checked/checkedSelection/requireCurrentSketchGeneration","status":"failed_partial"}},"qualified":false,"dbWalAndOriginalsUnchanged":true}
+✔ metadata imported only to new SQLite cannot become native qualified without original IO; unknown stops (29.348209ms)
+✔ untrusted callback/result or out-of-scope request cannot forge a store admission (3.551166ms)
+✔ concurrent actual second-store revision is refused instead of mixed-snapshot DTO (6.856166ms)
+✔ store admission itself rejects all command effects, independent of reader outcome (3.896375ms)
+✔ concurrent real semantic configuration epoch change refuses a mixed qualification (3.625833ms)
+✔ same revision raw snapshot substitution is detected by digest, not revision alone (3.579208ms)
+(node:96743) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ unresolved metadata reader retains exact production/review status and attempts without claiming IO/current authority (11.576625ms)
+✔ unresolved graph refuses foreign task/node/parent/binding/attempt shape rather than normalizing unknown to queued (3.679458ms)
+✔ even empty-generation envelope cannot be manufactured by a forged read-admission return (0.588084ms)
+✔ unknown image request must match stable native imageTask for this exact attempt, never only a digest shape (3.074833ms)
+✔ unknown review retains exact buildReviewRequest and binds any retained receipt input packet to its attempt and model (9.109084ms)
+(node:96744) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ default execution false uploads bytes and registers native current material with real now, no models/jobs (283.384291ms)
+ℹ /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/storage-only-unit3-gS7LnQ
+✔ wrong fields, bad image metadata/hash and unknown pending remain refused; requests not silently cleared (355.128875ms)
+✔ durable unknown pending blocks material and image storage without new writes (167.6235ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1521.484833

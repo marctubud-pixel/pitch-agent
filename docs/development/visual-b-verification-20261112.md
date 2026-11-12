@@ -1,3 +1,7 @@
+# PR #13最终回执 · 2026-11-12
+
+准确head5ed620c4的specifications/application及全部必需步骤success，已合并main437ab4fa。原14de超时与局部修复日志保留；不将失败运行写成成功。最后application job131076965246原回执及8源身份已补入[本轮证据](evidence/visual-storage-sketch-20261112/pr13-final-job.json)、[合并回执](evidence/visual-storage-sketch-20261112/pr13-merge.json)。这证明B后端接缝CI，不签实际B图片或完整App。以下保留原采用时点。
+
 # B成稿接线采用与验证 · 2026-11-12
 
 基线main ecf6b47f与受审f7400be0的apps/tools字节相同。完整8生产源由固定r2 patch采用，SHA逐件等于受审manifest；原根A/COPY、actor时间、typed views与可选FD证明保留。原候选、失败和报告仍按当时身份留存，没有运行旧业务或改写原DB。

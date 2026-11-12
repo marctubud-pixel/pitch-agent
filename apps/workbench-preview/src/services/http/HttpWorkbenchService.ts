@@ -61,6 +61,8 @@ export class HttpWorkbenchService implements WorkbenchService {
   private nativeCapability: Record<string, unknown> = {};
   private connecting: Promise<void> | null = null;
   private writing = false;
+  private snapshotReads = new Map<string, Promise<Snapshot>>();
+  private snapshotActor: string | null = null;
   private researchExecutionEnabled = false;
   private readonly journal: BriefWriteJournal | null;
   readonly briefRecovery?: BriefRecovery;
@@ -123,9 +125,9 @@ export class HttpWorkbenchService implements WorkbenchService {
     } finally {this.writing = false; this.emit();}
   }
   private completed(commandId: string) { this.journal?.clear(commandId); this.emit(); }
-  setLocale(locale: string) { this.locale = locale; }
+  setLocale(locale: string) { if (this.locale !== locale) this.snapshotReads.clear(); this.locale = locale; }
   subscribe(listener: ServiceListener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
-  private emit() { for (const listener of this.listeners) listener({type: 'data-changed', projectId: null}); }
+  private emit() { this.snapshotReads.clear(); for (const listener of this.listeners) listener({type: 'data-changed', projectId: null}); }
   private availability(connected: boolean) {
     if (this.connected === connected) return;
     this.connected = connected;
@@ -161,9 +163,23 @@ export class HttpWorkbenchService implements WorkbenchService {
   }
   async snapshot(id: string, revision?: number): Promise<Snapshot> {
     await this.connect();
-    const p = parseSnapshot((await this.request('GET', `/projects/${encodeURIComponent(id)}${revision === undefined ? '' : `?revision=${revision}`}`)).value);
-    if (p.id !== id || (revision !== undefined && p.revision !== revision)) throw new ServiceError('validation', '服务返回了其他项目或修订，未采用。');
-    return p;
+    let actor: string | null = null, share = !this.options.getHeaders;
+    try { actor = this.options.recovery?.actorKey() ?? null; }
+    catch { this.snapshotReads.clear(); share = false; }
+    if (this.snapshotActor !== actor) { this.snapshotReads.clear(); this.snapshotActor = actor; }
+    const key = JSON.stringify([this.options.baseUrl, id, revision ?? 'current', this.locale, actor]);
+    // Custom auth may change independently of the local actor; never share those reads.
+    let read = share ? this.snapshotReads.get(key) : undefined;
+    if (!read) {
+      read = this.request('GET', `/projects/${encodeURIComponent(id)}${revision === undefined ? '' : `?revision=${revision}`}`).then(({value}) => {
+        const p = parseSnapshot(value);
+        if (p.id !== id || (revision !== undefined && p.revision !== revision)) throw new ServiceError('validation', '服务返回了其他项目或修订，未采用。');
+        return p;
+      });
+      if (share) this.snapshotReads.set(key, read);
+    }
+    try { return structuredClone(await read); }
+    finally { if (this.snapshotReads.get(key) === read) this.snapshotReads.delete(key); }
   }
   async snapshots(): Promise<Snapshot[]> {
     await this.connect();
@@ -331,7 +347,7 @@ export class HttpWorkbenchService implements WorkbenchService {
     return this.visualService??=new HttpVisualAService({baseUrl:this.options.baseUrl,fetchImpl:this.options.fetchImpl,
       headers:async()=>({...await this.options.getHeaders?.()}),
       journal:new VisualAJournal(()=>`pitch:visual-a:v1:${encodeURIComponent(this.options.baseUrl)}:${encodeURIComponent(recovery?.actorKey()??'')}`,()=>{if(!recovery)throw new ServiceError('unavailable','视觉原请求持久保存尚未配置。');return recovery.storage();}),
-      authorize:route=>{if(!this.options.visualAuthorize)throw new ServiceError('forbidden','视觉操作权限尚未配置。');this.options.visualAuthorize(route);},
+      authorize:route=>{if(!this.options.visualAuthorize)throw new ServiceError('forbidden','视觉操作权限尚未配置。');this.options.visualAuthorize(route);this.snapshotReads.clear();},
       guard:()=>{if(this.writing||this.journal?.getPending())throw new ServiceError('conflict','请先核对原未决提交。');},changed:()=>this.emit(),error:response=>mapHttpError(response)});
   }
   readonly copyWorkflow:CopyWorkflowService={

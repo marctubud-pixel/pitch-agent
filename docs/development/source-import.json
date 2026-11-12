@@ -2002,8 +2002,8 @@
       "reason": "加入可选文案工作流及五种原请求恢复身份，不开放通用阶段命令。 本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "sha256": "ed37f18fe95805d18af9e3d4f200f8673d660af9e021506f99ccef2f2974b002",
-      "reason": "接受限双owner/copy/全文核验/17评审工作区，严核正文和原请求回执，同body恢复。 本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
+      "sha256": "5cbba54d2e66266e8fe46eca0ceb1eaa3386712673f4c99e29ef0f852e93376d",
+      "reason": "接受限双owner/copy/全文核验/17评审工作区，严核正文和原请求回执，同body恢复。 本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。 同版在途GET共享传输、每caller独立副本、写与身份变化失效；无持久缓存、POST合并或原件/权限豁免。"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
