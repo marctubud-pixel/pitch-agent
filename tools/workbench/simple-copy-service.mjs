@@ -6,7 +6,7 @@ import {SIMPLE_STRATEGY_VERSION} from './seven-stage-strategy.mjs';
 import {readArtifactContent} from './artifact-content.mjs';
 import {requireResearchWorkflow} from './seven-stage-workflow.mjs';
 import {COPY_HTTP_FIELDS,copyHttpJobs,copyHttpSnapshot,requireCopyHttpJob,COPY_ADVANCE_PROTOCOL,copyPending,requireCopyNoPending,requireCopyCurrent,requireCopyNativeAdmission} from './simple-copy-http.mjs';
-const hash=x=>createHash('sha256').update(x).digest('hex'),need=(v,c)=>{if(!v)throw new DomainError(c,c);},actor=()=>({actorType:'agent',actorId:'copy-http-coordinator',runId:randomUUID(),contextId:randomUUID()});
+const hash=x=>createHash('sha256').update(x).digest('hex'),need=(v,c)=>{if(!v)throw new DomainError(c,c);},actor=()=>({actorType:'agent',actorId:'copy-http-coordinator',runId:randomUUID(),contextId:randomUUID(),now:new Date().toISOString()});
 export function createSimpleCopyService({store,rootDir,executor,executionAllowed,bindings,providers,simple}){
  const read=id=>{const p=store.read(id);requireResearchWorkflow(p);return p;};
  const available=()=>Boolean(executionAllowed&&executor&&['strategy','copy','verification','creative_director',...['copy','brand','user','communication'].flatMap(r=>['creative_score_'+r,'creative_opposition_'+r])].every(k=>bindings[k]&&providers[bindings[k].providerId]?.model===bindings[k].model));

@@ -17,7 +17,7 @@ import {requireSimpleHttpJob} from './simple-strategy-http.mjs';
 import {readManagedLayoutBytes} from './managed-layout-bytes.mjs';
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const need=(v,c,m=c)=>{if(!v)throw new DomainError(c,m);};
-const actor=()=>({actorType:'agent',actorId:'simple-strategy-http',runId:randomUUID(),contextId:randomUUID()});
+const actor=()=>({actorType:'agent',actorId:'simple-strategy-http',runId:randomUUID(),contextId:randomUUID(),now:new Date().toISOString()});
 export function createSimpleStrategyService({store,rootDir,executor,executionAllowed,bindings={},providers={}}){
  const read=id=>{const p=store.read(id);requireResearchWorkflow(p);return p;};
  const capable=()=>{const configured=['strategy','verification'].every(role=>{const b=bindings[role],p=providers[b?.providerId];return b&&p?.model===b.model&&(p.adapter==='workbench-model-http-v1'||typeof p.execute==='function');});return {protocolVersion:SIMPLE_STRATEGY_VERSION,configured,executionAllowed:Boolean(executionAllowed),available:Boolean(configured&&executor&&executionAllowed),reason:!executionAllowed?'策略执行尚未启用。':!configured?'策略与独立全文核验尚未配置。':'只执行明确原任务；研究放行及当前版本门槛仍保留。'};};

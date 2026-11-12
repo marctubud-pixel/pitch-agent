@@ -1,3 +1,13 @@
+# PR #11已合并：当前应用视觉链继续接续 · 2026-11-12
+
+[PR #11](https://github.com/marctubud-pixel/pitch-agent/pull/11)最终head1c5c1091的specifications/application及实际安装、前端、完整后端、图片/视觉与构建全部success，无必需步骤skip；已合并main为c434676f。本地同步后新分支`codex/current-app-visual-chain-20261112`继续工作，apps/tools与已审1c5字节相同。最后确认时可用空间约43GiB。
+
+研究/简洁策略/双owner/唯一copy及17节点、初始129参考接线与错误/重放保护按已合并范围沿用；原129合成案仍是choice_blocked负例，不重跑或补通过。根两轴P2和最终组件UI均已按实证闭合，最终远程原回执保留在本地目标目录的VISUAL-BRIDGE-PR-FINAL-CI、FINAL-JOB及MERGE，不由本摘要替代。
+
+下一轮隔离候选：r5工程来源两P2已独立关闭，r6真实物理来源通用R1接收13项通过但TABLE工程正例尚缺；U2-r2的54 queued节点接缝26项独立通过，仍无有效review/artifact或App桥；通用Deck工程16页原生文字/图表与原PNG已独立复验，长研究分页继续候选。当前优先实际NewProject输入与预检合同对齐（summary/provenance/隐藏objectives不能为fixture改页面或注入隐藏state），只做新空Brief/真实Chrome确认，不重开研究/旧业务。后端草图同snapshot只读资格投影、完整App草图/v2、B、通用Deck准入/终审与包装/KV两整链仍未完成。
+
+真实/付费模型、生产、旧业务run及在线PPT编辑保存暂停边界保持，数据库/原件/失败/回执保留。以下是保留的历史时点，不将旧草稿/待修描述当作当前状态。
+
 # 视觉参考接线与纠错保护：PR #11草稿 · 2026-11-12
 
 GitHub main已合并PR #10（a5c6ee5b）；本轮[PR #11](https://github.com/marctubud-pixel/pitch-agent/pull/11)仍为草稿，尚未合并。根已采用A初始129节点参考映射、实际claim归属/durable原结果重放、COPY同类修复和Brief明确视觉视图。独立两轴发现的草图入口过早、零入账409永久锁journal均已窄修，最终18a修复/7aa环境补充的两轴独立补审已完成，原P2均关闭，未发现新增可证P1/P2；参见[本轮验证](../docs/development/visual-workflow-verification-20261112.md)。
