@@ -34,7 +34,7 @@ jobs:
       - name: Check repository and source identities
         run: npm run check:repository
       - name: Typecheck and test current application
-        run: npm run typecheck && npm run test:frontend
+        run: npm run typecheck && PATH="$(dirname "$PITCH_PDF_TEST_PYTHON"):$PATH" npm run test:frontend
       - name: Test portable domain and storage boundaries
         run: npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:simple-copy && npm run test:dependency
       - name: Test image readback and visual boundaries with configured Python

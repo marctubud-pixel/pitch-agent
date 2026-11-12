@@ -105,3 +105,5 @@ node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs to
 本轮配置PDF后的全量冷运行曾使两项真实PDF前端用例撞到Vitest默认5秒；单独16项通过。仅originalDocumentsHttp的真实页字节用例和researchAcquisitionHttp的实际PDF入r7用例设30秒外层时限，原断言、业务期限及解析器资源限制保持。不能把此前超时记录为产品通过，最终结果见[本轮验证](visual-workflow-verification-20261112.md)。
 
 PR #11首个应用CI的完整双owner/copy/17票前端用例在240秒外层超时，其他786项通过；本地相同用例已通过。仅copyWorkflowHttp的该首用例改600秒，第二个恢复用例仍240秒，原assertions/生产deadline及CI job30分钟保持；修后是否通过以准确head的实际CI回执为准。
+
+新增visualAKnownRejection前端测试实际解码原PNG，Application CI前端步骤显式把已配置PDF venv（含固定Pillow）加入PATH，和image/visual专项一致，不依赖runner系统偶然安装Pillow；生产Python默认选择不改。
