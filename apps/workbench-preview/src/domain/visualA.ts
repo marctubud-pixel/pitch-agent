@@ -6,7 +6,7 @@ export interface VisualWorkspace {
  advancePending:boolean;unrecordedAdvances:number;advanceResults:string|null;
  projectId:string;revision:number;copyArtifactId:string|null;current:boolean;available:boolean;
  target:VisualTarget|null;queuedJobIds:string[];unknownJobs:string[];runningJobs:string[];progress:{referenceReports:number;referencePlanned:number|null;sketchImages:number;sketchPlanned:number|null;reviewReports:number;reviewPlanned:number|null};images:VisualImage[];
- directions:Array<{id:string;title:string}>;referenceStatus:string;referenceChoiceAppSupported:boolean;referenceStateOriginal:string|null;selectionHash:string|null;
+ directions:Array<{id:string;title:string}>;referenceStatus:string;referenceChoiceAppSupported:boolean;sketchAppSupported:boolean;referenceStateOriginal:string|null;selectionHash:string|null;
  dossierId:string|null;generationId:string|null;generationHash:string|null;reports:Array<{title:string;body:string}>;
  choice:{catalogHash:string;pending:boolean;editionHash:string|null;directions:Array<{directionId:string;uses:Array<{id:string;imageId:string;kind:string;note:string;disabled:boolean}>}>}|null;
  materials:Array<{imageId:string;directionId:string;borrowingNote:string}>;

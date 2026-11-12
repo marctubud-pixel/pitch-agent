@@ -1,0 +1,7 @@
+
+> pitch-agent-workspace@0.1.0 typecheck
+> npm --prefix apps/workbench-preview run typecheck
+
+
+> proposal-workbench@0.1.0 typecheck
+> tsc --noEmit

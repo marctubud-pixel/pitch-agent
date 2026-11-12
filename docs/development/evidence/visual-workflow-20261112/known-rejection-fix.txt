@@ -1,0 +1,47 @@
+# 视觉 transport 已核零入账版本冲突窄修
+
+2026-11-12。按根授权直接修改当前根仅两份生产源：`HttpVisualAService.ts`、`visualAJournal.ts`，新增 `visualAKnownRejection.test.ts`。未写cap四文件、规范/index/Git/旧DB/原IO；未启动模型、上游或旧run。
+
+## 行为
+
+原来：storage-only实际上传expectedRevision99被409拒绝，原库revision0、imageAssets0、command未入账，但journal永远pending，正确版本请求也无法发出。
+
+现在仅对明确的 **HTTP409 + error.code=REVISION_CONFLICT** 尝试自动核回。先对同项目真实GET `visual-workflow`（cache:no-store）执行既有visualState/parseSnapshot验证项目、版本、协议、原target/原状态。检查原native snapshot的processedCommands、audit、原visualHttpIntents/visualHttpRequests及其request身份；完整原native的key/value若出现原commandId，一律保留待核。原step含jobIds时，还必须每个原job存在且queued、零attempt。当前性不符、任何native running/unknown、pending advance或legacy unrecorded同样不能结束。
+
+确认未入账后，journal以独立 `:rejected:<commandId>:<randomUUID>` 键**先保存并回读**完整原请求（原body字符串、rawBase64、项目/route/MIME），HTTP状态/原拒绝诊断、核回revision及完整native snapshot SHA。归档成功才删除原pending；quota、写入回读不符或删除失败均不宣称结束。原请求归档独立累积，不覆盖先前同command诊断。
+
+原错误仍以conflict抛给既有命令反馈，并增加中文“已核对原提交未入账…可按当前版本重新提交”。不发布成功回执、不调用changed更新业务状态，也不清native pending/unknown/legacy、绕过授权/guard或放宽journal.begin。新正确请求仍走原全部权限与版本门槛。
+
+**只修零入账版本冲突。** 网络、5xx、任何422、COMMAND_ID_REUSED、普通其他4xx、成功回执缺身份、GET失败/身份或版本不符、无法证明未写均保留原body，不允许新请求替换它。实际坏PNG在当前后端是500 INTERNAL_ERROR，非422；此项仍pending，并未泛称所有明确拒绝已修。
+
+## 真实红绿和便携检查
+
+`red.log`：新增原native小SQLite用例修前在 `pending()===false` 的预期处失败，实值true，证明原反例。未修改两轴原反例源或日志。
+
+`green-final.log`：在app目录执行 `npx vitest run src/services/http/visualAKnownRejection.test.ts src/services/http/visualA.test.ts --maxWorkers=1`，2文件/8测试全绿，0skip；`typecheck.log`为 `npx tsc --noEmit` 退出0。没有重跑根全量。
+
+新测试在OS临时目录创建新SQLite、本机真实HTTP，executionAllowed=false/providers={}/bindings={}；使用原native `referenceFixturePng`、canonical realpath。完成关闭服务并清理自有临时根，无硬编码旧DB依赖：
+
+- 真409先POST后GET，原command零入账，journal结束；独立诊断保存原expectedRevision99与REVISION_CONFLICT。正确command/revision0随后实际POST成功，并核原回执、原图字节：revision1、imageAssets1，stale命令仍未入账，corrected命令已入账。
+- 从同新库原GET构造cheap metadata反例：原intent、step、processed command、audit已入账；错误项目、revision不符、坏ledger、unknown、legacy、native pending。均保留pending，换body/新command仍在发HTTP前被journal挡住（每分支原POST仅1次）。这些是边界构造测试，不冒称真的运行了草图/评审节点。
+- cheap传输/存储反例：网络、500、400、422、COMMAND_ID_REUSED、成功缺身份、GET失败、诊断quota、remove失败。均保持pending；不确定或非白名单拒绝不追加GET。
+- 真坏PNG8字节、File.type=image/png、expectedRevision1，原服务真实返回500，adapter pending=true，journal仍有原rawBase64；原库仍revision1，broken命令未入账。没有为消除pending改后端500/409规则。
+- 既有7项包括丢回执同body重放、坏成功回执保留原图、权限拒绝0HTTP、历史/unknown/投影/只读阻断，均继续通过。
+
+中途 `green.log/debug.log` 曾因用于成功路径的微小PNG无合法解码/临时根路径未规范化而500，保留原失败。改用原native合法PNG builder并canonical realpath后成功；没有改生产decoder或HTTP guard以通过测试。最终坏PNG另有显式真实500断言。
+
+## 冻结身份
+
+`before-sha.json`及本目录同名两份原件保存修改前完整字节；`after-sha.json`、`frozen-source/`保存最终三文件。`candidate.patch`为只含上述三路径的统一差异。
+
+|源|before SHA256|after SHA256|
+|---|---|---|
+|HttpVisualAService.ts|231cb6e2e6bf2e00bd73b9e41f2b685e7def1f86a709177fa70a5daa756ec22a|8c593301d721c3e04ad297694b4f0497e33ff366656e818959718f53abd634d3|
+|visualAJournal.ts|c3519fa36282fbcc3fd8c5fc3e619c1d5fbed82b976233157a827c1a26330275|b23000be8d980216f41f34788ca9da2750695364981908702fe96214784a8b67|
+|visualAKnownRejection.test.ts|新增|e2adb3232d90e7fe1c23d21e2d4754b824db47325ae7923d5fa5a122cfd110b8|
+
+patch SHA256：`b95c62b17b89e161e19d64b8ae908e03288ade65d617d28acdfdca873475ecf9`。根统一提交及两轴delta审查，本工作未commit/push。
+
+## 未验/有限适用
+
+这是transport修复及真实新库HTTP回归，无页面结构变动，本轮没有浏览器UI签收。storage-only HTTP成功**不代表当前页面可上传**：现有页面仍有cap执行/copy门禁，已知能力映射差异保持，需根另作实际UI核对。完整App、旧129读链、真实生成图/v2、人类采用/批准、执行开启、模型、无障碍/版式均不在本轮验收范围。归档大原图可能达到浏览器quota，此时保留pending属于明确保守结果。

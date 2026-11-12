@@ -1,0 +1,527 @@
+﻿2026-11-12T04:43:34.0882138Z Current runner version: '2.338.2'
+2026-11-12T04:43:34.0918809Z ##[group]Runner Image Provisioner
+2026-11-12T04:43:34.0920312Z Hosted Compute Agent
+2026-11-12T04:43:34.0921367Z Version: 20261028.624
+2026-11-12T04:43:34.0922431Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T04:43:34.0923796Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T04:43:34.0924940Z Worker ID: {992ffa3e-ea85-4e92-b53a-07c39ae4f9cb}
+2026-11-12T04:43:34.0926177Z Region: eastus2
+2026-11-12T04:43:34.0927782Z Cloud: Azure
+2026-11-12T04:43:34.0928716Z ##[endgroup]
+2026-11-12T04:43:34.0931917Z ##[group]Operating System
+2026-11-12T04:43:34.0933164Z Ubuntu
+2026-11-12T04:43:34.0934076Z 24.04.5
+2026-11-12T04:43:34.0935094Z LTS
+2026-11-12T04:43:34.0935976Z ##[endgroup]
+2026-11-12T04:43:34.0937031Z ##[group]Runner Image
+2026-11-12T04:43:34.0938415Z Image: ubuntu-24.04
+2026-11-12T04:43:34.0939323Z Version: 20261101.360.1
+2026-11-12T04:43:34.0941560Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T04:43:34.0944428Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T04:43:34.0946097Z ##[endgroup]
+2026-11-12T04:43:34.0948379Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T04:43:34.0951692Z Contents: read
+2026-11-12T04:43:34.0952764Z Metadata: read
+2026-11-12T04:43:34.0953733Z ##[endgroup]
+2026-11-12T04:43:34.0956904Z Secret source: Actions
+2026-11-12T04:43:34.0958884Z Cache mode: write
+2026-11-12T04:43:34.0960073Z Prepare workflow directory
+2026-11-12T04:43:34.1784440Z Prepare all required actions
+2026-11-12T04:43:34.1861240Z Getting action download info
+2026-11-12T04:43:34.3777543Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-12T04:43:34.4959399Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-12T04:43:34.6901352Z Complete job name: application
+2026-11-12T04:43:34.7795259Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-12T04:43:34.7796393Z with:
+2026-11-12T04:43:34.7796868Z   persist-credentials: false
+2026-11-12T04:43:34.7797671Z   repository: marctubud-pixel/pitch-agent
+2026-11-12T04:43:34.7801423Z   token: ***
+2026-11-12T04:43:34.7801880Z   ssh-strict: true
+2026-11-12T04:43:34.7802340Z   ssh-user: git
+2026-11-12T04:43:34.7802771Z   clean: true
+2026-11-12T04:43:34.7803234Z   sparse-checkout-cone-mode: true
+2026-11-12T04:43:34.7803776Z   fetch-depth: 1
+2026-11-12T04:43:34.7804218Z   fetch-tags: false
+2026-11-12T04:43:34.7804675Z   show-progress: true
+2026-11-12T04:43:34.7805148Z   lfs: false
+2026-11-12T04:43:34.7805574Z   submodules: false
+2026-11-12T04:43:34.7806030Z   set-safe-directory: true
+2026-11-12T04:43:34.7806549Z   allow-unsafe-pr-checkout: false
+2026-11-12T04:43:34.7807538Z env:
+2026-11-12T04:43:34.7808434Z   PITCH_PDF_TEST_PYTHON: /home/runner/work/pitch-agent/pitch-agent/.scratch/pdf-test-runtime/bin/python
+2026-11-12T04:43:34.7809392Z ##[endgroup]
+2026-11-12T04:43:35.1561409Z Syncing repository: marctubud-pixel/pitch-agent
+2026-11-12T04:43:35.1564953Z ##[group]Getting Git version info
+2026-11-12T04:43:35.1566414Z Working directory is '/home/runner/work/pitch-agent/pitch-agent'
+2026-11-12T04:43:35.1569348Z [command]/usr/bin/git version
+2026-11-12T04:43:35.1698085Z git version 2.56.0
+2026-11-12T04:43:35.1726610Z ##[endgroup]
+2026-11-12T04:43:35.1757506Z Temporarily overriding HOME='/home/runner/work/_temp/c6bf3a24-bdc1-40df-85f9-13b37a23d00d' before making global git config changes
+2026-11-12T04:43:35.1761531Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T04:43:35.1768329Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/pitch-agent/pitch-agent
+2026-11-12T04:43:35.1837856Z Deleting the contents of '/home/runner/work/pitch-agent/pitch-agent'
+2026-11-12T04:43:35.1843558Z ##[group]Determining repository object format
+2026-11-12T04:43:35.1852359Z ##[endgroup]
+2026-11-12T04:43:35.1854882Z ##[group]Initializing the repository
+2026-11-12T04:43:35.1856806Z [command]/usr/bin/git init /home/runner/work/pitch-agent/pitch-agent
+2026-11-12T04:43:35.2011513Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T04:43:35.2013633Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T04:43:35.2015364Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T04:43:35.2016884Z hint: call:
+2026-11-12T04:43:35.2017830Z hint:
+2026-11-12T04:43:35.2018733Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T04:43:35.2019933Z hint:
+2026-11-12T04:43:35.2021059Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T04:43:35.2022743Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T04:43:35.2024210Z hint:
+2026-11-12T04:43:35.2025030Z hint: 	git branch -m <name>
+2026-11-12T04:43:35.2025961Z hint:
+2026-11-12T04:43:35.2027076Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T04:43:35.2029509Z Initialized empty Git repository in /home/runner/work/pitch-agent/pitch-agent/.git/
+2026-11-12T04:43:35.2040561Z [command]/usr/bin/git remote add origin https://github.com/marctubud-pixel/pitch-agent
+2026-11-12T04:43:35.2099422Z ##[endgroup]
+2026-11-12T04:43:35.2101165Z ##[group]Disabling automatic garbage collection
+2026-11-12T04:43:35.2103680Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T04:43:35.2151152Z ##[endgroup]
+2026-11-12T04:43:35.2153289Z ##[group]Setting up auth
+2026-11-12T04:43:35.2154492Z Removing SSH command configuration
+2026-11-12T04:43:35.2159929Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T04:43:35.2215837Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T04:43:35.2742471Z Removing HTTP extra header
+2026-11-12T04:43:35.2748773Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T04:43:35.2799380Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T04:43:35.3058554Z Removing includeIf entries pointing to credentials config files
+2026-11-12T04:43:35.3063216Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T04:43:35.3114182Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T04:43:35.3394438Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T04:43:35.3452515Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git.path /home/runner/work/_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:35.3502297Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:35.3597544Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:35.3650004Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:35.3698502Z ##[endgroup]
+2026-11-12T04:43:35.3700341Z ##[group]Fetching the repository
+2026-11-12T04:43:35.3708701Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +37669a6baba3ace2dc91d426ddcdf239d84ab099:refs/remotes/pull/11/merge
+2026-11-12T04:43:37.9858280Z From https://github.com/marctubud-pixel/pitch-agent
+2026-11-12T04:43:37.9860488Z  * [new ref]         37669a6baba3ace2dc91d426ddcdf239d84ab099 -> pull/11/merge
+2026-11-12T04:43:37.9864115Z ##[endgroup]
+2026-11-12T04:43:37.9864932Z ##[group]Determining the checkout info
+2026-11-12T04:43:37.9865615Z ##[endgroup]
+2026-11-12T04:43:37.9870908Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T04:43:37.9945137Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T04:43:37.9995176Z ##[group]Checking out the ref
+2026-11-12T04:43:38.0000399Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/11/merge
+2026-11-12T04:43:38.4793055Z Note: switching to 'refs/remotes/pull/11/merge'.
+2026-11-12T04:43:38.4793537Z
+2026-11-12T04:43:38.4793851Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T04:43:38.4794628Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T04:43:38.4795322Z state without impacting any branches by switching back to a branch.
+2026-11-12T04:43:38.4795744Z
+2026-11-12T04:43:38.4796136Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T04:43:38.4796763Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T04:43:38.4797556Z
+2026-11-12T04:43:38.4797795Z   git switch -c <new-branch-name>
+2026-11-12T04:43:38.4798061Z
+2026-11-12T04:43:38.4798237Z Or undo this operation with:
+2026-11-12T04:43:38.4798473Z
+2026-11-12T04:43:38.4798618Z   git switch -
+2026-11-12T04:43:38.4798827Z
+2026-11-12T04:43:38.4799137Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T04:43:38.4799609Z
+2026-11-12T04:43:38.4800090Z HEAD is now at 37669a6 Merge 507a3fe229a7730fb2cb303964777a72bc7ea595 into a5c6ee5bbde6345c267c8ce227a2adc334c30c25
+2026-11-12T04:43:38.4819415Z ##[endgroup]
+2026-11-12T04:43:38.4884212Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T04:43:38.4932840Z 37669a6baba3ace2dc91d426ddcdf239d84ab099
+2026-11-12T04:43:38.4943613Z ##[group]Removing auth
+2026-11-12T04:43:38.4944199Z Removing SSH command configuration
+2026-11-12T04:43:38.4948968Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T04:43:38.4996807Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T04:43:38.5264438Z Removing HTTP extra header
+2026-11-12T04:43:38.5269658Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T04:43:38.5318586Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T04:43:38.5593810Z Removing includeIf entries pointing to credentials config files
+2026-11-12T04:43:38.5597858Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T04:43:38.5641752Z includeif.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git.path
+2026-11-12T04:43:38.5642743Z includeif.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git/worktrees/*.path
+2026-11-12T04:43:38.5643288Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T04:43:38.5643724Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T04:43:38.5651736Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git.path
+2026-11-12T04:43:38.5692692Z /home/runner/work/_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:38.5708027Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-fa9ef759\-a4ec\-408c\-b0ad\-e7537f334f6a\.config
+2026-11-12T04:43:38.5771830Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git/worktrees/*.path
+2026-11-12T04:43:38.5813291Z /home/runner/work/_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:38.5825089Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/pitch-agent/pitch-agent/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-fa9ef759\-a4ec\-408c\-b0ad\-e7537f334f6a\.config
+2026-11-12T04:43:38.5877868Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T04:43:38.5918798Z /github/runner_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:38.6038944Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-fa9ef759\-a4ec\-408c\-b0ad\-e7537f334f6a\.config
+2026-11-12T04:43:38.6042219Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T04:43:38.6042972Z /github/runner_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config
+2026-11-12T04:43:38.6044358Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-fa9ef759\-a4ec\-408c\-b0ad\-e7537f334f6a\.config
+2026-11-12T04:43:38.6090108Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T04:43:38.6353144Z Removing credentials config '/home/runner/work/_temp/git-credentials-fa9ef759-a4ec-408c-b0ad-e7537f334f6a.config'
+2026-11-12T04:43:38.6364098Z ##[endgroup]
+2026-11-12T04:43:38.6653960Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-12T04:43:38.6654459Z with:
+2026-11-12T04:43:38.6654734Z   node-version-file: .node-version
+2026-11-12T04:43:38.6655090Z   package-manager-cache: false
+2026-11-12T04:43:38.6655399Z   check-latest: false
+2026-11-12T04:43:38.6658165Z   token: ***
+2026-11-12T04:43:38.6658429Z env:
+2026-11-12T04:43:38.6658899Z   PITCH_PDF_TEST_PYTHON: /home/runner/work/pitch-agent/pitch-agent/.scratch/pdf-test-runtime/bin/python
+2026-11-12T04:43:38.6659440Z ##[endgroup]
+2026-11-12T04:43:38.8034390Z Node version file is not JSON file
+2026-11-12T04:43:38.8040987Z Node version file is not TOML file
+2026-11-12T04:43:38.8041760Z Resolved .node-version as 24.13.0
+2026-11-12T04:43:38.8064946Z Attempting to download 24.13.0...
+2026-11-12T04:43:39.4086597Z Acquiring 24.13.0 - x64 from https://github.com/actions/node-versions/releases/download/24.13.0-20981653924/node-24.13.0-linux-x64.tar.gz
+2026-11-12T04:43:39.8494250Z Extracting ...
+2026-11-12T04:43:39.8650334Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/956f4f52-096e-4cfd-a9e8-8be5ab6ab17d -f /home/runner/work/_temp/5fd20c89-cc9d-49ef-93f7-eb46a1c96cb8
+2026-11-12T04:43:41.0987776Z Adding to the cache ...
+2026-11-12T04:43:43.0035361Z ##[group]Environment details
+2026-11-12T04:43:43.2665313Z node: v24.13.0
+2026-11-12T04:43:43.2665746Z npm: 11.6.2
+2026-11-12T04:43:43.2666064Z yarn: 1.22.22
+2026-11-12T04:43:43.2666751Z ##[endgroup]
+2026-11-12T04:43:43.2878350Z ##[group]Run npm run setup:frontend
+2026-11-12T04:43:43.2878747Z npm run setup:frontend
+2026-11-12T04:43:43.2904807Z shell: /usr/bin/bash -e {0}
+2026-11-12T04:43:43.2905070Z env:
+2026-11-12T04:43:43.2905502Z   PITCH_PDF_TEST_PYTHON: /home/runner/work/pitch-agent/pitch-agent/.scratch/pdf-test-runtime/bin/python
+2026-11-12T04:43:43.2906001Z ##[endgroup]
+2026-11-12T04:43:43.3870172Z
+2026-11-12T04:43:43.3876794Z > pitch-agent-workspace@0.1.0 setup:frontend
+2026-11-12T04:43:43.3877845Z > npm --prefix apps/workbench-preview ci --ignore-scripts
+2026-11-12T04:43:43.3878166Z
+2026-11-12T04:43:48.7977661Z
+2026-11-12T04:43:48.7978912Z added 79 packages, and audited 80 packages in 5s
+2026-11-12T04:43:48.7980045Z
+2026-11-12T04:43:48.7980634Z 20 packages are looking for funding
+2026-11-12T04:43:48.7981239Z   run `npm fund` for details
+2026-11-12T04:43:48.7991293Z
+2026-11-12T04:43:48.7991654Z found 0 vulnerabilities
+2026-11-12T04:43:48.8675943Z ##[group]Run npm run setup:workbench
+2026-11-12T04:43:48.8676304Z npm run setup:workbench
+2026-11-12T04:43:48.8699013Z shell: /usr/bin/bash -e {0}
+2026-11-12T04:43:48.8699271Z env:
+2026-11-12T04:43:48.8699697Z   PITCH_PDF_TEST_PYTHON: /home/runner/work/pitch-agent/pitch-agent/.scratch/pdf-test-runtime/bin/python
+2026-11-12T04:43:48.8700205Z ##[endgroup]
+2026-11-12T04:43:48.9741778Z
+2026-11-12T04:43:48.9742703Z > pitch-agent-workspace@0.1.0 setup:workbench
+2026-11-12T04:43:48.9743511Z > npx --yes pnpm@11.25.0 --dir tools/workbench install --frozen-lockfile --ignore-scripts
+2026-11-12T04:43:48.9743944Z
+2026-11-12T04:43:50.9089570Z ? Verifying lockfile against supply-chain policies (2 entries)...
+2026-11-12T04:43:50.9132730Z Lockfile is up to date, resolution step is skipped
+2026-11-12T04:43:50.9459344Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-11-12T04:43:50.9508840Z Packages: +2
+2026-11-12T04:43:50.9518646Z ++
+2026-11-12T04:43:51.0449406Z ✓ Lockfile passes supply-chain policies (2 entries in 134ms)
+2026-11-12T04:43:51.1243247Z Packages are hard linked from the content-addressable store to the virtual store.
+2026-11-12T04:43:51.1244800Z   Content-addressable store is at: /home/runner/.local/share/pnpm/store/v11
+2026-11-12T04:43:51.1246006Z   Virtual store is at:             node_modules/.pnpm
+2026-11-12T04:43:51.1268804Z Progress: resolved 2, reused 0, downloaded 2, added 2, done
+2026-11-12T04:43:51.1413521Z
+2026-11-12T04:43:51.1414165Z dependencies:
+2026-11-12T04:43:51.1414457Z + parse5 8.0.1
+2026-11-12T04:43:51.1414601Z
+2026-11-12T04:43:51.1478567Z Done in 925ms using pnpm v11.25.0
+2026-11-12T04:43:51.1943655Z ##[group]Run python3 -m venv .scratch/pdf-test-runtime
+2026-11-12T04:43:51.1944124Z python3 -m venv .scratch/pdf-test-runtime
+2026-11-12T04:43:51.1944765Z "$PITCH_PDF_TEST_PYTHON" -m pip install --only-binary=:all: --no-input -r tools/workbench/requirements-pdf.txt
+2026-11-12T04:43:51.1945348Z "$PITCH_PDF_TEST_PYTHON" -m pip check
+2026-11-12T04:43:51.1966000Z shell: /usr/bin/bash -e {0}
+2026-11-12T04:43:51.1966259Z env:
+2026-11-12T04:43:51.1966687Z   PITCH_PDF_TEST_PYTHON: /home/runner/work/pitch-agent/pitch-agent/.scratch/pdf-test-runtime/bin/python
+2026-11-12T04:43:51.1967476Z ##[endgroup]
+2026-11-12T04:43:55.6741996Z Collecting pypdf==6.10.0 (from -r tools/workbench/requirements-pdf.txt (line 2))
+2026-11-12T04:43:55.7952310Z   Downloading pypdf-6.10.0-py3-none-any.whl.metadata (7.1 kB)
+2026-11-12T04:43:55.8197731Z Collecting pdfplumber==0.11.9 (from -r tools/workbench/requirements-pdf.txt (line 3))
+2026-11-12T04:43:55.8539698Z   Downloading pdfplumber-0.11.9-py3-none-any.whl.metadata (43 kB)
+2026-11-12T04:43:55.8882456Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.6/43.6 kB 1.1 MB/s eta 0:00:00
+2026-11-12T04:43:55.9119686Z Collecting pdfminer.six==20251230 (from -r tools/workbench/requirements-pdf.txt (line 4))
+2026-11-12T04:43:55.9466539Z   Downloading pdfminer_six-20251230-py3-none-any.whl.metadata (4.3 kB)
+2026-11-12T04:43:56.1162937Z Collecting charset-normalizer==3.5.2 (from -r tools/workbench/requirements-pdf.txt (line 5))
+2026-11-12T04:43:56.1496899Z   Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+2026-11-12T04:43:56.1612950Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.4/46.4 kB 4.2 MB/s eta 0:00:00
+2026-11-12T04:43:56.4241222Z Collecting cryptography==50.0.2 (from -r tools/workbench/requirements-pdf.txt (line 6))
+2026-11-12T04:43:56.4570240Z   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (4.4 kB)
+2026-11-12T04:43:56.5882816Z Collecting cffi==2.1.1 (from -r tools/workbench/requirements-pdf.txt (line 7))
+2026-11-12T04:43:56.6219186Z   Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+2026-11-12T04:43:56.6526434Z Collecting pycparser==3.12 (from -r tools/workbench/requirements-pdf.txt (line 8))
+2026-11-12T04:43:56.6856641Z   Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+2026-11-12T04:43:56.9321956Z Collecting pillow==13.0.0 (from -r tools/workbench/requirements-pdf.txt (line 9))
+2026-11-12T04:43:56.9652910Z   Downloading pillow-13.0.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+2026-11-12T04:43:57.0885162Z Collecting pypdfium2==5.14.0 (from -r tools/workbench/requirements-pdf.txt (line 10))
+2026-11-12T04:43:57.1226930Z   Downloading pypdfium2-5.14.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (62 kB)
+2026-11-12T04:43:57.1364420Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.4/62.4 kB 4.9 MB/s eta 0:00:00
+2026-11-12T04:43:57.2329378Z Downloading pypdf-6.10.0-py3-none-any.whl (334 kB)
+2026-11-12T04:43:57.2825996Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 334.5/334.5 kB 6.9 MB/s eta 0:00:00
+2026-11-12T04:43:57.3155031Z Downloading pdfplumber-0.11.9-py3-none-any.whl (60 kB)
+2026-11-12T04:43:57.3201222Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.0/60.0 kB 19.5 MB/s eta 0:00:00
+2026-11-12T04:43:57.3544674Z Downloading pdfminer_six-20251230-py3-none-any.whl (6.6 MB)
+2026-11-12T04:43:57.4768416Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 54.8 MB/s eta 0:00:00
+2026-11-12T04:43:57.5109676Z Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+2026-11-12T04:43:57.5167566Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 257.6/257.6 kB 66.0 MB/s eta 0:00:00
+2026-11-12T04:43:57.5499805Z Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+2026-11-12T04:43:57.5794337Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 173.5 MB/s eta 0:00:00
+2026-11-12T04:43:57.6126256Z Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+2026-11-12T04:43:57.6178759Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 221.8/221.8 kB 65.9 MB/s eta 0:00:00
+2026-11-12T04:43:57.6511021Z Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+2026-11-12T04:43:57.6555971Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.6/62.6 kB 20.5 MB/s eta 0:00:00
+2026-11-12T04:43:57.6888165Z Downloading pillow-13.0.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)
+2026-11-12T04:43:57.7308642Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.1/7.1 MB 179.8 MB/s eta 0:00:00
+2026-11-12T04:43:57.7648311Z Downloading pypdfium2-5.14.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.8 MB)
+2026-11-12T04:43:57.7904524Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.8/3.8 MB 161.3 MB/s eta 0:00:00
+2026-11-12T04:43:57.8725639Z Installing collected packages: pypdfium2, pypdf, pycparser, pillow, charset-normalizer, cffi, cryptography, pdfminer.six, pdfplumber
+2026-11-12T04:43:59.0868197Z Successfully installed cffi-2.1.1 charset-normalizer-3.5.2 cryptography-50.0.2 pdfminer.six-20251230 pdfplumber-0.11.9 pillow-13.0.0 pycparser-3.12 pypdf-6.10.0 pypdfium2-5.14.0
+2026-11-12T04:43:59.6426194Z No broken requirements found.
+2026-11-12T04:43:59.6898383Z ##[group]Run npm run check:repository
+2026-11-12T04:43:59.6898731Z npm run check:repository
+2026-11-12T04:43:59.6919047Z shell: /usr/bin/bash -e {0}
+2026-11-12T04:43:59.6919308Z env:
+2026-11-12T04:43:59.6919750Z   PITCH_PDF_TEST_PYTHON: /home/runner/work/pitch-agent/pitch-agent/.scratch/pdf-test-runtime/bin/python
+2026-11-12T04:43:59.6920251Z ##[endgroup]
+2026-11-12T04:43:59.7897311Z
+2026-11-12T04:43:59.7898255Z > pitch-agent-workspace@0.1.0 check:repository
+2026-11-12T04:43:59.7899343Z > python3 scripts/check-repository.py && python3 scripts/check-repository.test.py
+2026-11-12T04:43:59.7899960Z
+2026-11-12T04:44:00.2402684Z {"result": "PASS", "repositoryFiles": 1854, "importedFiles": 393, "gitSelectionChecked": true, "preservedProofs": 147, "scope": "明示源码、文档和原件身份；不代表正式业务或原生运行时通过"}
+2026-11-12T04:44:00.3721945Z test_exact_git_selection_passes (__main__.RepositorySelectionChecks.test_exact_git_selection_passes) ... ok
+2026-11-12T04:44:00.4210016Z test_export_without_git_checks_manifest_only (__main__.RepositorySelectionChecks.test_export_without_git_checks_manifest_only) ... ok
+2026-11-12T04:44:00.5571182Z test_selected_but_untracked_file_is_rejected (__main__.RepositorySelectionChecks.test_selected_but_untracked_file_is_rejected) ... ok
+2026-11-12T04:44:00.6895385Z test_unlisted_staged_file_is_rejected (__main__.RepositorySelectionChecks.test_unlisted_staged_file_is_rejected) ... ok
+2026-11-12T04:44:00.6896229Z
+2026-11-12T04:44:00.6896625Z ----------------------------------------------------------------------
+2026-11-12T04:44:00.6897415Z Ran 4 tests in 0.369s
+2026-11-12T04:44:00.6897645Z
+2026-11-12T04:44:00.6897766Z OK
+2026-11-12T04:44:00.7093465Z ##[group]Run npm run typecheck && npm run test:frontend
+2026-11-12T04:44:00.7094239Z npm run typecheck && npm run test:frontend
+2026-11-12T04:44:00.7123483Z shell: /usr/bin/bash -e {0}
+2026-11-12T04:44:00.7123912Z env:
+2026-11-12T04:44:00.7124649Z   PITCH_PDF_TEST_PYTHON: /home/runner/work/pitch-agent/pitch-agent/.scratch/pdf-test-runtime/bin/python
+2026-11-12T04:44:00.7125580Z ##[endgroup]
+2026-11-12T04:44:00.8127382Z
+2026-11-12T04:44:00.8128189Z > pitch-agent-workspace@0.1.0 typecheck
+2026-11-12T04:44:00.8128858Z > npm --prefix apps/workbench-preview run typecheck
+2026-11-12T04:44:00.8129166Z
+2026-11-12T04:44:00.9122861Z
+2026-11-12T04:44:00.9123494Z > proposal-workbench@0.1.0 typecheck
+2026-11-12T04:44:00.9124052Z > tsc --noEmit
+2026-11-12T04:44:00.9124274Z
+2026-11-12T04:44:03.0777137Z
+2026-11-12T04:44:03.0778098Z > pitch-agent-workspace@0.1.0 test:frontend
+2026-11-12T04:44:03.0778883Z > npm --prefix apps/workbench-preview test
+2026-11-12T04:44:03.0779202Z
+2026-11-12T04:44:03.1812337Z
+2026-11-12T04:44:03.1813007Z > proposal-workbench@0.1.0 test
+2026-11-12T04:44:03.1813608Z > vitest run
+2026-11-12T04:44:03.1813837Z
+2026-11-12T04:44:03.5219877Z
+2026-11-12T04:44:03.5224704Z  RUN  v5.0.5 /home/runner/work/pitch-agent/pitch-agent/apps/workbench-preview
+2026-11-12T04:44:03.5225918Z
+2026-11-12T04:44:04.7869990Z  ✓ src/proposal/research-method/project.test.ts (34 tests) 425ms
+2026-11-12T04:44:05.0578061Z (node:2715) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:05.0580168Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:05.5556734Z  ✓ src/collaboration/protectServices.test.ts (12 tests) 492ms
+2026-11-12T04:44:05.6928644Z  ✓ src/services/http/briefIntegration.test.ts (16 tests) 633ms
+2026-11-12T04:44:06.6958709Z  ✓ src/services/mock/MockWorkbenchService.test.ts (27 tests) 837ms
+2026-11-12T04:44:06.7075229Z  ✓ src/proposal/qingyu-themes/content.test.ts (34 tests) 500ms
+2026-11-12T04:44:06.7078202Z    ✓ sealed copy boundary and readonly rendering, synthetic fixtures only (34)
+2026-11-12T04:44:06.7080297Z      ✓ retains the original 3 and revise plus a separate same-role clarification 4 without applying approval 320ms
+2026-11-12T04:44:07.1988725Z (node:2770) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:07.1989876Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:07.2080752Z (node:2764) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:07.2085443Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:09.0471363Z  ✓ src/proposal/qingyu-visual/visual-preview.test.ts (17 tests) 1641ms
+2026-11-12T04:44:09.0515483Z    ✓ Qingyu visual layout preview (17)
+2026-11-12T04:44:09.0535369Z      ✓ enters only the exact empty Qingyu case and keeps formal visual rendering first 448ms
+2026-11-12T04:44:09.5419211Z (node:2786) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:09.5439127Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:09.6804234Z  ✓ src/services/http/researchReaderHttp.test.ts (4 tests) 2687ms
+2026-11-12T04:44:09.6829357Z    ✓ registers exact preregistered questions with native SQLite and replays the same body after response loss 332ms
+2026-11-12T04:44:09.6832240Z    ✓ reconciles the original historical reader request without repeating the unknown model invocation 319ms
+2026-11-12T04:44:09.6834465Z    ✓ uses native revision, verified visible prose, exact disposition recovery and independent recheck 1970ms
+2026-11-12T04:44:12.3019503Z  ✓ src/proposal/qingyu-report/boards.test.ts (20 tests) 1985ms
+2026-11-12T04:44:12.3058765Z    ✓ self-contained SVG export boundary (3)
+2026-11-12T04:44:12.3072544Z      ✓ embeds the actual local assets with matching SHA and leaves no external drawing resources 1502ms
+2026-11-12T04:44:12.9703451Z  ✓ src/services/http/researchAcquisitionHttp.test.ts (9 tests) 5979ms
+2026-11-12T04:44:12.9706025Z    ✓ executes the native fixed sets through planner, four branches, seal and exactly one r7 producer 2048ms
+2026-11-12T04:44:12.9709059Z    ✓ only selects current physically verified parsed PDF materials and binds them into actual r7 producer 2908ms
+2026-11-12T04:44:14.0032009Z  ✓ src/proposal/qingyu-strategy/preview.test.ts (39 tests) 645ms
+2026-11-12T04:44:14.1559951Z  ✓ src/services/proposal/MockProposalService.test.ts (31 tests) 1549ms
+2026-11-12T04:44:14.7821208Z  ✓ src/services/cases/installQingyu.test.ts (19 tests) 346ms
+2026-11-12T04:44:15.3067708Z (node:2953) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:15.3098716Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:16.6180114Z  ✓ src/services/http/originalDocumentsHttp.test.ts (7 tests) 7260ms
+2026-11-12T04:44:16.6185444Z    ✓ actual local PDF keeps upload available, exact readable page bytes and strict bridge identity 1514ms
+2026-11-12T04:44:16.6189104Z    ✓ lost extraction response keeps same claim; wrong receipt stays unknown; historical recovery clears without adopting 1836ms
+2026-11-12T04:44:16.6191790Z    ✓ original upload receipt remains recoverable after another window has parsed the retained PDF 1828ms
+2026-11-12T04:44:16.6193914Z    ✓ explicit retry of a genuinely failed local job preserves its prior attempt 1021ms
+2026-11-12T04:44:16.6196154Z    ✓ durable running claim stays unknown through same-body recovery and guest cannot recover it 737ms
+2026-11-12T04:44:16.8198316Z  ✓ src/proposal/qingyu-themes/bundle.test.ts (20 tests) 2322ms
+2026-11-12T04:44:16.8202269Z    ✓ actual sealed copy bundle and original-file associations (20)
+2026-11-12T04:44:16.8204631Z      ✓ renders the actual three directions, explicit director recommendation, four roles and closed R1/R2 history 668ms
+2026-11-12T04:44:16.8207063Z      ✓ renders original not_applicable and reviewed scored from their distinct Rating statuses 549ms
+2026-11-12T04:44:16.8209526Z      ✓ renders original scored and reviewed not_applicable from their distinct Rating statuses 459ms
+2026-11-12T04:44:17.2690681Z (node:3005) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:17.2693212Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:17.3163152Z  ✓ src/proposal/qingyu-report/report-r2.test.ts (22 tests) 161ms
+2026-11-12T04:44:18.3043637Z  ✓ src/services/http/researchRevisionHistory.test.ts (2 tests) 1196ms
+2026-11-12T04:44:18.3045287Z    ✓ recovers a superseded same-card revision as known history and retains an unbound receipt as unknown 897ms
+2026-11-12T04:44:19.4240211Z  ✓ src/services/proposal/sevenStages.test.ts (15 tests) 654ms
+2026-11-12T04:44:21.5214315Z  ✓ src/proposal/qingyu-report/revisions-studio.test.ts (14 tests) 1250ms
+2026-11-12T04:44:21.5216307Z    ✓ studio default and business boundaries (14)
+2026-11-12T04:44:21.5218631Z      ✓ reads the same compiled research pages in five chapters with complete closed evidence 991ms
+2026-11-12T04:44:21.7949620Z  ✓ src/proposal/qingyu-themes/themes.test.ts (21 tests) 3746ms
+2026-11-12T04:44:21.7988630Z    ✓ Qingyu readonly reviewed copy (21)
+2026-11-12T04:44:21.8032024Z      ✓ shows the three authored directions with a truthful current context and closed details 681ms
+2026-11-12T04:44:21.8034412Z      ✓ shows the three authored directions with a truthful historical context and closed details 499ms
+2026-11-12T04:44:21.8036395Z      ✓ hooks only the exact case with no formal copy and preserves other themes 605ms
+2026-11-12T04:44:21.8038485Z      ✓ shows loading, failure, stale refresh and retry for research 602ms
+2026-11-12T04:44:21.8040105Z      ✓ shows loading, failure, stale refresh and retry for brief 791ms
+2026-11-12T04:44:22.0409460Z  ✓ src/services/mock/demoChinese.test.ts (10 tests) 315ms
+2026-11-12T04:44:22.8633640Z  ✓ src/proposal/qingyu-strategy/strategy.test.ts (7 tests) 428ms
+2026-11-12T04:44:23.2399045Z (node:3068) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:23.2404416Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:23.3937846Z  ✓ src/proposal/qingyu-report/pptx-r3.test.ts (13 tests) 988ms
+2026-11-12T04:44:23.3939503Z    ✓ native R3 research PPTX (13)
+2026-11-12T04:44:23.3941378Z      ✓ exports the actual frozen 21 modules with all original images and native data charts 929ms
+2026-11-12T04:44:23.5095396Z  ✓ src/services/http/intakeHttp.test.ts (4 tests) 428ms
+2026-11-12T04:44:23.5099985Z    ✓ saves exact PDFs and selected metadata, survives native reopen, and returns verified bytes 309ms
+2026-11-12T04:44:23.9788214Z  ✓ src/services/mock/taskCardContent.test.ts (7 tests) 321ms
+2026-11-12T04:44:24.1541872Z  ✓ src/services/proposal/BrandResources.service.test.ts (6 tests) 389ms
+2026-11-12T04:44:24.3109404Z  ✓ src/services/http/visualA.test.ts (7 tests) 107ms
+2026-11-12T04:44:24.6419572Z  ✓ src/services/http/researchProjection.test.ts (8 tests) 63ms
+2026-11-12T04:44:24.9039390Z  ✓ src/proposal/qingyu-report/report-r3.test.ts (34 tests) 381ms
+2026-11-12T04:44:25.0595100Z (node:3126) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:25.0620817Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:28.3979589Z  ✓ src/proposal/qingyu-report/pptx-r4.test.ts (5 tests) 3135ms
+2026-11-12T04:44:28.3983606Z    ✓ R4 native research delivery (5)
+2026-11-12T04:44:28.3985886Z      ✓ exports all six boards, canonical charts and five unchanged media with complete notes 1252ms
+2026-11-12T04:44:28.3997724Z      ✓ locates multiple editable charts on one slide by their own relationship and embedded workbook 907ms
+2026-11-12T04:44:28.3999759Z      ✓ keeps historical task context on the first page 964ms
+2026-11-12T04:44:32.3491706Z stderr | src/proposal/qingyu-layout/layout.test.ts > Qingyu sealed layout > preserves all original pages, exact current copy, image ratios, editable shapes and source closure in the same PPTX
+2026-11-12T04:44:32.3497633Z "" is not a valid scheme color or hex RGB! "000000" used instead. Only provide 6-digit RGB or 'pptx.SchemeColor' values!
+2026-11-12T04:44:32.3499984Z "" is not a valid scheme color or hex RGB! "000000" used instead. Only provide 6-digit RGB or 'pptx.SchemeColor' values!
+2026-11-12T04:44:32.3502035Z "" is not a valid scheme color or hex RGB! "000000" used instead. Only provide 6-digit RGB or 'pptx.SchemeColor' values!
+2026-11-12T04:44:32.3503116Z
+2026-11-12T04:44:35.4097073Z  ✓ src/proposal/qingyu-layout/layout.test.ts (8 tests) 6283ms
+2026-11-12T04:44:35.4104046Z    ✓ Qingyu sealed layout (8)
+2026-11-12T04:44:35.4104939Z      ✓ verifies all six actual PNG identities and rejects missing, corrupted and cancelled assets 944ms
+2026-11-12T04:44:35.4106194Z      ✓ preserves all original pages, exact current copy, image ratios, editable shapes and source closure in the same PPTX 4977ms
+2026-11-12T04:44:36.8439849Z  ✓ src/proposal/qingyu-content-review/view.test.ts (7 tests) 374ms
+2026-11-12T04:44:37.0992293Z  ✓ src/proposal/research-case/report.test.ts (22 tests) 32ms
+2026-11-12T04:44:40.2604017Z  ✓ src/proposal/deck-studio/deck.test.ts (7 tests | 1 skipped) 2588ms
+2026-11-12T04:44:40.2606222Z    ✓ shared measured Deck Studio plans (7)
+2026-11-12T04:44:40.2607764Z      ✓ exports the research source identities, native chart ranges, repeated scatter and exact images 2536ms
+2026-11-12T04:44:40.8735817Z  ✓ src/proposal/research-case/binding.test.ts (30 tests) 421ms
+2026-11-12T04:44:41.9223070Z  ✓ src/proposal/research-case/CaseSlot.test.ts (6 tests) 299ms
+2026-11-12T04:44:42.5879527Z  ✓ src/proposal/qingyu-report/report.test.ts (24 tests) 176ms
+2026-11-12T04:44:42.7678028Z  ✓ src/collaboration/LocalTeamStore.test.ts (7 tests) 26ms
+2026-11-12T04:44:43.9484999Z  ✓ src/proposal/qingyu-report/revisions-r2.test.ts (17 tests) 580ms
+2026-11-12T04:44:44.6980400Z  ✓ src/proposal/qingyu-final-review/record.test.ts (4 tests) 307ms
+2026-11-12T04:44:44.9250767Z  ✓ src/proposal/qingyu-strategy/summary.test.ts (5 tests) 25ms
+2026-11-12T04:44:45.1004051Z  ✓ src/services/http/researchReaderProjection.test.ts (5 tests) 15ms
+2026-11-12T04:44:45.3412543Z  ✓ src/proposal/qingyu-visual/workflow-intake.test.ts (25 tests) 36ms
+2026-11-12T04:44:45.6684924Z  ✓ src/proposal/research-method/figures.test.ts (7 tests) 71ms
+2026-11-12T04:44:46.6861272Z  ✓ src/proposal/qingyu-report/revisions-r3.test.ts (16 tests) 390ms
+2026-11-12T04:44:47.1089477Z (node:3290) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+2026-11-12T04:44:47.1092195Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-12T04:44:47.2005277Z  ✓ src/services/http/researchHttp.test.ts (2 tests) 256ms
+2026-11-12T04:44:47.7506346Z  ✓ src/proposal/ReaderDispositionHistory.test.ts (3 tests) 73ms
+2026-11-12T04:44:48.9029701Z  ✓ src/proposal/qingyu-report/revisions-r4.test.ts (12 tests) 439ms
+2026-11-12T04:44:49.2064379Z  ✓ src/proposal/qingyu-report/report-r4.test.ts (18 tests) 60ms
+2026-11-12T04:44:49.3929252Z  ✓ src/proposal/drafts.test.ts (10 tests) 13ms
+2026-11-12T04:44:49.6151301Z  ✓ src/services/proposal/BrandResourceRepository.test.ts (6 tests) 31ms
+2026-11-12T04:44:50.3360468Z  ✓ src/proposal/qingyu-content-review/preview.test.ts (8 tests) 325ms
+2026-11-12T04:45:00.9859099Z  ✓ src/services/http/visualReferenceMap.test.ts (5 tests) 10484ms
+2026-11-12T04:45:00.9861533Z    ✓ maps all actual initial native 129 full frozen assignments including 68 combination/overview nodes 4045ms
+2026-11-12T04:45:00.9863843Z    ✓ keeps legal original history readable after active task/policy changes 4277ms
+2026-11-12T04:45:00.9866036Z    ✓ rejects wrong full task/binding/parent/inputs and arbitrary/dynamic/sketch nodes 912ms
+2026-11-12T04:45:00.9936106Z    ✓ rejects wrong source/producer/old protocols even after recomputing envelope and task hash 875ms
+2026-11-12T04:45:00.9938951Z    ✓ rejects missing original history and producer author/receipt tampering 372ms
+2026-11-12T04:45:01.3059405Z  ✓ src/services/mock/MockAssistantService.test.ts (6 tests) 122ms
+2026-11-12T04:45:01.8339820Z  ✓ src/proposal/revisions.test.ts (5 tests) 333ms
+2026-11-12T04:45:02.2924873Z  ✓ src/proposal/research-method/ResearchMethodView.test.ts (4 tests) 146ms
+2026-11-12T04:45:04.8625337Z  ✓ src/services/http/copyCreativeProjection.test.ts (5 tests) 2358ms
+2026-11-12T04:45:04.8629030Z    ✓ admits every original owner/copy/review node from retained native evidence 605ms
+2026-11-12T04:45:04.8631178Z    ✓ rejects changed original packet, task, all-node coverage and exact phase input bindings 705ms
+2026-11-12T04:45:04.8633458Z    ✓ keeps frozen original jobs readable as history after a new active brief and policy 747ms
+2026-11-12T04:45:05.1069548Z  ✓ src/services/intake/intake.test.ts (7 tests) 26ms
+2026-11-12T04:45:05.6492487Z  ✓ src/proposal/recordTargets.test.ts (5 tests) 144ms
+2026-11-12T04:45:05.8325272Z  ✓ src/proposal/projectDetails.test.ts (7 tests) 13ms
+2026-11-12T04:45:06.1211297Z  ✓ src/proposal/researchClaims.test.ts (5 tests) 73ms
+2026-11-12T04:45:06.7382848Z  ✓ src/services/http/HttpWorkbenchService.test.ts (3 tests) 57ms
+2026-11-12T04:45:07.0919649Z  ✓ src/proposal/pending.test.ts (3 tests) 133ms
+2026-11-12T04:45:07.2849762Z  ✓ src/services/http/simpleStrategyProjection.test.ts (2 tests) 7ms
+2026-11-12T04:45:07.6589878Z  ✓ src/app/router.test.ts (5 tests) 13ms
+2026-11-12T04:45:07.8793407Z  ✓ src/services/http/copyAdvanceProjection.test.ts (2 tests) 9ms
+2026-11-12T04:45:08.0796403Z  ✓ src/ui/art/geometry.test.ts (3 tests) 6ms
+2026-11-12T04:45:08.2516221Z  ✓ src/domain/visualRequirements.test.ts (1 test) 7ms
+2026-11-12T04:46:48.3577053Z  ✓ src/services/http/simpleStrategyHttp.test.ts (5 tests) 153251ms
+2026-11-12T04:46:48.3580177Z    ✓ default research authorization and disabled execution never create a SIMPLE job 23527ms
+2026-11-12T04:46:48.3582916Z    ✓ projects actual unique SIMPLE three-block SHA content and independent full-text verification without copy 47932ms
+2026-11-12T04:46:48.3585565Z    ✓ recovers lost continuation and wrong verification receipt with exact original bodies and no redispatch 31947ms
+2026-11-12T04:46:48.3588852Z    ✓ keeps native producer unknown distinct from transport and reconciles exact saved IO with providers disabled 24211ms
+2026-11-12T04:46:48.3591734Z    ✓ reads blocked original conclusions and gaps while retaining no strategy artifact or verification 25631ms
+2026-11-12T04:49:20.7821284Z  ❯ src/services/http/copyWorkflowHttp.test.ts (2 tests | 1 failed) 295894ms
+2026-11-12T04:49:20.7830844Z    × actual HTTP and SQLite preserve the owner edge, unique three-direction copy and 17 original review nodes 250547ms
+2026-11-12T04:49:20.7832198Z    ✓ lost and corrupt receipts keep the exact original body and re-read without dispatch 45345ms
+2026-11-12T04:49:20.7881228Z
+2026-11-12T04:49:20.7882609Z ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+2026-11-12T04:49:20.7883630Z
+2026-11-12T04:49:20.7886764Z  FAIL  src/services/http/copyWorkflowHttp.test.ts > actual HTTP and SQLite preserve the owner edge, unique three-direction copy and 17 original review nodes
+2026-11-12T04:49:20.7892473Z Error: Test timed out in 240000ms.
+2026-11-12T04:49:20.7894208Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+2026-11-12T04:49:20.7895909Z  ❯ src/services/http/copyWorkflowHttp.test.ts:32:1
+2026-11-12T04:49:20.7982069Z      30| }
+2026-11-12T04:49:20.7983152Z      31|
+2026-11-12T04:49:20.7984828Z      32| it('actual HTTP and SQLite preserve the owner edge, unique three-direc…
+2026-11-12T04:49:20.7986079Z        | ^
+2026-11-12T04:49:20.7987592Z      33|  const h=await host(),s=h.s.copyWorkflow,id=h.f.id,state=await s.get(i…
+2026-11-12T04:49:20.7989171Z      34|  const initial=await s.continue(id,{artifactId:h.f.artifactId},{comman…
+2026-11-12T04:49:20.7989984Z
+2026-11-12T04:49:20.7990763Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+2026-11-12T04:49:20.7991471Z
+2026-11-12T04:49:20.7994062Z  FAIL  src/services/http/copyWorkflowHttp.test.ts > actual HTTP and SQLite preserve the owner edge, unique three-direction copy and 17 original review nodes
+2026-11-12T04:49:20.7995389Z
+2026-11-12T04:49:20.7996053Z Error: Hook timed out in 10000ms.
+2026-11-12T04:49:20.7998124Z If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
+2026-11-12T04:49:20.7999967Z  ❯ src/services/http/copyWorkflowHttp.test.ts:12:43
+2026-11-12T04:49:20.8001956Z
+2026-11-12T04:49:20.8002146Z
+2026-11-12T04:49:20.8002986Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+2026-11-12T04:49:20.8010983Z
+2026-11-12T04:49:20.8012007Z  Test Files  1 failed | 68 passed (69)
+2026-11-12T04:49:20.8014030Z       Tests  1 failed | 786 passed | 1 skipped (788)
+2026-11-12T04:49:20.8015395Z    Start at  04:44:03
+2026-11-12T04:49:20.8038623Z    Duration  317.25s (tests 96%, import 2%, transform 1%)
+2026-11-12T04:49:20.8067625Z
+2026-11-12T04:49:20.8077723Z
+2026-11-12T04:49:20.8105328Z ##[error]Error: Test timed out in 240000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/services/http/copyWorkflowHttp.test.ts:32:1
+
+
+2026-11-12T04:49:20.8114635Z
+2026-11-12T04:49:20.8117591Z ##[error]Error: Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
+ ❯ src/services/http/copyWorkflowHttp.test.ts:12:43
+
+
+2026-11-12T04:49:20.8838122Z ##[error]Process completed with exit code 1.
+2026-11-12T04:49:20.9014281Z Post job cleanup.
+2026-11-12T04:49:21.0012281Z [command]/usr/bin/git version
+2026-11-12T04:49:21.0097526Z git version 2.56.0
+2026-11-12T04:49:21.0144851Z Temporarily overriding HOME='/home/runner/work/_temp/c7f296ab-640c-4a8e-b4a0-8cff1daaffa2' before making global git config changes
+2026-11-12T04:49:21.0146423Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T04:49:21.0151063Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/pitch-agent/pitch-agent
+2026-11-12T04:49:21.0195745Z Removing SSH command configuration
+2026-11-12T04:49:21.0203557Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T04:49:21.0255406Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T04:49:21.0561950Z Removing HTTP extra header
+2026-11-12T04:49:21.0570659Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T04:49:21.0648722Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T04:49:21.0966635Z Removing includeIf entries pointing to credentials config files
+2026-11-12T04:49:21.0975455Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T04:49:21.1030365Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T04:49:21.1595541Z Cleaning up orphan processes

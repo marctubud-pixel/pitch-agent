@@ -1,0 +1,38 @@
+# Spec轴独立审查
+
+固定base `a5c6ee5bbde6345c267c8ce227a2adc334c30c25`，head `507a3fe229a7730fb2cb303964777a72bc7ea595`。未参与本轮实现，未改根、索引、旧DB或原票。
+
+## 结论（正文）
+
+发现1项可证P2、1项需根明确处置的交互缺口。P2：页面允许提交草图，但新排队节点不在App mapper范围；写成功后项目读取被拒。应先禁用未接App能力，保留native。另：明确409拒绝后视觉journal仍永久pending，原body重试仍拒、正确新请求被拦；当前UI无核对结束入口，且阻断Brief等写入。不能直接清全部409，应保留未知停止并区分确定未写的拒绝。其余所查durable、typed Brief、129映射未发现新增可证P1/P2；37项native窄回归、3项独立接缝探针通过。不签完整App、真实图像/原件质量、业务或人类批准。
+
+## P2：草图按钮越过当前App映射边界
+
+规格：`docs/pages/visual.md:46`“尚未接线的动作显示真实状态，不以示例按钮冒充能力”；`docs/development/visual-workflow.md:55`明确“草图和v2的完整App映射…仍需…验收”；`docs/specs/seven-stage-runtime.md:75`同样限定初始129与草图App未验。
+
+源码：`VisualWorkflowPanel.tsx:47` ready_for_sketch且无generation即显示“提交草图探索”，disabled仅blocked或无selectionHash。capability没有App sketch准入开关；native `visual-a-service.mjs:43`合法continueSketch能登记sketch_owner等任务。`briefModels.ts:65`所有非research任务须由storage/simple/copy/reference四bridge之一通过；reference mapper在`visualAProjection.ts:58`开头就拒stage!=references。
+
+实际独立`sketch-boundary.test.ts`读取U1明示的native纯builder元数据，逐SHA核当前sketch-authority.mjs与其provenance一致，12个原生成queued job全部被四bridge拒，mapProject均抛unavailable。另一断言核实际按钮源码没有App capability门槛。未伪造参考批准、改旧案或执行草图。原确认时间缺口与此guard无关，因为mapper在mapBrief之前拒绝。不能用这些metadata说已实际跑通提交；证明的是合法native节点类型与当前App读取合同不兼容，且实际写入口开放。
+
+最窄修复为单独App能力=false并禁提交/继续sketch与review，说明未接；native路由仍可保留既有授权边界。接完整mapper及实际原件是后续另一可验证单元。
+
+## 另需处置：确定拒绝也无法结束视觉journal
+
+规格：`docs/pages/visual.md:63`要求错误状态与待核分别呈现；`visual-workflow.md:47`所定义的是marker后中断/结果保存失败的advance_pending，不能把所有网络拒绝都当该业务状态。现有无自动恢复范围不等于必须无期限冻结明确未入账的拒绝。
+
+源码`HttpVisualAService.ts:27-31`只成功clear，`visualAJournal.ts:6`挡不同新body；`VisualWorkflowPanel.tsx:32`仅提供retry，未有acknowledge；`HttpWorkbenchService.ts:114`也阻止所有Brief/COPY等写入。测试`rejected-write.test.ts`使用真实mapHttpError和模拟明确409 response：首次拒后pending=true，retry仍原body并被拒，正确revision的新命令在发出前被挡（总fetch仅2）。它没有证明所有409都能安全清除，也没有假称该模拟传输是真实后端POST原件核回。
+
+建议限定确定未写错误、或新增显式只读核对/结束协议，保留原请求证据；不要对所有conflict自动清journal。若本PR保留此缺口，需记录可操作恢复办法及适用边界，不能声称当前视觉写入错误恢复完整。
+
+## 已核范围与实际运行
+
+规格读取：视觉合同、simple-copy新增durable节、Brief/visual/themes页面、seven-stage-runtime、现行七阶段工作流。检查固定diff里的原claim/CAS/complete、终态只读、legacy/pending停止、合法COPY active变化、明确views省略/[]及final校验、初始129身份边界、人工权限和暂停范围。两个PDF用例仅测试外层5→30秒，正文断言与生产资源限制没有改。未发现要求本PR完成B/Deck的依据，不将整体未完成报作本PR缺陷。
+
+- `probes-fixed-head.txt`：独立3项通过，0skip；其中rejected-write已改用根真实mapHttpError，首版自定义error探针保留。
+- `native-boundaries-network-enabled.txt`：37项通过、0skip（A replay12、claim4、COPY replay12、明确视图9）；只新临时SQLite/本机HTTP，无模型、旧run、外网或历史case访问。
+- 首轮`native-boundaries.txt`在受限沙盒触发listen EPERM/Node断言，两测试文件中止，23通过/2文件失败；随后同命令允许本机网络通过，不视为产品缺陷或抹去失败。
+- 根全量检查由父Agent执行，本审查未重复重型SIMPLE/COPY上游，也未冒称其最终结果。
+
+本轮只签以上固定diff、源码与便宜验证范围；未启动真实浏览器、没有物理IO/审美/业务正例。后续源码修复需另复验并记录新head。
+
+报告收束时父Agent已开始草图能力修复。独立按钮反例已保存固定507a3fe2的git-show原字节，探针改读此件，避免后续修复把原问题证据覆盖；本报告不预签修后状态。

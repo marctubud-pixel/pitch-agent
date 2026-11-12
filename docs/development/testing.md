@@ -103,3 +103,5 @@ node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs to
 `npm run test:image-scope`纳入根check；九个微型真实PNG/JPEG及本机HTTP original fixture核缓存生命周期和每次原件IO，另六项纯metadata核上下文谓词等值与bounded depth，不依赖旧DB。当前python3需Pillow；缺少直接失败，CI使用已安装的PDF venv并仅对此step前置其bin路径。已有venv的运行方法、原红例与边界见[图片原件只读核验](image-readback.md)。不以减少纯解码代替原来源、业务门槛或端到端性能验收。
 
 本轮配置PDF后的全量冷运行曾使两项真实PDF前端用例撞到Vitest默认5秒；单独16项通过。仅originalDocumentsHttp的真实页字节用例和researchAcquisitionHttp的实际PDF入r7用例设30秒外层时限，原断言、业务期限及解析器资源限制保持。不能把此前超时记录为产品通过，最终结果见[本轮验证](visual-workflow-verification-20261112.md)。
+
+PR #11首个应用CI的完整双owner/copy/17票前端用例在240秒外层超时，其他786项通过；本地相同用例已通过。仅copyWorkflowHttp的该首用例改600秒，第二个恢复用例仍240秒，原assertions/生产deadline及CI job30分钟保持；修后是否通过以准确head的实际CI回执为准。

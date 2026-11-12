@@ -54,7 +54,13 @@ marker后中断、或实际advance后结果保存失败，保持advance_pending�
 
 原生初始manual参考图谱为10生产节点与7个17节点评审，共129。严格mapper核完整task、parentId、binding、producerAssignment、原作者/attempt/receipt及正文hash。历史读取和当前写资格分开。动态choice诊断、草图和v2的完整App映射及三纸页、大图右评、采用交互仍需各自真实原件验收；不能由参考组件或纯schema测试代签。
 
-当前referenceChoiceAppSupported=false，手动重组及其版次采用在页面禁用，避免提交后进入尚未映射的动态节点。原生推荐selectionHash的明确采用另受原门槛，未因此禁用或代签；原native choice方法保持原范围。
+当前sketchAppSupported=false，页面禁用进入草图、继续草图及其独立评审，避免合法新节点创建后被尚未完成的App mapper拒绝；原后端草图路由保留，后续接齐映射才可开放。当前referenceChoiceAppSupported=false，手动重组及其版次采用在页面禁用，避免提交后进入尚未映射的动态节点。原生推荐selectionHash的明确采用另受原门槛，未因此禁用或代签；原native choice方法保持原范围。
+
+## 版本冲突的有限核回
+
+浏览器仅对HTTP409且code为REVISION_CONFLICT尝试核回：no-store读取同项目visual-workflow，重验原协议、版本和当前状态；完整native快照不得包含原commandId，原job须queued且零attempt，pending、legacy或任何running/unknown均不解除。先以独立诊断键保存并读回原body、图片原bytes、拒绝及核回snapshot SHA，成功后才结束浏览器待核，允许修正重提。配额或删除失败仍保留pending，不造成功回执、不解除native记录。
+
+网络、500、422、其他4xx、COMMAND_ID_REUSED、成功缺回执身份或无法核实未写均保留原请求。当前坏PNG解码错误实际返回500，不能宣称所有已知拒绝都可结束。storage-only真实HTTP已验不代表页面默认可上传。
 
 ## 明确交付视图
 

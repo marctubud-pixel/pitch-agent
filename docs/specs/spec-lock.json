@@ -335,7 +335,7 @@
       "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "97d997a4bd821984985b30c78127c7070953d47ccc2cf587f5e9120589133f50"
+        "docs/development/testing.md": "ff65518e14b7ec5643e875ff2d1d3d665daf7b9f8efdee1f33cebe3f67d5c858"
       }
     },
     "contract.git": {
@@ -440,7 +440,7 @@
       "version": "1.0.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/visual-workflow.md": "b4e4d7292ad8914f850a95a33516a2eae03bcec393680542bc5d2c2367e34d42"
+        "docs/development/visual-workflow.md": "c2f2049af22de1f495f2d81501a547b6328313af33ca5488ff75a6a1ef462f93"
       }
     }
   },
