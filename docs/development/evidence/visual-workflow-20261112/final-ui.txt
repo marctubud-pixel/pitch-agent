@@ -1,0 +1,69 @@
+# 当前最终根源 · 视觉参考组件 UI 复验
+
+2026-11-12。按local `skills/ui-review/SKILL.md`及已读principles/visual-evidence/verification进行。**实际具名负例组件范围通过，未发现新UI问题；本轮无产品源码修改。** 所有新增文件仅在本目录，未覆盖之前visual-capability-ui-final证据。
+
+## 身份和只读窗口
+
+直接使用当前根组件/样式/contexts/HTTP服务，独立复制原1130 SQLite快照为 `readonly-1130.sqlite`。原root为 `/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-1IpZQ2`，project为 `project-714a07beddf178027ddd90c48979d5e741f13a8dc2dc9b15de37c7673ee2c58f`。未补confirm.audit.at、未改原票/业务状态。标题明示“临时组件核对·非产品路由”“原案确认时间未记录，当前为只读组件核对”，游客仅本地角色演练，不是人类批准。
+
+API4222/Vite4472、自有PID36803/session76892，providers={}、bindings={}、executionAllowed=false；服务仅GET/OPTIONS，浏览器另拒写/外网，客户端也限制只读。临时harness直接渲染VisualWorkflowPanel，copy facade仅用真实copyState；不调用完整App getProject/mapBrief。
+
+`before.json`、`after.json`记录当前根1059源文件SHA；`final-runtime-source-identity.json`另列最终cap四源及transport/journal的精确SHA、真实请求过adapter/journal模块的证据，以及Vite实际返回panel/projection/HttpProposalService的模块SHA。最终panel原源SHA为 `b97a7a69fdf1752400a595ebab314edc9e7842953cbccf53b9a3a7e8423f574d`。相对前一轮final证据10个变化（cap四源、409三源、另三份HTTP测试）列于 `source-delta-from-prior-final.json`，未混用旧候选源码。
+
+## 冷开和交互实际结果
+
+同一有界 `review.mjs` 一次运行，真实Chrome的两个全新context：1280×910浅色、910×910深色，zh-CN/DPR1/reduced-motion。两次分别等待字体与12个image实例真实加载，不使用空数组条件。读取均自然完成，没有失败重启或追加第二批检查，不将等待等同于性能验收。
+
+- 真实状态仍 `choice_blocked`，中文“参考组合仍被阻断”“不能进入草图”明确；参考129/129，生成草图0，草图评审0，queued/running/unknown均0。旧advance未保存结果与执行不可用的说明继续保留，没有误呈通过或已有人类采用。
+- 两个视口都展开手动组合：9个真实select均disabled=true；说明“当前页面仅接初始参考图谱，手动重组暂不可提交”完整可见，原生推荐组合另行采用。提出按钮aria-disabled=true；编辑本地理由后dispatch click也没有POST。只填只读核对文本，没有代选主辅备。
+- 详情129项为“原报告n”，不存在“原评审n”。只展开首份原报告，不批量展开129正文；其nodeKey=assignment、rawReport.kind=assignment，原synthetic developer/no business or aesthetic acceptance限制原样可见。
+- 12个image实例对应9张唯一原图，浏览器逐一读取blob原字节并计算SHA256，全命中原IO SHA；全部natural尺寸720×480。实际点击原图链接打开大图页，也为720×480。这9张是已保存手工原参考图，非generated sketches。
+- 两视口scrollWidth分别1280/910，与viewport相等；输入/select/textarea/img无越出视口。目检当前完整页、手动组合、首报告、原图区域和大图截图，未见必要说明截断、原图遮挡或层级新回归。
+- 浏览器pageerror0、consoleerror0、POST0；API trace为28GET/0POST，无外网。不是用mock响应补页面。
+
+`review-receipt.json`保存上述DOM、图SHA/尺寸、网络和源码回执；`chrome.log`明确ok=true/states2/postCount0。已实际目检 `1280-light.png`、`1280-light-manual.png`、`910-dark.png`、`910-dark-manual.png`、`910-dark-report.png`、`910-dark-originals.png`，以及前述图组的真实大图行为。全部10张截图均留在本目录。
+
+## 原件不变与关闭
+
+`invariance-receipt.json`全部true：根1059源文件、原DB全SHA、原1130snapshot BLOB、semantic配置/epoch、2130份现存原IO（包含此前2114基线）及本轮克隆SHA均before=after。
+
+原DB SHA `9cc87309c05cf8b8bfdf469e381923560a9fdb74b3a21e9e39298dfb78d2edf0`；1130 BLOB SHA `e42e8b9835d6aebf415fb375adabb6b85ff3d20108d74dc97245ffdcc8b57819`；semantic epoch1/hash `21b71b8ed472d5c834f6a44ace78c4bf8a456933378ea91123828e2b2a3662ad`。
+
+Chrome在finally关闭；API/Vite经自有session SIGINT正常退出。`closure-receipt.json`在允许本机网络环境下验证4222/4472均ECONNREFUSED errno-61，非沙盒EPERM。不再留读取窗口，保留clone和全部原件。
+
+## 20原则处置（仅本状态）
+
+|原则|实际处置|
+|---|---|
+|01气质|已满足：沿现有中文/蓝色与深色基线，无重画|
+|02灰度|无法验证：本轮未专项灰度检查|
+|03文字层级|已满足：阶段/进度/阻断/方向有清晰层次|
+|04焦点竞争|已满足：阻断优先，未误强调可继续|
+|05标签|已满足：原报告为中性命名，首生产票内容保持|
+|06操作|已满足：9select禁用，提出不得发请求|
+|07留白|已满足：本次可见必要内容无拥挤遮挡|
+|08宽度|已满足：两视口实测无横溢|
+|09归属|已满足：方向、原图及借鉴说明保持原关系|
+|10比例|已满足：1280/910目标桌面；手机未验|
+|11文字|已满足本次中文/原英文可读；放大场景未验|
+|12对齐|已满足本次标题/表单/图卡实际对齐|
+|13色阶|已满足本次复用浅/深色变量|
+|14对比度|无法验证：未专项实测比值，不签WCAG|
+|15非颜色线索|已满足：阻断和禁用用中文明确说明|
+|16边界|已满足：选中方向与告警边界保留|
+|17图上文字|不适用：必要说明位于图外|
+|18素材|已满足本次9原图字节/尺寸/大图；未来生成图未验|
+|19分割|已满足：现有details分组可读，无新增分割|
+|20空态|已满足本案0generated/v2与已齐仍阻断区分；其他状态未验|
+
+复盘：最终根源在原负例状态下延续了准确阻断、原报告与原图可读性，无需新修。该判断只依据本轮实际截图/DOM/字节，不将源码门禁或数量当业务通过。
+
+## 明确未验
+
+原案不含 **ready_for_sketch、edition-adopt、recommended reference-adoptions、running** 正例。最终 `sketchAppSupported:false` 与ready中文说明已在本轮根源身份中，但其特定状态提示、未来草图/采用控件和running导航未实际触发，不签这些正例。不能为了测试造业务批准或改原确认时刻。
+
+本轮不能签完整App（原confirm.at=null仍被原guard拒绝）、动态choice节点、9实际generated图/54实际v2票、人类/客户批准、storage-only页面可上传或409页面恢复交互。409修复已有独立新小库nativeHTTP证据，本次旧案严格0写；HTTP storage成功不代表现有页面cap/copy门禁已验收。未重跑根32目标、上游/模型/旧129业务或无障碍全量。
+
+## 复开
+
+根目录运行 `node .scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/serve.mjs`；稳定只读窗口与端口空闲且授权后，再运行同目录 `review.mjs`。另存本轮证据后才可重跑，以免覆盖。harness/node_modules绝对symlink仅本地依赖，不是产品交付。关闭自有serve后核端口与前后hash；禁止把DB路径换成原DB或修确认时刻。

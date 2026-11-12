@@ -1,3 +1,4 @@
+import {fromBrief,toBriefInput,diffCards,preserveHiddenFields} from '../../intake/taskCard';
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {mkdtemp, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -232,4 +233,20 @@ describe('current frontend against actual restricted HTTP handler and SQLite', (
     expect((await refreshed.getBriefHistory(id)).current?.background).toBe('其他窗口后续新稿');
   });
 
+});
+
+it('preserves explicitly typed visual requirements across current HTTP confirmation, omitted update, historical snapshots, conflict and explicit clear',async()=>{
+ const host=await fixture(),service=host.service(),base=input();
+ if(!base.brief)throw Error('fixture missing');
+ base.brief.visualRequirements=[{kind:'packaging',views:[' front ','three_quarter','bottle_box','detail']}];
+ const created=await service.createProject(base,{commandId:'visual-new',expectedRevision:0}),id=created.data.id;
+ const initial=(await service.getBriefHistory(id)).current;expect(initial?.visualRequirements?.[0].views).toEqual(['front','three_quarter','bottle_box','detail']);
+ if(!initial)throw Error('No brief');const before=fromBrief(initial,created.data.name),after={...before,visualRequirements:[{kind:'packaging' as const,views:['front','three_quarter']}]};expect(diffCards(before,after).map(d=>d.field)).toEqual(['visualRequirements']);expect(toBriefInput(after,null).visualRequirements).toEqual(after.visualRequirements);expect(preserveHiddenFields({...toBriefInput(before,null),visualRequirements:undefined},initial).visualRequirements).toEqual(initial.visualRequirements);
+ const confirmed=await service.confirmBrief(id,{commandId:'visual-confirm',expectedRevision:0});expect(confirmed.data.confirmedAt).toMatch(/^\d{4}-/);
+ const saved=await service.saveBrief(id,{...input().brief!,background:'只改背景，保留明确视图'}, {commandId:'visual-omit',expectedRevision:confirmed.revision});expect(saved.data.visualRequirements).toEqual(initial?.visualRequirements);
+ await expect(service.saveBrief(id,{...input().brief!,visualRequirements:[]},{commandId:'stale-clear',expectedRevision:confirmed.revision})).rejects.toMatchObject({kind:'conflict'});
+ expect((await service.getBriefHistory(id)).current?.visualRequirements).toEqual(initial?.visualRequirements);
+ const cleared=await service.saveBrief(id,{...input().brief!,visualRequirements:[]},{commandId:'visual-clear',expectedRevision:saved.revision});expect(cleared.data.visualRequirements).toEqual([]);
+ const history=await service.getBriefHistory(id);expect(history.versions.find(b=>b.version===1)?.visualRequirements).toEqual(initial?.visualRequirements);
+ await host.reopen();expect((await host.service().getBriefHistory(id)).current?.visualRequirements).toEqual([]);
 });

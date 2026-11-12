@@ -23,7 +23,7 @@ import { WorkBotCharacter } from '../workbot/Character';
 
 const PREFIX = 'brief-field';
 const VERSION_QUERY_KEYS: readonly string[] = ['version', 'intake'];
-const fingerprint = (card: TaskCardState) => JSON.stringify(TASK_FIELDS.map((f) => [card[f].text.trim(), card[f].provenance.origin]));
+const fingerprint = (card: TaskCardState) => JSON.stringify([TASK_FIELDS.map((f) => [card[f].text.trim(), card[f].provenance.origin]), card.visualRequirements]);
 
 function sourcesOf(data: BriefHistory, t: ReturnType<typeof useT>): SourceDoc[] {
   return data.attachments.filter((a) => a.text).map((a) => ({ id: a.id, label: `${a.fileName ?? t(`attach.kind.${a.kind}`)} · ${t('common.version', { v: a.briefVersion })}`, text: a.text }));

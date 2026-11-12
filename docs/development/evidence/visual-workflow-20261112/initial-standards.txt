@@ -1,0 +1,21 @@
+# Standards 独立审查
+
+固定 `a5c6ee5bbde6345c267c8ce227a2adc334c30c25...507a3fe229a7730fb2cb303964777a72bc7ea595`；提交7791c6c7、507a3fe2。审查者未参与实现。根/索引/旧业务DB未改。
+
+## 硬规范：1项P2
+
+**[P2] 明确未入账的版本冲突仍永久锁定视觉提交。** `apps/workbench-preview/src/services/http/HttpVisualAService.ts:27–31`仅成功时清journal，异常只有finally；`VisualWorkflowPanel.tsx:19/32`因此把已经明确拒绝的请求继续显示待核并禁所有新写，没有结束路径。违反`docs/specs/ui-system.md:13`状态原因清楚的要求，以及既有`docs/development/http-brief.md:30`“冲突保留原文，核完可结束记录”的恢复约定。
+
+真实新空SQLite的storage-only上传使用过期revision99，服务返回409 REVISION_CONFLICT，revision0/imageAssets0且原command未入账。重试相同请求仍409；用新command及revision0修正提交，在发送前被旧journal拒绝。两次实际HTTP，无模型/旧run。刷新亦保留session记录，用户无法正常纠错。
+
+建议给明确未入账的拒绝提供有证据的结束待核路径，保留草稿/原字节。**不能把所有4xx统一清除**：command可能已保存intent再在native失败；需核实际command/intent/step记录，已入账和网络/5xx/成功回执身份缺失继续保留，不能丢未知结果或绕过原target/版本守卫。
+
+## 判断性smell：0项
+
+本轮未证实需要阻断的新增Fowler smell。A/COPY同型marker各自约束不同source/合法状态变化，不建议为表面去重引入跨业务统一层。现有仓库边界与旧原件身份保持。此结论不代替Spec轴、UI或业务批准。
+
+## 实际验证与范围
+
+`known-rejection.test.ts`两项观察测试通过：第一项固定409传输+实际journal；第二项原native host/实际TCP/新空SQLite，确认零入账的409仍锁定。`known-rejection.txt`保留首单项结果，`known-rejection-native.txt`保留最终2/2结果，0skip。绿表示反例被观察到，并非产品已修复。
+
+`source-identity.json`记录58个apps/tools变更文件，54个仍等于固定提交；根其间推进的4个文件另列working SHA，不并入本次固定差异结论。未重跑根全量、SIMPLE/COPY上游、真实图像评审、浏览器或PPT；根全量结果由根实际回执登记。原服务由finally关闭，自有数据库仅在本审查目录。未改原案、方法、规范锁或Git。

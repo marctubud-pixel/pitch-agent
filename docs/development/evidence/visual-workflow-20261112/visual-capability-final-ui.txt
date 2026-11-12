@@ -1,0 +1,75 @@
+# 视觉参考能力收窄 · 独立实际 UI 补验
+
+2026-11-12。仅核当前根 `VisualWorkflowPanel` 只读组件和具名1130保存点；本轮未修改根、候选、原DB/IO。沿已读本地 `skills/ui-review/SKILL.md` 及 principles/visual-evidence/verification执行。
+
+**本轮实际可见负例范围通过，未发现需交根修复的新UI问题。** 不能由此签完整App、running正例导航、推荐组合或组合版次采用正例、实际生成草图/v2或任何业务批准。
+
+## 入口与身份
+
+复用前两份独立报告 `../copy-durable-ui-independent/REPORT.md`、`../visual-reference-ui-independent-r5/REPORT.md` 的只读快照和服务方法。直接复制原先固定1130的 `readonly-1130.sqlite`，没有重建案或修卡。原root为 `/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-1IpZQ2`，project为 `project-714a07beddf178027ddd90c48979d5e741f13a8dc2dc9b15de37c7673ee2c58f`。
+
+临时harness导入**当前根src**、现有样式、服务/权限/主题contexts，使用真实HTTP visualA与原copyState facade。原audit.at=null保持；显式显示“原案确认时间未记录，当前为只读组件核对”。没有伪造project/confirmation/批准header，也未调用完整App getProject/mapBrief。
+
+自有API4220/Vite4470，PID9500。`executionAllowed=false`、providers={}、bindings={}。服务和浏览器分别拒绝非GET/OPTIONS；客户端服务又拒绝写入。游客仅本地角色演练，不代表组织身份。`serve.mjs`、`harness/main.tsx`与配置留作复开依据；`harness/node_modules`绝对symlink仅本地依赖，非产品交付。
+
+当前源身份由 `before.json`/`after.json` 的1058文件SHA与 `review-receipt.json` 的实际Vite模块响应SHA记录。相对上一视觉独立review，共同源中仅8文件变化，列于 `source-delta-from-prior-review.json`：COPY三源、visual domain/panel/projection、HttpProposalService、visual-a-service。两组件初始并发GET与上一脚手架相同，分别是原project `/visual-workflow`、`/copy-workflow`；未替换响应。
+
+## 实际观察与行为
+
+每种主题用新Chrome context冷开，真实Chrome，zh-CN、DPR1、1280×910浅色与910×910深色。等待字体、12张图片实际加载且natural尺寸非零后截图。
+
+- 页面原生状态为 `choice_blocked`，明确“参考组合仍被阻断”“不能进入草图”；参考129/129、生成草图0、草图评审0、queued/running/unknown均0。旧推进未记录和执行关闭说明保持，未因cap false将阻断译为已完成或仅待校准。
+- 展开“明确提出主、辅与备用组合”，两个视口的9个真实select全部 `disabled=true`。正文明确“当前页面仅接初始参考图谱，手动重组暂不可提交”，并区分原生推荐组合另行采用。理由可本地编辑保存草稿，提出按钮 `aria-disabled=true`；dispatch click仍0POST。没有替人填主辅备，也没有写command。
+- 当前原案无editionHash，故版次采用按钮不存在；原recommended reference-adoptions也因choice_blocked未出现。源码保留版次按钮的 `!referenceChoiceAppSupported`，推荐采用原来的精确状态/SHA/人类理由门槛不变。**这两项只做来源静态核对，不冒称可见正例验收。** 此案同时存在guest、blocked和legacy限制，不能独立证明“只有cap false”的所有门禁。
+- 详情129项均为“原报告n”，旧“原评审n”不存在。展开原报告1，仍是原 `nodeKey=assignment / rawReport.kind=assignment`，其synthetic developer scope原文保持，没有改成人类批准或美术通过。
+- 两个视口12个image实例对应9唯一原图。逐一从真实blob读取原字节SHA256，全部命中原IO SHA，natural尺寸均720×480；打开真实原图新页也为720×480。没有把这些9张手工原参考图当成9张generated sketches。
+- scrollWidth精确等于1280/910；检查的输入/select/textarea/img边界无横溢。截图目检未见必要内容被遮挡、方向标题丢失或中文说明截断。报告折叠/展开和原图大图可用。pageerror0、consoleerror0，浏览器POST0，API trace30GET/0POST，无外网请求。
+
+已实际查看 `1280-light.png`、`910-dark.png`、两张 `*-manual.png`、`1280-light-report.png`、`910-dark-originals.png`、`1280-light-original-large.png`。其余同名尺寸截图亦保留。图组仍沿原纸页/三方向布局，不按几何外观重排业务关系。
+
+`HttpProposalService.visualUnsettled` 当前源码仅检查awaiting_reconciliation，实际加载模块SHA已记录；此固定案没有running job，harness未走完整App导航。因此**running正例导航仍未验**，不能由本负例替代。
+
+## 等待与证据脚本错误
+
+首次证据脚本对巨大API响应使用DevTools `response.json()` 异步监听，触发“Request content was evicted from inspector cache”未处理拒绝而退出。首次未保存截图或完整receipt，原工具错误在会话；`initial-script-error.txt`如实记录，不把它称为界面失败截图。
+
+随后仅移除证据监听中的整份响应解析并捕获源码响应读取错误，未改产品/服务响应；第二次自然完成两个冷context，未追加第三批页面GET。等待中观察PID9500进程年龄02:58、瞬时CPU100.6%，针对它取1秒macOS `sample`，完整栈在 `api-sample.txt`。进程年龄不是GET延时；本脚本没有请求时间戳，精确GET耗时未测，不据等待直接判读链bug，也不声称性能通过。
+
+## 原件与关闭
+
+`invariance-receipt.json` 核全部true：根1058源文件SHA、原DB全SHA、revision1130、原snapshot BLOB SHA、semantic配置/epoch、现存2130原IO SHA以及克隆DB SHA均前后一致（2130包含旧2114保存点）。原DB SHA为 `9cc87309c05cf8b8bfdf469e381923560a9fdb74b3a21e9e39298dfb78d2edf0`，snapshot BLOB SHA为 `e42e8b9835d6aebf415fb375adabb6b85ff3d20108d74dc97245ffdcc8b57819`，semantic hash仍 `21b71b8ed472d5c834f6a44ace78c4bf8a456933378ea91123828e2b2a3662ad`、epoch1。
+
+Chrome finally关闭。自有session40378通过SIGINT正常关闭API/Vite；`closure-receipt.json` 记录授权网络环境对4220/4470均返回ECONNREFUSED errno-61，非沙盒EPERM。保留克隆、原件、回执，不留服务读取窗口。
+
+## UI原则处置与限制
+
+|原则|处置（仅本组件实际状态）|
+|---|---|
+|01气质|已满足：原中文工作台蓝色/深色基线保持|
+|02灰度|无法验证：本轮未做独立灰度截图|
+|03文字层级|已满足：阶段、原进度、阻断和三方向分层可见|
+|04焦点竞争|已满足：真实阻断优先，未增加主操作|
+|05标签|已满足：中性原报告标题与原assignment身份一致|
+|06操作层级|已满足：手动选择真实禁用、提出按钮禁止发送|
+|07留白|已满足：本次截图未见必要内容拥挤遮挡|
+|08宽度|已满足：两种实测scrollWidth匹配视口|
+|09归属|已满足：方向/原图/说明按原数据分组，手动表单fieldsets分方向|
+|10屏幕比例|已满足：1280/910两种目标桌面边界未横溢；手机未验|
+|11文字|已满足本次中文/原英文可读；200%放大未验|
+|12对齐|已满足本次标题/卡片/表单可见混排，未改共享对齐|
+|13色阶|已满足本次沿现有浅深色变量，未新造颜色|
+|14对比度|无法验证：未做专项比值测量，不签WCAG|
+|15非颜色线索|已满足：choice_blocked及禁用原因均有文字|
+|16局部边界|已满足：原选中方向和告警边界保留|
+|17图上文字|不适用：必要说明/图注均在图外|
+|18素材尺寸|已满足本次9原图字节及720×480/大图；未来生成图未验|
+|19分割|已满足：原details分组保留，未新添重复框|
+|20空态|已满足本次0generated/v2与参考已齐仍阻断的区别；其他首次/失败/unknown状态未验|
+
+本轮没有源码修改、无提升评分声明。只读已披露旧案不能签完整App的confirm guard、动态choice节点、edition/recommended采用正例、execution enabled、storage-only保存、pending/completed新协议、running正例导航、9张真实generated sketches、54原v2节点、客户或人类批准。原参考synthetic开发样本身份保留。
+
+## 可重复入口
+
+在仓库根：`node .scratch/seven-stage-static-goal-20261111/design/visual-capability-ui-final/serve.mjs`；只读窗口授权且端口空闲时，另终端运行 `node .scratch/seven-stage-static-goal-20261111/design/visual-capability-ui-final/review.mjs`。运行前后分别 `python3 .../capture.py before` / `after`；需先另存本轮固定证据，避免覆盖。完成SIGINT自有serve并核端口关闭。仅克隆DB可由constructor打开，原DB只读hash/SQLite RO；不得替换为原DB、不得补确认时刻。
+
+复盘：禁用状态与说明相互一致，原报告标签未改变原票内容。等待和DevTools缓存问题属于本轮工具/性能观察，真实图组与负例控件最终已有实际证据；未观察到的正例继续保持未验。

@@ -1,6 +1,6 @@
 # 配置与服务边界
 
-规范版本：1.7.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.8.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
@@ -28,7 +28,7 @@ PDF、原生渲染及字体专项涉及pypdf、pdfplumber、pdfminer.six、Pillo
 
 ## 当前七阶段与研究接入
 
-新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略按[策略合同](simple-strategy.md)接线，双负责人接收、三方向文案及独立评审按[文案接续合同](simple-copy.md)接线；视觉至交付仍待迁移，默认不执行模型。
+新协议、来源登记、受限研究与原件读取、方法绑定和缺能力时停止的具体范围见[接续说明](seven-stage-research.md)。当前已接同版独立正文阅读、实际修订复查与研究声明/放行，详见[读者合同](research-reader.md)。自动采集已按[受限运行合同](research-acquisition.md)接线，简洁策略按[策略合同](simple-strategy.md)接线，双负责人接收、三方向文案及独立评审按[文案接续合同](simple-copy.md)接线；视觉参考与后端草图路由见[受限合同](visual-workflow.md)，成稿至交付仍待迁移，默认不执行模型。
 
 ## PDF原件配置
 
@@ -64,3 +64,9 @@ PDF可选运行依赖固定在`tools/workbench/requirements-pdf.txt`，包含实
 受限copy复用同一research配置和执行器。available要求strategy、copy、verification、creative_director及copy、brand、user、communication四岗各自creative_score和creative_opposition绑定；每个binding必须对应已配置provider和同名model。原生评审继续要求真实校准证据，available不证明校准、网络或质量通过。
 
 默认research终点不提升，显式final_review只作用新案。strategy人工节点通过单独confirm采用当前稿，不能改policy绕过。接口与固定任务见[文案合同](simple-copy.md)；本包不提供任意阶段或下游unknown恢复开关。
+
+## 视觉参考配置
+
+参考与后端草图路由复用同一显式执行器。launch的moduleConfigs.reference、sketch及sketchReview分别映射原referenceConfiguration、sketchConfiguration、sketchReviewConfiguration；bindings/providers、图像能力和预算仍由各原模块验证。available仅表示配置匹配，不证明供应商在线、原件或质量通过。
+
+当前只接新协议manual_supplied与明确原target，不开启旧schedule、付费模型或旧run。原图storage-only与模型执行分开；当前UI尚未独立映射无执行器上传能力。COPY和视觉pending没有自动解除或原件恢复开关，旧未记录请求不补造结果。详细字段、方法与原claim见[视觉合同](visual-workflow.md)。

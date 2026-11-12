@@ -1,0 +1,59 @@
+# 当前根视觉参考组件 · 独立 UI 复验
+
+2026-11-12。复核者未写该前端，但曾参与A后端；本报告仅签开发UI所见，不签业务独立判断、A后端正确性、参考适用性或美术质量。按固定 `skills/ui-review/SKILL.md`、当前视觉页面规则，保留原配色/扇面参考/方向切换/过程折叠，未改源码。
+
+**核心只读范围通过，无证实P1/P2；一处非阻断P3详情命名待根处理。**
+
+## 实际入口、源与数据
+
+新独立harness副本 `harness/` 直接导入当前根 `apps/workbench-preview/src`，不是旧隔离r3源；冷启动4216 API/4466 Vite，未热改源。其provider、router、theme、styles沿原临时组件harness，不伪造项目或确认。页首实际显示“原案确认时间未记录，当前为只读组件核对”，游客角色只是本浏览器权限演练。
+
+原案 root：`/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/reader-owner-1IpZQ2`；项目 `project-714a07beddf178027ddd90c48979d5e741f13a8dc2dc9b15de37c7673ee2c58f`。原SQLite readOnly仅导出**固定1130原snapshot字节（1214352 bytes）与原semantic**到新 `readonly-1130.sqlite`，没有复制全历史、构造command、补时刻或修改原DB。
+
+当前根后端显式 executionAllowed=false、providers={}、bindings={}，rootDir指向原素材；API包装只接GET/OPTIONS并拒写。harness跳过完整App的Brief确认映射，仅使用原visual adapter与原copyState核对。confirm.audit.at仍为null；不能据此说完整App通过。
+
+`before.json`/`after.json`覆盖378根源码SHA（含当前VisualWorkflowPanel、visualAProjection、A service/http/brief-server）、原DB全SHA、1130 snapshot、semantic及2114原IO。结束后全部不变。根既有73后端/29前端/typecheck是其此前证据，本轮没有重跑或冒称为本次测试。
+
+另 `claim-r4-identity.json`：r4实际changed的两源精确匹配冻结after，visual-a-http=`243aba974510784266fffb777a657f6cc0561e06c79a2dcb9d4fe8abf0a65c42`，visual-a-service=`8f46718309bf680f9560a95812feef7b91c49cc5c1618e420bdcf7f3114993b3`。r4候选中未改的project baseline为72a8…，当前根合流project为`93efa8ebc5b9df12479a2cbb0a01529ef0b5dd9a775821db205c4d981c5c3db2`；其不在本轮378源pre集合，不冒称根整树与隔离候选完全相同，也不因已知合流身份不同就报告bug或回写它。本轮未验证actual claim执行。
+
+## 实际 Chrome 所见
+
+本轮新图 `review/1280-light.png`、`review/910-dark.png`、`review/originals-expanded.png` 与 `originals-expanded-viewport.png` 已实际看图。不是旧r3截图。完整原始网络和状态在 `review/result.json`：
+
+- 实际进度为129/129原报告、0草图、0草图评审、待执行0、执行中0、未知0；不是“尚未开始”空态。
+- 同时明确显示本地写入/执行不可用、`choice_blocked`、“参考组合仍被阻断”和“旧推进记录未保存原衔接结果…已停止继续”；37条旧记录都未记录新advance协议，pending=0、completed=0。不当作可继续或已完成衔接。
+- 三方向实际切换，每方向3图均完整加载、naturalWidth=720/naturalHeight=480；展开全部原图后12个显示实例对应9原图（含当前方向重复展示）。没有空img即通过的断言。
+- `identity-permission.json`对实际显示的12个blob计算SHA-256，均匹配before原IO字节SHA，9个唯一原图；尺寸全720×480。gallery仍显示原imageId/SHA。
+- 原图/报告过程可展开，原报告1正文存在；129个报告入口保留。更新进度请求实际完成，仍为同1130保存点，没有推进。
+- 1280浅与910深的scrollWidth分别1280/910，无横向溢出；选中方向描边、状态说明、折叠过程与长SHA仍可读。本轮未做正式对比度/灰度实测。
+- 3个写Action（存原图、提出用途、主辅备）实际 `aria-disabled=true`；原Action按设计保持可聚焦，不能只读DOM.disabled=false误判可写。补测实际React click handler不发送命令。只读transport与后端拒写同时存在；原采用/草图继续入口未出现。
+
+原pending/completed新状态没有在此真实case发生；本轮不另造metadata状态，不签这些UI已实测，更不拿纯fixture冒充原案。
+
+## 可验证P3
+
+`apps/workbench-preview/src/services/http/visualAProjection.ts:42`把全部报告统称“原评审 n”。实际“原评审1”为 `nodeKey=assignment / reference-dossier-v1 / kind=assignment`；129中10条是生产/交接报告，119条是像素评审。顶部“参考原报告129/129”准确；详情标题可能让使用者把生产安排误读为评分原票。
+
+证据 `report-label-fact.json`、本轮DOM/报告1展开与原1130记录。建议详情改为“原报告 n”或按协议类型标注，保留129计数、原文/身份及阻断状态。未改根；这是命名P3，不是业务门禁失效。
+
+## 自有探针失败与边界
+
+`review-permission/result.json`保留第二探针失败：普通Playwright click因aria-disabled被正确拒绝并timeout，不是产品bug。该轮刷新已自然完成，权限断言已过；随后用独立 `identity-permission-r2.mjs` dispatch click验证原React守卫，0POST。身份探针第一版有语法错误，保留原脚本/log，发生在浏览器启动前；仅修新探针，没有改产品。
+
+本轮没有运行研究/模型/付费服务/旧run，也没有重新做129报告物理/业务核验。仅核实际已显示图片字节，不据此证明其创意/事实合格。没有补原确认时刻、选案、人工采用、草图/v2、B或Deck行为。没有完整App、写入、恢复或未知重派验收。
+
+自有PID65795、exec handle11435已正常SIGINT退出，4216/4466均关闭；Chrome各finally关闭。`api-trace.json`总56请求均GET，POST0、外网0。原DB全SHA与1130snapshot/semantic/2114IO、378源码后核一致。旧harness、截图、case及冻结补丁未覆盖。
+
+## UI20原则处置
+
+|原则|本轮范围结论|
+|---|---|
+|01气质、03层级、04竞争、05标签|本范围已核；保留中文蓝色组件、真实进度优先，P3详情标签单列|
+|02灰度、14对比度|无法验证，未做专项实测|
+|06操作、15非颜色线索、16边界|本范围已核；更新/切换可读，明确停止文字与aria-disabled/权限理由，不靠颜色判断|
+|07留白、08宽度、09归属、10比例|本范围已核；1280/910无横向溢出、方向/参考/历史分组清楚|
+|11文字、12对齐、13色阶|本轮实际截图可读；不签所有交互/主题或全部无障碍标准|
+|17图上文字、18素材尺寸|只核原图字节及720×480完整读取，未重做原美术/小字质量判断|
+|19分割、20空态|本范围已核；37旧衔接待核与choice阻断不是空态，0草图如实显示|
+
+没有修改，因此没有同条件“优化前后”提升声明；初/后证据用于证明状态保持和读取完成。结论是已独立复验此只读组件范围，P3交根处理，业务结果仍阻断。

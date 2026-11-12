@@ -1,0 +1,49 @@
+# 明确视觉视图要求 · 独立复核
+
+2026-11-12；复核者未参与16文件实现。原冻结 patch `19563aec30b4b3d962b74beb0734c7346803a41393ad7065b9ec6adcb5674711` 与全部 manifest 源/原证据逐 SHA 预核、后核一致。本轮不修改候选16或根源码。
+
+**无证实 P1/P2；有一个实际复现的 P3。** 核心 typed 输入、旧约束并集和缺视图阻断成立。P3 已交根处理，修后尚未复核，不将计划当完成。
+
+## 发现
+
+`apps/workbench-preview/src/intake/VisualRequirementsEditor.tsx:4` 的总 `maxLength=1450` 小于合法12行×120字＋11换行=1451。独立 Chrome 在新克隆库只改本地未保存草稿：请求1451字，实际1450，末行119字，0POST。两个 parser 接受该合法12×120输入。证据 `independent/maxlength-receipt.json`、`maxlength.mjs`、`extra-r4.log`。这会静默丢最后1字；根已接受删除总长截断、保留逐行及60k总Brief限制的修法；本报告尚未签该修复。
+
+## 独立代码与行为核查
+
+- 仅 typed `fields.visualRequirements` 提供要求，不读 deliverables 自由文猜视图。省略保持未指定/保存时保留原值，`[]`明确清除，null/重复kind/重复trim后view/空类/超长/超项拒绝。解析派生新对象，原 task.brief 字节不改。
+- 原 native `validateFinalPlan` 对 legacy `task.finalVisualRequirements` 与同版Brief明确要求同时施约束；每方向须由同类单一target包含所要求视图，不能跨不完整target拼凑。新错误码列入原 plan 错误集合；source全文与hash机制未改。
+- 前端 read/write、编辑fingerprint、确认前保存、差异审阅、隐藏字段保留、历史、未决请求原body说明和Mock均有定点接线。更新导入 `mergeForUpdate` 保留子字段；新建导入保留当前手填字段的代码已核，但完整新建/导入界面没有在本轮执行。
+- 方法/岗位/页面仍为单份任务卡、交付字段内可选折叠区、历史只读、导航不签业务放行。未引入默认视图或修旧任务。
+
+## 独立实跑
+
+从根运行 `node --test tools/workbench/brief-visual-requirements.test.mjs`：9/9，0skip，日志 `independent/native-root.log`。
+
+从根运行候选原 loader + `native-plan.test.mjs`：9/9，0skip，`independent/native-candidate.log`。另以独立before-loader读取A隔离WT原final-visual（SHA准确等于manifest before `e8f48f5…`），同9例实际 **5绿4红**，`independent/native-before.log`；四红均为应拒绝typed缺视图/畸形而旧实现没拒，非加载故障。没有模型、图像生成或DB写。
+
+从实际根App运行 `npm test -- src/domain/visualRequirements.test.ts src/services/http/briefIntegration.test.ts`：17/17，0skip；`independent/frontend-root.log`。HTTP集成是实际native handler/SQLite经fetch桥，不能误称浏览器TCP完整流程。
+
+另独立 `extra.test.ts`：3/3，0skip（`extra-r4.log`），包含22组前后parser同值/同拒绝与原字节不改、Mock真实create→confirm→省略保留→清除→历史→新service读回、更新导入纯merge保留及`[]`差异。Mock使用独立memoryStore、不启动job。完整当前final source失效链未运行；旧source哈希保护原机制未变不等于该链已验。
+
+## 独立实际 UI（固定 ui-review）
+
+使用根实际采用源，独立 API4214/Vite4464。原 `evidence/ui.sqlite` 只复制到 `independent/readonly-clone-r2.sqlite`；不是原库复用写入。服务端仅允许GET和必要CORS OPTIONS，全部写方法拒绝。完整本轮成功窗口API trace **45GET/45OPTIONS/0POST**；浏览器完整成功r4 trace见 `independent/chrome-receipt-r4.json`。这是本轮新窗口证据；作者旧trace曾被tail覆盖，仍不能据此替作者补签旧全程0POST。
+
+新截图 `independent/current-1280-light-r4.png`、`current-910-dark-r4.png`、`history-910-dark-r4.png` 已实际看图：交付内部折叠区、准确原view文字、当前五视图/历史四视图可读；历史textarea禁用，前进仍为导航。两宽度scrollWidth≤innerWidth，pageerror为空；未做正式对比度/灰度测量，不签这些通过。r3中910因同hash保留展开状态而探针点击折叠，保留旧截图并补r4，不覆盖旧证据。完整页面截图的固定导航位于当时滚动位置，不据此断言真实文档中部插入导航。
+
+只读窗口关闭：自有PID52163正常SIGINT退出，4214/4464连通检查均关闭。原库与克隆库最终SHA都为 `750ffe0d9a0d775f4e3342170f61b216144fba569f8285a1b219fd64e0abf609`，clone head4不变；原库0job/2确认没有新增。本次本地最大长度草稿关闭即丢弃。`independent/after-protection.json`记录全部候选16、根16和原manifest所有artifact均未变。
+
+本轮探针失败如实保留：首server脚本误用URL.pathname造成中文路径转义ENOENT；第二次sandbox拒绝listen，后按已授权本机只读范围获工具批准；首次GET-only包装连OPTIONS也拒绝导致Chrome无法连接，第二克隆仅放行读预检后成功。extra首轮由Vite错误转换native jpeg模块，改用既有createRequire读取native；随后Mock create预期修订误用0，换实际catalogRevision后通过。均只修独立探针，未放宽产品守卫。
+
+## UI原则处置与限制
+
+|原则|本轮处置|
+|---|---|
+|01气质、03层级、04重点、05标签、06操作|已核本范围；沿用中文蓝色组件、明确保存/更新与导航，未改主操作|
+|02灰度、14对比度|无法验证，未测量|
+|07留白、08宽度、09归属、10屏幕比例|本范围已核；内部折叠、1280/910无横向溢出|
+|11文字、12对齐、13语义色阶|本范围截图可读，P3最大长度截断另列；不能签全站状态|
+|15非颜色线索、16边界、19分割、20空态|本范围已核未指定/类数/历史只读文字与控件；错误、加载、焦点全套未跑|
+|17图上文字、18素材尺寸|不适用，本新增字段无图片|
+
+未覆盖完整新建UI、Chrome资料导入与双窗口冲突、未决提交丢响应完整链、当前最终source变化的实际sketch/final原生链。没有改动UI，无同条件修复前后效果声明；业务美术、研究、A/B及总目标均不签通过。后续只需对根P3一行增量做窄复核，保留此原发现和所有失败。

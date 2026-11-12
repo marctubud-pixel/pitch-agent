@@ -188,7 +188,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
     adjustFinalVisualAllowance:finalVisuals.adjustFinalVisualAllowance,continueFinalVisual:finalVisuals.continueFinalVisual,advanceFinalVisual:finalVisuals.advanceFinalVisual,verifyFinalVisual:finalVisuals.verifyFinalVisual,finalVisualCapability:finalVisuals.capability,
     sketchReviewCapability:sketchReviews.capability,continueSketchReview:sketchReviews.continueSketchReview,advanceSketchReview:sketchReviews.advanceSketchReview,
     adjustImageAllowance:sketches.adjustImageAllowance,sketchCapability:sketches.capability,continueSketch:sketches.continueSketch,advanceSketch:sketches.advanceSketch,sketchReviewInput:sketches.sketchReviewInput,registerReviewedSketch:sketches.registerReviewedSketch,verifyReviewedSketch:(id,a)=>a.sketchGeneration?.protocol==='sketch-review-v2'?sketchReviews.verifyReviewedSketch(id,a):sketches.verifyReviewedSketch(id,a),
-    referenceCapability:references.capability,continueCopy:references.continueCopy,submitReferenceMaterial:references.submitReferenceMaterial,submitReferenceLibraryMaterial:references.submitReferenceLibraryMaterial,reviseReferences:references.reviseReferences,advanceReferences:references.advanceReferences,referenceStatus:references.referenceStatus,referenceStates:references.referenceStates,adoptReferences:references.adoptReferences,chooseReferences:references.chooseReferences,
+    referenceCapability:references.capability,continueCopy:references.continueCopy,submitReferenceMaterial:references.submitReferenceMaterial,submitReferenceLibraryMaterial:references.submitReferenceLibraryMaterial,reviseReferences:references.reviseReferences,advanceReferences:references.advanceReferences,referenceStatus:references.referenceStatus,referenceSelection:references.checkedSelection,referenceStates:references.referenceStates,adoptReferences:references.adoptReferences,chooseReferences:references.chooseReferences,
     async continueStrategy(projectId,request){
       await verifyOrdinaryProject(store.read(projectId),{executionRoot:root});
       const p=store.read(projectId),prior=(p.ownerIntents??[]).find(i=>i.id===request.commandId);
@@ -737,7 +737,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       store.command(projectId,{kind:'request-handoff',artifactId,side,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,handoffInput,request},commandId:commandId??randomUUID(),expectedRevision:expectedRevision??project.revision},context);
       return jobId;
     },
-    async execute(projectId,jobId,{retry=false,acquisitionAdmission,simpleStrategyAdmission,copyHttpAdmission}={}) {
+    async execute(projectId,jobId,{retry=false,acquisitionAdmission,simpleStrategyAdmission,copyHttpAdmission,visualAdmission}={}) {
       const admission=store.read(projectId),isReference=admission.jobs.find(j=>j.id===jobId)?.purpose==='reference';
       if(!isReference)await verifyOrdinaryProject(admission,{executionRoot:root});
       const project=isReference?admission:store.read(projectId),job=project.jobs.find(item=>item.id===jobId);
@@ -753,9 +753,9 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       if(job.stage==='layout')throw new DomainError('LAYOUT_EXECUTION_UNAVAILABLE','Dedicated native layout execution required');
       if(CONTENT_PURPOSES.includes(job.purpose))return completeContent.execute(projectId,jobId);
       if(FINAL_VISUAL_PURPOSES.includes(job.purpose))return finalVisuals.execute(projectId,jobId);
-      if(REVIEW_PURPOSES.includes(job.purpose))return sketchReviews.execute(projectId,jobId);
-      if(SKETCH_PURPOSES.includes(job.purpose))return sketches.execute(projectId,jobId);
-      if(job.purpose==='reference')return references.execute(projectId,jobId,{retry});
+      if(REVIEW_PURPOSES.includes(job.purpose))return sketchReviews.execute(projectId,jobId,{admission:visualAdmission});
+      if(SKETCH_PURPOSES.includes(job.purpose))return sketches.execute(projectId,jobId,{admission:visualAdmission});
+      if(job.purpose==='reference')return references.execute(projectId,jobId,{retry,admission:visualAdmission});
       if(job.purpose==='readiness'&&job.task.splitReadiness)return executeSplitReadiness({store,projectId,jobId,root,providers,send,checkCurrent:async current=>{await inputs(store.read(projectId),current);await verifyRegistered(store.read(projectId),current);}});
       const sourceRecords=job.task.sourceRecords??[];
       const planned=job.purpose==='creative_review'?(job.assignedContexts?.at(-1)??project.creativePanels.find(p=>p.id===job.panelId)?.nodes.find(n=>n.key===job.nodeKey)?.context):null;

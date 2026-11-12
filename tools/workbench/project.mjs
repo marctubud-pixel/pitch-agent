@@ -1,4 +1,5 @@
-import {copyHttpJobs,reduceCopyHttp,requireCopyHttpJob} from './simple-copy-http.mjs';
+import {reduceVisualStep,reduceVisualIntent,requireVisualClaim,reduceVisualAdvance,requireVisualNoPending} from './visual-a-http.mjs';
+import {copyHttpJobs,reduceCopyHttp,requireCopyHttpJob,reduceCopyAdvance,requireCopyNativeAdmission} from './simple-copy-http.mjs';
 import {reduceSimpleHttp,requireSimpleHttpJob} from './simple-strategy-http.mjs';
 import {requireAcquisitionHttpJob} from './research-acquisition.mjs';
 import {SIMPLE_STRATEGY_VERSION,createSimpleStrategyBasis} from './seven-stage-strategy.mjs';
@@ -30,7 +31,7 @@ import {FINAL_AUTHORITY_COMMANDS,reduceFinalAuthority,enforceFinalCallCeiling,fi
 import {reduceLayoutPreparation,LAYOUT_PURPOSE,LATER_FINAL_RESPONSIBILITIES} from './layout-boundary.mjs';
 import {reduceCompleteContent,requireCompleteContent,makeContentSource} from './complete-content.mjs';
 import {reduceFinalVisual,requireFinalVisual,FINAL_VISUAL_PURPOSES} from './final-visual.mjs';
-import {reduceSketchReview,requireSketchRefinement,REVIEW_PROTOCOL} from './sketch-review-v2.mjs';
+import {reduceSketchReview,requireSketchRefinement,requireReviewedSketchV2,REVIEW_PROTOCOL} from './sketch-review-v2.mjs';
 import {reduceSketchCommand,requireReviewedSketch,SKETCH_PURPOSES} from './sketch-authority.mjs';
 import {reduceReferenceCommand,referenceJobCurrent,referenceContext,referenceState,referenceCorrectionSources,referenceOwnersAccepted,REFERENCE_DOSSIER_PROTOCOL} from './reference-dossier.mjs';
 import {validateSavedReadinessProof,savedReadinessReceipt} from './readiness-claims.mjs';
@@ -1477,6 +1478,8 @@ export function applyCommand(project, command, context) {
   if(ACQUISITION_COMMANDS.includes(c.kind)){try{reduceAcquisition(p,c,context);}catch(e){fail(e.code??'ACQUISITION_INVALID',e.message);}}
   if(INTAKE_COMMANDS.includes(c.kind)){try{reduceIntake(p,c,context);}catch(e){fail(e.code??'INTAKE_INVALID',e.message);}}
   if(RESEARCH_READER_COMMANDS.includes(c.kind)){try{reduceResearchReaderCommand(p,c,context,{target:(p,id)=>targetWithin(new WeakMap(),p,id),independent:independentVerifier,running:runningAttempt,receipt:verificationReceipt,methodIdentity:researchMethodIdentity});}catch(error){fail(error.code??'INVALID_RESEARCH_READER',error.message);}}
+  if(['start-job','mark-reference-dispatched','claim-sketch-job','claim-sketch-review'].includes(c.kind)&&p.jobs.some(j=>j.id===c.jobId&&['reference','sketch_owner','sketch_plan','image_candidate','sketch_review_v2','sketch_refinement_handoff'].includes(j.purpose)))requireVisualNoPending(p);
+  if(c.visualHttpRequestId){requireValue(['start-job','mark-reference-dispatched','claim-sketch-job','claim-sketch-review'].includes(c.kind),'VISUAL_CLAIM_REQUIRED','Original visual claim transition required');requireVisualClaim(p,c.visualHttpRequestId,p.jobs.find(j=>j.id===c.jobId));}
   switch (c.kind) {
     case 'record-research-handoff': {
       if(p.workflow&&c.request?.input?.decision!=='returned')requiredReaderEvidence(p,c.request?.artifactId);
@@ -2144,11 +2147,19 @@ export function applyCommand(project, command, context) {
       requireValue(context.actorType==='agent'&&!['layout','final_review'].includes(job.stage)&&validOrdinaryHttpLocator(c.locator,attempt.id)&&!attempt.httpAttemptLocator,'INVALID_HTTP_LOCATOR','Exact unique internal HTTP attempt locator required');
       attempt.httpAttemptLocator=structuredClone(c.locator);break;
     }
+    case 'visual-http-advance-started':
+    case 'visual-http-advance-completed': reduceVisualAdvance(p,c,context);break;
+    case 'visual-http-intent': reduceVisualIntent(p,c,context);break;
+    case 'visual-http-step': reduceVisualStep(p,c,context);break;
+    case 'release-reviewed-sketch-v2': {requireValue(p.workflow&&context.actorType==='agent','REVIEW_TRUSTED_RUNTIME_REQUIRED','Current v2 runtime release only');const a=targetWithin(new WeakMap(),p,c.artifactId);requireReviewedSketchV2(p,a,(p,id,contents,binding)=>copyDeliveryEnvelopeWithin(new WeakMap(),p,id,contents,binding));if(!p.releases.some(r=>r.artifactId===a.id&&r.policyVersion===currentPolicy(p).version))p.releases.push({artifactId:a.id,policyVersion:currentPolicy(p).version,actorId:context.actorId,kind:'reviewed-sketch-v2-release',contentHash:a.contentHash});break;}
+    case 'copy-http-advance-started':
+    case 'copy-http-advance-completed': reduceCopyAdvance(p,c,context);break;
     case 'copy-http-request': reduceCopyHttp(p,c,context);break;
     case 'simple-strategy-http-request': reduceSimpleHttp(p,c,context);break;
     case 'start-job':
     case 'retry-job': {
       const job = p.jobs.find(j => j.id === c.jobId);
+      requireCopyNativeAdmission(p,job,c.copyHttpRequestId);
       if(c.copyHttpRequestId){const edgeId=requireCopyHttpJob(p,c.copyHttpRequestId,job);requireValue(!copyHttpJobs(p,edgeId).some(j=>['running','awaiting_reconciliation'].includes(j.status)),'COPY_OUTCOME_UNKNOWN','The original copy edge has an unsettled result');}
       if(c.simpleStrategyHttpRequestId)requireSimpleHttpJob(p,c.simpleStrategyHttpRequestId,job);
       if(c.acquisitionHttpRequestId)requireAcquisitionHttpJob(p,c.acquisitionHttpRequestId,job);

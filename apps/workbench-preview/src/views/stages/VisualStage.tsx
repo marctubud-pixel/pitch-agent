@@ -1,3 +1,5 @@
+import {useService} from '../../app/services';
+import {VisualWorkflowPanel} from '../../proposal/VisualWorkflowPanel';
 /**
  * E. Visual development. Each direction is its own branch: a reference search card, several
  * reference candidates with reasons for keeping or rejecting them, several composition sketches
@@ -31,7 +33,9 @@ type VisualPart = 'current' | 'process' | 'compare';
 export function VisualStage({ proposal: p, collaboration }: { proposal: Proposal; collaboration?: ReactNode }) {
   const t = useT();
   const { params, setParams } = useRouter();
+  const service=useService();
   const v = p.visual;
+  if(service.visualWorkflow&&!v)return <>{collaboration}<VisualWorkflowPanel projectId={p.id}/></>;
   if (!v) {
     if (isQingyuVisualPreview(p)) return <QingyuVisualPreview proposal={p} collaboration={collaboration} />;
     return <StageEmpty proposal={p} stage="visual" />;

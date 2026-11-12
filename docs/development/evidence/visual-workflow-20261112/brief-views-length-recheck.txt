@@ -1,0 +1,13 @@
+# P3 修后窄复核
+
+根仅删除已采用组件的 `maxLength={1450}`，原16文件候选及其manifest不改。复核前后实际根文件SHA均为 `6453ce29234d6408a8895d30bc790eb27db8b9342d8a78f5c9aef0c0ba9af16e`；复核者未改源码。原发现及前次失败留在 `independent-review.md` 和原 receipt，不倒写。
+
+使用第三份独立克隆 `independent/readonly-clone-r3.sqlite`、自己的API4214/Vite4464；只允许GET/OPTIONS，拒绝写请求。本机Chrome实际检查：
+
+- 合法12行×120字+11换行，requested=1451，actual=1451，末行120字，无maxlength属性，DOM逐字相同。
+- 随后仅本地草稿改为一行121字，更新→检查更改→作为v3应用。实际提示每项最多120字，未保存；原草稿121字保留，0POST。截图 `independent/p3-invalid-preserved.png` 已实际看图。
+- `independent/p3-fixed-receipt.json`、`maxlength-p3.mjs`、`p3-fixed.log` 保存具体证据。没有重复整套测试或业务链，没有新增版本、确认、模型或job。
+
+自有PID56611正常SIGINT退出；4214/4464均已关闭。第三克隆与原 `evidence/ui.sqlite` 最终SHA相同 `750ffe0d9a0d775f4e3342170f61b216144fba569f8285a1b219fd64e0abf609`；服务trace32个请求均为GET/OPTIONS，POST0。`independent/p3-after-protection.json`证明仅根授权的一行组件变化，候选16及原manifest所有artifact保持原SHA。
+
+**原P3已按本次窄范围修复并独立复验，无未处理P1/P2/P3发现。** 不扩大为完整新建/导入/冲突UI或当前最终source失效业务链已通过；原独立报告中的未覆盖范围继续保留。

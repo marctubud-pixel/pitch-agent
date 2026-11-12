@@ -35,7 +35,7 @@ export function ChangeReview({
         <ol className="change-list" aria-label={t('change.listLabel', { count: changes.length })}>
           {changes.map((c) => (
             <li key={c.field} className="change">
-              <p className="change__field">{c.field === 'proposalType' ? '提案类型' : t(`taskField.${c.field}`)}</p>
+              <p className="change__field">{c.field === 'visualRequirements' ? '视觉成果与视图要求' : c.field === 'proposalType' ? '提案类型' : t(`taskField.${c.field}`)}</p>
               <div className="change__pair">
                 <div className="change__side" data-side="before">
                   <span className="change__tag">{t('change.before')}</span>

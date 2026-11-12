@@ -1,0 +1,34 @@
+# COPY durable replay独立窄审
+
+2026-11-12。固定backend patch `2080e284b8c5c2e4e4e59d229b57cb5208f5df6d18d864759fb7c674f44d5ac0`（三源）；frontend patch `b099ed2fcccff73747f6b8e82c9394a304d45e30a96068fd0d3cae757f4debb7`（四文件，含两项unit）。审查者未参与实现。
+
+结论：**本窄增量未发现经实证的可操作P1/P2，适合按hunk根合流后执行受影响native验收；不代表COPY整链、模型/费用、真实人类采用、17票语义或UI实测通过。** 本轮没有根修改、旧case/129库访问、模型、图片生成、上游完整链或Git操作。A/B/COPY的修复与实际业务状态不互相代签。
+
+## 独立实际执行
+
+- `node run-tests.mjs`：`independent-green.log` **17通过、0失败、0skip，exit0**。新临时依赖stage，原5stop断言保留，仅扩其测试store shim消费新marker reducer；另12项覆盖新step/review、pending/legacy、真实SQLite双连接、重开读取与新小HTTP。没有导入重型COPY HTTP完整链。
+- 对冻结before三源执行相同原3正确行为期望：`independent-red.log` **0通过、3失败、0skip，exit1**。只提取最终replay.test中原前三项到本轮stage，并用independent-before-loader精确映射保留的before三源；未跑可能依赖新marker的旧全12项或gate组合。原copy-replay-probe源/log保持原位，没有修改。
+- 新增 `independent-extra.test.mjs/log`：**3通过、0失败**。owner advance合法写入新active copy后，原step仍保存一次owner＋creative结果，disabled无executor原body重放不再推进，未因套用A快照false stale；legacy review指向已非current-copy的旧artifact时，省略/借用admission ID的真实applyCommand start仍提前拒；已完成结果的completion commandId换progress被COMMAND_ID_REUSED挡住，revision/原结果不变。
+- 前端临时完整src副本叠加本四文件：`independent-frontend-test.log` **2 unit通过**；`independent-frontend-typecheck.log`最终exit0。首次typecheck因本轮临时复制漏了原test-fixtures/provenance/manifest.json，补原文件字节后通过；首次失败保留于independent-frontend-typecheck-first.log，没有改候选源码或编译规则。
+
+前端依赖用临时目录的独立node_modules容器链接原依赖，缓存位于临时目录；没有运行浏览器、启动App或复用其他页面截图签UI。临时stage路径记录于independent-frontend-stage.txt。
+
+## 核验结果
+
+**单次衔接与真实owner。** 新step/review只在未完成新协议下执行/advance；保存原progress，完成exact body只读返回，换body拒绝。随机marker之外，原CAS持久保存claimOwner，service重新读取真实marker/owner验证归属；真实双openStore的相同command另一actor抢先和不同command竞争均让loser零advance，分别由归属检查或CAS挡住。完成必须同marker、同owner；原生外来completion拒绝。单进程并发pending、marker后失败与completion保存失败均不会重新推进。
+
+**pending/legacy。** pending阻止新的continue/confirm/verify/step/review与COPY原生start/retry；GET和exact pending只读，既有原稿保留。旧无protocol queued/completed不补造marker或原progress，不因execution on/off升级。原job不能换commandId复用；legacy review同artifact不能新review升级。按原job membership及legacy review target检查的native准入覆盖省略admission和借用ID，也覆盖旧target不再current-copy；独立附加反例已证。
+
+**COPY合法状态变化。** 当前快照依旧使用原copyHttpSnapshot，绑定task/policy/Q/research/SIMPLE与strategy，未把A的copy-active快照强套给COPY；step从owner交接到生成新copy是允许的。review另外冻结原panelId/packet/nodes/contentHash，未完成路径核原edge、current strategy、binding及同edge unknown。独立正常新copy metadata过渡和原5stop全部通过。
+
+**原方法与门槛。** COPY_HTTP_FIELDS和copyHttpJobs定义没有改动，新增守卫叠加原requireCopyHttpJob及原actualclaim unknown检查；SIMPLE双owner、唯一copy、17评审、原human、onlycurrent与正常原IO消费路径没有在本三源delta中被移除。continue/confirm/verify除了pending新写停止，原行为未扩展；本包不新开恢复/重派/allowance入口。实际策略资格、角色与票据仍依赖原native校验，不能由metadata stub证明。
+
+**关闭执行的证据上限。** false＋显式executor的旧反例是直接createSimpleCopyService seam；真实ResearchService(false)的executor=null，不能宣称默认暂停API曾实际派模型或写队列。修后已实跑新SQLite关闭重开、disabled且无executor服务实例返回保存结果，不新增revision。没有把此实例测试说成完整服务器关开后的真实COPY业务正例。
+
+## 冻结与三方合流
+
+独立逐SHA核backend三件保留before及after、backend patch/tests与frontend四件after/patch相符；核验保存于independent-freeze-pre/post。pre记录在原17项后、附加探针前采样，不冒称整个独立执行启动前原根快照。原before来自候选before目录，不假称当前根project仍等于旧before。
+
+根project已含较新的A replay/claim-r4等改动，本候选project来自旧精确before。其两段新增COPY import/switch/start-retry admission必须三方hunk合流，保留根A/B marker/claimOwner及已有COPY_FIELDS/copyHttpJobs/unknown/sharedfields守卫，不能整文件覆盖。根三个源只读采样在附加探针前后保持一致；候选未采用。
+
+仍未验：真实当前SIMPLE→双owner→唯一copy→全文核验/17评审正向、实际provider失败后native resume/恢复组合、旧case迁移、pending/legacy原件核回、真实人类/客户/消费者及完整App/Chrome。根合流后应运行受影响native脚本并按实际结果记录，不为本次独立廉价审查另开几分钟上游链。0finding只适用于上述冻结差异与已执行边界，不能据此签整链完成。

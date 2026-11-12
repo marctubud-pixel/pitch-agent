@@ -1,3 +1,9 @@
+# 当前视觉参考与明确视图接线 · 2026-11-12
+
+当前应用经visual-a-service/http复用原参考、草图与v2 runtime，actual claim核固定技术请求、source/target/binding和未知结果；新marker及claimOwner保存一次衔接的原结果。COPY同类重放修复沿原owner/creative模块，不建新业务状态机。前端严格初始129映射、原图与参考组件见[运行合同](../development/visual-workflow.md)。完整App草图/v2、成稿至交付仍按实际原件继续，不恢复旧run或内容审阅岗位。
+
+Brief可选视图要求在既有交付内容内部传递，native final plan直接读取原task.brief约束每方向kind/views；原source字节/hash、旧明确要求与方法保持。真实UI、便携metadata和业务批准分别留证，最新[状态](../../status/current.md)不以数量签通过。以下为原时点地图。
+
 # 当前PDF原件接入 · 2026-11-11
 
 当前应用通过brief-server/brief-intake-service复用旧intake-runtime与intake-document-store，保存PDF原字节及同项目操作，前端按完整卡与原件身份读取/恢复/下载；不启动旧队列、解析或模型。模块合同见[PDF原件](../development/brief-originals.md)，默认旧模块地图继续保留原时点身份。

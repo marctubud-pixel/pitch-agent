@@ -1,0 +1,19 @@
+{
+  "apiPid": 9500,
+  "signal": "SIGINT via owned session40378",
+  "browserClosed": true,
+  "ports": [
+    {
+      "port": 4220,
+      "closed": true,
+      "code": "ECONNREFUSED",
+      "errno": -61
+    },
+    {
+      "port": 4470,
+      "closed": true,
+      "code": "ECONNREFUSED",
+      "errno": -61
+    }
+  ]
+}

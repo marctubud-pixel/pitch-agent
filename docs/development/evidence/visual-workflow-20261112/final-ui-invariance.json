@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "source": true,
+    "originalDbSha": true,
+    "revision": true,
+    "snapshotBlobSha": true,
+    "semantic": true,
+    "ioSha": true,
+    "cloneSha": true
+  },
+  "allEqual": true,
+  "sources": 1059,
+  "ioCount": 2130,
+  "revision": 1130
+}

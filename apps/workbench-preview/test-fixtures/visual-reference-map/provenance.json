@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "frozen-native-projection-metadata",
+  "sourceRevision": 1130,
+  "sourceProjectJsonSha256": "b5bf4a2c10a10ff976d3829fe06bcd29efd1e12917da7705f2aff127bc875493",
+  "nativeReferencePlanNodes": 129,
+  "nativeReferenceReports": 129,
+  "scope": "Initial manual_supplied only; no runnable fixture, model calls, artwork or customer approval",
+  "omitted": "Unrelated reports, file IO bodies and irrelevant runtime fields; original included metadata and 129 assignments retained",
+  "defaultTestRequiresLocalDatabase": false
+}

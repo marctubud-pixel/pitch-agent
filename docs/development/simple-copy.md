@@ -1,6 +1,6 @@
 # SIMPLE策略至三方向文案运行合同
 
-规范版本：1.0.0。本合同描述当前七阶段HTTP文案接续。业务方法沿用[文案负责人](../agents/copy-owner.md)，策略三板块及受阻诊断继续遵守[策略合同](simple-strategy.md)。本包不恢复旧复杂策略Skill。
+规范版本：1.1.0。本合同描述当前七阶段HTTP文案接续。业务方法沿用[文案负责人](../agents/copy-owner.md)，策略三板块及受阻诊断继续遵守[策略合同](simple-strategy.md)。本包不恢复旧复杂策略Skill。
 
 ## 当前原生链路
 
@@ -45,8 +45,12 @@ strategy人工节点未确认时，confirm先核当前SIMPLE正文SHA、同版�
 
 ## 原件、恢复与未接范围
 
+新step与review另保存copy-durable-advance-v1、原scope与实际完整binding。固定job组完成、或原panel登记后，先按CAS写唯一随机marker及真实claimOwner；从存储核回自己的claim后才推进一次。原progress由同marker和owner保存。exact原body重放只读该结果，关闭执行器也不安排后来eligible任务。
+
+marker后中断或结果保存失败保持advance_pending，GET不推进，新COPY命令和actual start/retry停止。旧无此协议的step/review只读返回advance_state_unrecorded；不补造历史结果，不允许换ID或省略准入借旧job升级。当前scope的未记录状态、历史原记录与当前业务资格分别呈现，不误挡另一合法新scope。pending核回、解除及视觉unknown恢复均未开放。
+
 已通过原IO核回的SIMPLE可凭原生reconciliation证明合法进入双负责人及下游。原attempt仍保持awaiting_reconciliation，原作者、executor、receipt、packet和正文身份不改。独立IO身份复核只证明来源和未重复执行，不能代替原生校准或业务质量判断。
 
-copy、owner和creative的unknown仅保留原记录，本包没有原件恢复端点，不重置queued或重派。策略修订、文案改稿及异议触发的再评、实际视觉continue仍待接。参考、草图、成稿、样机、同版Deck、终审、可编辑PPTX及包装/KV两类整链仍需独立接入和验收。
+copy、owner和creative的unknown仅保留原记录，本包没有原件恢复端点，不重置queued或重派。策略修订、文案改稿及异议触发的再评仍待接。视觉参考与后端草图路由另按[受限合同](visual-workflow.md)接线；完整App草图/v2、成稿、样机、同版Deck、终审、可编辑PPTX及包装/KV两类整链仍需实际接入和验收。
 
 原件、坏文件、失败票、旧数据库及青屿身份保持。本地合成HTTP测试证明接缝，不证明真实异议已解决、审美通过或客户选案。当前根最终检查、实际UI与PR #9按真实回执登记，候选owner自述不能替代根验收。专项入口见[验证范围](testing.md)。

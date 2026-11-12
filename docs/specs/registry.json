@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.12.0",
+  "baselineVersion": "1.13.0",
   "date": "2026-11-12",
-  "status": "SIMPLE双负责人至唯一三方向文案、全文核验与原四岗评审已接；下游恢复、改稿及视觉至交付继续目标模式",
+  "status": "SIMPLE文案与视觉参考受限接线，durable原结果重放和明确视图输入；完整App草图/v2、成稿至交付及两类整链仍待实际验收",
   "workflow": [
     "brief",
     "research",
@@ -188,7 +188,7 @@
       "kind": "page",
       "title": "简报与任务",
       "path": "docs/pages/brief.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -230,7 +230,7 @@
       "kind": "page",
       "title": "文案与主题",
       "path": "docs/pages/themes.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.copy-owner",
@@ -244,11 +244,12 @@
       "kind": "page",
       "title": "视觉开发",
       "path": "docs/pages/visual.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.visual-owner",
-        "contract.ui"
+        "contract.ui",
+        "contract.visual-workflow"
       ],
       "confirmedScope": "已确认要求汇编；本次整理待核对",
       "routeKey": "visual"
@@ -526,7 +527,7 @@
       "kind": "contract",
       "title": "开发启动与工程入口",
       "path": "docs/development/README.md",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -535,7 +536,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -544,7 +545,7 @@
       "kind": "contract",
       "title": "配置与服务边界",
       "path": "docs/development/configuration.md",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -553,7 +554,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -562,7 +563,7 @@
       "kind": "contract",
       "title": "Git与PR及版本恢复",
       "path": "docs/development/git-and-recovery.md",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -580,7 +581,7 @@
       "kind": "contract",
       "title": "工作台操作说明",
       "path": "docs/usage/README.md",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -589,7 +590,7 @@
       "kind": "contract",
       "title": "Pitch Agent后续调整顺序",
       "path": "docs/development/remaining-work.md",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
@@ -614,7 +615,7 @@
       "title": "七阶段运行合同",
       "kind": "contract",
       "path": "docs/specs/seven-stage-runtime.md",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.workflow",
@@ -707,7 +708,7 @@
       "kind": "contract",
       "title": "SIMPLE策略至三方向文案运行合同",
       "path": "docs/development/simple-copy.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.simple-strategy",
@@ -721,12 +722,27 @@
       "kind": "contract",
       "title": "图片原件只读核验",
       "path": "docs/development/image-readback.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
         "contract.testing"
       ]
+    },
+    {
+      "id": "contract.visual-workflow",
+      "kind": "contract",
+      "title": "视觉参考与草图受限接线",
+      "path": "docs/development/visual-workflow.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.simple-copy",
+        "contract.seven-stage-runtime",
+        "contract.http-brief",
+        "method.visual"
+      ],
+      "stage": "visual"
     }
   ],
   "entryDocuments": [

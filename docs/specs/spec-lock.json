@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.12.0",
-  "registrySha256": "b71ce64e9d7a786ae8e6513a2b83e3e092eeb32b825ab979b4ac5caa601d3fcf",
+  "baselineVersion": "1.13.0",
+  "registrySha256": "d57dc5b6c6d3cc9af265a3de5a52b9ef35df4234bb7b81713d49b79e537baf09",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -95,10 +95,10 @@
       }
     },
     "page.brief": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/brief.md": "80a6f2a48ef08030e168e3f4e9b2d42bd94692822dd37f507ccd7ad1d97a42f7"
+        "docs/pages/brief.md": "27ce2ce744e8aeb141a2f3cbc24d11d06155fe254bc8a78ff6171fc4289d1830"
       }
     },
     "page.research": {
@@ -116,17 +116,17 @@
       }
     },
     "page.themes": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "8e87e2990e96fe912b547ca98504812ba4d7df05a10b7b450ba52fea7f3bf575"
+        "docs/pages/themes.md": "64d9c58e1e485377a5d9b83ffecd2d40918abb57b7769026856062a6eafd8ba6"
       }
     },
     "page.visual": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "45f42272d4f332d5d7c0e4306239b2b7b8328a4a74a8beb348521fe70f85bde4"
+        "docs/pages/visual.md": "b8de75120578d721a177d6e5838c60694828fd4b697b6334f3aadb5e4346dedf"
       }
     },
     "page.layout": {
@@ -311,38 +311,38 @@
       }
     },
     "contract.development": {
-      "version": "1.8.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/development/README.md": "ddff0a975150a78c257634919532869ecb5d68826d534545fc2f7f8d62c530f1"
-      }
-    },
-    "contract.runtime": {
-      "version": "1.8.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/architecture/runtime.md": "c3f168cb96df45ab74147d1b9134aba97f3073886d19c603c6e506de62452742"
-      }
-    },
-    "contract.configuration": {
-      "version": "1.7.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/development/configuration.md": "d14479863bd3e6d08c6c3ce4ee7e21d0786d5a653ff26cd5a343c769bbc492f4"
-      }
-    },
-    "contract.testing": {
       "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "5da2180587ff5013d6529c30332b9d1af5abf3b94b49425f2e5d91d06ba4f4eb"
+        "docs/development/README.md": "9b872d63f5b3fc844be45445180c700a24fbdba8725c74fb6c641e6b5eb6ee6b"
+      }
+    },
+    "contract.runtime": {
+      "version": "1.9.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/architecture/runtime.md": "9020c36cbcea21e292030d9c270b89e3d6662e09138b31808dcc6c38b7e4f88a"
+      }
+    },
+    "contract.configuration": {
+      "version": "1.8.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/configuration.md": "c66df3ab213901621a47b80bad2e9c44ef942f28adae8d263694686b4c2cecf6"
+      }
+    },
+    "contract.testing": {
+      "version": "1.10.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/testing.md": "df0ee3a92630bc5ef08bc70dfed9dfcda37623b60daacd544a21f7ca114c734d"
       }
     },
     "contract.git": {
-      "version": "1.0.3",
+      "version": "1.0.4",
       "lifecycle": "current",
       "files": {
-        "docs/development/git-and-recovery.md": "7822654750dc42ce47c617a561adb579ecc3877662a15dad0ae5fd7afd0f46aa"
+        "docs/development/git-and-recovery.md": "565d384cc61507d840e6231b6fe587b464bd819d8b37634609f31f7e0e433351"
       }
     },
     "contract.resources": {
@@ -353,17 +353,17 @@
       }
     },
     "contract.usage": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/usage/README.md": "997a6a08be0ed22ef9074d484de9808816072ba129ae6c1137212689ffef5b9d"
+        "docs/usage/README.md": "8ddc9bd7b61aa60a1d356167e9ddca7702962c3026fb08bd6f1c4d0784ad4f97"
       }
     },
     "contract.remaining-work": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/remaining-work.md": "008a19675dab15d642c85565eb0fac25432b609b0875675c6578a54e226705f5"
+        "docs/development/remaining-work.md": "449eb15ff6d78ae03ee8de426f60bb76ca15556d920ed41011545ed93845f028"
       }
     },
     "contract.http-brief": {
@@ -374,10 +374,10 @@
       }
     },
     "contract.seven-stage-runtime": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/seven-stage-runtime.md": "4714b91c868c17ee11b4761f2904c05d58a77aaa448d506a5b329c8b11cab543"
+        "docs/specs/seven-stage-runtime.md": "48e71d37eb48674a41aba5c0d26b27f26ba16f85302dc8bcbc50b824f9562f92"
       }
     },
     "contract.seven-stage-research": {
@@ -423,17 +423,24 @@
       }
     },
     "contract.simple-copy": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/simple-copy.md": "b5afd425a7af4751f7981d7cb9ace4d75dd6eb129623fb9a6431ff8768ac9c85"
+        "docs/development/simple-copy.md": "b0f0cdc2c7833717776f0c9e80ec7166e5cfae244f216ecdb4088f2b2c0ba8c3"
       }
     },
     "contract.image-readback": {
+      "version": "1.0.1",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/image-readback.md": "d89009e65820421765ae533590fad2b1169c245aff5805d2da1c2cd8486f6d09"
+      }
+    },
+    "contract.visual-workflow": {
       "version": "1.0.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/image-readback.md": "12f29780bc2fc2841c6955d5a850b146a6da17be13fb0fc00772b02ebab2caed"
+        "docs/development/visual-workflow.md": "c2f2049af22de1f495f2d81501a547b6328313af33ca5488ff75a6a1ef462f93"
       }
     }
   },
@@ -444,7 +451,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "2f40da9f1b19467505711ff5f15a4c357c318a524b2c1c145c0711005cf4e0cd",
+    "docs/specs/README.md": "95dd59fee9f83128a5e2f94ce9c8ca9014fdcd695b4fa783c8d3bc8e58d320e1",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

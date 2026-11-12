@@ -1,3 +1,4 @@
+import {VisualRequirementsEditor} from './VisualRequirementsEditor';
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Check, CircleHelp, CircleSlash, Lightbulb, Quote, TriangleAlert, UserCheck } from 'lucide-react';
 import { CARD_MAIN_FIELDS, CARD_MORE_FIELDS, LIST_FIELDS, REQUIRED_FIELDS, type FieldOrigin, type SourceSpan, type TaskField } from '../domain/models';
@@ -151,6 +152,7 @@ export function TaskCardEditor({
       activeSpan={active?.field === f ? active.span : null}
       compact={compact}
       multilineBrand={multilineBrand}
+      afterContent={f === 'deliverables' ? <VisualRequirementsEditor value={state.visualRequirements} onChange={visualRequirements => onChange({...state, visualRequirements})} disabled={disabled || readOnly.includes(f)} idPrefix={idPrefix} /> : null}
     />
     {f === 'projectName' && <div className="tc-field tc-field--type">
       <label className="tc-field__label" htmlFor={`${idPrefix}-proposalType-input`}>提案类型</label>
@@ -253,7 +255,9 @@ function FieldRow({
   activeSpan,
   compact,
   multilineBrand,
+  afterContent,
 }: {
+  afterContent?: ReactNode;
   field: TaskField;
   state: TaskCardState;
   id: string;
@@ -342,6 +346,7 @@ function FieldRow({
           </details>}
         </>
       ) : explanation}
+      {afterContent}
     </div>
   );
 }

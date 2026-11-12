@@ -1998,12 +1998,12 @@
       "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
     },
     "apps/workbench-preview/src/domain/service.ts": {
-      "sha256": "d0d9333be7b627687527f660838d2924686f74450eea903fea8c2a57776d3b56",
-      "reason": "加入可选文案工作流及五种原请求恢复身份，不开放通用阶段命令。"
+      "sha256": "3a4ced72ccc63b5c84a590c0caee08788a5ac218bddb614b7d5222945baf6b90",
+      "reason": "加入可选文案工作流及五种原请求恢复身份，不开放通用阶段命令。 本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
     },
     "apps/workbench-preview/src/services/http/HttpWorkbenchService.ts": {
-      "sha256": "03d38dd5b915496b4ec8339ce1cd575486bb1b1f05501c2c4562eb978ceeffb2",
-      "reason": "接受限双owner/copy/全文核验/17评审工作区，严核正文和原请求回执，同body恢复。"
+      "sha256": "ed37f18fe95805d18af9e3d4f200f8673d660af9e021506f99ccef2f2974b002",
+      "reason": "接受限双owner/copy/全文核验/17评审工作区，严核正文和原请求回执，同body恢复。 本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
     },
     "apps/workbench-preview/src/App.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
@@ -2014,28 +2014,28 @@
       "sha256": "5af8ad8684f2e4a8a3956b6429fda5a9c6047d54defcdf9801ea2625aa88fbad"
     },
     "apps/workbench-preview/src/collaboration/protectServices.ts": {
-      "sha256": "24a7d7914c5cbb8a306f006926dee2ced9b28e2ba47e3be00c7a922b8ef399f0",
-      "reason": "为可选文案工作流复用既有workflow/decide权限，不改变其他岗位权限。"
+      "sha256": "ec7992cbb703c42f010ae2462873d5f88da39953fbff02c506b66e2497f291b6",
+      "reason": "为可选文案工作流复用既有workflow/decide权限，不改变其他岗位权限。 本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
     },
     "apps/workbench-preview/src/domain/models.ts": {
-      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份",
-      "sha256": "8be30d8116e3930f15b3cce4ef3b764545b70d70d2103a6cc40028c8e9d994a6"
+      "sha256": "7185baf11229464026387016079547c11938c3fdf5505759beda7923ab9acfe2",
+      "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份 本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
     },
     "apps/workbench-preview/src/domain/proposal.ts": {
       "sha256": "dc4697a3c7bfd791e13ad39ba42800647bc0ef5edeb9d5a72731563281b64666",
       "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
     },
     "apps/workbench-preview/src/services/index.ts": {
-      "sha256": "b337872cfff3a864b581f2b82aad5b11b51b6bf28c2500535e65277e21b34a6a",
-      "reason": "当前HTTP PDF原件接入和真实能力说明；不再将已接原件与研究误称仅Brief，不改旧内容或批准"
+      "sha256": "d8d5292c34bb081210f2d187c88f37bf471c7aac314f2afb8b171caaca4f12e4",
+      "reason": "当前HTTP PDF原件接入和真实能力说明；不再将已接原件与研究误称仅Brief，不改旧内容或批准 本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
     },
     "apps/workbench-preview/src/views/HomeView.tsx": {
       "reason": "按1.4.0合流受限简报HTTP、真实状态投影及刷新恢复；保留原始导入身份、业务原件和原图",
       "sha256": "0584636369f247b2615ea60a31337314e0224b2e0bc83aff21379981f06f0d1a"
     },
     "apps/workbench-preview/src/views/NewProjectView.tsx": {
-      "sha256": "674c93af7f8769cc654c55e9bf2e32513fac48df5ad1307df286276528d33a69",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "e8bd5fdd9f72e743e2428501e539b8faeea8cedc9f028988c653e2fb2b2073a7",
+      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准 本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
     },
     "apps/workbench-preview/src/collaboration/types.ts": {
       "sha256": "31516d5b577e51205c8d6ca34bd84f623ad8e4584744df3bb2e64e9d533539cd",
@@ -2088,6 +2088,30 @@
     "apps/workbench-preview/src/views/stages/ThemesStage.tsx": {
       "sha256": "8ec153ea196805fa74899a29e7b57d94d8fc9763d419ebde1516c5c7c65a4a6a",
       "reason": "connected页读取当前原生三方向/原票，Mock/青屿沿用既有视图。"
+    },
+    "apps/workbench-preview/src/intake/ChangeReview.tsx": {
+      "sha256": "63fd6a86ca440b683067007dacaf0b723027f0fd8015aa16d1a9efae311189f3",
+      "reason": "本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
+    },
+    "apps/workbench-preview/src/intake/TaskCardEditor.tsx": {
+      "sha256": "5de08b01f4a6ac1bb5fa63f12ebab5220c716c19b88f4577c701cee82cfddbd8",
+      "reason": "本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
+    },
+    "apps/workbench-preview/src/intake/taskCard.ts": {
+      "sha256": "f17f605c54be1059a7b59f9fe57a03568506b16649f4ef57aa2cfb618b59ae5c",
+      "reason": "本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
+    },
+    "apps/workbench-preview/src/services/mock/MockWorkbenchService.ts": {
+      "sha256": "b237d808c9c6026bf27d6e7a1d538d874c97e882ddc24de9c443d8249abbe7da",
+      "reason": "本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
+    },
+    "apps/workbench-preview/src/views/BriefView.tsx": {
+      "sha256": "f38d9cd0deb0cc280d04bb6cc8bb6139b575a013cb3b0c0cdc8efb581a15f10a",
+      "reason": "本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
+    },
+    "apps/workbench-preview/src/views/stages/VisualStage.tsx": {
+      "sha256": "d8d4ab60bfa55d8fc571f9c7a88fce39e6927ff72bac32ae069209004b13303b",
+      "reason": "本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
     }
   }
 }

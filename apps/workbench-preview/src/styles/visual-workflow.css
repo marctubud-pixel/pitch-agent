@@ -1,0 +1,3 @@
+.pw-visual.visual-workflow .pw-branch { grid-template-columns: minmax(0, 1fr); min-height: 76px; }
+.pw-visual.visual-workflow .pw-branch[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: -2px; }
+.pw-visual.visual-workflow .pw-branch__text { min-width: 0; }

@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.9.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.10.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -16,6 +16,14 @@
 | `npm run test:backend:legacy` | 兼容旧命令，现转到test:domain |
 
 默认命令集合写在根package.json，CI执行同一套入口。锁定安装曾报告、现已修复的image-size公告见[005](../../status/issues/005-dependency-advisory.md)，两更新锁审计已零公告，冻结历史环境另记。新增测试依赖先确认它是否需要真实服务、预算、个人运行库或旧案例资产，避免通配运行所有旧脚本。
+
+## 视觉与明确视图专项
+
+`npm run test:visual-workflow`包含初始参考/原图HTTP、fixed-target未知停止、新durable replay及真实SQLite两store claim竞争、旧protocol拒绝和原native明确视图约束。它使用新小根与明确metadata，不依赖个人129案例库、不执行模型，也不证明实际草图/v2或美术通过。
+
+原图测试的当前python3需Pillow，与image-scope相同。CI复用已安装PDF venv的PATH运行两组；生产解码器选择逻辑不变。前端129映射使用固定gzip metadata，来源/省略范围在test-fixtures/visual-reference-map/provenance.json，不含可运行旧库或完整原IO。
+
+COPY专项增加原结果只读重放、pending、旧scope准入及同store/双store竞争。完整当前COPY HTTP正向、每轮实际UI与独立业务核验仍分别记录；便携metadata绿不能代替它们。
 
 ## 历史失败及本轮修复
 
@@ -76,10 +84,10 @@ PITCH_PDF_TEST_PYTHON=/absolute/path/to/python3 npm run test:brief-http
 
 ## 文案接续专项
 
-当前源码有simple-copy-runtime、simple-copy-http、simple-copy-negative、simple-copy-scope和simple-copy-stop五组专项。可直接串行执行：
+当前源码有simple-copy-runtime、simple-copy-http、simple-copy-negative、simple-copy-scope、simple-copy-stop和simple-copy-replay六组专项。可直接串行执行：
 
 ```sh
-node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs tools/workbench/simple-copy-stop.test.mjs
+node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs tools/workbench/simple-copy-http.test.mjs tools/workbench/simple-copy-negative.test.mjs tools/workbench/simple-copy-scope.test.mjs tools/workbench/simple-copy-stop.test.mjs tools/workbench/simple-copy-replay.test.mjs
 ```
 
 这些测试使用新SQLite和本机合成HTTP，覆盖实际双负责人、唯一copy、全文核验、17节点、明确人工策略checkpoint、固定集合重放、unknown及上游变化拒绝。已核回SIMPLE专项另核原作者、原attempt、原IO文件身份在下游执行前后保持。工程IO证明不能代替原生校准、真实语义异议处理或客户批准。
@@ -88,8 +96,14 @@ node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs to
 
 `simple-copy-stop`直接检查整组首项未知后停止、原body重放零续派、新命令入账前拒绝、无edge不混入研究和不同edge隔离。实际HTTP正例另用同一新案的原历史快照执行合法start/dispatched/interrupted，再核第二原claim拒绝；不写原历史或重造模型结果。
 
-`npm run test:simple-copy`已按上述五文件串行集合加入根check及Application CI。实际原生双owner与17评审有真实IO成本，Application job上限由15分钟调为30分钟，不降低任何测试断言或业务门槛。候选owner测试和独立反例只支持其冻结字节与具体范围。根完整回归、修后受影响检查、实际UI及PR #9分别记录在[本轮核验](simple-copy-verification-20261112.md)，远程结果按准确head回执更新。不得用旧候选自述签根验收，也不把合成空异议票称为真实质量通过。
+`npm run test:simple-copy`已按上述六文件串行集合加入根check及Application CI。实际原生双owner与17评审有真实IO成本，Application job上限由15分钟调为30分钟，不降低任何测试断言或业务门槛。候选owner测试和独立反例只支持其冻结字节与具体范围。根完整回归、修后受影响检查、实际UI及PR #9分别记录在[本轮核验](simple-copy-verification-20261112.md)，远程结果按准确head回执更新。不得用旧候选自述签根验收，也不把合成空异议票称为真实质量通过。
 
 ## 图片只读核验回归
 
 `npm run test:image-scope`纳入根check；九个微型真实PNG/JPEG及本机HTTP original fixture核缓存生命周期和每次原件IO，另六项纯metadata核上下文谓词等值与bounded depth，不依赖旧DB。当前python3需Pillow；缺少直接失败，CI使用已安装的PDF venv并仅对此step前置其bin路径。已有venv的运行方法、原红例与边界见[图片原件只读核验](image-readback.md)。不以减少纯解码代替原来源、业务门槛或端到端性能验收。
+
+本轮配置PDF后的全量冷运行曾使两项真实PDF前端用例撞到Vitest默认5秒；单独16项通过。仅originalDocumentsHttp的真实页字节用例和researchAcquisitionHttp的实际PDF入r7用例设30秒外层时限，原断言、业务期限及解析器资源限制保持。不能把此前超时记录为产品通过，最终结果见[本轮验证](visual-workflow-verification-20261112.md)。
+
+PR #11首个应用CI的完整双owner/copy/17票前端用例在240秒外层超时，其他786项通过；本地相同用例已通过。仅copyWorkflowHttp的该首用例改600秒，第二个恢复用例仍240秒，原assertions/生产deadline及CI job30分钟保持；修后是否通过以准确head的实际CI回执为准。
+
+新增visualAKnownRejection前端测试实际解码原PNG，Application CI前端步骤显式把已配置PDF venv（含固定Pillow）加入PATH，和image/visual专项一致，不依赖runner系统偶然安装Pillow；生产Python默认选择不改。

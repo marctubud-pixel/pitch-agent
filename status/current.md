@@ -1,3 +1,25 @@
+# 视觉参考接线与纠错保护：PR #11草稿 · 2026-11-12
+
+GitHub main已合并PR #10（a5c6ee5b）；本轮[PR #11](https://github.com/marctubud-pixel/pitch-agent/pull/11)仍为草稿，尚未合并。根已采用A初始129节点参考映射、实际claim归属/durable原结果重放、COPY同类修复和Brief明确视觉视图。独立两轴发现的草图入口过早、零入账409永久锁journal均已窄修，最终18a修复/7aa环境补充的两轴独立补审已完成，原P2均关闭，未发现新增可证P1/P2；参见[本轮验证](../docs/development/visual-workflow-verification-20261112.md)。
+
+本地配置PDF的全量第二次运行退出0：前端787通过/1既有skip、native九组414通过/0skip及构建通过；末次源码变化另32项受影响前端/typecheck通过。首个远程head507a3fe2规范CI成功、应用CI完整COPY/17票用例240秒外层超时，其余786通过；仅该用例改600秒，修后准确headCI尚待实证，不能以本地绿代签远程绿。
+
+原129参考案继续是choice_blocked负例，不补确认时刻/原票/批准，不重跑。参考、COPY原稿与手动组合禁用已做独立只读组件UI复验，最终源补验也已完成（28GET/0POST、原件与1059源SHA前后不变），只签具名负例范围。完整App写入正例、草图/v2、成稿/样机、同版Deck、终审/PPTX及包装/KV两条整链未完成；安全source receiver和两类工程fixture仍隔离准备，不把metadata或旧成果当新案物理/业务批准。
+
+磁盘已超过原3GiB运行门槛。旧资料、DB与回执保留；真实/付费模型、旧业务run、生产及在线PPT编辑保存暂停边界保持。以下均为保留的历史节点，不以旧待修描述覆盖本段。
+
+# 视觉接线历史检查点 · 2026-11-12
+
+图片读取优化[PR #10](https://github.com/marctubud-pixel/pitch-agent/pull/10)准确head80858680的两项CI及实际安装、检查、构建步骤全部成功，已合并a5c6ee5b。操作内纯解码与不同context短路不改变原件、门槛或业务批准。当前从该main建立`codex/visual-a-bridge-20261112`，窄合A源码与参考前端，保留copy守卫/共享表，排除旧阻断夹具及依赖本机库的专项；初验48后端、7前端及typecheck通过。独立发现的重放P2修复待合，不发布未验功能；原PR及最终两轴报告保存在本地目标目录。
+
+视觉A同一合成包装案已保存129/129参考报告，head1130、2114原IO；0running/unknown，原生结果仍为`choice_blocked / CURRENT_REFERENCE_UNCERTAINTY`。189个原occurrence均来自两句重复的fixture限制；原图及角色理由也缺少方向所需品牌、主题、场景与载体的具体正向证据，因此不能凭工程身份豁免，且冻结129预算已用完。此案保留为实际阻断负例，不改旧票、任务、配置或确认时刻，不重跑129。只读诊断及52项纯检查保存在`design/simple-visual-reference-uncertainty-diagnosis.md`，后续新包装/KV工程正例先做输入、像素和角色证据预检，尚未创建。
+
+参考组件r3在临时harness实际完成1280浅色、910深色冷启动复验，9原图共12视图全部解码、原报告展开折回，0POST/页面与控制台错误、无横溢。局部修复方向卡44px列挤压及冷启动样式覆盖，显示129已保存但仍被阻断；服务与浏览器已关闭，1130/semantic/2114IO逐SHA不变。此范围不等于完整App：旧fixture确认audit.at=null不能补造，此前59job保存点没有覆盖完整初始129，旧bridge缺组合及overview的68节点；r5已窄合完整129映射，harness仍不证明完整App通过。草图9图、v2/负责人、采用及A完整通过均未完成。
+
+B候选revision正常切child后丢旧step回执的P2已在隔离r4修复，独立56项与4强反例通过；尚未采用、不签实际B通过。A已完成step重放再次advance的P2修复待合。根同类检查进一步实证COPY的step/review旧请求重放也调用advance且漏执行开关，3项纯内存反例保留、修复待做，不回写PR #9当时审查。新App Brief到原native requiredViews尚缺明确typed输入接线，正在隔离实现，不能从deliverables自由文猜出客户要求。通用Deck、终审/PPTX及包装/KV两条当前App整链继续待接；旧业务、真实/付费模型、生产及在线编辑暂停边界保持。磁盘现约46GiB，原清理证据保持，系统额外释放不全归因本轮。
+
+以下为原时间节点，均保留当时身份。
+
 # 图片只读核验工作包 · 2026-11-12
 
 文案[PR #9](https://github.com/marctubud-pixel/pitch-agent/pull/9)最终b5687cf3的两项CI及实际安装/测试/构建全部成功，已合并68b6302c。原unknown组内续派P2和CI整流程wall超时失败、修复、独立复验保留，见[文案核验](../docs/development/simple-copy-verification-20261112.md)。

@@ -40,7 +40,7 @@ export function createServices(): Services {
   const persistence = browserStore();
   const proposalOptions = { brandResources: new IndexedDBBrandResourceRepository(), metadataPersistence: persistence.persistence };
   if (baseUrl) {
-    const workbench = new HttpWorkbenchService({ baseUrl, recovery: {actorKey: () => team.getActor().id, storage: () => sessionStorage, authorize: kind => {team.require(pendingWriteAction(kind));}} });
+    const workbench = new HttpWorkbenchService({ baseUrl, visualAuthorize: route => team.require(['visual-image-uploads','reference-materials'].includes(route)?{kind:'edit_visual'}:['reference-adoptions','reference-choices','sketch-adoptions'].includes(route)?{kind:'decide',stage:'visual'}:{kind:'workflow'}), recovery: {actorKey: () => team.getActor().id, storage: () => sessionStorage, authorize: kind => {team.require(pendingWriteAction(kind));}} });
     // HTTP mode reads actual project snapshots; unsupported stages never synthesize results.
     return { ...protectServices({ workbench, intake: new LocalIntakeService(), assistant: new HttpAssistantService({ baseUrl }), proposals: new HttpProposalService(workbench) }, team), team };
   }

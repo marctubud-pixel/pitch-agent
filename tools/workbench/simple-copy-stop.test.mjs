@@ -1,3 +1,4 @@
+import {reduceCopyAdvance} from './simple-copy-http.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createWorkflow} from './seven-stage-workflow.mjs';
@@ -11,7 +12,7 @@ function fixture({firstUnknown=true,existingStatus=null,otherEdge=false,noEdge=f
  if(existingStatus)p.jobs.push({id:'prior',edgeId:otherEdge?'different-edge':'edge',status:existingStatus,attempts:[{status:existingStatus}],binding});
  if(noEdge)p.jobs.push({id:'research-unknown',status:'awaiting_reconciliation',attempts:[{}],binding});
  const calls=[];
- const store={read:()=>structuredClone(p),command:(_id,c,context)=>{reduceCopyHttp(p,c,context);p.revision++;}};
+ const store={read:()=>structuredClone(p),command:(_id,c,context)=>{if(c.kind==='copy-http-request')reduceCopyHttp(p,c,context);else reduceCopyAdvance(p,c,context);p.revision++;}};
  const executor={execute:async(_id,id)=>{calls.push(id);const j=p.jobs.find(j=>j.id===id);j.status=firstUnknown&&calls.length===1?'awaiting_reconciliation':'succeeded';j.attempts.push({status:j.status});p.revision++;return j;},advanceOwnerEdges:async()=>{},advanceCreativePanels:()=>{}};
  const roles=['strategy','copy','verification','creative_director',...['copy','brand','user','communication'].flatMap(r=>['creative_score_'+r,'creative_opposition_'+r])];
  const service=createSimpleCopyService({store,rootDir:'.',executor,executionAllowed:true,bindings:Object.fromEntries(roles.map(r=>[r,binding])),providers:{synthetic:{model:'synthetic'}},simple:{status:async()=>({strategy:{current:true}})}});

@@ -1,3 +1,4 @@
+import {visualRequirementText, type VisualRequirement} from '../domain/visualRequirements';
 /**
  * Task-card editing state shared by the intake flow and the brief page. Pure functions only:
  * no service calls, no storage, no parsing.
@@ -29,7 +30,7 @@ export interface CardField {
   initial: string;
 }
 
-export type TaskCardState = Record<TaskField, CardField>;
+export type TaskCardState = Record<TaskField, CardField> & {visualRequirements?: VisualRequirement[]};
 
 const lines = (text: string) =>
   text
@@ -59,14 +60,14 @@ export function fromBrief(brief: Brief | null, projectName: string): TaskCardSta
     if (!brief) return LIST_FIELDS.has(f) ? [] : '';
     return brief[f] as string | string[];
   };
-  return Object.fromEntries(
+  return {visualRequirements: brief?.visualRequirements, ...Object.fromEntries(
     TASK_FIELDS.map((f) => {
       const text = toText(value(f));
       const stored = brief?.provenance?.[f];
       const provenance: FieldProvenance = stored ?? (text.trim() ? { origin: 'accepted', reason: 'stated', spans: [] } : MISSING);
       return [f, { text, initial: text, provenance }];
     }),
-  ) as unknown as TaskCardState;
+  )} as TaskCardState;
 }
 
 /**
@@ -142,6 +143,7 @@ export function toBriefInput(state: TaskCardState, attachment: AttachmentInput |
   const list = (f: TaskField) => lines(state[f].text);
   const one = (f: TaskField) => state[f].text.trim();
   return {
+    ...(state.visualRequirements === undefined ? {} : {visualRequirements: state.visualRequirements}),
     background: one('background'),
     audience: one('audience'),
     objectives: list('objectives'),
@@ -161,7 +163,7 @@ export function toBriefInput(state: TaskCardState, attachment: AttachmentInput |
 }
 
 export interface FieldChange {
-  field: TaskField | 'proposalType';
+  field: TaskField | 'proposalType' | 'visualRequirements';
   before: string;
   after: string;
 }
@@ -175,18 +177,20 @@ export function preserveHiddenFields(input: BriefInput, base: Brief): BriefInput
     const inferredLegacy = !base.provenance[field] && (next.origin === 'accepted' || next.origin === 'missing') && next.spans.length === 0 && JSON.stringify(input[field]) === JSON.stringify(base[field]);
     if (!inferredLegacy) provenance[field] = next;
   }
-  return { ...input, ...legacyBriefFields(base), provenance };
+  return { ...input, ...legacyBriefFields(base), visualRequirements: input.visualRequirements ?? base.visualRequirements, provenance };
 }
 
 const norm = (f: TaskField, text: string) => (LIST_FIELDS.has(f) ? lines(text).join('\n') : text.trim());
 
 /** Field-by-field differences between two cards (project name excluded: it is not part of the brief). */
 export function diffCards(before: TaskCardState, after: TaskCardState): FieldChange[] {
-  return TASK_FIELDS.filter((f) => f !== 'projectName' && norm(f, before[f].text) !== norm(f, after[f].text)).map((f) => ({
+  const changes: FieldChange[] = TASK_FIELDS.filter((f) => f !== 'projectName' && norm(f, before[f].text) !== norm(f, after[f].text)).map((f) => ({
     field: f,
     before: norm(f, before[f].text),
     after: norm(f, after[f].text),
   }));
+  if(JSON.stringify(before.visualRequirements) !== JSON.stringify(after.visualRequirements))changes.push({field: 'visualRequirements', before: visualRequirementText(before.visualRequirements), after: visualRequirementText(after.visualRequirements)});
+  return changes;
 }
 
 /** Origins that a person is responsible for, for display. */

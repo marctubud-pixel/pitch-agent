@@ -1,0 +1,53 @@
+# 视觉参考、明确视图与重复请求保护的验证
+
+2026-11-12。本轮基于已合并PR #10的main `a5c6ee5bbde6345c267c8ce227a2adc334c30c25`，接当前应用的参考入口及Brief明确视图，并修复A/COPY请求重复推进。草图、成稿、Deck与最终交付没有因此完成。
+
+## 修复与实际检查
+
+| 范围 | 改动与已取得证据 | 结论上限 |
+| --- | --- | --- |
+| A参考 | 严格读取初始10生产节点与7组17节点评审，共129份原报告；原图保持原字节 | 原合成案仍为choice_blocked，不是参考批准 |
+| 单次推进 | A/COPY保存随机marker、实际claimOwner及原progress；同body只读重放；真实SQLite双连接竞争与失配completion拒绝 | pending及旧无协议记录停止继续，没有自动恢复 |
+| Brief明确视图 | 当前可选typed输入、省略保留/明确清空、真实确认与历史只读；native final计划逐方向核完整kind/views | 字段存在不证明最终像素满足；尚未跑完整视觉失效链 |
+| 根合流检查 | 后端85项：A33、Brief9、COPY17、既有域26；前端31项及typecheck通过 | 受影响边界检查，全量检查另记 |
+| 实际UI | 原1130参考案及原163文案案只读克隆；1280浅色/910深色；原文、原报告、原图和旧记录阻断分别核对 | 临时组件harness，不补原Brief确认时间，不签完整App或新durable正例 |
+
+候选作者报告、独立复核与根结果分别保存；小型回执副本及其来源SHA（个别文本日志去末尾空行或ANSI装饰与行尾空白，清单保留原SHA及转换）见[EVIDENCE-SOURCES](evidence/visual-workflow-20261112/EVIDENCE-SOURCES.json)。候选报告中的“根未采用”是原审查时点，不能当成当前合流状态，也不能把候选通过直接改写为根全量通过。
+
+## UI与原件保护
+
+参考独立复验读取9张唯一原图，共12个显示实例，实际blob SHA与720×480尺寸匹配；129报告保留，37条旧衔接记录明确未记录结果。COPY复验保留三方向原文、全文对象、17份原评与原裁定；没有新人工决定。两个服务均仅GET/OPTIONS，原DB、snapshot、semantic及其原IO前后不变，临时服务和Chrome已关闭。
+
+Brief新案另以真实保存/确认/修订和历史只读验证，0模型。前期全流程trace被末段脚本覆盖的缺陷如实保留，不宣称全流程网络计数为0。长度P3已移除textarea聚合上限：合法12行共1451字符完整保留，单行121字符仍由解析器拒绝、草稿保留且0POST。
+
+参考详情原“原评审”包含10份生产报告，已改为“原报告”，实际短核原assignment正文不变。最后的页面能力收窄将手动参考重组及版次采用禁用，避免提交后进入尚未映射的动态节点；实际UI补验已完成：两尺寸共9个手动select全部disabled，提出按钮禁止发送、0POST；原件及根源码前后不变。版次采用和推荐采用在此负例未出现，保留未验。原生推荐组合采用仍受原门槛。running导航状态的小改尚无当前App正例，不用静态测试代签。
+
+20项UI原则在各原UI报告中逐项处置。灰度、正式对比度、全站无障碍、运行中正例、pending/completed新保存点与完整App未测状态继续标为未验证。固定16张页面基线没有替换。
+
+## 失败和复验
+
+原A/COPY重复推进反例与错误并发锁候选均保留。修后终态重放零advance、双连接实际owner归属及completion篡改拒绝通过。COPY关闭执行但注入executor的原反例只证明直接service接缝；默认ResearchService关闭时executor为null，没有证据表明默认暂停API曾真实派发模型。
+
+根第一次前端命令使用错误cwd；修正为应用目录后验证。后续传输重试测试因旧mock缺新协议字段失败，只补fixture的真实协议标记，未放松生产守卫。新COPY投影测试曾因过滤名称写错而未纳入29项；改为准确文件名后2项通过，最后统一31项再次通过。原失败日志仍保留在本地任务目录。
+
+独立规格审查另实证：原native builder的12个合法queued草图节点均被当前App桥拒，原页面却可提交草图。已增加明确sketchAppSupported=false，禁用草图创建/继续/独立评审，保留原native能力；不靠放宽mapper让不支持的节点进入App。当前受阻原案没有ready_for_sketch正例，不能把负例UI复验当作此新门禁正例。
+
+标准轴另实证零入账409仍锁浏览器journal。修后仅对REVISION_CONFLICT先核真实同项目no-store GET、完整原ledger/命令及job、无pending/legacy/unknown；先归档原body和图片字节再结束待核。真实新SQLite409核回后，修正请求上传成功（revision0→1、imageAssets1）；坏PNG500、422及19种保守分支仍保留原请求。原7加新1项与typecheck通过；根最终32项受影响前端再通过。该正例为HTTP，不签当前页面storage-only上传。
+
+## 仍待完成
+
+首次配置PDF环境的全量运行停在前端：785通过、2项默认5000ms超时、1项既有跳过。同样两文件单独16项全通过，仅这两个真实PDF集成用例的Vitest外层时限改为30000ms；正文、断言、解析器资源限制和生产期限不变。失败和单独复验日志保留，本地重验前端69文件787项通过、1项既有skip。首个远程head507a3fe2规范CI成功，应用CI在完整COPY/17票用例的240秒外层超时，并触发其清理hook超时；其他786项通过。该用例本地已通过，仅将它的外层上限改为600秒，原正文/断言/生产期限及job总30分钟不变，不调整第二个恢复用例。失败完整job日志本地保留；修后准确head远程CI及最终两轴补审继续等实际回执。后续物理原件receiver、完整两类工程输入和浏览器草图合同仍为隔离候选；没有据此启动旧run或把metadata视作物理核验。
+
+完整App草图9图、v2共54报告及负责人处理、B成稿/样机、同版Deck Studio 1.7预览与可编辑PPTX、技术终审和包装/KV两条整链仍需实际完成。真实消费者研究、创意质量、人类/客户批准、PowerPoint原生打开和暂停的在线编辑各保持独立身份。接口与限制见[视觉合同](visual-workflow.md)。
+
+## 根完整运行记录
+
+配置独立固定PDF运行库的本地`npm run check`第二次退出0：前端69文件787通过/1既有skip；9组native合计414通过/0skip（core78、domain26、Brief57、research80、acquisition61、SIMPLE26、COPY29、image15、visual42），规范/纳管测试、依赖检查及构建通过。第一次PDF外层超时原记录没有删除。第二次运行从507a3fe2开始，其间仅本轮cap/409修复继续合流，故不冒称全部阶段都执行了最终冻结字节；最终32项受影响前端与typecheck另验，准确最终head的全量CI仍须成功。最后实际UI源复验、固定提交两轴补审及最终远程结果按其各自回执登记。
+
+## 固定源码最终独立复核
+
+固定18a8cc12的修复与7aa75e94仅CI环境补充已完成两轴补审。标准轴原409 P2关闭，独立5项加作者回归1项通过，新增硬规范问题0、smell0；规格轴原草图P2关闭，独立2项加根transport8项通过，新增可证P1/P2为0。报告分别保存为[Standards](evidence/visual-workflow-20261112/final-standards.txt)和[Spec](evidence/visual-workflow-20261112/final-spec.txt)，不相互代签。两个修前报告及原反例继续保留。
+
+最终源码UI另冷开原1130只读组件，1280浅色/910深色均核9个select禁用、129原报告首assignment、12实例/9唯一原图SHA与720×480大图；28次API GET、0POST、无横溢/页面与控制台错误。1059源码、原DB/snapshot/semantic/2130现存IO及clone前后相同，4222/4472已正常关闭。原案没有ready/running/采用正例，完整App、生成草图/v2、页面storage-only上传仍未验；不能由此负例签这些状态。详见[最终UI报告](evidence/visual-workflow-20261112/final-ui.txt)、[1280浅色](evidence/visual-workflow-20261112/final-ui-1280-light.png)和[910深色](evidence/visual-workflow-20261112/final-ui-910-dark.png)。
+
+本次追加只收文档和证据，apps/tools业务源码保持7aa75e94已审SHA；准确最终head远程CI待实际回执，PR #11继续草稿，不预签合并。

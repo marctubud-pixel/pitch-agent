@@ -35,29 +35,30 @@ export function createSketchReviewRuntime({store,root,sketches,providers,binding
     await sketches.sketchReviewInput(projectId,run.generationId);requireReviewedSketchV2(store.read(projectId),artifact,copyDeliveryEnvelope,{phase:'registration'});
     await verifyReviewedSketchOriginal(store.read(projectId),artifact,{executionRoot:root,imageStore});
   }
-  async function continueSketchReview(projectId,request) {
+  async function continueSketchReview(projectId,request,scope={}) {
     need(Object.keys(request).every(k=>['commandId','expectedRevision'].includes(k))&&typeof request.commandId==='string'&&request.commandId!=='__proto__'&&Number.isSafeInteger(request.expectedRevision),'INVALID_SKETCH_INTENT','Only valid continuation identity and revision accepted');
     store.command(projectId,{kind:'request-sketch-review',...request},coordinator());
-    return advanceSketchReview(projectId);
+    return advanceSketchReview(projectId,scope);
   }
-  async function advanceSketchReview(projectId) {
+  async function advanceSketchReview(projectId,{runId,generationId,noRecovery=false}={}) {
+    const selectedRun=()=>runId?store.read(projectId).sketchReviewRuns?.find(r=>r.id===runId):runOf(projectId);
     let p=store.read(projectId);if(!p.sketchReviewIntents?.length)return {status:'not_requested',queuedJobIds:[]};
     try {
-      let run=runOf(projectId);
-      if(!run){const g=p.sketchGenerations?.at(-1);need(g,'SKETCH_GENERATION_REQUIRED','Completed generation required');await sketches.sketchReviewInput(projectId,g.id);p=store.read(projectId);run=freezeSketchReview(p,g,assignments(),configuration,copyDeliveryEnvelope);await checkCapabilityEvidence(run);for(const node of run.nodes)available(run,node);send(projectId,{kind:'open-sketch-review',run});run=runOf(projectId);}
-      await checked(projectId,run);
-      for(const job of store.read(projectId).jobs.filter(j=>j.reviewRunId===run.id&&['running','awaiting_reconciliation'].includes(j.status)&&(j.attempts.at(-1)?.receipt?.responseText!==undefined||j.attempts.at(-1)?.httpAttemptLocator))) {
+      let run=runId?p.sketchReviewRuns?.find(r=>r.id===runId):runOf(projectId);if(runId)need(run,'REVIEW_RUN_REQUIRED','Explicit original run required');if(generationId)need(p.sketchGenerations?.at(-1)?.id===generationId,'REVIEW_SOURCE_STALE','Original generation required');
+      if(!run){const g=p.sketchGenerations?.at(-1);need(g,'SKETCH_GENERATION_REQUIRED','Completed generation required');await sketches.sketchReviewInput(projectId,g.id);p=store.read(projectId);run=freezeSketchReview(p,g,assignments(),configuration,copyDeliveryEnvelope);await checkCapabilityEvidence(run);for(const node of run.nodes)available(run,node);send(projectId,{kind:'open-sketch-review',run});run=selectedRun();}
+      await checked(projectId,run);if(noRecovery&&store.read(projectId).jobs.some(j=>j.reviewRunId===run.id&&['running','awaiting_reconciliation'].includes(j.status)))return {status:'awaiting_reconciliation',runId:run.id,reason:'ORIGINAL_OUTCOME_UNRESOLVED',queuedJobIds:[]};
+      for(const job of (noRecovery?[]:store.read(projectId).jobs).filter(j=>j.reviewRunId===run.id&&['running','awaiting_reconciliation'].includes(j.status)&&(j.attempts.at(-1)?.receipt?.responseText!==undefined||j.attempts.at(-1)?.httpAttemptLocator))) {
         await restoreOrdinaryJob(store,root,projectId,job.id,{imageStore});
         const current=store.read(projectId).jobs.find(j=>j.id===job.id),attempt=current.attempts.at(-1),folder=join(root,attempt.id);
         need(equal(JSON.parse(await readFile(join(folder,'receipt.json'),'utf8')),attempt.receipt)&&await readFile(join(folder,'response.txt'),'utf8')===attempt.receipt.responseText,'REVIEW_ANCHOR_CHANGED','Local response anchor unavailable');
         await reopenOrdinaryCompletion(store.read(projectId),current,attempt,{executionRoot:root,receipt:attempt.receipt,wrappers:[[join(folder,'receipt.json'),JSON.stringify(attempt.receipt)],[join(folder,'response.txt'),attempt.receipt.responseText]]});
         send(projectId,{kind:'complete-sketch-review',jobId:job.id,attemptId:attempt.id});
       }
-      run=runOf(projectId);p=store.read(projectId);
+      run=selectedRun();p=store.read(projectId);
       const stuck=p.jobs.find(j=>j.reviewRunId===run.id&&['blocked','failed','awaiting_reconciliation'].includes(j.status));
       if(stuck)return {status:stuck.status,reason:stuck.error?.code,queuedJobIds:[]};
       let outcome=deriveSketchReviewOutcome(p,run);
-      if(outcome.status==='selection_ready'){send(projectId,{kind:'extend-sketch-review',runId:run.id});run=runOf(projectId);outcome=deriveSketchReviewOutcome(store.read(projectId),run);}
+      if(outcome.status==='selection_ready'){send(projectId,{kind:'extend-sketch-review',runId:run.id});run=selectedRun();outcome=deriveSketchReviewOutcome(store.read(projectId),run);}
       if(outcome.status==='reviewed') {
         let artifact=store.read(projectId).artifacts.find(a=>a.sketchGeneration?.reviewRunId===run.id);
         if(!artifact){
@@ -69,9 +70,9 @@ export function createSketchReviewRuntime({store,root,sketches,providers,binding
         }
         await verifyReviewedSketch(projectId,artifact);
         try{requireReviewedSketchV2(store.read(projectId),artifact,copyDeliveryEnvelope);}catch(error){if(error.code==='HUMAN_GATE')return {...outcome,status:'awaiting_human_adoption',artifactId:artifact.id,queuedJobIds:[]};throw error;}
-        if(!store.read(projectId).releases.some(r=>r.artifactId===artifact.id&&r.policyVersion===store.read(projectId).policies.at(-1).version))send(projectId,{kind:'release-stage',artifactId:artifact.id});
+        if(!store.read(projectId).releases.some(r=>r.artifactId===artifact.id&&r.policyVersion===store.read(projectId).policies.at(-1).version))send(projectId,{kind:store.read(projectId).workflow?'release-reviewed-sketch-v2':'release-stage',artifactId:artifact.id});
         if(store.read(projectId).policies.at(-1).authorizedThrough==='sketch')return {...outcome,status:'released_at_endpoint',artifactId:artifact.id,queuedJobIds:[]};
-        if(!run.nodes.some(n=>n.phase==='producer')){send(projectId,{kind:'open-sketch-refinement',runId:run.id,artifactId:artifact.id});run=runOf(projectId);}
+        if(!run.nodes.some(n=>n.phase==='producer')){send(projectId,{kind:'open-sketch-refinement',runId:run.id,artifactId:artifact.id});run=selectedRun();}
         const returned=run.reports.find(r=>['producer','consumer'].includes(r.phase)&&(!r.valid||r.raw.decision!=='accept'));
         if(returned)return {...outcome,status:'handoff_returned',findings:returned.raw?.findings??[],queuedJobIds:[]};
         if(run.reports.some(r=>r.phase==='consumer'&&r.valid&&r.raw.decision==='accept'))return {...outcome,status:'refinement_handoff_ready',artifactId:artifact.id,queuedJobIds:[]};
@@ -81,8 +82,9 @@ export function createSketchReviewRuntime({store,root,sketches,providers,binding
       return {...outcome,runId:run.id,queuedJobIds:store.read(projectId).jobs.filter(j=>j.reviewRunId===run.id&&j.status==='queued').map(j=>j.id)};
     } catch(error){return {status:'blocked',reason:error.code??'REVIEW_EXECUTION_UNAVAILABLE',message:error.message,queuedJobIds:[]};}
   }
-  async function execute(projectId,jobId) {
+  async function execute(projectId,jobId,{admission}={}) {
     let job=store.read(projectId).jobs.find(j=>j.id===jobId);if(job.status!=='queued')return job;
+    const claim=(c,context,expectedRevision)=>admission?store.command(projectId,{...c,visualHttpRequestId:admission.requestId,commandId:`visual-${c.kind}-${hash([projectId,admission.requestId,jobId])}`,expectedRevision},context):send(projectId,c,context);
     const attemptId=randomUUID(),context={actorType:'agent',actorId:randomUUID(),runId:attemptId,contextId:randomUUID(),executorHost:hostname(),executorPid:process.pid,now:new Date().toISOString()};let claimed=false,receipt;
     try{
       let run=store.read(projectId).sketchReviewRuns.find(r=>r.id===job.reviewRunId);await checked(projectId,run);
@@ -90,7 +92,7 @@ export function createSketchReviewRuntime({store,root,sketches,providers,binding
       if(['producer','consumer'].includes(node.phase))requireReviewedSketchV2(store.read(projectId),store.read(projectId).artifacts.find(a=>a.id===run.artifactId),copyDeliveryEnvelope);
       const images=[];for(const image of request.images)images.push((await imageStore.read({projectId,imageId:image.imageId,expectedHash:image.sha256})).descriptor);
       const folder=join(root,attemptId);await mkdir(folder,{recursive:true});await writeFile(join(folder,'packet.json'),JSON.stringify({runId:attemptId,model:job.binding.model,...request}),{flag:'wx'});
-      await checked(projectId,run);available(run,node);send(projectId,{kind:'claim-sketch-review',jobId,attemptId},context);claimed=true;
+      await checked(projectId,run);available(run,node);claim({kind:'claim-sketch-review',jobId,attemptId},context,admission?.expectedRevision);claimed=true;
       receipt=await invokeOrdinary({executionRoot:root,provider:providers[job.binding.providerId],binding:job.binding,attemptId,request,images,runtimePacketBytes:Buffer.from(JSON.stringify({runId:attemptId,model:job.binding.model,...request})),persistLocator:locator=>send(projectId,{kind:'anchor-model-http-attempt',jobId,attemptId,locator},context)});
       await writeFile(join(folder,'receipt.json'),JSON.stringify(receipt),{flag:'wx'});await writeFile(join(folder,'response.txt'),receipt.responseText,{flag:'wx'});
       send(projectId,{kind:'anchor-sketch-review',jobId,attemptId,receipt},context);

@@ -1,0 +1,31 @@
+# Spec轴修后增量独立复核
+
+base `507a3fe229a7730fb2cb303964777a72bc7ea595` → 实现 `18a8cc1298424ba57dba498b2b3a5ca1f360dfc5`，另审CI/测试文档/锁增量 `7aa75e944d99d1c05e6a1cf25e894f710ec206f1`。原审查及反例保持，不改根/Git。
+
+## 结论（正文）
+
+原草图入口P2已关闭：App能力固定false，进入、继续草图及独立评审均禁用并说明，native保留。原409交互缺口在“明确版本冲突且核实未入账”范围闭合；先保留原body/图片与拒绝诊断，再结束浏览器待核，不解除原生pending或未知。实际独立2项补充、根8项transport回归通过，修后增量无新增可证P1/P2。600秒仅完整COPY首用例外层时限；CI前端PATH复用固定PDF/Pillow环境，无生产或断言放宽。真实UI仍仅负例组件范围；未验ready/running/采用/完整App，不签业务批准。
+
+## 规格与关闭依据
+
+- `docs/development/visual-workflow.md`“当前页面范围”已明确sketchAppSupported=false及动态choice范围；panel在ready条件下显示中文说明，提交草图、继续非references目标、提交草图评审均包含独立cap guard。cap的生产值固定false，mapper只取严格true；没有把缺失字段当可写。推荐参考采用及原backend methods保持原边界。本次不是完整sketch mapper实现，也不将未接映射宣称为完成。
+- 同合同“版本冲突的有限核回”准确限定HTTP409/REVISION_CONFLICT。adapter只对此code启动no-store GET，验证同project/revision/协议/current；任何running/unknown/native pending/legacy均保留。原command在整个native的key/value、intent/request/audit/derived引用出现，或原job不是queued零attempt时均不结束。成功没有重派原POST，也不修改native或伪造成功receipt。
+- journal先归档、读回验证精确archive，再remove原待核；配额、归档不等或删除失败仍保留。结束后仍抛带真实拒绝含义的conflict，允许当前版本重提。422、500、网络、COMMAND_ID_REUSED、缺成功回执、GET失败保持待核；此限制已明示，未承诺所有已知拒绝都能清理。
+- `copyWorkflowHttp.test.ts`仅首个完整双owner/COPY/17票用例240000→600000，第二恢复用例仍240000；测试正文/所有assertion和生产deadline未改。7aa增量只给CI frontend测试命令加已安装PDF venv/bin的PATH，固定requirements含Pillow，生产Python选择未改。没有用本轮审查推断远程CI已通过。
+
+## 实际执行与证据
+
+`delta-r2.txt` **2项通过、0skip**：
+
+1. 检查实际panel三个写入口的cap guard，以及实际native service capability返回false；不渲染假ready UI或创建草图。
+2. 新建仅Brief元数据的独立SQLite/本机HTTP读取真实visual-workflow（0job/0模型），再用其响应作受控adapter拒绝探针。核no-store，归档body原command/revision与rawBase64精确为AQID、snapshot SHA/revision匹配；额外检查derived原command引用、已有attempt、缺job、archive读回不等和remove no-op均保留pending。此受控409不是冒称真实业务POST；真实stale upload修正成功另由下列根回归验证。
+
+`root-transport.txt` **8项通过、0skip**：实际运行根visualAKnownRejection与visualA两文件。包含真实新库stale upload409→核回/归档→corrected upload成功、坏PNG500仍待核，以及19个保守分支、丢响应、原字节、权限和投影。没有执行重型研究/SIMPLE/COPY上游、旧case、模型或外网。
+
+首轮`delta.txt`为1通过/1失败：独立探针在Vitest中动态import原native模块触发jpeg-js hybrid CJS/ESM harness异常，不是产品回归。仅改独立探针用createRequire调用原native，未修改产品、依赖或guard，复跑2通过；首失败保留。
+
+`source-identity.json`逐SHA核12份受审文件与固定7aa提交相同；其中生产apps/tools字节与18a一致。首次完整Spec审查结果不覆写，原旧红例继续保留。
+
+## 未签范围
+
+只静态读取另agent的`visual-post-review-final-ui/REPORT.md`，不冒称自己新开Chrome或观察ready/running/采用正例。其报告限定原1130 choice_blocked只读组件、两视口、0POST、原图SHA及原件不变，与本次能力收窄一致；不扩大为完整App或全部UI分支。根全量r2与准确head远程CI由父Agent另记，本复核未重复运行或代签。物理原件完整性、语义/审美质量、人类/客户批准与后续PPT仍无新增通过声明。

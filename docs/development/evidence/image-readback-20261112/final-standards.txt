@@ -1,0 +1,19 @@
+# Standards 独立复核
+
+固定范围：`git diff 68b6302c4a88f2a11b0548a9243ca4ab3530347a...80858680e863ec7abfdd277eac0404e2abadc8bc`。两 ref 实际解析成功；区间只有 `80858680 perf: reuse operation-local image decode and short-circuit disjoint contexts`，48 文件非空。源码、测试及新增合同均以 `git show 80858680:<path>` 读取；未将工作区未提交变化、视觉A隔离实现纳入结论。
+
+## 硬规范违例：0
+
+依据根 AGENTS、CONTRIBUTING、tools/AGENTS、docs/specs/README 与 change-control、docs/agents/development-lead，以及 image-readback、runtime、testing 的固定合同检查。
+
+新增 scope 位于原 HTTP authority：ALS/Map 私有，公开入口仅 callback；只保存冻结的成功 dimensions。原文件读取、SHA、MIME、manifest、上下文和累计预算保留。结束清理、拒绝祖先失效、invoke 关闭及 generation 防晚到回填均有明确实现及实际 IO 回归断言。两个 project verifier 拥有生命周期，未增加调度器或业务批准权限。
+
+上下文短路仍在标签相同时调用双方 ordinarySuccess，原票验证职责保持。测试使用独立微型 PNG/JPEG 与合成本机 HTTP，metadata 测试仅纯数据；未引用个人旧DB作为必需输入。Python/Pillow 条件、CI配置及根入口同步记录。架构、状态、规范版本和证据索引已随差异更新。本次无页面变化，不触发页面 UI 复验。
+
+## Smell 判断：0
+
+按完整12项 Fowler baseline 检查新 hunk，未见值得报告的新问题。scope helper 与 reference verifier 的内部拆分各承载生命周期职责；未判为 Middle Man 或 Speculative Generality。既有压缩长行及文件长度未作为新硬错。
+
+## 验证和限制
+
+独立将该 commit 的 claims、JSON profile 及纯metadata测试提取至新临时目录实跑：6/6 pass、0 skip、exit 0；不读取工作区源码。15便携、55邻接、26域及59规范/1812清单的既有通过由主任务提供，非本审查重新执行。未重复工具已覆盖的格式、类型、清单检查；未启动模型、旧run或新全链，未改源码、Git或DB。未签远程CI、业务批准或端到端速度。

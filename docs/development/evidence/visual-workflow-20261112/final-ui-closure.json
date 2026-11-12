@@ -1,0 +1,20 @@
+{
+  "apiPid": 36803,
+  "session": 76892,
+  "signal": "SIGINT",
+  "browserClosed": true,
+  "ports": [
+    {
+      "port": 4222,
+      "closed": true,
+      "code": "ECONNREFUSED",
+      "errno": -61
+    },
+    {
+      "port": 4472,
+      "closed": true,
+      "code": "ECONNREFUSED",
+      "errno": -61
+    }
+  ]
+}

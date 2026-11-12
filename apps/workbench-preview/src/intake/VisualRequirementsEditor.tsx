@@ -1,0 +1,5 @@
+import type {VisualRequirement, VisualRequirementKind} from '../domain/visualRequirements';
+const rows: {kind: VisualRequirementKind; label: string}[] = [{kind:'packaging',label:'包装'}, {kind:'kv',label:'主视觉 / 海报'}, {kind:'adaptation',label:'延展'}];
+export function VisualRequirementsEditor({value, onChange, disabled, idPrefix}: {value: VisualRequirement[] | undefined; onChange:(value:VisualRequirement[])=>void; disabled:boolean; idPrefix:string}) {
+  return <details className="visual-requirements"><summary>视觉成果与视图要求（可选）{value?.length ? ` · ${value.length}类` : ' · 未指定'}</summary><p className="small muted">只填写本项目明确需要的视图，每行一项；未指定的要求保持待核。</p>{rows.map(({kind,label}) => <div key={kind}><label className="tc-field__label" htmlFor={`${idPrefix}-views-${kind}`}>{label}视图</label><textarea id={`${idPrefix}-views-${kind}`} rows={3} style={{resize:'none'}} disabled={disabled} value={value?.find(r=>r.kind===kind)?.views.join('\n') ?? ''} onChange={event => {const views=event.target.value.split('\n');onChange(rows.flatMap(row => row.kind===kind ? views.some(v=>v.trim()) ? [{kind, views}] : [] : value?.filter(r=>r.kind===row.kind) ?? []));}} /></div>)}</details>;
+}

@@ -1,0 +1,191 @@
+{
+  "date": "2026-11-12",
+  "files": [
+    {
+      "file": "a-claim-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-advance-claim-r4/independent-review.md",
+      "sha256": "06b63325fbd2e97f86f7e9a0441dab89e052b9eec3878d8a5d6334a99ddc5055",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "copy-replay-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-durable-replay/independent-review.md",
+      "sha256": "a5ac0ffff30e83857d419640dada9fbf5c0afce605c0bfe70f07ed31425953c6",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "brief-views-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/brief-visual-requirements/independent-review.md",
+      "sha256": "e3288ab12fd7ef534c75b05c3b2a534038fa8aacc55aa93b9bafcb48e922111b",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "brief-views-length-recheck.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/brief-visual-requirements/independent-p3-recheck.md",
+      "sha256": "b60366b8cc2270a3a31488f52fe00679f39f1e4cca5ae47d9bab47e2a1c0711e",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "visual-reference-ui.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-reference-ui-independent-r5/REPORT.md",
+      "sha256": "3a39fc5633e326f7106b978d2f2ef18c8444626dc97033c3eee66d9f602a7db8",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "copy-legacy-ui.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/copy-durable-ui-independent/REPORT.md",
+      "sha256": "fb1fbba99186475914beb4fdd55a5ffe4a58072a415fc3671a4cb771bb9cb65e",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "root-boundaries.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-all-boundaries-after-copy.log",
+      "sha256": "91d501e76e7c617b531894aa74010e995dc3997a04ab34e54d457d86ec06230f",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "root-frontend.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-cap-frontend.log",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份",
+      "sourceSha256": "d45aee543bba74e8ba2b03acc1a7f20ae8f4597e04686b5b41f19aaace2348f8",
+      "sha256": "fe437bd9c6a6bb99cba68d378d2df863a6a1596a122663e57372828ca1ff4682",
+      "transformation": "仅去除末尾空行，原完整日志保留在source路径"
+    },
+    {
+      "file": "root-typecheck.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-cap-typecheck.log",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份",
+      "sourceSha256": "82a331f35f84aa9dcd78f35a4d0c86e33195a0b10af5b3f66b7449b03dd7bf0c",
+      "sha256": "ee79cbde45b93a89a54402424ad8cb267c125e71b3cd5941a4aadef9f04d915a",
+      "transformation": "仅去除末尾空行，原完整日志保留在source路径"
+    },
+    {
+      "file": "visual-capability-final-ui.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-capability-ui-final/REPORT.md",
+      "sha256": "29efc902cc4cf4b799aea00b46d6c37e203b9a7134d7b5f840eff64ba621ee8a",
+      "scope": "原UI补验字节副本；仅报告所见负例范围，不是固定基线替换"
+    },
+    {
+      "file": "visual-capability-1280-light.png",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-capability-ui-final/1280-light-manual.png",
+      "sha256": "16475172d51c1b2a150c42b85953b3f2c6443c80d5913e8427832c9eb1c89459",
+      "scope": "原UI补验字节副本；仅报告所见负例范围，不是固定基线替换"
+    },
+    {
+      "file": "visual-capability-910-dark.png",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-capability-ui-final/910-dark-manual.png",
+      "sha256": "633e2747402fa31c31c42c456cfb53f306bd1f60a0db5a32f091065191b2a52b",
+      "scope": "原UI补验字节副本；仅报告所见负例范围，不是固定基线替换"
+    },
+    {
+      "file": "visual-capability-invariance.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-capability-ui-final/invariance-receipt.json",
+      "sha256": "fd4ff46226039060bd4b22f506bafd113a4e007ac687b6225c01db496206cc87",
+      "scope": "原UI补验字节副本；仅报告所见负例范围，不是固定基线替换"
+    },
+    {
+      "file": "visual-capability-closure.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-capability-ui-final/closure-receipt.json",
+      "sha256": "b397a82c77e03cb38fee1e55a5f1522c88fdd5df611257fffe4921faa887c25f",
+      "scope": "原UI补验字节副本；仅报告所见负例范围，不是固定基线替换"
+    },
+    {
+      "file": "initial-standards.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-visual-standards-review/REPORT.md",
+      "sha256": "eb11b2abaf17d866e379190322d6231eb9d8a173612819325c884cb774468252",
+      "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记"
+    },
+    {
+      "file": "initial-spec.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-visual-spec-review/REPORT.md",
+      "sha256": "019636a012c7f56c801d743d6fc084ed0f26507ea2216d9a05ace97d8a0ca177",
+      "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记"
+    },
+    {
+      "file": "known-rejection-fix.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-known-rejection-fix/REPORT.md",
+      "sha256": "208e046e3d8767523a714ea625a42052ea3281ea36c7ff9452a9fd7ebcec66cb",
+      "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记"
+    },
+    {
+      "file": "root-full-check-r2.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-full-check-configured-r2.txt",
+      "sha256": "4118c84ec8136b366f4bb7cb16a9cc3fc17eac9e3c34db3177b2d7545fe407d8",
+      "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记",
+      "sourceSha256": "2ed3fc557de756d7f285332cb458dd08911a1b27e5d28f9a650c232e3a349c7c",
+      "transformation": "仅去ANSI装饰码与行尾空白；原完整日志在source原位保留"
+    },
+    {
+      "file": "root-final-frontend.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-final-frontend.txt",
+      "sha256": "6c8f03482c9910d99b61f6c70a74528896f251666ae22457dc65a3694a219f69",
+      "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记",
+      "sourceSha256": "33b2739680f18f02ababbfb0cd2d0f298f0edef578bcb82abcf91cfa455e8e69",
+      "transformation": "仅去除日志末尾空行，原完整字节保留在source"
+    },
+    {
+      "file": "root-final-typecheck.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-final-typecheck.txt",
+      "sha256": "ee79cbde45b93a89a54402424ad8cb267c125e71b3cd5941a4aadef9f04d915a",
+      "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记",
+      "sourceSha256": "82a331f35f84aa9dcd78f35a4d0c86e33195a0b10af5b3f66b7449b03dd7bf0c",
+      "transformation": "仅去除日志末尾空行，原完整字节保留在source"
+    },
+    {
+      "file": "pr11-initial-failed-ci.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-BRIDGE-CI-INITIAL-FAILED-JOB.log",
+      "sha256": "530ae8b3a984131ba8f1583654be0adeb75b6bcbcdf90655a588bcaa115a4d91",
+      "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记",
+      "sourceSha256": "c24e7448470558c1bb798bc1973941b30089fec55fd3797ef875f61311b08c87",
+      "transformation": "仅去ANSI装饰码与行尾空白；原完整日志在source原位保留"
+    },
+    {
+      "file": "final-standards.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-visual-standards-review/final/REPORT.md",
+      "sha256": "29510593586f81e640dd404c7a13db55ab30265ec33edf40f7c335ca113ade2e",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-spec.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-visual-spec-review/final/REPORT.md",
+      "sha256": "84c8f1c8febb7f2c3eef50cd6f47db5c6589862f42c8064ccbe8d8021e8ccbde",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/REPORT.md",
+      "sha256": "602bee43d477f4160e8792cc53818ee55b8e5e30d6c12a9a979cb5ee3f40f190",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-1280-light.png",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/1280-light-manual.png",
+      "sha256": "16475172d51c1b2a150c42b85953b3f2c6443c80d5913e8427832c9eb1c89459",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-910-dark.png",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/910-dark-manual.png",
+      "sha256": "633e2747402fa31c31c42c456cfb53f306bd1f60a0db5a32f091065191b2a52b",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-source-identity.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/final-runtime-source-identity.json",
+      "sha256": "44be3d57ca030ed391a08ecba6e2f502a1e6ceb84c6bb5df7ea72b0c74c6571f",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-invariance.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/invariance-receipt.json",
+      "sha256": "71c0c00567ee6920d791b04cc3f630195376948da1f99609820030a477a2bd09",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-closure.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/closure-receipt.json",
+      "sha256": "17a07f8073b940742a66a32bc40a008826952664bbe71aa814e1aac75b184900",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    }
+  ]
+}

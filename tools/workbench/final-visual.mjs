@@ -1,3 +1,4 @@
+import {briefVisualRequirements} from './brief-visual-requirements.mjs';
 import {ordinaryOriginMatches,ordinarySuccessfulStatus,ordinaryHasContext,ordinarySameContext,ordinaryExecutionIdentity,ordinaryIdentitySameContext,isOrdinaryHttp,validOrdinaryHttpLocator} from './ordinary-model-claims.mjs';
 import {configFields,configNeed,configPositive,configAllowance,configEvidence} from './configuration-values.mjs';
 import {independentVisualPanel} from './independent-panel.mjs';
@@ -58,7 +59,7 @@ export function finalEnvelope(images,capability,binding) {
  need(bounds.count<=capability.maxImages&&bounds.bytes<=capability.maxBytes&&bounds.pixels<=capability.maxPixels,'FINAL_CAPACITY_EXCEEDED','Complete originals exceed assigned envelope; no omission allowed');
  imageManifest(images,{operation:FINAL_VISUAL_PROTOCOL,limits:capability});return bounds;
 }
-const FINAL_PLAN_ERRORS=['FINAL_PLAN_INVALID','FINAL_WORK_ORDER_REQUIRED','FINAL_SELECTION_CHANGED','FINAL_TARGETS_INVALID','FINAL_PAYLOAD_INCOMPLETE','FINAL_COPY_CHANGED','FINAL_TYPOGRAPHY_UNAVAILABLE','FINAL_EDIT_INPUT_REQUIRED','FINAL_REFERENCE_CHANGED','FINAL_PACKAGING_LIMIT_REQUIRED','FINAL_REQUIRED_OUTPUT_MISSING','FINAL_CLAIM_DROPPED'];
+const FINAL_PLAN_ERRORS=['FINAL_BRIEF_VISUAL_REQUIREMENTS_INVALID','FINAL_PLAN_INVALID','FINAL_WORK_ORDER_REQUIRED','FINAL_SELECTION_CHANGED','FINAL_TARGETS_INVALID','FINAL_PAYLOAD_INCOMPLETE','FINAL_COPY_CHANGED','FINAL_TYPOGRAPHY_UNAVAILABLE','FINAL_EDIT_INPUT_REQUIRED','FINAL_REFERENCE_CHANGED','FINAL_PACKAGING_LIMIT_REQUIRED','FINAL_REQUIRED_OUTPUT_MISSING','FINAL_CLAIM_DROPPED'];
 export function validateFinalPlan(raw,source) {
  need(record(raw)&&raw.protocol===FINAL_VISUAL_PROTOCOL&&raw.sourceHash===source.sourceHash&&raw.kind==='plan'&&equal(raw.copy,source.copy.directions),'FINAL_PLAN_INVALID','Plan must preserve exact approved copy and source');
  need(text(raw.workOrder)&&Array.isArray(raw.specialistRequirements)&&raw.specialistRequirements.every(r=>record(r)&&text(r.owner)&&text(r.requirement)&&text(r.evidenceJobId)),'FINAL_WORK_ORDER_REQUIRED','Substantive applicable work order and required specialist evidence required');
@@ -78,7 +79,7 @@ export function validateFinalPlan(raw,source) {
    if(t.kind==='packaging')need(d.limitations.some(x=>/concept|概念/i.test(x))&&d.limitations.some(x=>/manufactur|生产|刀模|印刷/i.test(x)),'FINAL_PACKAGING_LIMIT_REQUIRED','Concept status and unverified manufacturing limits must be visible');
   }
  }
- for(const requirement of source.task.finalVisualRequirements??[])need(raw.directions.every(d=>d.targets.some(t=>t.kind===requirement.kind&&requirement.views.every(v=>t.requiredViews.includes(v)))),'FINAL_REQUIRED_OUTPUT_MISSING','Every explicit task output and view must be planned');
+ for(const requirement of [...(source.task.finalVisualRequirements??[]),...briefVisualRequirements(source.task)])need(raw.directions.every(d=>d.targets.some(t=>t.kind===requirement.kind&&requirement.views.every(v=>t.requiredViews.includes(v)))),'FINAL_REQUIRED_OUTPUT_MISSING','Every explicit task output and view must be planned');
  need((source.copy.claims??[]).every(c=>raw.directions.some(d=>d.claims.some(x=>equal(x,c)))),'FINAL_CLAIM_DROPPED','Every source claim must be preserved with its sources');
  return {...clone(raw),planHash:hash(raw)};
 }

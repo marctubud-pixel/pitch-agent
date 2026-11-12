@@ -132,6 +132,36 @@
       "file": "root-combined-final.txt",
       "sha256": "58b2f77170a36be3d19fbebfa132324fcf1fab101571bcdfc5ae025f6693d04d",
       "bytes": 8984
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/IMAGE-READBACK-PR-FINAL-CI.json",
+      "file": "pr10-final-ci.json",
+      "sha256": "d4239159456126b6542a2276b4d46b32e0a0b1279c5589aafd4a241164d3f35e",
+      "bytes": 10269
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/IMAGE-READBACK-PR-FINAL-JOB.json",
+      "file": "pr10-final-job.json",
+      "sha256": "12d0d71451e9d4fde57601207de8123fb4975337dd72b4727f96988dc9b5b532",
+      "bytes": 4431
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/IMAGE-READBACK-PR-MERGE.json",
+      "file": "pr10-merge.json",
+      "sha256": "f6eb9c46104bc55b163816a408d2031c28ac597ea69be43a6bd9238fd47446b4",
+      "bytes": 122
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/readback-final-standards.md",
+      "file": "final-standards.txt",
+      "sha256": "35d7b01ddbf1cc76b449783966897ae2d60c40234970c06f448bb4a8524f3beb",
+      "bytes": 2204
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/readback-final-spec.md",
+      "file": "final-spec.txt",
+      "sha256": "8e09ef4e1f27cc1c52dbead2ce19d049dd603dcbe26babbb932e9fc674261c0a",
+      "bytes": 2194
     }
   ]
 }

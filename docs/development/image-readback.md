@@ -1,6 +1,6 @@
 # 图片原件只读核验
 
-规范版本：1.0.0。本模块在一次原件核验内复用相同图片bytes的纯解码结果，减少重复启动解码进程。每次原件读取、SHA、来源和当前权限检查仍执行。它不保存业务批准、原件有效性凭证或模型结果，不改变参考129节点、草图v2的54节点和任何评分门槛。
+规范版本：1.0.1。本模块在一次原件核验内复用相同图片bytes的纯解码结果，减少重复启动解码进程。每次原件读取、SHA、来源和当前权限检查仍执行。它不保存业务批准、原件有效性凭证或模型结果，不改变参考129节点、草图v2的54节点和任何评分门槛。
 
 ## 模块与生命周期
 
@@ -42,4 +42,6 @@ PATH="$(dirname "$PITCH_PDF_TEST_PYTHON"):$PATH" npm run test:image-scope
 
 固定历史565的完整projectView派生output SHA保持相同，完整JSON parse计数345638→7088，35次prefix/1750次票验证/700次生产输入重建保持。独立5184组纯数据pairs结果及异常等值，matching坏HTTP仍拒绝；这不是端到端速度比例。根新加bounded测试首次误把重复key检查归给纯claim函数，原失败保留；改用其实际负责的深度上限反例，生产逻辑未因此修改。
 
-来源、失败、独立复验和根采用身份见[证据清单](evidence/image-readback-20261112/EVIDENCE-SOURCES.json)。当前工作包的最终审查、远程CI及合并按实际回执更新；视觉A、视觉B、Deck及完整交付仍是其他工作包。
+来源、失败、独立复验和根采用身份见[证据清单](evidence/image-readback-20261112/EVIDENCE-SOURCES.json)。固定80858680的[最终规范审查](evidence/image-readback-20261112/final-standards.txt)与[最终规格审查](evidence/image-readback-20261112/final-spec.txt)没有未关闭P1/P2。准确head的[两项CI](evidence/image-readback-20261112/pr10-final-ci.json)和[实际应用步骤](evidence/image-readback-20261112/pr10-final-job.json)全部成功，[PR #10](https://github.com/marctubud-pixel/pitch-agent/pull/10)已正常合并为a5c6ee5b，[合并回执](evidence/image-readback-20261112/pr10-merge.json)保留。
+
+视觉A、视觉B、Deck及完整交付仍是其他工作包；上述审查和CI不替它们签通过。

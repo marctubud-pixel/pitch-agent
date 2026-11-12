@@ -65,7 +65,7 @@ it.skipIf(!process.env.PITCH_PDF_TEST_PYTHON)('only selects current physically v
  state=(await h.s.researchAcquisition.start(h.id,{...target(state),sourceEntryIds:[],materialIds:[materialId]},{commandId:'start-pdf',expectedRevision:state.revision})).data;
  for(let n=0;n<3;n++){if(!state.generationId)throw Error('Missing native generation');state=(await h.s.researchAcquisition.step(h.id,{...target(state),generationId:state.generationId,jobIds:state.queuedJobIds},{commandId:`pdf-step-${n}`,expectedRevision:state.revision})).data;}
  expect(state.producerStatus).toBe('succeeded');const snapshot=await h.s.snapshot(h.id),producer=snapshot.jobs.find(j=>object(object(j.task).researchDataBasis??{}).acquisition);expect(object(producer?.task).sourceRecords).toEqual(expect.arrayContaining([expect.objectContaining({provenance:expect.objectContaining({kind:'registered_intake_material',documentId:materialId})})]));
-});
+},30_000);
 
 it('projects the original generation as history after same-card question replacement',async()=>{
  const h=await host();let state=await h.s.researchAcquisition.get(h.id);

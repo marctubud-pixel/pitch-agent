@@ -1,3 +1,5 @@
+import {HttpVisualAService} from './HttpVisualAService';
+import {VisualAJournal} from './visualAJournal';
 import type {CopyWorkflowService} from '../../domain/copyWorkflow';
 import {copyState,copyReceipt,isCopyPending} from './copyWorkflowProjection';
 import type {SimpleStrategyService} from '../../domain/simpleStrategy';
@@ -30,6 +32,7 @@ export interface HttpServiceOptions {
   baseUrl: string;
   fetchImpl?: typeof fetch;
   recovery?: {actorKey: () => string; storage: () => Storage; authorize: (kind: PendingWriteKind) => void};
+  visualAuthorize?: (route:string) => void;
   getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
 }
 const READER_HISTORY_MESSAGE='原提交已保存为历史，请核对当前简报后重新登记或读取。';
@@ -108,7 +111,7 @@ export class HttpWorkbenchService implements WorkbenchService {
   }
   private bodyLimit(path: string) {return /^\/projects\/[A-Za-z0-9-]+\/documents$/.test(path) ? 17 * 1024 * 1024 : 128 * 1024;}
   private async write(path: string, body: Record<string, unknown>, label: string) {
-    if (this.writing) throw new ServiceError('validation', '当前简报提交仍在处理中。');
+    if (this.writing || this.visualService?.pending()) throw new ServiceError('validation', '当前提交仍在处理中或等待核对。');
     if (new TextEncoder().encode(JSON.stringify(body)).byteLength > this.bodyLimit(path)) throw new ServiceError('validation', '请求超过当前操作允许的大小，未发送。');
     const commandId = text(body.commandId);
     const kind = pendingWriteKind(path, body);
@@ -297,7 +300,7 @@ export class HttpWorkbenchService implements WorkbenchService {
     const hidden = input.editScope === 'task_card' ? legacyBriefFields(brief) : {};
     const provenance = input.editScope === 'task_card' ? {...brief.provenance} : input.provenance ?? brief.provenance;
     if (input.editScope === 'task_card') for (const field of ACTIVE_TASK_FIELDS) {const value = input.provenance?.[field]; if (value) provenance[field] = value;}
-    const fields = {...input, ...hidden, provenance, proposalType: input.proposalType ?? brief.proposalType, attachment: input.attachment === undefined ? original.fields.attachment : input.attachment};
+    const fields = {...input, ...hidden, visualRequirements: input.visualRequirements ?? brief.visualRequirements, provenance, proposalType: input.proposalType ?? brief.proposalType, attachment: input.attachment === undefined ? original.fields.attachment : input.attachment};
     const metadata = {...original.metadata, type: fields.proposalType};
     const taskCardId = `${id}:scope:${meta.commandId}`;
     const written = writeBrief(fields, metadata, '');
@@ -321,6 +324,15 @@ export class HttpWorkbenchService implements WorkbenchService {
     const target = p.artifacts.find(a => a.id === p.stages.find(s => s.stage === 'research')?.activeArtifactId && a.stage === 'research');
     if (!target || !Array.isArray(target.inputVersionIds) || !target.inputVersionIds.includes(p.activeTaskCardId) || p.stages.find(s => s.stage === 'research')?.status === 'stale') throw new ServiceError('not_eligible', '当前简报尚无有效研究产物，历史稿不能代替当前输入。');
     return target;
+  }
+  private visualService?:HttpVisualAService;
+  get visualWorkflow(){
+    const recovery=this.options.recovery;
+    return this.visualService??=new HttpVisualAService({baseUrl:this.options.baseUrl,fetchImpl:this.options.fetchImpl,
+      headers:async()=>({...await this.options.getHeaders?.()}),
+      journal:new VisualAJournal(()=>`pitch:visual-a:v1:${encodeURIComponent(this.options.baseUrl)}:${encodeURIComponent(recovery?.actorKey()??'')}`,()=>{if(!recovery)throw new ServiceError('unavailable','视觉原请求持久保存尚未配置。');return recovery.storage();}),
+      authorize:route=>{if(!this.options.visualAuthorize)throw new ServiceError('forbidden','视觉操作权限尚未配置。');this.options.visualAuthorize(route);},
+      guard:()=>{if(this.writing||this.journal?.getPending())throw new ServiceError('conflict','请先核对原未决提交。');},changed:()=>this.emit(),error:response=>mapHttpError(response)});
   }
   readonly copyWorkflow:CopyWorkflowService={
     get:async id=>{await this.connect();const value=(await this.request('GET',`/projects/${encodeURIComponent(id)}/copy-workflow`)).value,p=parseSnapshot(value);if(p.id!==id)throw new ServiceError('validation','文案项目身份不一致。');mapProject(p);return copyState(value,p);},
