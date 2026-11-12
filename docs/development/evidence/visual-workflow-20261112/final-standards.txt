@@ -1,0 +1,13 @@
+# Standards 修后补审
+
+固定 `507a3fe229a7730fb2cb303964777a72bc7ea595...18a8cc1298424ba57dba498b2b3a5ca1f360dfc5`。原标准轴P2已关闭；本delta未证实新增硬规范问题或Fowler smell（均0项）。原报告与失败反例保持。
+
+独立新案实际409未入账后，以no-store读取核对原snapshot，先归档完整原body/PNG字节/拒绝/SHA，再结束journal；修正请求真实上传成功至revision1。独立另测归档读回损坏、quota、删除抛错及no-op，原pending均保持。共5/5通过。作者新增回归独立重跑1/1通过（内含19分支及真实坏PNG500保持pending）；不是20项独立测试。
+
+结束路径仅处理已证实零入账的REVISION_CONFLICT；不生成业务成功、执行解除或native恢复。GET核不实、旧记录、已入账、running/unknown及其他错误继续保留，归档与实际命令身份仍受原守卫。cap收窄为草图/二轮评审App未接而禁动作，没有改变native能力或代签采用。COPY集成测试仅首用例外层240000→600000，正文/断言、第二用例时限及生产期限未变。
+
+本次只读审查和廉价原生存储验证；不签真实UI、全量CI、创意/客户批准或全提案完成。未执行重型COPY/SIMPLE、模型、旧run、PPT或Git写入。源身份与实际测试见本目录清单，数据库仅新自有证据目录、服务finally关闭。根仍须以准确最终head的CI及独立UI分别收束。
+
+## CI环境小差异静态补核
+
+另静态核`18a8cc12...7aa75e944d99d1c05e6a1cf25e894f710ec206f1`三文件：仅前端测试命令的PATH明确优先既有PDF venv bin，固定Pillow来自原requirements，未改生产Python、测试断言或权限；测试文档与锁SHA匹配。未发现新增问题。此小差异未重跑测试，不能签准确head远程CI。原apps/tools8个delta源与18a字节一致。

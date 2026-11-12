@@ -138,6 +138,54 @@
       "scope": "原回执副本；初次两轴finding/失败保留，修复与最终结论分别登记",
       "sourceSha256": "c24e7448470558c1bb798bc1973941b30089fec55fd3797ef875f61311b08c87",
       "transformation": "仅去ANSI装饰码与行尾空白；原完整日志在source原位保留"
+    },
+    {
+      "file": "final-standards.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-visual-standards-review/final/REPORT.md",
+      "sha256": "29510593586f81e640dd404c7a13db55ab30265ec33edf40f7c335ca113ade2e",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-spec.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-visual-spec-review/final/REPORT.md",
+      "sha256": "84c8f1c8febb7f2c3eef50cd6f47db5c6589862f42c8064ccbe8d8021e8ccbde",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/REPORT.md",
+      "sha256": "602bee43d477f4160e8792cc53818ee55b8e5e30d6c12a9a979cb5ee3f40f190",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-1280-light.png",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/1280-light-manual.png",
+      "sha256": "16475172d51c1b2a150c42b85953b3f2c6443c80d5913e8427832c9eb1c89459",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-910-dark.png",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/910-dark-manual.png",
+      "sha256": "633e2747402fa31c31c42c456cfb53f306bd1f60a0db5a32f091065191b2a52b",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-source-identity.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/final-runtime-source-identity.json",
+      "sha256": "44be3d57ca030ed391a08ecba6e2f502a1e6ceb84c6bb5df7ea72b0c74c6571f",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-invariance.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/invariance-receipt.json",
+      "sha256": "71c0c00567ee6920d791b04cc3f630195376948da1f99609820030a477a2bd09",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
+    },
+    {
+      "file": "final-ui-closure.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-post-review-final-ui/closure-receipt.json",
+      "sha256": "17a07f8073b940742a66a32bc40a008826952664bbe71aa814e1aac75b184900",
+      "scope": "固定修后源码的独立补审/实际UI原回执字节；具体未验范围保持"
     }
   ]
 }

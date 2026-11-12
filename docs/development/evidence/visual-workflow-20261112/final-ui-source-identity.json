@@ -1,0 +1,56 @@
+{
+  "rootSources": {
+    "tools/workbench/visual-a-service.mjs": "29a5f603838dadfa638e21f27b6a7d94d4fed677a79aceb28b73eb7f86d18f6f",
+    "apps/workbench-preview/src/domain/visualA.ts": "32a529a418343f3807462b9d9d10d2c4ec00e6794170f6f035480d781a0c961d",
+    "apps/workbench-preview/src/services/http/visualAProjection.ts": "15eda509fde169d3a5f7c3991bd17f57ef80a57f3db1ea2c19fe084a187f38d5",
+    "apps/workbench-preview/src/proposal/VisualWorkflowPanel.tsx": "b97a7a69fdf1752400a595ebab314edc9e7842953cbccf53b9a3a7e8423f574d",
+    "apps/workbench-preview/src/services/http/HttpVisualAService.ts": "8c593301d721c3e04ad297694b4f0497e33ff366656e818959718f53abd634d3",
+    "apps/workbench-preview/src/services/http/visualAJournal.ts": "b23000be8d980216f41f34788ca9da2750695364981908702fe96214784a8b67"
+  },
+  "viteTransformedModuleHashes": [
+    {
+      "url": "http://127.0.0.1:4472/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/apps/workbench-preview/src/services/http/HttpProposalService.ts",
+      "sha256": "c65837a7c75bcc0cac4b947d62a18390211bfae649eb760c0aaa6b0f67e6af02",
+      "hasReferenceChoiceGuard": false,
+      "hasReportLabel": false,
+      "hasRunningPredicate": false
+    },
+    {
+      "url": "http://127.0.0.1:4472/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/apps/workbench-preview/src/proposal/VisualWorkflowPanel.tsx",
+      "sha256": "a865dd20776d1428a9af5d059c91a880745e1a6aceeb65bcf0e64a6b6fb4da72",
+      "hasReferenceChoiceGuard": true,
+      "hasReportLabel": true,
+      "hasRunningPredicate": false
+    },
+    {
+      "url": "http://127.0.0.1:4472/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/apps/workbench-preview/src/services/http/visualAProjection.ts",
+      "sha256": "5a6092822b41b0eb9316a73d75fc93d191e4e6e5b8f43eb704a4240cc6d9931a",
+      "hasReferenceChoiceGuard": true,
+      "hasReportLabel": true,
+      "hasRunningPredicate": true
+    },
+    {
+      "url": "http://127.0.0.1:4472/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/apps/workbench-preview/src/services/http/HttpProposalService.ts",
+      "sha256": "c65837a7c75bcc0cac4b947d62a18390211bfae649eb760c0aaa6b0f67e6af02",
+      "hasReferenceChoiceGuard": false,
+      "hasReportLabel": false,
+      "hasRunningPredicate": false
+    },
+    {
+      "url": "http://127.0.0.1:4472/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/apps/workbench-preview/src/proposal/VisualWorkflowPanel.tsx",
+      "sha256": "a865dd20776d1428a9af5d059c91a880745e1a6aceeb65bcf0e64a6b6fb4da72",
+      "hasReferenceChoiceGuard": true,
+      "hasReportLabel": true,
+      "hasRunningPredicate": false
+    },
+    {
+      "url": "http://127.0.0.1:4472/@fs/Users/marc/Documents/ChatGPT/%E8%B0%83%E7%A0%94agent/apps/workbench-preview/src/services/http/visualAProjection.ts",
+      "sha256": "5a6092822b41b0eb9316a73d75fc93d191e4e6e5b8f43eb704a4240cc6d9931a",
+      "hasReferenceChoiceGuard": true,
+      "hasReportLabel": true,
+      "hasRunningPredicate": true
+    }
+  ],
+  "actualAdapterModuleRequested": true,
+  "actualJournalModuleRequested": true
+}

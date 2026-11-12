@@ -43,3 +43,11 @@ Brief新案另以真实保存/确认/修订和历史只读验证，0模型。前
 ## 根完整运行记录
 
 配置独立固定PDF运行库的本地`npm run check`第二次退出0：前端69文件787通过/1既有skip；9组native合计414通过/0skip（core78、domain26、Brief57、research80、acquisition61、SIMPLE26、COPY29、image15、visual42），规范/纳管测试、依赖检查及构建通过。第一次PDF外层超时原记录没有删除。第二次运行从507a3fe2开始，其间仅本轮cap/409修复继续合流，故不冒称全部阶段都执行了最终冻结字节；最终32项受影响前端与typecheck另验，准确最终head的全量CI仍须成功。最后实际UI源复验、固定提交两轴补审及最终远程结果按其各自回执登记。
+
+## 固定源码最终独立复核
+
+固定18a8cc12的修复与7aa75e94仅CI环境补充已完成两轴补审。标准轴原409 P2关闭，独立5项加作者回归1项通过，新增硬规范问题0、smell0；规格轴原草图P2关闭，独立2项加根transport8项通过，新增可证P1/P2为0。报告分别保存为[Standards](evidence/visual-workflow-20261112/final-standards.txt)和[Spec](evidence/visual-workflow-20261112/final-spec.txt)，不相互代签。两个修前报告及原反例继续保留。
+
+最终源码UI另冷开原1130只读组件，1280浅色/910深色均核9个select禁用、129原报告首assignment、12实例/9唯一原图SHA与720×480大图；28次API GET、0POST、无横溢/页面与控制台错误。1059源码、原DB/snapshot/semantic/2130现存IO及clone前后相同，4222/4472已正常关闭。原案没有ready/running/采用正例，完整App、生成草图/v2、页面storage-only上传仍未验；不能由此负例签这些状态。详见[最终UI报告](evidence/visual-workflow-20261112/final-ui.txt)、[1280浅色](evidence/visual-workflow-20261112/final-ui-1280-light.png)和[910深色](evidence/visual-workflow-20261112/final-ui-910-dark.png)。
+
+本次追加只收文档和证据，apps/tools业务源码保持7aa75e94已审SHA；准确最终head远程CI待实际回执，PR #11继续草稿，不预签合并。

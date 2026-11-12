@@ -1,10 +1,10 @@
 # 视觉参考接线与纠错保护：PR #11草稿 · 2026-11-12
 
-GitHub main已合并PR #10（a5c6ee5b）；本轮[PR #11](https://github.com/marctubud-pixel/pitch-agent/pull/11)仍为草稿，尚未合并。根已采用A初始129节点参考映射、实际claim归属/durable原结果重放、COPY同类修复和Brief明确视觉视图。独立两轴发现的草图入口过早、零入账409永久锁journal均已窄修，最终固定提交补审进行中；参见[本轮验证](../docs/development/visual-workflow-verification-20261112.md)。
+GitHub main已合并PR #10（a5c6ee5b）；本轮[PR #11](https://github.com/marctubud-pixel/pitch-agent/pull/11)仍为草稿，尚未合并。根已采用A初始129节点参考映射、实际claim归属/durable原结果重放、COPY同类修复和Brief明确视觉视图。独立两轴发现的草图入口过早、零入账409永久锁journal均已窄修，最终18a修复/7aa环境补充的两轴独立补审已完成，原P2均关闭，未发现新增可证P1/P2；参见[本轮验证](../docs/development/visual-workflow-verification-20261112.md)。
 
 本地配置PDF的全量第二次运行退出0：前端787通过/1既有skip、native九组414通过/0skip及构建通过；末次源码变化另32项受影响前端/typecheck通过。首个远程head507a3fe2规范CI成功、应用CI完整COPY/17票用例240秒外层超时，其余786通过；仅该用例改600秒，修后准确headCI尚待实证，不能以本地绿代签远程绿。
 
-原129参考案继续是choice_blocked负例，不补确认时刻/原票/批准，不重跑。参考、COPY原稿与手动组合禁用已做独立只读组件UI复验，最终源补验进行中。完整App写入正例、草图/v2、成稿/样机、同版Deck、终审/PPTX及包装/KV两条整链未完成；安全source receiver和两类工程fixture仍隔离准备，不把metadata或旧成果当新案物理/业务批准。
+原129参考案继续是choice_blocked负例，不补确认时刻/原票/批准，不重跑。参考、COPY原稿与手动组合禁用已做独立只读组件UI复验，最终源补验也已完成（28GET/0POST、原件与1059源SHA前后不变），只签具名负例范围。完整App写入正例、草图/v2、成稿/样机、同版Deck、终审/PPTX及包装/KV两条整链未完成；安全source receiver和两类工程fixture仍隔离准备，不把metadata或旧成果当新案物理/业务批准。
 
 磁盘已超过原3GiB运行门槛。旧资料、DB与回执保留；真实/付费模型、旧业务run、生产及在线PPT编辑保存暂停边界保持。以下均为保留的历史节点，不以旧待修描述覆盖本段。
 
