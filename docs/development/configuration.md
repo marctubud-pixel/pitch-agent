@@ -1,6 +1,6 @@
 # 配置与服务边界
 
-规范版本：1.8.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
+规范版本：1.9.0。默认开发只启动本地预览。真实密钥、账户配置及已有数据库保持在本地受控位置，不进入Git。
 
 ## 前端
 
@@ -70,3 +70,7 @@ PDF可选运行依赖固定在`tools/workbench/requirements-pdf.txt`，包含实
 参考与后端草图路由复用同一显式执行器。launch的moduleConfigs.reference、sketch及sketchReview分别映射原referenceConfiguration、sketchConfiguration、sketchReviewConfiguration；bindings/providers、图像能力和预算仍由各原模块验证。available仅表示配置匹配，不证明供应商在线、原件或质量通过。
 
 当前只接新协议manual_supplied与明确原target，不开启旧schedule、付费模型或旧run。原图storage-only与模型执行分开；当前UI尚未独立映射无执行器上传能力。COPY和视觉pending没有自动解除或原件恢复开关，旧未记录请求不补造结果。详细字段、方法与原claim见[视觉合同](visual-workflow.md)。
+
+## 可选的实际数据库文件核验
+
+内部`openStore(file,{openedFileProof:true})`仅在已验证的Darwin干净进程中启用，构造边界唯一真实文件描述符由native模块私有绑定。不支持、已有普通文件描述符或归属不明即停止；默认打开方式不变。这不是前台设置、公开HTTP字段或执行授权。条件和限制见[数据库打开文件身份](native-store-identity.md)。

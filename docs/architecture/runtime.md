@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.9.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.10.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -98,3 +98,7 @@ brief-intake-service复用intake-runtime→intake-pdf旧工具，显式extractio
 前端可选visualWorkflow由HttpVisualAService、strict projection和权限保护组成。初始129参考任务核完整原source与producer关系；实际原图按项目登记SHA读取，业务批准不由GET投影产生。完整App草图/v2映射和后续视觉仍待对应原件验收，详见[运行合同](../development/visual-workflow.md)。
 
 Brief的可选visualRequirements沿原卡、保存、确认及历史传递。`brief-visual-requirements.mjs`从原task.brief读取明确视图，`final-visual.mjs`对每方向计划执行原kind/view约束；没有改写task或finalVisualSource hash，也不恢复内容审阅岗位。
+
+## 可选的native文件身份
+
+store私有保存DatabaseSync实际文件描述符身份，显式启用时可检查其与固定inode一致，路径字符串不再作为该专用接管的充分证明。此能力仅支持已测Darwin干净第一连接前提，默认store和业务命令保持。它不自动使所有旧来源reader获得文件身份保证，调用方须显式采用并满足条件；见[合同](../development/native-store-identity.md)。

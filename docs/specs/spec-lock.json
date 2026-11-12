@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.13.0",
-  "registrySha256": "d57dc5b6c6d3cc9af265a3de5a52b9ef35df4234bb7b81713d49b79e537baf09",
+  "baselineVersion": "1.14.0",
+  "registrySha256": "7d9fb85a62435d32683c84d3301d572beb73613163e644e2fa541571ecbf1685",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -318,31 +318,31 @@
       }
     },
     "contract.runtime": {
-      "version": "1.9.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/architecture/runtime.md": "9020c36cbcea21e292030d9c270b89e3d6662e09138b31808dcc6c38b7e4f88a"
-      }
-    },
-    "contract.configuration": {
-      "version": "1.8.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/development/configuration.md": "c66df3ab213901621a47b80bad2e9c44ef942f28adae8d263694686b4c2cecf6"
-      }
-    },
-    "contract.testing": {
       "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "df0ee3a92630bc5ef08bc70dfed9dfcda37623b60daacd544a21f7ca114c734d"
+        "docs/architecture/runtime.md": "7f91017ec9f0c9cba647dd74e48a56f8144296454e173aa13ca880eb484f1387"
+      }
+    },
+    "contract.configuration": {
+      "version": "1.9.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/configuration.md": "1d90128d8a24a111cb48e0f8ef2b032da91b109aa392e5789aa24ad95d5d99d7"
+      }
+    },
+    "contract.testing": {
+      "version": "1.11.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/testing.md": "19a651164227f5bc6cf19198899ee8d0ca017e48c3ececd6f17909f2a3c368fb"
       }
     },
     "contract.git": {
-      "version": "1.0.4",
+      "version": "1.0.5",
       "lifecycle": "current",
       "files": {
-        "docs/development/git-and-recovery.md": "565d384cc61507d840e6231b6fe587b464bd819d8b37634609f31f7e0e433351"
+        "docs/development/git-and-recovery.md": "7fd0ca0f46fc07b43277becb5e72cb67b1669f87ca0b563aa1802535c8e090e2"
       }
     },
     "contract.resources": {
@@ -442,6 +442,13 @@
       "files": {
         "docs/development/visual-workflow.md": "c2f2049af22de1f495f2d81501a547b6328313af33ca5488ff75a6a1ef462f93"
       }
+    },
+    "contract.native-store-identity": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/native-store-identity.md": "c686234d1bee96eadc2124ebf49f7be5ab869fba17d643b4f0283e9aeb59faa6"
+      }
     }
   },
   "entryDocuments": {
@@ -451,7 +458,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "95dd59fee9f83128a5e2f94ce9c8ca9014fdcd695b4fa783c8d3bc8e58d320e1",
+    "docs/specs/README.md": "af440ef200beed0fc6fe4256a836489e29ddd306ca490764871cd133884a0534",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

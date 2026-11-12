@@ -1,3 +1,4 @@
+import {readdirSync as openedReaddir,fstatSync as openedFstat} from 'node:fs';
 import {layoutCommandWitness,layoutFingerprintHash,isLayoutCommandWitness} from './layout-command-witness.mjs';
 import {isDeepStrictEqual} from 'node:util';
 import {trustedTerminalFailureWitness} from './readiness-terminal-failure.mjs';
@@ -121,10 +122,27 @@ function decodeSnapshot(row) {
   catch (cause) {throw corrupt('Invalid encoded snapshot JSON',cause);}
 }
 
-export function openStore(file) {
+
+// This optional proof supports only clean, synchronous DatabaseSync opens on Darwin.
+const openedFiles=new WeakMap();
+function regularFileInventory(){
+ if(process.platform!=='darwin')throw Object.assign(Error('Opened file proof unsupported'),{code:'STORE_OPENED_FILE_UNSUPPORTED'});
+ const rows=[];
+ for(const name of openedReaddir('/dev/fd')){const fd=Number(name);if(!Number.isSafeInteger(fd)||fd<3)continue;let st;try{st=openedFstat(fd);}catch(e){if(e.code==='EBADF')continue;throw e;}if(st.isFile())rows.push({fd,dev:st.dev,ino:st.ino});}
+ return rows;
+}
+function standardDescriptors(){return [0,1,2].map(fd=>{try{const s=openedFstat(fd);return {fd,dev:s.dev,ino:s.ino,mode:s.mode};}catch{throw Object.assign(Error('Stable stdin/stdout/stderr required'),{code:'STORE_OPENED_FILE_UNSUPPORTED'});}});}
+function beginOpenedFileProof(){standardDescriptors();if(regularFileInventory().length)throw Object.assign(Error('Clean first-store process required; cached or unrelated regular descriptor exists'),{code:'STORE_OPENED_FILE_UNSUPPORTED'});}
+function finishOpenedFileProof(){const rows=regularFileInventory();if(rows.length!==1)throw Object.assign(Error('Cannot uniquely attribute DatabaseSync file descriptor'),{code:'STORE_OPENED_FILE_UNSUPPORTED'});return rows[0];}
+export function assertNativeOpenedFileIdentity(store,expected){const r=openedFiles.get(store);if(!r||r.state.closed)throw Object.assign(Error('Native live opened file proof required'),{code:'STORE_OPENED_FILE_REQUIRED'});let st;try{st=openedFstat(r.fd);}catch{throw Object.assign(Error('Opened file descriptor unavailable'),{code:'STORE_OPENED_FILE_REQUIRED'});}if(!st.isFile()||st.dev!==r.dev||st.ino!==r.ino||st.dev!==expected.dev||st.ino!==expected.ino)throw Object.assign(Error('Actual SQLite opened file differs'),{code:'STORE_OPENED_FILE_CHANGED'});}
+
+export function openStore(file,{openedFileProof=false}={}) {
   forbidEffect();
   if (file !== ':memory:') mkdirSync(dirname(resolve(file)),{recursive:true});
+  const standardBefore=openedFileProof?standardDescriptors():null;
+  if(openedFileProof)beginOpenedFileProof();
   const db=new DatabaseSync(file);
+  let actualOpenedFile;try{if(openedFileProof){actualOpenedFile=finishOpenedFileProof();if(!isDeepStrictEqual(standardBefore,standardDescriptors()))throw Object.assign(Error('Standard descriptor changed across open'),{code:'STORE_OPENED_FILE_UNSUPPORTED'});}}catch(error){db.close();throw error;}
   db.exec(`PRAGMA busy_timeout=5000;
     PRAGMA journal_mode=WAL;
     PRAGMA synchronous=FULL;
@@ -305,5 +323,6 @@ export function openStore(file) {
   };
   storeTokens.set(store,token);
   if(file!==':memory:')durableStores.set(store,durability);
+  if(actualOpenedFile)openedFiles.set(store,{...actualOpenedFile,state:durability});
   return Object.freeze(store);
 }
