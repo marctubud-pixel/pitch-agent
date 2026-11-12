@@ -1,0 +1,140 @@
+{
+  "id": 131037840966,
+  "run_id": 43175260319,
+  "workflow_name": "Application baseline",
+  "head_branch": "codex/current-app-visual-chain-20261112",
+  "run_url": "https://api.github.com/repos/marctubud-pixel/pitch-agent/actions/runs/43175260319",
+  "run_attempt": 1,
+  "node_id": "CR_kwDOVqPGWs8AAAAegnbGRg",
+  "head_sha": "f7400be01614f010c5b5f38d1013be3e8396709b",
+  "url": "https://api.github.com/repos/marctubud-pixel/pitch-agent/actions/jobs/131037840966",
+  "html_url": "https://github.com/marctubud-pixel/pitch-agent/actions/runs/43175260319/job/131037840966",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-11-12T07:26:18Z",
+  "started_at": "2026-11-12T07:26:20Z",
+  "completed_at": "2026-11-12T07:46:54Z",
+  "name": "application",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-12T07:26:21Z",
+      "completed_at": "2026-11-12T07:26:21Z"
+    },
+    {
+      "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-12T07:26:21Z",
+      "completed_at": "2026-11-12T07:26:25Z"
+    },
+    {
+      "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-12T07:26:25Z",
+      "completed_at": "2026-11-12T07:26:30Z"
+    },
+    {
+      "name": "Install locked preview dependencies",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-12T07:26:30Z",
+      "completed_at": "2026-11-12T07:26:34Z"
+    },
+    {
+      "name": "Install locked workbench dependencies",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-12T07:26:34Z",
+      "completed_at": "2026-11-12T07:26:36Z"
+    },
+    {
+      "name": "Install explicit local PDF test runtime",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-12T07:26:36Z",
+      "completed_at": "2026-11-12T07:26:42Z"
+    },
+    {
+      "name": "Check repository and source identities",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-12T07:26:42Z",
+      "completed_at": "2026-11-12T07:26:43Z"
+    },
+    {
+      "name": "Typecheck and test current application",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-12T07:26:43Z",
+      "completed_at": "2026-11-12T07:30:59Z"
+    },
+    {
+      "name": "Test portable domain and storage boundaries",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-12T07:30:59Z",
+      "completed_at": "2026-11-12T07:46:34Z"
+    },
+    {
+      "name": "Test image readback and visual boundaries with configured Python",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-11-12T07:46:34Z",
+      "completed_at": "2026-11-12T07:46:49Z"
+    },
+    {
+      "name": "Build current application",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-11-12T07:46:49Z",
+      "completed_at": "2026-11-12T07:46:52Z"
+    },
+    {
+      "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21,
+      "started_at": "2026-11-12T07:46:52Z",
+      "completed_at": "2026-11-12T07:46:52Z"
+    },
+    {
+      "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-11-12T07:46:52Z",
+      "completed_at": "2026-11-12T07:46:52Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 23,
+      "started_at": "2026-11-12T07:46:52Z",
+      "completed_at": "2026-11-12T07:46:52Z"
+    }
+  ],
+  "check_run_url": "https://api.github.com/repos/marctubud-pixel/pitch-agent/check-runs/131037840966",
+  "labels": [
+    "ubuntu-latest"
+  ],
+  "runner_id": 1000000059,
+  "runner_name": "GitHub Actions 1000000059",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions"
+}

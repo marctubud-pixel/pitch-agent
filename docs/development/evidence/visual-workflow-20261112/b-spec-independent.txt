@@ -1,0 +1,28 @@
+# B root rebase r2 独立规格复核
+
+**本固定增量范围未发现已证实P1/P2。** 本人未参与B实现；复核完整8源patch，不只看r1→r2时钟一行。结论限原生接线、固定任务门禁、回执/CAS和metadata测试；不是B真实生产、图片质量、完整App或业务批准。
+
+固定base f7400be01614f010c5b5f38d1013be3e8396709b，完整patch e8079caecd335268cf81278d1d69027811ab13c3adfa6619003017a86a7840e9；visual-b-service c827e3a604a61d6ab0b214b7183243fb6b4c55c059832c771aa7651b75c6c77e。after.json验证8候选均等manifest afterSHA，根仍是各自baseSHA（新增3文件根仍不存在）；原50件冻结文件与600 root pins逐SHA相符。
+
+## 规格对照与实际证据
+
+- 默认关闭：researchService只有executionAllowed且visualBExecutionAllowed===true才启用B；配置executor不自动启用。HTTP GET只投影，不advance/recover。明确路由白名单/固定phase、1–4唯一job、严格字段/128KiB/Host-Origin仍走原server边界。默认research即使打开执行也不能升级到B。
+- 固定target：step冻结target/source/snapshot/method/jobs，实际dispatch每项重核；native claim/anchor/complete三层均带原ledger。generic current-workflow claim、换Q/binding/source/job或旧父票借子job均拒。Skill/载体SHA在真实claim前重读比较；原finalVisualSource/原件/预算/requiredViews/四岗及独立裁定不被纯边界放行替代。
+- unknown停止：入账前、每dispatch前、native actualclaim均限制同final run；同target running/unknown/awaiting_reconciliation阻断，已核回SIMPLE原attempt及无关target不误拦。own-result例外只限同job/attempt/executor，发送后unknown没有retry/recover入口。原legacy runtime未被current的noRecovery配置偷偷回收。
+- durable advance：所有选定job实际succeeded后，随机marker和捕获claimOwner入账；失败/另一SQLite写者已占claim时不能advance或complete他人。marker后完整结果写回沿同一个context对象；actual actor now新建时捕获，原旧null和重放不回填。pending exact只返回pending、不重进advance，pending阻断新操作。completion保存失败不能冒认已完成。
+- revision父子票：原requireFinalRevisionOwner核原request/owner/report/receipt/plan，result记录原parent/child/revision job、completed与unexecuted集合。父step子run提交后只完成原terminal receipt，不执行剩余父job、不自动运行child；原父ledger保留，child需新current-head step。未知父/子、换报告/source/无owner/换job拒，不能只换head洗成revision成功。
+- A/COPY/FD/typedviews：8源diff只新增B入口/guard与必要runtime ownContext/固定scope，不覆盖原A/COPY reducer或SIMPLE授权方法。store.mjs不在8源、根FD私有proof源仍原a1f；B不创建同形store或绕native readAdmission。根SIMPLE/COPY clock保持。typed视图仍原final-visual validator，逐方向requiredViews及字面限制/选图原件门槛未被替换。
+
+## 本次执行
+
+- b61-own-copy.log：B61/61、0skip。包含实际独立新SQLite双连接CAS/owner、native reducer、HTTP新空库、父child revision、planner视图、clock旧null保护。未调用prepare/released或任何模型/image provider。
+- extra-adjacent.log：28/28、0skip，构成1条本人新增实际SQLite反例＋COPY stop/replay18＋typedviews9。新增反例对已捕获owner仅篡改now（actor/run/context同），实际第二SQLite store被VISUAL_B_ADVANCE_CLAIM_REQUIRED拒；整个pending快照不变，随后原owner原marker可完成，旧audit含null原样保留。
+- 首轮按作者README命令原portable测试运行B61也全绿（b61.log）；其中HTTP fixture按自身dirname把**新**小空库留在原portable-tests/tools/workbench/evidence/，未覆盖原冻结50文件。随后复制六测试到independent-spec/tests，重跑正式独立输出（b61-own-copy.log），只调整依赖定位loader，原断言/源不变。首轮新库原位保留，明确不冒称全运行目录均写在independent子树；所有原文件SHA不变。
+
+总覆盖89项（B61的两次执行不重复计覆盖），0fail/0skip。所有生成DB均本次新metadata fixture；无主案/旧业务DB读写、无上游/模型/外部服务、无Git或根代码写入。HTTP fixture仅本机loopback并正常结束。主案当前run、端口、PTY session均未触碰。
+
+## 限制与后续
+
+测试中execution/advance是明确synthetic返回，revision receipts为构造metadata，不是实际B生产原件或商业素材。没有验证真实generation provider调用、实际图片/四岗13评审的完整B正例、浏览器、Deck/PPT/终审。没有重跑FD全部23项，FD保持结论来自该源未改/同root模块边界，不能由metadata B61再宣称FD生产通过。
+
+未发现需要放宽原guard/预算/未知处理或业务方法的理由。可据此处理本8源固定候选合流评估；后续根采用、规范/UI和实际B验收分别按真实结果登记。

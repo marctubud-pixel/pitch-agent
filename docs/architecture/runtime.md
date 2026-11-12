@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.10.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.11.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -102,3 +102,8 @@ Brief的可选visualRequirements沿原卡、保存、确认及历史传递。`br
 ## 可选的native文件身份
 
 store私有保存DatabaseSync实际文件描述符身份，显式启用时可检查其与固定inode一致，路径字符串不再作为该专用接管的充分证明。此能力仅支持已测Darwin干净第一连接前提，默认store和业务命令保持。它不自动使所有旧来源reader获得文件身份保证，调用方须显式采用并满足条件；见[合同](../development/native-store-identity.md)。
+
+
+## B成稿接缝
+
+受限研究服务另装配visual-b-service，brief-server只接精确B路由；visual-b-http与visual-b-admission在project命令和executor实际claim处重核同一ledger，final-visual-runtime沿用原成稿/样机/修订/原件核验。全局与B独立开关同时为真才可执行，未知不恢复。根A/COPY时钟、durable归属、FD可选证明与明确视图输入保持。当前运行中的包装工程预览仍加载其固定f740模块，不能把新源码采用写成该进程B已升级或页面通过；后续专用运行须记录实际源码身份。

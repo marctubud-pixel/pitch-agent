@@ -1,3 +1,11 @@
+# PR #12已合并：同案SIMPLE至COPY联调 · 2026-11-12
+
+[PR #12](https://github.com/marctubud-pixel/pitch-agent/pull/12)准确f7400be0的双CI及全部实际步骤成功，main ecf6b47f；本地新分支`codex/visual-final-deck-20261112`接续。B受限后端8源已按双审固定候选采用，根61项边界绿，实际B图片/13评审/前端未验，见[采用核验](../docs/development/visual-b-verification-20261112.md)。
+
+原新包装案例未重建：r3同步hooks专用PTY在实际FD与完整原快照核对后接续，capture时head1/0job/0artifact；原PID85020已自行消失、原因时间未知，未由本轮关闭。主case沿原创建/确认进入合成研究/r7/交接及SIMPLE全文核验，checkpoint46；真实页面工程采用200保存至48，负责人及COPY继续同案推进，实际双owner、全文核验和17份评审现已保存至185，0queued/unknown；最后5节点经原HTTP接口完成，当前页面只读复验26GET/0POST、1280浅色/910深色无横溢，favicon404另记为既有资源缺失。视觉只读capture被工程适配r5对owner紧凑哈希与native规范化pretty哈希不一致所阻断；原native原件未改，不重跑上游，修复适配后重核。不能将其写成真实人类或客户批准；当前预览控制器仍加载f740，不因磁盘上新增B源码自动升级。
+
+当前App两案整链、草图/v2映射、B实际原件、通用Deck准入及终审/PPTX尚未完成。所有旧案/原件/失败/回执与暂停边界保留。以下为原时间点。
+
 # PR #11已合并：当前应用视觉链继续接续 · 2026-11-12
 
 [PR #11](https://github.com/marctubud-pixel/pitch-agent/pull/11)最终head1c5c1091的specifications/application及实际安装、前端、完整后端、图片/视觉与构建全部success，无必需步骤skip；已合并main为c434676f。本地同步后新分支`codex/current-app-visual-chain-20261112`继续工作，apps/tools与已审1c5字节相同。最后确认时可用空间约43GiB。

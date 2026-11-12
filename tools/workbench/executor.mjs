@@ -185,7 +185,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
     },
     layoutCapability:layouts.capability,layoutSemanticPlans:layouts.semanticPlans,layoutStatus:layouts.layoutStatus,continueLayout:layouts.continueLayout,reviseLayout:layouts.reviseLayout,advanceLayout:layouts.advanceLayout,
     reviseContent:completeContent.reviseContent,preflightContentRevision:completeContent.preflightContentRevision,continueContent:completeContent.continueContent,advanceContent:completeContent.advanceContent,contentStatus:completeContent.contentStatus,contentDraft:completeContent.contentDraft,contentLayoutInput:completeContent.contentLayoutInput,verifyLayoutPreparation:completeContent.verifyLayoutPreparation,contentCapability:completeContent.capability,
-    adjustFinalVisualAllowance:finalVisuals.adjustFinalVisualAllowance,continueFinalVisual:finalVisuals.continueFinalVisual,advanceFinalVisual:finalVisuals.advanceFinalVisual,verifyFinalVisual:finalVisuals.verifyFinalVisual,finalVisualCapability:finalVisuals.capability,
+    adjustFinalVisualAllowance:finalVisuals.adjustFinalVisualAllowance,continueFinalVisual:finalVisuals.continueFinalVisual,advanceFinalVisual:finalVisuals.advanceFinalVisual,verifyFinalVisual:finalVisuals.verifyFinalVisual,finalVisualCapability:finalVisuals.capability,verifyFinalVisualSource:finalVisuals.verifySource,releaseFinalVisual:finalVisuals.releaseFinalVisual,
     sketchReviewCapability:sketchReviews.capability,continueSketchReview:sketchReviews.continueSketchReview,advanceSketchReview:sketchReviews.advanceSketchReview,
     adjustImageAllowance:sketches.adjustImageAllowance,sketchCapability:sketches.capability,continueSketch:sketches.continueSketch,advanceSketch:sketches.advanceSketch,sketchReviewInput:sketches.sketchReviewInput,registerReviewedSketch:sketches.registerReviewedSketch,verifyReviewedSketch:(id,a)=>a.sketchGeneration?.protocol==='sketch-review-v2'?sketchReviews.verifyReviewedSketch(id,a):sketches.verifyReviewedSketch(id,a),
     referenceCapability:references.capability,continueCopy:references.continueCopy,submitReferenceMaterial:references.submitReferenceMaterial,submitReferenceLibraryMaterial:references.submitReferenceLibraryMaterial,reviseReferences:references.reviseReferences,advanceReferences:references.advanceReferences,referenceStatus:references.referenceStatus,referenceSelection:references.checkedSelection,referenceStates:references.referenceStates,adoptReferences:references.adoptReferences,chooseReferences:references.chooseReferences,
@@ -737,7 +737,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       store.command(projectId,{kind:'request-handoff',artifactId,side,jobId,binding,task:{id:jobId,owner:binding.role,parentId:projectId,handoffInput,request},commandId:commandId??randomUUID(),expectedRevision:expectedRevision??project.revision},context);
       return jobId;
     },
-    async execute(projectId,jobId,{retry=false,acquisitionAdmission,simpleStrategyAdmission,copyHttpAdmission,visualAdmission}={}) {
+    async execute(projectId,jobId,{retry=false,acquisitionAdmission,simpleStrategyAdmission,copyHttpAdmission,visualAdmission,visualBAdmission}={}) {
       const admission=store.read(projectId),isReference=admission.jobs.find(j=>j.id===jobId)?.purpose==='reference';
       if(!isReference)await verifyOrdinaryProject(admission,{executionRoot:root});
       const project=isReference?admission:store.read(projectId),job=project.jobs.find(item=>item.id===jobId);
@@ -752,7 +752,7 @@ export function createExecutor({store,rootDir,providers={},bindings={},imageStor
       if(job.stage==='final_review')throw new DomainError('FINAL_CONTINUATION_REQUIRED','Use final-review continuation to execute the owned final graph');
       if(job.stage==='layout')throw new DomainError('LAYOUT_EXECUTION_UNAVAILABLE','Dedicated native layout execution required');
       if(CONTENT_PURPOSES.includes(job.purpose))return completeContent.execute(projectId,jobId);
-      if(FINAL_VISUAL_PURPOSES.includes(job.purpose))return finalVisuals.execute(projectId,jobId);
+      if(FINAL_VISUAL_PURPOSES.includes(job.purpose)){if(retry)throw new DomainError('VISUAL_B_RETRY_CLOSED','Unknown final calls cannot retry');return finalVisuals.execute(projectId,jobId,{admission:visualBAdmission});}
       if(REVIEW_PURPOSES.includes(job.purpose))return sketchReviews.execute(projectId,jobId,{admission:visualAdmission});
       if(SKETCH_PURPOSES.includes(job.purpose))return sketches.execute(projectId,jobId,{admission:visualAdmission});
       if(job.purpose==='reference')return references.execute(projectId,jobId,{retry,admission:visualAdmission});

@@ -1,0 +1,90 @@
+✔ disabled capability cannot imply execution or quality (1.04275ms)
+✔ fresh fixed target and job can pass pure boundary only (0.51575ms)
+✔ same target running outside selected jobs stops dispatch and actual claim (0.360666ms)
+✔ unrelated target running does not stop this target (0.119917ms)
+✔ same target awaiting_reconciliation outside selected jobs stops dispatch and actual claim (0.13175ms)
+✔ unrelated target awaiting_reconciliation does not stop this target (0.097292ms)
+✔ same target unknown outside selected jobs stops dispatch and actual claim (0.116917ms)
+✔ unrelated target unknown does not stop this target (0.465666ms)
+✔ already reconciled SIMPLE upstream is not treated as an unresolved B job (0.102958ms)
+✔ own-running exception is limited to exact anchor attempt and executor (0.347166ms)
+✔ own anchor never exempts another same-target running job (0.385125ms)
+✔ missing attempt or executor identity cannot create an own-running exemption (0.126709ms)
+✔ changed task invalidates frozen boundary (0.07275ms)
+✔ changed policy invalidates frozen boundary (0.053791ms)
+✔ changed Q invalidates frozen boundary (0.051958ms)
+✔ changed researchReleaseHash invalidates frozen boundary (0.046792ms)
+✔ changed copyHash invalidates frozen boundary (0.042958ms)
+✔ changed sourceHash invalidates frozen boundary (0.059958ms)
+✔ Skill and carrier appendix bytes remain frozen (0.068459ms)
+✔ binding or target mutation cannot dispatch (0.088166ms)
+✔ replay cannot add an eligible later job or change request bytes (0.045292ms)
+✔ outside fixed job set fails even with otherwise identical metadata (0.063459ms)
+✔ completed or previously attempted job cannot redispatch (0.101667ms)
+✔ freeze rejects duplicate ids, excessive batch and missing method annex (0.139542ms)
+✔ freeze captures immutable copies (0.053ms)
+(node:87528) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ native applyCommand persists fixed ledger and preserves exact replay/CAS (3.795291ms)
+✔ same-target unknown is caught by actual native claim hook before native upstream authority (0.35375ms)
+✔ current workflow generic final claim cannot bypass B admission (0.132541ms)
+✔ upstream Q and binding mutations reject native claim admission (0.289375ms)
+✔ native runtime refuses unscoped current-workflow continuation before any store.command (0.601041ms)
+✔ B defaults disabled even if a native executor is configured (0.285958ms)
+✔ service stops a later fixed queued job after first produces unknown (3.841792ms)
+✔ own result anchor is exact-attempt only at native reducer entry (0.376583ms)
+✔ one-shot advance ledger records pending and never permits a second advance (0.334292ms)
+✔ pending advance is read-only on exact replay and blocks new step/continuation/adoption/release (0.583542ms)
+(node:87529) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ B losing cloned marker does not advance or complete another owner claim (15.657459ms)
+ℹ /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/b-advance-race-pkHDBB
+✔ B distinct marker loses real SQLite CAS before any advance (5.355125ms)
+ℹ /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/b-advance-race-SrP4bV
+✔ B single-store owner completes once and exact replay is readonly (5.454166ms)
+ℹ /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/b-advance-race-GivYjO
+✔ B native completion refuses another owner or marker and retains pending (4.240042ms)
+ℹ /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/b-advance-race-SWkVBg
+✔ B new service marker and completion capture the same live clock/owner without filling old audit nulls (5.763542ms)
+ℹ /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/b-advance-race-QAFl9S
+(node:87530) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ B HTTP defaults disabled and GET has no advance/recovery writes (26.3845ms)
+ℹ Retained empty boundary DB: /Users/marc/Documents/ChatGPT/调研agent/tools/workbench/evidence/http-boundary-m3X4Xj
+✔ HTTP rejects undeclared fields, invalid phase, duplicate jobs, query and route-method mismatch (8.042416ms)
+ℹ Retained empty boundary DB: /Users/marc/Documents/ChatGPT/调研agent/tools/workbench/evidence/http-boundary-pqXGU3
+✔ explicit B enable still rejects default research authority with domain 422 (5.295625ms)
+ℹ Retained empty boundary DB: /Users/marc/Documents/ChatGPT/调研agent/tools/workbench/evidence/http-boundary-Eb4QLf
+✔ authorized surface cannot invent missing native B source, no ledger or job created (5.884667ms)
+ℹ Retained empty boundary DB: /Users/marc/Documents/ChatGPT/调研agent/tools/workbench/evidence/http-boundary-DKkBss
+✔ B CORS does not acquire image-upload metadata permission (3.973875ms)
+ℹ Retained empty boundary DB: /Users/marc/Documents/ChatGPT/调研agent/tools/workbench/evidence/http-boundary-JzmhJS
+✔ dedicated adoption and final release cannot bypass missing original authority (6.005208ms)
+ℹ Retained empty boundary DB: /Users/marc/Documents/ChatGPT/调研agent/tools/workbench/evidence/http-boundary-Xo6uIt
+(node:87537) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ native planner preserves explicitly required packaging views in every direction (1.289209ms)
+✔ native KV targets use current task view requirements (0.175125ms)
+✔ native packaging limitations and exact approved lettering cannot be omitted (0.32575ms)
+✔ native refinement must edit the exact selected original (0.092792ms)
+✔ original four roles, blind readings, challenges and independent director stay native (0.179417ms)
+(node:87538) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ revision persists terminal child receipt and exact readonly replay; remaining=false (11.150625ms)
+✔ revision persists terminal child receipt and exact readonly replay; remaining=true (2.440583ms)
+✔ unproven/unsafe revision transition refuses completion: head-only (0.929708ms)
+✔ unproven/unsafe revision transition refuses completion: missing-owner (0.815166ms)
+✔ unproven/unsafe revision transition refuses completion: changed-report (0.913875ms)
+✔ unproven/unsafe revision transition refuses completion: different-source (0.877667ms)
+✔ unproven/unsafe revision transition refuses completion: unrelated-child (0.900625ms)
+✔ unproven/unsafe revision transition refuses completion: unknown-parent (0.933666ms)
+✔ unproven/unsafe revision transition refuses completion: unknown-child (1.096333ms)
+✔ unproven/unsafe revision transition refuses completion: changed-ledger-job (1.07075ms)
+ℹ tests 61
+ℹ suites 0
+ℹ pass 61
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 730.926667

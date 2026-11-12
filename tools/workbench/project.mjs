@@ -1,3 +1,4 @@
+import {reduceVisualBStep,reduceVisualBIntent,reduceVisualBAdvance,reduceVisualBRevisionCompleted,requireVisualBNoPending,requireVisualBClaim} from './visual-b-http.mjs';
 import {reduceVisualStep,reduceVisualIntent,requireVisualClaim,reduceVisualAdvance,requireVisualNoPending} from './visual-a-http.mjs';
 import {copyHttpJobs,reduceCopyHttp,requireCopyHttpJob,reduceCopyAdvance,requireCopyNativeAdmission} from './simple-copy-http.mjs';
 import {reduceSimpleHttp,requireSimpleHttpJob} from './simple-strategy-http.mjs';
@@ -1480,6 +1481,13 @@ export function applyCommand(project, command, context) {
   if(RESEARCH_READER_COMMANDS.includes(c.kind)){try{reduceResearchReaderCommand(p,c,context,{target:(p,id)=>targetWithin(new WeakMap(),p,id),independent:independentVerifier,running:runningAttempt,receipt:verificationReceipt,methodIdentity:researchMethodIdentity});}catch(error){fail(error.code??'INVALID_RESEARCH_READER',error.message);}}
   if(['start-job','mark-reference-dispatched','claim-sketch-job','claim-sketch-review'].includes(c.kind)&&p.jobs.some(j=>j.id===c.jobId&&['reference','sketch_owner','sketch_plan','image_candidate','sketch_review_v2','sketch_refinement_handoff'].includes(j.purpose)))requireVisualNoPending(p);
   if(c.visualHttpRequestId){requireValue(['start-job','mark-reference-dispatched','claim-sketch-job','claim-sketch-review'].includes(c.kind),'VISUAL_CLAIM_REQUIRED','Original visual claim transition required');requireVisualClaim(p,c.visualHttpRequestId,p.jobs.find(j=>j.id===c.jobId));}
+  if(p.workflow?.version==='proposal-seven-v1'&&c.kind==='adopt-final-visual')requireVisualBNoPending(p);
+  if(p.workflow?.version==='proposal-seven-v1'&&['claim-final-visual','anchor-final-visual','complete-final-visual'].includes(c.kind)) {
+    const job=p.jobs.find(j=>j.id===c.jobId),requestId=c.visualBHttpRequestId??job?.visualBHttpRequestId;
+    requireValue(requestId,'VISUAL_B_LEDGER_REQUIRED','Current visual B requires its fixed HTTP admission');
+    requireVisualBClaim(p,requestId,job,c.kind==='claim-final-visual'?{kind:'actual_claim'}:{kind:'anchor_own_result',jobId:c.jobId,attemptId:c.attemptId,executor:context});
+    if(c.kind==='claim-final-visual')job.visualBHttpRequestId=requestId;
+  }
   switch (c.kind) {
     case 'record-research-handoff': {
       if(p.workflow&&c.request?.input?.decision!=='returned')requiredReaderEvidence(p,c.request?.artifactId);
@@ -2151,6 +2159,11 @@ export function applyCommand(project, command, context) {
     case 'visual-http-advance-completed': reduceVisualAdvance(p,c,context);break;
     case 'visual-http-intent': reduceVisualIntent(p,c,context);break;
     case 'visual-http-step': reduceVisualStep(p,c,context);break;
+    case 'visual-b-http-revision-completed': reduceVisualBRevisionCompleted(p,c,context);break;
+    case 'visual-b-http-advance':
+    case 'visual-b-http-completed': reduceVisualBAdvance(p,c,context);break;
+    case 'visual-b-http-step': reduceVisualBStep(p,c,context);break;
+    case 'visual-b-http-intent': reduceVisualBIntent(p,c,context);break;
     case 'release-reviewed-sketch-v2': {requireValue(p.workflow&&context.actorType==='agent','REVIEW_TRUSTED_RUNTIME_REQUIRED','Current v2 runtime release only');const a=targetWithin(new WeakMap(),p,c.artifactId);requireReviewedSketchV2(p,a,(p,id,contents,binding)=>copyDeliveryEnvelopeWithin(new WeakMap(),p,id,contents,binding));if(!p.releases.some(r=>r.artifactId===a.id&&r.policyVersion===currentPolicy(p).version))p.releases.push({artifactId:a.id,policyVersion:currentPolicy(p).version,actorId:context.actorId,kind:'reviewed-sketch-v2-release',contentHash:a.contentHash});break;}
     case 'copy-http-advance-started':
     case 'copy-http-advance-completed': reduceCopyAdvance(p,c,context);break;

@@ -1,3 +1,5 @@
+import {visualMethod} from './visual-a-service.mjs';
+import {requireVisualBClaim,requireVisualBIdle,requireVisualBNoPending} from './visual-b-http.mjs';
 import {reopenOrdinaryCompletion} from './ordinary-model-project.mjs';
 import {verifyOrdinaryProject,restoreOrdinaryJob,reopenOrdinaryJob} from './ordinary-model-project.mjs';
 import {invokeOrdinary,reopenOrdinary,isOrdinaryHttp,ordinarySuccessfulStatus,ordinaryHasContext} from './ordinary-model.mjs';
@@ -44,15 +46,15 @@ export function createFinalVisualRuntime({store,root,sketchReviews,providers,bin
   for(const image of [...run.source.images,...(run.reviewImages??[])]) {const loaded=await imageStore.read({projectId:id,imageId:image.imageId,expectedHash:image.sha256});need(loaded.asset.width===image.width&&loaded.asset.height===image.height,'FINAL_SOURCE_BYTES_CHANGED','Frozen actual decoded dimensions required');}
   for(const job of p.jobs.filter(j=>j.finalVisualRunId===run.id&&j.status==='succeeded'))await verifyFinalVisualOriginal(p,run,job,{executionRoot:root,imageStore});
  }
- async function continueFinalVisual(id,request) {
+ async function continueFinalVisual(id,request,scope={}) {
   need(request&&Object.keys(request).every(k=>['commandId','expectedRevision'].includes(k))&&typeof request.commandId==='string'&&request.commandId.length>0&&request.commandId!=='__proto__'&&Number.isSafeInteger(request.expectedRevision)&&request.expectedRevision>=0,'INVALID_FINAL_INTENT','Only continuation identity and revision accepted');
-  const p=store.read(id),prior=p.processedCommands[request.commandId];if(prior)need(equal(JSON.parse(prior),{kind:'request-final-visual',...request}),'COMMAND_ID_REUSED','Continuation identity changed');else store.command(id,{kind:'request-final-visual',...request},context());return advanceFinalVisual(id);
+  const p=store.read(id);if(p.workflow?.version==='proposal-seven-v1')requireVisualBNoPending(p);if(p.workflow?.version==='proposal-seven-v1')need(scope.prepareOnly===true&&scope.noRecovery===true&&typeof scope.onlyRunId==='string'&&typeof scope.sourceHash==='string','VISUAL_B_SCOPE_REQUIRED','Bounded prepare-only final continuation scope required');const prior=p.processedCommands[request.commandId];if(prior)need(equal(JSON.parse(prior),{kind:'request-final-visual',...request}),'COMMAND_ID_REUSED','Continuation identity changed');else store.command(id,{kind:'request-final-visual',...request},context());return advanceFinalVisual(id,scope);
  }
- async function recover(id,run,job) {
+ async function recover(id,run,job,{ownContext}={}) {
   if(job.attempts.at(-1)?.httpAttemptLocator){await restoreOrdinaryJob(store,root,id,job.id,{imageStore});job=store.read(id).jobs.find(j=>j.id===job.id);}
   const attempt=job.attempts.at(-1);need(attempt.receipt,'FINAL_ANCHOR_REQUIRED','Unanchored dispatched uncertainty cannot retry');
   if(job.purpose==='final_visual_image') {
-   const result=await localImages.recover(finalImageTask(store.read(id),run,job,attempt.id),attempt.id,evidenceDir,{expectedEvidence:attempt.receipt.responseEvidence});need(result.kind==='image'&&equal(result.receipt,attempt.receipt),'FINAL_IMAGE_ANCHOR_CHANGED','Exact protected historical image success required');const asset=await imageStore.ingestGenerated({projectId:id,result});await imageStore.read({projectId:id,imageId:asset.id,expectedHash:asset.sha256});send(id,{kind:'complete-final-visual',jobId:job.id,attemptId:attempt.id,asset});
+   const result=await localImages.recover(finalImageTask(store.read(id),run,job,attempt.id),attempt.id,evidenceDir,{expectedEvidence:attempt.receipt.responseEvidence});need(result.kind==='image'&&equal(result.receipt,attempt.receipt),'FINAL_IMAGE_ANCHOR_CHANGED','Exact protected historical image success required');const asset=await imageStore.ingestGenerated({projectId:id,result});await imageStore.read({projectId:id,imageId:asset.id,expectedHash:asset.sha256});send(id,{kind:'complete-final-visual',jobId:job.id,attemptId:attempt.id,asset},ownContext);
   } else {
    const folder=join(root,attempt.id),request=finalRequest(store.read(id),run,job.node).request;
    need(equal(JSON.parse(await readFile(join(folder,'packet.json'),'utf8')),{runId:attempt.id,model:job.binding.model,...request})&&equal(JSON.parse(await readFile(join(folder,'receipt.json'),'utf8')),attempt.receipt)&&await readFile(join(folder,'response.txt'),'utf8')===attempt.receipt.responseText,'FINAL_ANCHOR_CHANGED','Exact original prepared packet and protected response required');
@@ -60,13 +62,15 @@ export function createFinalVisualRuntime({store,root,sketchReviews,providers,bin
    validateFinalReceipt(store.read(id),run,job,attempt,attempt.receipt);
    for(const image of attempt.receipt.images??[]) {const bytes=await readFile(image.path);need(bytes.length===image.byteLength&&createHash('sha256').update(bytes).digest('hex')===image.sha256,'FINAL_ATTACHMENT_CHANGED','Original assigned attachment bytes required');}
    await reopenOrdinaryCompletion(store.read(id),job,attempt,{executionRoot:root,receipt:attempt.receipt,wrappers:[[join(folder,'receipt.json'),JSON.stringify(attempt.receipt)],[join(folder,'response.txt'),attempt.receipt.responseText]]});
-   send(id,{kind:'complete-final-visual',jobId:job.id,attemptId:attempt.id});
+   send(id,{kind:'complete-final-visual',jobId:job.id,attemptId:attempt.id},ownContext);
   }
  }
- async function advanceFinalVisual(id) {
-  let p=store.read(id);if(!p.finalVisualIntents?.length)return {status:'not_requested',queuedJobIds:[]};
+ async function advanceFinalVisual(id,scope={}) {
+  let p=store.read(id);if(p.workflow?.version==='proposal-seven-v1')need(scope.noRecovery===true&&typeof scope.onlyRunId==='string'&&typeof scope.sourceHash==='string','VISUAL_B_SCOPE_REQUIRED','Bounded final advance scope required');if(!p.finalVisualIntents?.length)return {status:'not_requested',queuedJobIds:[]};
   try {
-   let run=currentRun(id);
+   if(p.workflow?.version==='proposal-seven-v1'&&!scope.prepareOnly){const row=p.visualBHttpRequests?.find(r=>r.request.commandId===scope.advanceRequestId);need(row?.advanceStarted&&!row.advanceResult&&row.target.targetId===scope.onlyRunId&&row.target.sourceHash===scope.sourceHash,'VISUAL_B_ADVANCE_LEDGER_REQUIRED','Only this durable one-shot advance may progress');}
+   let run=currentRun(id);const existed=Boolean(run);
+   if(scope.onlyRunId)need(scope.sourceHash===finalVisualSource(p,copyDeliveryEnvelope).sourceHash&&(!run||run.id===scope.onlyRunId),'VISUAL_B_TARGET_CHANGED','Exact scoped final run and source required');
    if(!run) {
     const source=finalVisualSource(p,copyDeliveryEnvelope);await sketchReviews.verifyReviewedSketch(id,p.artifacts.find(a=>a.id===source.sketchArtifact.id));
     need(configuration&&configuration.capabilities,'FINAL_CONFIGURATION_REQUIRED','Locally selected finite provider configuration required');
@@ -75,10 +79,13 @@ export function createFinalVisualRuntime({store,root,sketchReviews,providers,bin
     const allowance=p.finalVisualAllowance??{id:`final-allowance-${hash(id)}`,maxImageCalls:configuration.maxImageCalls,maxReviewCalls:configuration.maxReviewCalls,origin:configuration.origin,version:configuration.version};
     run={id:`fv-${source.sourceHash}`,protocol:FINAL_VISUAL_PROTOCOL,source,assignments:assigned,capabilities:structuredClone(configuration.capabilities),feedbackBaseline:structuredClone((p.humanFeedback??[]).filter(f=>['copy','sketch','visual'].includes(f.stage))),allowance};send(id,{kind:'open-final-visual',run});run=currentRun(id);
    }
+   if(scope.onlyRunId)need(run.id===scope.onlyRunId&&run.source.sourceHash===scope.sourceHash,'VISUAL_B_TARGET_CHANGED','Exact scoped final run required');
+   if(scope.noRecovery)requireVisualBIdle(store.read(id),run.id);
    if(run.parentRunId)requireFinalRevisionOwner(p,run);
+   if(scope.prepareOnly&&existed){await checked(id,run);return {status:'prepared',runId:run.id,queuedJobIds:store.read(id).jobs.filter(j=>j.finalVisualRunId===run.id&&j.status==='queued'&&!j.attempts.length).map(j=>j.id)};}
    const aggregate=run.reports.find(r=>r.nodeKey==='aggregate');if(aggregate&&!aggregate.valid&&aggregate.aggregateParser!==FINAL_AGGREGATE_PARSER){await checked(id,run);send(id,{kind:'reextract-final-aggregate',runId:run.id});run=currentRun(id);}
    await checked(id,run);
-   for(const job of store.read(id).jobs.filter(j=>j.finalVisualRunId===run.id&&['running','awaiting_reconciliation'].includes(j.status)&&(j.attempts.at(-1)?.receipt||j.attempts.at(-1)?.httpAttemptLocator)))await recover(id,run,job);
+   if(!scope.noRecovery)for(const job of store.read(id).jobs.filter(j=>j.finalVisualRunId===run.id&&['running','awaiting_reconciliation'].includes(j.status)&&(j.attempts.at(-1)?.receipt||j.attempts.at(-1)?.httpAttemptLocator)))await recover(id,run,job);
    run=currentRun(id);p=store.read(id);
    const stuck=p.jobs.find(j=>j.finalVisualRunId===run.id&&['failed','blocked','awaiting_reconciliation'].includes(j.status));if(stuck)return {status:stuck.status,reason:stuck.error?.code,queuedJobIds:[]};
    const queue=node=>{if(!store.read(id).jobs.some(j=>j.finalVisualRunId===run.id&&j.nodeKey===node.key))send(id,{kind:'queue-final-visual',runId:run.id,node});};
@@ -101,7 +108,7 @@ export function createFinalVisualRuntime({store,root,sketchReviews,providers,bin
      if(run.parentRunId) {const requirement=finalReviewRequirement(store.read(id),run);if(requirement.status==='converged'){send(id,{kind:'converge-final-visual',runId:run.id});return {status:'converged',runId:run.id,originalRunId:requirement.originalRunId,outcome:requirement.outcome,queuedJobIds:[]};}}
      for(const node of finalPanelNodes())if(node.dependencies.every(key=>run.reports.some(r=>r.nodeKey===key&&r.valid)))queue(node);
      run=currentRun(id);const outcome=finalOutcome(run);
-     if(outcome.status==='revision_required'){const report=run.reports.find(r=>r.nodeKey==='director:director');send(id,{kind:'record-final-visual-return',parentRunId:run.id,reportId:report.id});return advanceFinalVisual(id);}
+     if(outcome.status==='revision_required'){const report=run.reports.find(r=>r.nodeKey==='director:director');send(id,{kind:'record-final-visual-return',parentRunId:run.id,reportId:report.id});return advanceFinalVisual(id,scope);}
      if(outcome.status==='incomplete')return {...outcome,runId:run.id,queuedJobIds:[]};
      if(outcome.status==='reviewed') {
       queue({key:'aggregate',phase:'aggregate',role:'visual-lead',dependencies:finalPanelNodes().map(n=>n.key)});run=currentRun(id);
@@ -123,21 +130,24 @@ export function createFinalVisualRuntime({store,root,sketchReviews,providers,bin
    const jobs=store.read(id).jobs.filter(j=>j.finalVisualRunId===run.id);return {status:run.plan?'producing_or_reviewing':'planning',runId:run.id,queuedJobIds:jobs.filter(j=>j.status==='queued').map(j=>j.id)};
   }catch(e){return {status:'blocked',reason:e.code??'FINAL_EXECUTION_UNAVAILABLE',message:e.message,queuedJobIds:[]};}
  }
- async function execute(id,jobId) {
+ async function execute(id,jobId,{admission}={}) {
   let p=store.read(id),job=p.jobs.find(j=>j.id===jobId);if(job.status!=='queued')return job;
   const attemptId=randomUUID(),ctx={...context(),runId:attemptId};let claimed=false;
+  const claim=c=>store.command(id,{...c,...(admission?{visualBHttpRequestId:admission.requestId}:{}),commandId:randomUUID(),expectedRevision:admission?.expectedRevision??store.read(id).revision},ctx);
+  if(p.workflow?.version==='proposal-seven-v1')requireVisualBClaim(p,admission?.requestId,job);
+  const checkBAdmission=async()=>{const current=store.read(id);if(current.workflow?.version!=='proposal-seven-v1')return;const row=current.visualBHttpRequests?.find(r=>r.request.commandId===admission?.requestId);need(row&&equal(row.method,await visualMethod(current)),'VISUAL_B_STALE','Actual claim requires the same physical Skill and carrier appendix');requireVisualBClaim(store.read(id),admission.requestId,store.read(id).jobs.find(j=>j.id===jobId));};
   try {
    const run=p.finalVisualRuns.find(r=>r.id===job.finalVisualRunId);if(run.parentRunId)requireFinalRevisionOwner(p,run);await checked(id,run);available(run,job);
    if(job.purpose==='final_visual_image') {
     const task=finalImageTask(p,run,job,attemptId),inputs=[];for(const input of task.operation.images){const loaded=await imageStore.read({projectId:id,imageId:input.imageId,expectedHash:input.sha256});inputs.push({...input,...loaded.asset,bytes:loaded.bytes,imageId:input.imageId});}
-    const prepared=await imageProvider.prepare(task,inputs);need(prepared.kind==='prepared',prepared.diagnostic??'FINAL_PREPARE_REFUSED','Final image preparation refused before dispatch');await checked(id,run);available(run,job);send(id,{kind:'claim-final-visual',jobId,attemptId,requestHash:prepared.requestHash},ctx);claimed=true;
-    const result=await imageProvider.execute(prepared,{evidenceDir});need(result.kind==='image',result.diagnostic??'FINAL_IMAGE_UNKNOWN','Dispatched image outcome remains unknown');send(id,{kind:'anchor-final-visual',jobId,attemptId,receipt:result.receipt},ctx);await recover(id,run,store.read(id).jobs.find(j=>j.id===jobId));
+    const prepared=await imageProvider.prepare(task,inputs);need(prepared.kind==='prepared',prepared.diagnostic??'FINAL_PREPARE_REFUSED','Final image preparation refused before dispatch');await checked(id,run);available(run,job);await checkBAdmission();claim({kind:'claim-final-visual',jobId,attemptId,requestHash:prepared.requestHash});claimed=true;
+    const result=await imageProvider.execute(prepared,{evidenceDir});need(result.kind==='image',result.diagnostic??'FINAL_IMAGE_UNKNOWN','Dispatched image outcome remains unknown');send(id,{kind:'anchor-final-visual',jobId,attemptId,receipt:result.receipt},ctx);await recover(id,run,store.read(id).jobs.find(j=>j.id===jobId),{ownContext:ctx});
    } else {
     const request=finalRequest(p,run,job.node).request,images=[];for(const i of request.images)images.push((await imageStore.read({projectId:id,imageId:i.imageId,expectedHash:i.sha256})).descriptor);
     await checkCapability(run,job.node,job.node.phase==='planner'?run.source.images:finalImages(p,run));
     const folder=join(root,attemptId);await mkdir(folder,{recursive:true});await writeFile(join(folder,'packet.json'),JSON.stringify({runId:attemptId,model:job.binding.model,...request}),{flag:'wx'});
-    await checked(id,run);available(run,job);await checkCapability(run,job.node,job.node.phase==='planner'?run.source.images:finalImages(store.read(id),run));send(id,{kind:'claim-final-visual',jobId,attemptId},ctx);claimed=true;
-    const receipt=await invokeOrdinary({executionRoot:root,provider:providers[job.binding.providerId],binding:job.binding,attemptId,request,images,runtimePacketBytes:Buffer.from(JSON.stringify({runId:attemptId,model:job.binding.model,...request})),persistLocator:locator=>send(id,{kind:'anchor-model-http-attempt',jobId,attemptId,locator},ctx)});await writeFile(join(folder,'receipt.json'),JSON.stringify(receipt),{flag:'wx'});await writeFile(join(folder,'response.txt'),receipt.responseText,{flag:'wx'});send(id,{kind:'anchor-final-visual',jobId,attemptId,receipt},ctx);await recover(id,run,store.read(id).jobs.find(j=>j.id===jobId));
+    await checked(id,run);available(run,job);await checkCapability(run,job.node,job.node.phase==='planner'?run.source.images:finalImages(store.read(id),run));await checkBAdmission();claim({kind:'claim-final-visual',jobId,attemptId});claimed=true;
+    const receipt=await invokeOrdinary({executionRoot:root,provider:providers[job.binding.providerId],binding:job.binding,attemptId,request,images,runtimePacketBytes:Buffer.from(JSON.stringify({runId:attemptId,model:job.binding.model,...request})),persistLocator:locator=>send(id,{kind:'anchor-model-http-attempt',jobId,attemptId,locator},ctx)});await writeFile(join(folder,'receipt.json'),JSON.stringify(receipt),{flag:'wx'});await writeFile(join(folder,'response.txt'),receipt.responseText,{flag:'wx'});send(id,{kind:'anchor-final-visual',jobId,attemptId,receipt},ctx);await recover(id,run,store.read(id).jobs.find(j=>j.id===jobId),{ownContext:ctx});
    }
   } catch(e) {
    job=store.read(id).jobs.find(j=>j.id===jobId);
@@ -153,5 +163,13 @@ export function createFinalVisualRuntime({store,root,sketchReviews,providers,bin
   const adjustment=configuration?.allowanceAdjustments?.find(a=>a.id===adjustmentId);need(adjustment,'FINAL_ALLOWANCE_ADJUSTMENT_UNCONFIGURED','Named trusted local final review adjustment required');validateFinalReviewAdjustment(adjustment);
   send(id,{kind:'adjust-final-visual-review-allowance',adjustment});return store.read(id).finalVisualAllowance;
  }
- return {adjustFinalVisualAllowance,continueFinalVisual,advanceFinalVisual,execute,verifyFinalVisual,capability:()=>({protocol:FINAL_VISUAL_PROTOCOL,executionIntegrated:true,configured:!!configuration,semanticApproval:false,realEnvelopeVerified:false,limits:['Real final pixel and content-consumer capacity not yet established.']})};
+ async function releaseFinalVisual(id,request) {
+  const p=store.read(id),a=p.artifacts.find(a=>a.id===request.artifactId),run=p.finalVisualRuns?.find(r=>r.id===request.runId);
+  need(a&&run&&a.contentHash===request.draftHash&&a.finalVisual?.runId===run.id&&run.source.sourceHash===request.sourceHash,'FINAL_ADOPTION_STALE','Exact existing complete final draft required');
+  requireVisualBNoPending(p);requireVisualBIdle(p,run.id);await verifyFinalVisual(id,a);requireFinalVisual(store.read(id),a,copyDeliveryEnvelope);
+  store.command(id,{kind:'release-final-visual',runId:run.id,artifactId:a.id,visualBRelease:request,commandId:request.commandId,expectedRevision:request.expectedRevision},context());
+  return {status:'ready_for_content',artifactId:a.id,payloadRef:a.payloadRef};
+ }
+ async function verifySource(id,runId){const p=store.read(id),source=finalVisualSource(p,copyDeliveryEnvelope),run=runId?p.finalVisualRuns.find(r=>r.id===runId):currentRun(id);if(runId)need(run,'VISUAL_B_TARGET_REQUIRED','Exact existing final run required');if(run){await checked(id,run);return {runId:run.id,sourceHash:source.sourceHash};}await sketchReviews.verifyReviewedSketch(id,p.artifacts.find(a=>a.id===source.sketchArtifact.id));return {runId:`fv-${source.sourceHash}`,sourceHash:source.sourceHash};}
+ return {releaseFinalVisual,verifySource,adjustFinalVisualAllowance,continueFinalVisual,advanceFinalVisual,execute,verifyFinalVisual,capability:()=>({protocol:FINAL_VISUAL_PROTOCOL,executionIntegrated:true,configured:!!configuration,semanticApproval:false,realEnvelopeVerified:false,limits:['Real final pixel and content-consumer capacity not yet established.']})};
 }

@@ -230,3 +230,5 @@ brief-server通过simple-copy-service和simple-copy-http复用原生双负责人
 ordinary-model-project的两个原件verifier通过model-http-authority私有scope仅复用成功图片dimensions，每次原件读取及上下文校验保持，invoke关闭祖先scope，拒绝失效及generation防回填。当前微型便携回归另有明确Pillow环境，见[读取合同与证据](../development/image-readback.md)。不由此签视觉A或质量通过。
 
 store的可选opened-file核验由native模块维护私有描述符身份，仅用于满足条件的本地接管。默认打开/旧reader不自动升级；身份核验不能替代任务、政策、CAS或人工决定。具体见`docs/development/native-store-identity.md`。
+
+- B后端受限接缝：`visual-b-service`/`visual-b-http`/`visual-b-admission`复用原final-visual-runtime，根A/COPY/FD保持；默认关闭、精确来源与未知停止。当前B前端、实际图片和通用Deck整链分别待验，见[视觉合同](../development/visual-workflow.md)。
