@@ -1,0 +1,13 @@
+# B根重基r2 · Standards独立审查
+
+固定base `f7400be01614f010c5b5f38d1013be3e8396709b`，8源patch `e8079caecd335268cf81278d1d69027811ab13c3adfa6619003017a86a7840e9`。**未证实可操作P1/P2或需处理的新增Fowler smell（各0）。** 结论仅当前隔离源码及根合入形状，不签B业务/App或主案通过。
+
+独立取固定base的5个原blob、应用完整patch，重建8源全部逐SHA等于candidate，见`patch-equivalence.json`；没有整文件覆盖当前根。project保留A/COPY durable/共享表/实际claim导入与守卫；A/COPY clock、FD store、typed-view parser/final-plan模块不在patch内。615件根依赖及候选保护字节前后相同。
+
+新增admission纯规则、HTTP ledger与service职责分开；新增方法复用原final runtime/源验证，不另起调度/评分方法。B仍需全局执行和单独visualBExecutionAllowed===true，默认关闭、公开body不接提权字段；来源、任务/方法、原target/job-set、CAS、unknown/pending和人工采用分别校验。内部ready_for_content及旧授权枚举不新增前台内容审阅岗位/页面，也未调用旧schedule。
+
+B新actor仅捕获真实context.now；advance开始/完成仍使用同一claimOwner，原audit null不补，原结果重放不再次advance。独立admission/claim小集合30/30、0skip，包含实际双SQLite CAS与新时钟/旧null/终态只读观察；没有重复全部61+86或运行重型前置。测试用明确metadata夹具/合成advance，不冒充13票或真实图像质量。
+
+标准依据为根/apps/tools AGENTS、CONTRIBUTING与既有code-review十二项Fowler判断基线，仓库规则优先，工具已强制项不重复报。当前无需为同形A/COPY/B状态机强抽一个跨业务层，三者来源、合法状态变化与revision回执不同；保留这些边界比机械去重更清楚。
+
+根后续仍须明确纳管测试、注册运行合同/版本/锁及CI，并核真实B source/普通原件、成稿/样机、人工采用和当前App/UI。本审查未运行HTTP写正例、真实模型、旧业务、主DB或Git写入；只写新独立证据/固定base重建副本，自有测试store由test.after关闭。Spec/行为轴由另一评审者单独签署，不由本标准轴替代。

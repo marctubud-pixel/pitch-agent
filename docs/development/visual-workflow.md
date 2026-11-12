@@ -1,6 +1,6 @@
-# 视觉参考与草图的受限接线
+# 视觉参考、草图与成稿的受限接线
 
-规范版本：1.0.0。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
+规范版本：1.1.0。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
 
 ## 输入与方法
 
@@ -73,3 +73,16 @@ marker后中断、或实际advance后结果保存失败，保持advance_pending�
 原129合成案保留为choice_blocked负例。具体任务、像素和原角色证据不足时，不以工程身份、数量或通用免责声明豁免。新包装/KV正例须先核当前App输入、原图、逐use和角色证据；离线准备不算实际调用或独立质量判断。
 
 B成稿与样机、通用同版Deck、终审/PPTX及至少两条当前App整链继续按实际原件接续。付费/真实模型、生产账号、旧run及在线PPT编辑保存仍按原暂停范围执行。当前检查与真实UI范围从[状态](../../status/current.md)和各工作包原回执读取。
+
+
+## B成稿与样机的后端接缝
+
+`visual-b-service.mjs`、`visual-b-http.mjs`与`visual-b-admission.mjs`接原final-visual-runtime，不建立另一套创作或评分方法。须同时满足全局`executionAllowed`与服务端`visualBExecutionAllowed===true`，默认关闭；公共请求不能提供此开关。策略、copy、已核草图、原v2报告、当前方法及原图资格仍由原native守卫核对，授权终点不足或原件缺失均拒绝。
+
+前缀同上：GET `final-visual-workflow`只读；POST `final-visual-continuations`提交明确草图身份；POST `final-visual-workflow/step`只选同一run/sourceHash下1至4个queued零attempt job；POST `final-visual-adoptions`保留独立的人类采用记录；POST `final-visual-release`核对当前run、artifact、sourceHash与draftHash。没有扫描任务、unknown重派或通用恢复入口。当前前端尚未映射此B工作区，后端路由存在不等于页面可用或实际B完成。
+
+每次dispatch及实际claim重核原ledger、target、job/dispatch binding、方法与CAS；其它target或未知结果不能被借用。step完成后以随机marker与实际claimOwner取得原存储归属，advance完成仍使用同一owner。新actor记录真实签发时间，不填旧audit。exact terminal body只读原progress，pending或旧未证明记录停止。正常revision切换父run至child时，保存原step的terminal revisionResult；不能因为当前run变化丢掉原回执，也不能把无原负责人修订依据的head变化当成功。
+
+原native返回的`ready_for_content`仅保留内部历史状态名称；此入口不创建独立content_review页面、负责人或调度任务。排版前的比稿Agent检查和排版后终审仍按七阶段规则独立完成。
+
+根61项B便携检查只签路由、metadata、存储归属、时间及父子版本边界，不生成图片、不执行13节点实际评审、不签原件/审美/客户通过。原129阻断案、所有暂停项及默认关闭边界保持。采用与独立证据见[本轮B接线验证](visual-b-verification-20261112.md)。

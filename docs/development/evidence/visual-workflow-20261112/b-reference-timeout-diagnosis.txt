@@ -1,0 +1,21 @@
+# B根全量前端失败 · 独立诊断
+
+**已确认是Vitest默认5000ms外层超时，没有复现断言差异。** 原全量栈明确为`visualReferenceMap.test.ts:4:1`的首129节点用例：`Error: Test timed out in 5000ms`，记录6835ms；该文件其余4项通过。完整前端汇总787通过、1超时失败、1既有skip，原失败日志保持。
+
+## 实际复验与源码
+
+- 在`apps/workbench-preview`原cwd直接运行`npm test -- src/services/http/visualReferenceMap.test.ts`：5/5通过，原默认时限、全部原断言不改，总7.39s。
+- 同文件仅筛首用例并增加JSON reporter：1项通过，实际3160.333375ms。另4项只是此诊断筛选未执行；它们已在上一轮整文件5/5中通过，不把筛选项签作通过或原产品skip。
+- 原test、bridgeReferenceJob投影、COPY投影、DTO、SHA256及129gz/provenance夹具逐SHA等于固定f740。381个前端源码/相关夹具及配置保护路径前后字节相同。首用例保留129数量、全部expected task/binding及129完整映射检查，后续负例/合法历史也原样执行。
+
+证据为`single-file.txt`、`first-case.json`、`full-run-failure-excerpt.txt`、`fixed-identity.json`及before/after。原全量文件SHA另记`full-run-source.json`，摘录不是重跑结果。
+
+## 最窄修复建议
+
+仅首个实际超时用例增加末参数`30_000`作为外层Vitest时限；正文、129检查、所有错误拒绝断言、生产代码/解析资源/业务deadline均不变。不建议全局放宽，亦不借此减少映射数量或校验。
+
+并发运行造成额外wall时间是合理解释；本轮没有做资源归因或性能benchmark，不能宣称已定位某个CPU/GC瓶颈或B生产代码变慢。可确定的失败机制是外层测试时限，且完全相同前端字节在单文件/首用例复验中正常通过。根修后仍需受影响复验及原全量收束，不把本次单文件成功代签整轮检查。
+
+## 范围与探针记录
+
+只运行该固定前端文件，没有API/主案/原库/模型、整COPY或重型前置；没有根、测试、时限或Git写入。第二次首用例命令前的一条sed使用应用cwd下错误相对路径，仅读日志失败；随后npm测试正常运行，后在仓库cwd读得原完整栈。该工具路径错误不归为产品失败。

@@ -204,6 +204,89 @@
       "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-BRIDGE-PR-MERGE.json",
       "sha256": "4229ed66694326a178f255dd7404fcbaf3c4cec641515c120c4e55b2557cdd28",
       "scope": "准确head1c5c1091的最终GitHub回执原字节；merge为c434676f"
+    },
+    {
+      "file": "pr12-final-ci.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/NATIVE-STORE-PR-CHECKS-CURRENT.json",
+      "sha256": "7e3f1005dd669632ef4b83bad6ae95ff72d05899a0c7cf19532fd7e5d4b1c8a5",
+      "scope": "原回执字节副本；PR12准确head及B metadata/边界的实际范围分别保持，不代签实际B/App/终审通过"
+    },
+    {
+      "file": "pr12-final-job.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/NATIVE-STORE-PR-FINAL-JOB.json",
+      "sha256": "41cca3fd33659e069aadfb5c6faa4dc2e7e915da50fe541126d56649e437aa49",
+      "scope": "原回执字节副本；PR12准确head及B metadata/边界的实际范围分别保持，不代签实际B/App/终审通过"
+    },
+    {
+      "file": "pr12-merge.json",
+      "source": ".scratch/seven-stage-static-goal-20261111/NATIVE-STORE-PR-MERGE.json",
+      "sha256": "e1d1c5cb63faf09963b08d5eea1dff69d6aa9ba6664bf50e9804f1811e647a72",
+      "scope": "原回执字节副本；PR12准确head及B metadata/边界的实际范围分别保持，不代签实际B/App/终审通过"
+    },
+    {
+      "file": "b-spec-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-b-root-rebase/r2/independent-spec/REPORT.md",
+      "sha256": "5aed8a38dbd362971d4a6297dc93bd4760e0d8bbdb5c74e2828deaf4dc339828",
+      "scope": "原回执字节副本；PR12准确head及B metadata/边界的实际范围分别保持，不代签实际B/App/终审通过"
+    },
+    {
+      "file": "b-standards-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-b-root-rebase/r2/independent-standards/REPORT.md",
+      "sha256": "d11a20b696c9c8de77c6c1df18a9dd82f8f3055775faa08cf6f08eb04447f4f8",
+      "scope": "原回执字节副本；PR12准确head及B metadata/边界的实际范围分别保持，不代签实际B/App/终审通过"
+    },
+    {
+      "file": "b-root-61.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/B-ROOT-61.txt",
+      "sha256": "c0dcd472caabc838f1034629c9dc96f5153d14b87c90ec2be3e57820ca9e4b7c",
+      "scope": "原回执字节副本；PR12准确head及B metadata/边界的实际范围分别保持，不代签实际B/App/终审通过"
+    },
+    {
+      "file": "b-reference-timeout-diagnosis.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/b-root-frontend-diagnosis/REPORT.md",
+      "sourceSha256": "53689c45eb6563b5908dde684f57bdc083f0c063465515b009f0284d1182756f",
+      "sha256": "53689c45eb6563b5908dde684f57bdc083f0c063465515b009f0284d1182756f",
+      "scope": "实际失败/诊断/修后单文件结果，分别保持其身份，不冒称首次全check成功"
+    },
+    {
+      "file": "b-root-check-first.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/B-ROOT-FULL-CHECK.log",
+      "sourceSha256": "a403a770ec48874288eb49476b15931eb7e4e647c202c8b711ce70dfdc4a3eec",
+      "sha256": "8c1f5816255683bfcdd5e5e87fcf0b6ca4d62d2d0dd7c1cf125888238c9bb51f",
+      "scope": "实际失败/诊断/修后单文件结果，分别保持其身份，不冒称首次全check成功",
+      "transformation": "仅去除末尾空行；原完整日志保留"
+    },
+    {
+      "file": "b-reference-timeout-fixed.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/B-ROOT-REFERENCE-TIMEOUT-FIX.txt",
+      "sourceSha256": "0c1498c63abfb62d7abdff0587ca9d478b9e20d1378c438dc6dddc2a812fb0ac",
+      "sha256": "504b296293b3b1d54d02e384e1fbbf33c34f9ce947eafda4f388a5a7ea942ed4",
+      "scope": "实际失败/诊断/修后单文件结果，分别保持其身份，不冒称首次全check成功",
+      "transformation": "仅去除末尾空行；原完整日志保留"
+    },
+    {
+      "file": "b-ci-first-failure.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-B-CI-FIRST-FAILED-JOB.log",
+      "sourceSha256": "e27fb7c86216e9d5ed7f75e29ef42b51a37ce38c1c9f55f27a198a14979b44a4",
+      "sha256": "c6be14c8b62004d9424b7ee37c30ddecc909c2050ed4d6f4e517d76489c4ac1b",
+      "transformation": "移除ANSI颜色、各行末尾空白及末尾空行；原日志原位保留，sourceSha256不变",
+      "scope": "准确14de失败与原预算单跑/前提核验，不把跳过的步骤算通过"
+    },
+    {
+      "file": "b-acquisition-default-budget.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ci-timeout-premise/ACQUISITION-ORIGINAL-SINGLE-FILE.txt",
+      "sourceSha256": "909a7672ecedc95221ea5884f178b0a4ff2b52da35027c38bed82b095d1417dd",
+      "sha256": "9672f58df2b82d5eef8abdb3b54852cb023f8ea36806901eedbe38196a313d54",
+      "transformation": "移除ANSI颜色及末尾空行；原日志原位保留",
+      "scope": "准确14de失败与原预算单跑/前提核验，不把跳过的步骤算通过"
+    },
+    {
+      "file": "b-test-budget-premise.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ci-timeout-premise/PREMISE.md",
+      "sourceSha256": "3aeb7d0748759d91a42546d9b8ee31b98a11db453121ee6576ff51bd9bc5c4e0",
+      "sha256": "3aeb7d0748759d91a42546d9b8ee31b98a11db453121ee6576ff51bd9bc5c4e0",
+      "transformation": "移除ANSI颜色及末尾空行；原日志原位保留",
+      "scope": "准确14de失败与原预算单跑/前提核验，不把跳过的步骤算通过"
     }
   ]
 }

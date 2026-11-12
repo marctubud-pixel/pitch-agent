@@ -1,6 +1,6 @@
 # Git、PR与版本恢复
 
-规范版本：1.0.5。origin为 `git@github.com:marctubud-pixel/pitch-agent.git`。可见性与远程保护设置按实际GitHub状态判断，不能由本地配置推断。
+规范版本：1.0.6。origin为 `git@github.com:marctubud-pixel/pitch-agent.git`。可见性与远程保护设置按实际GitHub状态判断，不能由本地配置推断。
 
 ## 日常PR
 
@@ -47,3 +47,6 @@ PDF原件[PR #4](https://github.com/marctubud-pixel/pitch-agent/pull/4)准确hea
 文案[PR #9](https://github.com/marctubud-pixel/pitch-agent/pull/9)准确b5687cf3双CI与实际步骤成功，合并68b6302c；[文案核验](simple-copy-verification-20261112.md)保留原失败与独立复核。图片读取[PR #10](https://github.com/marctubud-pixel/pitch-agent/pull/10)准确80858680双CI和实际步骤成功，合并a5c6ee5b，五件最终回执/审查随[读取证据](evidence/image-readback-20261112/EVIDENCE-SOURCES.json)保存。后续发现的衔接重放问题另用新工作包修复，不改写PR #9当时的通过范围。
 
 PR #11最终1c5c1091的specifications/application和全部实际安装、前端、后端、图片/视觉及构建步骤成功，已合并c434676f。准确[CI](evidence/visual-workflow-20261112/pr11-final-ci.json)、[实际job步骤](evidence/visual-workflow-20261112/pr11-final-job.json)和[合并](evidence/visual-workflow-20261112/pr11-merge.json)分别保留；本地新上下文时钟与可选store文件身份正在后续分支，不冒称已在main。
+
+
+PR #12准确head f7400be0已通过specifications/application；实际安装、前端、完整便携后端、图片/视觉及构建步骤全部success，无必需skip。合并main为ecf6b47f，原回执在[CI](evidence/visual-workflow-20261112/pr12-final-ci.json)、[实际步骤](evidence/visual-workflow-20261112/pr12-final-job.json)及[合并](evidence/visual-workflow-20261112/pr12-merge.json)。本轮新分支`codex/visual-final-deck-20261112`继续B与Deck，尚未由PR #12的绿灯覆盖。

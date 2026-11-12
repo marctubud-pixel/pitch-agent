@@ -1,0 +1,94 @@
+
+> pitch-agent-workspace@0.1.0 check
+> npm run check:specs && npm run check:repository && npm run typecheck && npm run test:frontend && npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:simple-copy && npm run test:image-scope && npm run test:visual-workflow && npm run test:dependency && npm run build
+
+
+> pitch-agent-workspace@0.1.0 check:specs
+> python3 scripts/check-specs.py && python3 scripts/check-specs.test.py
+
+{"result": "PASS", "specifications": 61, "screenshots": 16, "baselineVersion": "1.15.0", "baseChecked": null, "baseMode": null, "scope": "规范字节、引用、版本、方法与截图身份；不是业务或审美通过"}
+test_broken_page_reference_fails_even_when_freezing (__main__.SpecificationChecks.test_broken_page_reference_fails_even_when_freezing) ... ok
+test_changed_requirement_is_not_silently_accepted (__main__.SpecificationChecks.test_changed_requirement_is_not_silently_accepted) ... ok
+test_clean_selected_checkout_passes (__main__.SpecificationChecks.test_clean_selected_checkout_passes) ... ok
+test_initial_specs_accept_a_real_bootstrap_commit (__main__.SpecificationChecks.test_initial_specs_accept_a_real_bootstrap_commit) ... ok
+test_missing_agent_entrypoint_support_document_fails (__main__.SpecificationChecks.test_missing_agent_entrypoint_support_document_fails) ... ok
+test_missing_screenshot_fails (__main__.SpecificationChecks.test_missing_screenshot_fails) ... ok
+test_refreshed_lock_cannot_hide_missing_version_bump (__main__.SpecificationChecks.test_refreshed_lock_cannot_hide_missing_version_bump) ... ok
+test_review_threshold_change_requires_a_new_protocol_version (__main__.SpecificationChecks.test_review_threshold_change_requires_a_new_protocol_version) ... ok
+test_unversioned_method_reference_change_is_detected (__main__.SpecificationChecks.test_unversioned_method_reference_change_is_detected) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 3.036s
+
+OK
+
+> pitch-agent-workspace@0.1.0 check:repository
+> python3 scripts/check-repository.py && python3 scripts/check-repository.test.py
+
+{"result": "PASS", "repositoryFiles": 1896, "importedFiles": 393, "gitSelectionChecked": true, "preservedProofs": 147, "scope": "明示源码、文档和原件身份；不代表正式业务或原生运行时通过"}
+test_exact_git_selection_passes (__main__.RepositorySelectionChecks.test_exact_git_selection_passes) ... ok
+test_export_without_git_checks_manifest_only (__main__.RepositorySelectionChecks.test_export_without_git_checks_manifest_only) ... ok
+test_selected_but_untracked_file_is_rejected (__main__.RepositorySelectionChecks.test_selected_but_untracked_file_is_rejected) ... ok
+test_unlisted_staged_file_is_rejected (__main__.RepositorySelectionChecks.test_unlisted_staged_file_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.386s
+
+OK
+
+> pitch-agent-workspace@0.1.0 typecheck
+> npm --prefix apps/workbench-preview run typecheck
+
+
+> proposal-workbench@0.1.0 typecheck
+> tsc --noEmit
+
+
+> pitch-agent-workspace@0.1.0 test:frontend
+> npm --prefix apps/workbench-preview test
+
+
+> proposal-workbench@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 /Users/marc/Documents/ChatGPT/调研agent/apps/workbench-preview
+
+(node:97185) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97180) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97182) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97179) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97183) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97271) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97356) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97358) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97502) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97512) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/services/http/visualReferenceMap.test.ts (5 tests | 1 failed) 11751ms
+   × maps all actual initial native 129 full frozen assignments including 68 combination/overview nodes 6835ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/services/http/visualReferenceMap.test.ts > maps all actual initial native 129 full frozen assignments including 68 combination/overview nodes
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/services/http/visualReferenceMap.test.ts:4:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 69 passed (70)
+      Tests  1 failed | 787 passed | 1 skipped (789)
+   Start at  16:11:12
+   Duration  185.96s (tests 97%, import 2%, transform 1%)

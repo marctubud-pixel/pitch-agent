@@ -1,3 +1,4 @@
+import {createVisualBService} from './visual-b-service.mjs';
 import {createVisualAService} from './visual-a-service.mjs';
 import {createSimpleCopyService} from './simple-copy-service.mjs';
 import {createSimpleStrategyService} from './simple-strategy-service.mjs';
@@ -59,12 +60,14 @@ export function createResearchService({store, rootDir, executionAllowed = false,
   const simple=createSimpleStrategyService({store,rootDir,executor,executionAllowed,bindings,providers});
   const copy=createSimpleCopyService({store,rootDir,executor,executionAllowed,bindings,providers,simple});
   const visual=createVisualAService({store,rootDir,executor,executionAllowed,bindings,providers,imageStore:options.imageStore});
+  const visualB=createVisualBService({store,executor,executionAllowed:executionAllowed&&options.visualBExecutionAllowed===true});
   return {
+    visualBStatus:visualB.status,visualBContinue:visualB.continuation,visualBStep:visualB.step,visualBAdopt:visualB.adopt,visualBRelease:visualB.release,
     visualStatus:visual.status,visualCommand:visual.command,visualStep:visual.step,uploadVisualImage:visual.upload,visualImage:visual.image,
     copyStatus:copy.status,copyCommand:copy.run,
     simpleStrategyStatus:simple.status,simpleStrategyContinue:simple.continue,simpleStrategyVerify:simple.verify,simpleStrategyReconcile:simple.reconcile,
     acquisitionStatus:acquisition.status,acquisitionStart:acquisition.start,acquisitionStep:acquisition.step,acquisitionReconcile:acquisition.reconcile,
-    capability:()=>({...capability(),acquisition:acquisition.capability(),simpleStrategy:simple.capability()}),
+    capability:()=>({...capability(),acquisition:acquisition.capability(),simpleStrategy:simple.capability(),visualB:visualB.capability()}),
     async readerReport(id, reportId) {
       const p=project(id),report=(p.researchReaderReports??[]).find(r=>r.id===reportId);
       need(report,'NOT_FOUND','没有该项目的独立读者报告。');
