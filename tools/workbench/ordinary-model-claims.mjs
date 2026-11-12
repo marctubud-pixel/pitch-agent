@@ -28,7 +28,7 @@ export const ordinarySuccessfulStatus=receipt=>isOrdinaryHttp(receipt)?ordinaryS
 export function ordinaryHasContext(receipt){return isOrdinaryHttp(receipt)?ordinarySuccess(receipt):text(receipt?.threadId);}
 export function ordinarySameContext(a,b){
  if(!a||!b)return false;
- if(isOrdinaryHttp(a)||isOrdinaryHttp(b))return isOrdinaryHttp(a)&&isOrdinaryHttp(b)&&ordinarySuccess(a)&&ordinarySuccess(b)&&a.context.namespace===b.context.namespace&&a.context.invocationId===b.context.invocationId;
+ if(isOrdinaryHttp(a)||isOrdinaryHttp(b))return isOrdinaryHttp(a)&&isOrdinaryHttp(b)&&a.context?.namespace===b.context?.namespace&&a.context?.invocationId===b.context?.invocationId&&ordinarySuccess(a)&&ordinarySuccess(b);
  return a.threadId===b.threadId;
 }
 export function ordinaryExecutionIdentity(context,receipt){

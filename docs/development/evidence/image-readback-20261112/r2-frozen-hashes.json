@@ -1,0 +1,65 @@
+{
+  "status": "r2-frozen-not-adopted",
+  "frozenAtUtc": "2026-11-11T22:39:09.257766+00:00",
+  "r1PatchSha256": "4b6195cb80f65b8730876c09f77521c418454aa3adb88a880d9931eccf1a2430",
+  "r1FrozenManifestSha256": "6c1e007668ca0641c6af12fac6db84cd1cbd893a22fce3b2deea9470fd568817",
+  "r1AllFrozenArtifactsUnchanged": {
+    "README.md": true,
+    "full.log": true,
+    "green-two.log": true,
+    "late-tamper.log": true,
+    "measurement-full-none-rev398.json": true,
+    "measurement-reference-none-rev398.json": true,
+    "measurement-two-image-bytes-late-rev398.json": true,
+    "measurement-two-none-rev398.json": true,
+    "overlay-loader.mjs": true,
+    "probe.mjs": true,
+    "red-before.log": true,
+    "reference.log": true,
+    "regression-red-base.log": true,
+    "regression.log": true,
+    "regression.test.mjs": true,
+    "tools/workbench/model-http-authority.mjs": true,
+    "tools/workbench/ordinary-model-project.mjs": true,
+    "visual-readback-decode-candidate.patch": true
+  },
+  "productionFiles": {
+    "tools/workbench/model-http-authority.mjs": {
+      "base": "59f48ae5714d777f447f186349812d01d4542b4af93ca8a3af233695c4e2ec7d",
+      "r1": "f3672562d9bda36c7b7bf7e782e58ab0908e8d53061d1624010c2845da8db5c1",
+      "r2": "73109caf2fffaaca5afaa94de947a2b90e7f7ec15c63943560f700e94f230924"
+    },
+    "tools/workbench/ordinary-model-project.mjs": {
+      "base": "eecbc89b71afdafc7e7ac57f68c4da6210018ad4658b5f3ff67c23a838ba0ac6",
+      "r1": "45470416970de50e5eff3f87e868fef404dfa6a577fcb72db0e2cffd56b240f7",
+      "r2": "45470416970de50e5eff3f87e868fef404dfa6a577fcb72db0e2cffd56b240f7"
+    }
+  },
+  "independentScriptSha256": "ab8eb4f12e057aaa62a0806f7220bdff58e7388b5b7621fa397420da32f5b6a7",
+  "snapshotRevision": 398,
+  "snapshotSha256": "d00c28d15e020f1adbf23f1fd1073cca20bdc3ce7988af6969636b3f39152dbf",
+  "artifacts": {
+    "README.md": "1a779a4a498c0bfce255c71585110e42a798f78f745c277c2e6b0ad8fe953244",
+    "full-green-r2.log": "75d5ebc11e07fdb8afcd3659a7429da59b16255288e1ac4054559ae92ea52747",
+    "generation-red-r1.log": "3f80f3504b7806ce7b5bd51d8333e6114ad786795f6b248414be43ed162752c2",
+    "independent-green-r2.log": "8f15cf83f327e923be3feea248f0c7d879ee89d357b0f79694f7e1be06cee111",
+    "independent-red-r1.log": "1d5db242f322abf48b698c05e655b5410fa4c3179e4254b98afc3b1a70bb685b",
+    "late-green-r2.log": "395b9e61c7ecd6538e8e2c5cdc879cd4caebb1e6a24e1c0e7627baf21ac06747",
+    "measurement-full-none-rev398.json": "72e0fb584f368721d25ccd5b8c4b5e8c017eba3e1f08688a251e6015152d4305",
+    "measurement-reference-none-rev398.json": "23826d3ca103143edfcfe02ef5822cf3f7e78543a52be64a01bbf5f4b10625c4",
+    "measurement-two-image-bytes-late-rev398.json": "9d85b4ab8d08af1a55a743b47ef7a2d679bdf42e8f0f878270995d70ac44e9e7",
+    "measurement-two-none-rev398.json": "94a437d1f35953250139172c5a0024cab7c046dcb69dc41fa9c14f6712620a36",
+    "nested-red-r1.log": "14a91763c52cc9410445464a917186360651394d97fe0e25a07635e95ceaa648",
+    "overlay-loader.mjs": "69ebeb0e684407e947bd36c904a1a3ba344366e807d996e88a150e87b37e1369",
+    "probe.mjs": "702370c6fb2dfa70fb8d6c1bf9380dc33ad6fec52b0e9a7511cc535fe777c95b",
+    "r1-to-r2.patch": "c78bd3108cf40cae89217dbcb62834e7b2241c590610ad2fe8c3d4b074d367a8",
+    "reference-green-r2.log": "bc2c708caf871d554acc1db6e1332894397cb831505699cfc89791a6ee86c7f9",
+    "regression-green-r2.log": "3be313d9f6590da5cd06e9b4167e2be402125712e1345dda398ee92154657c16",
+    "regression.test.mjs": "c7cd6f2ce86a4fd3e3b5b3be6dfa183bdb52edc4eb80a00cf8c905c478706619",
+    "tools/workbench/model-http-authority.mjs": "73109caf2fffaaca5afaa94de947a2b90e7f7ec15c63943560f700e94f230924",
+    "tools/workbench/ordinary-model-project.mjs": "45470416970de50e5eff3f87e868fef404dfa6a577fcb72db0e2cffd56b240f7",
+    "two-green-r2.log": "dfc29bcfa1d59bb9cec127345001588112f41039906a71c5d06d21b061619e5c",
+    "visual-readback-decode-candidate-r2.patch": "a312cfed4bbd7a6f4ff42ee2180e02fd0adc291698e4ceffb1ababbad90b37c5"
+  },
+  "boundaries": "No root/A WT/original DB/IO writes, no new model/API/full-chain/Astep; portable CI fixture remains separate future work."
+}

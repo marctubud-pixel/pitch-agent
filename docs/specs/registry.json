@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.11.1",
+  "baselineVersion": "1.12.0",
   "date": "2026-11-12",
   "status": "SIMPLE双负责人至唯一三方向文案、全文核验与原四岗评审已接；下游恢复、改稿及视觉至交付继续目标模式",
   "workflow": [
@@ -535,7 +535,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -553,7 +553,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.8.1",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -714,6 +714,18 @@
         "contract.seven-stage-runtime",
         "contract.http-brief",
         "agent.copy-owner"
+      ]
+    },
+    {
+      "id": "contract.image-readback",
+      "kind": "contract",
+      "title": "图片原件只读核验",
+      "path": "docs/development/image-readback.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.runtime",
+        "contract.testing"
       ]
     }
   ],

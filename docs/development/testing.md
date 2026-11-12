@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.8.1。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.9.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -89,3 +89,7 @@ node --test --test-concurrency=1 tools/workbench/simple-copy-runtime.test.mjs to
 `simple-copy-stop`直接检查整组首项未知后停止、原body重放零续派、新命令入账前拒绝、无edge不混入研究和不同edge隔离。实际HTTP正例另用同一新案的原历史快照执行合法start/dispatched/interrupted，再核第二原claim拒绝；不写原历史或重造模型结果。
 
 `npm run test:simple-copy`已按上述五文件串行集合加入根check及Application CI。实际原生双owner与17评审有真实IO成本，Application job上限由15分钟调为30分钟，不降低任何测试断言或业务门槛。候选owner测试和独立反例只支持其冻结字节与具体范围。根完整回归、修后受影响检查、实际UI及PR #9分别记录在[本轮核验](simple-copy-verification-20261112.md)，远程结果按准确head回执更新。不得用旧候选自述签根验收，也不把合成空异议票称为真实质量通过。
+
+## 图片只读核验回归
+
+`npm run test:image-scope`纳入根check；九个微型真实PNG/JPEG及本机HTTP original fixture核缓存生命周期和每次原件IO，另六项纯metadata核上下文谓词等值与bounded depth，不依赖旧DB。当前python3需Pillow；缺少直接失败，CI使用已安装的PDF venv并仅对此step前置其bin路径。已有venv的运行方法、原红例与边界见[图片原件只读核验](image-readback.md)。不以减少纯解码代替原来源、业务门槛或端到端性能验收。

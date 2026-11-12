@@ -1,0 +1,11 @@
+{
+  "sourcePatchSHA256": "b8f81f731bde6a4286d4174f3b7763247926c1eeb71661c0e56022aaf0a38aa7",
+  "production": {
+    "path": "tools/workbench/ordinary-model-claims.mjs",
+    "before": "89bba4eef52436c3049cfba110409dccf4296f91f33fc1bef774af10f072321d",
+    "after": "13b592fd002a328897af72ca38cde00557d668292822b9b20e0a7d4030e59d83"
+  },
+  "portableFrozenSHA256": "d03f42286b4dec88a0ddbd1aa19ad4c41778ee75ea616e97dde4ed99faf0cc6e",
+  "rootPortableSHA256": "63e20cd88d27956e05cd8cd3f9161070d55cc5d1068c1497b98e90ee1f2864e9",
+  "testAdaptation": "Preserved all five frozen tests; added one bounded-profile duplicate-key/matching regression. No production difference from frozen one-line candidate."
+}

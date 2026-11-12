@@ -1,4 +1,5 @@
 import {createHash, randomUUID} from 'node:crypto';
+import {AsyncLocalStorage} from 'node:async_hooks';
 import {constants} from 'node:fs';
 import {open,mkdir,realpath,lstat} from 'node:fs/promises';
 import {resolve,join,dirname,isAbsolute} from 'node:path';
@@ -128,7 +129,35 @@ async function sourceImage(image,budget){
   budget.check();return bytes.subarray(0,n);
  }finally{await f.close();}
 }
-function dimensions(bytes,budget){
+// Only successful pure decodes belong to this operation; no file or authority verdict is retained.
+const readOnlyImageVerification=new AsyncLocalStorage();
+export async function withReadOnlyImageVerification(verify){
+ const scope={parent:readOnlyImageVerification.getStore(),closed:false,generation:0,decoded:new Map()};
+ try{return await readOnlyImageVerification.run(scope,verify);}
+ catch(error){invalidateReadOnlyImageBranch(scope);throw error;}
+ finally{scope.closed=true;scope.decoded.clear();}
+}
+function invalidateReadOnlyImageBranch(scope,close=false){
+ for(let current=scope;current;current=current.parent){
+  current.generation++;current.decoded.clear();if(close)current.closed=true;
+ }
+}
+async function dimensions(bytes,budget,reuseDecodedImages){
+ budget.check();
+ const scope=reuseDecodedImages?readOnlyImageVerification.getStore():null;
+ if(!scope||scope.closed)return decodeDimensions(bytes,budget);
+ const decoderInput=hash(json([process.execPath,fileURLToPath(new URL('./model-http-image-check.mjs',import.meta.url)),'png-jpeg-8MiB-20M-single-frame-strict-v1',process.cwd(),Object.entries(process.env).sort()]));
+ const key=JSON.stringify([decoderInput,bytes.length,hash(bytes)]);
+ const saved=scope.decoded.get(key);
+ if(saved){budget.check();return saved;}
+ const generation=scope.generation;
+ const decoded=await decodeDimensions(bytes,budget);
+ budget.check();
+ const result=Object.freeze({...decoded});
+ if(!scope.closed&&scope.generation===generation)scope.decoded.set(key,result);
+ return result;
+}
+function decodeDimensions(bytes,budget){
  budget.check();
  return new Promise((accept,reject)=>{
   let child,timer,reason=null,output=Buffer.alloc(0);
@@ -160,7 +189,7 @@ function dimensions(bytes,budget){
  });
 }
 
-async function inputs(call,cfg,budget=preflight(cfg,call)){
+async function inputs(call,cfg,budget=preflight(cfg,call),reuseDecodedImages=false){
  budget.check();
  keys(call.binding,['providerId','model','role']);if(Object.values(call.binding).some(v=>!text(v))||call.binding.model!==cfg.model||!text(call.attemptId)||!call.request)fail('unsupported-input');
  keys(call.request,['runId','prompt'],['outputSchema','imageEnvelope']);const r=call.request;
@@ -169,7 +198,7 @@ async function inputs(call,cfg,budget=preflight(cfg,call)){
  const images=call.images??[];if(!Array.isArray(images)||images.length>32||images.length&&!cfg.vision||r.imageEnvelope&&!cfg.envelopes.includes(r.imageEnvelope.operation))fail('unsupported-input');
  if(r.imageEnvelope&&!images.length)fail('unsupported-input');
  const manifest=images.length?imageManifest(images,r.imageEnvelope):[];let pixels=0,total=0;const captured=[];
- for(let i=0;i<images.length;i++){const b=await sourceImage(images[i],budget);const decoded=await dimensions(b,budget);if(decoded.mediaType!==manifest[i].mediaType)fail('unsupported-input');pixels+=decoded.width*decoded.height;total+=b.length;if(total>CAP||pixels>(r.imageEnvelope?.limits.maxPixels??20_000_000))fail('unsupported-input');captured.push({...manifest[i],...decoded,bytes:b,occurrence:i});}
+ for(let i=0;i<images.length;i++){const b=await sourceImage(images[i],budget);const decoded=await dimensions(b,budget,reuseDecodedImages);if(decoded.mediaType!==manifest[i].mediaType)fail('unsupported-input');pixels+=decoded.width*decoded.height;total+=b.length;if(total>CAP||pixels>(r.imageEnvelope?.limits.maxPixels??20_000_000))fail('unsupported-input');captured.push({...manifest[i],...decoded,bytes:b,occurrence:i});}
  const logical=json({runId:r.runId,model:cfg.model,prompt:r.prompt,...(r.outputSchema===undefined?{}:{outputSchema:r.outputSchema}),...(manifest.length?{images:manifest}:{}),...(r.imageEnvelope?{imageEnvelope:r.imageEnvelope}:{})});
  if(!(call.logicalInputBytes instanceof Uint8Array)||!logical.equals(Buffer.from(call.logicalInputBytes))||!(call.runtimePacketBytes instanceof Uint8Array)||call.runtimePacketBytes.length<1||call.runtimePacketBytes.length>CAP)fail('unsupported-input');
  const runtime=Buffer.from(call.runtimePacketBytes);
@@ -238,7 +267,8 @@ export function createModelHttpAuthority({rootDir,operatorConfig,environment=pro
  const cfg=config(m.config);if(httpVariantForConfig(cfg)!==variant||m.origin!==variant.protocol||m.attemptId!==call.attemptId||m.runId!==call.request.runId||!same(m.binding,call.binding)||m.configurationHash!==hash(json(cfg))||!text(m.invocationId,100)||!['verified','rejected'].includes(m.outcome))throw invalid();
  for(const [key,path] of [['logical','logical.json'],['runtime','runtime.json'],['wire','wire.json'],['intent','intent.json'],['status','status.json'],['body','response.bin'],['output','output.json']])if(m[key]?.path!==path)throw invalid();
  budget??=preflight(cfg,call);budget.check();
- const inp=await inputs(call,cfg,budget);const logical=await readDescriptor(dir,m.logical,CAP),runtime=await readDescriptor(dir,m.runtime,CAP),wb=await readDescriptor(dir,m.wire,cfg.maxRequestBytes);
+ // An invoke-owned reopen must not inherit ambient read-only reuse across dispatch.
+ const inp=await inputs(call,cfg,budget,!invoked);const logical=await readDescriptor(dir,m.logical,CAP),runtime=await readDescriptor(dir,m.runtime,CAP),wb=await readDescriptor(dir,m.wire,cfg.maxRequestBytes);
  if(variant.bounded)for(const bytes of [logical,runtime,wb])inspectJSON(bytes,undefined,variant);
  if(!logical.equals(inp.logical)||!runtime.equals(inp.runtime)||!wb.equals(wire(call,inp.captured,m.invocationId))||!Array.isArray(m.images)||m.images.length!==inp.captured.length)throw invalid();
  for(let i=0;i<m.images.length;i++){const {bytes,...meta}=inp.captured[i];const expected={...meta,file:descriptor(`image-${i}.${meta.mediaType==='image/png'?'png':'jpg'}`,bytes)};if(!same(m.images[i],expected)||(await readDescriptor(dir,m.images[i].file,8*1024*1024)).equals(bytes)===false)throw invalid();}
@@ -249,10 +279,11 @@ export function createModelHttpAuthority({rootDir,operatorConfig,environment=pro
  budget.check();
  if(decoded.kind==='rejected')return {kind:'rejected',code:'http-status',savedFailure:saved};
  return {kind:'verified',success:Object.freeze({attemptId:m.attemptId,requestedModel:cfg.model,reportedModel:m.result.reportedModel,inputPacketHash:m.logical.sha256,runtimePacketHash:m.runtime.sha256,wireRequestHash:m.wire.sha256,responseText:m.result.outputText,context:Object.freeze(saved.context),imageOccurrences:Object.freeze(m.images)}),savedExecution:saved};
- }catch(error){if(invoked&&['deadline','abort'].includes(error.code))throw error;throw invalid();}
+ }catch(error){invalidateReadOnlyImageBranch(readOnlyImageVerification.getStore());if(invoked&&['deadline','abort'].includes(error.code))throw error;throw invalid();}
  }
  const reopen=call=>reopenWithin(call);
  async function invoke(call){
+ invalidateReadOnlyImageBranch(readOnlyImageVerification.getStore(),true);
  let cfg,variant,inp,secret,wb,id,dir,name,claimed=false;
  try{
  if(!current)fail('configuration');cfg=current;variant=httpVariantForConfig(cfg);call=snapshot(call);

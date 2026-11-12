@@ -1,0 +1,132 @@
+
+> pitch-agent-workspace@0.1.0 test:image-scope
+> node --test tools/workbench/image-verification-scope.test.mjs tools/workbench/ordinary-model-claims-short-circuit.test.mjs
+
+✔ same scope reuses two real decodes while every occurrence rereads source and persisted image (953.55425ms)
+✔ separate operations, concurrent scopes and detached closed continuations cannot share decodes (2087.091375ms)
+✔ warm decodes cannot bypass late source, hash, MIME, binding or persisted-original rejection (2465.34375ms)
+✔ nested invoke revokes ancestor successes (1298.0395ms)
+✔ nested reopen rejection revokes ancestor successes (964.309666ms)
+✔ nested callback rejection revokes ancestor successes (1017.191209ms)
+✔ nested invoke clears ancestors without clearing concurrent sibling's own cache (1562.943417ms)
+✔ nested reject clears ancestors without clearing concurrent sibling's own cache (1172.527834ms)
+✔ pending decode from before nested rejection cannot refill an invalidated ancestor (736.411625ms)
+✔ different valid HTTP contexts skip parsing both response bodies (1.270292ms)
+✔ matching valid HTTP contexts fully parse both receipts (0.169125ms)
+✔ matching context cannot turn malformed JSON into a successful claim (0.10575ms)
+✔ missing or malformed context and null inputs remain false without throwing (0.278208ms)
+✔ legacy thread comparison and mixed HTTP/legacy behavior are preserved (0.069584ms)
+✔ bounded matching claims still enforce JSON grammar while disjoint claims avoid parsing (0.967ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12324.645375
+✔ review P1 exact malformed non200 Unicode-escaped credential leaves no response or terminal manifest (42.875125ms)
+✔ review P2 exact credential-valued attemptId refuses before any managed filesystem effects (2.434291ms)
+✔ review P2 actual FIFO source refuses in owned child without parent forced timeout or network effects (44.414ms)
+✔ complete authenticated canonical JSON rejection remains durable and reopens without credentials (34.535417ms)
+✔ root and source path credential metadata refuse before managed writes and disclosure (0.766583ms)
+✔ actual image preflight obeys deadline and abort without managed effects or HTTP (68.500958ms)
+✔ final physical reopen shares the original invocation deadline and preserves zero-call recovery (316.156292ms)
+✔ physical invoke, exact three bytes, stateless echo and credential-free persisted-origin reopen (45.872375ms)
+✔ ordered actual PNG/JPEG occurrences including repeated bytes, finite envelopes (1497.174125ms)
+✔ every physical file mutation after successful first read fails without HTTP (50.553ms)
+✔ configuration, credential and logical mismatch refuse before dispatch (0.796875ms)
+▶ strict failures, bounded retention, zero automatic redispatch
+  ✔ malformed (19.970791ms)
+  ✔ utf8 (21.09575ms)
+  ✔ identity (20.985333ms)
+  ✔ unknown-field (18.812667ms)
+  ✔ bad-output (24.041625ms)
+  ✔ oversized (24.077ms)
+  ✔ encoding (18.357583ms)
+  ✔ deadline (55.695917ms)
+  ✔ invalid-utf8-rejection (26.969292ms)
+  ✔ connection (20ms)
+  ✔ duplicate-keys (22.165666ms)
+✔ strict failures, bounded retention, zero automatic redispatch (273.030042ms)
+✔ complete explicit rejection is durable and credential-free, never success (54.050667ms)
+▶ secret raw and escaped echoes never persist any response bytes
+  ✔ false (19.842666ms)
+  ✔ true (19.441208ms)
+✔ secret raw and escaped echoes never persist any response bytes (39.506292ms)
+✔ abort and concurrent exclusive claims produce at most one dispatch (78.307541ms)
+▶ failpoints at every durability boundary never cause redispatch
+  ✔ logical.json (9.407459ms)
+  ✔ runtime.json (11.714375ms)
+  ✔ wire.json (17.895417ms)
+  ✔ intent.json (18.32925ms)
+  ✔ intent-synced (19.252375ms)
+  ✔ status.json (22.7275ms)
+  ✔ response.bin (23.598042ms)
+  ✔ output.json (29.001375ms)
+  ✔ manifest.json (26.614666ms)
+  ✔ manifest-synced (33.858042ms)
+✔ failpoints at every durability boundary never cause redispatch (213.142708ms)
+✔ non-authoritative locator recovers committed terminal without config or credential and rejects downgrade (51.260666ms)
+✔ escaped credential in decoded JSON property names cannot enter rejection originals (16.451792ms)
+✔ fixed scanner boundaries count containers and delimiters outside correctly escaped strings (7.70525ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-QcWQGt","calls":1}
+✔ exact two-method API, closed profile config and v2 saved tuple do not change gateway grammar (55.085458ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-JqwVQa","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-KRTAl6","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-kELwAs","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-lgL480","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-cluhPE","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-ngjbuC","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-9lpn95","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-A7aCAj","calls":1}
+✔ UTF8 output and configured body limits admit exact bytes and reject plus one before retention (732.515042ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-6tyA5T","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-NqOjNl","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-iAyX0K","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-JezTu8","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-YZ07h2","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-7dEsYs","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-tVopK7","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-eDLJ6N","calls":1}
+✔ body, output, recursive strings and non200 responses are guarded before parser entry (186.961542ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-n6ZFNU","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-K3e8RA","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-2BpAqU","calls":1}
+✔ secret work and entry exhaustion retain only bounded unknown and never redispatch (333.57625ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-1OTOlJ","calls":1}
+✔ request inspections have separate input allowances and do not inherit the body ceiling (1232.744542ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-3pydVo","calls":0}
+✔ large operator metadata cannot exhaust a reserved manifest after dispatch (105.327334ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-jIxrgu","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-5vyyB8","calls":1}
+✔ fully escaped decoded output is refused as grammar or size without output retention (423.11275ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-6Et5Yt","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-zQ6dui","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-Czli6m","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-Z1k4Q9","calls":0}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-4XKGtl","calls":0}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-sdUkTj","calls":0}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-geDfaW","calls":0}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-SXTgnL","calls":0}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-TmWkNB","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-l9fK0P","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-F3XrDf","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-d7IawH","calls":1}
+{"retainedProfileFixture":"/private/tmp/http-json-profile-qe5ett","calls":1}
+✔ one attempt claim spans both profiles, concurrency and every interrupted durability point (1206.818417ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-8ZuP41","calls":1}
+✔ fresh physical reads reject changed identities, descriptors and malformed manifests with no legacy fallback (276.587625ms)
+{"retainedProfileFixture":"/private/tmp/http-json-profile-NoKkQk","calls":1}
+✔ ordinary adapter persists v2 locator before dispatch and rejects crossed receipt/locator pairs (84.14275ms)
+✔ legacy identity bytes and exact thread comparisons ignore arbitrary actor metadata (0.726333ms)
+✔ HTTP identity has its explicit version and cannot inherit a CLI context from actor metadata (0.643167ms)
+✔ invalid success claims cannot match an HTTP source identity or downgrade through a locator (0.399875ms)
+ℹ tests 55
+ℹ suites 0
+ℹ pass 55
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7705.4515

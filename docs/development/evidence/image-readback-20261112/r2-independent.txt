@@ -1,0 +1,34 @@
+# 纯解码 r2：独立复验
+
+2026-11-12。**性能验证实现本身无新增阻塞 finding，R1嵌套scope P2已证实修闭。可在统筹确认后用于同案有限续行的验证层。** 这不自动授权采用或Astep；A的同target组内unknown窄查/窄修另行处理，不由性能绿灯替代。没有端到端速度提升或视觉A通过结论。
+
+我是A后端作者、非性能候选作者。本次独立范围仅性能r2两源、相关只读接口/门禁及廉价authority邻接；不冒称对自己的A包独立终审。原P2及原失败保留在 `visual-readback-decode-independent.md` / WT `visual-readback-decode-independent.log`，未回写成绿。
+
+## 冻结身份
+
+`perf-candidate-r2/visual-readback-decode-candidate-r2.patch` SHA `a312cfed4bbd7a6f4ff42ee2180e02fd0adc291698e4ceffb1ababbad90b37c5`；r1→r2 SHA `c78bd3108cf40cae89217dbcb62834e7b2241c590610ad2fe8c3d4b074d367a8`。两源r2 after、全部r2 frozen artifacts以及R1全部frozen artifacts逐件SHA精确；WT两源仍是base，未采用。原独立脚本未改，仍使用同实际历史398及snapshot SHA `d00c28d15e020f1adbf23f1fd1073cca20bdc3ce7988af6969636b3f39152dbf`。
+
+## 独立实际结果：79通过、0skip
+
+命令都在 `worktrees/simple-strategy-rebased`，均使用 `--import <design/perf-candidate-r2/overlay-loader.mjs>`；overlay只载冻结两源，没有覆盖生产文件。
+
+1. `--test visual-readback-decode-independent.test.mjs <design/perf-candidate-r2/regression.test.mjs>` → `decode-r2-independent-18.log`，**18/18、exit0**。包括作者16项及我原2项。原R1反例同脚本、同398，现为 **9实际decode / 9 fresh imageReads**；control为3/6。无真实模型/业务API调用，invoke在configuration校验前拒绝dispatch。
+2. `--test --test-concurrency=1 tools/workbench/model-http-authority.test.mjs tools/workbench/model-http-authority-security.test.mjs tools/workbench/model-http-json-profile.test.mjs` → `decode-r2-independent-neighbor.log`，**52/52、exit0**。这些是独立隔离测试自身的synthetic loopback HTTP，不是A案服务、真实或付费模型、也不是新整链。
+3. `--test decode-r2-readonly-claims.test.mjs` → `decode-r2-readonly-claims.log`，**8/8、exit0**。从同案只读取真实历史183/184的原visual ledger、原start-job body与原executor context，在r2真实PNG decode预热scope内，仅在内存执行原applyCommand。原claim正例可进入184/running（不写store、不dispatch）；问题计划、政策、active copy来源、任务、研究release、binding改变均 `VISUAL_HTTP_STALE`，selected job改unknown为 `INVALID_JOB`。不是合成一份绿灯成功状态代替原合同。
+4. `--test decode-r2-independent-late.test.mjs` → `decode-r2-independent-late.log`，**1/1、exit0**。首轮真实decode成功后，只将第二次actual source读取返回的进程内Buffer翻一byte，authority仍 `original-invalid`；没有改原文件，未命中旧成功decode绕过fresh hash。
+
+第3项首次脚本漏掉store.read实际附着的semantic reader，原claim正例因 `DEPENDENCY_BLOCKED`失败；原日志保留 `decode-r2-readonly-claims-unbound.log`（7pass/1fail），那一轮负例不作有效证明。脚本随后只读实际semantic_configuration，校验真实hash/epoch1，按原store.read方式bindSemanticReader；对正例及每个变更clone均附同一实际配置，未改生产代码或发明批准，再重跑8/8。没有忽略正例失败后直接汇报负例绿。
+
+## 接口审查
+
+r2为scope保存私有parent与generation；invoke对当前分支及可恢复祖先全部closed/clear，返回外层后不再使用invoke前的metadata。reopen或callback拒绝递增当前/祖先generation并clear；开始于拒绝前的pending decode只有generation未变才入Map。实际16回归覆盖父链、callback/reopen拒绝、pending回填、并发兄弟独立、detached关闭、环境与预算等分支，原独立反例也已转绿。并发兄弟的独立Map不被另一个分支错误关闭。
+
+每个occurrence仍先完成sourceImage真实受限IO、路径/symlink/stat/hash，再查询纯dimensions；freshIO control及late byte反例已实跑。预算check、MIME/ID、累计bytes/pixels、binding、logical/runtime/wire/receipt及原context核对都保留在缓存外。只缓存冻结的mediaType/width/height，不缓存原件有效性、领域放行或业务票据；invoke自身与其post-dispatch reopen仍禁用reuse。
+
+Qpolicy/source/unknown业务条件未由这两源改写，实际历史claim窄例证实预热decoder不会把上述选定变化放行。**这不覆盖A同target兄弟unknown的完整调度合同，也不证明全部恢复组合或人类gate。** 已知A窄查必须单独进行，不能把selected unknown反例扩称所有unknown均验收。
+
+## 原位保留与后续边界
+
+复验后同案head仍565、1008原文件SHA与A-r2全部17 source SHA精确不变；9原queued、0running/unknown保持，参考50/129、草图0/9、v2/双owner0/54。未采用perf实现、未启动Astep、未改阈值/预算/规范或Git。各脚本/日志留WT，冻结候选目录未写。
+
+等待统筹确认后才可在同案安装验证层，并按既有有限步driver接原queued。来源仍synthetic engineering；实际GET/整请求old-new计时和视觉质量均未验，不报告加速比例、真实业务批准或总体goal完成。

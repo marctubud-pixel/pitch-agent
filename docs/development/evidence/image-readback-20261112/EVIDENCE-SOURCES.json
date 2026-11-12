@@ -1,0 +1,137 @@
+{
+  "scope": "各时点实际字节副本；完整原DB/IO保持本地，候选、根测试及业务范围分别记录。",
+  "files": [
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-readback-perf-diagnosis.md",
+      "file": "diagnosis.txt",
+      "sha256": "4765aae2fb7add7a634f2ef0491f8abaf220799a68f6c3d54bda4464fd650074",
+      "bytes": 9052
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-readback-decode-independent.md",
+      "file": "r1-independent.txt",
+      "sha256": "a201d4bca25c12e4dce5b9b4c7eb0968d0d816ba1261d8ffa1beef6ac1e3ef77",
+      "bytes": 4571
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-readback-decode-r2-independent.md",
+      "file": "r2-independent.txt",
+      "sha256": "bdd26d4f3a1822b099485a666bb4d4545c2a7ab0dbd328eb2d24e5116a495e4d",
+      "bytes": 5382
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/perf-candidate-r2/frozen-hashes.json",
+      "file": "r2-frozen-hashes.json",
+      "sha256": "7f165fb7f6a3d56529897db720eef926335b468b0ea0374cdd00db7359f7f948",
+      "bytes": 4103
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/perf-portable/frozen-hashes.json",
+      "file": "portable-frozen-hashes.json",
+      "sha256": "aba8e530c0d0efba6e0fc483de395d2f9c2e9e5136d20f5ef47e43ef5785b162",
+      "bytes": 1864
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/perf-portable/base-red.log",
+      "file": "portable-base-red.txt",
+      "sha256": "f4458a44b88addedac0ec03fb9c5830ee965474361f318a4c0edd9fae8ae45f9",
+      "bytes": 8544
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/perf-portable/r1-red.log",
+      "file": "portable-r1-red.txt",
+      "sha256": "2114bb1253b3cc59708e8ed493da72a65bb42d37c58452ebabba2f9c6079833c",
+      "bytes": 6580
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/perf-portable/r2.log",
+      "file": "portable-r2.txt",
+      "sha256": "d792e3784663ed1d03561d1c25b5b4c59b600966821e21f79546e5d8537508b2",
+      "bytes": 1122
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/image-readback-root-adoption.json",
+      "file": "root-adoption.json",
+      "sha256": "3360fa810372ecd299ecd2f729f30661fefeb8fd4253755426fde76a20f0f4b8",
+      "bytes": 1748
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/image-readback-root-portable.log",
+      "file": "root-portable.txt",
+      "sha256": "bbe0189bb3b39bd9451bf5c39701988d63a401f7d148fd3016ad0cdada7a26ca",
+      "bytes": 953
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/image-readback-root-authority.log",
+      "file": "root-authority.txt",
+      "sha256": "713e97d40b8f0127d9e70bb6c0ba2cdd30ba65208fac42519f77dd75e246c6c2",
+      "bytes": 7023
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/README.md",
+      "file": "context-candidate.txt",
+      "sha256": "2aa3d3671e5b40b5f0daa47ab274eccf8fc9867885bc7b008e65b1a0f9abc237",
+      "bytes": 6427
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/frozen-hashes.json",
+      "file": "context-frozen-hashes.json",
+      "sha256": "67bb238064a2d82cf0a14f31bcb12c8bfde5b771b112d83da0503ff4dcfcead4",
+      "bytes": 6779
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit-independent.md",
+      "file": "context-independent.txt",
+      "sha256": "9cec0015736a1b6322489e806c68c0574913b8221745031c7960ace0db6dd5c0",
+      "bytes": 2684
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/correctionSources-base.json",
+      "file": "context-correction-base.json",
+      "sha256": "d28e35c2f718f983dc670af89f8a99d2691dca65f6ed51db320e4b2fee498444",
+      "bytes": 1024
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/correctionSources-candidate.json",
+      "file": "context-correction-candidate.json",
+      "sha256": "84024549eddd6dd653d14ae0fc64c8eee6eb02402a29e4c6a367ea35918477f5",
+      "bytes": 1011
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/projectView-base.json",
+      "file": "context-view-base.json",
+      "sha256": "7e4cefa948be41152e73b2c22368663606e5990cbaac4c546028626ed9438f41",
+      "bytes": 1043
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/ordinary-context-short-circuit/projectView-candidate.json",
+      "file": "context-view-candidate.json",
+      "sha256": "b7dc35f39e5727be3f8f67477e2264b9eeee58c55df24ad3488a3820ff3977dc",
+      "bytes": 1027
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/ordinary-context-root-adoption.json",
+      "file": "context-root-adoption.json",
+      "sha256": "ca653c475c279bd2309d221be764f2cd416718c3dd5857919ba7c43e84c28d81",
+      "bytes": 696
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/ordinary-context-root-bounded-test-fix.json",
+      "file": "context-root-unit-fix.json",
+      "sha256": "b8dd75e63010f3b09215980f536583e701b2fc21b92ecab473858fb38b1c4b22",
+      "bytes": 532
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/image-readback-final-root-tests.log",
+      "file": "root-unit-expectation-failure.txt",
+      "sha256": "f47f2af974ad5647af806cba7c6fe9250c8051c5fecff8abf8515e37ec2088e3",
+      "bytes": 2650
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/image-readback-final-root-tests-r2.log",
+      "file": "root-combined-final.txt",
+      "sha256": "58b2f77170a36be3d19fbebfa132324fcf1fab101571bcdfc5ae025f6693d04d",
+      "bytes": 8984
+    }
+  ]
+}

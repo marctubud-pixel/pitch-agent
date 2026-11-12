@@ -1,0 +1,44 @@
+{
+  "done": true,
+  "mode": "correctionSources",
+  "revision": 565,
+  "wallMs": 308.693458,
+  "cpuUs": {
+    "user": 289054,
+    "system": 36733
+  },
+  "reads": 0,
+  "error": null,
+  "outputSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "signal": {},
+  "counts": {
+    "referenceCorrectionSources": 1,
+    "validateStoredReferenceReports": 1,
+    "validatedReferenceReportPrefix": 1,
+    "validateReferenceReceipt": 50,
+    "ordinarySuccess": 8050,
+    "parseBoundedHttpJSON": 8050,
+    "precheckHttpJSON": 8050,
+    "buildReferenceProductionRequest": 20
+  },
+  "uniqueReceiptObjects": 130,
+  "sqlite": {
+    "wallMs": 47.580999999999996,
+    "cpuUs": {
+      "user": 51193,
+      "system": 7841
+    },
+    "bytes": 10234615,
+    "snapshotSha256": "256ee70c9abf9d1939fe1c8919cebac3e77b3013201dbf7b1766fbc7cb0e6300"
+  },
+  "confirmation": {
+    "count": 1,
+    "audits": [
+      {
+        "revision": 1,
+        "at": null
+      }
+    ]
+  },
+  "verdict": "RED_REPEATED_PURE_JSON_VALIDATION"
+}

@@ -1,0 +1,21 @@
+# ordinarySameContext 短路候选独立审查
+
+2026-11-12。**未发现可证P1/P2，可以采用于root优化包及A下一自然chunk的新进程；不能热改PID23803或在途chunk。** 本次未实施采用。
+
+## 固定范围与等值依据
+
+独立核对冻结27份产物SHA；生产patch为`b8f81f731bde6a4286d4174f3b7763247926c1eeb71661c0e56022aaf0a38aa7`。root及AWT原claims均为`89bba4ee…`，候选为`13b592fd…`。逐字替换校验确认唯一生产变化是ordinary-model-claims.mjs:31的谓词次序，未动缓存、API、原票或IO函数。
+
+对于实际序列化纯数据，原HTTP返回true必已满足双方ordinarySuccess及namespace/invocationId相等。候选先核相等；不等即原本的false，相等仍完整核双方ordinarySuccess。optional访问在缺context/null时安全；两方都缺字段即使相等，完整校验仍拒绝。mixed HTTP/legacy及legacy分支原样保留。此结论不扩张到带副作用getter/Proxy的任意对象。
+
+matching伪造context、错origin、坏JSON/hash/protocol及不一致providerExecution均不能新增true。合法但错误业务正文的JSON语法资格不是业务批准；reference-dossier.mjs:216–232仍逐份核原locator、冻结task/binding/实际request、成功状态、独立context、原response/raw及岗位schema，未由disjoint false替代任何资格检查。
+
+## 本审查实际执行
+
+- 同命令重跑便携5项：baseline实际4绿1红（disjoint解析2次≠0）；候选5/5绿。matching合法仍解析双方2次；matching坏JSON仍false/1次；缺context、null、legacy及混合行为保持。
+- 另写即时纯内存truth表，直接分别导入root原文与冻结候选：72种输入、5184对比较，包含v1/v2、null/primitive/unknown provider、各类context、伪造matching、坏JSON、wrong-body、hash/origin/usage/原件和wrapper变体。bool／异常完全相等，0异常；50个matching非法HTTP条件仍false。合成metadata仅用于谓词验证，不冒充原业务票。
+- 实际核冻结派生结果：双方输出SHA相同，projectView的35次prefix、1750次validateReferenceReceipt及700次request重建相同；parse调用345638→7088。以上数量是重复函数调用，**不是业务票数**。未重跑该诊断或端到端测速，不据单次CPU/wall宣称速度比例。
+
+作者邻接日志记录的授权4绿，以及原新均出现的sandbox native async-id crash，只按原证据保留；本审查没有重跑网络测试，不将crash称候选回归或绿。
+
+未读live head、操作A进程、打开原DB、执行模型/API/新链或修改root/AWT/Git/冻结产物。原image private-scope r2不属于本次diff与复验范围。

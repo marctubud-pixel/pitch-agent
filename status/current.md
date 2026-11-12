@@ -1,3 +1,13 @@
+# 图片只读核验工作包 · 2026-11-12
+
+文案[PR #9](https://github.com/marctubud-pixel/pitch-agent/pull/9)最终b5687cf3的两项CI及实际安装/测试/构建全部成功，已合并68b6302c。原unknown组内续派P2和CI整流程wall超时失败、修复、独立复验保留，见[文案核验](../docs/development/simple-copy-verification-20261112.md)。
+
+当前独立codex/image-readback-scope-20261112按已冻a312cfed采用两个原件验证源及便携测试，根9项scope和52项邻接验证通过；同包追加已独立等值的单行context短路及六项纯metadata，组合15项便携+55项邻接全通过，零skip。规范准备1.12.0/59项，固定16截图、393导入/147封存保持；根最终纳管/独立审查/PR仍待收束，见[读取合同](../docs/development/image-readback.md)。不把减少重复纯解码签作业务通过或端到端加速。
+
+视觉A仍在隔离WT沿同一合成包装案有限推进，50/129保存点及后续运行以原checkpoint/handle为准，不重开上游。新unknown fixed-target守卫已独立24项核验，原件保持。完整App读回因该夹具confirm审计at=null被既有guard拒绝，未补造时间；actual workspace读回成功，Chrome尚未签UI通过。只读组件harness已准备，等待129稳定窗口；完整App须由后续当前Brief新案实证。
+
+同历史565诊断确认高层读取自然返回，重复ordinary receipt JSON验证的单行短路候选已独立等值复核并在根采用；不是无限循环，不减少票或原IO。视觉B、通用Deck/终审/PPTX、包装/KV两整链及整体目标仍未完成，真实模型/生产/在线编辑暂停范围保持。以下为原时间节点。
+
 # 文案工作包本地接线 · 2026-11-12
 
 策略[PR #8](https://github.com/marctubud-pixel/pitch-agent/pull/8)最终1008676f准确双CI与实际安装/测试/构建步骤成功，已合并3e230d51。当前独立codex/simple-copy-20261112已按SHA采用backend14与frontend r2 20文件；只窄合测试fixture保留受阻诊断，旧数据/青屿不改。规范1.11.1及最终规范/纳管门禁通过；PR #9已待审。b1ef4726规范CI通过、应用前端唯一SIMPLE测试30秒wall超时（770通过/1既有skip）；仅外层测试时限调120秒、正文/断言/业务期限不变，本地5/5通过，等待新head远程回执。

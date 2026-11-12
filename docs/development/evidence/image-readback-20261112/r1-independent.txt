@@ -1,0 +1,41 @@
+# 纯解码候选：独立只读接口审查
+
+2026-11-12。**证实1个P2，建议修正后再采用。** 我是视觉A后端作者，不是本纯解码候选作者；独立性仅涵盖性能候选两源接口审查，不冒称对自己的A包独立终审。未采用候选、未继续Astep、未启动模型/API/新案，也未改任何生产源码、原DB或原件。
+
+## 冻结身份与实际反例
+
+审查patch `perf-candidate/visual-readback-decode-candidate.patch` SHA `4b6195cb80f65b8730876c09f77521c418454aa3adb88a880d9931eccf1a2430`。实际候选两source after SHA与frozen-hashes逐件相符，WT两source仍为记录的before SHA；没有把变化中的作者源码当冻结候选。
+
+只读固定历史rev398，project `project-714a07beddf178027ddd90c48979d5e741f13a8dc2dc9b15de37c7673ee2c58f`，解压实际snapshot SHA `d00c28d15e020f1adbf23f1fd1073cca20bdc3ce7988af6969636b3f39152dbf`。使用原有成功角色job、原request/runtime/receipt/actual PNG bytes，解码为真实子进程，不伪造decoder成功。
+
+独立测试：WT `visual-readback-decode-independent.test.mjs`；日志 `visual-readback-decode-independent.log`。命令（在WT）：
+
+```sh
+node --import /Users/marc/Documents/ChatGPT/调研agent/.scratch/seven-stage-static-goal-20261111/design/perf-candidate/overlay-loader.mjs --test visual-readback-decode-independent.test.mjs
+```
+
+结果 **1pass/1fail、0skip、exit1**，约0.76秒。control同scope两次原件回读：3实际decode、6次fresh source image read，通过。反例见下：3实际decode、9次fresh source image read；期望跨invoke撤销后9次decode，失败。真实模型/API调用为0。
+
+## P2：嵌套scope的祖先缓存能跨invoke存活
+
+位置：冻结 `tools/workbench/model-http-authority.mjs:279–280`，关联scope创建134–137行。
+
+`withReadOnlyImageVerification`为每个嵌套调用创建独立ALS store；`invoke`只关闭`getStore()`返回的当前最内层scope。内层callback结束后，ALS恢复到外层scope，外层先前成功的decode Map仍开放。因此以下实际顺序违反“invoke立即撤销ambient verification reuse、scope不能越invoke/phase”的承诺：
+
+1. 外层scope按实际原件完整reopen一次，3张原PNG实际decode并缓存。
+2. 内层scope调用真实authority.invoke；authority没有operatorConfig，所以原生返回`refused/configuration/dispatch:not-started`，不触碰模型/API或新IO。
+3. 返回外层后，再完整reopen两次，9次source occurrence读取均实际发生，但总decode仍为3；未按候选已有非嵌套invoke回归所要求的规则失效为9。
+
+反例没有构造Map、篡改代码或伪造成功票据。建议invoke撤销当前scope及其所有仍可恢复的祖先scope（或收紧接口使这种嵌套无法成立），并纳入该嵌套真实回归。审查者不替作者改实现。
+
+实际影响边界：本次证明的是导出接口的生命周期合同缺口，**没有证明原件IO、预算、Qpolicy或HARD_BLOCKER能被绕过**；新鲜IO仍全部执行。当前两个生产wrapper均为只读核验，本轮没找到它们内部调用invoke的生产路径，不把未来内部误用推断成已有外部攻击通路。
+
+## 其余接口核查
+
+- 每occurrence仍先sourceImage受限打开/路径与symlink检查/前后stat/actual hash，再查纯dimensions memo；control实际保持6次原图读取。缓存不是来源读取、模型结果或领域放行。
+- 命中前/后仍budget.check，MIME、image manifest/ID、累计bytes/pixels、logical/runtime/wire/receipt上下文仍在缓存外。key使用实际fresh bytes SHA+length和decoder/policy/env identity；value只含冻结的mediaType/width/height，无外部供成功Map入口。
+- 普通wrapper resolve/reject的finally和closed-scope写入检查正确；invoke自身inputs默认reuse=false，其post-dispatch reopen亦以invoked禁止reuse。上述P2仅指出嵌套祖先仍可恢复的遗漏，不否定这些已有保护。
+- 两源diff未改Qpolicy、来源当前性、unknown调度/恢复、128KiB/CAS、业务分数或129/54门槛；我没有重跑全部业务门禁，不把源码未改冒称端到端重验。统筹10行为回归/52原authority等结果属于统筹证据，不计作我本次独立重跑。
+- 不报告速度提升；本轮decode计数只是可证生命周期反例，不能推算端到端节省。
+
+审查后只读核：同案head仍565，A保存点1008原文件SHA及r2全部17 source SHA均不变。A仍参考50/129、草图0/9、v2/双owner0/54；9原queued/0unknown保留，没有继续新组。

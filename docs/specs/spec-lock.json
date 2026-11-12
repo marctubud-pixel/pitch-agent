@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.11.1",
-  "registrySha256": "d99b3ce0d8de262cb13f28c72e3e8a30fbb35f1a5fae7b809e35f40bd3a4b9a9",
+  "baselineVersion": "1.12.0",
+  "registrySha256": "b71ce64e9d7a786ae8e6513a2b83e3e092eeb32b825ab979b4ac5caa601d3fcf",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -318,10 +318,10 @@
       }
     },
     "contract.runtime": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/architecture/runtime.md": "7eed1f358c3bcbae66a5c64a08d4391c5a1a8acdc4be46e0f6b5884b13c10037"
+        "docs/architecture/runtime.md": "c3f168cb96df45ab74147d1b9134aba97f3073886d19c603c6e506de62452742"
       }
     },
     "contract.configuration": {
@@ -332,10 +332,10 @@
       }
     },
     "contract.testing": {
-      "version": "1.8.1",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "3a862053f9c19e6bdd9f7968098047bdaffd4a71c7fc40c52134ef3ec4f368ed"
+        "docs/development/testing.md": "5da2180587ff5013d6529c30332b9d1af5abf3b94b49425f2e5d91d06ba4f4eb"
       }
     },
     "contract.git": {
@@ -428,6 +428,13 @@
       "files": {
         "docs/development/simple-copy.md": "b5afd425a7af4751f7981d7cb9ace4d75dd6eb129623fb9a6431ff8768ac9c85"
       }
+    },
+    "contract.image-readback": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/image-readback.md": "12f29780bc2fc2841c6955d5a850b146a6da17be13fb0fc00772b02ebab2caed"
+      }
     }
   },
   "entryDocuments": {
@@ -437,7 +444,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "270cf102e38e9309c16344e28270e31c2acea02b4f6936476262b1462cc5dd65",
+    "docs/specs/README.md": "2f40da9f1b19467505711ff5f15a4c357c318a524b2c1c145c0711005cf4e0cd",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

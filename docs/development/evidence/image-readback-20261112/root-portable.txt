@@ -1,0 +1,17 @@
+✔ same scope reuses two real decodes while every occurrence rereads source and persisted image (763.3155ms)
+✔ separate operations, concurrent scopes and detached closed continuations cannot share decodes (1750.625833ms)
+✔ warm decodes cannot bypass late source, hash, MIME, binding or persisted-original rejection (2168.213167ms)
+✔ nested invoke revokes ancestor successes (1207.043416ms)
+✔ nested reopen rejection revokes ancestor successes (864.247833ms)
+✔ nested callback rejection revokes ancestor successes (867.04725ms)
+✔ nested invoke clears ancestors without clearing concurrent sibling's own cache (1434.168125ms)
+✔ nested reject clears ancestors without clearing concurrent sibling's own cache (1137.483417ms)
+✔ pending decode from before nested rejection cannot refill an invalidated ancestor (614.890292ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10859.66475

@@ -1,3 +1,4 @@
+import {withReadOnlyImageVerification} from './model-http-authority.mjs';
 import {verifySplitProjectOriginals} from './readiness-split-runtime.mjs';
 import {buildSemanticRequest} from './research-semantic-review.mjs';
 import {buildResearchReaderRequest} from './research-reader-loop.mjs';
@@ -108,8 +109,11 @@ async function verifyOrdinaryProjectWithin(project,{executionRoot,referenceFacts
  }
 }
 
-export async function verifyOrdinaryProject(project,{executionRoot}){return verifyOrdinaryProjectWithin(project,{executionRoot});}
-export async function verifyOrdinaryReferenceProject(project,dossier,{executionRoot,imageStore}){
+export async function verifyOrdinaryProject(project,{executionRoot}){return withReadOnlyImageVerification(()=>verifyOrdinaryProjectWithin(project,{executionRoot}));}
+export async function verifyOrdinaryReferenceProject(project,dossier,options){
+ return withReadOnlyImageVerification(()=>verifyOrdinaryReferenceProjectWithin(project,dossier,options));
+}
+async function verifyOrdinaryReferenceProjectWithin(project,dossier,{executionRoot,imageStore}){
  need(!referencePriorHistoryGaps(project,dossier).length,'Original reference history is unresolved');
  const dossiers=[],visited=new Set(),active=new Set();
  function visit(d){

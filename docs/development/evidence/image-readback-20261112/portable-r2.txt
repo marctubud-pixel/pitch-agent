@@ -1,0 +1,18 @@
+authority overlay: /Users/marc/Documents/ChatGPT/调研agent/.scratch/seven-stage-static-goal-20261111/design/perf-candidate-r2/tools/workbench/model-http-authority.mjs
+✔ same scope reuses two real decodes while every occurrence rereads source and persisted image (726.974208ms)
+✔ separate operations, concurrent scopes and detached closed continuations cannot share decodes (1667.429208ms)
+✔ warm decodes cannot bypass late source, hash, MIME, binding or persisted-original rejection (2126.115708ms)
+✔ nested invoke revokes ancestor successes (1179.380958ms)
+✔ nested reopen rejection revokes ancestor successes (934.582667ms)
+✔ nested callback rejection revokes ancestor successes (914.877958ms)
+✔ nested invoke clears ancestors without clearing concurrent sibling's own cache (1427.70225ms)
+✔ nested reject clears ancestors without clearing concurrent sibling's own cache (1085.004ms)
+✔ pending decode from before nested rejection cannot refill an invalidated ancestor (659.567125ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10777.869875
