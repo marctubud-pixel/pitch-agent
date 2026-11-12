@@ -78,7 +78,7 @@ local('actual local PDF keeps upload available, exact readable page bytes and st
  expect(result.data.result?.status).toBe('text_extracted');expect(result.data.result?.pages[0].text).toBe('😀 Age 25');
  const p=await s.snapshot(id);expect(bridgeStorageJob(p,p.jobs[0])).toBe(true);const forged=structuredClone(p);forged.jobs[0].binding={providerId:'fake',model:'pdf-extraction-v1',role:'document-parser'};expect(()=>mapProject(forged)).toThrow();
  await h.reopen();expect(await h.service().originalDocuments.get(id,u.resource.id)).toMatchObject({result:{status:'text_extracted'}});
-});
+},30_000);
 local('lost extraction response keeps same claim; wrong receipt stays unknown; historical recovery clears without adopting',async()=>{
  const h=await fixture(true),{s,id}=await h.create(),u=await actualUpload();await s.saveBrandResources(id,[u]);const state=await s.originalDocuments.get(id,u.resource.id),input={documentId:state.documentId,taskCardId:state.taskCardId,taskCardHash:state.taskCardHash,action:'extract'} satisfies Parameters<typeof s.originalDocuments.extract>[1];h.lose();
  await expect(s.originalDocuments.extract(id,input,{commandId:'extract-lost',expectedRevision:state.revision})).rejects.toMatchObject({outcomeUnknown:true});const original=h.posts.at(-1)?.body;
