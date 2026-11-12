@@ -1,3 +1,4 @@
+import {PRELAYOUT_PURPOSE,buildPrelayoutDirectorRequest,prelayoutRuntimePacket} from './proposal-prelayout-contract.mjs';
 import {withReadOnlyImageVerification} from './model-http-authority.mjs';
 import {verifySplitProjectOriginals} from './readiness-split-runtime.mjs';
 import {buildSemanticRequest} from './research-semantic-review.mjs';
@@ -34,7 +35,8 @@ const need=value=>{if(!value)throw Object.assign(new Error('Frozen ordinary doma
 
 export async function ordinaryJobInput(project,job,attempt,{executionRoot}){
  let request,packet,imageRefs=[];
- if(job.purpose==='reference'){
+ if(job.purpose===PRELAYOUT_PURPOSE){need(job.stage==='layout');request=buildPrelayoutDirectorRequest(job.task.prelayoutInput);imageRefs=request.images;packet=prelayoutRuntimePacket(job,attempt).toString('utf8');
+ }else if(job.purpose==='reference'){
   const dossier=project.referenceDossiers.find(d=>d.id===job.dossierId),node=referenceNodePlan(dossier,project).find(n=>n.key===job.nodeKey);need(node);request=referenceRequest(dossier,node,project);imageRefs=referenceNodeInput(dossier,node,project).images;
   packet=JSON.stringify({projectId:project.id,jobId:job.id,attemptId:attempt.id,...request,...(imageRefs.length?{images:imageRefs}:{})},null,2);
  }else if(['sketch_owner','sketch_plan'].includes(job.purpose)){
@@ -74,6 +76,7 @@ export async function ordinaryJobInput(project,job,attempt,{executionRoot}){
 }
 async function verifyRetainedDomainWrappers(project,job,attempt,receipt,executionRoot){
  const checkBytes=async(path,expected)=>need((await readManagedLayoutBytes(executionRoot,path,64*1024*1024)).equals(Buffer.from(expected)));
+ if(job.purpose===PRELAYOUT_PURPOSE){await checkBytes(join(executionRoot,attempt.id,'receipt.json'),JSON.stringify(receipt));await checkBytes(join(executionRoot,attempt.id,'response.txt'),receipt.responseText);await checkBytes(join(executionRoot,attempt.id,'director-report.json'),receipt.responseText);}
  if(receipt.validatedOutputPath!==undefined){
   const bytes=await readManagedLayoutBytes(executionRoot,receipt.validatedOutputPath,64*1024*1024);
   need(createHash('sha256').update(bytes).digest('hex')===receipt.validatedOutputHash,'Normalized ordinary wrapper changed');

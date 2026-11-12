@@ -1,0 +1,1583 @@
+{
+  "project": {
+    "id": "prelayout-readlane-clear",
+    "name": "COMPONENT ONLY: no native source authority",
+    "workflow": {
+      "version": "proposal-seven-v1",
+      "stages": [
+        "brief",
+        "research",
+        "strategy",
+        "themes",
+        "visual",
+        "layout",
+        "delivery"
+      ],
+      "internalSteps": {
+        "visual": [
+          "references",
+          "sketch",
+          "visual"
+        ]
+      }
+    },
+    "revision": 5,
+    "taskCards": [
+      {
+        "id": "prelayout-readlane-clear:scope:1",
+        "brief": "{\"fields\":{\"attachment\":null,\"audience\":\"工程操作员\",\"background\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"brand\":\"TABLELAB\",\"budget\":\"\",\"changeNote\":\"\",\"constraints\":[\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\",\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\",\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\",\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\",\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\"],\"deliverables\":[\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\"],\"deliverableType\":\"\",\"objectives\":[],\"openQuestions\":[],\"proposalType\":\"packaging\",\"provenance\":{\"audience\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"background\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"brand\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"budget\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"constraints\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverables\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverableType\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"objectives\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"openQuestions\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"references\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"researchQuestions\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"timeline\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]}},\"references\":[],\"researchQuestions\":[\"合成蓝色产品与任务指定视觉机制能否逐项对应？\"],\"timeline\":\"\",\"visualRequirements\":[{\"kind\":\"packaging\",\"views\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"]}]},\"format\":\"proposal-workbench-brief-v1\",\"metadata\":{\"client\":\"合成工程操作员\",\"researchOwner\":\"工程研究\",\"strategyOwner\":\"工程策略\",\"summary\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"type\":\"packaging\"},\"savedAt\":\"\"}",
+        "createdBy": "component-human"
+      }
+    ],
+    "activeTaskCardId": "prelayout-readlane-clear:scope:1",
+    "confirmations": [],
+    "visualAuthorizations": [],
+    "policies": [
+      {
+        "version": 1,
+        "mode": "auto",
+        "authorizedThrough": "final_review",
+        "humanGates": []
+      }
+    ],
+    "jobs": [
+      {
+        "id": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944",
+        "stage": "layout",
+        "purpose": "proposal_prelayout_check",
+        "status": "succeeded",
+        "attempts": [
+          {
+            "id": "transport-fixture-attempt",
+            "status": "succeeded",
+            "executor": {
+              "actorType": "agent",
+              "actorId": "transport-fixture-owner",
+              "runId": "transport-fixture-run",
+              "contextId": "transport-fixture-context",
+              "now": "2026-11-12T00:00:00.000Z"
+            },
+            "startedAt": "2026-11-12T00:00:00.000Z",
+            "dispatchStarted": true,
+            "requestHash": "23944951ee1007a979174af8c0feab72b76059072a3461d5bf59d38e53475b0e",
+            "executionRequest": {
+              "projectId": "prelayout-readlane-clear",
+              "jobId": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944",
+              "commandId": "fixture-claim",
+              "expectedRevision": 1
+            },
+            "httpAttemptLocator": {
+              "kind": "http-attempt-locator-v1",
+              "provider": "workbench-model-http-v1",
+              "protocol": "workbench-model-http-original-v1",
+              "attemptId": "transport-fixture-attempt",
+              "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291"
+            },
+            "receipt": {
+              "provider": "workbench-model-http-v1",
+              "protocol": "workbench-model-http-original-v1",
+              "attemptId": "transport-fixture-attempt",
+              "runId": "transport-fixture-attempt",
+              "requestedModel": "component-model",
+              "reportedModel": "component-model",
+              "inputPacketHash": "718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060",
+              "runtimePacketHash": "fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc",
+              "wireRequestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "responseText": " \n{\n  \"protocol\": \"proposal-prelayout-v1\",\n  \"sourceTupleHash\": \"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\",\n  \"baseInputSha256\": \"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\n  \"decision\": \"clear\",\n  \"summary\": \"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\",\n  \"newIssues\": [],\n  \"carriedLimitationsHash\": \"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\"\n}\n",
+              "origin": {
+                "configurationHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "invocationId": "transport-only-no-dispatch",
+                "serviceIdentity": "transport-only-no-physical-IO"
+              },
+              "original": {
+                "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291",
+                "manifestHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+              },
+              "context": {
+                "kind": "isolated-http-call",
+                "namespace": "transport-only-no-physical-IO",
+                "invocationId": "transport-only-no-dispatch",
+                "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "isolation": "stateless-v1"
+              },
+              "usage": {
+                "inputTokens": null,
+                "outputTokens": null
+              },
+              "cost": null,
+              "providerExecution": {
+                "provider": "workbench-model-http-v1",
+                "protocol": "workbench-model-http-original-v1",
+                "attemptId": "transport-fixture-attempt",
+                "runId": "transport-fixture-attempt",
+                "requestedModel": "component-model",
+                "reportedModel": "component-model",
+                "inputPacketHash": "718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060",
+                "runtimePacketHash": "fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc",
+                "wireRequestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "responseText": " \n{\n  \"protocol\": \"proposal-prelayout-v1\",\n  \"sourceTupleHash\": \"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\",\n  \"baseInputSha256\": \"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\n  \"decision\": \"clear\",\n  \"summary\": \"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\",\n  \"newIssues\": [],\n  \"carriedLimitationsHash\": \"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\"\n}\n",
+                "origin": {
+                  "configurationHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "invocationId": "transport-only-no-dispatch",
+                  "serviceIdentity": "transport-only-no-physical-IO"
+                },
+                "original": {
+                  "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291",
+                  "manifestHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                },
+                "context": {
+                  "kind": "isolated-http-call",
+                  "namespace": "transport-only-no-physical-IO",
+                  "invocationId": "transport-only-no-dispatch",
+                  "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "isolation": "stateless-v1"
+                },
+                "usage": {
+                  "inputTokens": null,
+                  "outputTokens": null
+                },
+                "cost": null
+              },
+              "providerId": "component-provider",
+              "model": "component-model",
+              "role": "proposal-director",
+              "taskId": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944"
+            }
+          }
+        ],
+        "inputVersionIds": [
+          "prelayout-readlane-clear:scope:1",
+          "5b039f42-0130-4508-8d71-e09df6456758",
+          "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+          "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+          "component-only-B"
+        ],
+        "outputVersionIds": [
+          "prelayout-report-005e98e16ae896e2a29ae753d989645c9068472c2874393655be8aaa7c92fe4c"
+        ],
+        "binding": {
+          "providerId": "component-provider",
+          "model": "component-model",
+          "role": "proposal-director"
+        },
+        "task": {
+          "id": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944",
+          "prelayoutInput": {
+            "protocol": "proposal-prelayout-v1",
+            "sourceTuple": {
+              "protocol": "proposal-prelayout-source-v1",
+              "projectId": "prelayout-readlane-clear",
+              "databaseBindingHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "task": {
+                "taskCardId": "prelayout-readlane-clear:scope:1",
+                "taskOriginalSha256": "0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29",
+                "briefSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              "policy": {
+                "version": 1,
+                "sha256": "c5640e1bc17166dd92976f2af1dd01c7563ed06f638243e0271202b6c542171a"
+              },
+              "sources": {
+                "research": {
+                  "artifactId": "5b039f42-0130-4508-8d71-e09df6456758",
+                  "sha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+                },
+                "strategy": {
+                  "artifactId": "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+                  "sha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+                },
+                "copy": {
+                  "artifactId": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+                  "sha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+                },
+                "visual": {
+                  "artifactId": "component-only-B",
+                  "sha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+                }
+              },
+              "methods": {
+                "research": {
+                  "id": "design-research-lead",
+                  "version": "r7-20261109",
+                  "sha256": "ebd616b74559263847c44aa3adcf6e92bfc8306a0657107dba103dd937f39a2c"
+                },
+                "director": {
+                  "path": "docs/agents/proposal-director.md",
+                  "version": "1.0.1",
+                  "sha256": "baaa2a19c0b0492f06668d234fcf90e7d92ff0864ec4b9c1ac0514ad1a7ace0b"
+                }
+              },
+              "semantic": {
+                "epoch": 0,
+                "configurationHash": "b094ff0ef5c01f0d2e5be1ca0af39759af1b0c7d8515ede4a8b1b9a720916b97"
+              },
+              "copyEnvelopeHash": "493e8c2807b06067c26f7df97578a8e20b76d7763b77d3106cb0b4d15432a730",
+              "bSourceHash": "691e4a5805a8dada60da67567b9d26735fcb2bb946b331ce8306f25b5f9c6075",
+              "bPlanHash": "b39088ca074ad76ad00f7cbcbd188a9bee1bb8b33eb4d8c5a5ff654e40701735",
+              "directionIds": [
+                "steady",
+                "product",
+                "user"
+              ],
+              "typedViews": [
+                {
+                  "kind": "packaging",
+                  "views": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ]
+                }
+              ],
+              "targetImages": [
+                {
+                  "imageId": "component-image-0",
+                  "directionId": "steady",
+                  "targetId": "component-target-0",
+                  "kind": "packaging",
+                  "requiredViews": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ],
+                  "sha256": "11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a",
+                  "bytes": 1463,
+                  "mediaType": "image/png",
+                  "width": 24,
+                  "height": 24
+                },
+                {
+                  "imageId": "component-image-1",
+                  "directionId": "product",
+                  "targetId": "component-target-1",
+                  "kind": "packaging",
+                  "requiredViews": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ],
+                  "sha256": "a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d",
+                  "bytes": 1483,
+                  "mediaType": "image/png",
+                  "width": 24,
+                  "height": 24
+                },
+                {
+                  "imageId": "component-image-2",
+                  "directionId": "user",
+                  "targetId": "component-target-2",
+                  "kind": "packaging",
+                  "requiredViews": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ],
+                  "sha256": "04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d",
+                  "bytes": 1477,
+                  "mediaType": "image/png",
+                  "width": 24,
+                  "height": 24
+                }
+              ],
+              "baseInputSha256": "28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6",
+              "baseProjectionSha256": "8a8c0bda92fe07ec5db6b077d23ff440c1bc93b4b1146ab4ac0cd4dbaea0fd49"
+            },
+            "sourceTupleHash": "28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7",
+            "baseInputSha256": "28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6",
+            "baseProjectionSha256": "8a8c0bda92fe07ec5db6b077d23ff440c1bc93b4b1146ab4ac0cd4dbaea0fd49",
+            "directorMethod": {
+              "path": "docs/agents/proposal-director.md",
+              "version": "1.0.1",
+              "sha256": "baaa2a19c0b0492f06668d234fcf90e7d92ff0864ec4b9c1ac0514ad1a7ace0b",
+              "originalText": "# 比稿 Agent\n\n规范版本：1.0.1。类型：统筹岗位。适用：全阶段。这是已确认要求的统一整理，非本岗位首次存在，也不是业务接入完成声明。\n\n业务调度与内部执行关系见[Agent组织总览](README.md)。本岗位兼任简报整理、组织独立终审，阶段负责人各自承担产物责任。工作台开发另由[开发统筹Agent](development-lead.md)组织，不混作业务子岗位。统筹不得兼任自己所创稿件的独立审读或裁定者。\n\n接收当前 Brief、各阶段有效产物及其真实评审记录，组织派发、衔接检查、退回和排版前简短核对。每阶段核对是否回答同一任务、是否承接有效上游、能否形成下一步输入。\n\n排版前只处理新增事实矛盾、错版和必要缺件；已经说明的演练设定、研究缺口及未验证效果随稿保留，不反复生成相同待办。事实、策略或创意主张的修改退给原负责人，核受影响内容。\n\n输出本轮输入身份、简短结论、必要新问题及其责任人。创作、独立评分、人类项目决定分开；比稿 Agent 不改原票，不代人确认，不将推荐写成获选。\n\n前台七阶段，独立内容审阅岗位退役。排版后组织独立终审和交付核对；旧审阅原文、评论与回执保留原身份。\n\n\n## 输入、输出与结束条件\n\n| 项目 | 合同 |\n| --- | --- |\n| 输入 | 当前Brief、阶段结果、评审与限制 |\n| 输出 | 有效交接／新增问题及责任人／排版前简短结论 |\n| 结束条件 | 各阶段承接和版本可核，新问题已归属；不代签独立评审 |\n| 退回／暂停 | 退回对应研究、策略、文案、视觉或排版负责人 |\n\n## 开始与结束时读取\n\n执行前按[规范入口](../specs/README.md)选择本岗位、对应页面和方法；交付遵守[版本与交接](../specs/handoff.md)。只加载本次任务所需上下文，原件保持可追溯。产品决定以[已确认决定](../specs/decisions.md)及用户后续明确修正为准。\n"
+            },
+            "originals": {
+              "brief": {
+                "identity": "prelayout-readlane-clear:scope:1#/brief@0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29",
+                "sha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008",
+                "bytes": 2932,
+                "originalText": "{\"fields\":{\"attachment\":null,\"audience\":\"工程操作员\",\"background\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"brand\":\"TABLELAB\",\"budget\":\"\",\"changeNote\":\"\",\"constraints\":[\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\",\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\",\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\",\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\",\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\"],\"deliverables\":[\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\"],\"deliverableType\":\"\",\"objectives\":[],\"openQuestions\":[],\"proposalType\":\"packaging\",\"provenance\":{\"audience\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"background\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"brand\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"budget\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"constraints\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverables\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverableType\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"objectives\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"openQuestions\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"references\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"researchQuestions\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"timeline\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]}},\"references\":[],\"researchQuestions\":[\"合成蓝色产品与任务指定视觉机制能否逐项对应？\"],\"timeline\":\"\",\"visualRequirements\":[{\"kind\":\"packaging\",\"views\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"]}]},\"format\":\"proposal-workbench-brief-v1\",\"metadata\":{\"client\":\"合成工程操作员\",\"researchOwner\":\"工程研究\",\"strategyOwner\":\"工程策略\",\"summary\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"type\":\"packaging\"},\"savedAt\":\"\"}"
+              },
+              "research": {
+                "identity": "5b039f42-0130-4508-8d71-e09df6456758",
+                "sha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b",
+                "bytes": 1076,
+                "originalText": "{\n  \"outputKind\": \"research_findings\",\n  \"status\": \"complete\",\n  \"title\": \"Synthetic research\",\n  \"summary\": \"Synthetic package is blue.\",\n  \"sections\": [\n    {\n      \"heading\": \"Finding\",\n      \"body\": \"Synthetic package is blue.\",\n      \"evidenceIds\": [\n        \"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\"\n      ]\n    }\n  ],\n  \"claims\": [\n    {\n      \"text\": \"Synthetic package is blue.\",\n      \"kind\": \"fact\",\n      \"evidenceRefs\": [\n        \"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\"\n      ],\n      \"limitations\": [\n        \"Supplied excerpt only.\"\n      ],\n      \"verification\": \"pending\"\n    }\n  ],\n  \"gaps\": [],\n  \"evidenceClassifications\": [\n    {\n      \"sourceId\": \"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\",\n      \"scopeRelation\": \"background\",\n      \"reason\": \"Bounded example.\",\n      \"suppliedScopeRelation\": \"background\",\n      \"sourceVerification\": \"captured\"\n    }\n  ],\n  \"researchContractVersion\": \"research-data-v2\",\n  \"chartData\": null,\n  \"quantitativeClaims\": []\n}"
+              },
+              "strategy": {
+                "identity": "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+                "sha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8",
+                "bytes": 2674,
+                "originalText": "{\n  \"strategyContractVersion\": \"proposal-simple-strategy-v1\",\n  \"strategyBasisHash\": \"4984126c76c8282bcc0ed805ae24412d730f85cf5d1a5a4f6a99b3fb5c5207ea\",\n  \"outputKind\": \"strategy\",\n  \"status\": \"complete\",\n  \"title\": \"当前任务的有界工程方向\",\n  \"summary\": \"研究和原任务连接。\",\n  \"strategy\": {\n    \"researchConclusions\": [\n      {\n        \"id\": \"research\",\n        \"text\": \"按任务原文探索创作表达，保留研究未决限制。\",\n        \"kind\": \"inference\",\n        \"refs\": [\n          {\n            \"sourceId\": \"research:5b039f42-0130-4508-8d71-e09df6456758\",\n            \"location\": \"/summary\",\n            \"quote\": \"Synthetic package is blue.\"\n          }\n        ],\n        \"limitations\": []\n      }\n    ],\n    \"intersection\": {\n      \"id\": \"intersection\",\n      \"text\": \"按任务原文探索创作表达，保留研究未决限制。\",\n      \"kind\": \"inference\",\n      \"refs\": [\n        {\n          \"sourceId\": \"research:5b039f42-0130-4508-8d71-e09df6456758\",\n          \"location\": \"/summary\",\n          \"quote\": \"Synthetic package is blue.\"\n        },\n        {\n          \"sourceId\": \"task:project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c:scope:1\",\n          \"location\": \"/fields/background\",\n          \"quote\": \"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\"\n        }\n      ],\n      \"limitations\": []\n    },\n    \"focus\": {\n      \"id\": \"focus\",\n      \"text\": \"按任务原文探索创作表达，保留研究未决限制。\",\n      \"kind\": \"inference\",\n      \"refs\": [\n        {\n          \"sourceId\": \"research:5b039f42-0130-4508-8d71-e09df6456758\",\n          \"location\": \"/summary\",\n          \"quote\": \"Synthetic package is blue.\"\n        },\n        {\n          \"sourceId\": \"task:project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c:scope:1\",\n          \"location\": \"/fields/background\",\n          \"quote\": \"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\"\n        }\n      ],\n      \"limitations\": []\n    }\n  },\n  \"gaps\": [],\n  \"limitations\": [\n    \"Synthetic test only.\",\n    \"Synthetic reader; no real consumers.\",\n    \"不得从颜色推断偏好。\"\n  ]\n}"
+              },
+              "copy": {
+                "identity": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+                "sha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf",
+                "bytes": 2429,
+                "originalText": "{\n  \"outputKind\": \"copy\",\n  \"status\": \"complete\",\n  \"title\": \"TABLELAB engineering copy\",\n  \"summary\": \"Task-specified creative expression only; no consumer or aesthetic approval.\",\n  \"sections\": [\n    {\n      \"heading\": \"Engineering task\",\n      \"body\": \"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\n      \"evidenceIds\": []\n    }\n  ],\n  \"claims\": [],\n  \"gaps\": [\n    \"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\n    \"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\n    \"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\"\n  ],\n  \"directions\": [\n    {\n      \"id\": \"steady\",\n      \"title\": \"SHARE THE TABLE\",\n      \"slogan\": \"SHARE THE TABLE\",\n      \"supportingCopy\": \"SET A PLACE TO TALK\",\n      \"creativeExplanation\": \"A blue bottle stands inside a round table ring between two chairs.\",\n      \"rationale\": \"Task-specified fictional tabletop invitation, not an audience finding.\",\n      \"differentiation\": \"TABLE RING / TWO PLACEMATS / TABLE BRIDGE\",\n      \"evidenceIds\": []\n    },\n    {\n      \"id\": \"product\",\n      \"title\": \"OPEN A MOMENT\",\n      \"slogan\": \"OPEN A MOMENT\",\n      \"supportingCopy\": \"A BLUE BOTTLE FRAMES THE TABLE\",\n      \"creativeExplanation\": \"An enlarged blue bottle outline encloses a small table and two chairs.\",\n      \"rationale\": \"Task-specified fictional tabletop invitation, not an audience finding.\",\n      \"differentiation\": \"BOTTLE GATE / CAP HALO / LABEL WINDOW\",\n      \"evidenceIds\": []\n    },\n    {\n      \"id\": \"user\",\n      \"title\": \"MAKE ROOM\",\n      \"slogan\": \"MAKE ROOM\",\n      \"supportingCopy\": \"PULL UP A CHAIR AND TALK\",\n      \"creativeExplanation\": \"A gold empty chair is attached to a round table opposite a blue chair.\",\n      \"rationale\": \"Task-specified fictional tabletop invitation, not an audience finding.\",\n      \"differentiation\": \"EMPTY CHAIR / OPEN PLACE / PATH TO TABLE\",\n      \"evidenceIds\": []\n    }\n  ]\n}"
+              },
+              "visual": {
+                "identity": "component-only-B",
+                "sha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "bytes": 3283,
+                "originalText": "{\"protocol\":\"final-visual-v1\",\"sourceHash\":\"691e4a5805a8dada60da67567b9d26735fcb2bb946b331ce8306f25b5f9c6075\",\"planHash\":\"b39088ca074ad76ad00f7cbcbd188a9bee1bb8b33eb4d8c5a5ff654e40701735\",\"directions\":[{\"directionId\":\"steady\",\"approvedCopy\":{\"id\":\"steady\",\"title\":\"SHARE THE TABLE\",\"slogan\":\"SHARE THE TABLE\",\"supportingCopy\":\"SET A PLACE TO TALK\",\"creativeExplanation\":\"A blue bottle stands inside a round table ring between two chairs.\",\"rationale\":\"Task-specified fictional tabletop invitation, not an audience finding.\",\"differentiation\":\"TABLE RING / TWO PLACEMATS / TABLE BRIDGE\",\"evidenceIds\":[]},\"explanation\":\"Component mapping literal only; not a completed native B.\",\"presentationIntent\":\"Preserve the declared target/view fields.\",\"claims\":[],\"limitations\":[\"Component mapping fixture; no native source qualification or visual judgment.\"],\"targets\":[{\"targetId\":\"component-target-0\",\"directionId\":\"steady\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"imageId\":\"component-image-0\",\"sha256\":\"11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a\",\"mediaType\":\"image/png\",\"byteLength\":1463,\"width\":24,\"height\":24,\"plan\":{\"componentOnly\":true}}]},{\"directionId\":\"product\",\"approvedCopy\":{\"id\":\"product\",\"title\":\"OPEN A MOMENT\",\"slogan\":\"OPEN A MOMENT\",\"supportingCopy\":\"A BLUE BOTTLE FRAMES THE TABLE\",\"creativeExplanation\":\"An enlarged blue bottle outline encloses a small table and two chairs.\",\"rationale\":\"Task-specified fictional tabletop invitation, not an audience finding.\",\"differentiation\":\"BOTTLE GATE / CAP HALO / LABEL WINDOW\",\"evidenceIds\":[]},\"explanation\":\"Component mapping literal only; not a completed native B.\",\"presentationIntent\":\"Preserve the declared target/view fields.\",\"claims\":[],\"limitations\":[\"Component mapping fixture; no native source qualification or visual judgment.\"],\"targets\":[{\"targetId\":\"component-target-1\",\"directionId\":\"product\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"imageId\":\"component-image-1\",\"sha256\":\"a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d\",\"mediaType\":\"image/png\",\"byteLength\":1483,\"width\":24,\"height\":24,\"plan\":{\"componentOnly\":true}}]},{\"directionId\":\"user\",\"approvedCopy\":{\"id\":\"user\",\"title\":\"MAKE ROOM\",\"slogan\":\"MAKE ROOM\",\"supportingCopy\":\"PULL UP A CHAIR AND TALK\",\"creativeExplanation\":\"A gold empty chair is attached to a round table opposite a blue chair.\",\"rationale\":\"Task-specified fictional tabletop invitation, not an audience finding.\",\"differentiation\":\"EMPTY CHAIR / OPEN PLACE / PATH TO TABLE\",\"evidenceIds\":[]},\"explanation\":\"Component mapping literal only; not a completed native B.\",\"presentationIntent\":\"Preserve the declared target/view fields.\",\"claims\":[],\"limitations\":[\"Component mapping fixture; no native source qualification or visual judgment.\"],\"targets\":[{\"targetId\":\"component-target-2\",\"directionId\":\"user\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"imageId\":\"component-image-2\",\"sha256\":\"04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d\",\"mediaType\":\"image/png\",\"byteLength\":1477,\"width\":24,\"height\":24,\"plan\":{\"componentOnly\":true}}]}],\"sourceImages\":[],\"referenceQualifications\":[],\"refinementHandoffs\":[]}"
+              }
+            },
+            "taskContainer": {
+              "identity": "prelayout-readlane-clear:scope:1",
+              "originalText": "{\"id\":\"prelayout-readlane-clear:scope:1\",\"brief\":\"{\\\"fields\\\":{\\\"attachment\\\":null,\\\"audience\\\":\\\"工程操作员\\\",\\\"background\\\":\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\",\\\"brand\\\":\\\"TABLELAB\\\",\\\"budget\\\":\\\"\\\",\\\"changeNote\\\":\\\"\\\",\\\"constraints\\\":[\\\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\\\",\\\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\\\",\\\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\\\",\\\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\\\",\\\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\\\",\\\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\\\",\\\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\\\"],\\\"deliverables\\\":[\\\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\\\"],\\\"deliverableType\\\":\\\"\\\",\\\"objectives\\\":[],\\\"openQuestions\\\":[],\\\"proposalType\\\":\\\"packaging\\\",\\\"provenance\\\":{\\\"audience\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"background\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"brand\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"budget\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"constraints\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"deliverables\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"deliverableType\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"objectives\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"openQuestions\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"references\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"researchQuestions\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"timeline\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]}},\\\"references\\\":[],\\\"researchQuestions\\\":[\\\"合成蓝色产品与任务指定视觉机制能否逐项对应？\\\"],\\\"timeline\\\":\\\"\\\",\\\"visualRequirements\\\":[{\\\"kind\\\":\\\"packaging\\\",\\\"views\\\":[\\\"front\\\",\\\"three_quarter\\\",\\\"bottle_box\\\",\\\"detail\\\"]}]},\\\"format\\\":\\\"proposal-workbench-brief-v1\\\",\\\"metadata\\\":{\\\"client\\\":\\\"合成工程操作员\\\",\\\"researchOwner\\\":\\\"工程研究\\\",\\\"strategyOwner\\\":\\\"工程策略\\\",\\\"summary\\\":\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\",\\\"type\\\":\\\"packaging\\\"},\\\"savedAt\\\":\\\"\\\"}\",\"createdBy\":\"component-human\"}",
+              "sha256": "0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29",
+              "bytes": 3274
+            },
+            "baseImages": [
+              {
+                "imageId": "component-image-0",
+                "directionId": "steady",
+                "targetId": "component-target-0",
+                "kind": "packaging",
+                "requiredViews": [
+                  "front",
+                  "three_quarter",
+                  "bottle_box",
+                  "detail"
+                ],
+                "visualArtifactId": "component-only-B",
+                "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "originalLocator": "component-only:no-native-original",
+                "sha256": "11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a",
+                "bytes": 1463,
+                "mediaType": "image/png",
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-1",
+                "directionId": "product",
+                "targetId": "component-target-1",
+                "kind": "packaging",
+                "requiredViews": [
+                  "front",
+                  "three_quarter",
+                  "bottle_box",
+                  "detail"
+                ],
+                "visualArtifactId": "component-only-B",
+                "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "originalLocator": "component-only:no-native-original",
+                "sha256": "a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d",
+                "bytes": 1483,
+                "mediaType": "image/png",
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-2",
+                "directionId": "user",
+                "targetId": "component-target-2",
+                "kind": "packaging",
+                "requiredViews": [
+                  "front",
+                  "three_quarter",
+                  "bottle_box",
+                  "detail"
+                ],
+                "visualArtifactId": "component-only-B",
+                "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "originalLocator": "component-only:no-native-original",
+                "sha256": "04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d",
+                "bytes": 1477,
+                "mediaType": "image/png",
+                "width": 24,
+                "height": 24
+              }
+            ],
+            "images": [
+              {
+                "imageId": "component-image-0",
+                "sha256": "11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a",
+                "mediaType": "image/png",
+                "byteLength": 1463,
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-1",
+                "sha256": "a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d",
+                "mediaType": "image/png",
+                "byteLength": 1483,
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-2",
+                "sha256": "04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d",
+                "mediaType": "image/png",
+                "byteLength": 1477,
+                "width": 24,
+                "height": 24
+              }
+            ],
+            "knownLimitations": [
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/0",
+                "quote": "工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/1",
+                "quote": "工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/2",
+                "quote": "工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/3",
+                "quote": "SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/4",
+                "quote": "Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/5",
+                "quote": "Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/6",
+                "quote": "三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "research",
+                "pointer": "/summary",
+                "quote": "Synthetic package is blue.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/sections/0/body",
+                "quote": "Synthetic package is blue.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/text",
+                "quote": "Synthetic package is blue.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/kind",
+                "quote": "fact",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/limitations/0",
+                "quote": "Supplied excerpt only.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/verification",
+                "quote": "pending",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/evidenceClassifications/0/reason",
+                "quote": "Bounded example.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/researchConclusions/0/text",
+                "quote": "按任务原文探索创作表达，保留研究未决限制。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/researchConclusions/0/kind",
+                "quote": "inference",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/intersection/text",
+                "quote": "按任务原文探索创作表达，保留研究未决限制。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/intersection/kind",
+                "quote": "inference",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/focus/text",
+                "quote": "按任务原文探索创作表达，保留研究未决限制。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/focus/kind",
+                "quote": "inference",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/limitations/0",
+                "quote": "Synthetic test only.",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/limitations/1",
+                "quote": "Synthetic reader; no real consumers.",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/limitations/2",
+                "quote": "不得从颜色推断偏好。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "copy",
+                "pointer": "/gaps/0",
+                "quote": "SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.",
+                "sourceSha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+              },
+              {
+                "stage": "copy",
+                "pointer": "/gaps/1",
+                "quote": "Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.",
+                "sourceSha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+              },
+              {
+                "stage": "copy",
+                "pointer": "/gaps/2",
+                "quote": "Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.",
+                "sourceSha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+              },
+              {
+                "stage": "visual",
+                "pointer": "/directions/0/limitations/0",
+                "quote": "Component mapping fixture; no native source qualification or visual judgment.",
+                "sourceSha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+              },
+              {
+                "stage": "visual",
+                "pointer": "/directions/1/limitations/0",
+                "quote": "Component mapping fixture; no native source qualification or visual judgment.",
+                "sourceSha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+              },
+              {
+                "stage": "visual",
+                "pointer": "/directions/2/limitations/0",
+                "quote": "Component mapping fixture; no native source qualification or visual judgment.",
+                "sourceSha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+              }
+            ],
+            "carriedLimitationsHash": "74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd",
+            "imageEnvelope": {
+              "operation": "proposal-prelayout-v1",
+              "limits": {
+                "maxImages": 32,
+                "maxBytes": 33554432,
+                "maxPixels": 80000000
+              }
+            }
+          },
+          "nativeRequest": {
+            "projectId": "prelayout-readlane-clear",
+            "expectedRevision": 0,
+            "taskCardId": "prelayout-readlane-clear:scope:1",
+            "policyVersion": 1,
+            "copyArtifactId": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+            "copyContentHash": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf",
+            "sourceHash": "493e8c2807b06067c26f7df97578a8e20b76d7763b77d3106cb0b4d15432a730",
+            "visualArtifactId": "component-only-B",
+            "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+          }
+        },
+        "attemptId": "transport-fixture-attempt",
+        "prelayoutReport": {
+          "id": "prelayout-report-005e98e16ae896e2a29ae753d989645c9068472c2874393655be8aaa7c92fe4c",
+          "payloadRef": "transport-fixture-only/director-report.json",
+          "contentHash": "d0c55200dbda21589ce0cf777e43cb90a49b4ed915b3eb2a0c3636790ceaac92",
+          "sourceTupleHash": "28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7",
+          "baseInputSha256": "28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6",
+          "status": "clear",
+          "diagnostic": null
+        }
+      }
+    ],
+    "humanFeedback": [],
+    "feedbackReviews": [],
+    "sourceCaptures": [],
+    "sourceEntries": [],
+    "caseIdentityReviews": [],
+    "imageAssets": [],
+    "imageObservations": [],
+    "observationReviews": [],
+    "artifacts": [
+      {
+        "id": "5b039f42-0130-4508-8d71-e09df6456758",
+        "stage": "research",
+        "contentHash": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b",
+        "inputVersionIds": [
+          "prelayout-readlane-clear:scope:1"
+        ],
+        "author": {
+          "actorType": "human",
+          "actorId": "component-human",
+          "runId": "component-only",
+          "contextId": "component-only",
+          "now": "2026-11-12T00:00:00.000Z"
+        }
+      },
+      {
+        "id": "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+        "stage": "strategy",
+        "contentHash": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8",
+        "inputVersionIds": [
+          "prelayout-readlane-clear:scope:1"
+        ],
+        "author": {
+          "actorType": "human",
+          "actorId": "component-human",
+          "runId": "component-only",
+          "contextId": "component-only",
+          "now": "2026-11-12T00:00:00.000Z"
+        }
+      },
+      {
+        "id": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+        "stage": "copy",
+        "contentHash": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf",
+        "inputVersionIds": [
+          "prelayout-readlane-clear:scope:1"
+        ],
+        "author": {
+          "actorType": "human",
+          "actorId": "component-human",
+          "runId": "component-only",
+          "contextId": "component-only",
+          "now": "2026-11-12T00:00:00.000Z"
+        }
+      },
+      {
+        "id": "component-only-B",
+        "stage": "visual",
+        "contentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+        "inputVersionIds": [
+          "prelayout-readlane-clear:scope:1"
+        ],
+        "author": {
+          "actorType": "human",
+          "actorId": "component-human",
+          "runId": "component-only",
+          "contextId": "component-only",
+          "now": "2026-11-12T00:00:00.000Z"
+        }
+      },
+      {
+        "id": "prelayout-report-005e98e16ae896e2a29ae753d989645c9068472c2874393655be8aaa7c92fe4c",
+        "stage": "layout",
+        "provenance": "proposal-prelayout-director-report-v1",
+        "inputVersionIds": [
+          "prelayout-readlane-clear:scope:1",
+          "5b039f42-0130-4508-8d71-e09df6456758",
+          "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+          "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+          "component-only-B"
+        ],
+        "contentHash": "d0c55200dbda21589ce0cf777e43cb90a49b4ed915b3eb2a0c3636790ceaac92",
+        "payloadRef": "transport-fixture-only/director-report.json",
+        "author": {
+          "actorType": "agent",
+          "actorId": "transport-fixture-owner",
+          "runId": "transport-fixture-run",
+          "contextId": "transport-fixture-context",
+          "now": "2026-11-12T00:00:00.000Z"
+        },
+        "executionReceipt": {
+          "provider": "workbench-model-http-v1",
+          "protocol": "workbench-model-http-original-v1",
+          "attemptId": "transport-fixture-attempt",
+          "runId": "transport-fixture-attempt",
+          "requestedModel": "component-model",
+          "reportedModel": "component-model",
+          "inputPacketHash": "718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060",
+          "runtimePacketHash": "fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc",
+          "wireRequestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "responseText": " \n{\n  \"protocol\": \"proposal-prelayout-v1\",\n  \"sourceTupleHash\": \"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\",\n  \"baseInputSha256\": \"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\n  \"decision\": \"clear\",\n  \"summary\": \"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\",\n  \"newIssues\": [],\n  \"carriedLimitationsHash\": \"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\"\n}\n",
+          "origin": {
+            "configurationHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "invocationId": "transport-only-no-dispatch",
+            "serviceIdentity": "transport-only-no-physical-IO"
+          },
+          "original": {
+            "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291",
+            "manifestHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          "context": {
+            "kind": "isolated-http-call",
+            "namespace": "transport-only-no-physical-IO",
+            "invocationId": "transport-only-no-dispatch",
+            "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "isolation": "stateless-v1"
+          },
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null
+          },
+          "cost": null,
+          "providerExecution": {
+            "provider": "workbench-model-http-v1",
+            "protocol": "workbench-model-http-original-v1",
+            "attemptId": "transport-fixture-attempt",
+            "runId": "transport-fixture-attempt",
+            "requestedModel": "component-model",
+            "reportedModel": "component-model",
+            "inputPacketHash": "718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060",
+            "runtimePacketHash": "fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc",
+            "wireRequestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "responseText": " \n{\n  \"protocol\": \"proposal-prelayout-v1\",\n  \"sourceTupleHash\": \"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\",\n  \"baseInputSha256\": \"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\n  \"decision\": \"clear\",\n  \"summary\": \"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\",\n  \"newIssues\": [],\n  \"carriedLimitationsHash\": \"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\"\n}\n",
+            "origin": {
+              "configurationHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "invocationId": "transport-only-no-dispatch",
+              "serviceIdentity": "transport-only-no-physical-IO"
+            },
+            "original": {
+              "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291",
+              "manifestHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            },
+            "context": {
+              "kind": "isolated-http-call",
+              "namespace": "transport-only-no-physical-IO",
+              "invocationId": "transport-only-no-dispatch",
+              "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "isolation": "stateless-v1"
+            },
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null
+            },
+            "cost": null
+          },
+          "providerId": "component-provider",
+          "model": "component-model",
+          "role": "proposal-director",
+          "taskId": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944"
+        },
+        "claims": [],
+        "technicalReceipts": {},
+        "proposalPrelayout": {
+          "protocol": "proposal-prelayout-v1",
+          "jobId": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944",
+          "attemptId": "transport-fixture-attempt",
+          "sourceTupleHash": "28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7",
+          "baseInputSha256": "28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6",
+          "requestHash": "23944951ee1007a979174af8c0feab72b76059072a3461d5bf59d38e53475b0e"
+        }
+      }
+    ],
+    "verifications": [],
+    "readinessReports": [],
+    "readinessResolutions": [],
+    "handoffReports": [],
+    "panels": [],
+    "reviews": [],
+    "decisions": [],
+    "acknowledgments": [],
+    "releases": [],
+    "activeByStage": {
+      "research": "5b039f42-0130-4508-8d71-e09df6456758",
+      "strategy": "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+      "copy": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+      "visual": "component-only-B"
+    },
+    "audit": [
+      {
+        "commandId": "fixture-queue",
+        "kind": "queue-proposal-prelayout",
+        "actorId": "transport-fixture-owner",
+        "revision": 1,
+        "at": "2026-11-12T00:00:00.000Z"
+      },
+      {
+        "commandId": "fixture-claim",
+        "kind": "claim-proposal-prelayout",
+        "actorId": "transport-fixture-owner",
+        "revision": 2,
+        "at": "2026-11-12T00:00:00.000Z"
+      },
+      {
+        "commandId": "fixture-locator",
+        "kind": "anchor-model-http-attempt",
+        "actorId": "transport-fixture-owner",
+        "revision": 3,
+        "at": "2026-11-12T00:00:00.000Z"
+      },
+      {
+        "commandId": "fixture-anchor",
+        "kind": "anchor-proposal-prelayout",
+        "actorId": "transport-fixture-owner",
+        "revision": 4,
+        "at": "2026-11-12T00:00:00.000Z"
+      },
+      {
+        "commandId": "fixture-finish",
+        "kind": "finish-proposal-prelayout",
+        "actorId": "transport-fixture-owner",
+        "revision": 5,
+        "at": "2026-11-12T00:00:00.000Z"
+      }
+    ],
+    "processedCommands": {
+      "fixture-queue": "{\"kind\":\"queue-proposal-prelayout\",\"input\":{\"protocol\":\"proposal-prelayout-v1\",\"sourceTuple\":{\"protocol\":\"proposal-prelayout-source-v1\",\"projectId\":\"prelayout-readlane-clear\",\"databaseBindingHash\":\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\",\"task\":{\"taskCardId\":\"prelayout-readlane-clear:scope:1\",\"taskOriginalSha256\":\"0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29\",\"briefSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},\"policy\":{\"version\":1,\"sha256\":\"c5640e1bc17166dd92976f2af1dd01c7563ed06f638243e0271202b6c542171a\"},\"sources\":{\"research\":{\"artifactId\":\"5b039f42-0130-4508-8d71-e09df6456758\",\"sha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},\"strategy\":{\"artifactId\":\"5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf\",\"sha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},\"copy\":{\"artifactId\":\"e95c08b6-cae9-4a4d-8e64-2f095cff33dd\",\"sha256\":\"fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf\"},\"visual\":{\"artifactId\":\"component-only-B\",\"sha256\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\"}},\"methods\":{\"research\":{\"id\":\"design-research-lead\",\"version\":\"r7-20261109\",\"sha256\":\"ebd616b74559263847c44aa3adcf6e92bfc8306a0657107dba103dd937f39a2c\"},\"director\":{\"path\":\"docs/agents/proposal-director.md\",\"version\":\"1.0.1\",\"sha256\":\"baaa2a19c0b0492f06668d234fcf90e7d92ff0864ec4b9c1ac0514ad1a7ace0b\"}},\"semantic\":{\"epoch\":0,\"configurationHash\":\"b094ff0ef5c01f0d2e5be1ca0af39759af1b0c7d8515ede4a8b1b9a720916b97\"},\"copyEnvelopeHash\":\"493e8c2807b06067c26f7df97578a8e20b76d7763b77d3106cb0b4d15432a730\",\"bSourceHash\":\"691e4a5805a8dada60da67567b9d26735fcb2bb946b331ce8306f25b5f9c6075\",\"bPlanHash\":\"b39088ca074ad76ad00f7cbcbd188a9bee1bb8b33eb4d8c5a5ff654e40701735\",\"directionIds\":[\"steady\",\"product\",\"user\"],\"typedViews\":[{\"kind\":\"packaging\",\"views\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"]}],\"targetImages\":[{\"imageId\":\"component-image-0\",\"directionId\":\"steady\",\"targetId\":\"component-target-0\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"sha256\":\"11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a\",\"bytes\":1463,\"mediaType\":\"image/png\",\"width\":24,\"height\":24},{\"imageId\":\"component-image-1\",\"directionId\":\"product\",\"targetId\":\"component-target-1\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"sha256\":\"a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d\",\"bytes\":1483,\"mediaType\":\"image/png\",\"width\":24,\"height\":24},{\"imageId\":\"component-image-2\",\"directionId\":\"user\",\"targetId\":\"component-target-2\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"sha256\":\"04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d\",\"bytes\":1477,\"mediaType\":\"image/png\",\"width\":24,\"height\":24}],\"baseInputSha256\":\"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\"baseProjectionSha256\":\"8a8c0bda92fe07ec5db6b077d23ff440c1bc93b4b1146ab4ac0cd4dbaea0fd49\"},\"sourceTupleHash\":\"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\",\"baseInputSha256\":\"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\"baseProjectionSha256\":\"8a8c0bda92fe07ec5db6b077d23ff440c1bc93b4b1146ab4ac0cd4dbaea0fd49\",\"directorMethod\":{\"path\":\"docs/agents/proposal-director.md\",\"version\":\"1.0.1\",\"sha256\":\"baaa2a19c0b0492f06668d234fcf90e7d92ff0864ec4b9c1ac0514ad1a7ace0b\",\"originalText\":\"# 比稿 Agent\\n\\n规范版本：1.0.1。类型：统筹岗位。适用：全阶段。这是已确认要求的统一整理，非本岗位首次存在，也不是业务接入完成声明。\\n\\n业务调度与内部执行关系见[Agent组织总览](README.md)。本岗位兼任简报整理、组织独立终审，阶段负责人各自承担产物责任。工作台开发另由[开发统筹Agent](development-lead.md)组织，不混作业务子岗位。统筹不得兼任自己所创稿件的独立审读或裁定者。\\n\\n接收当前 Brief、各阶段有效产物及其真实评审记录，组织派发、衔接检查、退回和排版前简短核对。每阶段核对是否回答同一任务、是否承接有效上游、能否形成下一步输入。\\n\\n排版前只处理新增事实矛盾、错版和必要缺件；已经说明的演练设定、研究缺口及未验证效果随稿保留，不反复生成相同待办。事实、策略或创意主张的修改退给原负责人，核受影响内容。\\n\\n输出本轮输入身份、简短结论、必要新问题及其责任人。创作、独立评分、人类项目决定分开；比稿 Agent 不改原票，不代人确认，不将推荐写成获选。\\n\\n前台七阶段，独立内容审阅岗位退役。排版后组织独立终审和交付核对；旧审阅原文、评论与回执保留原身份。\\n\\n\\n## 输入、输出与结束条件\\n\\n| 项目 | 合同 |\\n| --- | --- |\\n| 输入 | 当前Brief、阶段结果、评审与限制 |\\n| 输出 | 有效交接／新增问题及责任人／排版前简短结论 |\\n| 结束条件 | 各阶段承接和版本可核，新问题已归属；不代签独立评审 |\\n| 退回／暂停 | 退回对应研究、策略、文案、视觉或排版负责人 |\\n\\n## 开始与结束时读取\\n\\n执行前按[规范入口](../specs/README.md)选择本岗位、对应页面和方法；交付遵守[版本与交接](../specs/handoff.md)。只加载本次任务所需上下文，原件保持可追溯。产品决定以[已确认决定](../specs/decisions.md)及用户后续明确修正为准。\\n\"},\"originals\":{\"brief\":{\"identity\":\"prelayout-readlane-clear:scope:1#/brief@0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29\",\"sha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\",\"bytes\":2932,\"originalText\":\"{\\\"fields\\\":{\\\"attachment\\\":null,\\\"audience\\\":\\\"工程操作员\\\",\\\"background\\\":\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\",\\\"brand\\\":\\\"TABLELAB\\\",\\\"budget\\\":\\\"\\\",\\\"changeNote\\\":\\\"\\\",\\\"constraints\\\":[\\\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\\\",\\\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\\\",\\\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\\\",\\\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\\\",\\\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\\\",\\\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\\\",\\\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\\\"],\\\"deliverables\\\":[\\\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\\\"],\\\"deliverableType\\\":\\\"\\\",\\\"objectives\\\":[],\\\"openQuestions\\\":[],\\\"proposalType\\\":\\\"packaging\\\",\\\"provenance\\\":{\\\"audience\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"background\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"brand\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"budget\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"constraints\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"deliverables\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"deliverableType\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"objectives\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"openQuestions\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"references\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"researchQuestions\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"timeline\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]}},\\\"references\\\":[],\\\"researchQuestions\\\":[\\\"合成蓝色产品与任务指定视觉机制能否逐项对应？\\\"],\\\"timeline\\\":\\\"\\\",\\\"visualRequirements\\\":[{\\\"kind\\\":\\\"packaging\\\",\\\"views\\\":[\\\"front\\\",\\\"three_quarter\\\",\\\"bottle_box\\\",\\\"detail\\\"]}]},\\\"format\\\":\\\"proposal-workbench-brief-v1\\\",\\\"metadata\\\":{\\\"client\\\":\\\"合成工程操作员\\\",\\\"researchOwner\\\":\\\"工程研究\\\",\\\"strategyOwner\\\":\\\"工程策略\\\",\\\"summary\\\":\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\",\\\"type\\\":\\\"packaging\\\"},\\\"savedAt\\\":\\\"\\\"}\"},\"research\":{\"identity\":\"5b039f42-0130-4508-8d71-e09df6456758\",\"sha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\",\"bytes\":1076,\"originalText\":\"{\\n  \\\"outputKind\\\": \\\"research_findings\\\",\\n  \\\"status\\\": \\\"complete\\\",\\n  \\\"title\\\": \\\"Synthetic research\\\",\\n  \\\"summary\\\": \\\"Synthetic package is blue.\\\",\\n  \\\"sections\\\": [\\n    {\\n      \\\"heading\\\": \\\"Finding\\\",\\n      \\\"body\\\": \\\"Synthetic package is blue.\\\",\\n      \\\"evidenceIds\\\": [\\n        \\\"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\\\"\\n      ]\\n    }\\n  ],\\n  \\\"claims\\\": [\\n    {\\n      \\\"text\\\": \\\"Synthetic package is blue.\\\",\\n      \\\"kind\\\": \\\"fact\\\",\\n      \\\"evidenceRefs\\\": [\\n        \\\"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\\\"\\n      ],\\n      \\\"limitations\\\": [\\n        \\\"Supplied excerpt only.\\\"\\n      ],\\n      \\\"verification\\\": \\\"pending\\\"\\n    }\\n  ],\\n  \\\"gaps\\\": [],\\n  \\\"evidenceClassifications\\\": [\\n    {\\n      \\\"sourceId\\\": \\\"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\\\",\\n      \\\"scopeRelation\\\": \\\"background\\\",\\n      \\\"reason\\\": \\\"Bounded example.\\\",\\n      \\\"suppliedScopeRelation\\\": \\\"background\\\",\\n      \\\"sourceVerification\\\": \\\"captured\\\"\\n    }\\n  ],\\n  \\\"researchContractVersion\\\": \\\"research-data-v2\\\",\\n  \\\"chartData\\\": null,\\n  \\\"quantitativeClaims\\\": []\\n}\"},\"strategy\":{\"identity\":\"5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf\",\"sha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\",\"bytes\":2674,\"originalText\":\"{\\n  \\\"strategyContractVersion\\\": \\\"proposal-simple-strategy-v1\\\",\\n  \\\"strategyBasisHash\\\": \\\"4984126c76c8282bcc0ed805ae24412d730f85cf5d1a5a4f6a99b3fb5c5207ea\\\",\\n  \\\"outputKind\\\": \\\"strategy\\\",\\n  \\\"status\\\": \\\"complete\\\",\\n  \\\"title\\\": \\\"当前任务的有界工程方向\\\",\\n  \\\"summary\\\": \\\"研究和原任务连接。\\\",\\n  \\\"strategy\\\": {\\n    \\\"researchConclusions\\\": [\\n      {\\n        \\\"id\\\": \\\"research\\\",\\n        \\\"text\\\": \\\"按任务原文探索创作表达，保留研究未决限制。\\\",\\n        \\\"kind\\\": \\\"inference\\\",\\n        \\\"refs\\\": [\\n          {\\n            \\\"sourceId\\\": \\\"research:5b039f42-0130-4508-8d71-e09df6456758\\\",\\n            \\\"location\\\": \\\"/summary\\\",\\n            \\\"quote\\\": \\\"Synthetic package is blue.\\\"\\n          }\\n        ],\\n        \\\"limitations\\\": []\\n      }\\n    ],\\n    \\\"intersection\\\": {\\n      \\\"id\\\": \\\"intersection\\\",\\n      \\\"text\\\": \\\"按任务原文探索创作表达，保留研究未决限制。\\\",\\n      \\\"kind\\\": \\\"inference\\\",\\n      \\\"refs\\\": [\\n        {\\n          \\\"sourceId\\\": \\\"research:5b039f42-0130-4508-8d71-e09df6456758\\\",\\n          \\\"location\\\": \\\"/summary\\\",\\n          \\\"quote\\\": \\\"Synthetic package is blue.\\\"\\n        },\\n        {\\n          \\\"sourceId\\\": \\\"task:project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c:scope:1\\\",\\n          \\\"location\\\": \\\"/fields/background\\\",\\n          \\\"quote\\\": \\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\"\\n        }\\n      ],\\n      \\\"limitations\\\": []\\n    },\\n    \\\"focus\\\": {\\n      \\\"id\\\": \\\"focus\\\",\\n      \\\"text\\\": \\\"按任务原文探索创作表达，保留研究未决限制。\\\",\\n      \\\"kind\\\": \\\"inference\\\",\\n      \\\"refs\\\": [\\n        {\\n          \\\"sourceId\\\": \\\"research:5b039f42-0130-4508-8d71-e09df6456758\\\",\\n          \\\"location\\\": \\\"/summary\\\",\\n          \\\"quote\\\": \\\"Synthetic package is blue.\\\"\\n        },\\n        {\\n          \\\"sourceId\\\": \\\"task:project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c:scope:1\\\",\\n          \\\"location\\\": \\\"/fields/background\\\",\\n          \\\"quote\\\": \\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\"\\n        }\\n      ],\\n      \\\"limitations\\\": []\\n    }\\n  },\\n  \\\"gaps\\\": [],\\n  \\\"limitations\\\": [\\n    \\\"Synthetic test only.\\\",\\n    \\\"Synthetic reader; no real consumers.\\\",\\n    \\\"不得从颜色推断偏好。\\\"\\n  ]\\n}\"},\"copy\":{\"identity\":\"e95c08b6-cae9-4a4d-8e64-2f095cff33dd\",\"sha256\":\"fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf\",\"bytes\":2429,\"originalText\":\"{\\n  \\\"outputKind\\\": \\\"copy\\\",\\n  \\\"status\\\": \\\"complete\\\",\\n  \\\"title\\\": \\\"TABLELAB engineering copy\\\",\\n  \\\"summary\\\": \\\"Task-specified creative expression only; no consumer or aesthetic approval.\\\",\\n  \\\"sections\\\": [\\n    {\\n      \\\"heading\\\": \\\"Engineering task\\\",\\n      \\\"body\\\": \\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\",\\n      \\\"evidenceIds\\\": []\\n    }\\n  ],\\n  \\\"claims\\\": [],\\n  \\\"gaps\\\": [\\n    \\\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\\\",\\n    \\\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\\\",\\n    \\\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\\\"\\n  ],\\n  \\\"directions\\\": [\\n    {\\n      \\\"id\\\": \\\"steady\\\",\\n      \\\"title\\\": \\\"SHARE THE TABLE\\\",\\n      \\\"slogan\\\": \\\"SHARE THE TABLE\\\",\\n      \\\"supportingCopy\\\": \\\"SET A PLACE TO TALK\\\",\\n      \\\"creativeExplanation\\\": \\\"A blue bottle stands inside a round table ring between two chairs.\\\",\\n      \\\"rationale\\\": \\\"Task-specified fictional tabletop invitation, not an audience finding.\\\",\\n      \\\"differentiation\\\": \\\"TABLE RING / TWO PLACEMATS / TABLE BRIDGE\\\",\\n      \\\"evidenceIds\\\": []\\n    },\\n    {\\n      \\\"id\\\": \\\"product\\\",\\n      \\\"title\\\": \\\"OPEN A MOMENT\\\",\\n      \\\"slogan\\\": \\\"OPEN A MOMENT\\\",\\n      \\\"supportingCopy\\\": \\\"A BLUE BOTTLE FRAMES THE TABLE\\\",\\n      \\\"creativeExplanation\\\": \\\"An enlarged blue bottle outline encloses a small table and two chairs.\\\",\\n      \\\"rationale\\\": \\\"Task-specified fictional tabletop invitation, not an audience finding.\\\",\\n      \\\"differentiation\\\": \\\"BOTTLE GATE / CAP HALO / LABEL WINDOW\\\",\\n      \\\"evidenceIds\\\": []\\n    },\\n    {\\n      \\\"id\\\": \\\"user\\\",\\n      \\\"title\\\": \\\"MAKE ROOM\\\",\\n      \\\"slogan\\\": \\\"MAKE ROOM\\\",\\n      \\\"supportingCopy\\\": \\\"PULL UP A CHAIR AND TALK\\\",\\n      \\\"creativeExplanation\\\": \\\"A gold empty chair is attached to a round table opposite a blue chair.\\\",\\n      \\\"rationale\\\": \\\"Task-specified fictional tabletop invitation, not an audience finding.\\\",\\n      \\\"differentiation\\\": \\\"EMPTY CHAIR / OPEN PLACE / PATH TO TABLE\\\",\\n      \\\"evidenceIds\\\": []\\n    }\\n  ]\\n}\"},\"visual\":{\"identity\":\"component-only-B\",\"sha256\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\",\"bytes\":3283,\"originalText\":\"{\\\"protocol\\\":\\\"final-visual-v1\\\",\\\"sourceHash\\\":\\\"691e4a5805a8dada60da67567b9d26735fcb2bb946b331ce8306f25b5f9c6075\\\",\\\"planHash\\\":\\\"b39088ca074ad76ad00f7cbcbd188a9bee1bb8b33eb4d8c5a5ff654e40701735\\\",\\\"directions\\\":[{\\\"directionId\\\":\\\"steady\\\",\\\"approvedCopy\\\":{\\\"id\\\":\\\"steady\\\",\\\"title\\\":\\\"SHARE THE TABLE\\\",\\\"slogan\\\":\\\"SHARE THE TABLE\\\",\\\"supportingCopy\\\":\\\"SET A PLACE TO TALK\\\",\\\"creativeExplanation\\\":\\\"A blue bottle stands inside a round table ring between two chairs.\\\",\\\"rationale\\\":\\\"Task-specified fictional tabletop invitation, not an audience finding.\\\",\\\"differentiation\\\":\\\"TABLE RING / TWO PLACEMATS / TABLE BRIDGE\\\",\\\"evidenceIds\\\":[]},\\\"explanation\\\":\\\"Component mapping literal only; not a completed native B.\\\",\\\"presentationIntent\\\":\\\"Preserve the declared target/view fields.\\\",\\\"claims\\\":[],\\\"limitations\\\":[\\\"Component mapping fixture; no native source qualification or visual judgment.\\\"],\\\"targets\\\":[{\\\"targetId\\\":\\\"component-target-0\\\",\\\"directionId\\\":\\\"steady\\\",\\\"kind\\\":\\\"packaging\\\",\\\"requiredViews\\\":[\\\"front\\\",\\\"three_quarter\\\",\\\"bottle_box\\\",\\\"detail\\\"],\\\"imageId\\\":\\\"component-image-0\\\",\\\"sha256\\\":\\\"11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a\\\",\\\"mediaType\\\":\\\"image/png\\\",\\\"byteLength\\\":1463,\\\"width\\\":24,\\\"height\\\":24,\\\"plan\\\":{\\\"componentOnly\\\":true}}]},{\\\"directionId\\\":\\\"product\\\",\\\"approvedCopy\\\":{\\\"id\\\":\\\"product\\\",\\\"title\\\":\\\"OPEN A MOMENT\\\",\\\"slogan\\\":\\\"OPEN A MOMENT\\\",\\\"supportingCopy\\\":\\\"A BLUE BOTTLE FRAMES THE TABLE\\\",\\\"creativeExplanation\\\":\\\"An enlarged blue bottle outline encloses a small table and two chairs.\\\",\\\"rationale\\\":\\\"Task-specified fictional tabletop invitation, not an audience finding.\\\",\\\"differentiation\\\":\\\"BOTTLE GATE / CAP HALO / LABEL WINDOW\\\",\\\"evidenceIds\\\":[]},\\\"explanation\\\":\\\"Component mapping literal only; not a completed native B.\\\",\\\"presentationIntent\\\":\\\"Preserve the declared target/view fields.\\\",\\\"claims\\\":[],\\\"limitations\\\":[\\\"Component mapping fixture; no native source qualification or visual judgment.\\\"],\\\"targets\\\":[{\\\"targetId\\\":\\\"component-target-1\\\",\\\"directionId\\\":\\\"product\\\",\\\"kind\\\":\\\"packaging\\\",\\\"requiredViews\\\":[\\\"front\\\",\\\"three_quarter\\\",\\\"bottle_box\\\",\\\"detail\\\"],\\\"imageId\\\":\\\"component-image-1\\\",\\\"sha256\\\":\\\"a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d\\\",\\\"mediaType\\\":\\\"image/png\\\",\\\"byteLength\\\":1483,\\\"width\\\":24,\\\"height\\\":24,\\\"plan\\\":{\\\"componentOnly\\\":true}}]},{\\\"directionId\\\":\\\"user\\\",\\\"approvedCopy\\\":{\\\"id\\\":\\\"user\\\",\\\"title\\\":\\\"MAKE ROOM\\\",\\\"slogan\\\":\\\"MAKE ROOM\\\",\\\"supportingCopy\\\":\\\"PULL UP A CHAIR AND TALK\\\",\\\"creativeExplanation\\\":\\\"A gold empty chair is attached to a round table opposite a blue chair.\\\",\\\"rationale\\\":\\\"Task-specified fictional tabletop invitation, not an audience finding.\\\",\\\"differentiation\\\":\\\"EMPTY CHAIR / OPEN PLACE / PATH TO TABLE\\\",\\\"evidenceIds\\\":[]},\\\"explanation\\\":\\\"Component mapping literal only; not a completed native B.\\\",\\\"presentationIntent\\\":\\\"Preserve the declared target/view fields.\\\",\\\"claims\\\":[],\\\"limitations\\\":[\\\"Component mapping fixture; no native source qualification or visual judgment.\\\"],\\\"targets\\\":[{\\\"targetId\\\":\\\"component-target-2\\\",\\\"directionId\\\":\\\"user\\\",\\\"kind\\\":\\\"packaging\\\",\\\"requiredViews\\\":[\\\"front\\\",\\\"three_quarter\\\",\\\"bottle_box\\\",\\\"detail\\\"],\\\"imageId\\\":\\\"component-image-2\\\",\\\"sha256\\\":\\\"04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d\\\",\\\"mediaType\\\":\\\"image/png\\\",\\\"byteLength\\\":1477,\\\"width\\\":24,\\\"height\\\":24,\\\"plan\\\":{\\\"componentOnly\\\":true}}]}],\\\"sourceImages\\\":[],\\\"referenceQualifications\\\":[],\\\"refinementHandoffs\\\":[]}\"}},\"taskContainer\":{\"identity\":\"prelayout-readlane-clear:scope:1\",\"originalText\":\"{\\\"id\\\":\\\"prelayout-readlane-clear:scope:1\\\",\\\"brief\\\":\\\"{\\\\\\\"fields\\\\\\\":{\\\\\\\"attachment\\\\\\\":null,\\\\\\\"audience\\\\\\\":\\\\\\\"工程操作员\\\\\\\",\\\\\\\"background\\\\\\\":\\\\\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\\\\\",\\\\\\\"brand\\\\\\\":\\\\\\\"TABLELAB\\\\\\\",\\\\\\\"budget\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"changeNote\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"constraints\\\\\\\":[\\\\\\\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\\\\\\\",\\\\\\\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\\\\\\\",\\\\\\\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\\\\\\\",\\\\\\\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\\\\\\\",\\\\\\\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\\\\\\\",\\\\\\\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\\\\\\\",\\\\\\\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\\\\\\\"],\\\\\\\"deliverables\\\\\\\":[\\\\\\\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\\\\\\\"],\\\\\\\"deliverableType\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"objectives\\\\\\\":[],\\\\\\\"openQuestions\\\\\\\":[],\\\\\\\"proposalType\\\\\\\":\\\\\\\"packaging\\\\\\\",\\\\\\\"provenance\\\\\\\":{\\\\\\\"audience\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"edited\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"background\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"edited\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"brand\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"edited\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"budget\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"missing\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"constraints\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"edited\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"deliverables\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"edited\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"deliverableType\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"missing\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"objectives\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"missing\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"openQuestions\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"missing\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"references\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"missing\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"researchQuestions\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"edited\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]},\\\\\\\"timeline\\\\\\\":{\\\\\\\"origin\\\\\\\":\\\\\\\"missing\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"not_stated\\\\\\\",\\\\\\\"spans\\\\\\\":[]}},\\\\\\\"references\\\\\\\":[],\\\\\\\"researchQuestions\\\\\\\":[\\\\\\\"合成蓝色产品与任务指定视觉机制能否逐项对应？\\\\\\\"],\\\\\\\"timeline\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"visualRequirements\\\\\\\":[{\\\\\\\"kind\\\\\\\":\\\\\\\"packaging\\\\\\\",\\\\\\\"views\\\\\\\":[\\\\\\\"front\\\\\\\",\\\\\\\"three_quarter\\\\\\\",\\\\\\\"bottle_box\\\\\\\",\\\\\\\"detail\\\\\\\"]}]},\\\\\\\"format\\\\\\\":\\\\\\\"proposal-workbench-brief-v1\\\\\\\",\\\\\\\"metadata\\\\\\\":{\\\\\\\"client\\\\\\\":\\\\\\\"合成工程操作员\\\\\\\",\\\\\\\"researchOwner\\\\\\\":\\\\\\\"工程研究\\\\\\\",\\\\\\\"strategyOwner\\\\\\\":\\\\\\\"工程策略\\\\\\\",\\\\\\\"summary\\\\\\\":\\\\\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\\\\\",\\\\\\\"type\\\\\\\":\\\\\\\"packaging\\\\\\\"},\\\\\\\"savedAt\\\\\\\":\\\\\\\"\\\\\\\"}\\\",\\\"createdBy\\\":\\\"component-human\\\"}\",\"sha256\":\"0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29\",\"bytes\":3274},\"baseImages\":[{\"imageId\":\"component-image-0\",\"directionId\":\"steady\",\"targetId\":\"component-target-0\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"visualArtifactId\":\"component-only-B\",\"visualContentHash\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\",\"originalLocator\":\"component-only:no-native-original\",\"sha256\":\"11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a\",\"bytes\":1463,\"mediaType\":\"image/png\",\"width\":24,\"height\":24},{\"imageId\":\"component-image-1\",\"directionId\":\"product\",\"targetId\":\"component-target-1\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"visualArtifactId\":\"component-only-B\",\"visualContentHash\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\",\"originalLocator\":\"component-only:no-native-original\",\"sha256\":\"a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d\",\"bytes\":1483,\"mediaType\":\"image/png\",\"width\":24,\"height\":24},{\"imageId\":\"component-image-2\",\"directionId\":\"user\",\"targetId\":\"component-target-2\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"visualArtifactId\":\"component-only-B\",\"visualContentHash\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\",\"originalLocator\":\"component-only:no-native-original\",\"sha256\":\"04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d\",\"bytes\":1477,\"mediaType\":\"image/png\",\"width\":24,\"height\":24}],\"images\":[{\"imageId\":\"component-image-0\",\"sha256\":\"11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a\",\"mediaType\":\"image/png\",\"byteLength\":1463,\"width\":24,\"height\":24},{\"imageId\":\"component-image-1\",\"sha256\":\"a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d\",\"mediaType\":\"image/png\",\"byteLength\":1483,\"width\":24,\"height\":24},{\"imageId\":\"component-image-2\",\"sha256\":\"04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d\",\"mediaType\":\"image/png\",\"byteLength\":1477,\"width\":24,\"height\":24}],\"knownLimitations\":[{\"stage\":\"brief\",\"pointer\":\"/fields/constraints/0\",\"quote\":\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\",\"sourceSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},{\"stage\":\"brief\",\"pointer\":\"/fields/constraints/1\",\"quote\":\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\",\"sourceSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},{\"stage\":\"brief\",\"pointer\":\"/fields/constraints/2\",\"quote\":\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\",\"sourceSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},{\"stage\":\"brief\",\"pointer\":\"/fields/constraints/3\",\"quote\":\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\"sourceSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},{\"stage\":\"brief\",\"pointer\":\"/fields/constraints/4\",\"quote\":\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\"sourceSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},{\"stage\":\"brief\",\"pointer\":\"/fields/constraints/5\",\"quote\":\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\",\"sourceSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},{\"stage\":\"brief\",\"pointer\":\"/fields/constraints/6\",\"quote\":\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\",\"sourceSha256\":\"93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008\"},{\"stage\":\"research\",\"pointer\":\"/summary\",\"quote\":\"Synthetic package is blue.\",\"sourceSha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},{\"stage\":\"research\",\"pointer\":\"/sections/0/body\",\"quote\":\"Synthetic package is blue.\",\"sourceSha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},{\"stage\":\"research\",\"pointer\":\"/claims/0/text\",\"quote\":\"Synthetic package is blue.\",\"sourceSha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},{\"stage\":\"research\",\"pointer\":\"/claims/0/kind\",\"quote\":\"fact\",\"sourceSha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},{\"stage\":\"research\",\"pointer\":\"/claims/0/limitations/0\",\"quote\":\"Supplied excerpt only.\",\"sourceSha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},{\"stage\":\"research\",\"pointer\":\"/claims/0/verification\",\"quote\":\"pending\",\"sourceSha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},{\"stage\":\"research\",\"pointer\":\"/evidenceClassifications/0/reason\",\"quote\":\"Bounded example.\",\"sourceSha256\":\"d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b\"},{\"stage\":\"strategy\",\"pointer\":\"/strategy/researchConclusions/0/text\",\"quote\":\"按任务原文探索创作表达，保留研究未决限制。\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/strategy/researchConclusions/0/kind\",\"quote\":\"inference\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/strategy/intersection/text\",\"quote\":\"按任务原文探索创作表达，保留研究未决限制。\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/strategy/intersection/kind\",\"quote\":\"inference\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/strategy/focus/text\",\"quote\":\"按任务原文探索创作表达，保留研究未决限制。\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/strategy/focus/kind\",\"quote\":\"inference\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/limitations/0\",\"quote\":\"Synthetic test only.\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/limitations/1\",\"quote\":\"Synthetic reader; no real consumers.\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"strategy\",\"pointer\":\"/limitations/2\",\"quote\":\"不得从颜色推断偏好。\",\"sourceSha256\":\"a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8\"},{\"stage\":\"copy\",\"pointer\":\"/gaps/0\",\"quote\":\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\"sourceSha256\":\"fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf\"},{\"stage\":\"copy\",\"pointer\":\"/gaps/1\",\"quote\":\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\"sourceSha256\":\"fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf\"},{\"stage\":\"copy\",\"pointer\":\"/gaps/2\",\"quote\":\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\",\"sourceSha256\":\"fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf\"},{\"stage\":\"visual\",\"pointer\":\"/directions/0/limitations/0\",\"quote\":\"Component mapping fixture; no native source qualification or visual judgment.\",\"sourceSha256\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\"},{\"stage\":\"visual\",\"pointer\":\"/directions/1/limitations/0\",\"quote\":\"Component mapping fixture; no native source qualification or visual judgment.\",\"sourceSha256\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\"},{\"stage\":\"visual\",\"pointer\":\"/directions/2/limitations/0\",\"quote\":\"Component mapping fixture; no native source qualification or visual judgment.\",\"sourceSha256\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\"}],\"carriedLimitationsHash\":\"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\",\"imageEnvelope\":{\"operation\":\"proposal-prelayout-v1\",\"limits\":{\"maxImages\":32,\"maxBytes\":33554432,\"maxPixels\":80000000}}},\"nativeRequest\":{\"projectId\":\"prelayout-readlane-clear\",\"expectedRevision\":0,\"taskCardId\":\"prelayout-readlane-clear:scope:1\",\"policyVersion\":1,\"copyArtifactId\":\"e95c08b6-cae9-4a4d-8e64-2f095cff33dd\",\"copyContentHash\":\"fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf\",\"sourceHash\":\"493e8c2807b06067c26f7df97578a8e20b76d7763b77d3106cb0b4d15432a730\",\"visualArtifactId\":\"component-only-B\",\"visualContentHash\":\"4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447\"},\"binding\":{\"providerId\":\"component-provider\",\"model\":\"component-model\",\"role\":\"proposal-director\"},\"commandId\":\"fixture-queue\"}",
+      "fixture-claim": "{\"kind\":\"claim-proposal-prelayout\",\"jobId\":\"prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944\",\"attemptId\":\"transport-fixture-attempt\",\"requestHash\":\"23944951ee1007a979174af8c0feab72b76059072a3461d5bf59d38e53475b0e\",\"executionRequest\":{\"projectId\":\"prelayout-readlane-clear\",\"jobId\":\"prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944\",\"commandId\":\"fixture-claim\",\"expectedRevision\":1},\"commandId\":\"fixture-claim\"}",
+      "fixture-locator": "{\"kind\":\"anchor-model-http-attempt\",\"jobId\":\"prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944\",\"attemptId\":\"transport-fixture-attempt\",\"locator\":{\"kind\":\"http-attempt-locator-v1\",\"provider\":\"workbench-model-http-v1\",\"protocol\":\"workbench-model-http-original-v1\",\"attemptId\":\"transport-fixture-attempt\",\"rootRelativePath\":\"9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291\"},\"commandId\":\"fixture-locator\"}",
+      "fixture-anchor": "{\"kind\":\"anchor-proposal-prelayout\",\"jobId\":\"prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944\",\"attemptId\":\"transport-fixture-attempt\",\"receipt\":{\"provider\":\"workbench-model-http-v1\",\"protocol\":\"workbench-model-http-original-v1\",\"attemptId\":\"transport-fixture-attempt\",\"runId\":\"transport-fixture-attempt\",\"requestedModel\":\"component-model\",\"reportedModel\":\"component-model\",\"inputPacketHash\":\"718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060\",\"runtimePacketHash\":\"fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc\",\"wireRequestHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"responseText\":\" \\n{\\n  \\\"protocol\\\": \\\"proposal-prelayout-v1\\\",\\n  \\\"sourceTupleHash\\\": \\\"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\\\",\\n  \\\"baseInputSha256\\\": \\\"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\\\",\\n  \\\"decision\\\": \\\"clear\\\",\\n  \\\"summary\\\": \\\"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\\\",\\n  \\\"newIssues\\\": [],\\n  \\\"carriedLimitationsHash\\\": \\\"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\\\"\\n}\\n\",\"origin\":{\"configurationHash\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"invocationId\":\"transport-only-no-dispatch\",\"serviceIdentity\":\"transport-only-no-physical-IO\"},\"original\":{\"rootRelativePath\":\"9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291\",\"manifestHash\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"context\":{\"kind\":\"isolated-http-call\",\"namespace\":\"transport-only-no-physical-IO\",\"invocationId\":\"transport-only-no-dispatch\",\"requestHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"isolation\":\"stateless-v1\"},\"usage\":{\"inputTokens\":null,\"outputTokens\":null},\"cost\":null,\"providerExecution\":{\"provider\":\"workbench-model-http-v1\",\"protocol\":\"workbench-model-http-original-v1\",\"attemptId\":\"transport-fixture-attempt\",\"runId\":\"transport-fixture-attempt\",\"requestedModel\":\"component-model\",\"reportedModel\":\"component-model\",\"inputPacketHash\":\"718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060\",\"runtimePacketHash\":\"fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc\",\"wireRequestHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"responseText\":\" \\n{\\n  \\\"protocol\\\": \\\"proposal-prelayout-v1\\\",\\n  \\\"sourceTupleHash\\\": \\\"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\\\",\\n  \\\"baseInputSha256\\\": \\\"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\\\",\\n  \\\"decision\\\": \\\"clear\\\",\\n  \\\"summary\\\": \\\"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\\\",\\n  \\\"newIssues\\\": [],\\n  \\\"carriedLimitationsHash\\\": \\\"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\\\"\\n}\\n\",\"origin\":{\"configurationHash\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"invocationId\":\"transport-only-no-dispatch\",\"serviceIdentity\":\"transport-only-no-physical-IO\"},\"original\":{\"rootRelativePath\":\"9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291\",\"manifestHash\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"context\":{\"kind\":\"isolated-http-call\",\"namespace\":\"transport-only-no-physical-IO\",\"invocationId\":\"transport-only-no-dispatch\",\"requestHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"isolation\":\"stateless-v1\"},\"usage\":{\"inputTokens\":null,\"outputTokens\":null},\"cost\":null},\"providerId\":\"component-provider\",\"model\":\"component-model\",\"role\":\"proposal-director\",\"taskId\":\"prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944\"},\"commandId\":\"fixture-anchor\"}",
+      "fixture-finish": "{\"kind\":\"finish-proposal-prelayout\",\"jobId\":\"prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944\",\"attemptId\":\"transport-fixture-attempt\",\"originalText\":\" \\n{\\n  \\\"protocol\\\": \\\"proposal-prelayout-v1\\\",\\n  \\\"sourceTupleHash\\\": \\\"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\\\",\\n  \\\"baseInputSha256\\\": \\\"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\\\",\\n  \\\"decision\\\": \\\"clear\\\",\\n  \\\"summary\\\": \\\"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\\\",\\n  \\\"newIssues\\\": [],\\n  \\\"carriedLimitationsHash\\\": \\\"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\\\"\\n}\\n\",\"payloadRef\":\"transport-fixture-only/director-report.json\",\"contentHash\":\"d0c55200dbda21589ce0cf777e43cb90a49b4ed915b3eb2a0c3636790ceaac92\",\"commandId\":\"fixture-finish\"}"
+    },
+    "correctionReviews": [],
+    "creativePanels": [],
+    "creativeReports": [],
+    "ownerEdges": [],
+    "ownerReports": [],
+    "ownerIntents": []
+  },
+  "view": {
+    "id": "prelayout-readlane-clear",
+    "name": "COMPONENT ONLY: no native source authority",
+    "revision": 5,
+    "references": [],
+    "ownerEdges": [],
+    "ownerIntents": [],
+    "taskCard": {
+      "id": "prelayout-readlane-clear:scope:1",
+      "brief": "{\"fields\":{\"attachment\":null,\"audience\":\"工程操作员\",\"background\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"brand\":\"TABLELAB\",\"budget\":\"\",\"changeNote\":\"\",\"constraints\":[\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\",\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\",\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\",\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\",\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\"],\"deliverables\":[\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\"],\"deliverableType\":\"\",\"objectives\":[],\"openQuestions\":[],\"proposalType\":\"packaging\",\"provenance\":{\"audience\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"background\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"brand\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"budget\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"constraints\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverables\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverableType\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"objectives\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"openQuestions\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"references\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"researchQuestions\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"timeline\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]}},\"references\":[],\"researchQuestions\":[\"合成蓝色产品与任务指定视觉机制能否逐项对应？\"],\"timeline\":\"\",\"visualRequirements\":[{\"kind\":\"packaging\",\"views\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"]}]},\"format\":\"proposal-workbench-brief-v1\",\"metadata\":{\"client\":\"合成工程操作员\",\"researchOwner\":\"工程研究\",\"strategyOwner\":\"工程策略\",\"summary\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"type\":\"packaging\"},\"savedAt\":\"\"}",
+      "createdBy": "component-human"
+    },
+    "policy": {
+      "version": 1,
+      "mode": "auto",
+      "authorizedThrough": "final_review",
+      "humanGates": []
+    },
+    "jobs": [
+      {
+        "id": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944",
+        "stage": "layout",
+        "purpose": "proposal_prelayout_check",
+        "status": "succeeded",
+        "attempts": [
+          {
+            "id": "transport-fixture-attempt",
+            "status": "succeeded",
+            "executor": {
+              "actorType": "agent",
+              "actorId": "transport-fixture-owner",
+              "runId": "transport-fixture-run",
+              "contextId": "transport-fixture-context",
+              "now": "2026-11-12T00:00:00.000Z"
+            },
+            "startedAt": "2026-11-12T00:00:00.000Z",
+            "dispatchStarted": true,
+            "requestHash": "23944951ee1007a979174af8c0feab72b76059072a3461d5bf59d38e53475b0e",
+            "executionRequest": {
+              "projectId": "prelayout-readlane-clear",
+              "jobId": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944",
+              "commandId": "fixture-claim",
+              "expectedRevision": 1
+            },
+            "httpAttemptLocator": {
+              "kind": "http-attempt-locator-v1",
+              "provider": "workbench-model-http-v1",
+              "protocol": "workbench-model-http-original-v1",
+              "attemptId": "transport-fixture-attempt",
+              "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291"
+            },
+            "receipt": {
+              "provider": "workbench-model-http-v1",
+              "protocol": "workbench-model-http-original-v1",
+              "attemptId": "transport-fixture-attempt",
+              "runId": "transport-fixture-attempt",
+              "requestedModel": "component-model",
+              "reportedModel": "component-model",
+              "inputPacketHash": "718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060",
+              "runtimePacketHash": "fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc",
+              "wireRequestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "responseText": " \n{\n  \"protocol\": \"proposal-prelayout-v1\",\n  \"sourceTupleHash\": \"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\",\n  \"baseInputSha256\": \"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\n  \"decision\": \"clear\",\n  \"summary\": \"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\",\n  \"newIssues\": [],\n  \"carriedLimitationsHash\": \"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\"\n}\n",
+              "origin": {
+                "configurationHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "invocationId": "transport-only-no-dispatch",
+                "serviceIdentity": "transport-only-no-physical-IO"
+              },
+              "original": {
+                "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291",
+                "manifestHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+              },
+              "context": {
+                "kind": "isolated-http-call",
+                "namespace": "transport-only-no-physical-IO",
+                "invocationId": "transport-only-no-dispatch",
+                "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "isolation": "stateless-v1"
+              },
+              "usage": {
+                "inputTokens": null,
+                "outputTokens": null
+              },
+              "cost": null,
+              "providerExecution": {
+                "provider": "workbench-model-http-v1",
+                "protocol": "workbench-model-http-original-v1",
+                "attemptId": "transport-fixture-attempt",
+                "runId": "transport-fixture-attempt",
+                "requestedModel": "component-model",
+                "reportedModel": "component-model",
+                "inputPacketHash": "718271ca6b366d7a45cb9e3a05809dec3415fc9ab2655555355bd5e781223060",
+                "runtimePacketHash": "fdbcd69f38e8102181120e5e6604455d94c9c57e7d096da360aca0c2cbb9e2bc",
+                "wireRequestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "responseText": " \n{\n  \"protocol\": \"proposal-prelayout-v1\",\n  \"sourceTupleHash\": \"28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7\",\n  \"baseInputSha256\": \"28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6\",\n  \"decision\": \"clear\",\n  \"summary\": \"合成元数据：模型记录未列新增阻断；没有真实B或原件资格。\",\n  \"newIssues\": [],\n  \"carriedLimitationsHash\": \"74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd\"\n}\n",
+                "origin": {
+                  "configurationHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "invocationId": "transport-only-no-dispatch",
+                  "serviceIdentity": "transport-only-no-physical-IO"
+                },
+                "original": {
+                  "rootRelativePath": "9ef16e004ce9bf7fbd0373c9f9adcda14fc02cb44340762ae7cfac299768a291",
+                  "manifestHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                },
+                "context": {
+                  "kind": "isolated-http-call",
+                  "namespace": "transport-only-no-physical-IO",
+                  "invocationId": "transport-only-no-dispatch",
+                  "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "isolation": "stateless-v1"
+                },
+                "usage": {
+                  "inputTokens": null,
+                  "outputTokens": null
+                },
+                "cost": null
+              },
+              "providerId": "component-provider",
+              "model": "component-model",
+              "role": "proposal-director",
+              "taskId": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944"
+            }
+          }
+        ],
+        "inputVersionIds": [
+          "prelayout-readlane-clear:scope:1",
+          "5b039f42-0130-4508-8d71-e09df6456758",
+          "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+          "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+          "component-only-B"
+        ],
+        "outputVersionIds": [
+          "prelayout-report-005e98e16ae896e2a29ae753d989645c9068472c2874393655be8aaa7c92fe4c"
+        ],
+        "binding": {
+          "providerId": "component-provider",
+          "model": "component-model",
+          "role": "proposal-director"
+        },
+        "task": {
+          "id": "prelayout-f5774d3fba9eed8501d55975e9dd44a1e309df648fea2816771663991b694944",
+          "prelayoutInput": {
+            "protocol": "proposal-prelayout-v1",
+            "sourceTuple": {
+              "protocol": "proposal-prelayout-source-v1",
+              "projectId": "prelayout-readlane-clear",
+              "databaseBindingHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "task": {
+                "taskCardId": "prelayout-readlane-clear:scope:1",
+                "taskOriginalSha256": "0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29",
+                "briefSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              "policy": {
+                "version": 1,
+                "sha256": "c5640e1bc17166dd92976f2af1dd01c7563ed06f638243e0271202b6c542171a"
+              },
+              "sources": {
+                "research": {
+                  "artifactId": "5b039f42-0130-4508-8d71-e09df6456758",
+                  "sha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+                },
+                "strategy": {
+                  "artifactId": "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+                  "sha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+                },
+                "copy": {
+                  "artifactId": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+                  "sha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+                },
+                "visual": {
+                  "artifactId": "component-only-B",
+                  "sha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+                }
+              },
+              "methods": {
+                "research": {
+                  "id": "design-research-lead",
+                  "version": "r7-20261109",
+                  "sha256": "ebd616b74559263847c44aa3adcf6e92bfc8306a0657107dba103dd937f39a2c"
+                },
+                "director": {
+                  "path": "docs/agents/proposal-director.md",
+                  "version": "1.0.1",
+                  "sha256": "baaa2a19c0b0492f06668d234fcf90e7d92ff0864ec4b9c1ac0514ad1a7ace0b"
+                }
+              },
+              "semantic": {
+                "epoch": 0,
+                "configurationHash": "b094ff0ef5c01f0d2e5be1ca0af39759af1b0c7d8515ede4a8b1b9a720916b97"
+              },
+              "copyEnvelopeHash": "493e8c2807b06067c26f7df97578a8e20b76d7763b77d3106cb0b4d15432a730",
+              "bSourceHash": "691e4a5805a8dada60da67567b9d26735fcb2bb946b331ce8306f25b5f9c6075",
+              "bPlanHash": "b39088ca074ad76ad00f7cbcbd188a9bee1bb8b33eb4d8c5a5ff654e40701735",
+              "directionIds": [
+                "steady",
+                "product",
+                "user"
+              ],
+              "typedViews": [
+                {
+                  "kind": "packaging",
+                  "views": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ]
+                }
+              ],
+              "targetImages": [
+                {
+                  "imageId": "component-image-0",
+                  "directionId": "steady",
+                  "targetId": "component-target-0",
+                  "kind": "packaging",
+                  "requiredViews": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ],
+                  "sha256": "11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a",
+                  "bytes": 1463,
+                  "mediaType": "image/png",
+                  "width": 24,
+                  "height": 24
+                },
+                {
+                  "imageId": "component-image-1",
+                  "directionId": "product",
+                  "targetId": "component-target-1",
+                  "kind": "packaging",
+                  "requiredViews": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ],
+                  "sha256": "a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d",
+                  "bytes": 1483,
+                  "mediaType": "image/png",
+                  "width": 24,
+                  "height": 24
+                },
+                {
+                  "imageId": "component-image-2",
+                  "directionId": "user",
+                  "targetId": "component-target-2",
+                  "kind": "packaging",
+                  "requiredViews": [
+                    "front",
+                    "three_quarter",
+                    "bottle_box",
+                    "detail"
+                  ],
+                  "sha256": "04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d",
+                  "bytes": 1477,
+                  "mediaType": "image/png",
+                  "width": 24,
+                  "height": 24
+                }
+              ],
+              "baseInputSha256": "28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6",
+              "baseProjectionSha256": "8a8c0bda92fe07ec5db6b077d23ff440c1bc93b4b1146ab4ac0cd4dbaea0fd49"
+            },
+            "sourceTupleHash": "28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7",
+            "baseInputSha256": "28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6",
+            "baseProjectionSha256": "8a8c0bda92fe07ec5db6b077d23ff440c1bc93b4b1146ab4ac0cd4dbaea0fd49",
+            "directorMethod": {
+              "path": "docs/agents/proposal-director.md",
+              "version": "1.0.1",
+              "sha256": "baaa2a19c0b0492f06668d234fcf90e7d92ff0864ec4b9c1ac0514ad1a7ace0b",
+              "originalText": "# 比稿 Agent\n\n规范版本：1.0.1。类型：统筹岗位。适用：全阶段。这是已确认要求的统一整理，非本岗位首次存在，也不是业务接入完成声明。\n\n业务调度与内部执行关系见[Agent组织总览](README.md)。本岗位兼任简报整理、组织独立终审，阶段负责人各自承担产物责任。工作台开发另由[开发统筹Agent](development-lead.md)组织，不混作业务子岗位。统筹不得兼任自己所创稿件的独立审读或裁定者。\n\n接收当前 Brief、各阶段有效产物及其真实评审记录，组织派发、衔接检查、退回和排版前简短核对。每阶段核对是否回答同一任务、是否承接有效上游、能否形成下一步输入。\n\n排版前只处理新增事实矛盾、错版和必要缺件；已经说明的演练设定、研究缺口及未验证效果随稿保留，不反复生成相同待办。事实、策略或创意主张的修改退给原负责人，核受影响内容。\n\n输出本轮输入身份、简短结论、必要新问题及其责任人。创作、独立评分、人类项目决定分开；比稿 Agent 不改原票，不代人确认，不将推荐写成获选。\n\n前台七阶段，独立内容审阅岗位退役。排版后组织独立终审和交付核对；旧审阅原文、评论与回执保留原身份。\n\n\n## 输入、输出与结束条件\n\n| 项目 | 合同 |\n| --- | --- |\n| 输入 | 当前Brief、阶段结果、评审与限制 |\n| 输出 | 有效交接／新增问题及责任人／排版前简短结论 |\n| 结束条件 | 各阶段承接和版本可核，新问题已归属；不代签独立评审 |\n| 退回／暂停 | 退回对应研究、策略、文案、视觉或排版负责人 |\n\n## 开始与结束时读取\n\n执行前按[规范入口](../specs/README.md)选择本岗位、对应页面和方法；交付遵守[版本与交接](../specs/handoff.md)。只加载本次任务所需上下文，原件保持可追溯。产品决定以[已确认决定](../specs/decisions.md)及用户后续明确修正为准。\n"
+            },
+            "originals": {
+              "brief": {
+                "identity": "prelayout-readlane-clear:scope:1#/brief@0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29",
+                "sha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008",
+                "bytes": 2932,
+                "originalText": "{\"fields\":{\"attachment\":null,\"audience\":\"工程操作员\",\"background\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"brand\":\"TABLELAB\",\"budget\":\"\",\"changeNote\":\"\",\"constraints\":[\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\",\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\",\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\",\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\",\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\"],\"deliverables\":[\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\"],\"deliverableType\":\"\",\"objectives\":[],\"openQuestions\":[],\"proposalType\":\"packaging\",\"provenance\":{\"audience\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"background\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"brand\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"budget\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"constraints\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverables\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"deliverableType\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"objectives\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"openQuestions\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"references\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]},\"researchQuestions\":{\"origin\":\"edited\",\"reason\":\"not_stated\",\"spans\":[]},\"timeline\":{\"origin\":\"missing\",\"reason\":\"not_stated\",\"spans\":[]}},\"references\":[],\"researchQuestions\":[\"合成蓝色产品与任务指定视觉机制能否逐项对应？\"],\"timeline\":\"\",\"visualRequirements\":[{\"kind\":\"packaging\",\"views\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"]}]},\"format\":\"proposal-workbench-brief-v1\",\"metadata\":{\"client\":\"合成工程操作员\",\"researchOwner\":\"工程研究\",\"strategyOwner\":\"工程策略\",\"summary\":\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\"type\":\"packaging\"},\"savedAt\":\"\"}"
+              },
+              "research": {
+                "identity": "5b039f42-0130-4508-8d71-e09df6456758",
+                "sha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b",
+                "bytes": 1076,
+                "originalText": "{\n  \"outputKind\": \"research_findings\",\n  \"status\": \"complete\",\n  \"title\": \"Synthetic research\",\n  \"summary\": \"Synthetic package is blue.\",\n  \"sections\": [\n    {\n      \"heading\": \"Finding\",\n      \"body\": \"Synthetic package is blue.\",\n      \"evidenceIds\": [\n        \"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\"\n      ]\n    }\n  ],\n  \"claims\": [\n    {\n      \"text\": \"Synthetic package is blue.\",\n      \"kind\": \"fact\",\n      \"evidenceRefs\": [\n        \"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\"\n      ],\n      \"limitations\": [\n        \"Supplied excerpt only.\"\n      ],\n      \"verification\": \"pending\"\n    }\n  ],\n  \"gaps\": [],\n  \"evidenceClassifications\": [\n    {\n      \"sourceId\": \"source-5bddd4b134c44d2c11b176268edaa9f91cf301c610922dd841315498fced5004\",\n      \"scopeRelation\": \"background\",\n      \"reason\": \"Bounded example.\",\n      \"suppliedScopeRelation\": \"background\",\n      \"sourceVerification\": \"captured\"\n    }\n  ],\n  \"researchContractVersion\": \"research-data-v2\",\n  \"chartData\": null,\n  \"quantitativeClaims\": []\n}"
+              },
+              "strategy": {
+                "identity": "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+                "sha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8",
+                "bytes": 2674,
+                "originalText": "{\n  \"strategyContractVersion\": \"proposal-simple-strategy-v1\",\n  \"strategyBasisHash\": \"4984126c76c8282bcc0ed805ae24412d730f85cf5d1a5a4f6a99b3fb5c5207ea\",\n  \"outputKind\": \"strategy\",\n  \"status\": \"complete\",\n  \"title\": \"当前任务的有界工程方向\",\n  \"summary\": \"研究和原任务连接。\",\n  \"strategy\": {\n    \"researchConclusions\": [\n      {\n        \"id\": \"research\",\n        \"text\": \"按任务原文探索创作表达，保留研究未决限制。\",\n        \"kind\": \"inference\",\n        \"refs\": [\n          {\n            \"sourceId\": \"research:5b039f42-0130-4508-8d71-e09df6456758\",\n            \"location\": \"/summary\",\n            \"quote\": \"Synthetic package is blue.\"\n          }\n        ],\n        \"limitations\": []\n      }\n    ],\n    \"intersection\": {\n      \"id\": \"intersection\",\n      \"text\": \"按任务原文探索创作表达，保留研究未决限制。\",\n      \"kind\": \"inference\",\n      \"refs\": [\n        {\n          \"sourceId\": \"research:5b039f42-0130-4508-8d71-e09df6456758\",\n          \"location\": \"/summary\",\n          \"quote\": \"Synthetic package is blue.\"\n        },\n        {\n          \"sourceId\": \"task:project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c:scope:1\",\n          \"location\": \"/fields/background\",\n          \"quote\": \"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\"\n        }\n      ],\n      \"limitations\": []\n    },\n    \"focus\": {\n      \"id\": \"focus\",\n      \"text\": \"按任务原文探索创作表达，保留研究未决限制。\",\n      \"kind\": \"inference\",\n      \"refs\": [\n        {\n          \"sourceId\": \"research:5b039f42-0130-4508-8d71-e09df6456758\",\n          \"location\": \"/summary\",\n          \"quote\": \"Synthetic package is blue.\"\n        },\n        {\n          \"sourceId\": \"task:project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c:scope:1\",\n          \"location\": \"/fields/background\",\n          \"quote\": \"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\"\n        }\n      ],\n      \"limitations\": []\n    }\n  },\n  \"gaps\": [],\n  \"limitations\": [\n    \"Synthetic test only.\",\n    \"Synthetic reader; no real consumers.\",\n    \"不得从颜色推断偏好。\"\n  ]\n}"
+              },
+              "copy": {
+                "identity": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+                "sha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf",
+                "bytes": 2429,
+                "originalText": "{\n  \"outputKind\": \"copy\",\n  \"status\": \"complete\",\n  \"title\": \"TABLELAB engineering copy\",\n  \"summary\": \"Task-specified creative expression only; no consumer or aesthetic approval.\",\n  \"sections\": [\n    {\n      \"heading\": \"Engineering task\",\n      \"body\": \"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\",\n      \"evidenceIds\": []\n    }\n  ],\n  \"claims\": [],\n  \"gaps\": [\n    \"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\",\n    \"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\",\n    \"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\"\n  ],\n  \"directions\": [\n    {\n      \"id\": \"steady\",\n      \"title\": \"SHARE THE TABLE\",\n      \"slogan\": \"SHARE THE TABLE\",\n      \"supportingCopy\": \"SET A PLACE TO TALK\",\n      \"creativeExplanation\": \"A blue bottle stands inside a round table ring between two chairs.\",\n      \"rationale\": \"Task-specified fictional tabletop invitation, not an audience finding.\",\n      \"differentiation\": \"TABLE RING / TWO PLACEMATS / TABLE BRIDGE\",\n      \"evidenceIds\": []\n    },\n    {\n      \"id\": \"product\",\n      \"title\": \"OPEN A MOMENT\",\n      \"slogan\": \"OPEN A MOMENT\",\n      \"supportingCopy\": \"A BLUE BOTTLE FRAMES THE TABLE\",\n      \"creativeExplanation\": \"An enlarged blue bottle outline encloses a small table and two chairs.\",\n      \"rationale\": \"Task-specified fictional tabletop invitation, not an audience finding.\",\n      \"differentiation\": \"BOTTLE GATE / CAP HALO / LABEL WINDOW\",\n      \"evidenceIds\": []\n    },\n    {\n      \"id\": \"user\",\n      \"title\": \"MAKE ROOM\",\n      \"slogan\": \"MAKE ROOM\",\n      \"supportingCopy\": \"PULL UP A CHAIR AND TALK\",\n      \"creativeExplanation\": \"A gold empty chair is attached to a round table opposite a blue chair.\",\n      \"rationale\": \"Task-specified fictional tabletop invitation, not an audience finding.\",\n      \"differentiation\": \"EMPTY CHAIR / OPEN PLACE / PATH TO TABLE\",\n      \"evidenceIds\": []\n    }\n  ]\n}"
+              },
+              "visual": {
+                "identity": "component-only-B",
+                "sha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "bytes": 3283,
+                "originalText": "{\"protocol\":\"final-visual-v1\",\"sourceHash\":\"691e4a5805a8dada60da67567b9d26735fcb2bb946b331ce8306f25b5f9c6075\",\"planHash\":\"b39088ca074ad76ad00f7cbcbd188a9bee1bb8b33eb4d8c5a5ff654e40701735\",\"directions\":[{\"directionId\":\"steady\",\"approvedCopy\":{\"id\":\"steady\",\"title\":\"SHARE THE TABLE\",\"slogan\":\"SHARE THE TABLE\",\"supportingCopy\":\"SET A PLACE TO TALK\",\"creativeExplanation\":\"A blue bottle stands inside a round table ring between two chairs.\",\"rationale\":\"Task-specified fictional tabletop invitation, not an audience finding.\",\"differentiation\":\"TABLE RING / TWO PLACEMATS / TABLE BRIDGE\",\"evidenceIds\":[]},\"explanation\":\"Component mapping literal only; not a completed native B.\",\"presentationIntent\":\"Preserve the declared target/view fields.\",\"claims\":[],\"limitations\":[\"Component mapping fixture; no native source qualification or visual judgment.\"],\"targets\":[{\"targetId\":\"component-target-0\",\"directionId\":\"steady\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"imageId\":\"component-image-0\",\"sha256\":\"11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a\",\"mediaType\":\"image/png\",\"byteLength\":1463,\"width\":24,\"height\":24,\"plan\":{\"componentOnly\":true}}]},{\"directionId\":\"product\",\"approvedCopy\":{\"id\":\"product\",\"title\":\"OPEN A MOMENT\",\"slogan\":\"OPEN A MOMENT\",\"supportingCopy\":\"A BLUE BOTTLE FRAMES THE TABLE\",\"creativeExplanation\":\"An enlarged blue bottle outline encloses a small table and two chairs.\",\"rationale\":\"Task-specified fictional tabletop invitation, not an audience finding.\",\"differentiation\":\"BOTTLE GATE / CAP HALO / LABEL WINDOW\",\"evidenceIds\":[]},\"explanation\":\"Component mapping literal only; not a completed native B.\",\"presentationIntent\":\"Preserve the declared target/view fields.\",\"claims\":[],\"limitations\":[\"Component mapping fixture; no native source qualification or visual judgment.\"],\"targets\":[{\"targetId\":\"component-target-1\",\"directionId\":\"product\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"imageId\":\"component-image-1\",\"sha256\":\"a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d\",\"mediaType\":\"image/png\",\"byteLength\":1483,\"width\":24,\"height\":24,\"plan\":{\"componentOnly\":true}}]},{\"directionId\":\"user\",\"approvedCopy\":{\"id\":\"user\",\"title\":\"MAKE ROOM\",\"slogan\":\"MAKE ROOM\",\"supportingCopy\":\"PULL UP A CHAIR AND TALK\",\"creativeExplanation\":\"A gold empty chair is attached to a round table opposite a blue chair.\",\"rationale\":\"Task-specified fictional tabletop invitation, not an audience finding.\",\"differentiation\":\"EMPTY CHAIR / OPEN PLACE / PATH TO TABLE\",\"evidenceIds\":[]},\"explanation\":\"Component mapping literal only; not a completed native B.\",\"presentationIntent\":\"Preserve the declared target/view fields.\",\"claims\":[],\"limitations\":[\"Component mapping fixture; no native source qualification or visual judgment.\"],\"targets\":[{\"targetId\":\"component-target-2\",\"directionId\":\"user\",\"kind\":\"packaging\",\"requiredViews\":[\"front\",\"three_quarter\",\"bottle_box\",\"detail\"],\"imageId\":\"component-image-2\",\"sha256\":\"04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d\",\"mediaType\":\"image/png\",\"byteLength\":1477,\"width\":24,\"height\":24,\"plan\":{\"componentOnly\":true}}]}],\"sourceImages\":[],\"referenceQualifications\":[],\"refinementHandoffs\":[]}"
+              }
+            },
+            "taskContainer": {
+              "identity": "prelayout-readlane-clear:scope:1",
+              "originalText": "{\"id\":\"prelayout-readlane-clear:scope:1\",\"brief\":\"{\\\"fields\\\":{\\\"attachment\\\":null,\\\"audience\\\":\\\"工程操作员\\\",\\\"background\\\":\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\",\\\"brand\\\":\\\"TABLELAB\\\",\\\"budget\\\":\\\"\\\",\\\"changeNote\\\":\\\"\\\",\\\"constraints\\\":[\\\"工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK\\\",\\\"工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE\\\",\\\"工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK\\\",\\\"SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.\\\",\\\"Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.\\\",\\\"Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.\\\",\\\"三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。\\\"],\\\"deliverables\\\":[\\\"概念蓝瓶正面与立体形态、瓶盒组合、字体与图形关键细节。\\\"],\\\"deliverableType\\\":\\\"\\\",\\\"objectives\\\":[],\\\"openQuestions\\\":[],\\\"proposalType\\\":\\\"packaging\\\",\\\"provenance\\\":{\\\"audience\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"background\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"brand\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"budget\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"constraints\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"deliverables\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"deliverableType\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"objectives\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"openQuestions\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"references\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"researchQuestions\\\":{\\\"origin\\\":\\\"edited\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]},\\\"timeline\\\":{\\\"origin\\\":\\\"missing\\\",\\\"reason\\\":\\\"not_stated\\\",\\\"spans\\\":[]}},\\\"references\\\":[],\\\"researchQuestions\\\":[\\\"合成蓝色产品与任务指定视觉机制能否逐项对应？\\\"],\\\"timeline\\\":\\\"\\\",\\\"visualRequirements\\\":[{\\\"kind\\\":\\\"packaging\\\",\\\"views\\\":[\\\"front\\\",\\\"three_quarter\\\",\\\"bottle_box\\\",\\\"detail\\\"]}]},\\\"format\\\":\\\"proposal-workbench-brief-v1\\\",\\\"metadata\\\":{\\\"client\\\":\\\"合成工程操作员\\\",\\\"researchOwner\\\":\\\"工程研究\\\",\\\"strategyOwner\\\":\\\"工程策略\\\",\\\"summary\\\":\\\"虚构工程品牌 TABLELAB 的合成蓝色产品。当前任务明确要求 TABLE NIGHT 桌面、座位、蓝色瓶形与三种可见关系。所有文案都是任务提供的创作表达，不推断消费者偏好。\\\\n核对指定文字、可见机制、载体和原协议接线；不评定真实美术质量。\\\",\\\"type\\\":\\\"packaging\\\"},\\\"savedAt\\\":\\\"\\\"}\",\"createdBy\":\"component-human\"}",
+              "sha256": "0d486e33e39b0c7874ff5feedb6df44a01c52387d2aaf7b0f91ce06e70737c29",
+              "bytes": 3274
+            },
+            "baseImages": [
+              {
+                "imageId": "component-image-0",
+                "directionId": "steady",
+                "targetId": "component-target-0",
+                "kind": "packaging",
+                "requiredViews": [
+                  "front",
+                  "three_quarter",
+                  "bottle_box",
+                  "detail"
+                ],
+                "visualArtifactId": "component-only-B",
+                "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "originalLocator": "component-only:no-native-original",
+                "sha256": "11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a",
+                "bytes": 1463,
+                "mediaType": "image/png",
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-1",
+                "directionId": "product",
+                "targetId": "component-target-1",
+                "kind": "packaging",
+                "requiredViews": [
+                  "front",
+                  "three_quarter",
+                  "bottle_box",
+                  "detail"
+                ],
+                "visualArtifactId": "component-only-B",
+                "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "originalLocator": "component-only:no-native-original",
+                "sha256": "a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d",
+                "bytes": 1483,
+                "mediaType": "image/png",
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-2",
+                "directionId": "user",
+                "targetId": "component-target-2",
+                "kind": "packaging",
+                "requiredViews": [
+                  "front",
+                  "three_quarter",
+                  "bottle_box",
+                  "detail"
+                ],
+                "visualArtifactId": "component-only-B",
+                "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447",
+                "originalLocator": "component-only:no-native-original",
+                "sha256": "04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d",
+                "bytes": 1477,
+                "mediaType": "image/png",
+                "width": 24,
+                "height": 24
+              }
+            ],
+            "images": [
+              {
+                "imageId": "component-image-0",
+                "sha256": "11395d289a456cb0d97119bc35ad4b5603b78bc95723f736bb2d3caa8bef5f5a",
+                "mediaType": "image/png",
+                "byteLength": 1463,
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-1",
+                "sha256": "a92b218590aa0082e6309e285c561f8886ca87c66058e13391fec99e14da2b9d",
+                "mediaType": "image/png",
+                "byteLength": 1483,
+                "width": 24,
+                "height": 24
+              },
+              {
+                "imageId": "component-image-2",
+                "sha256": "04bcf3b2dc1ea7a010c2a974a6216a69e322a6494bad85848f75cd061635031d",
+                "mediaType": "image/png",
+                "byteLength": 1477,
+                "width": 24,
+                "height": 24
+              }
+            ],
+            "knownLimitations": [
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/0",
+                "quote": "工程任务原文 steady：SHARE THE TABLE / SET A PLACE TO TALK",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/1",
+                "quote": "工程任务原文 product：OPEN A MOMENT / A BLUE BOTTLE FRAMES THE TABLE",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/2",
+                "quote": "工程任务原文 user：MAKE ROOM / PULL UP A CHAIR AND TALK",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/3",
+                "quote": "SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/4",
+                "quote": "Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/5",
+                "quote": "Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "brief",
+                "pointer": "/fields/constraints/6",
+                "quote": "三方向原文必须逐字保留；不得宣称功效、销量、消费者偏好或真实材质。",
+                "sourceSha256": "93a285666af8f0d1fd73db0db1c8184bf279cb50c8e35df0c406f9bee9504008"
+              },
+              {
+                "stage": "research",
+                "pointer": "/summary",
+                "quote": "Synthetic package is blue.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/sections/0/body",
+                "quote": "Synthetic package is blue.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/text",
+                "quote": "Synthetic package is blue.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/kind",
+                "quote": "fact",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/limitations/0",
+                "quote": "Supplied excerpt only.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/claims/0/verification",
+                "quote": "pending",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "research",
+                "pointer": "/evidenceClassifications/0/reason",
+                "quote": "Bounded example.",
+                "sourceSha256": "d60f234b3320b5f05c63cae4e31e959e7854824c896ad1b9491afe6ae85b580b"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/researchConclusions/0/text",
+                "quote": "按任务原文探索创作表达，保留研究未决限制。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/researchConclusions/0/kind",
+                "quote": "inference",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/intersection/text",
+                "quote": "按任务原文探索创作表达，保留研究未决限制。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/intersection/kind",
+                "quote": "inference",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/focus/text",
+                "quote": "按任务原文探索创作表达，保留研究未决限制。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/strategy/focus/kind",
+                "quote": "inference",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/limitations/0",
+                "quote": "Synthetic test only.",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/limitations/1",
+                "quote": "Synthetic reader; no real consumers.",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "strategy",
+                "pointer": "/limitations/2",
+                "quote": "不得从颜色推断偏好。",
+                "sourceSha256": "a5595de2ab447fd6cf1892a5a5fa5b5a41b0fca86e6adeb2356f5600b71ad1c8"
+              },
+              {
+                "stage": "copy",
+                "pointer": "/gaps/0",
+                "quote": "SYNTHETIC engineering originals and predetermined protocol fixture responses only; no real model, consumer study, aesthetic calibration, customer adoption or human approval.",
+                "sourceSha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+              },
+              {
+                "stage": "copy",
+                "pointer": "/gaps/1",
+                "quote": "Fictional brand and copy are engineering task instructions, not researched market facts or claims of effectiveness.",
+                "sourceSha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+              },
+              {
+                "stage": "copy",
+                "pointer": "/gaps/2",
+                "quote": "Concept packaging and poster only; dimensions, manufacturing, material, printing, legal compliance and commercial deployment remain unverified.",
+                "sourceSha256": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf"
+              },
+              {
+                "stage": "visual",
+                "pointer": "/directions/0/limitations/0",
+                "quote": "Component mapping fixture; no native source qualification or visual judgment.",
+                "sourceSha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+              },
+              {
+                "stage": "visual",
+                "pointer": "/directions/1/limitations/0",
+                "quote": "Component mapping fixture; no native source qualification or visual judgment.",
+                "sourceSha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+              },
+              {
+                "stage": "visual",
+                "pointer": "/directions/2/limitations/0",
+                "quote": "Component mapping fixture; no native source qualification or visual judgment.",
+                "sourceSha256": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+              }
+            ],
+            "carriedLimitationsHash": "74f7584c02363c15d604df036586111d589ff1c374575545d00e500f2d7be6cd",
+            "imageEnvelope": {
+              "operation": "proposal-prelayout-v1",
+              "limits": {
+                "maxImages": 32,
+                "maxBytes": 33554432,
+                "maxPixels": 80000000
+              }
+            }
+          },
+          "nativeRequest": {
+            "projectId": "prelayout-readlane-clear",
+            "expectedRevision": 0,
+            "taskCardId": "prelayout-readlane-clear:scope:1",
+            "policyVersion": 1,
+            "copyArtifactId": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+            "copyContentHash": "fce968ff0273ce36b261e617dba7c7975aa02d69f8dd2b863bbf4710e9077eaf",
+            "sourceHash": "493e8c2807b06067c26f7df97578a8e20b76d7763b77d3106cb0b4d15432a730",
+            "visualArtifactId": "component-only-B",
+            "visualContentHash": "4a9ec95767fd50426edacf294909061ae5ce871cb1de0127ae96dc79e226d447"
+          }
+        },
+        "attemptId": "transport-fixture-attempt",
+        "prelayoutReport": {
+          "id": "prelayout-report-005e98e16ae896e2a29ae753d989645c9068472c2874393655be8aaa7c92fe4c",
+          "payloadRef": "transport-fixture-only/director-report.json",
+          "contentHash": "d0c55200dbda21589ce0cf777e43cb90a49b4ed915b3eb2a0c3636790ceaac92",
+          "sourceTupleHash": "28b5683fd7b6b6317747ac51b563bb229a0bf1edccb615d19fd24dfd48ee16f7",
+          "baseInputSha256": "28adaa8428bfbd3c610b11f9490e2379d468607eed00b01de2704eba0bf054b6",
+          "status": "clear",
+          "diagnostic": null
+        }
+      }
+    ],
+    "stages": [
+      {
+        "stage": "research",
+        "correctionAvailability": {
+          "available": false,
+          "reason": "FEEDBACK_REQUIRED"
+        },
+        "activeArtifactId": "5b039f42-0130-4508-8d71-e09df6456758",
+        "latestJobId": null,
+        "status": "awaiting_release",
+        "blockedReasons": [
+          "RESEARCH_R7_READER_REQUIRED"
+        ]
+      },
+      {
+        "stage": "strategy",
+        "correctionAvailability": {
+          "available": false,
+          "reason": "FEEDBACK_REQUIRED"
+        },
+        "activeArtifactId": "5c4a6337-ddb1-4377-a968-8fcd6d8b1eaf",
+        "latestJobId": null,
+        "status": "awaiting_release",
+        "blockedReasons": [
+          "DEPENDENCY_BLOCKED"
+        ]
+      },
+      {
+        "stage": "copy",
+        "correctionAvailability": {
+          "available": false,
+          "reason": "FEEDBACK_REQUIRED"
+        },
+        "activeArtifactId": "e95c08b6-cae9-4a4d-8e64-2f095cff33dd",
+        "latestJobId": null,
+        "status": "awaiting_release",
+        "blockedReasons": [
+          "COPY_MESSAGE_INCOMPLETE"
+        ]
+      },
+      {
+        "stage": "references",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "sketch",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "visual",
+        "correctionAvailability": null,
+        "activeArtifactId": "component-only-B",
+        "latestJobId": null,
+        "status": "stale",
+        "blockedReasons": [
+          "STALE_ARTIFACT"
+        ]
+      },
+      {
+        "stage": "content_review",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "layout",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      },
+      {
+        "stage": "final_review",
+        "correctionAvailability": null,
+        "activeArtifactId": null,
+        "latestJobId": null,
+        "status": "blocked",
+        "blockedReasons": [
+          "SEVEN_STAGE_ROUTE_REQUIRED"
+        ]
+      }
+    ],
+    "complete": false
+  }
+}

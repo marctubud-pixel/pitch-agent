@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-11-12T14:36:17.980Z",
+  "kind": "engineering_reference_checkpoint_completed",
+  "revision": 1238,
+  "projectId": "project-396409f2c32aed97a0257cba3bd9164aabbcbb933f76e837d175e2dedfdc531c",
+  "dossierId": "reference-002111cf96e3ae47e6b1b55d549155a8-0",
+  "envelopeHash": "002111cf96e3ae47e6b1b55d549155a8b5f3b623105966e7d04c9ab76749f872",
+  "reports": 129,
+  "jobs": 129,
+  "succeededAttempts": 129,
+  "queued": 0,
+  "unknown": 0,
+  "pendingAdvances": 0,
+  "unrecordedAdvances": 0,
+  "referenceStatus": "diagnostic",
+  "referenceStateKeys": [
+    "dossierId",
+    "status",
+    "discovery",
+    "selection",
+    "selectionHash",
+    "coverage",
+    "reason",
+    "humanChoice",
+    "historyCoverage"
+  ],
+  "qualityApproval": false,
+  "humanApproval": false,
+  "clientApproval": false,
+  "syntheticOnly": true,
+  "adoptedReferences": false,
+  "sketchStarted": false,
+  "runtime": "unit4-r2 PID34161 base437+unit3-A2 cached modules; root code not automatically upgraded",
+  "originalResponse": ".scratch/seven-stage-static-goal-20261111/design/current-app-packaging-visual-continuation/unit4-r2/evidence/run-1794479978860-0ba50e4f-37e1-4cae-8401-786ea12b0657/api-unit4-step-74a4dd69-07f6-4a12-9fba-552b8fdf4114-response.bin",
+  "archivedResponse": ".scratch/seven-stage-static-goal-20261111/design/current-app-packaging-visual-continuation/unit4-r2/root-receipts/complete-129-1238-response.bin",
+  "responseSha256": "c502a9ffcd783c65df2d2b64cb00f1c916740a39ba5491c288339b2c37027aa4",
+  "nativeSnapshotSha256": "ca49fdde79b49976842742d5bf2d2f77e82e20e841111dd345d1b474b79b7aab",
+  "originalReceipt": {
+    "commandId": "unit4-step-74a4dd69-07f6-4a12-9fba-552b8fdf4114",
+    "replayed": false,
+    "phase": "references",
+    "targetId": "reference-002111cf96e3ae47e6b1b55d549155a8-0",
+    "jobIds": [
+      "reference-002111cf96e3ae47e6b1b55d549155a8-0:overview:director"
+    ],
+    "progress": []
+  }
+}

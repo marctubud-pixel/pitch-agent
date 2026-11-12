@@ -1,0 +1,36 @@
+(node:36335) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ component only: full source strings and all image attachments retained; no snapshot/self-report hash in stable tuple (50.770833ms)
+✔ known pending/inference/declared limits travel verbatim and cannot be removed or reopened as the same pending issue (28.044791ms)
+✔ new fact contradiction must bind real source pointer/quote and remain returned; unknown never becomes clear (28.98225ms)
+✔ original text, task, method, exact target set and finite image/pixel bounds are checked (18.501958ms)
+✔ new finite label requires the complete fixed-purpose request; wrong purpose/label/missing attachment rejects (24.069458ms)
+✔ a legacy execute callback cannot acquire the new label vision capacity (30.002917ms)
+✔ complete input and image wire capacity rejects too-small provider before any claim or dispatch (50.680125ms)
+(node:36336) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ component only native command CAS, original body replay and one attempt; no content_review or active layout is created (75.756042ms)
+✔ only exact claiming owner may persist locator or uncertainty; changing now with same actor IDs cannot borrow claim (35.782125ms)
+✔ source change prevents a queued original claim and caller flags cannot grant bypass (23.818459ms)
+✔ generic layout and final_review jobs still cannot use the ordinary locator entry (16.537042ms)
+(node:36337) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual FD program constructor remains read-only/off and refuses false pin, copied store facade, callbacks and DTO flags (19.385417ms)
+✔ a path-only ordinary native store cannot acquire report qualification (3.466625ms)
+(node:36338) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ component ordinary transport: all five actual PNG attachments and raw JSON whitespace survive; reopen invokes no model (2025.518666ms)
+ℹ {"scope":"partial original IO only; no native five-source qualification","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/prelayout-http-component-kjoUHc","requests":1,"images":5}
+✔ actual transport refuses new-label other purpose, wrong label, absent attachment and false dimensions before sending (22.987167ms)
+✔ FD-bound component recovery: native positive or explicit unsupported platform; stale=false (3226.9735ms)
+ℹ {"scope":"synthetic metadata + actual ordinary original IO only, native five-source still refused","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/prelayout-http-component-ZT5JHt","reportOriginalHash":"9f9daec34add38f3107aa8b2271bd207a4671f892584dc0e4bd81377c41c0a2e","actualModelCalls":1}
+✔ FD-bound component recovery: native positive or explicit unsupported platform; stale=true (3106.915ms)
+ℹ {"scope":"synthetic metadata + actual ordinary original IO only, native five-source still refused","root":"/private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/prelayout-http-component-78W4XF","reportOriginalHash":"bbca489d0f9a0a56d0b50ccd3be5901b414ea734805e55f2465cffa37ad84b79","actualModelCalls":1}
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8990.764541

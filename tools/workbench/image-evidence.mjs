@@ -146,7 +146,7 @@ export function imageManifest(images, envelope) {
   let maxImages = IMAGE_LIMITS.count;
   let remainingBytes;
   if (envelope !== undefined) {
-    if (!envelope || typeof envelope !== 'object' || Array.isArray(envelope) || Object.keys(envelope).some(key => !['operation', 'limits'].includes(key)) || !['sketch-review-v2', 'final-visual-v1', 'complete-content-v1'].includes(envelope.operation) || !envelope.limits || typeof envelope.limits !== 'object' || Array.isArray(envelope.limits) || !['maxImages', 'maxBytes', 'maxPixels'].every(key => Number.isSafeInteger(envelope.limits[key]) && envelope.limits[key] > 0)) throw new Error('Invalid review image envelope');
+    if (!envelope || typeof envelope !== 'object' || Array.isArray(envelope) || Object.keys(envelope).some(key => !['operation', 'limits'].includes(key)) || !['sketch-review-v2', 'final-visual-v1', 'complete-content-v1', 'proposal-prelayout-v1'].includes(envelope.operation) || !envelope.limits || typeof envelope.limits !== 'object' || Array.isArray(envelope.limits) || !['maxImages', 'maxBytes', 'maxPixels'].every(key => Number.isSafeInteger(envelope.limits[key]) && envelope.limits[key] > 0)) throw new Error('Invalid review image envelope');
     maxImages = envelope.limits.maxImages;
     remainingBytes = envelope.limits.maxBytes;
   }

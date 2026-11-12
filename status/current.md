@@ -1,3 +1,19 @@
+# 排版前检查与通用映射根采用 · 2026-11-12
+
+`codex/prelayout-deck-20261112`基于PR #14合并79089b92，按原SHA采用native21源及App r2九源，旧文件另存。根类型/16mjs语法通过，新增native17、mapper13及受影响前端44通过；规范准备1.17.0/62项。测试已便携移植并登记平台边界，完整check已退出0（834前端通过/1既有skip、526 native通过/0skip、构建通过），合流窄审无新增可证P1/P2；PR #15准确head CI尚待。见[核验](../docs/development/proposal-prelayout-verification-20261112.md)。
+
+同一新包装案初始129全部真实保存，head1238、129成功job/attempt、0queued/unknown/pending；状态仍diagnostic/UNCALIBRATED_REFERENCE_PANEL，未采用推荐、未开始草图。原unit4 PID34161/CLOSE自然exit0，完整原HTTP/原件保留本地。旧76572保持原运行身份。接续需在新root重新绑定控制器源码及真实原件资格，不复用旧pins/token。
+
+controller r2分派P2、prelayout App r2排队版本P2及SameDeck r3入口快照P2均已独立关闭，结论仅各自工程组件范围。A历史只读与B完整只读桥另包，真正9图/v2总54、B、五源排版前报告、通用同版PPT及终审/包装和KV两整链继续。当前正式layout/delivery未因组件通过填入；无真实研究/美术/人类或客户批准。以下为原时点。
+
+# PR #14已合并；继续同案视觉原队列 · 2026-11-12
+
+[PR #14](https://github.com/marctubud-pixel/pitch-agent/pull/14)准确head4f5e4260的specifications/application两项CI及全部实际步骤success，合并main为79089b92。本地从该main建立`codex/prelayout-deck-20261112`；此刻apps/tools字节与已审head相同。1.16.0的存储、同快照草图只读桥及在途GET合并已纳管，旧案/原件/回执保持，整链未签完成。
+
+同一个包装工程案沿原unit4执行，当前完整85/129参考记录、head906，下一批4个原score节点已派发；实际最新值以本地目标目录原回执为准，未采用推荐或启动草图。34161继续旧base437＋unit3-A2缓存，未重启/升级，旧244启动守卫不能在新root绕过。76572的原运行身份同样保留。
+
+排版前比稿native21源已独立64项通过，只读App9源正在独立复核；完整B生产job冷读仍待另包。SameDeck封存r2已关闭原四项P2，但独立又证明freeze在首await后才捕获入参，可被同步替换成另一套合法文件，候选未采用，需新版本修。后续真实9图/v2共54（含2owner）、B、同版Deck及终审/包装与KV两整链继续，工程原件不签真实研究、审美、人类或客户批准。
+
 # 视觉存储与只读桥根采用 · 2026-11-12
 
 `codex/visual-storage-sketch-20261112`在main437ab4fa上已采用视觉本地存储、同快照草图只读桥与客户端在途读取合并。规范准备1.16.0；根第二轮完整输出已到构建结束，前端813通过/1既有skip、native九组496通过/0skip，规范、仓库、类型、依赖和构建通过。终端单独exit字段未取回，不补造；准确head远程CI及PR #14尚待。真实UI同212前后及603只读页已复验，细节见[本轮核验](../docs/development/visual-storage-sketch-verification-20261112.md)。14固定方法文件字节不变，旧源码另存，未动旧DB/业务。

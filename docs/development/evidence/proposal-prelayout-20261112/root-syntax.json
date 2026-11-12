@@ -1,0 +1,82 @@
+[
+  {
+    "path": "apps/workbench-preview/src/proposal/generic-deck/mapper.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "apps/workbench-preview/src/proposal/generic-deck/semantic.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/current-copy-source-original-receiver.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/generic-deck-b-original-receiver.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/generic-deck-input-mapper.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/generic-deck-native-admission.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/generic-deck-source-identity.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/image-evidence.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/model-http-authority.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/ordinary-model-project.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/ordinary-model.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/project.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/proposal-prelayout-contract.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/proposal-prelayout-domain.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "tools/workbench/proposal-prelayout-native.mjs",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "path": "apps/workbench-preview/src/services/http/prelayout-template.generated.mjs",
+    "exitCode": 0,
+    "error": null
+  }
+]

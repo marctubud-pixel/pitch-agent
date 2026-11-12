@@ -1,0 +1,210 @@
+{
+  "recordedAt": "2026-11-12T14:56:41.597212+00:00",
+  "scope": "Selected source/UI/test metadata only; main database/full HTTP bodies/original IO remain local. Byte adoption does not sign full B/five-source/native/PPT/human qualification.",
+  "files": [
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/ROOT-ADOPTION.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/root-adoption.json",
+      "sourceSha256": "7ac3c9ba8ec7ca7072c36e1194a6d25ff11d13d9e2e0813d0c6de51a516196bd",
+      "sha256": "7ac3c9ba8ec7ca7072c36e1194a6d25ff11d13d9e2e0813d0c6de51a516196bd",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/TEST-PORT.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/test-port.json",
+      "sourceSha256": "85e9162b22ea1c9182d43e66fdb752d922f72dcf7a35afb84a0964994a0a05da",
+      "sha256": "85e9162b22ea1c9182d43e66fdb752d922f72dcf7a35afb84a0964994a0a05da",
+      "transform": "none; root-owned metadata count corrected after frozen 93-file review; original pre-correction TEST-PORT retained locally"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/root-typecheck.log",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/root-typecheck.txt",
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transform": "strip trailing line spaces/tabs and final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/root-syntax.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/root-syntax.json",
+      "sourceSha256": "880abb8997dff0f394b3b30639aeb2dda501d5cd483abbeea94e9c144693a1db",
+      "sha256": "880abb8997dff0f394b3b30639aeb2dda501d5cd483abbeea94e9c144693a1db",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/root-prelayout-native.log",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/root-native17.txt",
+      "sourceSha256": "34c438084a196dba0950d2382f8169a7ee4378fc88c22c5399c13d81c0213a78",
+      "sha256": "34c438084a196dba0950d2382f8169a7ee4378fc88c22c5399c13d81c0213a78",
+      "transform": "strip trailing line spaces/tabs and final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/root-mapper-tests.log",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/root-mapper13.txt",
+      "sourceSha256": "f3b4342296c893485470b42e6e066b3cf468d1c7dbcf306b6f4eac2c54fb7d0f",
+      "sha256": "f3b4342296c893485470b42e6e066b3cf468d1c7dbcf306b6f4eac2c54fb7d0f",
+      "transform": "strip trailing line spaces/tabs and final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/root-frontend-affected.log",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/root-frontend44.txt",
+      "sourceSha256": "97df40b295b1352a6cc484ed2d763c76b4fd854d870fa79ff19d9007e598f203",
+      "sha256": "e34ac3605c022b5b5dc1d769787117287b9e2c811b412e9496f136df1a625dbe",
+      "transform": "strip trailing line spaces/tabs and final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native-independent/REPORT.md",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/native-independent.md",
+      "sourceSha256": "32db6a1559719d39530d402fd54584b32a32048c395628744d4450a5a2ee7be2",
+      "sha256": "32db6a1559719d39530d402fd54584b32a32048c395628744d4450a5a2ee7be2",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-independent/REPORT.md",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/app-original-p2.md",
+      "sourceSha256": "376b741b3777fb4b4f8dbf57399c6b99750b2be79529cc029e38e67888edb30c",
+      "sha256": "376b741b3777fb4b4f8dbf57399c6b99750b2be79529cc029e38e67888edb30c",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2-independent/REPORT.md",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/app-r2-independent.md",
+      "sourceSha256": "3604101b28e34b4574ac274d3deec1d1341d3dc9fade74df44dcce752f6f46ac",
+      "sha256": "3604101b28e34b4574ac274d3deec1d1341d3dc9fade74df44dcce752f6f46ac",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/generic-deck-native-input-mapper-r2-independent/REPORT.md",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/mapper-r2-independent.md",
+      "sourceSha256": "e03b35a58788d138b28fd5bbe30bc6fc1e2abed89f89796561f2fbecd1ae2009",
+      "sha256": "e03b35a58788d138b28fd5bbe30bc6fc1e2abed89f89796561f2fbecd1ae2009",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/UI-REVIEW.md",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/UI-REVIEW.md",
+      "sourceSha256": "46b21f638eba5c092904919da5998a8449a18b8a23b1861a8041127d7a18a174",
+      "sha256": "46b21f638eba5c092904919da5998a8449a18b8a23b1861a8041127d7a18a174",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/current-app-packaging-visual-continuation/unit4-r2/root-receipts/complete-129-1238.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/reference129-checkpoint.json",
+      "sourceSha256": "31f90462fbe23c1c15142e52643d2cc98e6ba9d615ffefc2274f51fea15e6e5c",
+      "sha256": "31f90462fbe23c1c15142e52643d2cc98e6ba9d615ffefc2274f51fea15e6e5c",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-APP-FINAL.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/pr14-app-final.json",
+      "sourceSha256": "b02dc1c4e3a15249ca6ef82ef181c9649e2caa2e61183067fcfc7e1c110ae22b",
+      "sha256": "b02dc1c4e3a15249ca6ef82ef181c9649e2caa2e61183067fcfc7e1c110ae22b",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-SPEC-FINAL.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/pr14-spec-final.json",
+      "sourceSha256": "bb4251d8a37c1a6f7761b7b2a7e32f2fb8a574dd75ef137c04dfb4f2c18876a6",
+      "sha256": "bb4251d8a37c1a6f7761b7b2a7e32f2fb8a574dd75ef137c04dfb4f2c18876a6",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-MERGE.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/pr14-merge.json",
+      "sourceSha256": "bfe1a9328b17dca9e00dc64f3866fc4689fc1f44a06e7e25620b5436604f67e1",
+      "sha256": "bfe1a9328b17dca9e00dc64f3866fc4689fc1f44a06e7e25620b5436604f67e1",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-FINAL-RECEIPT.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/pr14-source-identity.json",
+      "sourceSha256": "55dab4c50c5c452c6f42a8ac50a4631c12a22d711a6353013a300289fed0a064",
+      "sha256": "55dab4c50c5c452c6f42a8ac50a4631c12a22d711a6353013a300289fed0a064",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/before-cold.png",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/before-cold.png",
+      "sourceSha256": "4e0c12207147b2086fb38a02b3e06eeed31a458dde976936cf9f0302de4d580c",
+      "sha256": "4e0c12207147b2086fb38a02b3e06eeed31a458dde976936cf9f0302de4d580c",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/after-unknown.png",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/after-unknown.png",
+      "sourceSha256": "6dfef058f8126dbb4795ea8ee5b488327c33213c9e5684aa1d3ac4e4a2f5fd60",
+      "sha256": "6dfef058f8126dbb4795ea8ee5b488327c33213c9e5684aa1d3ac4e4a2f5fd60",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/after-clear-report.png",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/after-clear-report.png",
+      "sourceSha256": "7bd064ccd2f714de720312437b1c7eb58752c25247e340b5d9fac9db5238b36c",
+      "sha256": "7bd064ccd2f714de720312437b1c7eb58752c25247e340b5d9fac9db5238b36c",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/after-stale-report.png",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/after-stale-report.png",
+      "sourceSha256": "cc8162a75ffccfa515a065ee18470da02c623291d63ed6e1cc340dc33728136d",
+      "sha256": "cc8162a75ffccfa515a065ee18470da02c623291d63ed6e1cc340dc33728136d",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/after-invalid-report.png",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/after-invalid-report.png",
+      "sourceSha256": "998ab2c54fb4572653bc56f82f116168f7d35172b6930ba6743647a585d2ee58",
+      "sha256": "998ab2c54fb4572653bc56f82f116168f7d35172b6930ba6743647a585d2ee58",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/after-boundary-1180-panel.png",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/after-boundary-1180-panel.png",
+      "sourceSha256": "1e94dec5245957c71f7e9c23aebcb0a551e13c519cde99c3595efd2b7ae81b3a",
+      "sha256": "1e94dec5245957c71f7e9c23aebcb0a551e13c519cde99c3595efd2b7ae81b3a",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/after-boundary-1180-viewport.png",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/after-boundary-1180-viewport.png",
+      "sourceSha256": "0309d797a67c8ce37c86e538ea69e76ffbdf01c42d8c6ca12ef934d295be73d8",
+      "sha256": "0309d797a67c8ce37c86e538ea69e76ffbdf01c42d8c6ca12ef934d295be73d8",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/boundary-proof.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/boundary-proof.json",
+      "sourceSha256": "c63b7b7e2605316f85d8c433ca1a450ab8f70934014611ae3f76bcda2fc12279",
+      "sha256": "c63b7b7e2605316f85d8c433ca1a450ab8f70934014611ae3f76bcda2fc12279",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane/ui-evidence/contrast.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/ui-evidence/contrast.json",
+      "sourceSha256": "ddd95ff1be3cb4c36578ef0edfa4133db80b7793f6f0758364e1e50c231c0bda",
+      "sha256": "ddd95ff1be3cb4c36578ef0edfa4133db80b7793f6f0758364e1e50c231c0bda",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/root-full-check.log",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/root-full-check.txt",
+      "sourceSha256": "e22be9cc18370864f2ce5dea28193e38307e263b78d5f4d0437349a525b0cbed",
+      "sha256": "984e11a3797a9b212d6217ffba027da858212bc9a4eb2ed10fc9300a4519290f",
+      "transform": "strip trailing line spaces/tabs and final empty LF lines; local original retained"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/independent-final/REPORT.md",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/integration-independent.md",
+      "sourceSha256": "84f21165f8ce5627456c54bf80114f78952ff7277e1f7f514f49644ad5523cf8",
+      "sha256": "84f21165f8ce5627456c54bf80114f78952ff7277e1f7f514f49644ad5523cf8",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/prelayout-root-integration-r1/independent-final/ASSERTION-PROOF.json",
+      "target": "docs/development/evidence/proposal-prelayout-20261112/assertion-proof.json",
+      "sourceSha256": "08f17d0c20aaa921c56f6bae76fd7611651f5ca07217318be31c5b4d6f63693e",
+      "sha256": "08f17d0c20aaa921c56f6bae76fd7611651f5ca07217318be31c5b4d6f63693e",
+      "transform": "none"
+    }
+  ],
+  "postReviewDelta": "Documentation only: four→five restored assertions, full-check outcome and frozen integration report. Implementation/test bytes unchanged."
+}

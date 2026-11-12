@@ -1,0 +1,7 @@
+{
+  "scope": "Native DTO shape from original domain reducers, purpose-limited synthetic metadata fixture only. No actual B producer jobs, model, DB, IO qualification or customer approval. Adding any unsupported B producer job must still reject canonical App read; complete B cold GET remains unverified.",
+  "sourceBasis": "proposal-prelayout-native/tests/fixture.mjs",
+  "physicalQualification": false,
+  "externalModels": 0,
+  "databaseOpened": false
+}

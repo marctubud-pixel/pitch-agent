@@ -1,0 +1,37 @@
+{
+  "head": "4f5e4260af4a4e7e101e0b59de9f7b57ef93817c",
+  "merge": "79089b9282dfa12ab40cd12401b7f3c718d61e7e",
+  "nativePass": 496,
+  "frontendPass": 813,
+  "existingFrontendSkip": 1,
+  "files": [
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-CREATED.json",
+      "sha256": "f7dae46fd850c668cbd4bad2500e4b89c5f165331f92869fd824eebd99886bf5"
+    },
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-APP-FINAL.json",
+      "sha256": "b02dc1c4e3a15249ca6ef82ef181c9649e2caa2e61183067fcfc7e1c110ae22b"
+    },
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-SPEC-FINAL.json",
+      "sha256": "bb4251d8a37c1a6f7761b7b2a7e32f2fb8a574dd75ef137c04dfb4f2c18876a6"
+    },
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-CHECKS-FINAL.json",
+      "sha256": "596543d4b25d5b0f28eadd1d30f50bec072edd1e375455e126f9c883a8a47084"
+    },
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-READY.json",
+      "sha256": "0edfce1a818a50fa980ffdc5c49f1e4c7586d89796d4e6ec019e1223b1131346"
+    },
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-MERGE.json",
+      "sha256": "bfe1a9328b17dca9e00dc64f3866fc4689fc1f44a06e7e25620b5436604f67e1"
+    },
+    {
+      "path": ".scratch/seven-stage-static-goal-20261111/VISUAL-STORAGE-SKETCH-PR14-APP-FINAL.log",
+      "sha256": "aad0a6b237a667a37d13150f64a9485be7866830a47473ea4517daf0bdde5f65"
+    }
+  ]
+}

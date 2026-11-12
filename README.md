@@ -50,3 +50,5 @@ npm run check
 已放行研究到[简洁三板块策略](docs/development/simple-strategy.md)、独立全文核验与原请求恢复已受限接线，实际页面、失败和范围见[策略核验](docs/development/simple-strategy-verification-20261112.md)。[文案接续](docs/development/simple-copy.md)现接实际双负责人、唯一三方向文案、全文核验和原17节点评审，见[文案核验](docs/development/simple-copy-verification-20261112.md)。视觉至PPT及包装/KV两整链继续分包推进，默认不执行模型。
 
 [视觉参考合同](docs/development/visual-workflow.md)接当前原图、初始129严格映射和后端草图路由。Brief可明确指定所需视图；COPY与视觉的原结果重放不再重复推进。完整App草图/v2、成稿、通用Deck和两类整链仍按真实原件继续，参考数量或合成测试不签业务通过。
+
+[排版前比稿检查与通用映射](docs/development/proposal-prelayout.md)已接专用原生协议与流程页只读记录，默认不执行；[实际核验](docs/development/proposal-prelayout-verification-20261112.md)继续区分组件、原件和完整B至PPT链。

@@ -1,3 +1,4 @@
+import {prelayoutReadScope} from './prelayoutReadback';
 import {registeredOriginals} from './intakeProjection';
 import {sameBrandResources} from '../../domain/brandResources';
 import type {Proposal, ProposalService, ProposalSummary, StageId, StageState, CheckpointStage} from '../../domain/proposal';
@@ -44,7 +45,7 @@ function proposal(p: Snapshot): Proposal {
   const visualUnsettled=p.jobs.some(j=>['reference','sketch_owner','sketch_plan','image_candidate','sketch_review_v2','sketch_refinement_handoff'].includes(String(j.purpose))&&j.status==='awaiting_reconciliation');
   const stage = (id: StageId): StageState => ({status: id === 'brief' ? brief.confirmedBy ? 'done' : 'in_progress' : id === 'research' ? researchStatus : id==='visual'&&visualStarted?visualUnsettled?'needs_revision':'in_progress':id==='themes'&&copyStarted?copyStatus:id==='strategy'&&strategyJob ? strategyStatus:'not_started', summary: id === 'brief' ? brief.confirmedBy ? '当前简报已确认。' : '当前简报待确认。' : id === 'research' ? researchSummary : id==='visual'&&visualStarted?'参考、草图及独立评审分别记录，尚未完成视觉阶段。':id==='themes'?copyStarted?copySummary:'尚无当前文案原稿。':id==='strategy'?strategySummary:'本轮尚未接通此阶段。', updatedAt: id === 'brief' ? brief.updatedAt || null : id === 'research' && hasResearch ? project.updatedAt || null : null, lead: '', version: id === 'brief' ? brief.version : id === 'research' ? p.artifacts.filter(a => a.stage === 'research').length : 0});
   const gates: Record<string, CheckpointStage | undefined> = {strategy: 'strategy', copy: 'themes', visual: 'visual', final_review: 'delivery'};
-  return {id: p.id, workbenchId: p.id, name: p.name, client: project.client || '客户尚未填写', type: brief.proposalType,
+  return {prelayoutRecords:prelayoutReadScope(p).records,id: p.id, workbenchId: p.id, name: p.name, client: project.client || '客户尚未填写', type: brief.proposalType,
     ...(envelope.metadata.presentationLocalTime ? {presentationLocalTime: envelope.metadata.presentationLocalTime} : {}),
     summary: project.summary, cover: null, mode: p.policy.mode === 'auto' ? 'automatic' : 'assisted',
     checkpoints: p.policy.humanGates.flatMap(value => {const gate = gates[value]; return gate ? [gate] : [];}),

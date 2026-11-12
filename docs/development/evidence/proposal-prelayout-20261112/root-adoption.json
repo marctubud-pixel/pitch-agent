@@ -1,0 +1,223 @@
+{
+  "status": "adopted_exact_reviewed_sources_pending_root_checks",
+  "baseHead": "79089b9282dfa12ab40cd12401b7f3c718d61e7e",
+  "implementationFiles": 30,
+  "allBeforeBytesMatch": true,
+  "files": [
+    {
+      "path": "apps/workbench-preview/src/proposal/generic-deck/builder.ts",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "ed41e441e459286b62fe24382ff3c0832746e399452c2516070a2324b632386e",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/apps/workbench-preview/src/proposal/generic-deck/builder.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/proposal/generic-deck/input.ts",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "219bfd695ae54f0f61a10a2448f6f717cca545c48b642dfc442412d78075195f",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/apps/workbench-preview/src/proposal/generic-deck/input.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/proposal/generic-deck/mapper.d.mts",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "d4d3d4b166ba1834a0e43464b5e7572ba6cc353984ecf5b7c24f9de03e07b1a0",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/apps/workbench-preview/src/proposal/generic-deck/mapper.d.mts"
+    },
+    {
+      "path": "apps/workbench-preview/src/proposal/generic-deck/mapper.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "0f9da6fed218dd7cbe432733aa1b24731188d2ac71636161783981227e8253fb",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/apps/workbench-preview/src/proposal/generic-deck/mapper.mjs"
+    },
+    {
+      "path": "apps/workbench-preview/src/proposal/generic-deck/pagination.ts",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "f13d169328d887da98b3c4dfe690424b52b68a0137f6d293ad8014bd40ca0c7d",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/apps/workbench-preview/src/proposal/generic-deck/pagination.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/proposal/generic-deck/semantic.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "ca17828a57d50484d1bc4a9b7b80adcacd2ea7fd1521538cfb040400a1237666",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/apps/workbench-preview/src/proposal/generic-deck/semantic.mjs"
+    },
+    {
+      "path": "tools/workbench/current-copy-source-original-receiver.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "3063952a11fa5dbc98cf094829c338d45dc7ce6015dff20c4b96867feb8cad3b",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/current-copy-source-original-receiver.mjs"
+    },
+    {
+      "path": "tools/workbench/generic-deck-b-original-receiver.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "9833472eb16975ad80d2af7df93cca1c20b1f2412100d06816a929db7df6d14a",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/generic-deck-b-original-receiver.mjs"
+    },
+    {
+      "path": "tools/workbench/generic-deck-input-mapper.d.mts",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "d1aa1600e864cb0a12e8e3f70f344f87cda4c78829b2ad76f6465ac32a34b389",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/generic-deck-input-mapper.d.mts"
+    },
+    {
+      "path": "tools/workbench/generic-deck-input-mapper.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "17aca35a53f45e7cc1afade1c9d11536936b7d5e129cbbfc8a23bb6e3c5757e7",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/generic-deck-input-mapper.mjs"
+    },
+    {
+      "path": "tools/workbench/generic-deck-native-admission.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "e8d7fa353af3857adbad0a5918092cc654c8c351463b21aad622d4b37fac57dd",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/generic-deck-native-admission.mjs"
+    },
+    {
+      "path": "tools/workbench/generic-deck-source-identity.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "d14700b4bba2a53c5bccbc1d243f27bf83e7bd45f59c5890edd444920aa6aa16",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/generic-deck-source-identity.mjs"
+    },
+    {
+      "path": "tools/workbench/image-evidence.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": "0252a7e166a7f629d748f6518cbd03aec1e35f9c7e96a7e90d9e3350ad2ab914",
+      "sourceSha256": "36af29c3f9abe4050c423a9d310b129ed97f7918d0ccc1555900e83a99b2447b",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/image-evidence.mjs"
+    },
+    {
+      "path": "tools/workbench/model-http-authority.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": "73109caf2fffaaca5afaa94de947a2b90e7f7ec15c63943560f700e94f230924",
+      "sourceSha256": "8a6917c227fb52cae727e151229d767d909f9b166101419e4b64d52e9d94e118",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/model-http-authority.mjs"
+    },
+    {
+      "path": "tools/workbench/ordinary-model-project.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": "45470416970de50e5eff3f87e868fef404dfa6a577fcb72db0e2cffd56b240f7",
+      "sourceSha256": "4e8f9bc1cf88c76561d4977438c8482f045cb437a546671075340f8c52ca20aa",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/ordinary-model-project.mjs"
+    },
+    {
+      "path": "tools/workbench/ordinary-model.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": "1eca6368194a98f29296ee68680fe7d4607dfedc710c22b025cee0581fc05cd6",
+      "sourceSha256": "204e14404f71aeac67a6fe64e836cb3597c5dda861fd9b0ce04afec79c6ce27b",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/ordinary-model.mjs"
+    },
+    {
+      "path": "tools/workbench/project.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": "3bbfaf0d9d60519d6803db9aca9648bf2d9c70c8e822d47e8fa959acc221fd32",
+      "sourceSha256": "abcf2fcdfa4d4b88d9af969f39aa6209e6efedca7c9870d28a6aa780c363fea1",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/project.mjs"
+    },
+    {
+      "path": "tools/workbench/proposal-prelayout-contract.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "87379c5a9d8ee25cffe1b70b6cf783780f4febadff75a7bb13a2ec330d017ade",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/proposal-prelayout-contract.mjs"
+    },
+    {
+      "path": "tools/workbench/proposal-prelayout-domain.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "f970bd149225b3dc85e23a232102564c889d0dc52a71af1f31e53cc7b73b2ed3",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/proposal-prelayout-domain.mjs"
+    },
+    {
+      "path": "tools/workbench/proposal-prelayout-native.d.mts",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "e03e3b215149268a01ec21e58240077c019cb1d19f283a90ad49b5579dd1b3bd",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/proposal-prelayout-native.d.mts"
+    },
+    {
+      "path": "tools/workbench/proposal-prelayout-native.mjs",
+      "owner": "proposal-prelayout-native",
+      "beforeSha256": null,
+      "sourceSha256": "665ac7447b639de863e87f75e5165f60ede05d1e15f713279b6a9c9ab9674309",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/candidate/tools/workbench/proposal-prelayout-native.mjs"
+    },
+    {
+      "path": "apps/workbench-preview/src/domain/prelayoutRead.ts",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": null,
+      "sourceSha256": "e183b1070ed5d8ddc38c0ee8017b998169899ccbdbd8a9e26a71e3bd60895855",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/domain/prelayoutRead.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/domain/proposal.ts",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": "dc4697a3c7bfd791e13ad39ba42800647bc0ef5edeb9d5a72731563281b64666",
+      "sourceSha256": "2c65328af08d1dc46fa994b2ab2d939a47cef66de8b6c76cb975edf39fe02015",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/domain/proposal.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/HttpProposalService.ts",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": "2de3f18e544905d7d209e1f2c20259ff66091f11c675add053a19aebf2946aac",
+      "sourceSha256": "76d324e46c195b8c41bf3c9231752d8f507f171121dc99e1411833fd69487e5d",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/services/http/HttpProposalService.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/briefModels.ts",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": "1932e810725947e6efd652ca0fcdc2bcd9513a404304f32f23ea6542e2f39a47",
+      "sourceSha256": "35e051e21ccd4b0143a093b4db6292a1b1fdd292627b34b8dffe0f0119c977d1",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/services/http/briefModels.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/prelayout-template.generated.d.mts",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": null,
+      "sourceSha256": "b6051881e8e17e67317d0ee10552f5cb274e780c23f00a8b30637f6be79002b4",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/services/http/prelayout-template.generated.d.mts"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/prelayout-template.generated.mjs",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": null,
+      "sourceSha256": "d9d6b95f33187c3568f51ab1620acd528fd5c57cc64d674fe9bbaa8b5101caf8",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/services/http/prelayout-template.generated.mjs"
+    },
+    {
+      "path": "apps/workbench-preview/src/services/http/prelayoutReadback.ts",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": null,
+      "sourceSha256": "8a44ab630c690bf736f67315566c4504e6e259c2bc684ca347c04bb27dfd9200",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/services/http/prelayoutReadback.ts"
+    },
+    {
+      "path": "apps/workbench-preview/src/views/project/PrelayoutHistory.tsx",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": null,
+      "sourceSha256": "49b449315e966c56ad4f33ecced8a2c6a7b8098f6888595a137ce41040cd92bf",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/views/project/PrelayoutHistory.tsx"
+    },
+    {
+      "path": "apps/workbench-preview/src/views/project/ProcessArea.tsx",
+      "owner": "proposal-prelayout-app-readlane-r2",
+      "beforeSha256": "2259d0c5f2bae9e51432933ffb2b794894b1ee3ed83c975e96d3a11466a634cc",
+      "sourceSha256": "034a8bd0f5002c36710d972c549dfdcb1543f655ae711bdba37417358f490210",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/views/project/ProcessArea.tsx"
+    }
+  ],
+  "waiting": "original unit4 completed129 and natural close before root implementation changes",
+  "edition": "separate root portability design, not falsely included",
+  "adoptedAt": "2026-11-12T14:37:19.389346+00:00",
+  "pr14Head": "4f5e4260af4a4e7e101e0b59de9f7b57ef93817c",
+  "unit4": "completed129/head1238, CLOSE natural exit0; no main processes restarted or main database edited by this adoption"
+}

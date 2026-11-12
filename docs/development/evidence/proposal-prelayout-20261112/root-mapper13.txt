@@ -1,0 +1,23 @@
+✔ actual sealed185 retains all four original bodies, meaningful SIMPLE/copy leaves and byte spans; missing B refuses (12.174583ms)
+✔ packaging: native target/view mapping needs no fake mockup; pure DTO never claims authority (13.491833ms)
+✔ kv: native target/view mapping needs no fake mockup; pure DTO never claims authority (4.368334ms)
+✔ wrong original SHA, missing source, changed copy and missing view reject rather than filling from another case (14.041625ms)
+✔ JSON escape/surrogate/newline token spans bind to actual UTF8 original bytes (0.159083ms)
+✔ unknown meaningful source fields, missing target identity and altered media refuse explicitly (6.93225ms)
+✔ native typed research declarations/lexemes remain literal data pages and do not create charts or statistics (6.5125ms)
+✔ semantic policy keeps technical metadata in records and associates original judgment qualifiers, reuses exact source text and retains every distinct limit origin (1.794583ms)
+✔ explicit reference/handoff constraints remain visible with all origins while their technical reports stay recorded (7.548917ms)
+✔ copy and B claims preserve original prose and judgment qualifiers; unclassifiable claim shapes refuse (6.034333ms)
+✔ builder projection has one source: complete original input, independent of deleted or reattached caller diagnostics (16.228ms)
+✔ legacy caller projection cannot be smuggled into the strict raw input boundary (5.09925ms)
+(node:38772) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ only own native private token can map; plain successful-looking DTO or copied token cannot qualify (13.868583ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 297.534709

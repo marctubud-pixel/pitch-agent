@@ -1,0 +1,42 @@
+{
+  "scope": "Real installed Rolldown/Oxc AST assertion-call multiset; only source positions/raw spelling/comments omitted, all semantic arguments and string values retained. Supported-platform original assertions preserved; unsupported branches are explicit negative contracts.",
+  "rows": [
+    {
+      "target": "tools/workbench/prelayout-tests/contract.test.mjs",
+      "sourceAssertions": 28,
+      "portedAssertions": 28,
+      "missing": []
+    },
+    {
+      "target": "tools/workbench/prelayout-tests/domain.test.mjs",
+      "sourceAssertions": 17,
+      "portedAssertions": 17,
+      "missing": []
+    },
+    {
+      "target": "tools/workbench/prelayout-tests/fd.test.mjs",
+      "sourceAssertions": 8,
+      "portedAssertions": 9,
+      "missing": []
+    },
+    {
+      "target": "tools/workbench/prelayout-tests/http-original.test.mjs",
+      "sourceAssertions": 23,
+      "portedAssertions": 29,
+      "missing": []
+    },
+    {
+      "target": "tools/workbench/prelayout-tests/mapper.test.mjs",
+      "sourceAssertions": 60,
+      "portedAssertions": 60,
+      "missing": []
+    },
+    {
+      "target": "tools/workbench/prelayout-tests/qualified-mapper.test.mjs",
+      "sourceAssertions": 6,
+      "portedAssertions": 7,
+      "missing": []
+    }
+  ],
+  "allOriginalAssertionsPresent": true
+}

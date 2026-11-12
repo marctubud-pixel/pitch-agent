@@ -1,0 +1,76 @@
+{
+  "id": 131201481975,
+  "run_id": 43223732945,
+  "workflow_name": "Specification baseline",
+  "head_branch": "codex/visual-storage-sketch-20261112",
+  "run_url": "https://api.github.com/repos/marctubud-pixel/pitch-agent/actions/runs/43223732945",
+  "run_attempt": 1,
+  "node_id": "CR_kwDOVqPGWs8AAAAejDe89w",
+  "head_sha": "4f5e4260af4a4e7e101e0b59de9f7b57ef93817c",
+  "url": "https://api.github.com/repos/marctubud-pixel/pitch-agent/actions/jobs/131201481975",
+  "html_url": "https://github.com/marctubud-pixel/pitch-agent/actions/runs/43223732945/job/131201481975",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-11-12T13:04:06Z",
+  "started_at": "2026-11-12T13:04:08Z",
+  "completed_at": "2026-11-12T13:04:17Z",
+  "name": "specifications",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-12T13:04:09Z",
+      "completed_at": "2026-11-12T13:04:09Z"
+    },
+    {
+      "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-12T13:04:09Z",
+      "completed_at": "2026-11-12T13:04:13Z"
+    },
+    {
+      "name": "Check specification versions and references",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-12T13:04:13Z",
+      "completed_at": "2026-11-12T13:04:13Z"
+    },
+    {
+      "name": "Exercise specification drift guards",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-12T13:04:13Z",
+      "completed_at": "2026-11-12T13:04:16Z"
+    },
+    {
+      "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-12T13:04:16Z",
+      "completed_at": "2026-11-12T13:04:16Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-12T13:04:16Z",
+      "completed_at": "2026-11-12T13:04:16Z"
+    }
+  ],
+  "check_run_url": "https://api.github.com/repos/marctubud-pixel/pitch-agent/check-runs/131201481975",
+  "labels": [
+    "ubuntu-latest"
+  ],
+  "runner_id": 1000000070,
+  "runner_name": "GitHub Actions 1000000070",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions"
+}

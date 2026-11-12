@@ -1,0 +1,145 @@
+{
+  "scope": "Portable existing bounded tests; not full B/five-source qualification, actual FD/recovery positives are Darwin-only with explicit unsupported-platform refusal elsewhere",
+  "files": [
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/tests/fixture.mjs",
+      "target": "tools/workbench/prelayout-tests/fixture.mjs",
+      "sourceSha256": "90a6bb7fb7539ff0aff9cc69936726ae3012d9bb3310cad4c6a7fe727ead3b61",
+      "sha256": "acb06bfbc46fbd006b04507376b220edae0398827feb65b5accc72d8d0c67daa",
+      "transform": "portable import/resource paths"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/tests/component-fixture.mjs",
+      "target": "tools/workbench/prelayout-tests/component-fixture.mjs",
+      "sourceSha256": "48936154ea7d4b71718c7a5e179ef0a5eb41d224b702bdc53d11d9b3d29c3369",
+      "sha256": "f15e890ab182449c164f6f872a2cf150a90fb3d4aae3b04b4c0cc5675bda725e",
+      "transform": "portable import/resource paths"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/tests/contract.test.mjs",
+      "target": "tools/workbench/prelayout-tests/contract.test.mjs",
+      "sourceSha256": "af963976c709a67009c9ec038130264f35a58d0beece779903b026ab78d9aa1a",
+      "sha256": "6496b6a47f97cc1f31c47a363025067541045c38733e5b15b31415c60b9075d5",
+      "transform": "portable import/resource paths"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/tests/domain.test.mjs",
+      "target": "tools/workbench/prelayout-tests/domain.test.mjs",
+      "sourceSha256": "caf3f97329c0857bcf59dcf88fbe8a59375ea3ae6ac8d57f59980381884eb358",
+      "sha256": "7af7216bd8fd8c15cf33cb52fd1c81f33306e5e56f85ca20acaccbaf5b670ff0",
+      "transform": "portable import/resource paths"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/tests/fd.test.mjs",
+      "target": "tools/workbench/prelayout-tests/fd.test.mjs",
+      "sourceSha256": "f863a29870deec01dccb3a01d76abd110864e8da5c6b36ebc1b36d6efc3528a1",
+      "sha256": "f8f7191e1f959dbbbc7975889bed3ac94e1c9059235a5a5d39eafce4e181ae3c",
+      "transform": "portable import/resource paths; temporary evidence directory; unsupported platform asserts refusal without fake FD qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-native/tests/http-original.test.mjs",
+      "target": "tools/workbench/prelayout-tests/http-original.test.mjs",
+      "sourceSha256": "29a2fb5133aaeae146598f0889e27fd1004bf1a9f1d9e6f02eefe386f7273e11",
+      "sha256": "7b0f878fd634592fc4caaa26fdd2ccba2e19322395672e5ba24398d0298b20d2",
+      "transform": "portable import/resource paths; temporary evidence directories; restore five assertions previously swallowed by comment, same restoration independently exercised; unsupported platform explicitly tests native FD refusal; no fabricated recovery positive"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/generic-deck-native-input-mapper-r2/evidence/sealed185-source.json",
+      "target": "tools/workbench/prelayout-tests/source-prefix.json",
+      "sourceSha256": "df3b0898f35d04ecff74b2fcbdea5b8cd5437e93c0b929adc95fa87796b0461c",
+      "sha256": "df3b0898f35d04ecff74b2fcbdea5b8cd5437e93c0b929adc95fa87796b0461c",
+      "transform": "none; synthetic metadata mapping prefix, not a transferable native qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/services/http/prelayoutReadback.test.ts",
+      "target": "apps/workbench-preview/src/services/http/prelayoutReadback.test.ts",
+      "sourceSha256": "bccb78d7b5f0d35e413c5099b7c7583325a38f150bcd35cbeb2c8051ae202a95",
+      "sha256": "bccb78d7b5f0d35e413c5099b7c7583325a38f150bcd35cbeb2c8051ae202a95",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/src/services/http/prelayoutQueueRevision.test.ts",
+      "target": "apps/workbench-preview/src/services/http/prelayoutQueueRevision.test.ts",
+      "sourceSha256": "83cd43117385c2b07fd97aed8f83086eeaf297cce9a0e30afe745e3cfe612fbb",
+      "sha256": "83cd43117385c2b07fd97aed8f83086eeaf297cce9a0e30afe745e3cfe612fbb",
+      "transform": "none"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/test-prelayout/SCOPE.json",
+      "target": "apps/workbench-preview/test-prelayout/SCOPE.json",
+      "sourceSha256": "834e561b9da2ff0a01bae08254de72570913728e61904f2df73f2bfcd852acb3",
+      "sha256": "834e561b9da2ff0a01bae08254de72570913728e61904f2df73f2bfcd852acb3",
+      "transform": "none; purpose-limited synthetic metadata, no B production qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/test-prelayout/clear.json",
+      "target": "apps/workbench-preview/test-prelayout/clear.json",
+      "sourceSha256": "813d15cacae346132e633591648e6cfce5b9c260b5423abf4de72d0bc9a36256",
+      "sha256": "813d15cacae346132e633591648e6cfce5b9c260b5423abf4de72d0bc9a36256",
+      "transform": "none; purpose-limited synthetic metadata, no B production qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/test-prelayout/invalid.json",
+      "target": "apps/workbench-preview/test-prelayout/invalid.json",
+      "sourceSha256": "cad6b1ede0e48446c3c3ce3c045dfc2af60a3b540b5f7161e31b81bd7c983734",
+      "sha256": "cad6b1ede0e48446c3c3ce3c045dfc2af60a3b540b5f7161e31b81bd7c983734",
+      "transform": "none; purpose-limited synthetic metadata, no B production qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/test-prelayout/queued.json",
+      "target": "apps/workbench-preview/test-prelayout/queued.json",
+      "sourceSha256": "1b6f9ac416c4f892e2fa21ceaf106d2714d77c1d681ee28fa18ca627c7516a06",
+      "sha256": "1b6f9ac416c4f892e2fa21ceaf106d2714d77c1d681ee28fa18ca627c7516a06",
+      "transform": "none; purpose-limited synthetic metadata, no B production qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/test-prelayout/running.json",
+      "target": "apps/workbench-preview/test-prelayout/running.json",
+      "sourceSha256": "00bbefe913b08ad294218c87878908a74a873da36cf258e6434e57f4d44a474d",
+      "sha256": "00bbefe913b08ad294218c87878908a74a873da36cf258e6434e57f4d44a474d",
+      "transform": "none; purpose-limited synthetic metadata, no B production qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/test-prelayout/stale.json",
+      "target": "apps/workbench-preview/test-prelayout/stale.json",
+      "sourceSha256": "5f801148e34fcbb92e7f654f0b3e03170f5424acfec84724ab46784ecdd35de8",
+      "sha256": "5f801148e34fcbb92e7f654f0b3e03170f5424acfec84724ab46784ecdd35de8",
+      "transform": "none; purpose-limited synthetic metadata, no B production qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/proposal-prelayout-app-readlane-r2/candidate/apps/workbench-preview/test-prelayout/unknown.json",
+      "target": "apps/workbench-preview/test-prelayout/unknown.json",
+      "sourceSha256": "f0f1e8c3650f25939901f391bcbf8f1fc6992b8882518873348e1d17dfd215b3",
+      "sha256": "f0f1e8c3650f25939901f391bcbf8f1fc6992b8882518873348e1d17dfd215b3",
+      "transform": "none; purpose-limited synthetic metadata, no B production qualification"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/generic-deck-native-input-mapper-r2/fixture.mjs",
+      "target": "tools/workbench/prelayout-tests/mapper-fixture.mjs",
+      "sourceSha256": "1644086baf7d46dec3b580d250eec597a9e07decad8db771248725287bff4a15",
+      "sha256": "1ad8f28d3e09bd689ed8f53436e646f7da4130b70a0bd9a569e83264d5f404c5",
+      "transform": "portable production imports and same-byte source prefix"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/generic-deck-native-input-mapper-r2/mapper.test.mjs",
+      "target": "tools/workbench/prelayout-tests/mapper.test.mjs",
+      "sourceSha256": "aa99f24bcfd3899814b4d9d4d262bee2f2c8006f0b855faaf3d197b72fede419",
+      "sha256": "5a379f7142904dc2a248993f41f1cb39e0d70b3875c380154545d0e869763ed8",
+      "transform": "portable production imports and same-byte source prefix"
+    },
+    {
+      "source": ".scratch/seven-stage-static-goal-20261111/design/generic-deck-native-input-mapper-r2/qualified.test.mjs",
+      "target": "tools/workbench/prelayout-tests/qualified-mapper.test.mjs",
+      "sourceSha256": "3c48b20e5f28ded6bf6362e2ba4e1b1346aded4d64735eda661ad81dbc275232",
+      "sha256": "db26e975103ff93ad2f50686d3f9a7a452a43e710895707cfd559442aa1687e7",
+      "transform": "portable production imports and same-byte source prefix; temporary evidence directory and explicit unsupported-platform FD refusal"
+    }
+  ],
+  "assertionAudit": {
+    "originalAssertions": 142,
+    "portedAssertions": 150,
+    "restoredFromComment": 5,
+    "platformRefusalAssertions": 3,
+    "scope": "AST comparison from frozen independent-final; four refusal checks plus one no-redispatch counter restored, original statements unmodified"
+  }
+}

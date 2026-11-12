@@ -2022,8 +2022,8 @@
       "reason": "按1.5.0接七阶段协议及受限研究、原件读取与稳定恢复；保留未分类论点和既有演示身份 本轮在既有交付内容中接明确visualRequirements，保留省略/清空、确认、历史、恢复和原自由文字语义。"
     },
     "apps/workbench-preview/src/domain/proposal.ts": {
-      "sha256": "dc4697a3c7bfd791e13ad39ba42800647bc0ef5edeb9d5a72731563281b64666",
-      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准"
+      "sha256": "2c65328af08d1dc46fa994b2ab2d939a47cef66de8b6c76cb975edf39fe02015",
+      "reason": "当前HTTP PDF原件接入：真实卡/原件/选择身份与动态支持范围、管理权限和刷新同体恢复；保留Mock与原页面基线，不改旧内容或批准 本轮新增排版前专用只读记录/历史展示，不授B生产或正式批准资格；原导入SHA仍保留。"
     },
     "apps/workbench-preview/src/services/index.ts": {
       "sha256": "d8d5292c34bb081210f2d187c88f37bf471c7aac314f2afb8b171caaca4f12e4",
@@ -2112,6 +2112,10 @@
     "apps/workbench-preview/src/views/stages/VisualStage.tsx": {
       "sha256": "d8d4ab60bfa55d8fc571f9c7a88fce39e6927ff72bac32ae069209004b13303b",
       "reason": "本轮视觉参考受限接线与原结果只读重放，保留Mock、青屿及原票身份。"
+    },
+    "apps/workbench-preview/src/views/project/ProcessArea.tsx": {
+      "sha256": "034a8bd0f5002c36710d972c549dfdcb1543f655ae711bdba37417358f490210",
+      "reason": " 本轮新增排版前专用只读记录/历史展示，不授B生产或正式批准资格；原导入SHA仍保留。"
     }
   }
 }

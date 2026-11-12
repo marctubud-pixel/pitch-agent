@@ -1,3 +1,4 @@
+import {PRELAYOUT_PROTOCOL,assertPrelayoutTransport} from './proposal-prelayout-contract.mjs';
 import {join} from 'node:path';
 import {isDeepStrictEqual as equal} from 'node:util';
 import {createModelHttpAuthority} from './model-http-authority.mjs';
@@ -18,6 +19,7 @@ function callInput(call){
 function domainResult(saved,call){return {...saved,providerExecution:structuredClone(saved),model:call.binding.model,...(call.images?.length?{images:structuredClone(call.images)}:{})};}
 export async function invokeOrdinary(call){
  const {provider,binding,attemptId,request,images=[],maxOutputBytes}=call;
+ if(request?.imageEnvelope?.operation===PRELAYOUT_PROTOCOL){need(provider?.adapter===ORDINARY_HTTP_PROVIDER,'Prelayout requires its fixed ordinary HTTP purpose');assertPrelayoutTransport(callInput(call));}
  need(provider&&provider.model===binding.model,'Configured provider must match frozen binding');
  if(provider.adapter!==ORDINARY_HTTP_PROVIDER){const value=await provider.execute({runId:attemptId,...request,...(images.length?{images}:{}),...(call.timeoutMs===undefined?{}:{timeoutMs:call.timeoutMs}),...(maxOutputBytes===undefined?{}:{maxOutputBytes}),...(call.signal===undefined?{}:{signal:call.signal})});need(!isOrdinaryHttp(value),'A legacy execute adapter cannot supply HTTP saved authority');return value;}
  const input=callInput(call);
