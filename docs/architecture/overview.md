@@ -1,3 +1,9 @@
+# 排版前检查与通用输入 · 2026-11-12
+
+proposal-prelayout-contract/domain/native复用普通HTTP和实际store原件接收，专用layout job保存同版五源、原report与未知结果。generic-deck-input-mapper只经私票接当前原件并消费实际检查；前端prelayoutReadback独立只读scope与ProcessArea折叠报告不授执行、B生产或终审资格。source/semantic/方法、snapshot与稳定元组分别核对，不借本检查的入账假造上游变更。
+
+当前30源码和30便携native检查接入，实际五源/B/Deck与完整App后段仍待新案验证，见[运行合同](../development/proposal-prelayout.md)和[本轮范围](../development/proposal-prelayout-verification-20261112.md)。旧模块图按原时点保留。
+
 # 本地原图保存与同快照只读图谱 · 2026-11-12
 
 reference-runtime抽出createReferenceMaterialStorage，视觉A只让存图/用途脱离模型执行开关；页面读取独立storage旗标，其他执行与未决锁保留。brief-server canonical GET与research-service调用sketch-native-reader，原store read-admission核当前source/IO；sketch-read-graph保留未知图谱并校验原job/attempt请求，前端sketchReadback和sketch-contracts只读同快照结果，不提升执行资格。新A命令记录实际时间且不回填旧audit。

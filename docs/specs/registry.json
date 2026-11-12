@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.16.0",
+  "baselineVersion": "1.17.0",
   "date": "2026-11-12",
-  "status": "已合并视觉参考接线；新服务签发时间和可选Darwin实际文件核验，完整App草图/v2、B至交付仍未完成",
+  "status": "排版前专用原生检查、通用输入映射及只读记录；完整App后段和两案例整链仍待实际验收",
   "workflow": [
     "brief",
     "research",
@@ -259,11 +259,12 @@
       "kind": "page",
       "title": "版式与整案排版",
       "path": "docs/pages/layout.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.layout-owner",
-        "contract.ui"
+        "contract.ui",
+        "contract.proposal-prelayout"
       ],
       "confirmedScope": "已确认要求汇编；本次整理待核对",
       "routeKey": "layout"
@@ -315,11 +316,12 @@
       "kind": "page",
       "title": "流程与历史",
       "path": "docs/pages/history.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.proposal-director",
-        "contract.ui"
+        "contract.ui",
+        "contract.proposal-prelayout"
       ],
       "confirmedScope": "部分要求已确认；完整页面待细化",
       "routeKey": "history"
@@ -554,7 +556,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.13.0",
+      "version": "1.14.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -756,6 +758,20 @@
         "contract.configuration"
       ],
       "stage": "开发与本地接管"
+    },
+    {
+      "id": "contract.proposal-prelayout",
+      "kind": "contract",
+      "title": "排版前比稿检查与通用输入映射",
+      "path": "docs/development/proposal-prelayout.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "agent.proposal-director",
+        "contract.handoff",
+        "contract.seven-stage-runtime"
+      ],
+      "stage": "layout"
     }
   ],
   "entryDocuments": [

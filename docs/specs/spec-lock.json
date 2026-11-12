@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.16.0",
-  "registrySha256": "a52094b1e2ccae1a49716dbe52c7e9b64cb042a6f733809d82186b146d1b7c97",
+  "baselineVersion": "1.17.0",
+  "registrySha256": "198636c713254349fa686177d17c1fcd621ba505f5f261362d0a6f0a1dc51091",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -130,10 +130,10 @@
       }
     },
     "page.layout": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/layout.md": "8cc0f6853e1de3abe48e0ddd63f2750f4fa3b79dee2ef4abc3476462a2d67428"
+        "docs/pages/layout.md": "63ac8333d31b373e56609111c4b851ace410836e4fd9c1d5066ccc53232e5af3"
       }
     },
     "page.delivery": {
@@ -158,10 +158,10 @@
       }
     },
     "page.history": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/history.md": "b48187cd31de37a675ac467288151bad713f77e7afd1ca4dc96329623d89c5bc"
+        "docs/pages/history.md": "3344dea64d828aaa2523367e955be2d999f38725f3798e04bf33e59965f4f11a"
       }
     },
     "page.team": {
@@ -332,10 +332,10 @@
       }
     },
     "contract.testing": {
-      "version": "1.13.0",
+      "version": "1.14.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "2cb350c1814633949ceb901a942815c07d33e6c714b6ce65602f7b5628220ed8"
+        "docs/development/testing.md": "15aa8a872f15aced4087c018e1c78c4abadddf6290f12b2edf1489e5a69af093"
       }
     },
     "contract.git": {
@@ -449,6 +449,13 @@
       "files": {
         "docs/development/native-store-identity.md": "c686234d1bee96eadc2124ebf49f7be5ab869fba17d643b4f0283e9aeb59faa6"
       }
+    },
+    "contract.proposal-prelayout": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/proposal-prelayout.md": "aead7d330e710661e3a822f1f07fd37e7e07da246023bd7e58300ade20ec4d1c"
+      }
     }
   },
   "entryDocuments": {
@@ -458,7 +465,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "d2c40f127862a9b8a0ee5c695b0e2b920c2d978be48ce912963c0834fd0f2332",
+    "docs/specs/README.md": "9069af14c217bb64cddb73ed58648da1da716d43b390824c8c8c98427f137dad",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
     "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"

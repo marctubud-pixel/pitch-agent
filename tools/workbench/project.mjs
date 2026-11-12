@@ -1,3 +1,5 @@
+import {PRELAYOUT_COMMANDS,reducePrelayout,requirePrelayoutOwner} from './proposal-prelayout-domain.mjs';
+import {PRELAYOUT_PURPOSE} from './proposal-prelayout-contract.mjs';
 import {reduceVisualBStep,reduceVisualBIntent,reduceVisualBAdvance,reduceVisualBRevisionCompleted,requireVisualBNoPending,requireVisualBClaim} from './visual-b-http.mjs';
 import {reduceVisualStep,reduceVisualIntent,requireVisualClaim,reduceVisualAdvance,requireVisualNoPending} from './visual-a-http.mjs';
 import {copyHttpJobs,reduceCopyHttp,requireCopyHttpJob,reduceCopyAdvance,requireCopyNativeAdmission} from './simple-copy-http.mjs';
@@ -1474,6 +1476,7 @@ export function applyCommand(project, command, context) {
   p.creativePanels ??= []; p.creativeReports ??= [];
   p.ownerEdges??=[];p.ownerReports??=[];p.ownerIntents??=[];
   const c = command;
+  if(PRELAYOUT_COMMANDS.includes(c.kind)){try{reducePrelayout(p,c,context);}catch(e){fail(e.code??'PRELAYOUT_INVALID',e.message);}}
   if(NATIVE_COMMANDS.includes(c.kind)){try{reduceNativeLayout(p,c,context);}catch(e){fail(e.code??'LAYOUT_NATIVE_INVALID',e.message);}}
   if(FINAL_AUTHORITY_COMMANDS.includes(c.kind)){try{reduceFinalAuthority(p,c,context);}catch(e){fail(e.code??'FINAL_AUTHORITY_INVALID',e.message);}}
   if(ACQUISITION_COMMANDS.includes(c.kind)){try{reduceAcquisition(p,c,context);}catch(e){fail(e.code??'ACQUISITION_INVALID',e.message);}}
@@ -1544,6 +1547,7 @@ export function applyCommand(project, command, context) {
     case 'retain-final-operation-capture':
     case 'bind-final-operation-authorization': case 'mark-final-operation-dispatched': case 'settle-final-operation-observation': case 'reconcile-final-operation-observation':
     case 'set-final-review-authority': case 'reserve-final-review-plan': case 'release-final-review-reservation': case 'mark-final-review-dispatched': case 'settle-final-review-call': case 'reconcile-final-review-call': case 'close-final-review-reservation': case 'adopt-final-review': case 'return-final-review': case 'accept-final-review-delivery': case 'resolve-final-review-return': break;
+    case 'queue-proposal-prelayout': case 'claim-proposal-prelayout': case 'anchor-proposal-prelayout': case 'finish-proposal-prelayout': case 'interrupt-proposal-prelayout': break;
     case 'queue-layout-export': case 'claim-layout-export': case 'record-layout-worker': case 'anchor-layout-export': case 'interrupt-layout-export': case 'register-layout-technical': break;
     case 'prepare-project-layout':
       try{reduceLayoutPreparation(p,c,context,(p, contents, options) => contentSourceEnvelopeWithin(new WeakMap(), p, contents, options));}catch(e){fail(e.code??'LAYOUT_PREPARATION_INVALID',e.message);}break;
@@ -2147,12 +2151,14 @@ export function applyCommand(project, command, context) {
     }
     case 'restore-ordinary-http-attempt': {
       const job=p.jobs.find(j=>j.id===c.jobId),attempt=job?.attempts.at(-1);
+      if(job?.purpose===PRELAYOUT_PURPOSE)requirePrelayoutOwner(job,c.attemptId,context);
       requireValue(context.actorType==='agent'&&['running','awaiting_reconciliation'].includes(job?.status)&&attempt?.id===c.attemptId&&!attempt.receipt&&validOrdinaryHttpLocator(attempt.httpAttemptLocator,attempt.id)&&ordinaryOriginMatches(c.receipt,attempt.httpAttemptLocator,attempt.id)&&isOrdinaryHttp(c.receipt)&&ordinarySuccessfulStatus(c.receipt)&&c.receipt.runId===attempt.id&&c.receipt.attemptId===attempt.id&&c.receipt.requestedModel===job.binding.model&&c.receipt.model===job.binding.model,'INVALID_HTTP_RESTORE','Exact committed HTTP saved claim and original locator required');
       attempt.receipt=structuredClone(c.receipt);break;
     }
     case 'anchor-model-http-attempt': {
       const job=p.jobs.find(j=>j.id===c.jobId),attempt=runningAttempt(job,c,context);
-      requireValue(context.actorType==='agent'&&!['layout','final_review'].includes(job.stage)&&validOrdinaryHttpLocator(c.locator,attempt.id)&&!attempt.httpAttemptLocator,'INVALID_HTTP_LOCATOR','Exact unique internal HTTP attempt locator required');
+      if(job?.purpose===PRELAYOUT_PURPOSE)requirePrelayoutOwner(job,c.attemptId,context);
+      requireValue(context.actorType==='agent'&&(!['layout','final_review'].includes(job.stage)||job.stage==='layout'&&job.purpose===PRELAYOUT_PURPOSE)&&validOrdinaryHttpLocator(c.locator,attempt.id)&&!attempt.httpAttemptLocator,'INVALID_HTTP_LOCATOR','Exact unique internal HTTP attempt locator required');
       attempt.httpAttemptLocator=structuredClone(c.locator);break;
     }
     case 'visual-http-advance-started':

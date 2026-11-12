@@ -1,0 +1,16 @@
+{
+  "scope": "actual unknown status tag only; no overall WCAG claim",
+  "foreground": [
+    173,
+    67,
+    0
+  ],
+  "background": [
+    255,
+    232,
+    214
+  ],
+  "ratio": 4.962875978686279,
+  "minimum": 4.5,
+  "passed": true
+}

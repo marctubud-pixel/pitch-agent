@@ -1,0 +1,37 @@
+{
+  "rootCount": 1,
+  "processHeadingCount": 1,
+  "prelayoutSectionCount": 1,
+  "documentWidth": 1180,
+  "viewport": 1180,
+  "panelWidth": 1108,
+  "body": {
+    "color": "rgb(69, 70, 77)",
+    "background": "rgba(0, 0, 0, 0)",
+    "fontSize": "14px"
+  },
+  "tag": {
+    "color": "rgb(173, 67, 0)",
+    "background": "rgb(255, 232, 214)",
+    "fontSize": "12px"
+  },
+  "calls": [
+    {
+      "url": "http://transport.invalid/capabilities",
+      "method": "GET"
+    },
+    {
+      "url": "http://transport.invalid/projects/prelayout-readlane-unknown",
+      "method": "GET"
+    },
+    {
+      "url": "http://transport.invalid/projects/prelayout-readlane-unknown",
+      "method": "GET"
+    },
+    {
+      "url": "http://transport.invalid/projects/prelayout-readlane-unknown/artifacts/5b039f42-0130-4508-8d71-e09df6456758/content",
+      "method": "GET"
+    }
+  ],
+  "keyboardExpanded": "查看任务与版本关联"
+}

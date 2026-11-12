@@ -1,3 +1,4 @@
+import {assertPrelayoutTransport} from './proposal-prelayout-contract.mjs';
 import {createHash, randomUUID} from 'node:crypto';
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {constants} from 'node:fs';
@@ -13,7 +14,7 @@ import {HTTP_JSON_PROFILE,httpVariantForConfig,httpVariantForProtocol,precheckHt
 const PROTOCOL='workbench-stateless-model-json-v1';
 const ADAPTER='workbench-model-http-v1';
 const CAP=64*1024*1024;
-const ENVELOPES=['sketch-review-v2','final-visual-v1','complete-content-v1'];
+const ENVELOPES=['sketch-review-v2','final-visual-v1','complete-content-v1','proposal-prelayout-v1'];
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const json=v=>Buffer.from(JSON.stringify(v));
 const same=(a,b)=>json(a).equals(json(b));
@@ -195,10 +196,11 @@ async function inputs(call,cfg,budget=preflight(cfg,call),reuseDecodedImages=fal
  keys(call.request,['runId','prompt'],['outputSchema','imageEnvelope']);const r=call.request;
  if(!text(r.runId)||typeof r.prompt!=='string'||!r.prompt.trim()||Buffer.byteLength(r.prompt)>cfg.maxRequestBytes)fail('unsupported-input');
  if(r.outputSchema!==undefined&&(!r.outputSchema||typeof r.outputSchema!=='object'||Array.isArray(r.outputSchema)))fail('unsupported-input');
+ assertPrelayoutTransport(call);
  const images=call.images??[];if(!Array.isArray(images)||images.length>32||images.length&&!cfg.vision||r.imageEnvelope&&!cfg.envelopes.includes(r.imageEnvelope.operation))fail('unsupported-input');
  if(r.imageEnvelope&&!images.length)fail('unsupported-input');
  const manifest=images.length?imageManifest(images,r.imageEnvelope):[];let pixels=0,total=0;const captured=[];
- for(let i=0;i<images.length;i++){const b=await sourceImage(images[i],budget);const decoded=await dimensions(b,budget,reuseDecodedImages);if(decoded.mediaType!==manifest[i].mediaType)fail('unsupported-input');pixels+=decoded.width*decoded.height;total+=b.length;if(total>CAP||pixels>(r.imageEnvelope?.limits.maxPixels??20_000_000))fail('unsupported-input');captured.push({...manifest[i],...decoded,bytes:b,occurrence:i});}
+ for(let i=0;i<images.length;i++){const b=await sourceImage(images[i],budget);const decoded=await dimensions(b,budget,reuseDecodedImages);if(decoded.mediaType!==manifest[i].mediaType)fail('unsupported-input');if(r.imageEnvelope?.operation==='proposal-prelayout-v1'&&(images[i].width!==decoded.width||images[i].height!==decoded.height))fail('unsupported-input');pixels+=decoded.width*decoded.height;total+=b.length;if(total>CAP||pixels>(r.imageEnvelope?.limits.maxPixels??20_000_000))fail('unsupported-input');captured.push({...manifest[i],...decoded,bytes:b,occurrence:i});}
  const logical=json({runId:r.runId,model:cfg.model,prompt:r.prompt,...(r.outputSchema===undefined?{}:{outputSchema:r.outputSchema}),...(manifest.length?{images:manifest}:{}),...(r.imageEnvelope?{imageEnvelope:r.imageEnvelope}:{})});
  if(!(call.logicalInputBytes instanceof Uint8Array)||!logical.equals(Buffer.from(call.logicalInputBytes))||!(call.runtimePacketBytes instanceof Uint8Array)||call.runtimePacketBytes.length<1||call.runtimePacketBytes.length>CAP)fail('unsupported-input');
  const runtime=Buffer.from(call.runtimePacketBytes);

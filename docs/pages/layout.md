@@ -1,6 +1,6 @@
 # 版式与整案排版 · 页面开发规格
 
-规范版本：1.0.1。页面ID：`layout`。状态：已确认要求汇编；本次整理待核对。负责人见[layout-owner](../agents/layout-owner.md)。
+规范版本：1.1.0。页面ID：`layout`。状态：已确认要求汇编；本次整理待核对。负责人见[layout-owner](../agents/layout-owner.md)。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 
@@ -54,3 +54,7 @@
 ## 来源与版本
 
 要求来源：现有[用户决定索引](../specs/decisions.md)、[版本沿革](../handoffs/提案工作台_版本沿革与已确认要求_20261111.md)及本次[来源清单](../specs/source-provenance.json)。图像是证据，不覆盖当前文字要求。新需求通过[变更与PR规则](../specs/change-control.md)更新本文件版本。
+
+## 排版前后台检查
+
+通用映射接收五源原文、原图及既有限制，由比稿Agent按[专用合同](../development/proposal-prelayout.md)检查衔接。当前clear原件须与输入同版；unknown、return、stale或缺件保持待核。它属于版式阶段，未新增内容审阅页面，也不是排版后终审。当前组件和只读记录接线不表示已有正式layout或可交付文件。

@@ -1,3 +1,4 @@
+import {PrelayoutHistory} from './PrelayoutHistory';
 /**
  * Process & History: who did what, how it was reviewed, how work was handed over, every
  * human decision, and the version record with stale dependencies. Kept out of the creative
@@ -282,7 +283,7 @@ function Tasks({ proposal: p }: { proposal: Proposal }) {
   const t = useT();
   return (
     <div className="stack">
-      <p className="process-scope">统一查看两类记录：创意岗位记录说明分工与回执，研究执行记录说明证据任务、失败与恢复。岗位完成不等于研究检查通过或成果已可交付。</p>
+      <p className="process-scope">这里保留创意岗位、排版前检查与研究执行记录。岗位完成或模型报告保存，不代表已通过原件核验、终审或人类采用。</p>
       <section aria-labelledby="agent-tasks">
         <SectionHead id="agent-tasks" title="创意岗位记录" aside={<Backed as="prototype" note={t('pw.proc.simulatedAgents')} />} />
         <div className="pw-table-wrap">
@@ -314,6 +315,7 @@ function Tasks({ proposal: p }: { proposal: Proposal }) {
           </table>
         </div>
       </section>
+      <PrelayoutHistory records={p.prelayoutRecords??[]} />
       <section className="process-research-jobs" aria-labelledby="work-jobs">
         <SectionHead id="work-jobs" title="研究执行记录" aside={<Backed as="connected" />} />
         <Embedded>

@@ -1,0 +1,7 @@
+# 独立r2复审：原P2关闭，有限GO
+
+固定3源delta `40ced70d1efd377ff5f37c66aedf90fec9c79c8a0e44572a096e8c9c60cf5041`，完整12源patch `8062874856421b08968359a77027fb92b4885a5f42e14e9ebf629f38866b89fd`，作者manifest `740b07b6e6a21359b411b2887aa18503baccfbdd2fabd60bf394c875fff83c98`。
+
+原P2已闭合。真实Chrome新三参调用中，删kind/pending、重挂到无关方向、删正文/限制、改正文/span均不能改变Deck或完整sourceMap；原claim仍关联fact/pending。旧四参、raw夹projection、五源原文字节及图片字节变化均拒。CONTRACT:11与builder:24–27一致：只从已核input内部canonical派生。
+
+35目标、portable1+独立FD2、typecheck通过；独立两类37页及PPTX原图/原文追溯通过。原冻结证据及12源前后不变。未发现新增P1/P2，允许继续限定接线；真实B、qualified消费正例、正式prelayout与终审仍未验，不授整链通过。详见EVIDENCE.md。

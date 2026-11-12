@@ -1,3 +1,4 @@
+import type {PrelayoutReadRecord} from './prelayoutRead';
 /**
  * The stored proposal model retains all eight historical stage identities.
  *
@@ -524,6 +525,8 @@ export interface StageState {
 }
 
 export interface Proposal {
+  /** Saved prelayout metadata only; no native IO or approval qualification. */
+  prelayoutRecords?:PrelayoutReadRecord[];
   id: ID;
   workbenchId: ID;
   name: string;
