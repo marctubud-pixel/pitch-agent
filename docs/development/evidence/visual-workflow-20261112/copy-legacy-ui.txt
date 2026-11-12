@@ -1,0 +1,55 @@
+# COPY durable legacy UI · 独立只读复验
+
+2026-11-12。复核者未写COPY前端；沿项目固定 `skills/ui-review/SKILL.md`，只核当前根组件与具名原案可见状态，不签业务独立判断、美术/文案质量、审批或完整App。
+
+**本次范围通过，未证实新P1/P2/P3。** 原案正确停在“旧推进结果未记录”；它不是新durable完成正例。A详情命名P3也已做实际修后短核，原assignment正文未改。
+
+## 身份与只读边界
+
+COPY取 `simple-copy-r1/OWNER-NOTES.md` 指定的原 `reader-owner-FyRazA`、项目 `project-783b3ceba8cad8e9ed9c1cd8de55e49cc404bbb5f7e373f957abd98be2625689`，readOnly导出固定**163**原snapshot+semantic到本目录 `copy.sqlite`。原正文payload SHA精确为 `5b15a316efe64c4305c44fd80c3c43fbec0f458bcf2b13fa030c415bc5073130`；`expected-copy.json`仅索引原件，不创建或替换稿件。
+
+A另从原 `reader-owner-1IpZQ2` readOnly导出固定**1130**到 `visual.sqlite`，未改confirm.at=null。两案各自独立clone，rootDir分别指向本案原素材；没有合并业务数据或借错原件。
+
+临时harness直接导入当前根src，复用原contexts/样式与copyState，不使用旧候选源码。providers={}、bindings={}、executionAllowed=false；后端只接GET/OPTIONS，客户端也拒写/外网。仅组件路径，不走完整App的Brief确认投影，不补卡或时刻。
+
+`before.json`、`after.json`覆盖当前924源码SHA、两个原DB全SHA、两份原snapshot与semantic、COPY301原IO及A2130现存原IO（包含此前2114基线）。全部后核不变。原copy17票、双owner、原director与决策原身份保持；humanDecisions仍0、队列0。没有新增模型、job、advance或人类决定。
+
+## COPY实际Chrome
+
+入口自有API4218/Vite4468，PID81936；新 `copy-ui/1280-light.png`、`910-dark.png` 与 `reports-expanded.png`，前两张已实际看图。`copy-ui/result.json`、`copy-chrome.mjs`、`copy-chrome.log`保存行为与完整网络：
+
+- “旧推进结果未记录”及“原稿仍可阅读…不能猜测通过或升级执行”明确显示。不存在“已保存原衔接结果”的完成正例声明；不能据队列0反推durable已落定。
+- 3张方向卡的主/副文逐字等于原payload；三个推导/依据展开，限制 `No consumer validation` 保留。该组件原来就并排展示三案，没有另造方向切换控件。
+- 展开文案原稿并parse后，与原正文对象深比较完全相同；详情首读/评分8、对应异议8、原裁定1，总17。双owner与核验原记录保留。
+- 实际展开原裁定报告；所显示完整报告对象与原snapshot的director记录深比较一致（`after.json`）。不把原模型判断转成人类批准，也不修改其原结论。
+- 两个登记Action均 `aria-disabled=true`，实际dispatch click不发命令；继续按钮不存在（queue0）。游客权限理由可见，执行cap关闭与legacy停止同时成立，不能据此单独证明执行开启时所有门禁路径。
+- 浏览器reload后仍为3方向、旧衔接未记录，0POST；当前无恢复/继续能力不被导航或刷新替代。
+- 1280浅色截图未见横向溢出；910深色实测scrollWidth=910/viewport=910。没有正式灰度/对比度测量。页错误0。
+
+原R1全为legacy保存点，本轮没有模拟pending/completed metadata、没有创建新durable业务运行，也没有重跑前序研究或17票。
+
+## A详情P3修后短核
+
+COPY服务正常SIGINT退出后，同端口冷启自有A服务PID83985，读取独立1130 clone。`visual-label-receipt.json`及已实际看过的 `visual-label-fixed.png`证明：详情为**“原报告1”**，旧“原评审1”不存在；展开仍是原 `nodeKey=assignment / rawReport.kind=assignment`，129/129进度不变。
+
+没有为改标题更改计数、原文或状态；原 `choice_blocked` 继续存在。未重复9图全SHA，也未将这次短核扩大为A/完整App/业务通过。此前P3旧截图和发现报告保持原位。
+
+## 关闭、原件保护与失败
+
+COPY、A自有handle82680/13052均正常SIGINT退出，Chrome均finally关闭。独立允许本机网络的端口回连实际返回 **ECONNREFUSED61**（4218/4468），没有把沙盒EPERM当关闭证据。两段API trace分别2GET、14GET，POST0、外网0。对应两个原DB/snapshot/semantic/全部原IO和924源码SHA均不变。
+
+准备脚本曾把17票误读为panel.reports，出现KeyError，因该脚本提前终止，首次serve启动缺文件；仅修独立提取脚本读取实际 `creativeReports` 后启动。原工具失败回执保留在本轮工具记录，未重放业务或修改产品；不冒称另有该失败的完整日志文件。
+
+## UI20原则处置
+
+|原则|本轮处置|
+|---|---|
+|01气质、03层级、04竞争、05标签|本范围已核；沿用中文蓝色基线、三案正文优先，legacy说明突出；A标签修后准确|
+|02灰度、14对比度|无法验证，未专项测量|
+|06操作、15非颜色线索、16边界|本范围已核；明确旧记录说明、禁继续、aria-disabled和权限理由，不靠颜色猜测|
+|07留白、08宽度、09归属、10比例|本范围已核；并排方向、详情分组和双尺寸未见横溢；910有数值测量|
+|11文字、12对齐、13色阶|本轮截图可读、原英文正文保持；不签全站/全部状态或无障碍合规|
+|17图上文字、18素材尺寸|COPY无新增图片；A只短核报告标题，不重复素材验证|
+|19分割、20空态|本范围已核；旧衔接未记录与无正文/未知执行状态分开，原稿持续可读|
+
+只读独立复验未改源码，故没有视觉优化前后提升声明。未覆盖新durable完成/崩溃核回、执行开启、完整App、付费模型/外网、真实消费者/客户/人类批准。根既有后端与前端unit结果是其先前证据，本轮不冒称重跑。

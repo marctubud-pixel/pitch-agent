@@ -1,0 +1,124 @@
+(node:77306) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ native planner preserves explicitly required packaging views in every direction (2.049083ms)
+✔ native KV targets use current task view requirements (0.188542ms)
+✔ native packaging limitations and exact approved lettering cannot be omitted (0.35ms)
+✔ native refinement must edit the exact selected original (0.094208ms)
+✔ original four roles, blind readings, challenges and independent director stay native (0.172792ms)
+✔ typed Brief explicit packaging views cannot be dropped (0.31875ms)
+✔ typed Brief explicit kv views cannot be dropped (0.168666ms)
+✔ typed Brief explicit adaptation views cannot be dropped (0.169625ms)
+✔ plain Brief remains unknown and typed invalid requirements fail closed (0.323292ms)
+(node:77308) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ synthetic generic sequence requires scope and independent handoffs, stopping at dedicated sketch authority (16.511667ms)
+✔ metadata-only copy cannot release through manual review or human adoption, even with forged completeness receipts (5.17ms)
+✔ assisted selected gate remains paused after pass and requires human adoption (8.519334ms)
+✔ creative disagreement can be adopted but factual unknown remains blocked with original review retained (1.863708ms)
+✔ independent review rejects author identity, run, ancestry and contaminated first reads (1.871291ms)
+✔ scope edit invalidates descendants and old in-flight completion stays historical (1.735166ms)
+✔ generic content and native stages reject exported-file flags and technical receipts before job creation (7.742833ms)
+✔ optimistic conflict, immutable input and idempotent command replay (0.2635ms)
+✔ human may adopt creative rejection without rewriting original independent verdict (1.483875ms)
+✔ updated copy invalidates released references and retains original artifacts and releases (11.70975ms)
+✔ generic content review and unreviewed sketch cannot skip dedicated authority (6.878666ms)
+✔ new blocking rejection revokes current release and downstream use transitively (8.524167ms)
+✔ each consuming edge needs its own two-owner handoff (1.623958ms)
+✔ older same-input completion is historical after newer request (0.194166ms)
+✔ panel cannot collapse seats or waive new dissent with an earlier decision (2.0215ms)
+✔ endpoint limits generic authorization and selected gates require current human adoption (12.852166ms)
+✔ reference fit uses separate criteria even with four high original scores (5.935792ms)
+✔ minor actionable observations do not become hard blockers (1.243167ms)
+✔ empty rejection stays unresolved and a single visual role cannot fill the panel (5.822416ms)
+✔ four-role panel is frozen before scores and original low scores cannot be replaced (9.038292ms)
+✔ human disposition outcomes never satisfy a selected gate and adoption binds current reviews (3.591541ms)
+✔ pending or deferred criticism cannot resolve a rejection and hard findings cannot be waived (2.703416ms)
+✔ legacy native metadata cannot release or gain authority even with all technical receipts (1.675959ms)
+✔ current sketch algorithm preserves four original scores and rejects an unrounded mean below four (1.739834ms)
+✔ current sketch algorithm requires all original votes and keeps unknown necessary conditions blocked (0.183792ms)
+✔ generic completion cannot convert old in-flight sketch or native jobs into current authority (0.986708ms)
+(node:77315) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ legacy completed step exact is unrecorded and never advances, enabled=false (1.646667ms)
+✔ legacy completed step exact is unrecorded and never advances, enabled=true (0.266417ms)
+✔ legacy disabled review exact is unrecorded, zero creative calls (0.1695ms)
+✔ new step saves real result and disabled exact replay is readonly (3.836333ms)
+✔ new review saves real result and disabled exact replay is readonly (0.859291ms)
+✔ marker failure stays pending and rejects COPY commands and legacy native admission; GET is pure (0.901084ms)
+✔ completion save failure never re-advances; concurrent exact observes pending (1.373459ms)
+✔ real SQLite two stores do not mistake another owner for own CAS claim, sameId=true (16.230833ms)
+ℹ Retained new SQLite race /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/copy-claim-race-ByTOfz
+✔ real SQLite two stores do not mistake another owner for own CAS claim, sameId=false (6.426792ms)
+ℹ Retained new SQLite race /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/copy-claim-race-lmuo1H
+✔ real small HTTP rejects new COPY step at durable pending without changing original new fixture head (17.923084ms)
+ℹ Retained new HTTP metadata fixture /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/copy-pending-http-WLfP7p
+✔ old queued step replay cannot dispatch under on/off; actual start/retry cannot borrow legacy membership (1.125958ms)
+✔ real SQLite successful result survives restart with no executor and no new revision (6.116791ms)
+ℹ Retained saved result SQLite /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/copy-saved-result-anFDpg
+(node:77316) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a fixed four-job step stops at its first unknown and exact replay does not dispatch the remainder (2.896292ms)
+✔ a prior running on the same edge refuses a new step before its ledger entry (0.170167ms)
+✔ a prior awaiting_reconciliation on the same edge refuses a new step before its ledger entry (0.121375ms)
+✔ an unsettled job on another edge does not block this fixed group (1.059958ms)
+✔ a workspace without an owner edge never presents unrelated research jobs as copy jobs (0.118209ms)
+(node:77317) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ default visual surface stays read-only while project-bound upload preserves exact original bytes and receipt (303.762ms)
+ℹ Retained synthetic boundary root: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/visual-a-http-tpYFdp
+✔ image header permission is route-local and normal visual JSON remains bounded and strict (6.699541ms)
+ℹ Retained synthetic boundary root: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/visual-a-http-UR7EEL
+✔ enabled visual surface rejects default authorization and absent original target as domain HTTP errors (13.413958ms)
+ℹ Retained synthetic boundary root: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/visual-a-http-jAjfxg
+ℹ Retained synthetic boundary root: /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/visual-a-http-dX03ud
+(node:77352) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a competing stored marker cannot grant the losing caller an advance claim (12.983917ms)
+ℹ Retained isolated race DB /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/a-replay-race-only-RddpmH
+✔ legacy queued request without protocol is rejected at the actual visual claim hook (0.940875ms)
+✔ distinct claim marker loses actual SQLite CAS without advance (5.94325ms)
+ℹ Retained isolated race DB /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/a-replay-race-only-By3NvG
+✔ A native completion refuses another owner or marker and retains pending (0.878083ms)
+(node:77353) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ fixed references ledger admits only its exact original job and target (1.15775ms)
+✔ fixed sketch ledger admits only its exact original job and target (0.185333ms)
+✔ fixed sketch_review ledger admits only its exact original job and target (0.178167ms)
+✔ unknown, wrong source, default-only authorization and duplicate IDs never gain a visual claim (0.142375ms)
+(node:77358) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ portable native actual claim blocks late unknown before native reducer with DomainError (5.878708ms)
+✔ portable actual HTTP unknown admission keeps new fixture DB head and ledger unchanged (20.044042ms)
+ℹ Retained isolated metadata fixture /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/a-preintegration-only-aKXeZo
+✔ regression: successful step without saved advance cannot advance with execution disabled (1.193291ms)
+✔ regression: saved exact replay returns original progress and never advances later eligible (2.395291ms)
+✔ advance marker survives crash; exact replay is pending/read only and blocks new writes and claims (2.724709ms)
+✔ concurrent exact replay observes pending; advance called once and completion freezes result (1.493083ms)
+✔ completion commit failure remains durable pending after executor has advanced once (1.160625ms)
+✔ unfinished original step rechecks method/current source and target idle before advance (1.858375ms)
+✔ legacy no-protocol exact requests stay unrecorded for queued/succeeded and on/off; zero commands/advance (1.293458ms)
+✔ portable actual HTTP pending-marker admission rejects new step without touching new DB head (5.769708ms)
+ℹ Retained isolated pending fixture /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/a-replay-pending-http-Xx8CmH
+✔ real new SQLite persists advance result; reopened disabled service replays without revision or executor (6.960125ms)
+ℹ Retained durable new metadata fixture /private/var/folders/y6/gsc47lg94291ccbj4bj_gm0h0000gn/T/a-replay-durable-2DVlFl
+✔ new command cannot re-admit original queued IDs to upgrade an unsupported legacy step (0.676208ms)
+(node:77361) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ references: target unknown rejects before ledger write (0.913916ms)
+✔ references: actual claim rejects newly unknown original-target sibling (0.445958ms)
+✔ references: unrelated unknown and recovered upstream attempt do not block, own running mark remains legal (0.199584ms)
+✔ sketch: target unknown rejects before ledger write (0.094ms)
+✔ sketch: actual claim rejects newly unknown original-target sibling (0.086542ms)
+✔ sketch: unrelated unknown and recovered upstream attempt do not block, own running mark remains legal (0.10775ms)
+✔ sketch_review: target unknown rejects before ledger write (0.106584ms)
+✔ sketch_review: actual claim rejects newly unknown original-target sibling (0.08475ms)
+✔ sketch_review: unrelated unknown and recovered upstream attempt do not block, own running mark remains legal (0.098833ms)
+✔ fixed four-job service stops after first unknown and never dispatches next item (3.540417ms)
+ℹ tests 85
+ℹ suites 0
+ℹ pass 85
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1570.303375

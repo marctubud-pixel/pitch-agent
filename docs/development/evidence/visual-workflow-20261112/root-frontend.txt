@@ -1,0 +1,14 @@
+
+> proposal-workbench@0.1.0 test
+> vitest run src/services/http/visualA.test.ts src/services/http/visualReferenceMap.test.ts src/domain/visualRequirements.test.ts src/services/http/briefIntegration.test.ts src/services/http/copyAdvanceProjection.test.ts
+
+
+ RUN  v5.0.5 /Users/marc/Documents/ChatGPT/调研agent/apps/workbench-preview
+
+(node:6559) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  5 passed (5)
+      Tests  31 passed (31)
+   Start at  12:33:49
+   Duration  7.01s (tests 95%, import 3%, transform 2%)

@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-12",
+  "files": [
+    {
+      "file": "a-claim-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-advance-claim-r4/independent-review.md",
+      "sha256": "06b63325fbd2e97f86f7e9a0441dab89e052b9eec3878d8a5d6334a99ddc5055",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "copy-replay-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/simple-copy-durable-replay/independent-review.md",
+      "sha256": "a5ac0ffff30e83857d419640dada9fbf5c0afce605c0bfe70f07ed31425953c6",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "brief-views-independent.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/brief-visual-requirements/independent-review.md",
+      "sha256": "e3288ab12fd7ef534c75b05c3b2a534038fa8aacc55aa93b9bafcb48e922111b",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "brief-views-length-recheck.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/brief-visual-requirements/independent-p3-recheck.md",
+      "sha256": "b60366b8cc2270a3a31488f52fe00679f39f1e4cca5ae47d9bab47e2a1c0711e",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "visual-reference-ui.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/visual-reference-ui-independent-r5/REPORT.md",
+      "sha256": "3a39fc5633e326f7106b978d2f2ef18c8444626dc97033c3eee66d9f602a7db8",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "copy-legacy-ui.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/copy-durable-ui-independent/REPORT.md",
+      "sha256": "fb1fbba99186475914beb4fdd55a5ffe4a58072a415fc3671a4cb771bb9cb65e",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "root-boundaries.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-all-boundaries-after-copy.log",
+      "sha256": "91d501e76e7c617b531894aa74010e995dc3997a04ab34e54d457d86ec06230f",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份"
+    },
+    {
+      "file": "root-frontend.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-cap-frontend.log",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份",
+      "sourceSha256": "d45aee543bba74e8ba2b03acc1a7f20ae8f4597e04686b5b41f19aaace2348f8",
+      "sha256": "fe437bd9c6a6bb99cba68d378d2df863a6a1596a122663e57372828ca1ff4682",
+      "transformation": "仅去除末尾空行，原完整日志保留在source路径"
+    },
+    {
+      "file": "root-typecheck.txt",
+      "source": ".scratch/seven-stage-static-goal-20261111/design/root-a-merge/root-cap-typecheck.log",
+      "scope": "原回执字节副本；所记候选、运行时点及限制保持原身份",
+      "sourceSha256": "82a331f35f84aa9dcd78f35a4d0c86e33195a0b10af5b3f66b7449b03dd7bf0c",
+      "sha256": "ee79cbde45b93a89a54402424ad8cb267c125e71b3cd5941a4aadef9f04d915a",
+      "transformation": "仅去除末尾空行，原完整日志保留在source路径"
+    }
+  ]
+}

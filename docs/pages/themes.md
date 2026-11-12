@@ -1,6 +1,6 @@
 # 文案与主题 · 页面开发规格
 
-规范版本：1.1.0。页面ID：`themes`。状态：已确认要求汇编；本次整理待核对。负责人见[copy-owner](../agents/copy-owner.md)。
+规范版本：1.2.0。页面ID：`themes`。状态：已确认要求汇编；本次整理待核对。负责人见[copy-owner](../agents/copy-owner.md)。
 
 这是页面显示、状态与交互合同；业务做法由岗位和方法承担，页面实现不自行改变业务门禁。共同视觉规则见[桌面UI基线](../specs/ui-system.md)。
 
@@ -52,6 +52,8 @@
 当前三方向主副文与推荐，1280桌面。既有界面留档，不证明所有现行要求已实现或获批。原图身份见[截图来源清单](../specs/screenshot-provenance.json)。
 
 ## 来源与版本
+
+当前COPY入口按[运行合同](../development/simple-copy.md)区分已保存原稿、原四岗报告、人类采用及技术衔接。pending或当前scope的旧推进结果未记录时，保留原文/原票并停止继续；不会自动重派或把历史结果补成已完成。已保存的新原结果折叠查看，页面刷新只核对原请求。
 
 要求来源：现有[用户决定索引](../specs/decisions.md)、[版本沿革](../handoffs/提案工作台_版本沿革与已确认要求_20261111.md)及本次[来源清单](../specs/source-provenance.json)。图像是证据，不覆盖当前文字要求。新需求通过[变更与PR规则](../specs/change-control.md)更新本文件版本。
 

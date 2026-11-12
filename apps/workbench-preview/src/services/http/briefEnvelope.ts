@@ -1,3 +1,4 @@
+import {parseVisualRequirements} from '../../domain/visualRequirements';
 import type { AttachmentInput, BriefInput, BriefProvenance, CreateProjectInput, FieldOrigin, FieldProvenance, ProvenanceReason } from '../../domain/models';
 import { TASK_FIELDS } from '../../domain/models';
 import { ServiceError } from '../../domain/service';
@@ -45,11 +46,12 @@ export function readBrief(raw: string): BriefEnvelope {
   }
   const envelope = object(candidate), f = object(envelope.fields), m = object(envelope.metadata);
   return { format: 'proposal-workbench-brief-v1', savedAt: text(envelope.savedAt), metadata: { client: text(m.client), summary: text(m.summary), researchOwner: text(m.researchOwner), strategyOwner: text(m.strategyOwner), type: isProposalType(f.proposalType) ? f.proposalType : isProposalType(m.type) ? m.type : undefined, ...(typeof m.presentationLocalTime === 'string' ? { presentationLocalTime: m.presentationLocalTime } : {}) }, fields: {
+    ...(f.visualRequirements === undefined ? {} : {visualRequirements: parseVisualRequirements(f.visualRequirements)}),
     ...(isProposalType(f.proposalType) ? {proposalType: f.proposalType} : isProposalType(m.type) ? {proposalType: m.type} : {}), background: text(f.background), audience: text(f.audience), objectives: strings(f.objectives), deliverables: strings(f.deliverables), constraints: strings(f.constraints), changeNote: text(f.changeNote), brand: text(f.brand), researchQuestions: strings(f.researchQuestions), deliverableType: text(f.deliverableType), timeline: text(f.timeline), budget: text(f.budget), references: strings(f.references), openQuestions: strings(f.openQuestions), provenance: provenance(f.provenance), attachment: attachment(f.attachment),
   } };
 }
 export function writeBrief(fields: BriefInput, metadata: ProjectMetadata, savedAt: string): string {
-  const value: BriefEnvelope = { format: 'proposal-workbench-brief-v1', savedAt, metadata, fields: { ...fields, attachment: fields.attachment ? { ...fields.attachment, file: null } : null } };
+  const value: BriefEnvelope = { format: 'proposal-workbench-brief-v1', savedAt, metadata, fields: { ...fields, ...(fields.visualRequirements === undefined ? {} : {visualRequirements: parseVisualRequirements(fields.visualRequirements)}), attachment: fields.attachment ? { ...fields.attachment, file: null } : null } };
   const raw = JSON.stringify(value, (_key, item: unknown) => item && typeof item === 'object' && !Array.isArray(item) ? Object.fromEntries(Object.entries(object(item)).sort(([a], [b]) => a.localeCompare(b, 'en'))) : item);
   if (raw.length > 60000) throw new ServiceError('validation', '任务卡与原始文本合计超过后端 60,000 字符限制，请缩短后重试。未保存。');
   return raw;

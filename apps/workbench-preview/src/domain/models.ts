@@ -1,3 +1,4 @@
+import type {VisualRequirement} from './visualRequirements';
 /**
  * Frontend contract for Proposal Workbench.
  *
@@ -200,6 +201,7 @@ export interface Brief {
   audience: string;
   objectives: string[];
   deliverables: string[];
+  visualRequirements?: VisualRequirement[];
   constraints: string[];
   brand: string;
   researchQuestions: string[];
@@ -808,6 +810,7 @@ export interface BriefInput {
   audience: string;
   objectives: string[];
   deliverables: string[];
+  visualRequirements?: VisualRequirement[];
   constraints: string[];
   changeNote: string;
   brand?: string;

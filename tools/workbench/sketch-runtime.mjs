@@ -56,12 +56,12 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
     }
     return {p,source};
   }
-  async function continueSketch(projectId,request) {
+  async function continueSketch(projectId,request,scope={}) {
     need(Object.keys(request).every(k=>['commandId','expectedRevision'].includes(k)),'INVALID_SKETCH_INTENT','Only continuation identity and revision are accepted');
     const p=store.read(projectId),prior=p.sketchIntents?.find(i=>i.id===request.commandId);
     if(prior)need(equal(prior.request,request),'COMMAND_ID_REUSED','Continuation ID reused');
     else store.command(projectId,{kind:'request-sketch-continuation',request,commandId:request.commandId,expectedRevision:request.expectedRevision},coordinator());
-    return advanceSketch(projectId);
+    return advanceSketch(projectId,scope);
   }
   async function importAnchored(projectId,job) {
     const p=store.read(projectId),g=p.sketchGenerations.find(g=>g.id===job.generationId),attempt=job.attempts.at(-1);
@@ -71,9 +71,9 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
     await imageStore.read({projectId,imageId:asset.id,expectedHash:asset.sha256});
     send(projectId,{kind:'complete-image-candidate',jobId:job.id,attemptId:attempt.id,asset});
   }
-  async function advanceSketch(projectId) {
-    let p=store.read(projectId);
-    for(const job of p.jobs.filter(j=>['sketch_owner','sketch_plan'].includes(j.purpose)&&['running','awaiting_reconciliation'].includes(j.status)&&j.attempts.at(-1)?.httpAttemptLocator)){
+  async function advanceSketch(projectId,{generationId,dossierId,selectionHash,noRecovery=false}={}) {
+    let p=store.read(projectId);if(generationId&&!p.sketchGenerations?.some(g=>g.id===generationId))return {status:'blocked',reason:'SKETCH_GENERATION_REQUIRED',queuedJobIds:[]};if(noRecovery&&p.jobs.some(j=>(generationId?j.generationId===generationId:['sketch_owner','sketch_plan','image_candidate'].includes(j.purpose))&&['running','awaiting_reconciliation'].includes(j.status)))return {status:'awaiting_reconciliation',reason:'ORIGINAL_OUTCOME_UNRESOLVED',queuedJobIds:[]};
+    for(const job of (noRecovery?[]:p.jobs).filter(j=>(!generationId||j.generationId===generationId)&&['sketch_owner','sketch_plan'].includes(j.purpose)&&['running','awaiting_reconciliation'].includes(j.status)&&j.attempts.at(-1)?.httpAttemptLocator)){
       try{const receipt=await restoreOrdinaryJob(store,root,projectId,job.id,{imageStore}),attempt=job.attempts.at(-1),raw=JSON.parse(receipt.responseText),payloadRef=join(root,attempt.id,'sketch-report.json');
       try{await writeFile(payloadRef,JSON.stringify(raw),{flag:'wx'});}catch(error){if(error.code!=='EEXIST')throw error;need(await readFile(payloadRef,'utf8')===JSON.stringify(raw),'SKETCH_RECEIPT_CHANGED','Retained normalized text report changed');}
       {const p=store.read(projectId),j=p.jobs.find(j=>j.id===job.id);await reopenOrdinaryCompletion(p,j,j.attempts.at(-1),{executionRoot:root,receipt,wrappers:[[payloadRef,JSON.stringify(raw)],[join(root,attempt.id,'receipt.json'),JSON.stringify(receipt)]]});}
@@ -81,15 +81,15 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
       }catch(error){return {status:'awaiting_reconciliation',reason:error.code??'SKETCH_EVIDENCE_UNAVAILABLE',queuedJobIds:[]};}
     }
     p=store.read(projectId);
-    for(const job of p.jobs.filter(j=>j.purpose==='image_candidate'&&['running','awaiting_reconciliation'].includes(j.status)&&j.attempts.at(-1)?.responseEvidence)) {
+    for(const job of (noRecovery?[]:p.jobs).filter(j=>(!generationId||j.generationId===generationId)&&j.purpose==='image_candidate'&&['running','awaiting_reconciliation'].includes(j.status)&&j.attempts.at(-1)?.responseEvidence)) {
       try{await importAnchored(projectId,job);}catch(error){return {status:'awaiting_reconciliation',reason:error.code??'SKETCH_EVIDENCE_UNAVAILABLE',queuedJobIds:[]};}
     }
     p=store.read(projectId);
     if(!p.sketchIntents?.length)return {status:'not_requested',queuedJobIds:[]};
     try {
-      const {source}=await checked(projectId);
+      const {source}=await checked(projectId);need(!dossierId||source.dossierId===dossierId,'SKETCH_SOURCE_STALE','Original dossier required');need(!selectionHash||source.selectionHash===selectionHash,'SKETCH_SOURCE_STALE','Original selection required');
       p=store.read(projectId);
-      let g=p.sketchGenerations?.find(g=>g.source.sourceHash===source.sourceHash);
+      let g=generationId?p.sketchGenerations.find(g=>g.id===generationId):p.sketchGenerations?.find(g=>g.source.sourceHash===source.sourceHash);if(generationId)need(g?.source.sourceHash===source.sourceHash,'SKETCH_SOURCE_STALE','Explicit original generation required');
       if(!g) {
         const currentBindings=configuredBindings();
         const allowance=p.imageAllowance??{id:`image-allowance-${hash(p.id)}`,maxCalls:configuration.maxCalls,origin:configuration.origin,configurationVersion:configuration.version};
@@ -112,9 +112,10 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
       return {generationId:g.id,status:failed?failed.status:g.plan&&jobs.filter(j=>j.purpose==='image_candidate').every(j=>j.status==='succeeded')?'candidates_ready':g.plan?'producing':'waiting_handoff_or_plan',...(failed?{reason:failed.error?.code}:{}),queuedJobIds};
     } catch(error) {return {status:'blocked',reason:error.code??'SKETCH_UNAVAILABLE',queuedJobIds:[]};}
   }
-  async function execute(projectId,jobId) {
+  async function execute(projectId,jobId,{admission}={}) {
     let p=store.read(projectId),job=p.jobs.find(j=>j.id===jobId);
     if(job.status!=='queued')return job;
+    const claim=(c,context,expectedRevision)=>admission?store.command(projectId,{...c,visualHttpRequestId:admission.requestId,commandId:`visual-${c.kind}-${hash([projectId,admission.requestId,jobId])}`,expectedRevision},context):send(projectId,c,context);
     const attemptId=randomUUID(),context={actorType:'agent',actorId:`sketch-worker-${attemptId}`,runId:attemptId,contextId:randomUUID(),executorHost:hostname(),executorPid:process.pid,now:new Date().toISOString()};
     let claimed=false,receipt;
     try {
@@ -129,7 +130,7 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
         await checked(projectId,g);
         requireCurrentSketchGeneration(store.read(projectId),g,copyDeliveryEnvelope);
         requireExecution(job);
-        send(projectId,{kind:'claim-sketch-job',jobId,attemptId,requestHash:prepared.requestHash},context);claimed=true;
+        claim({kind:'claim-sketch-job',jobId,attemptId,requestHash:prepared.requestHash},context,admission?.expectedRevision);claimed=true;
         const result=await imageProvider.execute(prepared,{evidenceDir});receipt=result.receipt;
         need(result.kind==='image',result.diagnostic??receipt?.diagnostic??'IMAGE_OUTCOME_UNKNOWN','Dispatched image result requires reconciliation');
         send(projectId,{kind:'anchor-image-response',jobId,attemptId,receipt},context);
@@ -140,7 +141,7 @@ export function createSketchRuntime({store,root,references,providers,bindings,im
         await checked(projectId,g);
         requireCurrentSketchGeneration(store.read(projectId),g,copyDeliveryEnvelope);
         requireExecution(job);
-        send(projectId,{kind:'claim-sketch-job',jobId,attemptId},context);claimed=true;
+        claim({kind:'claim-sketch-job',jobId,attemptId},context,admission?.expectedRevision);claimed=true;
         receipt=await invokeOrdinary({executionRoot:root,provider:providers[job.binding.providerId],binding:job.binding,attemptId,request,runtimePacketBytes:Buffer.from(JSON.stringify(packet)),persistLocator:locator=>send(projectId,{kind:'anchor-model-http-attempt',jobId,attemptId,locator},context)});
         await writeFile(join(folder,'receipt.json'),JSON.stringify(receipt),{flag:'wx'});
         const raw=JSON.parse(receipt.responseText),payloadRef=join(folder,'sketch-report.json');

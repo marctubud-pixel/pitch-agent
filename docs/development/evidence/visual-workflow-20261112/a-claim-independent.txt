@@ -1,0 +1,44 @@
+# A/B advance claim r4独立复验
+
+2026-11-12。结论：**原A两项P2与B同类CAS去重缺口，在本次独立廉价边界内已实质关闭；未发现新增可操作P1/P2。** 适合作为后续三方合流与实际上游小范围验收候选，没有采用或签A/B整链、模型/图片原IO、视觉质量通过。COPY是另包，不混作已修。
+
+固定manifest SHA256：`ef3c95f1a224abb07e999003997461edf61a237227ce7cff3092116c2ba767e2`。A两源delta `590280b63875884107a2da4b3ffba5b97b85dd78842392caf7071fed290fb380`；B两源delta `221277c72082662117c51d019e6a06af363ffb240a7e2ed2abd832a3b5c99329`。原A三源/B八源合计11件独立核SHA保持不变；本轮不改根、原WT、旧129案、旧freeze或Git。
+
+## 独立实际运行
+
+使用REPORT指定的相同命令及冻结测试：
+
+| 执行 | 实际结果 | 本轮日志 |
+| --- | --- | --- |
+| A原29＋新增4 | 33通过／0失败／0skip | independent-a-green.log |
+| B原56＋新增4 | 60通过／0失败／0skip | independent-b-green.log |
+| A同新增4项、旧A三源before-loader | 1通过／3失败／0skip | independent-a-before.log |
+| B同新增4项、旧B八源before-loader | 2通过／2失败／0skip | independent-b-before.log |
+
+没有运行旧12项baseline的gate组合。A只读依赖stage与B loader均未导入硬编码历史unknown-actual/engineering链；HTTP测试只使用新空边界SQLite/loopback，由test关闭服务，0模型、0生成图片、0旧DB读写。
+
+进一步保留旧错误断言原文件不变：
+
+- 原独立A `simple-visual-a-replay-r3/independent-race.test.mjs`直接指向新a-stage：0通过／2失败，分别由 `VISUAL_ADVANCE_CLAIM_REQUIRED`及旧协议提前拒绝使原错误不再成立，见independent-original-counterexamples-closed.log。该“红”是旧错误断言失效，不是新正确行为回归失败。
+- B原 `b-race.test.mjs`用before-loader：1通过，实证旧同marker去重后loser仍advance；相同未改源用新loader因 `VISUAL_B_ADVANCE_CLAIM_REQUIRED`失败，见independent-b-original-reproduced/closed.log。B同类问题本轮确实独立复现了旧源，不只借A推断。
+- 新增独立completion body强反例，见independent-extra.test.mjs/log：真实新SQLite中正常owner完成后，另一连接使用相同completion commandId替换progress，被原 `COMMAND_ID_REUSED`拒绝；revision及原结果保持，同body step replay仍零第二次advance。1通过／0失败。fixture仅提取未改metadata准备函数，没有改作者test或生产守卫。
+
+## 问题关闭的实质
+
+**CAS claim归属。** A/B每次尝试使用独立UUID marker及独立内部actor/run/context；原CAS仍保留。关键是reducer将完整claimOwner存入durable row，service在command返回后重新从store读取marker和owner，精确属于自己才advance。不是单靠随机ID：双真实openStore反例仍把完全相同marker交另一owner先提交，loser同指纹回放返回revision1，但新service拒绝，loser advance为0、结果不被写，pending原位保留。不同marker竞争则由真实SQLite CAS抛REVISION_CONFLICT，亦零advance。
+
+**completion归属及内容。** 正常完成使用原claimOwner上下文并引用原marker。原reducer对其他owner/marker拒绝，不写结果；A保持pending，B revision仍1。相同completion身份换progress也不能覆盖原结果，新增真实store反例已证。现有单store正常完成与exact replay保持一次advance、原progress及revision不变。
+
+**A旧ledger准入。** requireVisualClaim现明确要求 `visual-a-durable-advance-v1`。旧无protocol queued通过原visualHttpRequestId调用真实applyCommand start hook，现提前抛 `VISUAL_LEGACY_ADVANCE_RECONCILIATION_CLOSED`，不再落到后续无关execution-binding检查。新service旧queued/succeeded/on/off仍只读返回unrecorded、不补marker/进度，换commandId不能重新纳管原job。无该新准入ID的原runtime没有被泛禁。
+
+**保存与停止。** 原完成/历史exact body只读回放，换body拒绝；marker中断或completion写失败保持pending，新step/command/nativeclaim被挡，不自动核回或重派。A关闭executionAllowed且无executor的service在原新SQLite关闭重开后仍读原progress，已有29项继续通过；这不冒称整个HTTP服务器真实业务关闭重开已跑通。B原revisionResult、child另需新target/request、旧parent余job不执行的10项也继续通过。
+
+本次delta没有修改原项目/store CAS幂等顺序、native method/source/currentness、score/requiredViews/预算/三轮、same-target unknown、onlytarget/noRecovery或正常当次receipt消费。原11生产基线未变；只有A/B各http/service两源窄改。原cheap17、便携实际hook/新HTTP负例、B46/修订10以及pending组合均在本轮全套中重跑。
+
+## 范围与冻结
+
+测试前独立重算manifest所有列出artifact及A/B overlay after、两delta SHA，另核原11 source；保存independent-freeze-pre.json。测试和独立补充探针后再次逐件重算并保存independent-freeze-post.json，所有原冻结字节仍一致；新HTTP/metadata DB只新增，不覆盖旧证据。
+
+SQLite竞态是紧贴真实store.command边界插入另一连接提交的合法交错，使用真实事务和实际processedCommands/CAS路径；没有冒称启动两个完整OS服务。fixture是明确构造的metadata与legacy关系，不是实际ordinary图像/评审原票或成功业务整链。
+
+原129像素语义choice_blocked、A9图/v2/refinement54、真实B13节点/三轮/人类采用/放行、App/Chrome和视觉质量仍未由本轮验证。pending仍无全面恢复承诺。后续合流须保留根较新copy/sharedfields/perf/claims等改动；应按delta三方合并，并在真正上游具备后另行小范围验收。

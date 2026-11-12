@@ -1,6 +1,6 @@
 # Git、PR与版本恢复
 
-规范版本：1.0.3。origin为 `git@github.com:marctubud-pixel/pitch-agent.git`。可见性与远程保护设置按实际GitHub状态判断，不能由本地配置推断。
+规范版本：1.0.4。origin为 `git@github.com:marctubud-pixel/pitch-agent.git`。可见性与远程保护设置按实际GitHub状态判断，不能由本地配置推断。
 
 ## 日常PR
 
@@ -43,3 +43,5 @@ SQLite主文件、WAL和SHM按同一数据库处理，使用既有恢复协议�
 七阶段与受限研究[PR #2](https://github.com/marctubud-pixel/pitch-agent/pull/2)的同两项检查均completed/success，head为d0298f0dfdc06af60ea0a95f9b32c6865e655644，正常合并为df719104205662812b28b3ad3a91af52d14860d1。原生回执在`.scratch/seven-stage-research-20261111/pr2-checks-before-merge.json`、`pr2-merge-receipt.json`及`PUBLISH-RECEIPT.json`，本次对账只读复核这些已保存原件，没有重新远程核设置。上述结果不证明保护、审批、可见性和协作者权限；后续PR也分别核验。
 
 PDF原件[PR #4](https://github.com/marctubud-pixel/pitch-agent/pull/4)准确head双CI成功，合并44c495b14677cc8e16b77957fe060a483a4d3f84。研究读者与同版交接[PR #5](https://github.com/marctubud-pixel/pitch-agent/pull/5)在head cac8e589ea3505dab80f7ba78b5dd31ff16e6c90的application/specifications均completed/success，正常合并97f13ab562b231f689afb9536e658a2cd3c2558c。原回执分别在本地目标目录的ORIGINALS-CI/MERGE与READER-CI/MERGE.json；它们不证明整案闭环或远程保护设置。
+
+文案[PR #9](https://github.com/marctubud-pixel/pitch-agent/pull/9)准确b5687cf3双CI与实际步骤成功，合并68b6302c；[文案核验](simple-copy-verification-20261112.md)保留原失败与独立复核。图片读取[PR #10](https://github.com/marctubud-pixel/pitch-agent/pull/10)准确80858680双CI和实际步骤成功，合并a5c6ee5b，五件最终回执/审查随[读取证据](evidence/image-readback-20261112/EVIDENCE-SOURCES.json)保存。后续发现的衔接重放问题另用新工作包修复，不改写PR #9当时的通过范围。

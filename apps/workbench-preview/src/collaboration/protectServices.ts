@@ -27,6 +27,7 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const acquisition = service.researchAcquisition;
   const simple = service.simpleStrategy;
   const copy = service.copyWorkflow;
+  const visual=service.visualWorkflow;
   const originals = service.originalDocuments;
   const recoveryAction = (): TeamAction => {
     const pending = recovery?.getPending();
@@ -41,6 +42,12 @@ export function protectServices(raw: ProtectedServices, store: LocalTeamStore): 
   const workbench: WorkbenchService = {
     get environment() { return service.environment; },
     briefRecovery,
+    visualWorkflow:visual?{
+      get:id=>visual.get(id),image:(id,image)=>visual.image(id,image),pending:()=>visual.pending(),
+      retry:()=>visual.retry(),
+      upload:(id,file,description,meta)=>store.run({kind:'edit_visual'},actor=>visual.upload(id,file,description,{...meta,actor})),
+      act:(id,action,meta)=>store.run(['reference-adoptions','reference-choices','sketch-adoptions'].includes(action.route)?{kind:'decide',stage:'visual'}:action.route==='reference-materials'?{kind:'edit_visual'}:{kind:'workflow'},actor=>visual.act(id,action,{...meta,actor})),
+    }:undefined,
     copyWorkflow:copy?{
       get:id=>copy.get(id),
       continue:(id,input,meta)=>store.run({kind:'workflow'},actor=>copy.continue(id,input,{...meta,actor})),

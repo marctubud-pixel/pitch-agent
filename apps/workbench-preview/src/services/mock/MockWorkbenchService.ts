@@ -1,3 +1,4 @@
+import {parseVisualRequirements} from '../../domain/visualRequirements';
 import { installQingyu, readCaseStore } from '../cases/installQingyu';
 import { demoChineseText } from './demoChinese';
 import { ACTIVE_TASK_FIELDS } from '../../domain/models';
@@ -824,6 +825,7 @@ export class MockWorkbenchService implements WorkbenchService, DemoControls {
       audience: input.audience.trim(),
       objectives: cleanList(input.objectives),
       deliverables: cleanList(input.deliverables),
+      ...(input.visualRequirements === undefined ? {} : {visualRequirements: parseVisualRequirements(input.visualRequirements)}),
       constraints: cleanList(input.constraints),
       brand: (input.brand ?? '').trim(),
       researchQuestions: cleanList(input.researchQuestions ?? []),
@@ -1042,7 +1044,7 @@ export class MockWorkbenchService implements WorkbenchService, DemoControls {
       const brief = currentBrief(db, projectId);
       if (!brief) throw new ServiceError('not_found', m('err.noBrief'));
       const hidden = input.editScope === 'task_card' ? legacyBriefFields(brief) : {};
-      const next = { ...this.briefFields({ ...input, proposalType: input.proposalType ?? brief.proposalType }), ...hidden };
+      const next = { ...this.briefFields({ ...input, visualRequirements: input.visualRequirements ?? brief.visualRequirements, proposalType: input.proposalType ?? brief.proposalType }), ...hidden };
       const current = { ...this.briefFields({ ...brief, changeNote: '' }), ...hidden };
       const same = stableStringify(next) === stableStringify(current) && !input.attachment;
       const provenance = input.editScope === 'task_card' ? { ...brief.provenance } : input.provenance ?? brief.provenance ?? {};

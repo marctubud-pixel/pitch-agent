@@ -90,7 +90,7 @@ export function NewProjectView() {
   const [adopted, setAdopted] = useState<string | null>(null);
   if (done && adopted !== done.doc.id) {
     setAdopted(done.doc.id);
-    setCard(fromDraft(done.mapping.fields));
+    setCard(previous => ({...fromDraft(done.mapping.fields), visualRequirements: previous?.visualRequirements}));
     setSettings((s) => ({ ...s, client: s.client || (Array.isArray(done.mapping.fields.brand.value) ? '' : done.mapping.fields.brand.value.split(/ [—–-] /)[0].slice(0, 60)) }));
     void assistant.newConversation({ kind: 'draft' });
   }

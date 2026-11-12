@@ -1,0 +1,13 @@
+# 固定提交独立 Spec 审查
+
+审查：`68b6302c4a88f2a11b0548a9243ca4ab3530347a...80858680e863ec7abfdd277eac0404e2abadc8bc`。两 ref 已解析；范围仅单 commit `80858680`，diff 非空。未将未提交目录、其他视觉候选或模型输出纳入结论。
+
+依据：根 AGENTS.md、docs/specs/README.md 1.12.0、docs/development/image-readback.md 1.0.0、docs/architecture/runtime.md 1.8.0、docs/development/testing.md 1.9.0。
+
+a. 缺失／部分需求：未发现可证 P1/P2。image-readback:7–15 对应 model-http-authority:133–157 的私有 Map、成功维度冻结、fresh bytes SHA/长度/策略/环境 identity、关闭与 generation；:198–205、:271–282 继续逐次读取并核 manifest、原件、绑定及 deadline。ordinary-model-project:112–131 在原两个 verifier 建立独立 scope，reference 内部核验沿用同次 scope。invoke:286 先关闭本分支和祖先，invoke 自有 reopen 在 :271 禁用复用；拒绝异常清空祖先，兄弟 Map 不共享。
+
+b. 越范围：未发现可证 P1/P2。生产变更限指定三源；测试、CI、注册锁与证据文件为配套。image-readback:3、15、39–45 保留研究默认授权、原参考／草图门槛与业务批准边界，分别登记历史计数、原红例、候选、根采用及误期望修正，未将计数转述为速度或业务通过。
+
+c. 实现错误：未发现可证 P1/P2。image-readback:35 对应 ordinary-model-claims:31：仅提前比较 HTTP namespace/invocationId，matching 仍执行双方 ordinarySuccess；JSON-domain 的失败、null/context 缺失与 legacy/mixed 结果保持。九项图片测试使用自建真实 PNG/JPEG、本机 HTTP 原件、新临时目录；Pillow 缺能力明确失败，CI 显式前置已配置 venv，未改生产 Python 选择。
+
+本人实际执行：纯 metadata 六项全部通过（6 pass、0 fail、0 skip）。未复跑本机 HTTP 九项、55 邻接、26 域、规范／清单检查；根已有的 15+55+26 和 59/1812 结果属于根执行证据。未运行远程完整 CI、新全链、旧 run 或真实模型，未修改源码、数据库或 Git。结论限固定 diff 与上述纯测试，不代签业务批准。

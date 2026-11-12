@@ -1,3 +1,4 @@
+import type {VisualAService} from './visualA';
 import type {CopyWorkflowService} from './copyWorkflow';
 import type {SimpleStrategyService} from './simpleStrategy';
 import type {ResearchAcquisitionService} from './researchAcquisition';
@@ -56,6 +57,7 @@ export interface WorkbenchService {
   readonly researchAcquisition?: ResearchAcquisitionService;
   readonly simpleStrategy?: SimpleStrategyService;
   readonly copyWorkflow?: CopyWorkflowService;
+  readonly visualWorkflow?: VisualAService;
   readonly originalDocuments?: OriginalDocumentsService;
 
   /** Notifies when data may have changed so views can refresh. */

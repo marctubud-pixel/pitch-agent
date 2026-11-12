@@ -1,6 +1,6 @@
 # 应用与Agent运行架构
 
-规范版本：1.8.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.9.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ```mermaid
 flowchart LR
@@ -20,7 +20,7 @@ flowchart LR
 
 `apps/workbench-preview/src/App.tsx`装配应用、路由、服务、主题、人类协作和WorkBot。`src/app/router.tsx`负责hash路由，`views/ProjectWorkspace.tsx`装配五项目区域；`ProposalArea.tsx`装配七生产阶段。页面ID与实际路由映射见[页面索引](../pages/README.md)。
 
-`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台、提案和助手为Mock，本地Brief解析另有实际提取能力。HTTP模式用HttpWorkbenchService与HttpProposalService读取同一真实快照，完成项目和简报读写，研究原件另有真实读取。brief-server默认没有执行器，显式配置可执行指定研究job，不扫描恢复旧任务。HTTP助手及视觉至交付未迁移此入口，旧助手后端已有实现与限定工程证据。DTO、Brief封装、重试与业务版本见[简报HTTP合同](../development/http-brief.md)和[研究接续](../development/seven-stage-research.md)，设置地址本身不代表连接成功。
+`src/domain`定义服务和模型，`src/services/index.ts`选择实现。默认工作台、提案和助手为Mock，本地Brief解析另有实际提取能力。HTTP模式用HttpWorkbenchService与HttpProposalService读取同一真实快照，完成项目和简报读写，研究原件另有真实读取。brief-server默认没有执行器，显式配置可执行指定研究job，不扫描恢复旧任务。HTTP助手及成稿至交付未迁移此入口，视觉参考与后端草图路由按独立合同接线，旧助手后端已有实现与限定工程证据。DTO、Brief封装、重试与业务版本见[简报HTTP合同](../development/http-brief.md)和[研究接续](../development/seven-stage-research.md)，设置地址本身不代表连接成功。
 
 `src/services/proposal`及`collaboration`负责本地提案、角色、修订和草稿保护。本地权限矩阵不等于生产身份服务；浏览器持久化不是远程数据库。案例投影在`src/proposal/qingyu-*`，依输入、版本与哈希守卫只读显示原稿和原评，不能反写正式阶段通过。
 
@@ -85,8 +85,16 @@ brief-intake-service复用intake-runtime→intake-pdf旧工具，显式extractio
 
 `simple-copy-service.mjs`复用原executor、owner edge和creative panel，`simple-copy-http.mjs`冻结原请求与固定job bindings，brief-server只开放六个受限接口。当前SIMPLE经实际双负责人和原子commit派生唯一copy-message-v2，全文核验及原17节点评审分别执行。策略人工节点由humanContext显式adopt-creative，不用generic release-stage。
 
-前端可选copyWorkflow及CopyWorkflowPanel按业务阶段展示操作。copyWorkflowProjection核来源、正文与报告，copyCreativeProjection核完整冻结packet、phase、17节点和原执行输入，同步SHA仅用于snapshot准入。合法历史保持可读，当前写资格另判。GET originalsVerified=false，不把投影冒称全原票物理核验。下游unknown恢复、文案改稿再评、视觉继续和Deck整链仍待接，详见[文案合同](../development/simple-copy.md)。
+前端可选copyWorkflow及CopyWorkflowPanel按业务阶段展示操作。copyWorkflowProjection核来源、正文与报告，copyCreativeProjection核完整冻结packet、phase、17节点和原执行输入，同步SHA仅用于snapshot准入。合法历史保持可读，当前写资格另判。GET originalsVerified=false，不把投影冒称全原票物理核验。下游unknown恢复、文案改稿再评和Deck整链仍待接，视觉参考另按受限合同接线，详见[文案合同](../development/simple-copy.md)。
 
 ## 图片原件只读核验
 
 原普通/reference project verifier拥有单次纯图片解码scope，底层HTTP authority私有管理相同实际bytes的成功dimensions；每次原件IO、SHA、上下文及预算保持。invoke、拒绝及嵌套生命周期按[只读核验合同](../development/image-readback.md)失效，业务门槛和默认执行授权不变。ordinarySameContext只提前比较不同HTTP context标签；matching仍完整校验双方，不引入第二缓存。该读取优化不等于视觉或整链已接通。
+
+## 视觉参考与衔接结果
+
+`visual-a-service`复用原reference/sketch/sketch-review runtime，`visual-a-http`保存原技术请求、固定target/job/binding和方法。actual claim进入原project守卫；scoped advance不扫描其他项目、不恢复unknown。COPY与视觉的随机marker及真实claimOwner经同一SQLite CAS保存，完成由同owner保存原progress，exact重放不推进；未记录和pending均保留真实边界。
+
+前端可选visualWorkflow由HttpVisualAService、strict projection和权限保护组成。初始129参考任务核完整原source与producer关系；实际原图按项目登记SHA读取，业务批准不由GET投影产生。完整App草图/v2映射和后续视觉仍待对应原件验收，详见[运行合同](../development/visual-workflow.md)。
+
+Brief的可选visualRequirements沿原卡、保存、确认及历史传递。`brief-visual-requirements.mjs`从原task.brief读取明确视图，`final-visual.mjs`对每方向计划执行原kind/view约束；没有改写task或finalVisualSource hash，也不恢复内容审阅岗位。
