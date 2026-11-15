@@ -109,14 +109,10 @@ async function main() {
     });
     await page.goto(origin + '/nightflight/#/p/ui');
     await page.locator('.stage-head').first().click();
-    const briefOnly = process.argv.includes('--brief');
-    for (const [i, headings] of (briefOnly ? stages.slice(0, 1) : stages).entries()) {
-      if (process.argv.includes('--research') && i !== 1) continue;
-      if (process.argv.includes('--themes') && i !== 3) continue;
-      if (process.argv.includes('--visual') && i !== 4) continue;
-      if (process.argv.includes('--layout') && i !== 5) continue;
-      if (process.argv.includes('--delivery') && i !== 6) continue;
-      if (process.argv.includes('--strategy') && i !== 2) continue;
+    const stageFlags = ['brief', 'research', 'strategy', 'themes', 'visual', 'layout', 'delivery'];
+    const selected = stageFlags.findIndex((flag) => process.argv.includes('--' + flag));
+    for (const [i, headings] of stages.entries()) {
+      if (selected >= 0 && i !== selected) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
       assert.deepEqual(
@@ -166,7 +162,7 @@ async function main() {
       assert.equal(await doc.getByLabel('先查哪个渠道？').count(), 1);
     }
     assert.deepEqual(errors, []);
-    console.log(process.argv.includes('--themes') ? '文案与主题页面专项通过。' : process.argv.includes('--strategy') ? '策略旧稿逐条依据匹配与核心主句通过。' : process.argv.includes('--research') ? '研究页结论、策略用途与来源展开通过。' : briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
+    console.log(selected >= 0 ? stages[selected][0] + '页面专项通过。' : '七阶段栏目与交互检查通过。');
   } finally {
     await browser.close();
   }
