@@ -59,7 +59,7 @@ export interface CopyReview {
   issues?: { id: string; role: CopyRole; directionId: DirectionId; origin: 'score' | 'challenge'; dimension?: string; reason?: string }[];
   criticReads?: {
     role: CopyRole;
-    items: { directionId: DirectionId; risk: string; evidence: string }[];
+    items: { readId?: string; directionId: DirectionId; risk: string; evidence: string }[];
   }[];
   decisionPlan?: {
     rulings: {
@@ -78,7 +78,7 @@ export interface CopyReview {
   finalVotes: CopyVote[];
   challenges: {
     coverage?: {
-      directionId: DirectionId; dimension: string; reason: string; originalClaim: string; originalEvidence: string;
+      readId?: string; directionId: DirectionId; dimension: string; reason: string; originalClaim: string; originalEvidence: string;
     }[];
     role: CopyRole;
     runId: string;
@@ -91,7 +91,7 @@ export interface CopyReview {
     ready: boolean;
     reason: string;
     single?: { directionId: DirectionId; ready: boolean; reason: string }[];
-    pairs?: { pair: 'AB' | 'AC' | 'BC'; reason: string }[];
+    pairs?: { pair: 'AB' | 'AC' | 'BC'; distinct?: boolean; reason: string }[];
     set?: { ready: boolean; reason: string };
     rulings: { challengeId: string; verdict: 'resolved' | 'rejected' | 'pending'; reason: string }[];
   };

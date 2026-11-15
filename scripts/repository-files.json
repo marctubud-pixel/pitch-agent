@@ -474,6 +474,7 @@
     "apps/workbench-preview/src/proposal/qingyu-themes/content.test.ts",
     "apps/workbench-preview/src/proposal/qingyu-themes/content.ts",
     "apps/workbench-preview/src/proposal/qingyu-themes/preview.ts",
+    "apps/workbench-preview/src/proposal/qingyu-themes/published-copy.json",
     "apps/workbench-preview/src/proposal/qingyu-themes/reviewed-copy.json",
     "apps/workbench-preview/src/proposal/qingyu-themes/themes.css",
     "apps/workbench-preview/src/proposal/qingyu-themes/themes.test.ts",

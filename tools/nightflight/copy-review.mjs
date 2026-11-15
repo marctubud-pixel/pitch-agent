@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 
 const dimensions = {
   copy: ['主张成立','同组创意机制差异','中文表达与节奏','主副文协作'],
@@ -34,7 +35,12 @@ const planSchema = object({rulings:list(object({
   challengeId:str,verdict:choice(['accepted_now','accepted_later','rejected','pending']),
   action:choice(['revise','recheck','none']),reason:str,
 }))});
-const reviseSchema = object({draft:draftSchema,changes:list(str)});
+const reviseSchema = object({baseHash:str,draft:draftSchema,changes:list(str)});
+const repairSchema = object({baseHash:str,actions:list(object({
+  issueId:str,directionId:choice(ids),action:choice(['revise','recheck','pause']),evidence:str,reason:str,
+}))});
+// A single user action may fund at most two additional repair decisions after the initial gate.
+const maxFollowups = 2;
 const recommendationSchema = object({directionId:choice(ids),reason:str,tradeoff:str});
 const adjudicateSchema = object({
   ready:{type:'boolean'},reason:str,recommendation:recommendationSchema,
@@ -170,47 +176,57 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     validateVote(output.items,role,draft);
     return {role,draftHash:digest(draft),anonymousReadRunId:anonymousRead.runId,...receipt,items:output.items};
   }
-  try {
-    const source={brief:project.brief,materials:inputs.texts,feedback:project.feedback || []};
-    await onEvent?.('文案负责人正在创作三个方向');
-    const generated=await run('COPY_CREATE',craft,draftSchema,source,true);
-    const first=generated.output;
-    validateDraft(first,materials);
-    attempt.initialDraft=first;
-    await onEvent?.('四岗分别首读文案初稿');
-    attempt.anonymousReads=await anonymousReads(first);
-    for (const role of roles) attempt.firstVotes.push(await score('COPY_FIRST',role,first,attempt.anonymousReads));
-
+  async function revise(base, targets, packet) {
+    const baseHash=digest(base);
+    const {output}=await run('COPY_REVISE',craft+' 使用生成规范中的 slogan-engine 定向打磨。只修改 targets 内裁定确有作品问题的方向；逐字保留其余方向、顺序及每案身份。baseHash 原样返回，changes逐条写清改前、改后及原因。',
+      reviseSchema,{...packet,baseHash,draft:base,targets:[...targets]},true);
+    requireThat(output.baseHash===baseHash,'改稿与冻结原稿身份不符');
+    validateDraft(output.draft,materials);
+    for (const [index,d] of output.draft.directions.entries()) {
+      const old=base.directions[index];
+      requireThat(d.id===old.id && d.duty===old.duty,'改稿改变了方向身份或顺序');
+      if (targets.has(d.id)) requireThat(!isDeepStrictEqual(d,old),'作品问题尚未改稿：'+d.name);
+      else requireThat(isDeepStrictEqual(d,old),'改稿改动了冻结方向：'+old.name);
+    }
+    requireThat(output.changes.length,'改稿缺少修改对照');
+    return output;
+  }
+  async function evaluatePanel(draft,votes,reads) {
+    const draftHash=digest(draft);
+    const prefix=attempt.panelHistory.length ? draftHash+'-' : '';
+    requireThat(votes.every(v=>v.draftHash===draftHash) && reads.every(r=>r.draftHash===draftHash),'双团评审收到其他版本的票或首读');
+    const panel={draftHash,draft,votes,anonymousReads:reads,criticReads:[],challenges:[]};
+    attempt.panelHistory.push(panel);
     for (const role of roles) {
       const {output,receipt}=await run('COPY_CRITIC_BLIND',
         '独立找本岗可能遗漏的事实、表达或同组三案风险。先不看原票、不打分。逐案列出所有独立风险，一条对应一个风险；某案确无发现时仅写一条 risk 和 evidence 均为空的记录。提出风险必须引当前该案逐字证据。',
-        criticSchema,{role,...reviewPacket(first)});
+        criticSchema,{role,...reviewPacket(draft)});
       for (const id of ids) {
         const reads=output.items.filter(i=>i.directionId===id);
         requireThat(reads.length,'异议岗独立阅读未覆盖方向 '+id);
         requireThat(reads.length===1 || reads.every(i=>nonempty(i.risk)),'同案存在风险时不得混入无风险记录');
       }
       for (const item of output.items) {
-        const d=first.directions.find(d=>d.id===item.directionId);
+        const d=draft.directions.find(d=>d.id===item.directionId);
         requireThat(!item.risk.trim() && !item.evidence.trim() || nonempty(item.risk) && nonempty(item.evidence) &&
           sourceQuotes(d).some(s=>s.includes(item.evidence)),role+' 漏项缺该案证据');
       }
       const items=output.items.map((item,index)=>({...item,readId:role+'-'+receipt.runId+'-'+(index+1)}));
-      attempt.criticReads.push({role,draftHash:digest(first),...receipt,items});
+      panel.criticReads.push({role,draftHash:draftHash,...receipt,items});
     }
-    for (const vote of attempt.firstVotes) {
-      const blindRead=attempt.criticReads.find(r=>r.role===vote.role);
+    for (const vote of votes) {
+      const blindRead=panel.criticReads.find(r=>r.role===vote.role);
       const {output,receipt}=await run('COPY_CHALLENGE',
         '保留本岗独立漏项阅读，核原票的具体肯定、证据是否已经覆盖。coverage逐条引用 blindRead.items 的 readId 与 directionId，每条恰好一次，包括无风险记录。指向原票维度并具体说明漏项是否已处理、为何保留或质疑原判。items只列确有依据的异议，区分反证、缺证、偏好、已覆盖与阶段外；action说明影响和建议。个人偏好不阻断，未见新增漏项允许空列表。不得打分。',
-        challengeSchema,{role:vote.role,...reviewPacket(first),blindRead,vote});
+        challengeSchema,{role:vote.role,...reviewPacket(draft),blindRead,vote});
       const readsById=new Map(blindRead.items.map(i=>[i.readId,i]));
       requireThat(exactly(output.coverage.map(c=>c.readId),[...readsById.keys()]) &&
         output.coverage.every(c=>readsById.get(c.readId)?.directionId===c.directionId && dimensions[vote.role].includes(c.dimension)),
         '对应异议未逐条覆盖同案首读记录或所指原票有误');
       const items=output.items.map((item,i)=>{
-        const d=first.directions.find(d=>d.id===item.directionId);
+        const d=draft.directions.find(d=>d.id===item.directionId);
         requireThat(dimensions[vote.role].includes(item.dimension) && sourceQuotes(d).some(s=>s.includes(item.evidence)),'异议未对应该案原文或原岗维度');
-        return {...item,id:vote.role+'-'+(i+1)};
+        return {...item,id:prefix+vote.role+'-'+(i+1)};
       });
       const coverage=output.coverage.map(c=>{
         const item=vote.items.find(i=>i.directionId===c.directionId);
@@ -218,10 +234,10 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         return {...c,originalClaim:score.reason,originalEvidence:score.evidence,
           independentRead:readsById.get(c.readId)};
       });
-      attempt.challenges.push({role:vote.role,draftHash:digest(first),blindReadRunId:blindRead.runId,voteRunId:vote.runId,...receipt,items,coverage});
+      panel.challenges.push({role:vote.role,draftHash:draftHash,blindReadRunId:blindRead.runId,voteRunId:vote.runId,...receipt,items,coverage});
     }
     const issues=[
-      ...attempt.firstVotes.flatMap(v=>blocked(v).flatMap(item=>{
+      ...votes.flatMap(v=>blocked(v).flatMap(item=>{
         const grounds=[
           ...item.hardRejects.map(reason=>({kind:'hard_reject',reason})),
           ...item.blockers.map(reason=>({kind:'blocker',reason})),
@@ -229,20 +245,20 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         ];
         if (!grounds.length) grounds.push({kind:'decision',reason:item.reason});
         return grounds.map((ground,index)=>({
-          id:['score',v.role,item.directionId,index+1].join('-'),role:v.role,directionId:item.directionId,
+          id:prefix+['score',v.role,item.directionId,index+1].join('-'),role:v.role,directionId:item.directionId,
           blocking:true,origin:'score',...ground,item,
         }));
       })),
-      ...attempt.challenges.flatMap(c=>c.items.map(i=>({...i,role:c.role,origin:'challenge'}))),
+      ...panel.challenges.flatMap(c=>c.items.map(i=>({...i,role:c.role,origin:'challenge'}))),
     ];
-    attempt.issues=issues;
-    const references={initialDraft:first,anonymousReads:attempt.anonymousReads,firstVotes:attempt.firstVotes,
-      criticReads:attempt.criticReads,challenges:attempt.challenges,issues};
+    panel.issues=issues;
+    const references={initialDraft:draft,anonymousReads:reads,firstVotes:votes,
+      criticReads:panel.criticReads,challenges:panel.challenges,issues};
     const plan=await run('COPY_PLAN',
       '在创作者改稿前独立逐条裁定 issues；每个id必须决定采纳当前/后续、驳回或待核及理由。作品确需修改时 action=revise，评分原判有误或证据需要复核时 action=recheck 且保持原稿，非阻断范围外事项可延后。不得代评分岗改分。没有问题可为空。',
       planSchema,{upstream:reviewSources,...references});
-    const decisionPlan={...plan.output,...plan.receipt};
-    attempt.decisionPlan=decisionPlan;
+    const decisionPlan={...plan.output,...plan.receipt,draftHash};
+    panel.decisionPlan=decisionPlan;
     requireThat(exactly(decisionPlan.rulings.map(r=>r.challengeId),issues.map(i=>i.id)),'改稿前的独立裁定缺项');
     const actions=decisionPlan.rulings.map(r=>({...r,issue:issues.find(i=>i.id===r.challengeId)}));
     for (const r of actions) {
@@ -252,6 +268,24 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       requireThat(!(r.issue.origin==='score' && r.action==='none'),'原评阻断需修改或原岗复核：'+r.reason);
       requireThat(!(r.issue.blocking && r.verdict==='accepted_now' && r.action==='none'),'采纳的阻断缺处理动作：'+r.reason);
     }
+    return {panel,references,actions};
+  }
+  try {
+    const source={brief:project.brief,materials:inputs.texts,feedback:project.feedback || []};
+    await onEvent?.('文案负责人正在创作三个方向');
+    const generated=await run('COPY_CREATE',craft+' 使用本次加载的 slogan-engine 创作步骤展开、淘汰和打磨主副文。',draftSchema,source,true);
+    const first=generated.output;
+    validateDraft(first,materials);
+    attempt.initialDraft=first;
+    await onEvent?.('四岗分别首读文案初稿');
+    attempt.anonymousReads=await anonymousReads(first);
+    for (const role of roles) attempt.firstVotes.push(await score('COPY_FIRST',role,first,attempt.anonymousReads));
+
+    attempt.panelHistory=[];
+    let activePanel=await evaluatePanel(first,attempt.firstVotes,attempt.anonymousReads);
+    const {references,actions}=activePanel;
+    const {decisionPlan,issues,criticReads,challenges}=activePanel.panel;
+    Object.assign(attempt,{decisionPlan,issues,criticReads,challenges});
     // A disputed original judgment is reconsidered on exactly its original text,
     // including when another decision also sends an execution problem back to the author.
     attempt.sameDraftRechecks=[];
@@ -266,16 +300,8 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     const edits=actions.filter(r=>r.action==='revise');
     if (edits.length) {
       await onEvent?.('创作者正在处理总监裁定的改稿项');
-      const revision=await run('COPY_REVISE',craft+' 仅处理裁定要求修改的作品问题，保留每案 id 和职责；changes逐条说明修改前后和原因。',
-        reviseSchema,{...source,...references,decisionPlan,sameDraftRechecks:attempt.sameDraftRechecks,draft:first},true);
-      ({draft,changes}=revision.output);
-      validateDraft(draft,materials);
-      for (const d of draft.directions) {
-        const old=first.directions.find(x=>x.id===d.id);
-        requireThat(d.duty===old.duty,'改稿改变了方向职责身份');
-        if (edits.some(r=>r.issue.directionId===d.id)) requireThat(digest(d)!==digest(old),'作品问题尚未改稿：'+d.name);
-      }
-      requireThat(changes.length,'改稿缺少修改对照');
+      ({draft,changes}=await revise(first,new Set(edits.map(r=>r.issue.directionId)),
+        {...source,...references,decisionPlan,sameDraftRechecks:attempt.sameDraftRechecks}));
     }
     Object.assign(attempt,{draft,changes});
     const revised=edits.length>0;
@@ -290,27 +316,120 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         objections:attempt.challenges.find(c=>c.role===vote.role),decisionPlan};
       attempt.finalVotes.push(await score('COPY_RECHECK',vote.role,draft,attempt.finalAnonymousReads,extra));
     }
-    const outstanding=attempt.finalVotes.flatMap(v=>blocked(v).map(i=>v.role+' '+i.directionId+'：'+[
-      ...i.hardRejects,...i.blockers,...i.scores.filter(s=>s.score===null || s.score<4).map(s=>s.dimension+' '+(s.score??'待核')+' '+s.reason),i.reason].join('；')));
-    const verdict=await run('COPY_ADJUDICATE','独立总监按当前稿分别给A/B/C单案准入、AB/AC/BC逐对差异及整组是否成立。逐对比较主张、情绪、品牌语义桥梁与视觉载体假设，不把换词换色当创意差别。再就各 issues 的id核实最终处置。阻断/关键缺证/必评不足4不得放行。独立说明推荐谁、为什么、牺牲什么；不平均、改票或代替人类采用。',adjudicateSchema,{
-      upstream:reviewSources,...references,decisionPlan,sameDraftRechecks:attempt.sameDraftRechecks,draft,changes,finalVotes:attempt.finalVotes,
-    });
-    const adjudication=verdict.output;
-    attempt.adjudication=adjudication;
-    requireThat(exactly(adjudication.rulings.map(x=>x.challengeId),issues.map(i=>i.id)),'有异议未得到逐条独立裁定');
-    requireThat(!outstanding.length,'文案复核未通过：'+outstanding.join('；'));
-    const unresolved=adjudication.rulings.some(r=>{
-      if (r.verdict!=='pending') return false;
-      const prior=actions.find(a=>a.challengeId===r.challengeId);
-      return prior.issue.blocking || prior.verdict!=='accepted_later';
-    });
-    requireThat(adjudication.ready && !unresolved,'文案裁定未通过：'+adjudication.reason);
-    requireThat(exactly(adjudication.single.map(i=>i.directionId),ids) && adjudication.single.every(i=>i.ready),'单案准入未完成');
-    requireThat(exactly(adjudication.pairs.map(i=>i.pair),['AB','AC','BC']) && adjudication.pairs.every(i=>i.distinct),'三案逐对差异未成立');
-    requireThat(adjudication.set.ready,'三案整组未通过：'+adjudication.set.reason);
-    const body=markdown(draft,adjudication);
-    Object.assign(attempt,{status:'ready',bodyHash:hash(body),recommendation:adjudication.recommendation});
-    return {body,directions:draft.directions.map(x=>x.name),copyReview:attempt};
+    attempt.polishRounds=[];
+    // Material changes invalidate both panels. Same-text score corrections retain
+    // the original paired challenge and disclose the corrected vote to the director.
+    const completedRechecks=new Set();
+    const allActions=[...actions];
+    for (let round=0; ; round++) {
+      if (digest(draft)!==activePanel.panel.draftHash) {
+        activePanel=await evaluatePanel(draft,attempt.finalVotes,attempt.finalAnonymousReads);
+        allActions.push(...activePanel.actions);
+      }
+      const current=activePanel.panel;
+      const priorPlans=attempt.panelHistory.slice(0,-1).map(p=>({
+        draftHash:p.draftHash,issues:p.issues,decisionPlan:p.decisionPlan,
+      }));
+      const requiredRulingIds=allActions.map(r=>r.challengeId);
+      const verdict=await run('COPY_ADJUDICATE','独立总监按当前稿分别给A/B/C单案准入、AB/AC/BC逐对差异及整组是否成立。逐对比较主张、情绪、品牌语义桥梁与视觉载体假设，不把换词换色当创意差别。按 requiredRulingIds 逐条核实本版与前版遗留裁定是否在当前稿解决。若本版决定需改稿或同稿复核且尚无执行证据，不得视为已解决。阻断/关键缺证/必评不足4不得放行。独立说明推荐谁、为什么、牺牲什么；不平均、改票或代替人类采用。',adjudicateSchema,{
+        upstream:reviewSources,...activePanel.references,decisionPlan:current.decisionPlan,priorPlans,requiredRulingIds,
+        sameDraftRechecks:attempt.sameDraftRechecks,draft,changes,finalVotes:attempt.finalVotes,previousRepair:attempt.polishRounds.at(-1)?.repair,
+      });
+      const adjudication=verdict.output;
+      attempt.adjudication=adjudication;
+      (current.verdicts??=[]).push({adjudication,runId:verdict.receipt.runId,voteRunIds:attempt.finalVotes.map(v=>v.runId)});
+      requireThat(exactly(adjudication.rulings.map(x=>x.challengeId),requiredRulingIds),'有异议未得到逐条独立裁定');
+      requireThat(exactly(adjudication.single.map(i=>i.directionId),ids),'单案准入记录不完整');
+      requireThat(exactly(adjudication.pairs.map(i=>i.pair),['AB','AC','BC']),'三案逐对差异记录不完整');
+      const untouchedActions=current.draftHash===digest(first) ? [] : activePanel.actions.filter(a=>
+        a.action!=='none' && !completedRechecks.has(a.challengeId));
+      const failures=attempt.finalVotes.flatMap(v=>blocked(v).filter(item=>!untouchedActions.some(a=>
+        a.issue.origin==='score' && a.issue.role===v.role && a.issue.directionId===item.directionId)).map(item=>({
+        id:'score-'+v.role+'-'+item.directionId,role:v.role,eligible:[item.directionId],
+        reason:'文案复核未通过：'+item.reason,scoreRecord:item,
+      })));
+      for (const item of adjudication.single.filter(i=>!i.ready))
+        failures.push({id:'single-'+item.directionId,eligible:[item.directionId],reason:'单案待改：'+item.reason});
+      for (const item of adjudication.pairs.filter(i=>!i.distinct))
+        failures.push({id:'pair-'+item.pair,eligible:[...item.pair],reason:'逐对差异未成立：'+item.reason});
+      for (const ruling of adjudication.rulings.filter(r=>r.verdict==='pending')) {
+        const prior=allActions.find(a=>a.challengeId===ruling.challengeId);
+        if (prior.issue.blocking || prior.verdict!=='accepted_later') failures.push({
+          id:'ruling-'+ruling.challengeId,role:prior.issue.role,eligible:[prior.issue.directionId],reason:ruling.reason,
+        });
+      }
+      for (const a of untouchedActions) {
+        failures.push({id:'current-'+a.challengeId,role:a.issue.role,eligible:[a.issue.directionId],
+          requiredAction:a.action,challengeId:a.challengeId,
+          reason:(a.issue.origin==='score'?'文案复核未通过：':'')+a.reason});
+      }
+      if (!failures.length && (!adjudication.ready || !adjudication.set.ready)) {
+        failures.push({id:'set',eligible:ids,reason:'整组裁定未通过：'+(adjudication.set.ready?adjudication.reason:adjudication.set.reason)});
+      }
+      if (!failures.length) {
+        const body=markdown(draft,adjudication);
+        Object.assign(attempt,{status:'ready',bodyHash:hash(body),recommendation:adjudication.recommendation});
+        return {body,directions:draft.directions.map(x=>x.name),copyReview:attempt};
+      }
+
+      const reasons=failures.map(f=>f.reason).join('；');
+      requireThat(round<maxFollowups,'文案达到本次打磨上限：'+reasons);
+      const baseHash=digest(draft);
+      const priorVotes=attempt.finalVotes;
+      const history={round:round+1,baseHash,draft,anonymousReads:attempt.finalAnonymousReads,votes:priorVotes,
+        adjudication,adjudicationRunId:verdict.receipt.runId,failures};
+      attempt.polishRounds.push(history);
+      await onEvent?.('文案门禁退回，正在定位待改原句或需同稿复核的原判');
+      const triage=await run('COPY_REPAIR_PLAN',
+        '逐条核对本版 failures；退回可落实的作品问题才 revise。每项给出 affected directionId（必须在 eligible 内），evidence 逐字引用该案。作品无误、原判与依据不符时要求 recheck；缺真实上游资料、外部授权或没有可执行的修复时 pause。保住已通过的案；两案相似必须解释只动哪一案以及理由。不得降低门槛，原样回传 baseHash。已有 requiredAction 的具体裁定必须执行；不能用复核替代已裁定的作品改稿。',
+        repairSchema,{baseHash,...reviewPacket(draft),votes:priorVotes,adjudication,failures,currentDecision:current.decisionPlan});
+      const repair={...triage.output,...triage.receipt};
+      history.repair=repair;
+      requireThat(repair.baseHash===baseHash && exactly(repair.actions.map(a=>a.issueId),failures.map(f=>f.id)),
+        '退回事项或稿件身份未对齐');
+      const targets=new Set(), recheckRoles=new Set();
+      for (const action of repair.actions) {
+        const failure=failures.find(f=>f.id===action.issueId);
+        const d=draft.directions.find(d=>d.id===action.directionId);
+        requireThat(failure.eligible.includes(d.id) && sourceQuotes(d).some(q=>q.includes(action.evidence)),
+          '打磨裁定与退回方向或原文不符');
+        requireThat(action.action!=='pause',failure.reason+'；暂停打磨：'+action.reason);
+        requireThat(!failure.requiredAction || action.action===failure.requiredAction,'打磨动作与本版独立裁定不符：'+failure.reason);
+        if (action.action==='recheck' && failure.challengeId) completedRechecks.add(failure.challengeId);
+        if (action.action==='revise') targets.add(d.id);
+        else if (failure.role) recheckRoles.add(failure.role);
+      }
+      const corrected=[];
+      for (const role of recheckRoles) {
+        const originalVote=priorVotes.find(v=>v.role===role);
+        corrected.push(await score('COPY_RECHECK',role,draft,attempt.finalAnonymousReads,
+          {originalVote,decisionPlan:repair,currentPlan:current.decisionPlan,
+            objections:current.challenges.find(c=>c.role===role),changes:[],priorAdjudication:adjudication}));
+      }
+      history.sameDraftRechecks=corrected;
+      attempt.sameDraftRechecks.push(...corrected);
+      if (targets.size) {
+        const result=await revise(draft,targets,{...source,decisionPlan:repair,currentPlan:current.decisionPlan,
+          objections:current.challenges,failures,priorVotes,sameDraftRechecks:corrected});
+        requireThat(!attempt.polishRounds.some(r=>isDeepStrictEqual(r.draft,result.draft)) &&
+          !isDeepStrictEqual(attempt.initialDraft,result.draft),'文案打磨重复已退回的稿件：'+reasons);
+        draft=result.draft;
+        changes=[...changes,...result.changes];
+        Object.assign(history,{changes:result.changes,revisedHash:digest(draft)});
+        attempt.draft=draft;
+        attempt.changes=changes;
+        attempt.finalAnonymousReads=await anonymousReads(draft);
+        attempt.finalVotes=[];
+        for (const role of roles) {
+          const originalVote=corrected.find(v=>v.role===role) || priorVotes.find(v=>v.role===role);
+          attempt.finalVotes.push(await score('COPY_RECHECK',role,draft,attempt.finalAnonymousReads,{
+            originalVote,initialDraft:reviewPacket(history.draft).draft,changes:result.changes,decisionPlan:repair,
+          }));
+        }
+      } else {
+        attempt.finalVotes=priorVotes.map(v=>corrected.find(c=>c.role===v.role) || v);
+      }
+    }
   } catch(error) {
     attempt.status='blocked';attempt.error=error.message;
     await writeFile(join(dir,filename),JSON.stringify(attempt,null,2),{flag:'wx',mode:0o600});

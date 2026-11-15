@@ -8,6 +8,16 @@ const actions = { revise: '改稿', recheck: '复核', none: '无追加动作' }
 const rulings = { resolved: '已解决', rejected: '未采纳', pending: '待核' };
 const decisions = { pass: '通过', revise: '需修改', hold: '待核', reject: '退回' };
 
+type Coverage = NonNullable<CopyReview['challenges'][number]['coverage']>[number];
+function CoverageNote({ entry }: { entry: Coverage }) {
+  return <div>
+    <h4>对抗岗核对原票 · {entry.dimension}</h4>
+    <p>原判　{entry.originalClaim}</p>
+    <p>原据　{entry.originalEvidence}</p>
+    <p>{entry.reason}</p>
+  </div>;
+}
+
 function Vote({ vote, direction, label }: { vote?: CopyVote; direction: ReviewedDirection; label: string }) {
   const item = vote?.items.find((entry) => entry.directionId === direction.id);
   return (
@@ -32,10 +42,13 @@ function Vote({ vote, direction, label }: { vote?: CopyVote; direction: Reviewed
   );
 }
 
-export function CopyReviewPanel({ review, direction }: { review: CopyReview; direction: ReviewedDirection }) {
+export function CopyReviewPanel({ review, direction, scoreRecord = review, showOriginal = true }: {
+  review: CopyReview; direction: ReviewedDirection; scoreRecord?: CopyReview; showOriginal?: boolean;
+}) {
   const recommended = review.draft.directions.find((d) => d.id === review.recommendation.directionId);
-  const original = review.initialDraft.directions.find((d) => d.id === direction.id);
+  const original = scoreRecord.initialDraft.directions.find((d) => d.id === direction.id);
   const dual = review.protocol === 'dual-panel-v2';
+  const dualScores = scoreRecord.protocol === 'dual-panel-v2';
   const single = dual && review.adjudication.single?.find((entry) => entry.directionId === direction.id);
   const comparison = dual && review.adjudication.pairs;
   const set = dual && review.adjudication.set;
@@ -65,21 +78,23 @@ export function CopyReviewPanel({ review, direction }: { review: CopyReview; dir
         <summary>「{direction.name}」的四岗原评与复核</summary>
         <p className="hint">以下为本地模型审读。目标用户岗模拟阅读，实际受众反应仍待验证。</p>
         {Object.entries(roles).map(([role, title]) => {
-          const first = review.firstVotes.find((vote) => vote.role === role);
-          const final = review.finalVotes.find((vote) => vote.role === role);
-          const firstRead = dual ? review.anonymousReads?.find((entry) => entry.role === role) : undefined;
+          const first = scoreRecord.firstVotes.find((vote) => vote.role === role);
+          const final = scoreRecord.finalVotes.find((vote) => vote.role === role);
+          const firstRead = dualScores ? scoreRecord.anonymousReads?.find((entry) => entry.role === role) : undefined;
           const read = firstRead?.items.find((item) => item.directionId === direction.id);
-          const finalRead = dual ? review.finalAnonymousReads?.find((entry) => entry.role === role) : undefined;
+          const finalRead = dualScores ? scoreRecord.finalAnonymousReads?.find((entry) => entry.role === role) : undefined;
           const newRead = finalRead && finalRead.runId !== firstRead?.runId
             ? finalRead.items.find((item) => item.directionId === direction.id) : undefined;
-          const middle = review.sameDraftRechecks?.filter((vote) => vote.role === role && vote.runId !== final?.runId);
-          const risks = dual ? review.criticReads?.find((entry) => entry.role === role)?.items
+          const middle = scoreRecord.sameDraftRechecks?.filter((vote) => vote.role === role && vote.runId !== final?.runId);
+          const risks = dualScores ? scoreRecord.criticReads?.find((entry) => entry.role === role)?.items
             .filter((item) => item.directionId === direction.id && item.risk) : undefined;
-          const originalIssues = dual ? review.issues?.filter((item) =>
+          const originalIssues = dualScores ? scoreRecord.issues?.filter((item) =>
             item.origin === 'score' && item.role === role && item.directionId === direction.id
           ) : undefined;
-          const group = review.challenges.find((entry) => entry.role === role);
+          const group = scoreRecord.challenges.find((entry) => entry.role === role);
           const coverage = group?.coverage?.filter((entry) => entry.directionId === direction.id);
+          const otherCoverage = coverage?.filter((entry) =>
+            !entry.readId || !risks?.some((risk) => risk.readId === entry.readId));
           const objections = group?.items.filter((entry) => entry.directionId === direction.id) ?? [];
           return (
             <details key={role} data-review-role={role}>
@@ -91,8 +106,8 @@ export function CopyReviewPanel({ review, direction }: { review: CopyReview; dir
               </div>}
               <Vote vote={first} direction={direction} label="原稿评分" />
               {originalIssues?.map((issue) => {
-                const plan = review.decisionPlan?.rulings.find((entry) => entry.challengeId === issue.id);
-                const decision = review.adjudication.rulings.find((entry) => entry.challengeId === issue.id);
+                const plan = scoreRecord.decisionPlan?.rulings.find((entry) => entry.challengeId === issue.id);
+                const decision = scoreRecord.adjudication.rulings.find((entry) => entry.challengeId === issue.id);
                 return <div key={issue.id}>
                   <h4>原票阻断处置</h4>
                   {issue.reason && <p>{issue.dimension && issue.dimension + '　'}{issue.reason}</p>}
@@ -102,23 +117,20 @@ export function CopyReviewPanel({ review, direction }: { review: CopyReview; dir
               })}
               {!!risks?.length && <div>
                 <h4>对抗岗独立首查</h4>
-                {risks.map((critic, i) => <div key={i}>
+                {risks.map((critic, i) => <div key={critic.readId ?? i} data-critic-read={critic.readId}>
                   <p>{critic.risk}</p>
                   {critic.evidence && <p>依据　{critic.evidence}</p>}
+                  {critic.readId && coverage?.filter((entry) => entry.readId === critic.readId)
+                    .map((entry, j) => <CoverageNote key={j} entry={entry} />)}
                 </div>)}
               </div>}
-              {dual && coverage?.map((covered, i) => <div key={i}>
-                <h4>对抗岗核对原票 · {covered.dimension}</h4>
-                <p>原判　{covered.originalClaim}</p>
-                <p>原据　{covered.originalEvidence}</p>
-                <p>{covered.reason}</p>
-              </div>)}
+              {dualScores && otherCoverage?.map((entry, i) => <CoverageNote key={i} entry={entry} />)}
               {!!objections.length && (
                 <>
                   <h4>对应异议</h4>
                   {objections.map((item) => {
-                    const plan = dual && review.decisionPlan?.rulings.find((entry) => entry.challengeId === item.id);
-                    const ruling = review.adjudication.rulings.find((entry) => entry.challengeId === item.id);
+                    const plan = dualScores && scoreRecord.decisionPlan?.rulings.find((entry) => entry.challengeId === item.id);
+                    const ruling = scoreRecord.adjudication.rulings.find((entry) => entry.challengeId === item.id);
                     return (
                       <div key={item.id}>
                         <strong>{item.dimension}</strong>
@@ -136,18 +148,18 @@ export function CopyReviewPanel({ review, direction }: { review: CopyReview; dir
               {newRead && <div><h4>新稿匿名首读</h4><p>{newRead.reading}</p>{newRead.uncertainty && <p>不确定处　{newRead.uncertainty}</p>}</div>}
               {final?.reused ? <p>本岗沿用原票。当前稿件未要求本岗追加复核。</p> : (
                 <Vote vote={final} direction={direction}
-                  label={dual ? first?.draftHash === final?.draftHash ? '同稿复核' : '新稿复核' : '交回稿复核'} />
+                  label={dualScores ? first?.draftHash === final?.draftHash ? '同稿复核' : '新稿复核' : '交回稿复核'} />
               )}
             </details>
           );
         })}
         <details>
           <summary>改稿与裁定记录</summary>
-          {original && <><h4>本方向原稿</h4><p>{original.main}</p><p>{original.secondary}</p></>}
-          {!!review.changes.length && <><h4>整组改稿记录</h4><ul className="plain-list">
-            {review.changes.map((change, i) => <li key={i}>{change}</li>)}
+          {showOriginal && original && <><h4>本方向原稿</h4><p>{original.main}</p><p>{original.secondary}</p></>}
+          {!!scoreRecord.changes.length && <><h4>整组改稿记录</h4><ul className="plain-list">
+            {scoreRecord.changes.map((change, i) => <li key={i}>{change}</li>)}
           </ul></>}
-          <h4>裁定理由</h4><p>{review.adjudication.reason}</p>
+          <h4>裁定理由</h4><p>{scoreRecord.adjudication.reason}</p>
         </details>
       </details>
     </section>

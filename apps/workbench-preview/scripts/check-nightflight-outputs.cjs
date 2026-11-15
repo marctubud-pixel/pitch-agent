@@ -175,7 +175,7 @@ async function main() {
     if (process.argv.includes('--themes')) {
       const archive = require('../src/proposal/qingyu-themes/reviewed-copy.json');
       const round = archive.rounds.find((r) => r.id === archive.currentRoundId);
-      await page.goto(origin + '/nightflight/#/reference/qingyu/copy');
+      await page.goto(origin + '/nightflight/#/reference/qingyu/copy?edition=archive');
       for (const d of round.draft.directions) {
         await page.getByRole('button', { name: d.name, exact: true }).click();
         assert.doesNotMatch(await page.locator('.copy-compare').innerText(), /共同策略|稳健延续|放大品牌或产品特征|放大用户氛围或情绪/);

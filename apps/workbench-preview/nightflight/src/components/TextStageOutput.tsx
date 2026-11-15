@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import type { CopyDuty, Project } from '../live';
+import type { CopyDuty, Project, ReviewedDirection } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
@@ -126,6 +126,8 @@ export function CopyOutput({
   onChoose,
   busy,
   renderReview,
+  recommendationLabel,
+  publishedDirections,
 }: {
   p: Pick<Project, 'id' | 'directions' | 'mode' | 'stage' | 'status' | 'artifacts' | 'choice' | 'copyReview'>;
   text: string;
@@ -133,6 +135,8 @@ export function CopyOutput({
   onChoose?: (name: string) => void;
   busy?: boolean;
   renderReview?: (directionName: string) => ReactNode;
+  recommendationLabel?: string;
+  publishedDirections?: ReviewedDirection[];
 }) {
   const [browsing, browse] = useState('');
   if (!p.directions.length)
@@ -152,6 +156,7 @@ export function CopyOutput({
     .filter((r): r is Row => !!r && /^(推荐理由|推荐取舍|取舍)$/.test(r.label));
   const directions = p.directions.map((name, i) => {
     const signed = ticket?.draft.directions.find((entry) => entry.name === name);
+    const copy = signed ?? publishedDirections?.find((entry) => entry.name === name);
     const body = directionBody(sections, name, i);
     const fields = (body?.lines || []).map(rowOf).filter((r): r is Row => !!r);
     const value = (pattern: RegExp) => fields.find((r) => pattern.test(r.label))?.value;
@@ -167,8 +172,8 @@ export function CopyOutput({
       }
     }
     const scenes = new Map<string, string[]>();
-    const sceneRows = signed
-      ? signed.touchpoints.map((point) => ({ label: point.label, value: point.text }))
+    const sceneRows = copy
+      ? copy.touchpoints.map((point) => ({ label: point.label, value: point.text }))
       : fields.filter((row) => /场景文案|示例|样例|短句/.test(row.label));
     for (const row of sceneRows) {
       const label = row.label.replace(/(?:示例|样例)$/, '') || row.label;
@@ -177,8 +182,8 @@ export function CopyOutput({
       scenes.set(label, lines);
     }
     return {
-      name, main: signed?.main ?? main, secondary: signed?.secondary ?? secondary,
-      idea: signed?.mechanism ?? idea, review, scenes, signed,
+      name, main: copy?.main ?? main, secondary: copy?.secondary ?? secondary,
+      idea: copy?.mechanism ?? idea, review, scenes, signed,
     };
   });
   const current = directions.find((d) => d.name === browsing)
@@ -194,7 +199,7 @@ export function CopyOutput({
             <article key={d.name} className={'dir' + (d === current ? ' is-picked' : '')}>
               <p className="mono-label">
                 {d.signed ? copyDuties[d.signed.duty] : '方向 ' + String.fromCharCode(65 + index)}
-                {d.name === recommended && (ticket ? ' · 推荐' : ' · 原稿推荐')}
+                {d.name === recommended && ' · ' + (recommendationLabel ?? (ticket ? '推荐' : '原稿推荐'))}
                 {d.name === p.choice && ' · 已选定'}
               </p>
               <h3>
@@ -219,7 +224,7 @@ export function CopyOutput({
                 <div key={label}>
                   <dt>{label}</dt>
                   <dd>
-                    <p>{lines[0]}</p>
+                    <p style={{whiteSpace: 'pre-line'}}>{lines[0]}</p>
                     {lines.length > 1 && (
                       <details>
                         <summary>同场景备选（{lines.length - 1}）</summary>

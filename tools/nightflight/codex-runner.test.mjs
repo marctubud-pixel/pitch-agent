@@ -19,6 +19,7 @@ function copyFixture(input, action) {
   }));
   if (step === 'CREATE') {
     if (action === 'badcopy') directions[2].duty = directions[0].duty;
+    if (!input.includes('slogan-engine') || !input.includes('寻找连接与改句')) throw Error('创作没有加载口号方法');
     return {directions};
   }
   if (step === 'ANONYMOUS') {
@@ -30,8 +31,12 @@ function copyFixture(input, action) {
   }
   if (step === 'REVISE') {
     if (['copy-clarify','copy-clean'].includes(action)) throw Error('同稿纠正不该调用创作岗');
-    directions[1].main = '晨雾修改后主文';
-    return {draft:{directions},changes:['澄清晨雾主文']};
+    if (!input.includes('寻找连接与改句')) throw Error('改稿没有加载口号方法');
+    const revised=structuredClone(packet.draft.directions);
+    if (action==='copy-frozen' && packet.failures) revised[0].main+='越权改稿';
+    revised[1].main=packet.failures ? revised[1].main+'（再澄清）' : '晨雾修改后主文';
+    return {baseHash:action==='copy-stale' && packet.failures ? '旧稿' : packet.baseHash,
+      draft:{directions:revised},changes:['澄清晨雾主文']};
   }
   if (step === 'CRITIC_BLIND') {
     if (action === 'copy-clean') return {items:directions.map(d=>({directionId:d.id,risk:'',evidence:''}))};
@@ -46,7 +51,7 @@ function copyFixture(input, action) {
   if (['FIRST','RECHECK'].includes(step)) {
     if (step === 'FIRST' && (!packet.anonymousRead || !input.includes(source) || input.includes('盲测污染哨兵'))) throw Error('评分未取得封存首读与依据');
     return {items:packet.draft.directions.map((d) => {
-      const low = action !== 'copy-clean' && d.id === 'B' && packet.role === 'user' && (step === 'FIRST' || action === 'copy-blocked');
+      const low = action !== 'copy-clean' && d.id === 'B' && packet.role === 'user' && (step === 'FIRST' || action === 'copy-blocked' || action==='copy-polish-recheck' && !packet.priorAdjudication);
       return {directionId:d.id,decision:low?'revise':'pass',reason:'本案说明'+d.main,
         hardRejects:[],blockers:low?['需澄清用途']:[], scores:packet.dimensions.map((dimension) => ({
           dimension,score:low && dimension==='直接理解'?3:4,evidence:d.main,reason:'据同版主文可以判断',scope:'本组文字概念',
@@ -60,16 +65,34 @@ function copyFixture(input, action) {
       readId:read.readId,directionId:read.directionId,dimension,reason:'核对本案原评范围',
     }));
     if (action === 'copy-missing-coverage' && packet.role === 'brand') coverage.pop();
+    const b=packet.draft.directions.find(d=>d.id==='B');
+    const initial=b.main==='晨雾原稿主文';
+    const fresh=action.startsWith('copy-new-challenge') && b.main==='晨雾修改后主文';
     return {coverage,
-      items:action !== 'copy-clean' && packet.role === 'user' ? [{directionId:'B',dimension:'直接理解',objection:'核查原判引用',evidence:'晨雾原稿主文',action:'复核读者理解',blocking:true}] : []};
+      items:action !== 'copy-clean' && packet.role === 'user' && (initial || fresh) ? [{
+        directionId:'B',dimension:'直接理解',objection:fresh?'新稿新增读者歧义':'核查原判引用',
+        evidence:b.main,action:'复核读者理解',blocking:true,
+      }]:[]};
   }
-  if (step === 'PLAN') return {rulings:packet.issues.map(issue=>({challengeId:issue.id,verdict:'accepted_now',action:action==='copy-clarify' || (action==='copy-mixed' && issue.origin==='score') ? 'recheck':'revise',reason:'按原句核对使用情境'}))};
+  if (step === 'PLAN') return {rulings:packet.issues.map(issue=>({challengeId:issue.id,verdict:'accepted_now',action:action==='copy-clarify' || (action==='copy-polish-recheck' && packet.initialDraft.directions[1].main!=='晨雾原稿主文') || (action==='copy-mixed' && issue.origin==='score') ? 'recheck':'revise',reason:'按原句核对使用情境'}))};
+  if (step === 'REPAIR_PLAN') {
+    if (action==='copy-polish-tool-error') throw Error('模拟工具中断');
+    return {baseHash:packet.baseHash,actions:packet.failures.map(f=>{
+      const d=packet.draft.directions.find(d=>d.id==='B' && f.eligible.includes(d.id))
+        || packet.draft.directions.find(d=>f.eligible.includes(d.id));
+      return {issueId:f.id,directionId:d.id,action:['copy-blocked','copy-similar'].includes(action)?'pause':action==='copy-new-challenge-bypass'?'recheck':
+        action==='copy-polish-recheck'?'recheck':'revise',evidence:d.main,reason:'按本案的实际条件核对'};
+    })};
+  }
+  const followupCase=['copy-polish','copy-frozen','copy-stale','copy-budget','copy-polish-tool-error'].includes(action);
+  const distinct=action!=='copy-similar' && action!=='copy-budget' &&
+    (!followupCase || packet.draft?.directions[1].main.includes('再澄清'));
   if (step === 'ADJUDICATE') return {ready:true,reason:'本地概念阶段完成',
     recommendation:{directionId:'B',reason:'说明清楚',tradeoff:'适用范围有限'},
-    rulings:packet.decisionPlan.rulings.map(r=>({challengeId:r.challengeId,verdict:'resolved',reason:'已按原始裁定核验'})),
+    rulings:packet.requiredRulingIds.map(challengeId=>({challengeId,verdict:'resolved',reason:'已按原始裁定核验'})),
     single:directions.map(d=>({directionId:d.id,ready:true,reason:'主副文可以同读'})),
-    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:action!=='copy-similar',reason:'逐对比对表达和使用情境'})),
-    set:{ready:action!=='copy-similar',reason:'三案组内比较结论'}};
+    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:pair==='AC' || distinct,reason:'逐对比对表达和使用情境'})),
+    set:{ready:distinct,reason:'三案组内比较结论'}};
   throw Error('未知文案测试步骤');
 }
 
@@ -189,6 +212,7 @@ test('copy corrects a mistaken vote on the identical draft through the original 
   const f=await fixture(t,'copy-clarify');
   const {copyReview:r}=await f.run('copy');
   assert.deepEqual(r.draft,r.initialDraft);
+  assert.equal(r.panelHistory.length,1);
   assert.ok(!r.calls.some(c=>c.phase==='COPY_REVISE'));
   assert.deepEqual(r.calls.filter(c=>c.phase==='COPY_RECHECK').map(c=>c.role),['user']);
   const userScore = votes=>votes.find(v=>v.role==='user').items.find(d=>d.directionId==='B').scores.find(s=>s.dimension==='直接理解').score;
@@ -217,6 +241,65 @@ test('copy stays unpublished when final review still contains a blocking score',
   assert.ok(!(await readdir(f.dir)).some(n=>n.endsWith('.md')));
 });
 
+test('copy polishes a refused direction and leaves the two accepted directions intact',async t=>{
+  const f=await fixture(t,'copy-polish');
+  const {copyReview:r}=await f.run('copy');
+  assert.equal(r.polishRounds.length,1);
+  const prior=r.polishRounds[0];
+  assert.equal(prior.adjudication.set.ready,false);
+  assert.deepEqual(r.draft.directions[0],prior.draft.directions[0]);
+  assert.deepEqual(r.draft.directions[2],prior.draft.directions[2]);
+  assert.notEqual(r.draft.directions[1].main,prior.draft.directions[1].main);
+  assert.ok(r.adjudication.set.ready && r.adjudication.pairs.every(p=>p.distinct));
+  assert.equal(new Set(r.finalVotes.map(v=>v.draftHash)).size,1);
+  assert.equal(r.finalVotes[0].draftHash,prior.revisedHash);
+});
+test('copy reopens paired challenges and pre-edit rulings on every changed draft',async t=>{
+  const f=await fixture(t,'copy-new-challenge');
+  const {copyReview:r}=await f.run('copy');
+  const panels=r.panelHistory;
+  assert.equal(panels.length,3);
+  assert.equal(new Set(panels.map(p=>p.draftHash)).size,3);
+  for (const panel of panels) {
+    assert.equal(panel.criticReads.length,4);
+    assert.equal(panel.challenges.length,4);
+    for (const c of panel.challenges) {
+      assert.ok(c.draftHash===panel.draftHash &&
+        panel.votes.some(v=>v.runId===c.voteRunId && v.draftHash===panel.draftHash) &&
+        panel.criticReads.some(v=>v.runId===c.blindReadRunId && v.draftHash===panel.draftHash));
+    }
+  }
+  const newIssue=panels[1].issues.find(i=>i.objection==='新稿新增读者歧义');
+  assert.ok(newIssue);
+  assert.ok(panels[1].decisionPlan.rulings.some(r=>r.challengeId===newIssue.id && r.action==='revise'));
+  assert.match(r.draft.directions[1].main,/再澄清/);
+  assert.ok(r.adjudication.rulings.some(r=>r.challengeId===newIssue.id));
+});
+test('copy rejects a repair plan that tries to bypass a required new-draft challenge edit',async t=>{
+  const f=await fixture(t,'copy-new-challenge-bypass');
+  await assert.rejects(f.run('copy'),/本版独立裁定/);
+  assert.ok(!(await readdir(f.dir)).some(n=>n.endsWith('.md')));
+});
+test('copy can correct a rejected final score on the identical text without another author call',async t=>{
+  const f=await fixture(t,'copy-polish-recheck');
+  const {copyReview:r}=await f.run('copy');
+  assert.equal(r.polishRounds.length,1);
+  assert.deepEqual(r.polishRounds[0].draft,r.draft);
+  assert.equal(r.calls.filter(c=>c.phase==='COPY_REVISE').length,1);
+  assert.deepEqual(r.polishRounds[0].sameDraftRechecks.map(v=>v.role),['user']);
+});
+for (const [action,error] of [['copy-frozen',/冻结方向/],['copy-stale',/冻结原稿身份/],
+  ['copy-budget',/打磨上限/],['copy-polish-tool-error',/调用失败/]]) {
+  test('copy polishing halts safely: '+action,async t=>{
+    const f=await fixture(t,action);
+    await assert.rejects(f.run('copy'),error);
+    const files=await readdir(f.dir);
+    assert.ok(!files.some(name=>name.endsWith('.md')));
+    const log=JSON.parse(await readFile(join(f.dir,files.find(name=>name.startsWith('copy-review-attempt-'))),'utf8'));
+    assert.ok(log.polishRounds.length <= 2);
+    assert.equal(log.status,'blocked');
+  });
+}
 test('collaboration generates the chosen direction using the current thread PNG bytes',async t=>{
   const f=await fixture(t,'image');
   const result=await f.run('visual');
