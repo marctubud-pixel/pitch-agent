@@ -2311,16 +2311,20 @@
       "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
     },
     "apps/workbench-preview/src/proposal/qingyu-visual/QingyuVisualPreview.tsx": {
-      "sha256": "799272a5e14b2c5f7597f7f8fb34ce70ad76a5bfd285665c78485e936273be50",
-      "reason": " 接入按方向查看的视觉图册。"
+      "sha256": "92f680ff08324b427da79ef9549ad8e7e83545d373c4e1dbe63920b8f896d282",
+      "reason": " 接入按方向查看的视觉图册。 接入视觉草图选择、版本或相应方法身份。"
     },
     "apps/workbench-preview/src/proposal/qingyu-visual/visual-preview.css": {
       "sha256": "6e665e2d42a947eb10ded1f2ecd75449c02e712d10df336c9d4162c81074d7c3",
       "reason": " 接入按方向查看的视觉图册。"
     },
     "apps/workbench-preview/src/proposal/qingyu-visual/visual-preview.test.ts": {
-      "sha256": "e9ad1f2bb78557baa32bfc3d9d7eead7a494080f58c2384469266413c223a5a4",
-      "reason": " 接入按方向查看的视觉图册。 视觉图稿按画幅与产物用途展示。"
+      "sha256": "7535c86d53ae4a897d11f18ce957986699d81b18ffb95b464fc3e13748651782",
+      "reason": " 接入按方向查看的视觉图册。 视觉图稿按画幅与产物用途展示。 接入视觉草图选择、版本或相应方法身份。"
+    },
+    "apps/workbench-preview/src/proposal/qingyu-visual/concept-images.ts": {
+      "sha256": "5997d0df0bba622a5ce3b0c8db5e5d1968f39fadaff938fc8cf3847197940532",
+      "reason": " 接入视觉草图选择、版本或相应方法身份。"
     }
   },
   "nightflightArchive": {

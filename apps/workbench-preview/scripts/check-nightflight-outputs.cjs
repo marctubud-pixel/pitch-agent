@@ -181,19 +181,20 @@ async function main() {
       assert.equal(await page.locator('.vg-reference-row').count(), 3);
       for (const id of ['v2', 'n7', 'k4']) {
         const row = page.locator('[data-reference-direction="' + id + '"]');
-        assert.equal(await row.locator('.vg-references img').count(), 3);
+        const count = id === 'k4' ? 2 : 3;
+        assert.equal(await row.locator('.vg-references img').count(), count);
         assert.ok((await row.locator('.vg-description').innerText()).trim());
-        assert.deepEqual(await row.locator('.vg-references img').evaluateAll(images => images.map(img => getComputedStyle(img).objectFit)), ['contain', 'contain', 'contain']);
+        assert.deepEqual(await row.locator('.vg-references img').evaluateAll(images => images.map(img => getComputedStyle(img).objectFit)), Array(count).fill('contain'));
         await row.locator('.vg-direction').click();
         const pair = page.locator('[data-visual-direction="' + id + '"]');
         await pair.waitFor();
         assert.ok(page.url().endsWith('dir=' + id));
         assert.equal(await pair.locator('.vg-portrait > figure').count(), 3);
-        assert.match(await pair.locator('figure').last().innerText(), /包装延展待补/);
-        assert.match(await pair.locator('.vg-zoom img').first().getAttribute('src'), new RegExp(id + '-sketch-1'));
-        assert.match(await pair.locator('.vg-zoom img').last().getAttribute('src'), new RegExp(id + '-main'));
+        assert.match(await pair.locator('.vg-portrait > figure').last().innerText(), /包装延展待补/);
+        assert.match(await pair.locator('.vg-portrait .vg-zoom img').first().getAttribute('src'), new RegExp(id === 'k4' ? 'k4-sketch-cup' : id + '-sketch-1'));
+        assert.match(await pair.locator('.vg-portrait .vg-zoom img').last().getAttribute('src'), new RegExp(id + '-main'));
         assert.match(await page.locator('.vg-mockup img').getAttribute('src'), new RegExp(id + '-mockups'));
-        assert.equal(await page.locator('.vg-details').evaluate(el => el.open), false);
+        assert.equal(await page.locator('.visual-image-gallery > .vg-details').evaluate(el => el.open), false);
         await page.locator('.visual-image-gallery img').evaluateAll(async imgs => {
           await Promise.all(imgs.map(img => img.decode()));
         });
@@ -204,7 +205,7 @@ async function main() {
         }
         assert.equal(await row.locator('.vg-references').innerText(), '');
         assert.equal(await page.locator('.vg-mockup figcaption').count(), 0);
-        const positions = await pair.locator('figure:has(img)').evaluateAll(figures => figures.map(figure => {
+        const positions = await pair.locator('.vg-portrait > figure:has(img)').evaluateAll(figures => figures.map(figure => {
           const img = figure.querySelector('img');
           const rect = img.getBoundingClientRect();
           // Measure the contained artwork, including any letterboxing inside the element.
@@ -212,6 +213,14 @@ async function main() {
           return [rect.top, rect.top + height, figure.querySelector('figcaption').getBoundingClientRect().top];
         }));
         assert.ok(positions[0].every((value, i) => Math.abs(value - positions[1][i]) <= 1));
+        const history = pair.locator('.vg-sketch-history');
+        assert.equal(await history.count(), id === 'k4' ? 1 : 0);
+        if (id === 'k4') {
+          await history.locator('summary').click();
+          assert.match(await history.locator('img').first().getAttribute('src'), /k4-sketch-1.png$/);
+          assert.match(await history.locator('img').last().getAttribute('src'), /k4-sketch-cup.png$/);
+          await history.locator('summary').click();
+        }
         const zoom = page.locator('.vg-mockup .vg-zoom');
         await zoom.click();
         await page.getByRole('dialog').getByRole('button', { name:'关闭' }).click();

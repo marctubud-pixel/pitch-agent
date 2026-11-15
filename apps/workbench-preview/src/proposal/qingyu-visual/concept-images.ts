@@ -7,6 +7,7 @@ export type DirectionConcept = {
   notes: readonly [string, string];
   main: ConceptImage;
   sketches: readonly [ConceptImage, ConceptImage, ConceptImage];
+  previousSketch?: ConceptImage;
   mockups: ConceptImage;
 };
 const image = (file: string, alt: string): ConceptImage => ({ url: `/visual-concepts/qingyu-20261110/${file}.png`, alt, generationType: 'preview' });
@@ -22,7 +23,8 @@ export const conceptImages = [
     directionId: 'k4', description: '以泉水地理为线索，让一道纵向水流窗口引出虎跑山线。',
     notes: ['纵向窗口组织水流与山线，形成从泉到瓶的阅读动线。', '青色与透明留白共同表达地理线索，不补写茶种或工艺。'],
     main: image('k4-main', '一口到虎跑方向的青屿500毫升透明瓶包装设计试稿'),
-    sketches: [image('k4-sketch-1', '一口到虎跑方向草图一'), image('k4-sketch-2', '一口到虎跑方向草图二'), image('k4-sketch-3', '一口到虎跑方向草图三')],
+    previousSketch: image('k4-sketch-1', '原稿：水流指向茶芽'),
+    sketches: [image('k4-sketch-cup', '采用稿：泉水流入正在泡茶的杯子'), image('k4-sketch-2', '一口到虎跑方向草图二'), image('k4-sketch-3', '一口到虎跑方向草图三')],
     mockups: image('k4-mockups', '一口到虎跑方向的正面、侧面、背面模拟样机图板'),
   },
   {

@@ -79,7 +79,7 @@ describe('Qingyu visual layout preview', () => {
       expect((html.match(/class="vg-reference-row"/g) ?? [])).toHaveLength(3);
       for (const dir of result.preview.bundle.currentRound.directions) {
         const refs = displayReferences(dir.id);
-        expect(refs).toHaveLength(3);
+        expect(refs).toHaveLength(dir.id === 'k4' ? 2 : 3);
         const row = html.split(`data-reference-direction="${dir.id}"`)[1].split('class="vg-reference-row"')[0];
         for (const ref of refs) expect(row).toContain(`src="${ref.image}"`);
       }
@@ -87,6 +87,7 @@ describe('Qingyu visual layout preview', () => {
       expect(html).toContain(`/${direction.id}-main.png`);
       expect(html).toContain(`/${direction.id}-mockups.png`);
       expect(html).toContain(`/${direction.id}-sketch-1.png`);
+      if (direction.id === 'k4') expect(html).toContain('/k4-sketch-cup.png');
       expect(html).not.toContain(`/${direction.id}-sketch-2.png`);
       expect(html).toContain('包装延展');
       expect(html.split('<details class="vg-details">')[0]).not.toContain(direction.slogan);
@@ -140,7 +141,7 @@ describe('Qingyu visual layout preview', () => {
     }
     const invalid = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), 'part=compare&compareStage=other');
     expect(invalid).toContain('未找到指定的对照阶段');
-    expect((invalid.match(/<img /g) ?? [])).toHaveLength(9);
+    expect((invalid.match(/<img /g) ?? [])).toHaveLength(8);
   });
 
   it('registers fifteen unique preview assets and preserves the three direction identities', async () => {

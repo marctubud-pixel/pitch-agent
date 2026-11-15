@@ -51,7 +51,7 @@ export function evaluateStage(input, evidence) {
   const current = evidence.documents.get(input.currentInput?.sha256);
   const authorization = evidence.documents.get(input.authorization?.sha256);
   const stageIndex = stages.indexOf(input.stage);
-  if (input.skillVersion !== '1.0.0' || stageIndex < 0 || input.stage === 'delivery'
+  if (!['1.0.0', '1.1.0'].includes(input.skillVersion) || stageIndex < 0 || input.stage === 'delivery'
     || !['record', 'advance', 'revise'].includes(input.action)
     || !isText(task.id) || !isText(task.scopeVersion) || !isText(task.inputVersion)
     || typeof task.requiresNode !== 'boolean' || !list(task.creatorIds).length || task.creatorIds.some(id => !isText(id))

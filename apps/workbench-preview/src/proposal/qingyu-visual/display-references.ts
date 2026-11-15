@@ -22,7 +22,7 @@ const additionalReferences: Record<PackagingReference['directionId'], PackagingR
     sourceUrl: 'https://www.foodtalks.cn/fbifwowfoodawards/gallery/wowfood/detail/5563',
     sourceName: '伊利／FBIF 品牌投稿', form: '品牌投稿单品图', scope: '同品类参考', market: '中国大陆',
     alt: '伊刻活泉现泡茉莉花茶单瓶，绿色瓶标和浅色瓶身',
-    borrow: '观察绿色标签与透明瓶身的留白，为水流窗口的构图找参照。',
+    borrow: '主参考：把水源信息紧贴茶名，让读者在认出茶的同时注意到泡茶用水。',
     limits: '沿用青屿研究 R4 原图 C-A02；青屿的配方事实独立核对。',
     sha256: '6e2c2e5c16220de458d040b9287802d149d0dc0a62a79910c71dd134c2391324',
     width: 1920, height: 1080,
@@ -44,5 +44,9 @@ const additionalReferences: Record<PackagingReference['directionId'], PackagingR
 export function displayReferences(directionId: string): readonly PackagingReference[] {
   const archived = packagingReferenceSet.references.filter((reference) => reference.directionId === directionId);
   if (!archived.length) return [];
+  if (directionId === 'k4') {
+    const supporting = archived.filter(ref => ref.id === 'trip-longjing');
+    return [additionalReferences.k4, ...supporting];
+  }
   return [...archived, additionalReferences[archived[0].directionId]];
 }

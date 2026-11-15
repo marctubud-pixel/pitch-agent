@@ -131,6 +131,7 @@ function AvailableLayout({ result, intake, collaborationControl }: { result: Ava
           <h4>设计说明</h4><p>{concept.description}</p><ul>{concept.notes.map(note => <li key={note}>{note}</li>)}</ul>
           <p>500毫升透明瓶，青色与山形。茶种及完整配料未确定；瓶型、材质与印刷均为模拟。</p>
           <h4>参考来源与借鉴</h4>
+          {current.id === 'k4' && <p>选图小试：伊刻活泉作主参考，东方树叶辅助图文分区；长白雪的虎身叠山林留作备选，分享瓶侧重人际称呼，本方向退回。</p>}
           {displayReferences(current.id).map(reference => <div key={reference.id} className="qv-source">
             <strong>{reference.title}</strong><p>{reference.borrow}</p><p>{reference.limits}</p>
             <p>{reference.form} · {reference.scope}</p>

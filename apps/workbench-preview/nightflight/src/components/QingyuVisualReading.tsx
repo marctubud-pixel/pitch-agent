@@ -18,6 +18,7 @@ export default function QingyuVisualReading({ directionId }: { directionId: stri
           <p>{concept.description}</p>
           <p>{concept.notes.join('')}</p>
           <p>本组为设计试稿，正式视觉评审与印前核验待完成。</p>
+          {current.id === 'k4' && <p>选图小试：伊刻活泉作主参考，东方树叶辅助图文分区；长白雪的虎身叠山林留作备选，分享瓶侧重人际称呼，本方向退回。</p>}
           {displayReferences(current.id).map(ref => <p key={ref.id}>
             <strong>{ref.title}</strong>　{ref.borrow} {ref.limits} <a href={ref.sourceUrl} target="_blank" rel="noopener noreferrer">{ref.sourceName}</a>
           </p>)}

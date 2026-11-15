@@ -7,6 +7,7 @@ export interface GalleryDirection {
   references: readonly GalleryImage[]; sketch?: GalleryImage;
   mains: readonly GalleryImage[]; extensions?: readonly GalleryImage[];
   format?: 'portrait' | 'landscape'; extensionLabel?: string;
+  sketchComparison?: { previous: GalleryImage; note: string };
   mockup?: GalleryImage;
 }
 
@@ -65,6 +66,14 @@ function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirecti
           }} />
         {portrait && extension}
       </div>
+      {direction.sketchComparison && direction.sketch && <details className="vg-details vg-sketch-history">
+        <summary>对照草图原稿与采用稿</summary>
+        <div className="vg-pair">
+          <Artwork label={direction.sketchComparison.previous.title} images={[direction.sketchComparison.previous]} zoom={zoom} />
+          <Artwork label="采用稿" images={[direction.sketch]} zoom={zoom} />
+        </div>
+        <p>{direction.sketchComparison.note}</p>
+      </details>}
     </section>
     {!portrait && <section className="vg-section vg-extension"><h3>{extensionLabel}</h3>{extension}</section>}
     <section className="vg-section vg-mockup"><h3>样机 <span className="vg-letter">方向 {letter}</span></h3>

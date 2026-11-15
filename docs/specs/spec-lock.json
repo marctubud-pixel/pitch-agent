@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.40.2",
-  "registrySha256": "e0817fb05ca83a50a0fb9018efa7d68fd6002af418b00eddd493a1724dcdd70c",
+  "baselineVersion": "1.41.0",
+  "registrySha256": "4011126f5933e6fd5b3996ac0dcd9acf348f183eb4904b9cf6831d180c88ce11",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -39,10 +39,10 @@
       }
     },
     "agent.visual-owner": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/visual-owner.md": "f31b4d43ddd9a609bdcd03f8901487423446e73b9d113d7211ff69bd06037286"
+        "docs/agents/visual-owner.md": "a04db7d0334c3c9e59517ef1fbbe72824adda74fc0049b7555069d6292dffc85"
       }
     },
     "agent.layout-owner": {
@@ -123,10 +123,10 @@
       }
     },
     "page.visual": {
-      "version": "1.5.2",
+      "version": "1.6.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "09ab76ad6723df8eac87f803eb38e24215c96a6016b391a647f2753ae3416083"
+        "docs/pages/visual.md": "045402a892f299bd4c6e742b91860da3cc8f8cf56cedd4466d21caf9615a8965"
       }
     },
     "page.layout": {
@@ -203,15 +203,15 @@
       }
     },
     "method.visual": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "a88df574f60936e6ff1740097445d09c199b607f1eab7cb9678c9ba5bef3e464",
+        "skills/visual-development-lead/SKILL.md": "26dc8b8a6a6cb8538bd951fb9aee57b9afd4fc375cafdb6b6b940cc0489712d0",
         "skills/visual-development-lead/references/kv.md": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
         "skills/visual-development-lead/references/packaging.md": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a",
-        "skills/visual-development-lead/references/records.md": "ee707e90ca10e8ebac767d926091a43c787396d9bb719d8105b9a4fcc7eab155",
-        "skills/visual-development-lead/references/stage-review.md": "3b0955c5e0ee428cde8e33cde67c3f42f53e5a91f0de12b436d9580167629528",
-        "skills/visual-development-lead/scripts/check-stage.mjs": "e989e82288e1ee4b8b873ec409c061a734e0881cce37ffb9b0597e54ad796dd4",
+        "skills/visual-development-lead/references/records.md": "be96318b306240076f8f3e116fb1b75bd055d0bc3a4d221fa5dbb98719293985",
+        "skills/visual-development-lead/references/stage-review.md": "dfa05e931d1f7e17b8b4e9750a2a9adff43a127d50daae7cea2d8eac66aa45fb",
+        "skills/visual-development-lead/scripts/check-stage.mjs": "b6ab278887810cc7786db805392fbd50dcb892ff115d487f9ba8348b8dd93a1f",
         "skills/visual-development-lead/tests/check-stage.test.mjs": "d3e8fa7e48ac35ddaf0d2c585681c224bd6e14230fc133bb32fefe9fdbd93adc"
       }
     },
@@ -242,17 +242,17 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.16.2",
+      "version": "1.17.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "105128fe520b1be0c0d9975a7f675d4158ddd62c0a6e059aabeb8ee6560b09e3"
+        "docs/specs/nightflight-stage-output.md": "6ffc29bfbdad89185dad93427847b470ab83dffc03fd1799066239a60ddfdd5a"
       }
     },
     "contract.workflow": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "files": {
-        "docs/workflows/提案工作流_现行规则.md": "e598bf604242506518aef6fde095c0fce9d5a9f1dc2d024e4092ee2a046dd4dd"
+        "docs/workflows/提案工作流_现行规则.md": "89f8e279f2676b801aff9d8a998acb3a6fcb11b422f363dccac6c3b0c7be0afa"
       }
     },
     "contract.change": {
@@ -445,10 +445,10 @@
       }
     },
     "contract.visual-workflow": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/visual-workflow.md": "1921a44d729c85dd5fbaec2dd7af3361f3fa2591fd51034e05e320a1685debc5"
+        "docs/development/visual-workflow.md": "0be58576318b51cf7a93edefad1fed0faae8cd4c0708cf81a4499d4bde63bc64"
       }
     },
     "contract.native-store-identity": {
@@ -480,7 +480,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "f117febbbb77347c1b73c2e64245482d80d469fc5803d1f481485fde192f22e8",
+    "docs/specs/README.md": "fc3d52d7fbd2eb746959c9aab2f507dd97a5aedcf8cf3239c3479ce9b5f55521",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
