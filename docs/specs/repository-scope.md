@@ -1,12 +1,12 @@
 # Git纳管范围与源码位置
 
-规范版本：1.1.0。本轮用户明确授权补齐应用与Agent工程、源码用法、PR及回退基础并推送到既有GitHub origin。最初无提交、之后仅规范纳管的状态保留为历史；当前范围以下表和明示清单为准。
+规范版本：1.2.0。本轮用户明确授权补齐应用与Agent工程、源码用法、PR及回退基础并推送到既有GitHub origin。最初无提交、之后仅规范纳管的状态保留为历史；当前范围以下表和明示清单为准。
 
 | 对象 | 仓库位置 | 当前边界 |
 | --- | --- | --- |
-| 当前应用 | apps/workbench-preview | 从活跃scratch导入源码、测试、必要public及证据映射，后续开发从这里继续 |
+| 当前应用 | apps/workbench-preview | nightflight 为默认应用，src 保留既有工作台与共享 Deck Studio。两个来源分别登记导入身份 |
 | 较早正式前端 | apps/proposal-workbench | 保留旧对接源码，不覆盖当前应用，也不自动恢复正式联调 |
-| 业务与工具源码 | tools/workbench、tools/auto-layout、tools/local-acceptance | 源码、测试、合同、必要夹具及vendor保留；本机专用能力明确未移植 |
+| 业务与工具源码 | tools/nightflight、tools/workbench、tools/auto-layout、tools/local-acceptance | 源码、测试、合同、必要夹具及vendor保留；本机专用能力明确未移植 |
 | 规范与方法 | docs、skills及AGENTS | 现行岗位、页面、固定Skill、工程用法和历史依据分别导航 |
 | 原活跃前端 | .scratch/frontend-ui-optimization-20261108/source/proposal-workbench | 原位保留，旧4417不因导入而切换；来源SHA写入source-import.json |
 | 原业务状态及交付 | .data、.scratch、.audit、output及外部用户PDF | 原位保留，不整体上传，不清理或重开旧run |

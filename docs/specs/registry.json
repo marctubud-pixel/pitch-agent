@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.18.0",
+  "baselineVersion": "1.19.0",
   "date": "2026-11-15",
-  "status": "成稿汇总支持同版完整内容摘要，排版前读取支持较大快照。整链验收继续。",
+  "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
     "brief",
     "research",
@@ -412,7 +412,7 @@
       "kind": "contract",
       "title": "中文桌面UI基线",
       "path": "docs/specs/ui-system.md",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.ui"
@@ -473,7 +473,7 @@
       "kind": "agent",
       "title": "工作台UI负责人",
       "path": "docs/agents/workbench-ui-owner.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",
@@ -497,7 +497,7 @@
       "kind": "contract",
       "title": "页面基线与责任索引",
       "path": "docs/pages/README.md",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.workbench-ui-owner",
@@ -520,7 +520,7 @@
       "kind": "contract",
       "title": "Git纳管范围与源码边界",
       "path": "docs/specs/repository-scope.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -529,7 +529,7 @@
       "kind": "contract",
       "title": "开发启动与工程入口",
       "path": "docs/development/README.md",
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -538,7 +538,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.11.0",
+      "version": "1.12.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -547,7 +547,7 @@
       "kind": "contract",
       "title": "配置与服务边界",
       "path": "docs/development/configuration.md",
-      "version": "1.10.0",
+      "version": "1.11.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -583,7 +583,7 @@
       "kind": "contract",
       "title": "工作台操作说明",
       "path": "docs/usage/README.md",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": []
     },

@@ -1,0 +1,100 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p, ul, ol, dl, dd, figure, blockquote { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+h1, h2, h3 { text-wrap: balance; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
+button:disabled { cursor: not-allowed; }
+svg { display: block; }
+
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── 复古按钮：黑描边 + 金属渐变 ───────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 7px 14px;
+  font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.084em; line-height: 1.5;
+  white-space: nowrap;
+  color: var(--ink);
+  border: var(--rule); border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff 0%, #ececec 42%, #b4b4b4 100%);
+  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+  transition: filter 0.12s;
+}
+.btn:hover:not(:disabled) { filter: brightness(0.95); }
+.btn:active:not(:disabled), .btn.is-on {
+  background: linear-gradient(180deg, #a9a9a9 0%, #d9d9d9 60%, #f1f1f1 100%);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.btn:disabled { opacity: 0.45; }
+.btn-dark {
+  color: #fff;
+  background: linear-gradient(180deg, #6a6a6a 0%, #262626 38%, #000 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 #000;
+}
+.btn-dark:hover:not(:disabled) { filter: brightness(1.25); }
+.btn-dark:active:not(:disabled) { background: linear-gradient(180deg, #000 0%, #2a2a2a 100%); box-shadow: inset 0 2px 4px #000; }
+.btn-xl { width: 100%; padding: 14px 20px; font-size: 16px; letter-spacing: 0.18em; }
+.btn-sm { padding: 3px 10px; font-size: 12px; letter-spacing: 0.06em; }
+.btn-dot { margin-left: 2px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.link-btn {
+  font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px;
+}
+.link-btn:hover { color: var(--orange); }
+.back-link { font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; color: var(--mute); }
+.back-link:hover { color: var(--ink); }
+
+/* ── 状态点：橙色只表示"正在发生" ───────────────── */
+.dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 2px; background: var(--mute); margin-right: 8px; vertical-align: 1px; }
+.dot-live { background: var(--orange); animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.3; } }
+@keyframes blink { 50% { opacity: 0; } }
+
+.tag-demo {
+  display: inline-block; padding: 1px 8px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.084em; line-height: 1.7; white-space: nowrap;
+  color: var(--orange); border: 1px solid var(--orange); border-radius: 2px;
+}
+.tag-demo.on-dark { color: #f0a078; border-color: #f0a078; }
+
+.mono-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.096em; color: var(--mute); }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; color: var(--mute); }
+.time { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--mute); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.mute { color: var(--mute); }
+.hint { font-size: 13px; color: var(--mute); }
+.form-error { font-size: 14px; color: #a23c12; }
+.empty { font-size: 14px; color: var(--mute); padding: 4px 0 8px; }
+.demo-note { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; line-height: 1.7; color: var(--mute); margin-top: 14px; }
+.chip {
+  display: inline-block; padding: 0 8px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.084em; line-height: 1.8;
+  background: #fff; border-radius: 2px; color: var(--mute); white-space: nowrap;
+}
+
+.appear { animation: appear 0.5s ease-out; }
+@keyframes appear { from { opacity: 0; transform: translateY(6px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 1000px) {
+  html, body, #root { height: auto; min-height: 100%; }
+}

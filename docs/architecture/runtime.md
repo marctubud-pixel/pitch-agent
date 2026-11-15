@@ -1,6 +1,12 @@
 # 应用与Agent运行架构
 
-规范版本：1.11.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.12.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+
+## 夜航本机运行
+
+浏览器从 `/api/projects` 读取本机项目。启动器提供编译好的夜航和经典页面，服务将原件保存至独立项目目录，在 SQLite 记录阶段和版本。研究及创作按本机 Codex 登录调用，排版在本机浏览器进程内编译同一 Deck。操作与数据位置见[夜航说明](../development/nightflight-local.md)。
+
+## 经典工作台与既有业务服务
 
 ```mermaid
 flowchart LR

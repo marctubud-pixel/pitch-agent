@@ -1,0 +1,468 @@
+import { DatabaseSync } from 'node:sqlite';
+import { createHash, randomUUID } from 'node:crypto';
+import {
+  constants,
+  createReadStream,
+  mkdirSync,
+  mkdtempSync,
+  openSync,
+  closeSync,
+  fstatSync,
+  readFileSync,
+  copyFileSync,
+  writeFileSync,
+} from 'node:fs';
+import { resolve, join, basename, extname } from 'node:path';
+import { pipeline } from 'node:stream/promises';
+
+const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
+const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
+const safeId = /^[a-zA-Z0-9_-]{1,100}$/;
+const now = () => new Date().toISOString();
+const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
+function check(condition, message, status = 400) {
+  if (!condition) throw Object.assign(new Error(message), { status });
+}
+function filename(value) {
+  check(
+    typeof value === 'string' &&
+      value.trim() &&
+      value === basename(value) &&
+      !value.startsWith('.') &&
+      !/[\\/:\x00-\x1f]/u.test(value) &&
+      Buffer.byteLength(value) <= 220,
+    '文件名称无效',
+  );
+  return value;
+}
+function note(p, text) {
+  p.events.push({ stage: p.stage, at: now(), text });
+}
+function publicView(p) {
+  const { owner, claim, inputHash, commands, ...visible } = p;
+  const unstore = ({ storageKey, ...record }) => record;
+  return {
+    ...visible,
+    artifacts: p.artifacts.map(unstore),
+    attachments: p.attachments.map(unstore),
+    versions: p.versions.map((v) => ({ ...v, artifacts: v.artifacts.map(unstore) })),
+  };
+}
+async function body(req) {
+  check(req.headers['content-type']?.split(';')[0] === 'application/json', '需要 JSON 请求', 415);
+  let length = 0;
+  const chunks = [];
+  for await (const chunk of req) {
+    length += chunk.length;
+    check(length <= 40 * 1024 * 1024, '每次提交的附件合计请控制在 28 MB 以内', 413);
+    chunks.push(chunk);
+  }
+  try {
+    const v = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    if (v && typeof v === 'object' && !Array.isArray(v)) return v;
+  } catch {}
+  check(false, '请求格式错误');
+}
+const mime = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.pdf': 'application/pdf',
+  '.md': 'text/plain; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+};
+
+export function createNightflight({ root, runStage, runLayout }) {
+  root = resolve(root);
+  mkdirSync(root, { recursive: true, mode: 0o700 });
+  const db = new DatabaseSync(join(root, 'nightflight.sqlite'));
+  db.exec(
+    'PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS projects(id TEXT PRIMARY KEY, revision INTEGER NOT NULL, state TEXT NOT NULL)',
+  );
+  const get = (id) => {
+    const row = db.prepare('SELECT state FROM projects WHERE id=?').get(id);
+    return row && JSON.parse(row.state);
+  };
+  const list = () =>
+    db
+      .prepare(
+        "SELECT id,json_extract(state,'$.title') AS title,json_extract(state,'$.status') AS status,json_extract(state,'$.stage') AS stage,json_extract(state,'$.updatedAt') AS updatedAt FROM projects ORDER BY updatedAt DESC",
+      )
+      .all();
+  const jobs = new Map();
+  let closing = false;
+  function save(p) {
+    const old = p.revision;
+    p.revision++;
+    p.updatedAt = now();
+    check(
+      db
+        .prepare('UPDATE projects SET revision=?,state=? WHERE id=? AND revision=?')
+        .run(p.revision, JSON.stringify(p), p.id, old).changes === 1,
+      '项目已更新，请刷新后再试',
+      409,
+    );
+  }
+  function disk(p, key) {
+    return join(root, p.id, 'files', key);
+  }
+  function storeFile(p, name, source, kind) {
+    const storageKey = randomUUID() + extname(name);
+    const path = disk(p, storageKey);
+    if (Buffer.isBuffer(source)) writeFileSync(path, source, { flag: 'wx', mode: 0o600 });
+    else {
+      const fd = openSync(source, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+      try {
+        const stat = fstatSync(fd);
+        check(stat.isFile() && stat.size > 0 && stat.size <= 128 * 1024 * 1024, '产物为空或过大');
+        writeFileSync(path, readFileSync(fd), { flag: 'wx', mode: 0o600 });
+      } finally {
+        closeSync(fd);
+      }
+    }
+    return { name, kind, storageKey, url: '/api/projects/' + p.id + '/files/' + storageKey };
+  }
+  function schedule(id) {
+    if (closing || jobs.has(id)) return;
+    const abort = new AbortController();
+    jobs.set(id, abort);
+    setImmediate(async () => {
+      let claim;
+      try {
+        while (!closing) {
+          const p = get(id);
+          if (!p || p.status !== 'running' || p.claim) break;
+          claim = randomUUID();
+          p.claim = claim;
+          p.owner = process.pid;
+          note(p, '开始' + labels[stages.indexOf(p.stage)]);
+          save(p);
+          const dir = mkdtempSync(join(root, id, 'attempt-'));
+          const input = publicView(p);
+          for (const type of ['artifacts', 'attachments']) {
+            input[type] = p[type].map((record) => {
+              const path = join(dir, filename(record.name));
+              copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
+              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, path };
+            });
+          }
+          const onEvent = (text) => {
+            const live = get(id);
+            if (live?.claim === claim && typeof text === 'string' && text.trim()) {
+              note(live, text.slice(0, 500));
+              save(live);
+            }
+          };
+          const result = await (p.stage === 'layout' ? runLayout : runStage)({
+            stage: p.stage,
+            project: input,
+            dir,
+            onEvent,
+            signal: abort.signal,
+          });
+          const live = get(id);
+          check(live?.claim === claim, '该次运行已结束', 409);
+          check(Array.isArray(result.artifacts) && result.artifacts.length, '这一阶段没有交回文件', 422);
+          const occupied = new Set(
+            [...live.attachments, ...live.artifacts].map((a) => a.name.normalize('NFC').toLowerCase()),
+          );
+          const outputs = result.artifacts.map((a) => {
+            const name = filename(a.name),
+              key = name.normalize('NFC').toLowerCase();
+            check(!occupied.has(key), '产物文件名重复：' + name, 422);
+            occupied.add(key);
+            check(['image', 'pptx', 'text'].includes(a.kind), '产物类型无效', 422);
+            return {
+              ...storeFile(live, name, join(dir, name), a.kind),
+              stage: p.stage,
+              ...(typeof a.text === 'string' ? { text: a.text } : {}),
+            };
+          });
+          if (p.stage === 'copy') {
+            check(
+              result.directions?.length === 3 &&
+                result.directions.every((d) => typeof d === 'string' && d.trim()) &&
+                new Set(result.directions).size === 3,
+              '文案未交回三个不同方向',
+              422,
+            );
+            live.directions = result.directions;
+          }
+          live.artifacts.push(...outputs);
+          live.claim = null;
+          live.owner = null;
+          note(live, '已保存' + outputs.length + '份' + labels[stages.indexOf(p.stage)] + '产物');
+          if (p.stage === 'copy' && p.mode === 'collab') {
+            live.status = 'waiting';
+            note(live, '等待你选择创意方向');
+          } else if (p.stage === 'visual') {
+            live.status = 'waiting';
+            note(live, '请查看真实图稿，决定是否采用本版进入排版');
+          } else if (p.stage === 'final') {
+            live.status = 'done';
+            note(live, '本地试跑完成，可查看核对记录与 PPTX');
+          } else live.stage = stages[stages.indexOf(p.stage) + 1];
+          save(live);
+          claim = null;
+        }
+      } catch (error) {
+        const p = get(id);
+        if (p && p.claim === claim) {
+          p.status = 'failed';
+          p.claim = null;
+          p.owner = null;
+          p.error = String(error.message).slice(0, 1800);
+          note(p, p.error);
+          save(p);
+        }
+      } finally {
+        jobs.delete(id);
+        if (closing) {
+          if (!jobs.size) db.close();
+        } else {
+          const p = get(id);
+          if (p?.status === 'running' && !p.claim) schedule(id);
+        }
+      }
+    });
+  }
+  // A restarted server must expose interrupted work for an explicit retry, never replay it on launch.
+  for (const { id, status } of list())
+    if (status === 'running') {
+      const p = get(id);
+      let alive = false;
+      if (p.owner && p.owner !== process.pid) {
+        try {
+          process.kill(p.owner, 0);
+          alive = true;
+        } catch {}
+      }
+      if (!alive) {
+        p.claim = null;
+        p.owner = null;
+        p.status = 'failed';
+        p.error = '本地服务已重启，请核对已保存的结果后重试当前阶段。';
+        note(p, p.error);
+        save(p);
+      }
+    }
+  function parseAttachments(attachments, existing = []) {
+    check(Array.isArray(attachments) && attachments.length <= 32, '单次最多 32 个附件');
+    const isImage = (a) => /\.(png|jpe?g)$/i.test(a.name);
+    check(
+      [...existing.filter((a) => a.kind === 'attachment'), ...attachments].filter(isImage).length <= 4,
+      '一个项目最多上传四张参考图',
+    );
+    const names = new Set(existing.map((a) => a.name.normalize('NFC').toLowerCase()));
+    let total = 0;
+    return attachments.map((a) => {
+      const name = filename(a.name),
+        key = name.normalize('NFC').toLowerCase();
+      check(!names.has(key), '附件文件名重复：' + name);
+      names.add(key);
+      check(typeof a.data === 'string' && a.data.length && a.data.length % 4 === 0, '附件内容为空或损坏');
+      check(/\.(md|txt|pdf|docx|pptx|png|jpe?g)$/i.test(name), '不支持的附件格式');
+      const bytes = Buffer.from(a.data, 'base64');
+      check(bytes.toString('base64') === a.data, '附件编码错误');
+      total += bytes.length;
+      if (isImage(a)) check(bytes.length <= 8 * 1024 * 1024, '每张参考图最多 8 MB');
+      if (/\.pdf$/i.test(name)) check(bytes.length <= 12 * 1024 * 1024, '每份 PDF 最多 12 MB');
+      check(total <= 28 * 1024 * 1024, '附件合计不能超过 28 MB');
+      return { name, bytes };
+    });
+  }
+  function create(input) {
+    const id = input.id,
+      brief = input.brief?.trim(),
+      attachments = input.attachments ?? [];
+    check(typeof id === 'string' && safeId.test(id), '项目编号无效');
+    check(
+      typeof brief === 'string' && (brief.length || attachments.length) && brief.length <= 64000,
+      '请填写需求或上传 Brief',
+    );
+    check(['auto', 'collab'].includes(input.mode), '工作模式无效');
+    check(Array.isArray(attachments) && attachments.length <= 32, '单次最多 32 个附件');
+    const inputHash = hash(JSON.stringify([brief, input.mode, attachments.map((a) => [a.name, a.data])]));
+    const existing = get(id);
+    if (existing) {
+      check(existing.inputHash === inputHash, '此项目编号已用于不同任务', 409);
+      return existing;
+    }
+    const files = parseAttachments(attachments);
+    const p = {
+      id,
+      inputHash,
+      brief,
+      mode: input.mode,
+      title: (brief.split('\n')[0] || files[0]?.name || '新提案').slice(0, 64),
+      stage: 'brief',
+      status: 'running',
+      revision: 1,
+      updatedAt: now(),
+      commands: {},
+      claim: null,
+      owner: null,
+      attachments: [],
+      artifacts: [],
+      versions: [],
+      feedback: [],
+      events: [],
+      directions: [],
+      choice: null,
+    };
+    mkdirSync(join(root, id, 'files'), { recursive: true, mode: 0o700 });
+    p.attachments = files.map((f) => storeFile(p, f.name, f.bytes, 'attachment'));
+    note(p, '已收到需求，开始本地 Codex 试跑');
+    db.prepare('INSERT INTO projects VALUES(?,?,?)').run(id, p.revision, JSON.stringify(p));
+    schedule(id);
+    return p;
+  }
+  function action(p, input) {
+    const { kind, opId } = input,
+      text = (input.text ?? '').trim();
+    check(typeof text === 'string' && text.length <= 64000, '消息过长');
+    const attachments = input.attachments ?? [];
+    const commandHash = hash(JSON.stringify([kind, text, attachments, input.expectedRevision]));
+    if (opId) {
+      check(safeId.test(opId) && !Object.hasOwn(Object.prototype, opId), '动作编号无效');
+      if (Object.hasOwn(p.commands, opId)) {
+        check(p.commands[opId] === commandHash, '动作编号冲突', 409);
+        return p;
+      }
+    }
+    if (kind === 'choice' || kind === 'adopt')
+      check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
+    if (kind === 'choice') {
+      check(
+        p.status === 'waiting' && p.stage === 'copy' && p.directions.includes(text),
+        '当前方向不可选',
+        409,
+      );
+      p.choice = text;
+      note(p, '已选择：' + text);
+      p.stage = 'visual';
+      p.status = 'running';
+    } else if (kind === 'adopt') {
+      check(p.status === 'waiting' && p.stage === 'visual', '当前没有待采用的图稿', 409);
+      const chosen = p.artifacts
+        .filter((a) => a.stage === 'visual' && a.kind === 'image')
+        .map((a) => a.storageKey);
+      check(chosen.length, '没有图稿可采用', 409);
+      p.visualAdoption = { at: now(), artifacts: chosen };
+      note(p, '用户采用本版视觉稿，继续本地排版');
+      p.stage = 'layout';
+      p.status = 'running';
+    } else if (kind === 'retry') {
+      check(p.status === 'failed', '当前阶段无需重试', 409);
+      p.status = 'running';
+      p.error = null;
+      note(p, '用户重试当前阶段');
+    } else if (kind === 'message') {
+      const files = parseAttachments(attachments, [...p.artifacts, ...p.attachments]);
+      check(text || files.length, '请输入意见或添加文件');
+      p.attachments.push(...files.map((f) => storeFile(p, f.name, f.bytes, 'attachment')));
+      p.feedback.push({ at: now(), stage: p.stage, text });
+      note(p, '收到你的意见：' + text.slice(0, 180));
+      if ((p.status === 'waiting' && p.stage === 'visual') || p.status === 'done') {
+        const restart = p.status === 'done' ? 'brief' : 'visual';
+        p.versions.push({
+          at: now(),
+          stage: p.stage,
+          artifacts: [...p.artifacts],
+          visualAdoption: p.visualAdoption ?? null,
+        });
+        p.artifacts = p.artifacts.filter((a) => stages.indexOf(a.stage) < stages.indexOf(restart));
+        p.stage = restart;
+        p.status = 'running';
+        p.visualAdoption = null;
+        if (restart === 'brief') {
+          p.directions = [];
+          p.choice = null;
+        }
+        note(p, '已保存前版，按修改意见生成新版');
+      }
+    } else check(false, '未知操作');
+    if (opId) p.commands[opId] = commandHash;
+    save(p);
+    if (p.status === 'running') schedule(p.id);
+    return p;
+  }
+  async function handle(req, res) {
+    const send = (status, value) => {
+      res.writeHead(status, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Content-Type-Options': 'nosniff',
+      });
+      res.end(JSON.stringify(value));
+    };
+    try {
+      const host = req.headers.host ?? '';
+      check(
+        /^(127\.0\.0\.1|localhost)(:\d+)?$/.test(host) &&
+          ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress),
+        '仅限本机使用',
+        403,
+      );
+      if (req.method === 'POST')
+        check(req.headers.origin === 'http://' + host, '请求必须来自当前工作台', 403);
+      const parts = new URL(req.url, 'http://' + host).pathname.split('/').filter(Boolean);
+      check(parts[0] === 'api' && parts[1] === 'projects', '接口不存在', 404);
+      if (parts.length === 2 && req.method === 'GET') {
+        send(200, { projects: list() });
+        return;
+      }
+      if (parts.length === 2 && req.method === 'POST') {
+        send(201, { project: publicView(create(await body(req))) });
+        return;
+      }
+      const input = req.method === 'POST' ? await body(req) : null;
+      const p = get(parts[2]);
+      check(p, '项目不存在', 404);
+      if (parts.length === 3 && req.method === 'GET') {
+        send(200, { project: publicView(p) });
+        return;
+      }
+      if (parts.length === 4 && parts[3] === 'action' && req.method === 'POST') {
+        send(200, { project: publicView(action(p, input)) });
+        return;
+      }
+      if (parts.length === 5 && parts[3] === 'files' && req.method === 'GET') {
+        const a = [...p.artifacts, ...p.attachments, ...p.versions.flatMap((v) => v.artifacts)].find(
+          (x) => x.storageKey === parts[4],
+        );
+        check(a, '文件不存在', 404);
+        const type = mime[extname(a.name).toLowerCase()] ?? 'application/octet-stream';
+        res.writeHead(200, {
+          'Content-Type': type,
+          'Content-Disposition':
+            (a.kind === 'image' ? 'inline' : 'attachment') +
+            "; filename*=UTF-8''" +
+            encodeURIComponent(a.name),
+          'X-Content-Type-Options': 'nosniff',
+          'Content-Security-Policy': "default-src 'none'; sandbox",
+          'Cache-Control': 'no-store',
+        });
+        await pipeline(createReadStream(disk(p, a.storageKey)), res);
+        return;
+      }
+      check(false, '接口不存在', 404);
+    } catch (error) {
+      if (!res.headersSent)
+        send(error.status ?? 500, {
+          error: error.status ? error.message : '本地服务未能处理请求，请检查服务日志',
+        });
+      if (!error.status) console.error(error);
+    }
+  }
+  return {
+    handle,
+    close() {
+      closing = true;
+      for (const abort of jobs.values()) abort.abort();
+      if (!jobs.size) db.close();
+    },
+  };
+}

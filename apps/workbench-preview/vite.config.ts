@@ -8,6 +8,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 export default defineConfig(({ mode }) => ({
   plugins: [react(), ...(mode === 'singlefile' ? [viteSingleFile()] : [])],
   build: {
+    ...(mode === 'singlefile' ? {} : { rollupOptions: { input: ['index.html', 'nightflight/index.html'] } }),
     outDir: mode === 'singlefile' ? 'dist-single' : 'dist',
   },
   test: {

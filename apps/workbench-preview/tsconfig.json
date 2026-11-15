@@ -24,6 +24,7 @@
   },
   "include": [
     "src",
+    "nightflight/src",
     "vite.config.ts"
   ]
 }

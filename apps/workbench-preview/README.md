@@ -1,8 +1,8 @@
 # 当前中文桌面预览应用
 
-本目录为仓库后续开发入口，来自2026-11-11活跃独立前端的原字节导入。七阶段、既有配色和组件沿用，原scratch目录和4417预览保留，不覆盖较早正式apps源。
+本目录为仓库后续开发入口，来自2026-11-11活跃独立前端的原字节导入。默认入口采用用户提供的夜航源码及本机工作模式。经典页面使用原七阶段、配色和组件，原scratch目录和4417预览保留，不覆盖较早正式apps源。
 
-从仓库根运行 `npm run setup:frontend`、`npm run dev`，打开4420。验证使用 `npm run check`；单模块也可运行 `npm run typecheck`、`npm test`、`npm run build`。
+从仓库根运行 `npm run setup:frontend`、`npm run dev`，打开[夜航提案台](http://127.0.0.1:4420/)。经典页面从 `?classic` 或原有 `#/` 路由进入。验证使用 `npm run check`；单模块也可运行 `npm run typecheck`、`npm test`、`npm run build`。
 
 开发与配置见[工程入口](../../docs/development/README.md)，使用见[操作说明](../../docs/usage/README.md)，本模块规则见[AGENTS](AGENTS.md)。
 

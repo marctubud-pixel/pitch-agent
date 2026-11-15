@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.18.0",
-  "registrySha256": "9282858faee6660d67fae0885e77024dc9cf8ae4af5faabb682133c91cd55c62",
+  "baselineVersion": "1.19.0",
+  "registrySha256": "c59d91b46863e70a6978d0df9d885edcfcb42188bb633c3425c7dbc9fdc6e7c2",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -234,10 +234,10 @@
       }
     },
     "contract.ui": {
-      "version": "1.1.2",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/ui-system.md": "56c3d261ee13d5c9eb7fbadc6b4c62e483b799d0a5d5647a952b2c3c8a339ae6"
+        "docs/specs/ui-system.md": "9399bdffc6ca0d64347afcc1afc0d72da07bf6c5929179183800c2d700eea20b"
       }
     },
     "contract.workflow": {
@@ -276,10 +276,10 @@
       }
     },
     "agent.workbench-ui-owner": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/workbench-ui-owner.md": "9941cf74f61c6cccc6a140309496cda6a45702ff493d1d0e72a682cd5bc5d757"
+        "docs/agents/workbench-ui-owner.md": "19c2c2216b6a4ef2c52697b0e25b2896afbb26d89143cf818a847126fb8fbdb9"
       }
     },
     "contract.organization": {
@@ -290,10 +290,10 @@
       }
     },
     "contract.pages": {
-      "version": "1.1.1",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/README.md": "b45f5a1fe19608a15c91b5751d4828fe79ae82e7d591c2dd48b8279f1ef49830"
+        "docs/pages/README.md": "e0ed7c4b198a135f70b627c22ba43ce439320cfa6d640daa657ba6fe96294b59"
       }
     },
     "contract.final-review": {
@@ -304,31 +304,31 @@
       }
     },
     "contract.repository": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/repository-scope.md": "1df973c8b4d49c93cc62c9c4821fa450ecce3e6a73e9860ae5f09628cfe4a831"
+        "docs/specs/repository-scope.md": "9aa97fbd770c1ac5f9fc2182ed7750cb54373967b001d4ce8d255a76ae92586c"
       }
     },
     "contract.development": {
-      "version": "1.9.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/development/README.md": "9b872d63f5b3fc844be45445180c700a24fbdba8725c74fb6c641e6b5eb6ee6b"
-      }
-    },
-    "contract.runtime": {
-      "version": "1.11.0",
-      "lifecycle": "current",
-      "files": {
-        "docs/architecture/runtime.md": "4756be68ae443db44bc530f16d0d560399e51898b7481829d62036475797eb05"
-      }
-    },
-    "contract.configuration": {
       "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/development/configuration.md": "23f56c1cb387a9fc1003d8ac40e3eb4cbaf61484701a9f4426523f377ff8a3b3"
+        "docs/development/README.md": "a4a5d8f433efc099d97f1251ca947f701d93c16e18d528aa09a29044bd2b22a5"
+      }
+    },
+    "contract.runtime": {
+      "version": "1.12.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/architecture/runtime.md": "16794fbc42358b2cd469ee43e9ab858e578abd43b409201abcf95633915574b9"
+      }
+    },
+    "contract.configuration": {
+      "version": "1.11.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/development/configuration.md": "2048efc9b00153257899a2c9fb765d4027eac2383dbc2c1a48478ef74bd61a56"
       }
     },
     "contract.testing": {
@@ -353,10 +353,10 @@
       }
     },
     "contract.usage": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/usage/README.md": "8ddc9bd7b61aa60a1d356167e9ddca7702962c3026fb08bd6f1c4d0784ad4f97"
+        "docs/usage/README.md": "a2cee11a874486e8b3b4c3db7366029ab4a9f28351e49250172a5e54f8c9e2ba"
       }
     },
     "contract.remaining-work": {
@@ -465,10 +465,10 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "3599bc2a8839b77ae89c29a0bb2c30659d4af4a4412bb71a2e1524c7e9f95e94",
+    "docs/specs/README.md": "e634ced68318ba1048cd7602db84b84f8ca593245801306109537cec32940605",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
-    "apps/workbench-preview/AGENTS.md": "cf3f91b654c5274af56854e4a99f1ab1149e2a3f5dc217181e0aa23e1e59b4c1",
-    "tools/AGENTS.md": "a7fb73ab7b33a0bfda2cd4d85dedc950ea4d45241fd183cf982f4045eb6b1a91"
+    "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
+    "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
   },
   "screenshots": {
     "docs/specs/screenshots/home.png": "9031e9fe130ecf30798ce76da9d58bbad8667d814a91d547aa62a1e1cab64b24",
