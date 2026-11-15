@@ -68,6 +68,9 @@ async function readSources(project, dir) {
 async function render({ title, sections }) {
   const { compile, exportDeckStudio, paginateText } = globalThis.NightflightDeck;
   const theme = { primary: '#143F9B', accent: '#08746D', style: 'business', mode: 'light' };
+  // The engine repeats its brand argument in a fixed-width page footer.
+  // Nightflight project titles come from the Brief and belong in the deck metadata.
+  const footerBrand = '夜航提案台';
   const drafts = [];
   const inventory = [];
   for (const section of sections) {
@@ -90,7 +93,7 @@ async function render({ title, sections }) {
       const normalized = text => text.replace(/\s/gu, '');
       const fits = text => {
         try {
-          const page = compile([makeDraft(text)], title, theme)[0];
+          const page = compile([makeDraft(text)], footerBrand, theme)[0];
           return page.nodes.some(node => node.kind === 'text' && node.size >= 42
             && normalized(node.lines.join('')) === normalized(text));
         } catch { return false; }
@@ -101,7 +104,7 @@ async function render({ title, sections }) {
     }
     inventory.push({ source: section.name, first, last: drafts.length });
   }
-  const pages = compile(drafts, title, theme);
+  const pages = compile(drafts, footerBrand, theme);
   const blob = await exportDeckStudio({ title, pages, status: '本地试运行' }, new AbortController().signal);
   const data = await new Promise((resolve, reject) => {
     const reader = new FileReader();

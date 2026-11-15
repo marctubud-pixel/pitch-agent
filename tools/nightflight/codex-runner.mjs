@@ -76,19 +76,19 @@ async function source(dir, name) {
   return path;
 }
 
-async function officeText(path, signal) {
+async function officeText(path, signal, fromLayout) {
   // OOXML extraction never executes macros, expands relationships or writes archive paths.
   const script = `import sys, re, zipfile, json, xml.etree.ElementTree as X
 with zipfile.ZipFile(sys.argv[1]) as z:
  parts = [i for i in z.infolist() if i.filename == 'word/document.xml' or re.fullmatch(r'ppt/slides/slide[0-9]+\\.xml', i.filename)]
- if not parts or len(parts)>120 or sum(i.file_size for i in parts)>10000000: raise ValueError('unsupported document')
+ if not parts or (sys.argv[2] == "attachment" and len(parts)>120) or sum(i.file_size for i in parts)>10000000: raise ValueError('unsupported document')
  parts.sort(key=lambda i: int((re.search(r'slide([0-9]+)',i.filename) or [None,0])[1]))
  for i in parts:
   root=X.fromstring(z.read(i))
   print(i.filename, '，图片对象',sum(e.tag.endswith('}pic') for e in root.iter()))
   for p in root.iter():
    if p.tag.endswith('}p'): print(''.join(e.text or '' for e in p.iter() if e.tag.endswith('}t')))`;
-  return (await executeFile(await executable('python3'), ['-I','-B','-c',script,path], {signal, timeout:15000, maxBuffer:1024 * 1024})).stdout;
+  return (await executeFile(await executable('python3'), ['-I','-B','-c',script,path,fromLayout ? 'layout' : 'attachment'], {signal, timeout:15000, maxBuffer:1024 * 1024})).stdout;
 }
 
 async function readInputs(dir, project, stage, signal) {
@@ -121,7 +121,7 @@ async function readInputs(dir, project, stage, signal) {
     } else if (item.kind === 'text' || ['.txt','.md'].includes(ext)) {
       append(item.name, await readFile(path,'utf8'));
     } else if (ext === '.docx' || ext === '.pptx') {
-      append(item.name, await officeText(path,signal));
+      append(item.name, await officeText(path,signal,!item.uploaded && item.stage === 'layout' && item.kind === 'pptx'));
     } else if (ext === '.pdf') {
       const bytes = await readFile(path);
       if (bytes.length > PDF_LIMITS.bytes) throw Error('「'+item.name+'」超过每份 PDF 12 MiB 的限制，请拆分后上传');

@@ -12,19 +12,20 @@ const { unzipSync, strFromU8 } = req('fflate');
 test('exports the fixture body as editable native text, keeps original PNG bytes, and paginates long copy', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'nightflight-layout-'));
   try {
+    const title = '很长的用户提案需求'.repeat(8);
     const text = '原创研究记录。'.repeat(90) + '尾端标记';
     const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=', 'base64');
     await writeFile(join(dir, 'research.md'), text);
     await writeFile(join(dir, 'kv.png'), png);
     const { artifacts, pages } = await runLayout({ dir, project: {
-      title: '隔离夹具', brief: '独立简报', directions: ['原野', '飞鸟', '星空'], choice: '星空',
+      title, brief: '独立简报', directions: ['原野', '飞鸟', '星空'], choice: '星空',
       artifacts: [{ stage: 'research', kind: 'text', name: 'research.md' }, { stage: 'visual', kind: 'image', name: 'kv.png' }],
     } });
     const preview = artifacts.find(item => item.name.endsWith('.deck.json'));
     assert.equal(preview.kind, 'text');
     assert.equal(preview.text, undefined);
     const deck = JSON.parse(await readFile(join(dir, preview.name), 'utf8'));
-    assert.equal(deck.title, '隔离夹具');
+    assert.equal(deck.title, title);
     assert.equal(deck.pages.length, pages);
     const media = deck.pages.flatMap(page => page.nodes).find(node => node.kind === 'image');
     assert.deepEqual(Buffer.from(media.image.data.split(',')[1], 'base64'), png);

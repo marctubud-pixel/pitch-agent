@@ -25,7 +25,7 @@ process.stdin.on('end',()=>{
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
  if(!input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
- if(action==='final' && (!input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
+ if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
  if(action==='search') console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',query:'测试公开品类'}}));
  let body = {body:'按材料制订测试茶任务卡'};
@@ -104,7 +104,8 @@ test('final reads native slide XML, excludes bulky deck JSON and records missing
   const f=await fixture(t,'final');
   const requireApp=createRequire(new URL('../../apps/workbench-preview/package.json',import.meta.url));
   const {zipSync,strToU8}=requireApp('fflate');
-  const pptx=zipSync({'ppt/slides/slide1.xml':strToU8('<p:sld xmlns:p="urn:slide" xmlns:a="urn:text"><a:p><a:r><a:t>实际页面证据</a:t></a:r></a:p></p:sld>')});
+  const slide = strToU8('<p:sld xmlns:p="urn:slide" xmlns:a="urn:text"><a:p><a:r><a:t>实际页面证据</a:t></a:r></a:p></p:sld>');
+  const pptx = zipSync(Object.fromEntries(Array.from({length:140},(_,i)=>['ppt/slides/slide'+(i+1)+'.xml',slide])));
   await writeFile(join(f.dir,'排版.pptx'),pptx);
   await writeFile(join(f.dir,'排版.deck.json'),'大块预览输入');
   f.project.artifacts=[{stage:'layout',name:'排版.pptx',kind:'pptx'},{stage:'layout',name:'排版.deck.json',kind:'text'}];
