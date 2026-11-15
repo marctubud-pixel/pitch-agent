@@ -188,3 +188,7 @@ details p { font-size: 14.5px; }
 .copy-browse:focus-visible::after { outline: 2px solid var(--ink); outline-offset: -4px; }
 .copy-theme .two-col p { font-family: var(--serif); font-size: 18px; }
 .copy-theme details { margin-top: 12px; }
+.copy-theme .copy-scenes { margin: 24px 0; }
+.copy-scenes dd > p { font-family: var(--serif); font-size: 17px; }
+.copy-scenes dd > details { margin-top: 6px; }
+.copy-theme > .btn { margin-top: 14px; }

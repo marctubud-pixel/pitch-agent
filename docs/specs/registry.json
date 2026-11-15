@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.30.0",
+  "baselineVersion": "1.31.0",
   "date": "2026-11-15",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -67,7 +67,7 @@
       "kind": "agent",
       "title": "文案与主题负责人",
       "path": "docs/agents/copy-owner.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",
@@ -232,7 +232,7 @@
       "kind": "page",
       "title": "文案与主题",
       "path": "docs/pages/themes.md",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.copy-owner",
@@ -426,7 +426,7 @@
       "kind": "contract",
       "title": "夜航七阶段产出展示规范",
       "path": "docs/specs/nightflight-stage-output.md",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",

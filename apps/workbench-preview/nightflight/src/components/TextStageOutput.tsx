@@ -143,8 +143,17 @@ export function CopyOutput({
     const secondary = value(/^(副文案?|副标题|副标)$/);
     const link = value(/^(策略承接|策略依据|承接策略|策略衔接|与策略的关系)$/)
       || value(/^(主张|创意概念|概念|创意说明)$/);
-    const scenes = fields.filter((r) => /场景文案|场景短句|场景示例|场景样例|示例|样例|短句/.test(r.label));
-    return { name, main, secondary, link, scenes };
+    const support = ['气质', '适用场景', '视觉配合', '值得选', '误读风险']
+      .flatMap((label) => fields.filter((r) => r.label === label));
+    const scenes = new Map<string, string[]>();
+    for (const row of fields) {
+      if (!/场景文案|示例|样例|短句/.test(row.label)) continue;
+      const label = row.label.replace(/(?:示例|样例)$/, '') || row.label;
+      const lines = scenes.get(label) || [];
+      if (!lines.includes(row.value)) lines.push(row.value);
+      scenes.set(label, lines);
+    }
+    return { name, main, secondary, link, support, scenes };
   });
   const current = directions.find((d) => d.name === browsing)
     || directions.find((d) => d.name === p.choice)
@@ -179,9 +188,28 @@ export function CopyOutput({
           {current.main && <div><h3>主文案</h3><p>{current.main}</p></div>}
           {current.secondary && <div><h3>副文案</h3><p>{current.secondary}</p></div>}
         </div>
-        {!!current.scenes.length && <details className="research-original">
-          <summary>场景文案</summary><Rows rows={current.scenes} />
-        </details>}
+        <Rows rows={current.support} />
+        {current.scenes.size > 0 && (
+          <div className="copy-scenes">
+            <h3>场景文案</h3>
+            <dl className="kv">
+              {Array.from(current.scenes, ([label, lines]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>
+                    <p>{lines[0]}</p>
+                    {lines.length > 1 && (
+                      <details>
+                        <summary>同场景备选（{lines.length - 1}）</summary>
+                        <ul className="plain-list">{lines.slice(1).map((line) => <li key={line}>{line}</li>)}</ul>
+                      </details>
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
         {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (
           <button type="button" className="btn btn-dark" disabled={busy}
             onClick={() => onChoose(current.name)}>采用「{current.name}」</button>

@@ -57,7 +57,7 @@ const project = {
       '文案.md',
       'text',
       directions
-        .map((s, i) => '## 方向' + (i + 1) + '：' + s + '\n主文案：' + s + '主题\n主张：' + s + '说明\n副文案：' + s + '副句')
+        .map((s, i) => '## 方向' + (i + 1) + '：' + s + '\n主文案：' + s + '主题\n主张：' + s + '说明\n副文案：' + s + '副句\n气质：直白\n适用场景：门店\n视觉配合：主副文相邻\n值得选：品牌读得清\n误读风险：容易看成地名\n瓶侧示例：第一句\n瓶侧示例：另一种写法\n电商示例：独立场景')
         .join('\n'),
     ),
     image,
@@ -144,7 +144,17 @@ async function main() {
         await rows.nth(1).locator('summary').click();
         assert.match(await rows.nth(1).innerText(), /可核对的原文/);
       }
-      if (i === 3) assert.equal(await page.locator('.dir-grid .dir').count(), 3);
+      if (i === 3) {
+        assert.equal(await page.locator('.dir-grid .dir').count(), 3);
+        const theme = page.locator('.copy-theme');
+        const visible = await theme.innerText();
+        for (const phrase of ['直白', '门店', '主副文相邻', '品牌读得清', '容易看成地名', '第一句', '独立场景']) {
+          assert.ok(visible.includes(phrase), phrase);
+        }
+        assert.doesNotMatch(visible, /另一种写法/);
+        await theme.locator('summary').click();
+        assert.match(await theme.innerText(), /另一种写法/);
+      }
       if (i === 5) await page.locator('.deck-stage').waitFor();
     }
     if (process.argv.includes('--themes')) {
