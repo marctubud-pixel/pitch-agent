@@ -27,9 +27,9 @@ function VisualOutput({ p }: { p: Project }) {
   const report = p.artifacts.find((file) => file.stage === 'visual' && file.kind === 'text');
   return (
     <>
-      <section className="block">
-        <h2>视觉参考</h2>
-        {refs.length ? (
+      {refs.length > 0 && (
+        <section className="block">
+          <h2>视觉参考</h2>
           <div className="ref-row">
             <div className="ref-head">
               <h3>项目参考图</h3>
@@ -41,27 +41,34 @@ function VisualOutput({ p }: { p: Project }) {
               </a>
             ))}
           </div>
-        ) : (
-          <p className="pending">本项目尚无已关联的视觉参考图。</p>
-        )}
-      </section>
+        </section>
+      )}
       <section className="block" data-artifact={report?.name}>
-        <h2>草图与主视觉{p.choice ? ' · ' + p.choice : ''}</h2>
+        <h2>草图与主视觉</h2>
         {images.length ? (
           <div className="kv-row media-concepts">
-            {images.map((image) => (
-              <figure key={image.url} data-artifact={image.name}>
-                <a href={safeURL(image.url)} target="_blank" rel="noopener noreferrer">
-                  <img
-                    loading="lazy"
-                    src={safeURL(image.url)}
-                    alt={visualCaption(p, image) + ' · 视觉概念稿'}
-                  />
-                </a>
-                <figcaption>{visualCaption(p, image)} · 视觉概念稿</figcaption>
-                <p>{visualRecord(p, image)?.description}</p>
-              </figure>
-            ))}
+            {images.map((image) => {
+              const record = visualRecord(p, image);
+              const caption = record?.title || visualCaption(p, image);
+              return (
+                <figure key={image.url} data-artifact={image.name}>
+                  <a href={safeURL(image.url)} target="_blank" rel="noopener noreferrer">
+                    <img
+                      loading="lazy"
+                      src={safeURL(image.url)}
+                      alt={caption + ' · 视觉概念稿'}
+                    />
+                  </a>
+                  <figcaption>{caption} · 视觉概念稿</figcaption>
+                  {record?.description && (
+                    <details className="research-original">
+                      <summary>图稿说明</summary>
+                      <p>{record.description}</p>
+                    </details>
+                  )}
+                </figure>
+              );
+            })}
           </div>
         ) : (
           <p className="pending">草图与主视觉稿尚未交回。</p>

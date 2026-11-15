@@ -71,7 +71,7 @@ const stages = [
   ['关键发现'],
   ['核心策略'],
   ['三个创意方向', '主题文案'],
-  ['视觉参考', '草图与主视觉'],
+  ['草图与主视觉'],
   ['提案预览'],
   ['终稿提案', '终审记录', '你的反馈'],
 ];
@@ -113,6 +113,7 @@ async function main() {
     for (const [i, headings] of (briefOnly ? stages.slice(0, 1) : stages).entries()) {
       if (process.argv.includes('--research') && i !== 1) continue;
       if (process.argv.includes('--themes') && i !== 3) continue;
+      if (process.argv.includes('--visual') && i !== 4) continue;
       if (process.argv.includes('--strategy') && i !== 2) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
