@@ -186,9 +186,15 @@ details p { font-size: 14.5px; }
 .copy-browse { color: inherit; font: inherit; text-align: left; }
 .copy-browse::after { content: ''; position: absolute; inset: 0; cursor: pointer; }
 .copy-browse:focus-visible::after { outline: 2px solid var(--ink); outline-offset: -4px; }
-.copy-theme .two-col p { font-family: var(--serif); font-size: 18px; }
+.copy-theme .statement { margin-bottom: 10px; }
+.copy-theme .copy-review { margin-top: 28px; }
 .copy-theme details { margin-top: 12px; }
 .copy-theme .copy-scenes { margin: 24px 0; }
 .copy-scenes dd > p { font-family: var(--serif); font-size: 17px; }
 .copy-scenes dd > details { margin-top: 6px; }
 .copy-theme > .btn { margin-top: 14px; }
+.copy-theme [data-copy-review] { margin-top: 40px; }
+.copy-theme [data-review-role] { padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.copy-theme [data-review-role] > summary { font-size: 15px; color: var(--ink); }
+.copy-theme [data-dimension], .copy-theme [data-review-followup] { margin: 18px 0; line-height: 1.65; }
+.copy-theme [data-dimension] h4 { margin-bottom: 4px; }

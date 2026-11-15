@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.31.0",
-  "registrySha256": "ec0bfd2f9cf6d27a0a9aaa746d75466f4d8978cdd4382029dbf0b5dbe9c11954",
+  "baselineVersion": "1.32.0",
+  "registrySha256": "08c246a90eca6fc39022cd3a8e8ed86ef8cce602f8fe46f216a78d2dac3b1cb0",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -116,10 +116,10 @@
       }
     },
     "page.themes": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "ce1d61b1ada983c79cac0fcb7ba34fb562b98dee4b36e611f388168e4223c25f"
+        "docs/pages/themes.md": "b4bdf6ecc3426d198175895f83fbf6bf468e53cbb0d37ce5796c62e04d63ceca"
       }
     },
     "page.visual": {
@@ -242,10 +242,10 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "a613f1a46d89b8bb855929ccf56128f37387476cda95ec6fe4212302563ad9cf"
+        "docs/specs/nightflight-stage-output.md": "43cdf4d7e0cf14121b332d7c15abb6525711f1320583139df5b9a391a5966e0d"
       }
     },
     "contract.workflow": {
@@ -473,7 +473,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "2433282f92989fdbc13dafe17ea536a3de3dfaac5dc16449ff4f2709844187df",
+    "docs/specs/README.md": "3eece22255300f5f2e870a7886aa91e6a77e5e035b65cdb27637027117d7bf7e",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

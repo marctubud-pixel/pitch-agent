@@ -2303,7 +2303,7 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "d0b89a8b887ec681dc7a11e433508bd98894fa613c9dfc978fef8d3b4fa53cd4",
+      "sha256": "bd60a174b4055e6bce9bc8e99f1b97804cec48d3e7a15a5e9ab4794cb2f310d6",
       "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {

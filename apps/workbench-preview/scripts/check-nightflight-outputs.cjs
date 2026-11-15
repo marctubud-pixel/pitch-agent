@@ -148,7 +148,7 @@ async function main() {
         assert.equal(await page.locator('.dir-grid .dir').count(), 3);
         const theme = page.locator('.copy-theme');
         const visible = await theme.innerText();
-        for (const phrase of ['直白', '门店', '主副文相邻', '品牌读得清', '容易看成地名', '第一句', '独立场景']) {
+        for (const phrase of ['品牌读得清', '容易看成地名', '第一句', '独立场景']) {
           assert.ok(visible.includes(phrase), phrase);
         }
         assert.doesNotMatch(visible, /另一种写法/);
@@ -170,6 +170,38 @@ async function main() {
       await Promise.all([page.waitForResponse((res) => res.url().endsWith('/action')),
         doc.getByRole('button', { name: '采用「明月」' }).click()]);
       assert.deepEqual(actions.map(({ kind, text }) => [kind, text]), [['choice', '明月']]);
+    }
+    if (process.argv.includes('--themes')) {
+      const archive = require('../src/proposal/qingyu-themes/reviewed-copy.json');
+      const round = archive.rounds.find((r) => r.id === archive.currentRoundId);
+      await page.goto(origin + '/nightflight/#/reference/qingyu/copy');
+      for (const d of round.draft.directions) {
+        await page.getByRole('button', { name: d.name, exact: true }).click();
+        const review = page.locator('[data-copy-review="' + d.id + '"]');
+        assert.equal(await page.locator('.copy-theme .statement').innerText(), d.slogan);
+        assert.equal(await page.locator('.copy-theme .lead').innerText(), d.subline);
+        await review.locator(':scope > details > summary').click();
+        for (const original of round.reviews) {
+          const role = review.locator('[data-review-role="' + original.role + '"]');
+          await role.locator(':scope > summary').click();
+          const scores = original.raw.items.find((item) => item.id === d.id).scores;
+          assert.equal(await role.locator('[data-dimension]').count(), scores.length);
+          for (const score of scores) {
+            const cell = role.locator('[data-dimension="' + score.dimension_id + '"]');
+            const text = await cell.innerText();
+            assert.ok(text.includes(score.dimension));
+            assert.ok(text.includes('原分 ' + score.score + ' 分'));
+            const evidence = typeof score.evidence === 'string' ? score.evidence : score.evidence.reason;
+            if (evidence) assert.ok(text.includes(evidence));
+          }
+          if (d.id === 'k4' && original.role === 'user') {
+            const follow = role.locator('[data-review-followup="benefit_emotion"]');
+            assert.match(await follow.innerText(), /原分 3 分.*复核 4 分/);
+          } else {
+            assert.equal(await role.locator('[data-review-followup]').count(), 0);
+          }
+        }
+      }
     }
     if (process.argv.includes('--research')) {
       project.stage = 'research';

@@ -118,12 +118,14 @@ export function CopyOutput({
   text,
   onChoose,
   busy,
+  renderReview,
 }: {
   p: Pick<Project, 'id' | 'directions' | 'mode' | 'stage' | 'status' | 'artifacts' | 'choice'>;
   text: string;
   name?: string;
   onChoose?: (name: string) => void;
   busy?: boolean;
+  renderReview?: (directionName: string) => ReactNode;
 }) {
   const [browsing, browse] = useState('');
   if (!p.directions.length)
@@ -131,6 +133,13 @@ export function CopyOutput({
   const sections = sectionsOf(text);
   const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
   const recommended = rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
+  const recommendationSection = sections.find((s) => !p.directions.some((d) => s.heading.includes(d))
+    && s.lines.some((line) => {
+      const row = rowOf(line);
+      return row?.label === '推荐方向' && row.value === recommended;
+    }));
+  const recommendationNotes = (recommendationSection?.lines || []).map(rowOf)
+    .filter((r): r is Row => !!r && /^(推荐理由|推荐取舍|取舍)$/.test(r.label));
   const strategyText = p.artifacts.findLast((a) => a.stage === 'strategy' && a.kind === 'text' && a.text)?.text;
   const focus = sectionsOf(strategyText || '').find((s) => /策略发力点|核心策略|策略主张/.test(s.heading));
   const shared = rows.find((r) => r.label === '共同策略')?.value
@@ -141,10 +150,15 @@ export function CopyOutput({
     const value = (pattern: RegExp) => fields.find((r) => pattern.test(r.label))?.value;
     const main = value(/^(主文案?|主标题|广告语|标语|口号|主题文案|slogan)$/i);
     const secondary = value(/^(副文案?|副标题|副标)$/);
-    const link = value(/^(策略承接|策略依据|承接策略|策略衔接|与策略的关系)$/)
-      || value(/^(主张|创意概念|概念|创意说明)$/);
-    const support = ['气质', '适用场景', '视觉配合', '值得选', '误读风险']
-      .flatMap((label) => fields.filter((r) => r.label === label));
+    const idea = value(/^(?:创意机制|表达机制|机制|创意主张|主张|创意概念|概念|创意说明|创意切口)$/)
+      || value(/^(?:策略承接|策略依据|承接策略|策略衔接|与策略的关系)$/)
+      || main;
+    const review = fields.filter((r) => /^(推荐理由|推荐取舍|取舍|值得选|误读风险)$/.test(r.label));
+    if (name === recommended) {
+      for (const note of recommendationNotes) {
+        if (!review.some((r) => r.value === note.value)) review.push(note);
+      }
+    }
     const scenes = new Map<string, string[]>();
     for (const row of fields) {
       if (!/场景文案|示例|样例|短句/.test(row.label)) continue;
@@ -153,7 +167,7 @@ export function CopyOutput({
       if (!lines.includes(row.value)) lines.push(row.value);
       scenes.set(label, lines);
     }
-    return { name, main, secondary, link, support, scenes };
+    return { name, main, secondary, idea, review, scenes };
   });
   const current = directions.find((d) => d.name === browsing)
     || directions.find((d) => d.name === p.choice)
@@ -176,19 +190,15 @@ export function CopyOutput({
                 <button type="button" className="copy-browse" aria-pressed={d === current}
                   onClick={() => browse(d.name)}>{d.name}</button>
               </h3>
-              {d.main && <p className="dir-line">{d.main}</p>}
-              {d.link && <p>{d.link.split(/(?<=[。！？])/, 1)[0]}</p>}
+              {d.idea && <p className="dir-line">{d.idea}</p>}
             </article>
           ))}
         </div>
       </section>
       <section className="block copy-theme" key={current.name}>
         <h2>主题文案 · {current.name}</h2>
-        <div className="two-col">
-          {current.main && <div><h3>主文案</h3><p>{current.main}</p></div>}
-          {current.secondary && <div><h3>副文案</h3><p>{current.secondary}</p></div>}
-        </div>
-        <Rows rows={current.support} />
+        {current.main && <p className="statement">{current.main}</p>}
+        {current.secondary && <p className="lead">{current.secondary}</p>}
         {current.scenes.size > 0 && (
           <div className="copy-scenes">
             <h3>场景文案</h3>
@@ -208,6 +218,12 @@ export function CopyOutput({
                 </div>
               ))}
             </dl>
+          </div>
+        )}
+        {renderReview ? renderReview(current.name) : current.review.length > 0 && (
+          <div className="copy-review">
+            <h3>推荐与取舍</h3>
+            <Rows rows={current.review} />
           </div>
         )}
         {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (
