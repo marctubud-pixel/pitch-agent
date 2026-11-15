@@ -165,9 +165,10 @@ test('a personal run waits for direction and current image adoption, saves user 
   await action({ kind: 'choice', text: 'A', expectedRevision: copy.revision });
   const visual = await wait('waiting');
   assert.equal(visual.stage, 'visual');
-  await action({ kind: 'message', text: 'change', attachments: [file('update.md', 'update')] });
+  await action({ kind: 'message', text: 'change', attachments: [file('update.md', 'update'), ...Array.from({length:5},(_,i)=>file('补图'+i+'.jpg','reference'+i))] });
   const revised = await wait('waiting');
   assert.equal(revised.versions.length, 4);
+  assert.equal(revised.attachments.filter(a=>a.visualOnly).length,5);
   assert.equal((await action({ kind: 'adopt', expectedRevision: visual.revision })).status, 409);
   const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice', attachments: [file('逐页材料.md', '指定版次')] };
   assert.equal((await action(adoption)).status, 200);

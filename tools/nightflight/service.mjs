@@ -255,7 +255,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
-              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, path };
+              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, visualOnly:record.visualOnly, path };
             });
           }
           const onEvent = (text) => {
@@ -394,11 +394,11 @@ export function createNightflight({ root, runStage, runLayout }) {
         save(p);
       }
     }
-  function parseAttachments(attachments, existing = [], layoutOnly = false) {
+  function parseAttachments(attachments, existing = [], scope = 'project') {
     check(Array.isArray(attachments) && attachments.length <= 32, '单次最多 32 个附件');
     const isImage = (a) => /\.(png|jpe?g)$/i.test(a.name);
     check(
-      layoutOnly || [...existing.filter((a) => a.kind === 'attachment'), ...attachments].filter(isImage).length <= 4,
+      scope !== 'project' || [...existing.filter((a) => a.kind === 'attachment' && !a.visualOnly), ...attachments].filter(isImage).length <= 4,
       '一个项目最多上传四张参考图',
     );
     const names = new Set(existing.map((a) => a.name.normalize('NFC').toLowerCase()));
@@ -508,7 +508,7 @@ export function createNightflight({ root, runStage, runLayout }) {
         .filter((a) => a.stage === 'visual' && a.kind === 'image' && (!candidates.length || a.visual?.recommended))
         .map((a) => a.storageKey);
       check(chosen.length, '没有图稿可采用', 409);
-      const files = parseAttachments(attachments, [...p.attachments, ...p.artifacts], true);
+      const files = parseAttachments(attachments, [...p.attachments, ...p.artifacts], 'layout');
       p.visualAdoption = { at: now(), artifacts: chosen,
         materials: files.map(f => storeFile(p, f.name, f.bytes, 'attachment')) };
       note(p, '用户采用本版视觉稿，继续本地排版');
@@ -552,9 +552,12 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.error = null;
       note(p, '用户重试当前阶段');
     } else if (kind === 'message') {
-      const files = parseAttachments(attachments, [...p.artifacts, ...p.attachments]);
+      const visual = p.stage === 'visual';
+      check(!visual || p.attachments.length + attachments.length <= 32, '视觉资料累计最多 32 个附件');
+      const files = parseAttachments(attachments, [...p.artifacts, ...p.attachments], visual ? 'visual' : 'project');
       check(text || files.length, '请输入意见或添加文件');
-      p.attachments.push(...files.map((f) => storeFile(p, f.name, f.bytes, 'attachment')));
+      p.attachments.push(...files.map(f => ({...storeFile(p, f.name, f.bytes, 'attachment'),
+        ...(visual && /\.(png|jpe?g)$/i.test(f.name) ? {visualOnly:true} : {})})));
       p.feedback.push({ at: now(), stage: p.stage, text });
       note(p, '收到你的意见：' + text.slice(0, 180));
       if ((p.status === 'waiting' && p.stage === 'visual') || p.status === 'done') {

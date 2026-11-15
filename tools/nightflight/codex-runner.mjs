@@ -10,6 +10,7 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison } from './visual-comparison.mjs';
+import { selectVisualReferences } from './visual-references.mjs';
 import { reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -412,9 +413,9 @@ async function readInputs(dir, project, stage, signal) {
     if (size > 150000) throw Error('本次输入正文过长，请缩减附件或拆分提案');
     texts.push({ name, text });
   };
-  const attachments = project.attachments || [];
+  const attachments = (project.attachments || []).filter(a=>!a.visualOnly || stage==='visual');
   if (attachments.length > 32) throw Error('单次最多上传 32 个附件');
-  if (attachments.filter(a=>/\.(?:png|jpe?g)$/i.test(a.name)).length > 4) throw Error('单次最多上传 4 张 PNG 或 JPEG 品牌参考图');
+  if (stage!=='visual' && attachments.filter(a=>/\.(?:png|jpe?g)$/i.test(a.name)).length > 4) throw Error('单次最多上传 4 张 PNG 或 JPEG 品牌参考图');
   const items = [...attachments.map(a => ({...a, uploaded:true})), ...(project.artifacts || [])];
   for (const item of items) {
     signal?.throwIfAborted();
@@ -457,7 +458,7 @@ async function readInputs(dir, project, stage, signal) {
       throw Error('请将「'+item.name+'」转换成 PDF、DOCX、PPTX、TXT、MD、PNG 或 JPEG 后重试');
     }
   }
-  if (images.length > 4 && stage !== 'final') throw Error('请将本次品牌参考图控制在四张以内');
+  if (images.length > 4 && stage !== 'final' && stage !== 'visual') throw Error('请将本次品牌参考图控制在四张以内');
   return {texts,images};
 }
 
@@ -568,19 +569,22 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
       if (all.length !== 3 || new Set(all).size !== 3) throw Error('视觉阶段需要本案三份文案方向');
       const directions = project.mode==='collab' ? [project.choice] : all;
       if (directions.some(d=>!all.includes(d))) throw Error('请先选定本案的视觉方向');
+      const plans = await selectVisualReferences({call,project,images:inputs.images,active:directions});
       const seen = new Set(), summaries = [];
       for (const direction of directions) {
         const batch = [], images = [];
         const previous = project.previousVisual?.filter(item => item.visual?.direction === direction) ?? [];
         const best = previous.sort((a,b)=>Number(b.visual.recommended)-Number(a.visual.recommended) || b.visual.mean-a.visual.mean)[0];
-        const attachPrevious = best && inputs.images.length < 4;
-        const sourceImages = attachPrevious ? [best.image, ...inputs.images] : inputs.images;
+        const {images:references,handoff} = plans.get(direction);
+        const sourceImages = best ? [best.image, ...references] : references;
+        const generationContext = JSON.stringify({...JSON.parse(context),materials:inputs.texts.filter(item=>!item.imageNumber),
+          direction:project.copyReview?.draft?.directions?.find(d=>d.name===direction) ?? direction, referenceHandoff:handoff});
         for (const [index, focus] of ['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'].entries()) {
           await onEvent?.('正在为「'+direction+'」生成主视觉 '+(index+1)+'/3');
           const instruction = '只用内置 image_generation 工具生成一张完整主视觉，保留同方向的核心卖点及必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。本张从'+focus+'做实质不同的处理。'+
-            (best ? (attachPrevious ? '第一张输入图为上一批原稿。' : '本轮附全部四张品牌参考。')+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
+            (best ? '第一张输入图为上一批原稿。'+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
             '同批已有方案描述：'+JSON.stringify(batch.map(item=>item.description))+'。完成后简述设计。指定方向：'+JSON.stringify(direction);
-          const result = await call(instruction,sourceImages,null);
+          const result = await call(instruction,sourceImages,null,{context:generationContext});
           const original = await ownGeneratedImage(result,home);
           const digest = hash(original.bytes);
           if (seen.has(digest)) throw Error('主视觉候选返回了重复图片，请重试视觉阶段');
@@ -588,7 +592,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
           const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
           const path = join(dir,name);
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const record = {direction,name,sha256:digest,thread:result.threadId,originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          const record = {direction,name,referenceHandoff:handoff,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(result.paths.runDir,'generated-image.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
           batch.push(record);
           images.push({imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'});
@@ -598,7 +602,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
         for (const [i,record] of batch.entries()) {
           const verdict = review.candidates.find(row=>row.candidate===i+1);
-          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
+          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
         }
         if (review.board) artifacts.push({name:review.board,kind:'image',visual:{direction,role:'comparison',references:review.references.map(r=>r.name)}});

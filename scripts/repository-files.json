@@ -1487,6 +1487,7 @@
     "tools/nightflight/visual-batch.mjs",
     "tools/nightflight/visual-comparison.mjs",
     "tools/nightflight/visual-comparison.py",
+    "tools/nightflight/visual-references.mjs",
     "tools/workbench/.gitignore",
     "tools/workbench/ASSISTANT_API.md",
     "tools/workbench/IMAGE_API.md",
