@@ -72,8 +72,11 @@ test('a personal run waits for direction and current image adoption, saves user 
         const name='稿'+candidate+'.png';
         await writeFile(join(dir,name),'合成图'+candidate);
         const score=candidate===2?5:4;
-        artifacts.push({name,kind:'image',visual:{direction:'A',role:'main',candidate,mean:score,blocked:false,reason:'合成评语',recommended:candidate===2,scores:['视觉','品牌','用户','传播'].map(role=>({role,score,reason:'合成依据'}))}});
+        artifacts.push({name,kind:'image',visual:{direction:'A',role:'main',blind:{first:'茶',action:'入杯',words:'青屿',alternative:'山泉'},edit:'放大文字',research:'无',candidate,mean:score,blocked:false,reason:'合成评语',recommended:candidate===2,scores:['视觉','品牌','用户','传播'].map(role=>({role,score,reason:'合成依据'}))}});
       }
+      const board='同类并排.png';
+      await writeFile(join(dir,board),'合成对照');
+      artifacts.push({name:board,kind:'image',visual:{role:'comparison',direction:'A',references:['同类']}});
       return {artifacts};
     }
     if(stage==='layout') assert.deepEqual((await import('node:fs/promises').then(fs=>fs.readdir(dir))).filter(n=>n.endsWith('.png')),['稿2.png']);
@@ -157,7 +160,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice' };
   assert.equal((await action(adoption)).status, 200);
   const finished = await wait('done');
-  assert.equal(finished.artifacts.length, 9);
+  assert.equal(finished.artifacts.length, 10);
   assert.equal((await action(adoption)).status, 200);
   service.close();
   service = createNightflight(options);

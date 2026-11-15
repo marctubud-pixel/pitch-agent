@@ -241,7 +241,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             });
           }
           for (const type of ['artifacts', 'attachments']) {
-            const records = p[type].filter(a=>!(p.stage==='layout' && a.visual?.candidate && !p.visualAdoption?.artifacts.includes(a.storageKey)));
+            const records = p[type].filter(a=>!(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
@@ -277,10 +277,12 @@ export function createNightflight({ root, runStage, runLayout }) {
           }
           if (p.stage === 'visual') {
             const expected = p.mode==='collab' ? [p.choice] : p.directions;
-            const images = result.artifacts.filter(a=>a.kind==='image');
+            const images = result.artifacts.filter(a=>a.kind==='image' && a.visual?.role!=='comparison');
             check(images.length===expected.length*3 && expected.every(direction=>{
               const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
               if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
+                ['first','action','words','alternative'].every(k=>typeof a.blind?.[k]==='string' && a.blind[k].trim()) &&
+                typeof a.edit==='string' && a.edit.trim() && typeof a.research==='string' && a.research.trim() &&
                 ['视觉','品牌','用户','传播'].every(role=>a.scores?.some(v=>v.role===role && Number.isInteger(v.score) && v.score>=1 && v.score<=5)) &&
                 a.scores.length===4 && a.mean===a.scores.reduce((sum,v)=>sum+v.score,0)/4 && typeof a.blocked==='boolean' && a.reason?.trim())) return false;
               const eligible = batch.filter(a=>!a.blocked && a.mean>=4);

@@ -1,3 +1,4 @@
+import { VisualReview } from '../../../src/proposal/qingyu-visual/VisualReview';
 import { useState } from 'react';
 import { isDeckPreview, safeURL, type Artifact, type Project } from '../live';
 import type { Act } from './ChatPanel';
@@ -23,7 +24,7 @@ function visualRecord(p: Project, image: Artifact) {
 }
 
 function VisualOutput({ p, name }: { p: Project; name?: string }) {
-  const images = p.artifacts.filter(file => file.stage === 'visual' && file.kind === 'image');
+  const images = p.artifacts.filter(file => file.stage === 'visual' && file.kind === 'image' && file.visual?.role !== 'comparison');
   const refs = (p.attachments || []).filter(file => /\.(png|jpe?g|webp)$/i.test(file.name) && safeURL(file.url));
   const reports = images.map(file => ({ file, record: visualRecord(p, file), title: visualCaption(p, file) }));
   const initial = reports.find(item => item.file.name === name)?.title;
@@ -51,11 +52,17 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   });
   const active = directions.find(item => item.id === selected) ?? directions[0];
   const current = reports.find(item => item.title === active?.id);
+  const board = p.artifacts.find(a=>a.visual?.role==='comparison' && a.visual.direction===active?.id);
+  const candidates = reports.filter(item=>item.title===active?.id && item.file.visual?.candidate).map(({file})=>{
+    const v = file.visual!;
+    return {image:safeURL(file.url) || undefined,title:'第 '+v.candidate+' 稿 · '+v.mean+'/5',readings:v.blind?[v.blind]:[],scores:v.scores || [],reason:v.reason,edit:v.edit,research:v.research};
+  });
   const other = reports.filter(item => !directions.some(direction => direction.id === item.title));
   return <>
     {!!directions.length && active && <div data-artifact={current?.file.name}>
       <VisualImageGallery directions={directions} currentId={active.id} onDirectionChange={setSelected}
-        details={reports.some(item=>item.title===active.id && item.file.visual?.candidate) ? reports.filter(item=>item.title===active.id && item.file.visual?.candidate).map(({file})=><div key={file.name}><h4>第 {file.visual?.candidate} 稿 · {file.visual?.mean}/5</h4><p>{file.visual?.reason}</p>{file.visual?.scores?.map(v=><p key={v.role}>{v.role} · {v.score}/5　{v.reason}</p>)}</div>) : current?.record?.description && <p>{current.record.description}</p>} />
+        details={candidates.length ? <VisualReview board={board && safeURL(board.url) || undefined}
+          order={[...candidates.map(c=>c.title.split(' · ')[0]),...(board?.visual?.references || [])]} candidates={candidates} /> : current?.record?.description && <p>{current.record.description}</p>} />
     </div>}
     {!active && !other.length && <p className="pending">主视觉稿尚未交回。</p>}
     {!!other.length && <section className="block"><h2>其他已存图稿</h2>

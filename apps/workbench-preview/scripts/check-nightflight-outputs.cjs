@@ -176,6 +176,22 @@ async function main() {
       assert.equal(await extension.locator('img').getAttribute('src'), origin + slides[2].url);
       await extension.getByRole('button', {name:'KV 延展上一张'}).click();
       assert.equal(await extension.locator('img').getAttribute('src'), origin + slides[1].url);
+      const scores = ['用户','传播','品牌','视觉'].map(role=>({role,score:4,reason:'缩小后水源说明难读'}));
+      project.artifacts.push({...image,name:'候选乙.png',url:image.url+'?candidate=2',
+        visual:{direction:'明月',role:'main',candidate:2,mean:4,scores,blind:{first:'茶碗',action:'泉水落入杯中',words:'无糖',alternative:'可能在倒水'},edit:'放大说明',research:'补用水凭据'}});
+      project.artifacts.push({...image,name:'同类并排.png',url:image.url+'?comparison=1',
+        visual:{direction:'明月',role:'comparison',references:['同类包装']}});
+      await page.reload();
+      await page.locator('.stage-head').nth(4).click();
+      await page.getByRole('button',{name:/方向 B.*明月/}).click();
+      const review = page.locator('section[aria-label="主视觉评审"]');
+      await page.locator('.visual-image-gallery > .vg-details > summary').click();
+      await review.getByText('匿名盲读原话',{exact:true}).click();
+      await review.getByText('四岗原分与理由',{exact:true}).click();
+      assert.match(await review.innerText(),/泉水落入杯中/);
+      assert.match(await review.innerText(),/视觉 · 4\/5/);
+      assert.match(await review.innerText(),/补用水凭据/);
+      assert.match(await review.locator('img').getAttribute('src'),/comparison=1/);
       await page.goto(origin + '/nightflight/#/reference/qingyu/visual?dir=v2');
       await page.locator('[data-visual-direction="v2"]').waitFor();
       assert.equal(await page.locator('.vg-reference-row').count(), 3);

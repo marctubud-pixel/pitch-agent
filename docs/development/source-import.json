@@ -2287,8 +2287,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "f46d2521aa8882a608d2ca5af1d76deebbeab8af0f1172289b29642b2dceb81a",
-      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
+      "sha256": "579c26aca4e19aefedcf275aa6fb9809557ce5fbda9c3ce2685e3013adf79821",
+      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。 视觉评审与证据展示。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",

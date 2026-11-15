@@ -1,3 +1,4 @@
+import type { BlindReading } from '../../src/proposal/qingyu-visual/VisualReview';
 import type { Mode, StageId } from './types';
 import { STAGES } from './data/project';
 export interface Summary {
@@ -19,7 +20,8 @@ export interface Artifact extends Asset {
     direction: string;
     candidate?: number; mean?: number; recommended?: boolean; blocked?: boolean; reason?: string;
     scores?: {role:string; score:number; reason:string}[];
-    role: 'sketch' | 'main' | 'extension' | 'mockup';
+    blind?: BlindReading; edit?: string; research?: string; references?: string[];
+    role: 'comparison' | 'sketch' | 'main' | 'extension' | 'mockup';
     output?: 'packaging' | 'kv';
     format?: 'portrait' | 'landscape';
   };

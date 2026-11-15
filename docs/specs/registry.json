@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.43.0",
+  "baselineVersion": "1.44.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -248,7 +248,7 @@
       "kind": "page",
       "title": "视觉开发",
       "path": "docs/pages/visual.md",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.visual-owner",

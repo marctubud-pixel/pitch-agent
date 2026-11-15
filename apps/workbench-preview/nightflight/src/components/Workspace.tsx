@@ -42,7 +42,7 @@ export function Workspace({
     done = STAGES.filter((s) => phase(p, s.id) === 'done');
   const pending = STAGES.filter((s) => phase(p, s.id) !== 'done'),
     latest = p.events.at(-1)?.text;
-  const images = p.artifacts.filter((a) => a.kind === 'image'),
+  const images = p.artifacts.filter((a) => a.kind === 'image' && a.visual?.role !== 'comparison'),
     docs = p.artifacts.filter((a) => a.kind === 'text' && !isDeckPreview(a)),
     decks = p.artifacts.filter((a) => a.kind === 'pptx');
   const preview = p.artifacts.find(isDeckPreview);

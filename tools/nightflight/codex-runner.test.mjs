@@ -128,7 +128,7 @@ process.stdin.on('data',x=>input+=x);
 process.stdin.on('end',()=>{
  console.log(JSON.stringify({type:'thread.started',thread_id:id}));
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && input.includes('独立读图者')) && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -150,9 +150,19 @@ process.stdin.on('end',()=>{
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
  if(action==='image' && args.includes('--output-schema')){
-   if(args[args.indexOf('image_generation')-1]!=='--disable' || args.filter(x=>x==='--image').length!==3) process.exit(9);
-   const fields=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1])).properties.items.items.properties;
-   body={items:[1,2,3].map(n=>({candidate:n,reason:'可见依据',...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.priority?{priority:n,blocked:false}:{})}))};
+   if(args[args.indexOf('image_generation')-1]!=='--disable')process.exit(9);
+   const props=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1])).properties;
+   const count=args.filter(x=>x==='--image').length;
+   if(props.first){
+     if(count!==1 || input.includes('晨雾') || input.includes('测试茶'))process.exit(9);
+     body={first:'第一眼',action:'泉水入杯',words:'品牌',alternative:'其他读法'};
+   } else if(props.indices){
+     body={packaging:true,indices:count?[1]:[]};
+   } else {
+     if(count!==5)process.exit(9);
+     const fields=props.items.items.properties;
+     body={items:[1,2,3].map(n=>({candidate:n,reason:'可见依据',...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}))};
+   }
  } else if(action==='image' || action==='other-thread'){
    if(args[args.indexOf('code_mode_host')-1]!=='--enable'||args[args.indexOf('image_generation')-1]!=='--enable')process.exit(9);
    if (!input.includes('指定方向："晨雾"')) process.exit(5);
@@ -344,11 +354,15 @@ for (const [action,error] of [['copy-frozen',/冻结方向/],['copy-stale',/冻�
 }
 test('collaboration generates the chosen direction using the current thread PNG bytes',async t=>{
   const f=await fixture(t,'image');
+  await writeFile(join(f.dir,'同类包装.png'),Buffer.from(png,'base64'));
+  f.project.attachments.push({name:'同类包装.png'});
   const result=await f.run('visual');
-  assert.equal(result.artifacts.length,4);
+  assert.equal(result.artifacts.length,5);
+  assert.equal(result.artifacts[0].visual.blind.action,'泉水入杯');
+  assert.deepEqual(result.artifacts[3].visual.references,['同类包装.png']);
   assert.match(result.artifacts[0].name,/^visual-2-/);
   assert.deepEqual(result.artifacts.slice(0,3).map(a=>a.visual.recommended),[false,true,false]);
-  assert.match(result.artifacts[3].text,/晨雾/);
+  assert.match(result.artifacts[4].text,/晨雾/);
 });
 for (const [action,stage,error] of [['disabled-host','visual',/工具宿主未启用/],['other-thread','visual',/未留下原生生图文件/],['badcopy','copy',/方向|职责|探索/],['failed','brief',/调用失败/],['api-key','brief',/ChatGPT 账户/]]) {
   test('reject '+action+' without publishing business artifacts',async t=>{
@@ -480,15 +494,17 @@ test('extracts a real uploaded PDF with the pinned local runtime and passes its 
 
 test('visual batch ranks only eligible images, resolves ties and leaves an unsuccessful batch open', async () => {
   const { reviewVisualBatch } = await import('./visual-batch.mjs');
-  async function rank(scores, blocked) {
+  async function rank(scores, blocked, packaging = false) {
     return reviewVisualBatch({
       direction: '产品', context: '测试', images: [1,2,3].map(n => ({sha256: String(n)})),
       call: async (_prompt, _images, schema) => {
+        if (schema.properties.first) return {parsedOutput:{first:'一瓶茶',action:'水入杯',words:'无糖',alternative:'不确定'}};
+        if (schema.properties.indices) return {parsedOutput:{packaging,indices:[]}};
         const fields = schema.properties.items.items.properties;
         const items = scores.map((score, i) => ({
           candidate: i+1, reason: '测试依据',
           ...(fields.score && {score}),
-          ...(fields.priority && {priority: 3-i, blocked: blocked.includes(i+1)}),
+          ...(fields.priority && {priority: 3-i, blocked: blocked.includes(i+1), edit:'无', research:'无'}),
         }));
         return {threadId: 'test', parsedOutput: {items}};
       },
@@ -496,5 +512,8 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
   }
   assert.equal((await rank([5,4,4], [1])).winner, 3);
   assert.equal((await rank([5,3,3], [1])).winner, null);
+  const missing = await rank([5,5,5],[],true);
+  assert.equal(missing.winner,null);
+  assert.match(missing.candidates[0].research,/补充同类/);
   await assert.rejects(rank([4,0,5], []), /分数无效/);
 });

@@ -9,6 +9,7 @@ import { promisify } from 'node:util';
 import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
+import { makeComparison } from './visual-comparison.mjs';
 import { reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -427,7 +428,7 @@ async function readInputs(dir, project, stage, signal) {
       const bytes = await readFile(path);
       if (bytes.length > 8 * 1024 * 1024) throw Error('「'+item.name+'」超过单张图片 8 MiB 的限制，请缩小后再上传');
       const dimensions = await inspectImage(bytes);
-      images.push({imageId:'ref_' + images.length, sha256:hash(bytes), path, byteLength:bytes.length, mediaType:dimensions.mediaType});
+      images.push({name:item.name,imageId:'ref_' + images.length, sha256:hash(bytes), path, byteLength:bytes.length, mediaType:dimensions.mediaType});
       texts.push({name:item.name, imageNumber:images.length});
     } else if (item.kind === 'text' || ['.txt','.md'].includes(ext)) {
       append(item.name, await readFile(path,'utf8'));
@@ -535,7 +536,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
     const call = async (instruction, images = inputs.images, schema = textSchema, task = {}) => {
       signal?.throwIfAborted();
       try {
-        return await (stage === 'visual' && !schema ? creator : reviewer).execute({runId:randomUUID(),prompt:[common,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n'),images,signal,...(schema ? {outputSchema:schema}:{})});
+        return await (stage === 'visual' && !schema ? creator : reviewer).execute({runId:randomUUID(),prompt:[common,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n'),images,signal,...(task.comparison ? {imageEnvelope:{operation:'final-visual-v1',limits:{maxImages:8,maxBytes:64*1024*1024,maxPixels:160_000_000}}}:{}),...(schema ? {outputSchema:schema}:{})});
       } catch (error) {
         if (signal?.aborted) throw Error('本次阶段已中止');
         // Native image generation can finish without a final text message.
@@ -568,7 +569,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
         const sourceImages = attachPrevious ? [best.image, ...inputs.images] : inputs.images;
         for (const [index, focus] of ['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'].entries()) {
           await onEvent?.('正在为「'+direction+'」生成主视觉 '+(index+1)+'/3');
-          const instruction = '只用内置 image_generation 工具生成一张完整主视觉，保留同方向的核心卖点、文案及必要约束，本张从'+focus+'做实质不同的处理。'+
+          const instruction = '只用内置 image_generation 工具生成一张完整主视觉，保留同方向的核心卖点及必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。本张从'+focus+'做实质不同的处理。'+
             (best ? (attachPrevious ? '第一张输入图为上一批原稿。' : '本轮附全部四张品牌参考。')+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
             '同批已有方案描述：'+JSON.stringify(batch.map(item=>item.description))+'。完成后简述设计。指定方向：'+JSON.stringify(direction);
           const result = await call(instruction,sourceImages,null);
@@ -585,13 +586,14 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
           images.push({imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'});
         }
         await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
-        const review = await reviewVisualBatch({call,direction,images,context});
+        const review = await reviewVisualBatch({call,direction,images,context,sources:inputs.images,makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
         for (const [i,record] of batch.entries()) {
           const verdict = review.candidates.find(row=>row.candidate===i+1);
           artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,candidate:i+1,mean:verdict.mean,
-            scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
+            blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
         }
+        if (review.board) artifacts.push({name:review.board,kind:'image',visual:{direction,role:'comparison',references:review.references.map(r=>r.name)}});
         const winner = review.candidates.find(row=>row.candidate===review.winner);
         summaries.push('## '+direction+'\n'+(winner ? '推荐第 '+winner.candidate+' 稿，四岗均分 '+winner.mean+'/5。'+winner.reason : '本批尚无达标主视觉。'+review.candidates.map(c=>c.reason).join('；')));
       }

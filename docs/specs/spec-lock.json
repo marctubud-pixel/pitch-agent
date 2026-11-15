@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.43.0",
-  "registrySha256": "da2da825358ad6200915e5c324afaaad0ddc9aaaca686571db24be821bc2b3f7",
+  "baselineVersion": "1.44.0",
+  "registrySha256": "ca79ba6a0e85d703a7c1abb37a6c66303359206735a60a849f3de0a8f68b7192",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -123,10 +123,10 @@
       }
     },
     "page.visual": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "53eede4f37306a2978d3887458d0ed58153b66fceb923319abcf4afb7dbb719f"
+        "docs/pages/visual.md": "081139adf04083e576105930a22485bc805df16448b83034ecf1cd575f7a02b1"
       }
     },
     "page.layout": {
@@ -480,7 +480,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "7194e37dd695d20a85d6008f72f76da1f9af6fd7fc5699757c4cd1ce2d2de3e1",
+    "docs/specs/README.md": "c82e7e8626b036f04c15e96dafc3810c647dc7f14edfee25c2d1ec70fd114c24",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
