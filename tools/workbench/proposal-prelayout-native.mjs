@@ -1,4 +1,4 @@
-import {validateModelHttpConfiguration} from './model-http-authority.mjs';
+import {validateModelHttpConfiguration,withReadOnlyImageVerification} from './model-http-authority.mjs';
 import {randomUUID} from 'node:crypto';
 import {isDeepStrictEqual as equal} from 'node:util';
 import {readFile,mkdir,open,realpath} from 'node:fs/promises';
@@ -38,15 +38,22 @@ export function createProposalPrelayoutNative(configuration){
  const base=Object.fromEntries(baseKeys.map(k=>[k,configuration[k]])),{store,executionRoot,imageRoot}=base,selected=selectDeckDatabase(store,base.dbPath,base.pin),database=()=>assertDeckDatabase(store,selected),reader=createGenericDeckNativeAdmission(base),imageStore=createImageEvidenceStore({rootDir:imageRoot}),owned=new WeakMap();let closed=false;
  const check=()=>{need(!closed,'PRELAYOUT_CLOSED');database();};
  const capability=()=>{let configured=false;try{const cfg=validateModelHttpConfiguration(options.provider?.operatorConfig),env=options.provider?.environment??process.env;configured=Boolean(options.binding?.role==='proposal-director'&&options.provider?.adapter==='workbench-model-http-v1'&&options.provider.model===options.binding.model&&cfg.model===options.binding.model&&cfg.vision&&cfg.envelopes.includes(PRELAYOUT_PROTOCOL)&&(cfg.authentication.kind==='none'||typeof env[cfg.authentication.name]==='string'&&env[cfg.authentication.name].length>0));}catch{/* Unconfigured remains unavailable; no claim or effects. */}return {executionAllowed:options.executionAllowed&&options.prelayoutExecutionAllowed,configured,semanticApproval:false,humanApproval:false,customerApproval:false};};
- async function sources(request){
+ async function sources(request){return withReadOnlyImageVerification(()=>readSources(request));}
+ async function readSources(request){
   check();const capture=await reader.capture(request);check();if(capture.kind==='rejected')return {kind:'awaiting_sources',diagnostic:capture};
-  const native=await reader.assertCurrent(capture.token),mapped=await mapNativeSources(native);need(mapped.kind==='mapped','PRELAYOUT_FIVE_SOURCES_REQUIRED');const method=await directorMethod();let policy;
+  const native=reader.read(capture.token),mapped=await mapNativeSources(native);need(mapped.kind==='mapped','PRELAYOUT_FIVE_SOURCES_REQUIRED');const method=await directorMethod();let policy;
   const admitted=await store.withReadAdmission(request.projectId,{readAttempts:1,snapshotBytes:256*1024**2,decodedBytes:256*1024**2,storedBytes:256*1024**2},()=>{check();assertStoreReadAdmission(store,request.projectId);const p=store.read(request.projectId);need(prelayoutHash(p)===native.identity.snapshotHash,'PRELAYOUT_SOURCE_CHANGED');policy=structuredClone(p.policies.at(-1));return policy;});
   need(admitted.kind==='complete'&&policy&&admitted.value===policy,'PRELAYOUT_NATIVE_READ_REQUIRED');
   const input=derivePrelayoutBasis({mapped,policy,databaseBindingHash:prelayoutHash(selected),directorMethod:method}),images=[];
-  for(const image of input.images){const loaded=await reader.readImage(capture.token,image.imageId);images.push(loaded);}
+  for(const image of input.images){
+   const identity=native.images.find(item=>item.imageId===image.imageId);
+   need(identity,'DECK_ADMISSION_IMAGE_REQUIRED');
+   const loaded=await imageStore.readWithInspection({projectId:request.projectId,imageId:image.imageId,expectedHash:identity.sha256});
+   need(loaded.asset.sha256===identity.sha256&&loaded.bytes.length===identity.bytes&&loaded.inspection.width===identity.width&&loaded.inspection.height===identity.height,'DECK_ADMISSION_IMAGE_CHANGED');
+   images.push({identity:structuredClone(identity),bytes:Uint8Array.from(loaded.bytes)});
+  }
   const after=await reader.assertCurrent(capture.token);need(equal(native,after)&&equal(method,await directorMethod()),'PRELAYOUT_SOURCE_CHANGED');check();
-  return {kind:'qualified_sources',input,mapped,images,native,observedSnapshot:{revision:native.identity.expectedRevision,snapshotHash:native.identity.snapshotHash}};
+  return {kind:'qualified_sources',input,mapped,images,native,nativeToken:capture.token,observedSnapshot:{revision:native.identity.expectedRevision,snapshotHash:native.identity.snapshotHash}};
  }
  const requestNow=(request,p)=>({...request,expectedRevision:p.revision});
  async function currentReport(request){
@@ -58,6 +65,7 @@ export function createProposalPrelayoutNative(configuration){
   if(read.report.decision!=='clear')return {kind:'blocked',status:read.report.decision==='return'?'returned':'unresolved',read,source};
   return {kind:'ready',read,source};
  }
+ function checkedDescriptor(r){return {prelayoutCheck:structuredClone(r.read.descriptor),sourceTuple:structuredClone(r.source.input.sourceTuple),baseInputSha256:r.source.input.baseInputSha256,baseProjectionSha256:r.source.input.baseProjectionSha256,observedSnapshot:r.source.observedSnapshot,original:{jobId:r.read.jobId,attemptId:r.read.attemptId,requestHash:r.read.requestHash,receiptHash:r.read.receiptHash},semanticApproval:false,humanApproval:false,customerApproval:false};}
  async function saveResponse(p,j,a,receipt){
   need(ordinarySuccess(receipt),'PRELAYOUT_ORIGINAL_RECEIPT_REQUIRED');const folder=join(executionRoot,a.id);await mkdir(folder,{recursive:true});
   for(const [name,bytes] of [['receipt.json',JSON.stringify(receipt)],['response.txt',receipt.responseText],['director-report.json',receipt.responseText]])await retain(executionRoot,join(folder,name),bytes);
@@ -70,9 +78,27 @@ export function createProposalPrelayoutNative(configuration){
  }
  return {
   capability,
+  async readForMapping(request){
+   const r=await currentReport(request);
+   check();
+   if(r.source.kind!=='qualified_sources')return {kind:'rejected',diagnostic:r.source.diagnostic};
+   const verifyCurrent=()=>withReadOnlyImageVerification(async()=>{
+    if(r.read){
+     const p=store.read(request.projectId),job=p.jobs.find(j=>j.id===r.read.jobId);
+     need(prelayoutHash(p)===r.source.observedSnapshot.snapshotHash,'PRELAYOUT_SOURCE_CHANGED');
+     const end=await verifyProposalPrelayoutReportOriginal(p,job,{executionRoot,imageStore});
+     need(equal(r.read,end),'PRELAYOUT_CURRENT_CHECK_CHANGED');
+    }
+    const after=await reader.assertCurrent(r.source.nativeToken);
+    need(equal(after,r.source.native)&&equal(await directorMethod(),r.source.input.directorMethod),'PRELAYOUT_SOURCE_CHANGED');
+    check();
+   });
+   return {kind:'read',mapped:r.source.mapped,images:r.source.images,identity:r.source.native.identity,nativeSha256:prelayoutHash(r.source.native),verifyCurrent,
+    status:r.kind==='ready'?'clear':r.status,check:r.kind==='ready'?checkedDescriptor(r):null};
+  },
   async inspect(request){const r=await currentReport(request);return {kind:r.kind,status:r.kind==='ready'?'clear':r.status,sourceTupleHash:r.source?.input?.sourceTupleHash??null,observedSnapshot:r.source?.observedSnapshot??null,...(r.read?{originalReport:r.read.descriptor,report:r.read.report}:{}),authority:'none',semanticApproval:false,humanApproval:false,customerApproval:false};},
   async captureCheck(request){const r=await currentReport(request);if(r.kind!=='ready')return {kind:'blocked',status:r.status,authority:'none'};const token=Object.freeze({protocol:'proposal-prelayout-current-check-v1',id:randomUUID()});owned.set(token,{request:structuredClone(request),sourceTupleHash:r.source.input.sourceTupleHash,reportHash:r.read.descriptor.sha256});return {kind:'ready',token};},
-  async consumeCheck(token){check();const prior=owned.get(token);need(prior,'PRELAYOUT_PRIVATE_TOKEN_REQUIRED');const r=await currentReport(prior.request);need(r.kind==='ready'&&r.source.input.sourceTupleHash===prior.sourceTupleHash&&r.read.descriptor.sha256===prior.reportHash,'PRELAYOUT_CURRENT_CHECK_CHANGED');return {prelayoutCheck:structuredClone(r.read.descriptor),sourceTuple:structuredClone(r.source.input.sourceTuple),baseInputSha256:r.source.input.baseInputSha256,baseProjectionSha256:r.source.input.baseProjectionSha256,observedSnapshot:r.source.observedSnapshot,original:{jobId:r.read.jobId,attemptId:r.read.attemptId,requestHash:r.read.requestHash,receiptHash:r.read.receiptHash},semanticApproval:false,humanApproval:false,customerApproval:false};},
+  async consumeCheck(token){check();const prior=owned.get(token);need(prior,'PRELAYOUT_PRIVATE_TOKEN_REQUIRED');const r=await currentReport(prior.request);need(r.kind==='ready'&&r.source.input.sourceTupleHash===prior.sourceTupleHash&&r.read.descriptor.sha256===prior.reportHash,'PRELAYOUT_CURRENT_CHECK_CHANGED');return checkedDescriptor(r);},
   async prepare(request){
    check();need(request&&equal(Object.keys(request).sort(),['commandId','nativeRequest']),'PRELAYOUT_REQUEST_INVALID');const {commandId,nativeRequest}=request;need(nativeRequest&&typeof nativeRequest.projectId==='string','PRELAYOUT_REQUEST_INVALID');need(safe(commandId),'PRELAYOUT_COMMAND_REQUIRED');const p=store.read(nativeRequest.projectId),prior=p.processedCommands[commandId];
    if(prior){const c=JSON.parse(prior);need(c.kind==='queue-proposal-prelayout'&&equal(c.nativeRequest,nativeRequest),'COMMAND_ID_REUSED');return {jobId:prelayoutJobId(c.input),replayed:true};}
