@@ -16,9 +16,20 @@ function methodOrigin(p,g,method){const source=g.source,copy=source.referenceSou
     need(p.audit.some(a=>a.commandId===origin.request.commandId&&a.kind==='visual-http-intent'&&a.revision===origin.request.expectedRevision+1)&&p.audit.some(a=>a.commandId===origin.nativeRequest.commandId&&a.kind==='request-sketch-continuation'&&a.revision===origin.nativeRequest.expectedRevision+1),'SKETCH_READ_METHOD_AUDIT_REQUIRED');
     return {commandId:origin.request.commandId,nativeCommandId:origin.nativeRequest.commandId,requestHash:hash(origin.request),methodHash:hash(origin.method)};
 }
+export function sketchImageReadCoverage({asset,bytes}){
+ return {
+  imageId:asset.id,sha256:createHash('sha256').update(bytes).digest('hex'),
+  mediaType:asset.mediaType,byteLength:bytes.length,width:asset.width,height:asset.height,
+  verifier:'image-evidence checkedImageDescriptor'
+ };
+}
 export function createSketchNativeReader({store,rootDir}){
  const scope=new AsyncLocalStorage(),disk=createImageEvidenceStore({rootDir:rootDir+'/images'});
- async function observedImage(identity,inspection){const result=await disk[inspection?'readWithInspection':'read'](identity);scope.getStore()?.push({imageId:result.asset.id,sha256:hash(result.bytes),mediaType:result.asset.mediaType,byteLength:result.bytes.length,width:result.asset.width,height:result.asset.height,verifier:'image-evidence checkedImageDescriptor'});return result;}
+ async function observedImage(identity,inspection){
+  const result=await disk[inspection?'readWithInspection':'read'](identity);
+  scope.getStore()?.push(sketchImageReadCoverage(result));
+  return result;
+ }
  const imageStore=Object.freeze({read:i=>observedImage(i,false),readWithInspection:i=>observedImage(i,true)});
  const references=createReferenceRuntime({store,root:rootDir,providers:{},bindings:{},imageStore,sourceEnvelope:copyDeliveryEnvelope});
  const sketches=createSketchRuntime({store,root:rootDir,references,providers:{},bindings:{},imageStore});
