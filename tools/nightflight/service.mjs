@@ -230,11 +230,22 @@ export function createNightflight({ root, runStage, runLayout }) {
                   .join('\n'),
               };
           }
+          if (p.stage === 'visual') {
+            const last = p.versions.at(-1);
+            const previous = last?.stage === 'visual' ? last : undefined;
+            input.previousVisual = previous?.artifacts.filter(a=>a.visual?.candidate).map(a => {
+              const path = join(dir, 'previous-'+filename(a.name));
+              copyFileSync(disk(p,a.storageKey),path,constants.COPYFILE_EXCL);
+              const bytes = readFileSync(path);
+              return {visual:a.visual,image:{path,imageId:'previous',sha256:hash(bytes),byteLength:bytes.length,mediaType:'image/png'}};
+            });
+          }
           for (const type of ['artifacts', 'attachments']) {
-            input[type] = p[type].map((record) => {
+            const records = p[type].filter(a=>!(p.stage==='layout' && a.visual?.candidate && !p.visualAdoption?.artifacts.includes(a.storageKey)));
+            input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
-              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, path };
+              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, path };
             });
           }
           const onEvent = (text) => {
@@ -264,6 +275,19 @@ export function createNightflight({ root, runStage, runLayout }) {
             live.directions = names;
             live.copyReview = review;
           }
+          if (p.stage === 'visual') {
+            const expected = p.mode==='collab' ? [p.choice] : p.directions;
+            const images = result.artifacts.filter(a=>a.kind==='image');
+            check(images.length===expected.length*3 && expected.every(direction=>{
+              const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
+              if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
+                ['视觉','品牌','用户','传播'].every(role=>a.scores?.some(v=>v.role===role && Number.isInteger(v.score) && v.score>=1 && v.score<=5)) &&
+                a.scores.length===4 && a.mean===a.scores.reduce((sum,v)=>sum+v.score,0)/4 && typeof a.blocked==='boolean' && a.reason?.trim())) return false;
+              const eligible = batch.filter(a=>!a.blocked && a.mean>=4);
+              const winners = batch.filter(a=>a.recommended);
+              return eligible.length ? winners.length===1 && eligible.includes(winners[0]) && winners[0].mean===Math.max(...eligible.map(a=>a.mean)) : !winners.length;
+            }), '视觉阶段需要每方向三张同版主视觉及完整复核推荐', 422);
+          }
           const occupied = new Set(
             [...live.attachments, ...live.artifacts].map((a) => a.name.normalize('NFC').toLowerCase()),
           );
@@ -276,6 +300,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             return {
               ...storeFile(live, name, join(dir, name), a.kind),
               stage: p.stage,
+              ...(p.stage === 'visual' && a.visual ? {visual:a.visual} : {}),
               ...(typeof a.text === 'string' ? { text: a.text } : {}),
             };
           });
@@ -308,7 +333,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             note(live, '等待你选择创意方向');
           } else if (p.stage === 'visual') {
             live.status = 'waiting';
-            note(live, '请查看真实图稿，决定是否采用本版进入排版');
+            note(live, outputs.some(a=>a.visual?.candidate && !outputs.some(w=>w.visual?.direction===a.visual.direction && w.visual.recommended)) ? '有方向尚无达标主视觉，请查看原因并修改' : '每方向已推荐同批达标最高稿，等待采用');
           } else if (p.stage === 'final') {
             live.status = 'done';
             note(live, '本地试跑完成，可查看核对记录与 PPTX');
@@ -455,8 +480,10 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
     } else if (kind === 'adopt') {
       check(p.status === 'waiting' && p.stage === 'visual', '当前没有待采用的图稿', 409);
+      const candidates = p.artifacts.filter(a=>a.visual?.candidate);
+      if (candidates.length) check((p.mode==='collab' ? [p.choice] : p.directions).every(d=>candidates.some(a=>a.visual.direction===d && a.visual.recommended)), '本批有方向尚无达标主视觉，请修改后再采用',409);
       const chosen = p.artifacts
-        .filter((a) => a.stage === 'visual' && a.kind === 'image')
+        .filter((a) => a.stage === 'visual' && a.kind === 'image' && (!candidates.length || a.visual?.recommended))
         .map((a) => a.storageKey);
       check(chosen.length, '没有图稿可采用', 409);
       p.visualAdoption = { at: now(), artifacts: chosen };

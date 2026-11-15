@@ -2259,8 +2259,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "cac954db6828a9c948d3ce2de505bed7a72e7a5af5f30c37a3686e1633f0e955",
-      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。"
+      "sha256": "5f779390e06e42c672de3407277f1c5bdf75effbf3cdb5c1141a326c03c044d3",
+      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。 主视觉三稿同评。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "5cb9391753c2bfd0f04387597934911edca9be4866216614aaafb6c023207530",
@@ -2279,8 +2279,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/StartScreen.tsx": {
-      "sha256": "19833296c0c07b3de7d73fbc18ec1fea19d39ff6d428f9134875837a0992414b",
-      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
+      "sha256": "d0023b37baa349abf49cbe72ec93acb3b00da7e2f67167757ef344079bae3710",
+      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。 主视觉三稿同评。"
     },
     "apps/workbench-preview/nightflight/src/components/TopBar.tsx": {
       "sha256": "249fd9c4d3237a88ebccb19bec259a4f8a3b8e17f2c354d5d4bd9a7bf7d563d8",

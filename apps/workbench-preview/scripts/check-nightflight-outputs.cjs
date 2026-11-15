@@ -71,7 +71,7 @@ const stages = [
   ['关键发现'],
   ['核心策略'],
   ['三个创意方向'],
-  ['视觉参考', '草图与主视觉', '延展图', '样机'],
+  ['视觉参考', '主视觉', '延展图', '样机'],
   ['提案预览'],
   ['本版提案', '终审记录', '你的反馈'],
 ];
@@ -169,7 +169,7 @@ async function main() {
       await page.reload();
       await page.locator('.stage-head').nth(4).click();
       await page.getByRole('button', {name:/方向 B.*明月/}).click();
-      assert.equal(await page.locator('.vg-pair > figure').count(), 2);
+      assert.equal(await page.locator('.vg-pair > figure').count(), 1);
       const extension = page.locator('.vg-extension');
       assert.equal(await extension.locator('h3').innerText(), 'KV 延展');
       await extension.getByRole('button', {name:'KV 延展下一张'}).click();

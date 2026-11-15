@@ -9,6 +9,7 @@ import { promisify } from 'node:util';
 import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
+import { reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -26,7 +27,7 @@ const stages = {
   research: ['研究', 'research-owner', '根据实际取得的来源列出出处、观察、推论和缺口。网络检索只用无保密内容的品类词；不把模型常识当作已核来源。'],
   strategy: ['策略', 'strategy-owner', '只写研究结论、方向交叉点、策略发力点三个板块，指出互相支撑的实际依据。'],
   copy: ['文案与主题', 'copy-owner', '依据研究与策略创作三案，组织匿名首读和对应对抗。总监按证据裁定改稿或同稿复核，分别记录单案、整组差异和推荐。'],
-  visual: ['视觉开发', 'visual-owner', '按指定文案方向和真实简报完成一张概念效果图。'],
+  visual: ['视觉开发', 'visual-owner', '按指定文案方向和真实简报直接制作同方向的三张不同主视觉候选。'],
   final: ['终审与交付', 'final-review-owner', '逐页核对实际PPTX提取的文案、次序、图片数量与上游。给出页码、问题、证据、责任和需复核项。只记录本次本地审读，未经检查的维度明示待审。'],
 };
 const extraRules = {
@@ -511,13 +512,13 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
     if (!login || !/^Logged in using ChatGPT\s*$/im.test(login.stdout+'\n'+login.stderr)) {
       throw Error('请先使用 ChatGPT 账户登录本机 Codex，再重试本阶段');
     }
-    const provider = createCodexProvider({
+    const makeProvider = (generate) => createCodexProvider({
       binary:programPath, model:selectedModel, rootDir:join(dir,'.codex-runs'), timeoutMs:900000,
       spawn(program, args, options) {
         const disabled = ['apps','workspace_dependencies','in_app_local_automation','hooks','plugins','shell_tool','unified_exec','multi_agent','skill_search','computer_use','browser_use','browser_use_external','in_app_browser','view_image','skill_mcp_dependency_install'];
         const flags = ['--ignore-rules', ...disabled.flatMap(name=>['--disable',name]), '-c','model_provider="openai"','-c','forced_login_method="chatgpt"','-c','web_search='+JSON.stringify(stage==='research'?'live':'disabled')];
-        flags.push(['visual','research'].includes(stage)?'--enable':'--disable','code_mode_host');
-        flags.push(stage==='visual'?'--enable':'--disable','image_generation');
+        flags.push(generate || stage==='research'?'--enable':'--disable','code_mode_host');
+        flags.push(generate?'--enable':'--disable','image_generation');
         const child = spawn(program,[...args.slice(0,-1), ...flags,'-'], {...options,env});
         // npm's codex launcher starts a native executable. Cancel the whole owned group.
         return {
@@ -529,14 +530,16 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
         };
       },
     });
+    const reviewer = makeProvider(false);
+    const creator = stage === 'visual' ? makeProvider(true) : reviewer;
     const call = async (instruction, images = inputs.images, schema = textSchema, task = {}) => {
       signal?.throwIfAborted();
       try {
-        return await provider.execute({runId:randomUUID(),prompt:[common,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n'),images,signal,...(schema ? {outputSchema:schema}:{})});
+        return await (stage === 'visual' && !schema ? creator : reviewer).execute({runId:randomUUID(),prompt:[common,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n'),images,signal,...(schema ? {outputSchema:schema}:{})});
       } catch (error) {
         if (signal?.aborted) throw Error('本次阶段已中止');
         // Native image generation can finish without a final text message.
-        if (stage === 'visual' && error.code === 'INVALID_OUTPUT' && error.receipt?.threadId &&
+        if (stage === 'visual' && !schema && error.code === 'INVALID_OUTPUT' && error.receipt?.threadId &&
             ['Output file is empty','ENOENT'].some(reason=>String(error.message).includes(reason))) {
           return {...error.receipt, responseText:''};
         }
@@ -556,23 +559,43 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
       if (all.length !== 3 || new Set(all).size !== 3) throw Error('视觉阶段需要本案三份文案方向');
       const directions = project.mode==='collab' ? [project.choice] : all;
       if (directions.some(d=>!all.includes(d))) throw Error('请先选定本案的视觉方向');
-      const records = [];
+      const seen = new Set(), summaries = [];
       for (const direction of directions) {
-        await onEvent?.('正在为「'+direction+'」生成视觉概念稿');
-        const result = await call('只用内置 image_generation 工具为以下方向实际生成一张图。不得写代码、引用旧图或仅给提示词。包装提案展示整体包装与关键细节，按需展示多视角；KV展示真实主视觉及本案已交接的文案原句。图完成后只回一段中文设计说明。指定方向：'+JSON.stringify(direction),inputs.images,null);
-        const original = await ownGeneratedImage(result,home);
-        const digest = hash(original.bytes);
-        if (records.some(r=>r.sha256===digest)) throw Error('两个方向返回了完全相同的图，请重新生成');
-        const ordinal = all.indexOf(direction)+1;
-        const name = 'visual-'+ordinal+'-'+digest.slice(0,12)+'.png';
-        await writeFile(join(dir,name),original.bytes,{flag:'wx',mode:0o600});
-        artifacts.push({name,kind:'image'});
-        const record = {direction,name,sha256:digest,thread:result.threadId,originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
-        await writeFile(join(result.paths.runDir,'generated-image.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
-        records.push(record);
+        const batch = [], images = [];
+        const previous = project.previousVisual?.filter(item => item.visual?.direction === direction) ?? [];
+        const best = previous.sort((a,b)=>Number(b.visual.recommended)-Number(a.visual.recommended) || b.visual.mean-a.visual.mean)[0];
+        const attachPrevious = best && inputs.images.length < 4;
+        const sourceImages = attachPrevious ? [best.image, ...inputs.images] : inputs.images;
+        for (const [index, focus] of ['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'].entries()) {
+          await onEvent?.('正在为「'+direction+'」生成主视觉 '+(index+1)+'/3');
+          const instruction = '只用内置 image_generation 工具生成一张完整主视觉，保留同方向的核心卖点、文案及必要约束，本张从'+focus+'做实质不同的处理。'+
+            (best ? (attachPrevious ? '第一张输入图为上一批原稿。' : '本轮附全部四张品牌参考。')+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
+            '同批已有方案描述：'+JSON.stringify(batch.map(item=>item.description))+'。完成后简述设计。指定方向：'+JSON.stringify(direction);
+          const result = await call(instruction,sourceImages,null);
+          const original = await ownGeneratedImage(result,home);
+          const digest = hash(original.bytes);
+          if (seen.has(digest)) throw Error('主视觉候选返回了重复图片，请重试视觉阶段');
+          seen.add(digest);
+          const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
+          const path = join(dir,name);
+          await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
+          const record = {direction,name,sha256:digest,thread:result.threadId,originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          await writeFile(join(result.paths.runDir,'generated-image.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
+          batch.push(record);
+          images.push({imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'});
+        }
+        await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
+        const review = await reviewVisualBatch({call,direction,images,context});
+        await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
+        for (const [i,record] of batch.entries()) {
+          const verdict = review.candidates.find(row=>row.candidate===i+1);
+          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,candidate:i+1,mean:verdict.mean,
+            scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
+        }
+        const winner = review.candidates.find(row=>row.candidate===review.winner);
+        summaries.push('## '+direction+'\n'+(winner ? '推荐第 '+winner.candidate+' 稿，四岗均分 '+winner.mean+'/5。'+winner.reason : '本批尚无达标主视觉。'+review.candidates.map(c=>c.reason).join('；')));
       }
-      const report = records.map(r=>'## '+r.direction+'\n'+r.description+'\n\n图片：'+r.name+'（'+r.width+' × '+r.height+'）').join('\n\n');
-      await addText('# 视觉概念稿\n\n'+report+'\n\n本次为概念图，独立评分、样机或生产可行性按实际另行复核。');
+      await addText('# 主视觉推荐\n\n'+summaries.join('\n\n'));
       return {artifacts};
     }
     if (stage === 'final') {

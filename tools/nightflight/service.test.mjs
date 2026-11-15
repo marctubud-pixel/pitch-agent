@@ -66,6 +66,17 @@ test('a personal run waits for direction and current image adoption, saves user 
     const name = 'output-' + stage + { pptx: '.pptx', image: '.png', text: '.md' }[kind];
     const draft = { directions: ['A','B','C'].map((name,i) => ({id:name, name, duty:['emotion','continuity','feature'][i], main:name+' 标题'})) };
     const body = stage === 'copy' ? draft.directions.map(d => '## '+d.name+'\n主标题：'+d.main).join('\n\n') : 'isolated '+stage;
+    if (stage === 'visual') {
+      const artifacts=[];
+      for (const candidate of [1,2,3]) {
+        const name='稿'+candidate+'.png';
+        await writeFile(join(dir,name),'合成图'+candidate);
+        const score=candidate===2?5:4;
+        artifacts.push({name,kind:'image',visual:{direction:'A',role:'main',candidate,mean:score,blocked:false,reason:'合成评语',recommended:candidate===2,scores:['视觉','品牌','用户','传播'].map(role=>({role,score,reason:'合成依据'}))}});
+      }
+      return {artifacts};
+    }
+    if(stage==='layout') assert.deepEqual((await import('node:fs/promises').then(fs=>fs.readdir(dir))).filter(n=>n.endsWith('.png')),['稿2.png']);
     await writeFile(join(dir, name), body);
     return {
       research,
@@ -146,7 +157,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice' };
   assert.equal((await action(adoption)).status, 200);
   const finished = await wait('done');
-  assert.equal(finished.artifacts.length, 7);
+  assert.equal(finished.artifacts.length, 9);
   assert.equal((await action(adoption)).status, 200);
   service.close();
   service = createNightflight(options);

@@ -108,7 +108,7 @@ const MODES: { id: Mode; en: string; name: string; lead: string; points: string[
     points: [
       '关键依据不足时自动定向补查一轮',
       '补查后仍缺关键依据，项目留在研究',
-      '保留三个创意方向，分别生成视觉稿',
+      '三个方向各出三张主视觉，各推荐一张达标最高稿',
       '视觉稿由你确认后进入排版',
     ],
     cta: '全自动开始',
@@ -122,7 +122,7 @@ const MODES: { id: Mode; en: string; name: string; lead: string; points: string[
       '每次只问一个关键问题',
       '可作答，也可按不同条件继续补查',
       '有依据的结论能支持取舍后，再交给策略',
-      '由你选创意方向、确认采用视觉稿',
+      '选定方向后出三张主视觉，由你确认采用推荐稿',
     ],
     cta: '协作开始',
   },

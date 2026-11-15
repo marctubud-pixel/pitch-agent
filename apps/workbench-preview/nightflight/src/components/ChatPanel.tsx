@@ -27,15 +27,17 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
     .map((a) => a.text).filter(Boolean).join('\n\n')) : [];
   const reviewed = p.copyReview?.status === 'ready' ? p.copyReview.draft.directions : [];
 
+  const visualBatch = p.artifacts.filter(a=>a.visual?.candidate);
+  const missingWinner = visualBatch.some(a=>!visualBatch.some(w=>w.visual?.direction===a.visual?.direction && w.visual?.recommended));
   return (
     <div className="msg-body">
       <p className="msg-flag">需要你决定</p>
       {p.stage === 'visual' ? (
         <>
-          <p>请先打开视觉稿。确认采用当前版本后，主理人再开始排版。</p>
+          <p>{missingWinner ? '有方向尚无达标稿，请查看评审并发送修改意见。' : visualBatch.length ? '本批每方向已推荐一张达标最高稿，采用后进入排版。' : '请先查看视觉稿，确认采用后进入排版。'}</p>
           <button
             className="btn btn-dark"
-            disabled={busy}
+            disabled={busy || missingWinner}
             onClick={() => act('adopt', '采用当前视觉稿做本地排版')}
           >
             采用这版做本地排版

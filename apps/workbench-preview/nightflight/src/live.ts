@@ -17,6 +17,8 @@ export interface Artifact extends Asset {
   text?: string;
   visual?: {
     direction: string;
+    candidate?: number; mean?: number; recommended?: boolean; blocked?: boolean; reason?: string;
+    scores?: {role:string; score:number; reason:string}[];
     role: 'sketch' | 'main' | 'extension' | 'mockup';
     output?: 'packaging' | 'kv';
     format?: 'portrait' | 'landscape';

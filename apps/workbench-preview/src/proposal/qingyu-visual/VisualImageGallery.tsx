@@ -6,6 +6,7 @@ export interface GalleryDirection {
   id: string; name: string; description?: string;
   references: readonly GalleryImage[]; sketch?: GalleryImage;
   mains: readonly GalleryImage[]; extensions?: readonly GalleryImage[];
+  batchSummary?: string;
   format?: 'portrait' | 'landscape'; extensionLabel?: string;
   sketchComparison?: { previous: GalleryImage; note: string };
   mockup?: GalleryImage;
@@ -34,7 +35,7 @@ function Artwork({ images, label, zoom, loaded, rowRatio, showCaption = true }: 
         loaded?.(element, index);
       }} />
     </button>
-    {showCaption && <figcaption>{label}
+    {showCaption && <figcaption>{images.length > 1 ? label + ' · ' + image.title : label}
       {images.length > 1 && <span className="vg-pager">
         <button type="button" aria-label={label + '上一张'} onClick={() => setIndex((index + images.length - 1) % images.length)}>←</button>
         <span aria-live="polite">{index + 1} / {images.length}</span>
@@ -56,9 +57,10 @@ function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirecti
   const extension = <Artwork label={extensionLabel} rowRatio={portrait ? rowRatio : undefined} loaded={portrait ? measure : undefined} images={direction.extensions ?? []} zoom={zoom} />;
   return <>
     <section className="vg-section" data-visual-direction={direction.id}>
-      <h3>草图与主视觉 <span className="vg-letter">方向 {letter}</span></h3>
-      <div className={'vg-pair' + (portrait ? ' vg-portrait' : '')}>
-        <Artwork label="构图草图" rowRatio={rowRatio} loaded={measure} images={direction.sketch ? [direction.sketch] : []} zoom={zoom} />
+      <h3>{direction.sketch ? '草图与主视觉' : '主视觉'} <span className="vg-letter">方向 {letter}</span></h3>
+      {direction.batchSummary && <p className="vg-recommendation">{direction.batchSummary}</p>}
+      <div className={'vg-pair' + (portrait && direction.sketch ? ' vg-portrait' : '')}>
+        {direction.sketch && <Artwork label="构图草图" rowRatio={rowRatio} loaded={measure} images={[direction.sketch]} zoom={zoom} />}
         <Artwork label="主视觉" rowRatio={rowRatio} images={direction.mains} zoom={zoom}
           loaded={(image, index) => {
             measure(image);

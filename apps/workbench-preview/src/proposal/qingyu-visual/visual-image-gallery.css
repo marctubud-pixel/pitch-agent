@@ -43,3 +43,5 @@
   .vg-direction { justify-self: start; }
   .vg-pair { gap: 10px; }
 }
+
+.visual-image-gallery .vg-recommendation { margin: 0 0 14px; }

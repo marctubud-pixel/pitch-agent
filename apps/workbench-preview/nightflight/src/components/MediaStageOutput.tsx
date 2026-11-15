@@ -29,17 +29,23 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   const initial = reports.find(item => item.file.name === name)?.title;
   const [selected, setSelected] = useState(initial || p.choice || p.directions[0]);
   const directions: GalleryDirection[] = [...new Set(p.directions)].map(title => {
-    const group = reports.filter(item => item.title === title);
+    const group = reports.filter(item => item.title === title).sort((a,b)=>Number(!!b.file.visual?.recommended)-Number(!!a.file.visual?.recommended));
+    const winner = group.find(item=>item.file.visual?.recommended)?.file.visual;
     const current = group.find(item => !item.file.visual || item.file.visual.role === 'main');
     const metadata = current?.file.visual ?? group.find(item => item.file.visual)?.file.visual;
     function pictures(role: 'sketch' | 'main' | 'extension' | 'mockup') {
-      return group.filter(item => (item.file.visual?.role ?? 'main') === role)
+      const ordered = group.filter(item => (item.file.visual?.role ?? 'main') === role);
+      if (role === 'main' && name) ordered.sort((a,b) => Number(b.file.name === name) - Number(a.file.name === name));
+      return ordered
         .flatMap(({ file }) => {
           const src = safeURL(file.url);
-          return src ? [{ src, title: file.name, alt: title + ' · ' + file.name }] : [];
+          return src ? [{ src, title: file.visual?.candidate ? '第 '+file.visual.candidate+' 稿 · '+file.visual.mean+'/5' : file.name, alt: title + ' · ' + file.name }] : [];
         });
     }
-    return { id: title, name: title, description: current?.record?.description?.split(/[。\n]/)[0], references: [],
+    return { id: title, name: title,
+      batchSummary: group.some(item=>item.file.visual?.candidate) ?
+        (winner ? '推荐第 '+winner.candidate+' 稿 · '+winner.mean+'/5　'+winner.reason : '本批暂无达标稿，查看评审后修改。') : undefined,
+      description: current?.record?.description?.split(/[。\n]/)[0], references: [],
       format: metadata?.format, extensionLabel: metadata?.output === 'packaging' ? '包装延展' : metadata?.output === 'kv' ? 'KV 延展' : '延展图',
       sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: pictures('mockup')[0] };
   });
@@ -49,9 +55,9 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   return <>
     {!!directions.length && active && <div data-artifact={current?.file.name}>
       <VisualImageGallery directions={directions} currentId={active.id} onDirectionChange={setSelected}
-        details={current?.record?.description && <p>{current.record.description}</p>} />
+        details={reports.some(item=>item.title===active.id && item.file.visual?.candidate) ? reports.filter(item=>item.title===active.id && item.file.visual?.candidate).map(({file})=><div key={file.name}><h4>第 {file.visual?.candidate} 稿 · {file.visual?.mean}/5</h4><p>{file.visual?.reason}</p>{file.visual?.scores?.map(v=><p key={v.role}>{v.role} · {v.score}/5　{v.reason}</p>)}</div>) : current?.record?.description && <p>{current.record.description}</p>} />
     </div>}
-    {!active && !other.length && <p className="pending">草图与主视觉稿尚未交回。</p>}
+    {!active && !other.length && <p className="pending">主视觉稿尚未交回。</p>}
     {!!other.length && <section className="block"><h2>其他已存图稿</h2>
       {other.map(({ file, title }) => <a key={file.url} href={safeURL(file.url)} target="_blank" rel="noopener noreferrer">{title}</a>)}
     </section>}

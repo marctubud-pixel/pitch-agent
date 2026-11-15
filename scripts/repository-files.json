@@ -1464,6 +1464,7 @@
     "tools/nightflight/layout.test.mjs",
     "tools/nightflight/service.mjs",
     "tools/nightflight/service.test.mjs",
+    "tools/nightflight/visual-batch.mjs",
     "tools/nightflight/start.mjs",
     "tools/workbench/.gitignore",
     "tools/workbench/ASSISTANT_API.md",
