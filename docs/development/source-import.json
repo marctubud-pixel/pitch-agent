@@ -2259,8 +2259,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "824856e40137987bf2985e9748615b00c8a7f823c0729bd6f898d2c6f97d369a",
-      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
+      "sha256": "e199cd713830038efe4c3c62e6522ec0f7b5b57d610ca87e47b9e4568083af66",
+      "reason": "协作选案按已登记的方向映射显示该案主标题，并保留实际选案身份。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "6c4517f2ea2ed7197738c82a534869a9b6709c3ffd3681c1b4c9ba24a627049e",

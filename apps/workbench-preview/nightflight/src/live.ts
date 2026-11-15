@@ -51,8 +51,24 @@ interface CopyFirstRead {
   runId: string;
   items: { directionId: DirectionId; reading: string; uncertainty: string }[];
 }
+export interface HeadlineCheck {
+  criterion: string;
+  passed: boolean;
+  evidence: string;
+  reason: string;
+}
+export const commonHeadlineCriteria = ['事实准确，归属清楚', '单句读得懂，念得顺', '能接上本案策略'];
+export const headlineTaskByDuty: Record<CopyDuty, string> = {
+  continuity: '稳健延续',
+  feature: '品牌或产品特征放大',
+  emotion: '用户氛围或情绪放大',
+};
+export function headlineReviewProtocol(review?: CopyReview) {
+  if (review?.version === 3 && review.protocol === 'dual-panel-headline-v4') return 'v4';
+  if (review?.version === 2 && review.protocol === 'dual-panel-headline-v3') return 'v3';
+}
 export interface CopyReview {
-  protocol?: 'dual-panel-v2' | 'dual-panel-headline-v3';
+  protocol?: 'dual-panel-v2' | 'dual-panel-headline-v3' | 'dual-panel-headline-v4';
   anonymousReads?: CopyFirstRead[];
   finalAnonymousReads?: CopyFirstRead[];
   sameDraftRechecks?: CopyVote[];
@@ -69,7 +85,7 @@ export interface CopyReview {
       reason: string;
     }[];
   };
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   status: 'ready';
   bodyHash: string;
   draft: { directions: ReviewedDirection[] };
@@ -78,7 +94,7 @@ export interface CopyReview {
   finalVotes: CopyVote[];
   challenges: {
     coverage?: {
-      readId?: string; directionId: DirectionId; dimension: string; reason: string; originalClaim: string; originalEvidence: string;
+      readId?: string; directionId: DirectionId; dimension: string; reason: string; originalClaim: string; originalObserved?: boolean; originalEvidence: string | null;
     }[];
     role: CopyRole;
     runId: string;
@@ -86,11 +102,11 @@ export interface CopyReview {
     items: { id: string; directionId: DirectionId; dimension: string; objection: string; evidence: string; action: string }[];
   }[];
   changes: string[];
-  recommendation: { directionId: DirectionId; reason: string; tradeoff: string };
+  recommendation: { directionId: DirectionId; reason: string; tradeoff: string; memory?: string; retell?: string; scene?: string };
   adjudication: {
     ready: boolean;
     reason: string;
-    single?: { directionId: DirectionId; ready: boolean; reason: string }[];
+    single?: { directionId: DirectionId; ready: boolean; reason: string; checks?: HeadlineCheck[] }[];
     pairs?: { pair: 'AB' | 'AC' | 'BC'; distinct?: boolean; reason: string }[];
     set?: { ready: boolean; reason: string };
     rulings: { challengeId: string; verdict: 'resolved' | 'rejected' | 'pending'; reason: string }[];

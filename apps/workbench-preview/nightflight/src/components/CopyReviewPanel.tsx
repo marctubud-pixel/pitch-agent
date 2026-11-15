@@ -1,4 +1,4 @@
-import type { CopyReview, CopyRole, CopyVote, ReviewedDirection } from '../live';
+import { commonHeadlineCriteria, headlineTaskByDuty, headlineReviewProtocol, type HeadlineCheck, type CopyReview, type CopyRole, type CopyVote, type ReviewedDirection } from '../live';
 
 const roles: Record<CopyRole, string> = {
   copy: '文案', brand: '品牌', user: '目标用户模拟', comms: '传播',
@@ -12,8 +12,9 @@ type Coverage = NonNullable<CopyReview['challenges'][number]['coverage']>[number
 function CoverageNote({ entry }: { entry: Coverage }) {
   return <div>
     <h4>对抗岗核对原票 · {entry.dimension}</h4>
-    <p>原判　{entry.originalClaim}</p>
-    <p>原据　{entry.originalEvidence}</p>
+    <p>{entry.originalObserved === false ? '原岗总体说明' : '原判'}　{entry.originalClaim}</p>
+    {entry.originalObserved === false ? <p>原票未观察此项。</p>
+      : entry.originalEvidence && <p>原据　{entry.originalEvidence}</p>}
     <p>{entry.reason}</p>
   </div>;
 }
@@ -26,6 +27,7 @@ function Vote({ vote, direction, label }: { vote?: CopyVote; direction: Reviewed
       {item ? (
         <>
           <p>{item.reason}</p>
+          {!item.scores.length && <p>本票只记录了岗位总体意见。</p>}
           {item.scores.map((score) => (
             <div key={score.dimension} data-dimension={score.dimension}>
               <strong>{score.dimension} · {score.score === null ? '待核' : score.score + ' 分'}</strong>
@@ -42,30 +44,52 @@ function Vote({ vote, direction, label }: { vote?: CopyVote; direction: Reviewed
   );
 }
 
+function DecisionChecks({ heading, criteria, checks }: { heading: string; criteria: string[]; checks: HeadlineCheck[] }) {
+  return <div data-check-group={heading}>
+    <h3>{heading}</h3>
+    <dl className="kv">{criteria.map((criterion) => {
+      const check = checks.find((entry) => entry.criterion === criterion);
+      return <div key={criterion}>
+        <dt>{criterion}</dt>
+        <dd>{!check ? '待核' : <>
+          <strong>{check.passed ? '通过' : '未通过'}</strong>　{check.reason}
+          <p>依据　{check.evidence}</p>
+        </>}</dd>
+      </div>;
+    })}</dl>
+  </div>;
+}
+
 export function CopyReviewPanel({ review, direction, scoreRecord = review, showOriginal = true }: {
   review: CopyReview; direction: ReviewedDirection; scoreRecord?: CopyReview; showOriginal?: boolean;
 }) {
   const recommended = review.draft.directions.find((d) => d.id === review.recommendation.directionId);
   const label = '方向 ' + direction.id;
   const original = scoreRecord.initialDraft.directions.find((d) => d.id === direction.id);
-  const dual = review.protocol === 'dual-panel-headline-v3';
-  const dualScores = scoreRecord.protocol === 'dual-panel-headline-v3';
+  const dual = headlineReviewProtocol(review);
+  const dualScores = headlineReviewProtocol(scoreRecord);
   const single = dual && review.adjudication.single?.find((entry) => entry.directionId === direction.id);
   const comparison = dual && review.adjudication.pairs;
   const set = dual && review.adjudication.set;
   const nameOf = (id: string) => '方向 ' + id;
   return (
     <section className="copy-review" data-copy-review={direction.id}>
+      {dual === 'v3' && <p className="hint">历史单标题评审 · 按当时的岗位维度读取原分。</p>}
       {single && <div className="block">
         <h2>单案裁定 · {label}</h2>
         <p>{single.ready ? '可交接' : '待处理'}　{single.reason}</p>
+        {dual === 'v4' && <>
+          <DecisionChecks heading="三个共通要求" criteria={commonHeadlineCriteria} checks={single.checks ?? []} />
+          {headlineTaskByDuty[direction.duty] && <DecisionChecks heading="本方向任务"
+            criteria={[headlineTaskByDuty[direction.duty]]} checks={single.checks ?? []} />}
+        </>}
       </div>}
       {comparison && <div className="block">
         <h2>三案差异</h2>
         <dl className="kv">
-          {comparison.map(({ pair, reason }) => <div key={pair}>
+          {comparison.map(({ pair, distinct, reason }) => <div key={pair}>
             <dt>{nameOf(pair[0])} / {nameOf(pair[1])}</dt>
-            <dd>{reason}</dd>
+            <dd>{dual === 'v4' && <strong>{distinct === undefined ? '待核' : distinct ? '差异成立' : '差异不足'}　</strong>}{reason}</dd>
           </div>)}
         </dl>
         {set && <p>整组{set.ready ? '可交接' : '待处理'}　{set.reason}</p>}
@@ -73,11 +97,16 @@ export function CopyReviewPanel({ review, direction, scoreRecord = review, showO
       <h2>推荐与取舍</h2>
       {recommended && <h3>建议优先讨论「{nameOf(recommended.id)}」</h3>}
       <p>{review.recommendation.reason}</p>
+      {dual === 'v4' && <dl className="kv" data-recommendation-basis>
+        <div><dt>记忆点</dt><dd>{review.recommendation.memory || '待补'}</dd></div>
+        <div><dt>如何复述</dt><dd>{review.recommendation.retell || '待补'}</dd></div>
+        <div><dt>使用场景</dt><dd>{review.recommendation.scene || '待补'}</dd></div>
+      </dl>}
       <p>{review.recommendation.tradeoff}</p>
       {direction.risk && <p>本方向风险　{direction.risk}</p>}
       <details key={direction.id}>
         <summary>「{label}」的四岗原评与复核</summary>
-        <p className="hint">以下为本地模型审读。目标用户岗模拟阅读，实际受众反应仍待验证。</p>
+        <p className="hint">{dualScores === 'v4' && '分数记录各岗观察，单案结果见四项裁定。'}目标用户岗模拟阅读，实际受众反应仍待验证。</p>
         {Object.entries(roles).map(([role, title]) => {
           const first = scoreRecord.firstVotes.find((vote) => vote.role === role);
           const final = scoreRecord.finalVotes.find((vote) => vote.role === role);

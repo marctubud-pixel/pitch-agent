@@ -1,5 +1,5 @@
 import legacy from '../../../src/proposal/qingyu-themes/legacy-headlines.json';
-import type { CopyReview, DirectionId } from '../live';
+import { commonHeadlineCriteria, headlineReviewProtocol, headlineTaskByDuty, type CopyReview, type DirectionId } from '../live';
 import { CopyOutput } from './TextStageOutput';
 import { CopyReviewPanel } from './CopyReviewPanel';
 
@@ -19,21 +19,31 @@ const roles = ['copy', 'brand', 'user', 'comms'] as const;
 function publishedExperiment() {
   const snapshot = Object.values(snapshots)[0];
   const review = snapshot?.copyReview;
+  const protocol = headlineReviewProtocol(review);
   if (snapshot?.version !== 1 || snapshot.status !== 'published' || !snapshot.receipt?.director ||
       !review?.bodyHash || snapshot.receipt.contentSha256 !== review.bodyHash ||
-      review.version !== 2 || review.protocol !== 'dual-panel-headline-v3' || review.status !== 'ready' ||
+      !protocol || review.status !== 'ready' ||
       !review.adjudication?.ready || !review.adjudication.set?.ready) return;
   const directions = review.draft?.directions;
   if (directions?.length !== 3 || !ids.every((id) => {
     const d = directions.find((entry) => entry.id === id);
-    return d?.main?.trim() && review.adjudication.single?.some((entry) => entry.directionId === id && entry.ready) &&
-      roles.every((role) => {
-        const vote = review.finalVotes?.find((entry) => entry.role === role);
-        const item = vote?.items.find((entry) => entry.directionId === id);
-        return vote?.runId && item?.decision === 'pass' && !item.blockers.length && !item.hardRejects.length &&
-          item.scores.length === 4 && item.scores.every(({ score }) => score !== null && score >= 4);
-      });
+    const single = review.adjudication.single?.find((entry) => entry.directionId === id);
+    if (!d?.main?.trim() || !single?.ready) return false;
+    const criteria = [...commonHeadlineCriteria, headlineTaskByDuty[d.duty]];
+    if (protocol === 'v4' && (!criteria[3] || single.checks?.length !== 4 ||
+        !criteria.every((criterion) => single.checks?.some((check) =>
+          check.criterion === criterion && check.passed && check.evidence?.trim() && check.reason?.trim())))) return false;
+    return roles.every((role) => {
+      const vote = review.finalVotes?.find((entry) => entry.role === role);
+      const item = vote?.items.find((entry) => entry.directionId === id);
+      if (!vote?.runId || !item) return false;
+      if (protocol === 'v4') return true;
+      return item.scores.length === 4 && item.decision === 'pass' && !item.blockers.length && !item.hardRejects.length &&
+        item.scores.every(({ score }) => score !== null && score >= 4);
+    });
   })) return;
+  if (protocol === 'v4' && ![review.recommendation.memory, review.recommendation.retell,
+    review.recommendation.scene].every((basis) => basis?.trim())) return;
   if (!['AB', 'AC', 'BC'].every((pair) => review.adjudication.pairs?.some((entry) => entry.pair === pair && entry.distinct))) return;
   return review;
 }

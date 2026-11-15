@@ -194,6 +194,70 @@ async function main() {
       const role = review.locator('[data-review-role="copy"]');
       await role.locator('summary').click();
       assert.match(await role.innerText(), /按标题核对/);
+      assert.match(await review.innerText(), /历史单标题评审/);
+      assert.equal(await review.locator('[data-check-group]').count(), 0);
+
+      const common = ['事实准确，归属清楚', '单句读得懂，念得顺', '能接上本案策略'];
+      const tasks = ['用户氛围或情绪放大', '稳健延续', '品牌或产品特征放大'];
+      const newDraft = { directions: draft.directions.map((d, i) => ({
+        ...d, duty: ['emotion','continuity','feature'][i],
+      })) };
+      const checks = (d, i) => [...common, tasks[i]].map(criterion => ({
+        criterion, passed: true, evidence: d.main, reason: criterion + '的裁定理由',
+      }));
+      const observations = votes.map((v, roleIndex) => ({
+        ...v, items: v.items.map((item, i) => ({
+          ...item, decision: 'hold', scores: checks(newDraft.directions[i], i).slice(roleIndex, roleIndex === 3 ? roleIndex : roleIndex+1).map(c => ({
+            dimension: c.criterion, score: 2, evidence: c.evidence, reason: '测试观察意见',
+          })),
+        })),
+      }));
+      project.copyReview = {
+        ...project.copyReview, version: 3, protocol:'dual-panel-headline-v4',
+        draft:newDraft, initialDraft:newDraft, firstVotes:observations,
+        finalVotes:observations.map(v=>({...v,reused:true})),
+        challenges:[{role:'comms',items:[],coverage:newDraft.directions.map(d=>({
+          directionId:d.id,dimension:common[0],originalObserved:false,originalClaim:'原岗总体意见',originalEvidence:null,reason:'核原票没有这一项',
+        }))}],
+        adjudication:{ready:true,reason:'本组裁定',rulings:[], set:{ready:true,reason:'整组核对'},
+          pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:pair+'独立差异'})),
+          single:newDraft.directions.map((d,i)=>({directionId:d.id,ready:true,reason:'当前标题可交接',checks:checks(d,i).reverse()}))},
+        recommendation:{directionId:'C',reason:'推荐原因',tradeoff:'保留取舍', memory:'记住品牌名',retell:'自然说出这句',scene:'面对货架时'},
+      };
+      await page.reload();
+      await page.locator('.stage-head').nth(3).click({force:true});
+      assert.deepEqual(await doc.locator('.copy-browse').allTextContents(),newDraft.directions.map(d=>d.main));
+      assert.doesNotMatch(await doc.innerText(), /本案策略|面对货架时/);
+      assert.deepEqual(await page.locator('.chat .option-text strong').allTextContents(),newDraft.directions.map(d=>d.main));
+      for (const [i,d] of newDraft.directions.entries()) {
+        await doc.getByRole('button',{name:d.main,exact:true}).click();
+        await doc.getByText('本标题的评审与推荐',{exact:true}).click();
+        const current = doc.locator('[data-copy-review="'+d.id+'"]');
+        assert.deepEqual(await current.locator('[data-check-group="三个共通要求"] dt').allTextContents(), common);
+        assert.deepEqual(await current.locator('[data-check-group="本方向任务"] dt').allTextContents(), [tasks[i]]);
+        assert.match(await current.locator('[data-check-group="本方向任务"]').innerText(), /通过/);
+        assert.ok((await current.innerText()).includes(tasks[i]+'的裁定理由'));
+        for(const pair of ['AB','AC','BC']) assert.ok((await current.innerText()).includes(pair+'独立差异'));
+        for(const basis of ['记住品牌名','自然说出这句','面对货架时']) assert.ok((await current.locator('[data-recommendation-basis]').innerText()).includes(basis));
+        await current.locator(':scope > details > summary').click();
+        const original=current.locator('[data-review-role="copy"]');
+        await original.locator('summary').click();
+        assert.equal(await original.locator('[data-dimension]').count(),1);
+        assert.match(await original.innerText(), /2 分/);
+        assert.match(await original.innerText(), /原稿评分 · 待核/);
+        const sparse=current.locator('[data-review-role="comms"]');
+        await sparse.locator('summary').click();
+        assert.equal(await sparse.locator('[data-dimension]').count(),0);
+        assert.match(await sparse.innerText(), /原票未观察此项/);
+        assert.doesNotMatch(await sparse.innerText(), /原据/);
+        assert.doesNotMatch(await doc.textContent(), /副句|第一句|独立场景/);
+      }
+      project.copyReview = {...project.copyReview,version:1,protocol:'dual-panel-v2'};
+      await page.reload();
+      await page.locator('.stage-head').nth(3).click({force:true});
+      await doc.getByText('评审记录',{exact:true}).click();
+      assert.match(await doc.innerText(), /旧版按主副文合读评审/);
+      assert.equal(await doc.locator('[data-check-group]').count(),0);
       assert.doesNotMatch(await doc.textContent(), /副句|第一句|独立场景/);
 
     }

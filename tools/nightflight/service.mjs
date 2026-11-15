@@ -14,7 +14,7 @@ import {
 } from 'node:fs';
 import { resolve, join, basename, extname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
-import { headlineMarkdown, headlineProtocol } from './copy-review.mjs';
+import { headlineMarkdown, headlineProtocol, validSingleReview } from './copy-review.mjs';
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
 const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
@@ -54,7 +54,7 @@ function archiveVersion(p) {
 
 // This gate is used only when accepting a new run. Historical tickets keep their original shape.
 function copyHandoffReady(review, names, text) {
-  if (review?.protocol !== headlineProtocol || review.version !== 2 || review.status !== 'ready' ||
+  if (review?.protocol !== headlineProtocol || review.version !== 3 || review.status !== 'ready' ||
       !text || hash(text) !== review.bodyHash) return false;
   const draft = review.draft?.directions;
   if (draft?.length !== 3 || !names.every((name, i) => draft[i]?.name === name) ||
@@ -67,10 +67,12 @@ function copyHandoffReady(review, names, text) {
       roles.every(role => group.some(report => report.role === role)))) return false;
   const verdict = review.adjudication;
   return verdict?.ready === true && verdict.set?.ready === true && verdict.single?.length === 3 &&
-    ['A', 'B', 'C'].every(id => verdict.single.some(item => item.directionId === id && item.ready === true)) &&
+    ['A', 'B', 'C'].every(id => verdict.single.some(item => item.directionId === id && item.ready === true &&
+      validSingleReview(item,draft.find(d=>d.id===id)))) &&
     verdict.pairs?.length === 3 && ['AB', 'AC', 'BC'].every(pair =>
       verdict.pairs.some(item => item.pair === pair && item.distinct === true)) &&
-    draft.some(item => item.id === review.recommendation?.directionId);
+    draft.some(item => item.id === review.recommendation?.directionId) &&
+    ['reason','tradeoff','memory','retell','scene'].every(key=>typeof review.recommendation?.[key]==='string' && review.recommendation[key].trim());
 }
 
 function researchHandoff(report, project) {

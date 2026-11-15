@@ -64,7 +64,7 @@ test('a personal run waits for direction and current image adoption, saves user 
     if (stage === 'layout') assert.equal(await readFile(join(dir, 'update.md'), 'utf8'), 'update');
     const kind = stage === 'layout' ? 'pptx' : stage === 'visual' ? 'image' : 'text';
     const name = 'output-' + stage + { pptx: '.pptx', image: '.png', text: '.md' }[kind];
-    const draft = { directions: ['A','B','C'].map(name => ({id:name, name, main:name+' 标题'})) };
+    const draft = { directions: ['A','B','C'].map((name,i) => ({id:name, name, duty:['emotion','continuity','feature'][i], main:name+' 标题'})) };
     const body = stage === 'copy' ? draft.directions.map(d => '## '+d.name+'\n主标题：'+d.main).join('\n\n') : 'isolated '+stage;
     await writeFile(join(dir, name), body);
     return {
@@ -72,13 +72,13 @@ test('a personal run waits for direction and current image adoption, saves user 
       researchReturn,
       artifacts: [{ kind, name, ...(stage === 'copy' ? { text: body } : {}) }],
       copyReview: stage === 'copy' ? {
-        version: 2, protocol: 'dual-panel-headline-v3', status: 'ready',
+        version: 3, protocol: 'dual-panel-headline-v4', status: 'ready',
         adjudication: { ready: true, set: { ready: true },
-          single: ['A','B','C'].map(directionId => ({directionId, ready:true})),
+          single: draft.directions.map((d,i)=>({directionId:d.id,ready:true,checks:['事实准确，归属清楚','单句读得懂，念得顺','能接上本案策略',['用户氛围或情绪放大','稳健延续','品牌或产品特征放大'][i]].map(criterion=>({criterion,passed:true,evidence:d.main,reason:'同版核对'}))})),
           pairs: ['AB','AC','BC'].map(pair => ({pair, distinct:true})),
         }, bodyHash: createHash('sha256').update(body).digest('hex'),
         draft,
-        recommendation: {directionId:'A'},
+        recommendation: {directionId:'A',reason:'推荐说明',tradeoff:'取舍',memory:'记忆',retell:'复述',scene:'适用场景'},
         ...Object.fromEntries(['anonymousReads','firstVotes','criticReads','challenges','finalVotes']
           .map(field => [field, ['copy','brand','user','comms'].map(role => ({role}))])),
       } : undefined,

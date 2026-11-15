@@ -1,9 +1,9 @@
 import { useState, type ReactNode } from 'react';
-import type { CopyDuty, Project } from '../live';
+import { headlineReviewProtocol, type CopyDuty, type Project } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
-import { directionBody, rowOf, sectionsOf, type Row } from './stageText';
+import { headlineFromSections, rowOf, sectionsOf, type Row } from './stageText';
 
 type TextStage = 'brief' | 'research' | 'strategy' | 'copy';
 
@@ -144,15 +144,14 @@ export function CopyOutput({
   const sections = sectionsOf(text);
   const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
   const ticket = p.copyReview?.status === 'ready' ? p.copyReview : undefined;
-  const headlineReview = ticket?.version === 2 && ticket.protocol === 'dual-panel-headline-v3';
+  const headlineReview = headlineReviewProtocol(ticket);
   const recommended = ticket
     ? ticket.draft.directions.find((d) => d.id === ticket.recommendation.directionId)?.name
     : rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
   const directions = p.directions.map((name, i) => {
     const signed = ticket?.draft.directions.find((entry) => entry.name === name);
     const copy = signed ?? publishedDirections?.find((entry) => entry.name === name);
-    const fields = (directionBody(sections, name, i)?.lines || []).map(rowOf);
-    const main = copy?.main ?? fields.find((r) => r && /^(主文案?|主标题|广告语|标语|口号|主题文案|slogan)$/i.test(r.label))?.value;
+    const main = copy?.main ?? headlineFromSections(sections, name, i);
     return { name, main, signed };
   });
   const current = directions.find((d) => d.name === browsing)

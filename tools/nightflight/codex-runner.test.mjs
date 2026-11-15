@@ -51,31 +51,42 @@ function copyFixture(input, action) {
   }
   if (['FIRST','RECHECK'].includes(step)) {
     if (step === 'FIRST' && (!packet.anonymousRead || !input.includes(source) || input.includes('盲测污染哨兵'))) throw Error('评分未取得封存首读与依据');
+    if (action==='copy-observe-only') return {items:packet.draft.directions.map(d=>({
+      directionId:d.id,decision:'hold',reason:'对复述有保留',hardRejects:['建议另测记忆'],blockers:['场景印象待核'],
+      scores:packet.criteriaByDirection[d.id].slice(0,{copy:0,brand:1,user:2,comms:3}[packet.role]).map((dimension,i)=>({dimension,score:i===0?null:3,evidence:d.main,
+        reason:'属于本岗观察，留给总监核对原句',scope:'本组标题'})),
+    }))};
     return {items:packet.draft.directions.map((d) => {
-      const low = action !== 'copy-clean' && d.id === 'B' && packet.role === 'user' && (step === 'FIRST' || action === 'copy-blocked' || action==='copy-polish-recheck' && !packet.priorAdjudication);
+      const low = action !== 'copy-clean' && d.id === 'B' && (packet.role === 'user' || action==='copy' && packet.role==='brand') && (step === 'FIRST' || action === 'copy-blocked' || action==='copy-polish-recheck' && !packet.priorAdjudication);
       return {directionId:d.id,decision:low?'revise':'pass',reason:'本案说明'+d.main,
-        hardRejects:[],blockers:low?['需澄清用途']:[], scores:packet.dimensions.map((dimension) => ({
-          dimension,score:low && dimension==='直接理解'?3:4,evidence:action==='copy-meta-evidence'?source:d.main,reason:'据同版主文可以判断',scope:'本组文字概念',
+        hardRejects:[],blockers:low?['需澄清用途']:[], scores:packet.criteriaByDirection[d.id].map((dimension) => ({
+          dimension,score:low && dimension==='单句读得懂，念得顺'?3:4,evidence:action==='copy-meta-evidence'?source:d.main,reason:'据同版主文可以判断',scope:'本组文字概念',
         }))};
     })};
   }
   if (step === 'CHALLENGE') {
     if (!packet.vote || !packet.blindRead) throw Error('对应对抗缺原票或首读');
-    const dimension=packet.vote.items[0].scores[0].dimension;
+    const dimension=packet.vote.items[0].scores[0]?.dimension || packet.criteriaByDirection.A[0];
     const coverage=packet.blindRead.items.map(read=>({
       readId:read.readId,directionId:read.directionId,dimension,reason:'核对本案原评范围',
     }));
     if (action === 'copy-missing-coverage' && packet.role === 'brand') coverage.pop();
     const b=packet.draft.directions.find(d=>d.id==='B');
     const initial=b.main==='晨雾原稿主文';
+    if (action==='copy-observe-only' && packet.role==='copy') return {coverage,items:[{
+      directionId:'B',dimension:'单句读得懂，念得顺',objection:'原票未查复述是否受影响',evidence:b.main,action:'记录复述观察',blocking:false,
+    }]};
     const fresh=action.startsWith('copy-new-challenge') && b.main==='晨雾修改后主文';
     return {coverage,
       items:action !== 'copy-clean' && packet.role === 'user' && (initial || fresh) ? [{
-        directionId:'B',dimension:'直接理解',objection:fresh?'新稿新增读者歧义':'核查原判引用',
+        directionId:'B',dimension:'单句读得懂，念得顺',objection:fresh?'新稿新增读者歧义':'核查原判引用',
         evidence:b.main,action:'复核读者理解',blocking:true,
       }]:[]};
   }
-  if (step === 'PLAN') return {rulings:packet.issues.map(issue=>({challengeId:issue.id,verdict:'accepted_now',action:action==='copy-clarify' || (action==='copy-polish-recheck' && packet.initialDraft.directions[1].main!=='晨雾原稿主文') || (action==='copy-mixed' && issue.origin==='score') ? 'recheck':'revise',reason:'按原句核对使用情境'}))};
+  if (step==='PLAN' && action==='copy-observe-only') return {rulings:packet.issues.map(x=>({
+    challengeId:x.id,criterion:'推荐观察',problem:'复述时是否优先想起品牌',verdict:'accepted_later',action:'none',reason:'本案已完成职责，推荐另论',
+  }))};
+  if (step === 'PLAN') return {rulings:packet.issues.map(issue=>({challengeId:issue.id,criterion:'单句读得懂，念得顺',problem:'原句用途指代不清',verdict:'accepted_now',action:action==='copy-clarify' || (action==='copy-polish-recheck' && packet.initialDraft.directions[1].main!=='晨雾原稿主文') || (action==='copy-mixed' && issue.origin==='score') ? 'recheck':'revise',reason:'按原句核对使用情境'}))};
   if (step === 'REPAIR_PLAN') {
     if (action==='copy-polish-tool-error') throw Error('模拟工具中断');
     return {baseHash:packet.baseHash,actions:packet.failures.map(f=>{
@@ -89,9 +100,13 @@ function copyFixture(input, action) {
   const distinct=action!=='copy-similar' && action!=='copy-budget' &&
     (!followupCase || packet.draft?.directions[1].main.includes('再澄清'));
   if (step === 'ADJUDICATE') return {ready:true,reason:'本地概念阶段完成',
-    recommendation:{directionId:'B',reason:'说明清楚',tradeoff:'适用范围有限'},
+    recommendation:{directionId:'B',reason:'说明清楚',tradeoff:'适用范围有限',memory:'记忆点',retell:'复述方式',scene:'适用场景'},
     rulings:packet.requiredRulingIds.map(challengeId=>({challengeId,verdict:'resolved',reason:'已按原始裁定核验'})),
-    single:directions.map(d=>({directionId:d.id,ready:true,reason:'主标题能独立阅读'})),
+    single:packet.draft.directions.map(d=>{
+      const blocked=action==='copy-blocked' && d.id==='B';
+      return {directionId:d.id,ready:!blocked,reason:blocked?'读者难以辨认对象':'主标题能独立阅读',
+        checks:packet.criteriaByDirection[d.id].map(criterion=>({criterion,passed:!blocked || criterion!=='单句读得懂，念得顺',evidence:d.main,reason:'根据原句核验'}))};
+    }),
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:pair==='AC' || distinct,reason:'逐对比对表达和使用情境'})),
     set:{ready:distinct,reason:'三案组内比较结论'}};
   throw Error('未知文案测试步骤');
@@ -173,7 +188,7 @@ test('copy releases three reviewed directions only after blind votes, revision, 
   assert.deepEqual(result.directions,['山风','晨雾','旧街']);
   assert.equal((await readFile(join(f.dir,result.artifacts[0].name),'utf8')).trim(),
     '## 山风\n主标题：山风原稿主文\n\n## 晨雾\n主标题：晨雾修改后主文\n\n## 旧街\n主标题：旧街原稿主文');
-  assert.equal(result.copyReview.protocol,'dual-panel-headline-v3');
+  assert.equal(result.copyReview.protocol,'dual-panel-headline-v4');
   assert.equal(result.copyReview.status,'ready');
   assert.equal(result.copyReview.recommendation.directionId,'B');
   assert.equal(result.copyReview.initialDraft.directions[1].main,'晨雾原稿主文');
@@ -181,8 +196,10 @@ test('copy releases three reviewed directions only after blind votes, revision, 
   for (const [votes,expected] of [[result.copyReview.firstVotes,3],[result.copyReview.finalVotes,4]]) {
     assert.deepEqual(new Set(votes.map(v=>v.role)),new Set(['copy','brand','user','comms']));
     const item=votes.find(v=>v.role==='user').items.find(d=>d.directionId==='B');
-    assert.equal(item.scores.find(s=>s.dimension==='直接理解').score,expected);
+    assert.equal(item.scores.find(s=>s.dimension==='单句读得懂，念得顺').score,expected);
   }
+  assert.equal(result.copyReview.decisionPlan.editRequests.length,1);
+  assert.deepEqual(new Set(result.copyReview.decisionPlan.editRequests[0].observations.map(o=>o.role)),new Set(['brand','user']));
   const runs=await readdir(join(f.dir,'.codex-runs'));
   const receipts=await Promise.all(runs.map(async(id)=>JSON.parse(await readFile(join(f.dir,'.codex-runs',id,'receipt.json'),'utf8'))));
   assert.equal(receipts.length,result.copyReview.calls.length);
@@ -197,6 +214,19 @@ test('copy releases three reviewed directions only after blind votes, revision, 
   assert.deepEqual(coverage.map(c=>c.independentRead),brandReads);
   assert.deepEqual(result.copyReview.adjudication.pairs.map(p=>p.pair).sort(),['AB','AC','BC']);
   assert.ok(receipts.every(r=>r.exitCode===0));
+});
+test('copy releases four approved criteria despite low independent scores and recommendation concerns',async t=>{
+  const f=await fixture(t,'copy-observe-only');
+  const {copyReview:r}=await f.run('copy');
+  assert.ok(r.finalVotes.every(v=>v.items.every(i=>i.decision==='hold' && i.scores.every(s=>s.score===null || s.score===3))));
+  assert.deepEqual(r.finalVotes.map(v=>v.items[0].scores.length),[0,1,2,3]);
+  assert.equal(r.challenges.find(c=>c.role==='copy').items.length,1);
+  assert.ok(r.challenges.find(c=>c.role==='copy').coverage.every(c=>c.originalObserved===false && c.originalEvidence===null));
+  assert.ok(!r.calls.some(c=>['COPY_REVISE','COPY_RECHECK'].includes(c.phase)));
+  for (const [i,duty] of ['用户氛围或情绪放大','稳健延续','品牌或产品特征放大'].entries()) {
+    assert.deepEqual(r.adjudication.single[i].checks.map(c=>c.criterion),['事实准确，归属清楚','单句读得懂，念得顺','能接上本案策略',duty]);
+    assert.ok(r.adjudication.single[i].ready);
+  }
 });
 test('copy rejects factual background as quoted headline evidence',async t=>{
   const f=await fixture(t,'copy-meta-evidence');
@@ -222,7 +252,7 @@ test('copy corrects a mistaken vote on the identical draft through the original 
   assert.equal(r.panelHistory.length,1);
   assert.ok(!r.calls.some(c=>c.phase==='COPY_REVISE'));
   assert.deepEqual(r.calls.filter(c=>c.phase==='COPY_RECHECK').map(c=>c.role),['user']);
-  const userScore = votes=>votes.find(v=>v.role==='user').items.find(d=>d.directionId==='B').scores.find(s=>s.dimension==='直接理解').score;
+  const userScore = votes=>votes.find(v=>v.role==='user').items.find(d=>d.directionId==='B').scores.find(s=>s.dimension==='单句读得懂，念得顺').score;
   assert.equal(userScore(r.firstVotes),3);
   assert.equal(userScore(r.finalVotes),4);
 });
@@ -242,9 +272,9 @@ test('copy cannot release individually ready directions when the set lacks diffe
   await assert.rejects(f.run('copy'),/整组|差异|裁定/);
   assert.ok(!(await readdir(f.dir)).some(n=>n.endsWith('.md')));
 });
-test('copy stays unpublished when final review still contains a blocking score',async t=>{
+test('copy stays unpublished when a director criterion fails',async t=>{
   const f=await fixture(t,'copy-blocked');
-  await assert.rejects(f.run('copy'), /文案复核未通过/);
+  await assert.rejects(f.run('copy'), /单案待改|文案复核未通过/);
   assert.ok(!(await readdir(f.dir)).some(n=>n.endsWith('.md')));
 });
 

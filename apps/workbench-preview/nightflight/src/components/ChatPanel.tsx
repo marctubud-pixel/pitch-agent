@@ -8,6 +8,7 @@ import {
   type Project,
   type Summary,
 } from '../live';
+import { headlineFromSections, sectionsOf } from './stageText';
 import { BotFigure } from './Bot';
 import { AttachButton, AttachmentChips } from './Attachments';
 export type Act = (kind: Action, text: string, files?: File[]) => Promise<boolean>;
@@ -22,6 +23,10 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
       </div>
     );
   if (p.status !== 'waiting' || p.stage === 'research') return null;
+  const copyText = p.stage === 'copy' ? sectionsOf(p.artifacts.filter((a) => a.stage === 'copy' && a.kind === 'text')
+    .map((a) => a.text).filter(Boolean).join('\n\n')) : [];
+  const reviewed = p.copyReview?.status === 'ready' ? p.copyReview.draft.directions : [];
+
   return (
     <div className="msg-body">
       <p className="msg-flag">需要你决定</p>
@@ -39,9 +44,11 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
       ) : (
         <div className="options">
           {p.directions.map((d, i) => (
-            <div className="option" key={i}>
+            <div className={p.stage === 'copy' ? 'option copy-choice' : 'option'} key={i}>
               <div className="option-text">
-                <strong>{d}</strong>
+                <strong>{p.stage === 'copy'
+                  ? reviewed.find((entry) => entry.name === d)?.main || headlineFromSections(copyText, d, i) || '主标题待补'
+                  : d}</strong>
               </div>
               <button className="btn btn-sm" disabled={busy} onClick={() => act('choice', d)}>
                 选这个
