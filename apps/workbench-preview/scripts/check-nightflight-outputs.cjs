@@ -71,7 +71,7 @@ const stages = [
   ['关键发现'],
   ['核心策略'],
   ['三个创意方向'],
-  ['草图与主视觉'],
+  ['方向参考', '草图与主视觉', '样机'],
   ['提案预览'],
   ['本版提案', '终审记录', '你的反馈'],
 ];
@@ -119,7 +119,7 @@ async function main() {
     for (const [i, headings] of stages.entries()) {
       if (selected >= 0 && i !== selected) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
-      const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
+      const visible = await page.locator(i === 4 ? '.vg-section > h3' : '.sheet-doc h2:visible').allTextContents();
       assert.deepEqual(
         visible.map((s, n) => (s.startsWith(headings[n]) ? headings[n] : s)),
         headings,
@@ -154,6 +154,36 @@ async function main() {
         assert.doesNotMatch(await page.locator('.sheet-doc').textContent(), /副句|另一种写法|第一句|独立场景|品牌读得清|原始文件与下载/);
       }
       if (i === 5) await page.locator('.deck-stage').waitFor();
+    }
+    if (process.argv.includes('--visual')) {
+      assert.equal(await page.locator('.vg-references img').count(), 0);
+      assert.match(await page.locator('.vg-pair img').getAttribute('src'), /visual-1-abc/);
+      await page.getByRole('button', {name:'明月', exact:true}).click();
+      assert.equal(await page.locator('.vg-pair img, .vg-mockup img').count(), 0);
+      assert.deepEqual(actions, []);
+      await page.goto(origin + '/nightflight/#/reference/qingyu/visual?dir=v2');
+      await page.locator('[data-visual-direction="v2"]').waitFor();
+      assert.equal(await page.locator('.vg-reference-row').count(), 3);
+      for (const id of ['v2', 'n7', 'k4']) {
+        const row = page.locator('[data-reference-direction="' + id + '"]');
+        assert.equal(await row.locator('.vg-references img').count(), 3);
+        await row.locator('.vg-direction').click();
+        const pair = page.locator('[data-visual-direction="' + id + '"]');
+        await pair.waitFor();
+        assert.ok(page.url().endsWith('dir=' + id));
+        await pair.getByRole('group').getByRole('button').nth(2).click();
+        assert.match(await pair.locator('.vg-zoom img').first().getAttribute('src'), new RegExp(id + '-sketch-3'));
+        assert.match(await pair.locator('.vg-zoom img').last().getAttribute('src'), new RegExp(id + '-main'));
+        assert.match(await page.locator('.vg-mockup img').getAttribute('src'), new RegExp(id + '-mockups'));
+        assert.equal(await page.locator('.vg-details').evaluate(el => el.open), false);
+        await page.locator('.visual-image-gallery img').evaluateAll(async imgs => {
+          await Promise.all(imgs.map(img => img.decode()));
+        });
+        const zoom = page.locator('.vg-mockup .vg-zoom');
+        await zoom.click();
+        await page.getByRole('dialog').getByRole('button', { name:'关闭' }).click();
+        assert.equal(await zoom.evaluate(el => el === document.activeElement), true);
+      }
     }
     if (process.argv.includes('--themes')) {
       project.stage = 'copy';

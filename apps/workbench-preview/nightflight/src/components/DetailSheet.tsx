@@ -194,7 +194,7 @@ export function DetailSheet({
             <h1>{stage.name}</h1>
           </header>
           {id === 'visual' || id === 'layout' || id === 'final' ? (
-            <MediaStageOutput p={p} id={id} act={act} busy={busy} />
+            <MediaStageOutput p={p} id={id} name={name} act={act} busy={busy} />
           ) : (
             <TextStageOutput p={p} id={id} busy={busy} onChoose={(value) => act('choice', value)} />
           )}

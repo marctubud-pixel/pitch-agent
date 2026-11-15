@@ -28,6 +28,8 @@ const navigate = (route: string) => {
 };
 const QingyuCopyReading = lazy(() => import('./components/QingyuCopyReading'));
 
+const QingyuVisualReading = lazy(() => import('./components/QingyuVisualReading'));
+
 export function App() {
   const [route, setRoute] = useState(hash),
     [projects, list] = useState<Summary[]>([]),
@@ -203,6 +205,11 @@ export function App() {
     kind: 'info' as const,
     simulated: false,
   }));
+  if (routePath === '/reference/qingyu/visual') return (
+    <Suspense fallback={<p className="pending">正在读取青屿视觉稿…</p>}>
+      <QingyuVisualReading directionId={new URLSearchParams(query).get('dir')} />
+    </Suspense>
+  );
   if (routePath === '/reference/qingyu/copy') return (
     <Suspense fallback={<p className="pending">正在读取青屿文案…</p>}>
       <QingyuCopyReading edition={new URLSearchParams(query).get('edition')} />

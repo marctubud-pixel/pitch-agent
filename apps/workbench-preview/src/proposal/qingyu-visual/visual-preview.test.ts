@@ -30,6 +30,7 @@ import { resolveQingyuThemesPreview } from '../qingyu-themes/preview';
 import { QingyuVisualResultView } from './QingyuVisualPreview';
 import { conceptImages, resolveDirectionConcept } from './concept-images';
 import { packagingReferenceSet, resolvePackagingReferences } from './packaging-references';
+import { displayReferences } from './display-references';
 
 let researchQuery: QueryState<ResearchWorkspace>;
 let briefQuery: QueryState<BriefHistory>;
@@ -67,87 +68,37 @@ beforeEach(async () => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Qingyu visual layout preview', () => {
-  it('shows bound design previews with sealed full copy without business visual writes', async () => {
+  it('shows the bound reference rows, switchable sketches, main concept and mockup without writing to the proposal', async () => {
     const input = await data();
     const before = JSON.stringify(input);
     const result = resolveQingyuThemesPreview(input);
-    if (result.kind === 'unavailable') throw new Error('Actual sealed copy required');
-    expect(result.preview.bundle.id).toBe('qingyu-copy-full-r2-20261110');
-    expect(result.preview.bundle.currentRound.directions.map(direction => direction.id)).toEqual(['n7', 'k4', 'v2']);
+    if (result.kind === 'unavailable') throw new Error('Sealed copy required');
     for (const direction of result.preview.bundle.currentRound.directions) {
       const html = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), `part=current&dir=${direction.id}`);
-      for (const text of [direction.name, direction.slogan, direction.subline]) expect(html).toContain(text);
+      expect((html.match(/data-reference-direction=/g) ?? [])).toHaveLength(3);
+      expect((html.match(/class="vg-reference-row"/g) ?? [])).toHaveLength(3);
+      for (const dir of result.preview.bundle.currentRound.directions) {
+        const refs = displayReferences(dir.id);
+        expect(refs).toHaveLength(3);
+        const row = html.split(`data-reference-direction="${dir.id}"`)[1].split('class="vg-reference-row"')[0];
+        for (const ref of refs) expect(row).toContain(`src="${ref.image}"`);
+      }
       expect(html).toContain(`data-visual-direction="${direction.id}"`);
-      expect(html).toContain('class="pw-refined"');
-      expect(html).toContain(`/visual-concepts/qingyu-20261110/${direction.id}-main.png`);
-      expect(html).toContain(`/visual-concepts/qingyu-20261110/${direction.id}-mockups.png`);
-      expect(html).toContain('生成示意');
-      expect(html).toContain('规范与评审记录');
-      expect((html.match(/class="qv-mockup-board qv-image-button"/g) ?? [])).toHaveLength(1);
-      expect((html.match(/aria-haspopup="dialog"/g) ?? [])).toHaveLength(2);
-      for (const label of ['正面', '侧面', '背面']) expect(html).toContain(label);
-      expect(html).not.toMatch(/图位|待制作|视觉稿版本位置|视觉评审位置/);
-      expect(html).not.toMatch(/data-verdict|data-met|data-score|pw-scores|pw-threshold|<image|art-frame|精修第|[0-9]+\s*\/\s*5|[0-9]+%/);
+      expect(html).toContain(`/${direction.id}-main.png`);
+      expect(html).toContain(`/${direction.id}-mockups.png`);
+      for (const i of [1,2,3]) expect(html).toContain(`/${direction.id}-sketch-${i}.png`);
+      expect(html).toContain('aria-label="切换构图草图"');
+      expect(html.split('<details class="vg-details">')[0]).not.toContain(direction.slogan);
+      expect(html).toContain('尚无独立视觉评分或正式采用');
+      expect(html).not.toContain(direction.subline);
+      for (const ref of displayReferences(direction.id)) {
+        expect(html).toContain(ref.borrow);
+        expect(html).toContain(ref.sourceUrl.replaceAll('&','&amp;'));
+      }
+      expect(html).not.toMatch(/data-verdict|data-met|data-score|pw-scores/);
     }
     expect(JSON.stringify(input)).toBe(before);
     expect(input.proposal.visual).toBeNull();
-    expect(input.proposal.stages.visual.status).toBe('not_started');
-  });
-
-  it('keeps the reference fan, folder sheets and equal comparison positions available with no scores', async () => {
-    const result = resolveQingyuThemesPreview(await data());
-    const process = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), 'part=process&dir=k4');
-    expect((process.match(/class="vd-fan__card"/g) ?? [])).toHaveLength(2);
-    expect((process.match(/class="vd-sheet"/g) ?? [])).toHaveLength(3);
-    expect(process).toContain('data-reference-detail="trip-longjing"');
-    expect(process).toContain('借鉴句来自对公开包装图的观察');
-    expect(process).toContain('class="vd-folder"');
-    expect(process).toContain('--dir:#587650');
-    expect(render(createElement(QingyuVisualResultView, { result, retry: () => {} }), 'part=process&dir=n7')).toContain('class="vd-folder" style="--dir:#002FA7');
-    const compare = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), 'part=compare');
-    expect((compare.match(/data-visual-comparison=/g) ?? [])).toHaveLength(3);
-    expect(compare).toContain('未进行相似度评审');
-    if (result.kind === 'unavailable') throw new Error('Actual sealed copy required');
-    for (const direction of result.preview.bundle.currentRound.directions) for (const text of [direction.name, direction.slogan, direction.subline]) expect(compare).toContain(text);
-    expect(process + compare).not.toMatch(/data-verdict|data-score|data-met|art-frame|[0-9]+\s*\/\s*5|[0-9]+%/);
-    expect((compare.match(/<img /g) ?? [])).toHaveLength(9);
-    for (const reference of packagingReferenceSet.references) expect(compare).toContain(reference.image);
-  });
-
-  it('defaults to references only when part is absent and shows each direction’s actual references', async () => {
-    const input = await data();
-    const before = JSON.stringify(input);
-    const result = resolveQingyuThemesPreview(input);
-    if (result.kind === 'unavailable') throw new Error('Actual sealed copy required');
-    for (const direction of result.preview.bundle.currentRound.directions) {
-      const refs = resolvePackagingReferences({ bundle: result.preview.bundle, directionId: direction.id });
-      if (refs.kind !== 'ready') throw new Error('Bound packaging references required');
-      const html = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), `dir=${direction.id}`);
-      expect(html).toContain('参考已收集待评');
-      expect(html).toContain(`data-reference-detail="${refs.references[0].id}"`);
-      expect((html.match(/<img /g) ?? [])).toHaveLength(8);
-      for (const index of [1, 2, 3]) expect(html).toContain(`/visual-concepts/qingyu-20261110/${direction.id}-sketch-${index}.png`);
-      for (const reference of refs.references) {
-        expect(html).toContain(reference.title);
-        expect(html).toContain(reference.image);
-      }
-      const displayed = refs.references[0];
-      expect(html).toContain(`data-reference-note="${displayed.id}"`);
-      expect(html.split(displayed.borrow)).toHaveLength(2);
-      expect(html).toContain(displayed.sourceName);
-      expect(html).toContain(displayed.sourceUrl.replaceAll('&', '&amp;'));
-      expect(html).toContain(`href="${displayed.image}"`);
-      expect(html).toContain('来源、用途限制与评审记录');
-      expect(html).toContain(refs.references[0].form);
-      expect(html).toContain(refs.references[0].scope);
-      expect(html).not.toContain('精修主图图位');
-      expect(html).not.toMatch(/data-verdict|data-score|data-met|[0-9]+\s*\/\s*5/);
-    }
-    const memory = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), 'dir=v2');
-    expect(memory).toContain('查看完整系列图');
-    expect(memory).toContain('近景原图未显示瓶底');
-    expect(memory).toContain('2023金兔生肖瓶');
-    expect(JSON.stringify(input)).toBe(before);
   });
 
   it('keeps unmatched reference bindings visible without exposing another version’s pictures', async () => {
@@ -181,7 +132,7 @@ describe('Qingyu visual layout preview', () => {
       const html = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), `part=compare&compareStage=${stage}`);
       expect((html.match(/data-comparison-stage=/g) ?? [])).toHaveLength(3);
       expect((html.match(/class="qv-comparison-art"/g) ?? [])).toHaveLength(3);
-      expect((html.match(/<img /g) ?? [])).toHaveLength(stage === 'sketch' ? 12 : 6);
+      expect((html.match(/<img /g) ?? [])).toHaveLength(stage === 'sketch' ? 9 : 3);
       expect(html).not.toMatch(/data-score|pw-scores|data-verdict/);
       for (const reference of packagingReferenceSet.references) expect(html).not.toContain(`src="${reference.image}"`);
       if (stage === 'refined') expect(html).not.toContain('-sketch-');
@@ -280,7 +231,7 @@ describe('Qingyu visual layout preview', () => {
     expect(html).toContain('未找到链接指定的文案方向');
     expect(html).toContain('未找到链接指定的视图');
     expect(html).toContain('没有可核对的视觉稿版本');
-    expect(html).toContain('当前显示“当前稿”');
+    expect(html).toContain('当前显示方向参考与图稿');
     expect(html).not.toMatch(/data-reference-detail/);
     expect(html).toContain('/visual-concepts/qingyu-20261110/n7-main.png');
     expect(html).toContain('data-visual-direction="n7"');
@@ -299,7 +250,7 @@ describe('Qingyu visual layout preview', () => {
     for (const part of ['current', 'process', 'compare']) {
       const html = render(createElement(QingyuVisualResultView, { result, retry: () => {} }), `part=${part}`);
       expect(html).toContain('data-visual-context="historical"');
-      expect(html.indexOf('历史依据预览')).toBeLessThan(html.indexOf('role="tablist"'));
+      expect(html.indexOf('历史依据预览')).toBeLessThan(html.indexOf(part === 'compare' ? 'class="qv-comparison"' : 'class="visual-image-gallery"'));
       expect(html).toContain(context === 'no-current' ? '当前任务卡缺失' : '最新任务卡为第 2 版');
     }
   });

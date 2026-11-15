@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { isDeckPreview, safeURL, type Artifact, type Project } from '../live';
 import type { Act } from './ChatPanel';
+import { VisualImageGallery, type GalleryDirection } from '../../../src/proposal/qingyu-visual/VisualImageGallery';
 import { DeckPreview } from './DeckPreview';
 
 type MediaStage = 'visual' | 'layout' | 'final';
@@ -21,61 +22,36 @@ function visualRecord(p: Project, image: Artifact) {
   return undefined;
 }
 
-function VisualOutput({ p }: { p: Project }) {
-  const refs = (p.attachments || []).filter((file) => /\.(png|jpe?g)$/i.test(file.name));
-  const images = p.artifacts.filter((file) => file.stage === 'visual' && file.kind === 'image');
-  const report = p.artifacts.find((file) => file.stage === 'visual' && file.kind === 'text');
-  return (
-    <>
-      {refs.length > 0 && (
-        <section className="block">
-          <h2>视觉参考</h2>
-          <div className="ref-row">
-            <div className="ref-head">
-              <h3>项目参考图</h3>
-            </div>
-            {refs.map((ref) => (
-              <a href={safeURL(ref.url)} key={ref.url} download={ref.name}>
-                <img className="ref-art media-reference" src={safeURL(ref.url)} alt={ref.name} />
-                <span className="hint">{ref.name}</span>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-      <section className="block" data-artifact={report?.name}>
-        <h2>草图与主视觉</h2>
-        {images.length ? (
-          <div className="kv-row media-concepts">
-            {images.map((image) => {
-              const record = visualRecord(p, image);
-              const caption = record?.title || visualCaption(p, image);
-              return (
-                <figure key={image.url} data-artifact={image.name}>
-                  <a href={safeURL(image.url)} target="_blank" rel="noopener noreferrer">
-                    <img
-                      loading="lazy"
-                      src={safeURL(image.url)}
-                      alt={caption + ' · 视觉概念稿'}
-                    />
-                  </a>
-                  <figcaption>{caption} · 视觉概念稿</figcaption>
-                  {record?.description && (
-                    <details className="research-original">
-                      <summary>图稿说明</summary>
-                      <p>{record.description}</p>
-                    </details>
-                  )}
-                </figure>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="pending">草图与主视觉稿尚未交回。</p>
-        )}
-      </section>
-    </>
-  );
+function VisualOutput({ p, name }: { p: Project; name?: string }) {
+  const images = p.artifacts.filter(file => file.stage === 'visual' && file.kind === 'image');
+  const refs = (p.attachments || []).filter(file => /\.(png|jpe?g|webp)$/i.test(file.name) && safeURL(file.url));
+  const reports = images.map(file => ({ file, record: visualRecord(p, file), title: visualCaption(p, file) }));
+  const initial = reports.find(item => item.file.name === name)?.title;
+  const [selected, setSelected] = useState(initial || p.choice || p.directions[0]);
+  const directions: GalleryDirection[] = [...new Set(p.directions)].map(title => {
+    const current = reports.find(item => item.title === title);
+    const src = current && safeURL(current.file.url);
+    return { id: title, name: title, references: [], sketches: [],
+      main: src ? { src, title: title + ' · 概念稿', alt: title + '的视觉概念稿' } : undefined };
+  });
+  const active = directions.find(item => item.id === selected) ?? directions[0];
+  const current = reports.find(item => item.title === active?.id);
+  const other = reports.filter(item => !directions.some(direction => direction.main?.src === safeURL(item.file.url)));
+  return <>
+    {!!directions.length && active && <div data-artifact={current?.file.name}>
+      <VisualImageGallery directions={directions} currentId={active.id} onDirectionChange={setSelected}
+        details={current?.record?.description && <p>{current.record.description}</p>} />
+    </div>}
+    {!active && !other.length && <p className="pending">草图与主视觉稿尚未交回。</p>}
+    {!!other.length && <section className="block"><h2>其他已存图稿</h2>
+      {other.map(({ file, title }) => <a key={file.url} href={safeURL(file.url)} target="_blank" rel="noopener noreferrer">{title}</a>)}
+    </section>}
+    {!!refs.length && <details className="research-original"><summary>项目参考图（未分方向）</summary>
+      <div className="ref-row">{refs.map(ref => <a href={safeURL(ref.url)} key={ref.url} target="_blank" rel="noopener noreferrer">
+        <img className="ref-art media-reference" src={safeURL(ref.url)} alt={ref.name} /><span>{ref.name}</span>
+      </a>)}</div>
+    </details>}
+  </>;
 }
 
 function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
@@ -120,15 +96,17 @@ function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
 export function MediaStageOutput({
   p,
   id,
+  name,
   act,
   busy,
 }: {
   p: Project;
   id: MediaStage;
+  name?: string;
   act: Act;
   busy: boolean;
 }) {
-  if (id === 'visual') return <VisualOutput p={p} />;
+  if (id === 'visual') return <VisualOutput key={JSON.stringify([p.id, name])} p={p} name={name} />;
   const deck = p.artifacts.find(isDeckPreview);
   const pptx = p.artifacts.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
   if (id === 'layout') {
