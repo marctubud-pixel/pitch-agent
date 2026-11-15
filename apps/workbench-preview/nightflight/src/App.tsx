@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { LogBar } from './components/LogBar';
 import { TopBar } from './components/TopBar';
 import { Home } from './components/Home';
@@ -26,6 +26,8 @@ const hash = () => location.hash.slice(1);
 const navigate = (route: string) => {
   location.hash = route;
 };
+const QingyuCopyReading = lazy(() => import('./components/QingyuCopyReading'));
+
 export function App() {
   const [route, setRoute] = useState(hash),
     [projects, list] = useState<Summary[]>([]),
@@ -201,6 +203,11 @@ export function App() {
     kind: 'info' as const,
     simulated: false,
   }));
+  if (routePath === '/reference/qingyu/copy') return (
+    <Suspense fallback={<p className="pending">正在读取青屿文案…</p>}>
+      <QingyuCopyReading />
+    </Suspense>
+  );
   if (routePath === '/reference/qingyu/strategy') return <QingyuStrategyReading />;
   return (
     <div className={'app phase-' + (workspace ? 'workspace' : start ? 'start' : mode ? 'mode' : 'home')}>

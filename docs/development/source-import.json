@@ -2251,7 +2251,7 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "264c7ceec17bbac0cce9111e5c542ece943160b93c3e4c17291c6ee9d6411d08",
+      "sha256": "322f8bbd3428a026c495dadb35875e84d3c128849db15621181503c26f104304",
       "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作；支持直达指定项目的简报详情"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
@@ -2303,7 +2303,7 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "4e152967bddc07df1f06b7e08bf3516545e6c9807f1ffda48688f9e00a969bb4",
+      "sha256": "b1359e41582c90ce5d05a44037e0f124da802d331a74e9da4f12580aebe94e04",
       "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {

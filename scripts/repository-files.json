@@ -212,6 +212,7 @@
     "apps/workbench-preview/nightflight/src/components/Library.tsx",
     "apps/workbench-preview/nightflight/src/components/LogBar.tsx",
     "apps/workbench-preview/nightflight/src/components/MediaStageOutput.tsx",
+    "apps/workbench-preview/nightflight/src/components/QingyuCopyReading.tsx",
     "apps/workbench-preview/nightflight/src/components/QingyuStrategyReading.tsx",
     "apps/workbench-preview/nightflight/src/components/StartScreen.tsx",
     "apps/workbench-preview/nightflight/src/components/StrategyOutput.tsx",

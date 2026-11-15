@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Project } from '../live';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
-import { directionBody, rowOf, sectionsOf, type Row } from './stageText';
+import { directionBody, firstStatement, rowOf, sectionsOf, type Row } from './stageText';
 
 type TextStage = 'brief' | 'research' | 'strategy' | 'copy';
 
@@ -112,82 +112,81 @@ function Research({ p, name }: { p: Project; name?: string }) {
   );
 }
 
-function Copy({
+export function CopyOutput({
   name,
   p,
   text,
   onChoose,
   busy,
 }: {
-  p: Project;
+  p: Pick<Project, 'id' | 'directions' | 'mode' | 'stage' | 'status' | 'artifacts' | 'choice'>;
   text: string;
   name?: string;
   onChoose?: (name: string) => void;
   busy?: boolean;
 }) {
+  const [browsing, browse] = useState('');
   if (!p.directions.length)
     return <Pending>{text ? '已有文案原稿，尚未登记候选方向。' : '尚无创意方向。'}</Pending>;
   const sections = sectionsOf(text);
+  const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
+  const recommended = rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
+  const strategyText = p.artifacts.findLast((a) => a.stage === 'strategy' && a.kind === 'text' && a.text)?.text;
+  const focus = sectionsOf(strategyText || '').find((s) => /策略发力点|核心策略|策略主张/.test(s.heading));
+  const shared = rows.find((r) => r.label === '共同策略')?.value
+    || firstStatement(focus?.lines || []).replace(/^(?:发力点|核心策略|优先放大)[：:]\s*/, '');
   const directions = p.directions.map((name, i) => {
     const body = directionBody(sections, name, i);
-    const rows = (body?.lines || []).map(rowOf).filter((r): r is Row => !!r);
-    const main = rows.find((r) => /^(主文案?|主标题|广告语|标语|口号|主题文案|slogan)$/i.test(r.label));
-    const concept = rows.find((r) => /^(主张|创意概念|概念|创意说明)$/.test(r.label));
-    const secondary = rows.find((r) => /^(副文案?|副标题|副标)$/.test(r.label));
-    const samples = rows.filter((r) => /示例|样例|短句/.test(r.label));
-    const other = rows.filter((r) => r !== main && r !== concept && r !== secondary && !samples.includes(r));
-    const notes = body?.lines.filter((line) => !rowOf(line)) || [];
-    return { name, main, concept, secondary, samples, other, notes };
+    const fields = (body?.lines || []).map(rowOf).filter((r): r is Row => !!r);
+    const value = (pattern: RegExp) => fields.find((r) => pattern.test(r.label))?.value;
+    const main = value(/^(主文案?|主标题|广告语|标语|口号|主题文案|slogan)$/i);
+    const secondary = value(/^(副文案?|副标题|副标)$/);
+    const link = value(/^(策略承接|策略依据|承接策略|策略衔接|与策略的关系)$/)
+      || value(/^(主张|创意概念|概念|创意说明)$/);
+    const scenes = fields.filter((r) => /场景文案|场景短句|场景示例|场景样例|示例|样例|短句/.test(r.label));
+    return { name, main, secondary, link, scenes };
   });
-  const chosen = directions.find((d) => d.name === p.choice);
-  const themes = chosen ? [chosen] : p.mode === 'auto' ? directions : [];
+  const current = directions.find((d) => d.name === browsing)
+    || directions.find((d) => d.name === p.choice)
+    || directions.find((d) => d.name === recommended)
+    || directions[0];
   return (
     <>
-      <section className="block" data-artifact={name}>
+      <section className="block copy-compare" data-artifact={name}>
         <h2>{directions.length === 3 ? '三个创意方向' : '创意方向'}</h2>
+        {shared && <p className="lead"><strong>共同策略　</strong>{shared.split(/(?<=[。！？])/, 1)[0]}</p>}
         <div className="dir-grid">
-          {directions.map((d, i) => (
-            <article key={d.name} className={'dir' + (d === chosen ? ' is-picked' : '')}>
+          {directions.map((d, index) => (
+            <article key={d.name} className={'dir' + (d === current ? ' is-picked' : '')}>
               <p className="mono-label">
-                方向 {String.fromCharCode(65 + i)}
-                {d === chosen && <span className="picked-tag">已选定</span>}
+                方向 {String.fromCharCode(65 + index)}
+                {d.name === recommended && ' · 原稿推荐'}
+                {d.name === p.choice && ' · 已选定'}
               </p>
-              <h3>{d.name}</h3>
-              {d.main && <p className="dir-line">{d.main.value}</p>}
-              {d.concept && <p>{d.concept.value}</p>}
-              {(d.other.length > 0 || d.notes.length > 0 ||
-                (!themes.includes(d) && (d.secondary || d.samples.length > 0))) && (
-                <details className="research-original">
-                  <summary>方向细节</summary>
-                  <Rows rows={d.other} mini />
-                  {!themes.includes(d) && <Rows rows={[...(d.secondary ? [d.secondary] : []), ...d.samples]} mini />}
-                  {d.notes.map((line, j) => <p key={j}>{line}</p>)}
-                </details>
-              )}
-              {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (
-                <button
-                  type="button"
-                  className="btn btn-dark"
-                  disabled={busy}
-                  onClick={() => onChoose(d.name)}
-                >
-                  选方向 {String.fromCharCode(65 + i)}
-                </button>
-              )}
+              <h3>
+                <button type="button" className="copy-browse" aria-pressed={d === current}
+                  onClick={() => browse(d.name)}>{d.name}</button>
+              </h3>
+              {d.main && <p className="dir-line">{d.main}</p>}
+              {d.link && <p>{d.link.split(/(?<=[。！？])/, 1)[0]}</p>}
             </article>
           ))}
         </div>
       </section>
-      {themes.map(
-        (d) =>
-          (d.secondary || d.samples.length > 0) && (
-            <section className="block" key={d.name}>
-              <h2>主题文案 · {d.name}</h2>
-              {d.secondary && <p className="lead">{d.secondary.value}</p>}
-              <Rows rows={d.samples} />
-            </section>
-          ),
-      )}
+      <section className="block copy-theme" key={current.name}>
+        <h2>主题文案 · {current.name}</h2>
+        <div className="two-col">
+          {current.main && <div><h3>主文案</h3><p>{current.main}</p></div>}
+          {current.secondary && <div><h3>副文案</h3><p>{current.secondary}</p></div>}
+        </div>
+        {!!current.scenes.length && <details className="research-original">
+          <summary>场景文案</summary><Rows rows={current.scenes} />
+        </details>}
+        {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (
+          <button type="button" className="btn btn-dark" disabled={busy}
+            onClick={() => onChoose(current.name)}>采用「{current.name}」</button>
+        )}
+      </section>
     </>
   );
 }
@@ -217,6 +216,6 @@ export function TextStageOutput({
     case 'strategy':
       return <StrategyOutput p={p} text={text} name={name} />;
     case 'copy':
-      return <Copy p={p} name={name} text={text} onChoose={onChoose} busy={busy} />;
+      return <CopyOutput key={JSON.stringify([p.id, files.map((f) => f.url), text])} p={p} name={name} text={text} onChoose={onChoose} busy={busy} />;
   }
 }

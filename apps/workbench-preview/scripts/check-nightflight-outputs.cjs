@@ -84,10 +84,15 @@ async function main() {
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 960 }, reducedMotion: 'reduce' });
     const errors = [];
+    const actions = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.route('**/*', async (route) => {
       const req = route.request(),
         u = new URL(req.url());
+      if (req.method() === 'POST' && u.origin === origin && u.pathname === '/api/projects/ui/action') {
+        actions.push(req.postDataJSON());
+        return route.fulfill({ json: { project } });
+      }
       if (u.origin !== origin || req.method() !== 'GET') return route.abort();
       const path = decodeURIComponent(u.pathname);
       if (path === '/api/projects') return route.fulfill({ json: { projects: [project] } });
@@ -141,6 +146,20 @@ async function main() {
       }
       if (i === 3) assert.equal(await page.locator('.dir-grid .dir').count(), 3);
       if (i === 5) await page.locator('.deck-stage').waitFor();
+    }
+    if (process.argv.includes('--themes')) {
+      project.stage = 'copy';
+      project.status = 'waiting';
+      project.choice = undefined;
+      await page.reload();
+      await page.locator('.stage-head').nth(3).click({ force: true });
+      const doc = page.locator('.sheet-doc');
+      await doc.getByRole('button', { name: '明月', exact: true }).click();
+      assert.equal(await doc.locator('.copy-theme h2').innerText(), '主题文案 · 明月');
+      assert.deepEqual(actions, []);
+      await Promise.all([page.waitForResponse((res) => res.url().endsWith('/action')),
+        doc.getByRole('button', { name: '采用「明月」' }).click()]);
+      assert.deepEqual(actions.map(({ kind, text }) => [kind, text]), [['choice', '明月']]);
     }
     if (process.argv.includes('--research')) {
       project.stage = 'research';
