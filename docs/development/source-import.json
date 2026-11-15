@@ -2287,7 +2287,7 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "8ef1c27306a719ad5067c818e14cf27f62b1f45c00e52d91b9cc1f52541e9f30",
+      "sha256": "c9e25e018dae6a986fd80b790374f060f5ebbd73a4e6cc4a7498519533ce85f6",
       "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {

@@ -37,6 +37,7 @@ export function Workspace({
     docs = p.artifacts.filter((a) => a.kind === 'text' && !isDeckPreview(a)),
     decks = p.artifacts.filter((a) => a.kind === 'pptx');
   const preview = p.artifacts.find(isDeckPreview);
+  const researchPaused = p.stage === 'research' && p.status === 'waiting' && !researchQuestion(p);
   const next =
     p.status === 'failed'
       ? '查看中断原因，确认后重新尝试。'
@@ -59,7 +60,7 @@ export function Workspace({
           bot={{
             label: projectStatus(p),
             detail: st.name,
-            state: ({ waiting: 'waiting', done: 'done', failed: 'blocked', running: 'working' } as const)[
+            state: researchPaused ? 'idle' : ({ waiting: 'waiting', done: 'done', failed: 'blocked', running: 'working' } as const)[
               p.status
             ],
           }}
@@ -67,7 +68,7 @@ export function Workspace({
         />
         <p className="mode-line">{p.mode === 'auto' ? '全自动 · SURPRISE ME' : '协作 · IDEA'}</p>
         <div className={'now-box ' + (p.status === 'failed' ? 'is-blocked' : '')}>
-          <p>{p.error || latest || '项目已建立。'}</p>
+          <p>{researchPaused ? '本轮研究暂停：现有依据不足以交给策略。无需作选择。' : p.error || latest || '项目已建立。'}</p>
           {p.status === 'running' && <span className="block-cursor" />}
         </div>
         <div className="btn-row">
