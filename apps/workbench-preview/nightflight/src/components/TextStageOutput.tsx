@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import type { CopyDuty, Project, ReviewedDirection } from '../live';
+import type { CopyDuty, Project } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
@@ -136,55 +136,24 @@ export function CopyOutput({
   busy?: boolean;
   renderReview?: (directionName: string) => ReactNode;
   recommendationLabel?: string;
-  publishedDirections?: ReviewedDirection[];
+  publishedDirections?: { name: string; main: string }[];
 }) {
   const [browsing, browse] = useState('');
   if (!p.directions.length)
     return <Pending>{text ? '已有文案原稿，尚未登记候选方向。' : '尚无创意方向。'}</Pending>;
   const sections = sectionsOf(text);
   const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
-  const ticket = p.copyReview?.version === 1 && p.copyReview.status === 'ready' ? p.copyReview : undefined;
+  const ticket = p.copyReview?.status === 'ready' ? p.copyReview : undefined;
+  const headlineReview = ticket?.version === 2 && ticket.protocol === 'dual-panel-headline-v3';
   const recommended = ticket
     ? ticket.draft.directions.find((d) => d.id === ticket.recommendation.directionId)?.name
     : rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
-  const recommendationSection = sections.find((s) => !p.directions.some((d) => s.heading.includes(d))
-    && s.lines.some((line) => {
-      const row = rowOf(line);
-      return row?.label === '推荐方向' && row.value === recommended;
-    }));
-  const recommendationNotes = (recommendationSection?.lines || []).map(rowOf)
-    .filter((r): r is Row => !!r && /^(推荐理由|推荐取舍|取舍)$/.test(r.label));
   const directions = p.directions.map((name, i) => {
     const signed = ticket?.draft.directions.find((entry) => entry.name === name);
     const copy = signed ?? publishedDirections?.find((entry) => entry.name === name);
-    const body = directionBody(sections, name, i);
-    const fields = (body?.lines || []).map(rowOf).filter((r): r is Row => !!r);
-    const value = (pattern: RegExp) => fields.find((r) => pattern.test(r.label))?.value;
-    const main = value(/^(主文案?|主标题|广告语|标语|口号|主题文案|slogan)$/i);
-    const secondary = value(/^(副文案?|副标题|副标)$/);
-    const idea = value(/^(?:创意机制|表达机制|机制|创意主张|主张|创意概念|概念|创意说明|创意切口)$/)
-      || value(/^(?:策略承接|策略依据|承接策略|策略衔接|与策略的关系)$/)
-      || main;
-    const review = fields.filter((r) => /^(推荐理由|推荐取舍|取舍|值得选|误读风险)$/.test(r.label));
-    if (name === recommended) {
-      for (const note of recommendationNotes) {
-        if (!review.some((r) => r.value === note.value)) review.push(note);
-      }
-    }
-    const scenes = new Map<string, string[]>();
-    const sceneRows = copy
-      ? copy.touchpoints.map((point) => ({ label: point.label, value: point.text }))
-      : fields.filter((row) => /场景文案|示例|样例|短句/.test(row.label));
-    for (const row of sceneRows) {
-      const label = row.label.replace(/(?:示例|样例)$/, '') || row.label;
-      const lines = scenes.get(label) || [];
-      if (!lines.includes(row.value)) lines.push(row.value);
-      scenes.set(label, lines);
-    }
-    return {
-      name, main: copy?.main ?? main, secondary: copy?.secondary ?? secondary,
-      idea: copy?.mechanism ?? idea, review, scenes, signed,
-    };
+    const fields = (directionBody(sections, name, i)?.lines || []).map(rowOf);
+    const main = copy?.main ?? fields.find((r) => r && /^(主文案?|主标题|广告语|标语|口号|主题文案|slogan)$/i.test(r.label))?.value;
+    return { name, main, signed };
   });
   const current = directions.find((d) => d.name === browsing)
     || directions.find((d) => d.name === p.choice)
@@ -198,56 +167,34 @@ export function CopyOutput({
           {directions.map((d, index) => (
             <article key={d.name} className={'dir' + (d === current ? ' is-picked' : '')}>
               <p className="mono-label">
-                {d.signed ? copyDuties[d.signed.duty] : '方向 ' + String.fromCharCode(65 + index)}
-                {d.name === recommended && ' · ' + (recommendationLabel ?? (ticket ? '推荐' : '原稿推荐'))}
+                {'方向 ' + String.fromCharCode(65 + index)}
+                {d.signed?.duty && ' · ' + copyDuties[d.signed.duty]}
+                {d.name === recommended && ' · ' + (recommendationLabel ?? (headlineReview ? '本版推荐' : '旧版推荐'))}
                 {d.name === p.choice && ' · 已选定'}
               </p>
               <h3>
                 <button type="button" className="copy-browse" aria-pressed={d === current}
-                  onClick={() => browse(d.name)}>{d.name}</button>
+                  onClick={() => browse(d.name)}>{d.main || '主标题待补'}</button>
               </h3>
-              {d.idea && <p className="dir-line">{d.idea}</p>}
             </article>
           ))}
         </div>
       </section>
       <section className="block copy-theme" key={current.name}>
-        <h2>主题文案 · {current.name}</h2>
-        {current.main && <p className="statement">{current.main}</p>}
-        {current.secondary && <p className="lead">{current.secondary}</p>}
-        {current.signed?.basis && <p><strong>方向依据　</strong>{current.signed.basis}</p>}
-        {current.scenes.size > 0 && (
-          <div className="copy-scenes">
-            <h3>场景文案</h3>
-            <dl className="kv">
-              {Array.from(current.scenes, ([label, lines]) => (
-                <div key={label}>
-                  <dt>{label}</dt>
-                  <dd>
-                    <p style={{whiteSpace: 'pre-line'}}>{lines[0]}</p>
-                    {lines.length > 1 && (
-                      <details>
-                        <summary>同场景备选（{lines.length - 1}）</summary>
-                        <ul className="plain-list">{lines.slice(1).map((line) => <li key={line}>{line}</li>)}</ul>
-                      </details>
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+        {renderReview ? renderReview(current.name) : current.signed && headlineReview && ticket ? (
+          <details className="research-original">
+            <summary>本标题的评审与推荐</summary>
+            <CopyReviewPanel review={ticket} direction={current.signed} />
+          </details>
+        ) : (
+          <details className="research-original">
+            <summary>评审记录</summary>
+            <p>{ticket ? '旧版按主副文合读评审。单标题暂无独立通过记录。' : '本版未登记单标题评审。'}</p>
+          </details>
         )}
-        {current.signed && ticket ? <CopyReviewPanel review={ticket} direction={current.signed} />
-          : renderReview ? renderReview(current.name) : current.review.length > 0 && (
-          <div className="copy-review">
-            <h3>推荐与取舍</h3>
-            <Rows rows={current.review} />
-          </div>
-        )}
-        {!ticket && !renderReview && <p className="hint">本版未登记四岗评审票，可在原稿中查看创作记录。</p>}
         {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (
           <button type="button" className="btn btn-dark" disabled={busy}
-            onClick={() => onChoose(current.name)}>采用「{current.name}」</button>
+            onClick={() => onChoose(current.name)}>采用此方向</button>
         )}
       </section>
     </>

@@ -14,6 +14,7 @@ import {
 } from 'node:fs';
 import { resolve, join, basename, extname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
+import { headlineMarkdown, headlineProtocol } from './copy-review.mjs';
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
 const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
@@ -53,10 +54,13 @@ function archiveVersion(p) {
 
 // This gate is used only when accepting a new run. Historical tickets keep their original shape.
 function copyHandoffReady(review, names, text) {
-  if (review?.protocol !== 'dual-panel-v2' || review.version !== 1 || review.status !== 'ready' ||
+  if (review?.protocol !== headlineProtocol || review.version !== 2 || review.status !== 'ready' ||
       !text || hash(text) !== review.bodyHash) return false;
   const draft = review.draft?.directions;
-  if (draft?.length !== 3 || !names.every((name, i) => draft[i].name === name)) return false;
+  if (draft?.length !== 3 || !names.every((name, i) => draft[i]?.name === name) ||
+      !draft.every(d => typeof d.main === 'string' && d.main.trim() && !/[\r\n]/.test(d.main) &&
+        !Object.hasOwn(d, 'secondary') && !Object.hasOwn(d, 'touchpoints')) ||
+      headlineMarkdown(review.draft) !== text) return false;
   const roles = ['copy', 'brand', 'user', 'comms'];
   const reports = [review.anonymousReads, review.firstVotes, review.criticReads, review.challenges, review.finalVotes];
   if (!reports.every(group => Array.isArray(group) && group.length === roles.length &&

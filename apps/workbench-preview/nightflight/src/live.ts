@@ -28,8 +28,8 @@ export interface ReviewedDirection {
   strategyLink: string;
   basis: string;
   main: string;
-  secondary: string;
-  touchpoints: { label: string; text: string }[];
+  secondary?: string;
+  touchpoints?: { label: string; text: string }[];
   risk: string;
 }
 export interface CopyVote {
@@ -52,7 +52,7 @@ interface CopyFirstRead {
   items: { directionId: DirectionId; reading: string; uncertainty: string }[];
 }
 export interface CopyReview {
-  protocol?: 'dual-panel-v2';
+  protocol?: 'dual-panel-v2' | 'dual-panel-headline-v3';
   anonymousReads?: CopyFirstRead[];
   finalAnonymousReads?: CopyFirstRead[];
   sameDraftRechecks?: CopyVote[];
@@ -69,7 +69,7 @@ export interface CopyReview {
       reason: string;
     }[];
   };
-  version: 1;
+  version: 1 | 2;
   status: 'ready';
   bodyHash: string;
   draft: { directions: ReviewedDirection[] };

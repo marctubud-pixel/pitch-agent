@@ -70,7 +70,7 @@ const stages = [
   ['项目任务卡'],
   ['关键发现'],
   ['核心策略'],
-  ['三个创意方向', '主题文案'],
+  ['三个创意方向'],
   ['草图与主视觉'],
   ['提案预览'],
   ['本版提案', '终审记录', '你的反馈'],
@@ -148,13 +148,10 @@ async function main() {
         assert.doesNotMatch(await page.locator('.copy-compare').innerText(), /共同策略/);
         assert.equal(await page.locator('.dir-grid .dir').count(), 3);
         const theme = page.locator('.copy-theme');
-        const visible = await theme.innerText();
-        for (const phrase of ['品牌读得清', '容易看成地名', '第一句', '独立场景']) {
-          assert.ok(visible.includes(phrase), phrase);
-        }
-        assert.doesNotMatch(visible, /另一种写法/);
+        assert.deepEqual(await page.locator('.copy-browse').allTextContents(), directions.map(d => d + '主题'));
         await theme.locator('summary').click();
-        assert.match(await theme.innerText(), /另一种写法/);
+        assert.match(await theme.innerText(), /未登记单标题评审/);
+        assert.doesNotMatch(await page.locator('.sheet-doc').textContent(), /副句|另一种写法|第一句|独立场景|品牌读得清|原始文件与下载/);
       }
       if (i === 5) await page.locator('.deck-stage').waitFor();
     }
@@ -165,44 +162,53 @@ async function main() {
       await page.reload();
       await page.locator('.stage-head').nth(3).click({ force: true });
       const doc = page.locator('.sheet-doc');
-      await doc.getByRole('button', { name: '明月', exact: true }).click();
-      assert.equal(await doc.locator('.copy-theme h2').innerText(), '主题文案 · 明月');
+      await doc.getByRole('button', { name: '明月主题', exact: true }).click();
+      assert.equal(await doc.getByRole('button', {name:'明月主题'}).getAttribute('aria-pressed'), 'true');
       assert.deepEqual(actions, []);
       await Promise.all([page.waitForResponse((res) => res.url().endsWith('/action')),
-        doc.getByRole('button', { name: '采用「明月」' }).click()]);
+        doc.getByRole('button', { name: '采用此方向' }).click()]);
       assert.deepEqual(actions.map(({ kind, text }) => [kind, text]), [['choice', '明月']]);
+      const draft = { directions: directions.map((name, i) => ({
+        id: 'ABC'[i], name, main: name + '独立标题', duty: ['continuity', 'feature', 'emotion'][i],
+      })) };
+      const votes = ['copy', 'brand', 'user', 'comms'].map(role => ({
+        role, draftHash: 'ui-only', runId: 'ui-' + role, items: draft.directions.map(d => ({
+          directionId:d.id, decision:'pass', reason:'隔离夹具的评审理由', blockers:[], hardRejects:[],
+          scores:[{dimension:'测试维度',score:4,reason:'按标题核对',evidence:d.main}],
+        })),
+      }));
+      project.copyReview = {
+        version:2,protocol:'dual-panel-headline-v3',status:'ready',draft,initialDraft:draft,firstVotes:votes,
+        finalVotes:votes.map(v=>({...v,reused:true})),changes:[],challenges:[],
+        adjudication:{ready:true,reason:'测试裁定',rulings:[]},
+        recommendation:{directionId:'C',reason:'推荐核对项',tradeoff:'取舍核对项'},
+      };
+      await page.reload();
+      await page.locator('.stage-head').nth(3).click({force:true});
+      assert.deepEqual(await doc.locator('.copy-browse').allTextContents(),draft.directions.map(d=>d.main));
+      assert.doesNotMatch(await doc.innerText(), /推荐核对项/);
+      await doc.getByText('本标题的评审与推荐',{exact:true}).click();
+      assert.match(await doc.innerText(), /推荐核对项/);
+      const review = doc.locator('[data-copy-review="C"]');
+      await review.locator(':scope > details > summary').click();
+      const role = review.locator('[data-review-role="copy"]');
+      await role.locator('summary').click();
+      assert.match(await role.innerText(), /按标题核对/);
+      assert.doesNotMatch(await doc.textContent(), /副句|第一句|独立场景/);
+
     }
     if (process.argv.includes('--themes')) {
       const archive = require('../src/proposal/qingyu-themes/reviewed-copy.json');
       const round = archive.rounds.find((r) => r.id === archive.currentRoundId);
       await page.goto(origin + '/nightflight/#/reference/qingyu/copy?edition=archive');
       for (const d of round.draft.directions) {
-        await page.getByRole('button', { name: d.name, exact: true }).click();
-        assert.doesNotMatch(await page.locator('.copy-compare').innerText(), /共同策略|稳健延续|放大品牌或产品特征|放大用户氛围或情绪/);
-        const review = page.locator('[data-copy-review="' + d.id + '"]');
-        assert.equal(await page.locator('.copy-theme .statement').innerText(), d.slogan);
-        assert.equal(await page.locator('.copy-theme .lead').innerText(), d.subline);
-        await review.locator(':scope > details > summary').click();
-        for (const original of round.reviews) {
-          const role = review.locator('[data-review-role="' + original.role + '"]');
-          await role.locator(':scope > summary').click();
-          const scores = original.raw.items.find((item) => item.id === d.id).scores;
-          assert.equal(await role.locator('[data-dimension]').count(), scores.length);
-          for (const score of scores) {
-            const cell = role.locator('[data-dimension="' + score.dimension_id + '"]');
-            const text = await cell.innerText();
-            assert.ok(text.includes(score.dimension));
-            assert.ok(text.includes('原分 ' + score.score + ' 分'));
-            const evidence = typeof score.evidence === 'string' ? score.evidence : score.evidence.reason;
-            if (evidence) assert.ok(text.includes(evidence));
-          }
-          if (d.id === 'k4' && original.role === 'user') {
-            const follow = role.locator('[data-review-followup="benefit_emotion"]');
-            assert.match(await follow.innerText(), /原分 3 分.*复核 4 分/);
-          } else {
-            assert.equal(await role.locator('[data-review-followup]').count(), 0);
-          }
-        }
+        await page.getByRole('button', {name:d.slogan, exact:true}).click();
+        const panel = page.locator('.copy-theme');
+        await panel.locator('summary').click();
+        assert.match(await panel.innerText(), /旧版按主副文合读评审/);
+        const text = await page.locator('.sheet-doc').textContent();
+        assert.ok(!text.includes(d.subline));
+        for (const point of d.extensions) assert.ok(!text.includes(point.text));
       }
     }
     if (process.argv.includes('--research')) {

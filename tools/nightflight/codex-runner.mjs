@@ -559,7 +559,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
       const records = [];
       for (const direction of directions) {
         await onEvent?.('正在为「'+direction+'」生成视觉概念稿');
-        const result = await call('只用内置 image_generation 工具为以下方向实际生成一张图。不得写代码、引用旧图或仅给提示词。包装提案展示整体包装与关键细节，按需展示多视角；KV展示真实主视觉及主副文案。图完成后只回一段中文设计说明。指定方向：'+JSON.stringify(direction),inputs.images,null);
+        const result = await call('只用内置 image_generation 工具为以下方向实际生成一张图。不得写代码、引用旧图或仅给提示词。包装提案展示整体包装与关键细节，按需展示多视角；KV展示真实主视觉及本案已交接的文案原句。图完成后只回一段中文设计说明。指定方向：'+JSON.stringify(direction),inputs.images,null);
         const original = await ownGeneratedImage(result,home);
         const digest = hash(original.bytes);
         if (records.some(r=>r.sha256===digest)) throw Error('两个方向返回了完全相同的图，请重新生成');

@@ -15,8 +15,9 @@ function copyFixture(input, action) {
   const directions = ['山风', '晨雾', '旧街'].map((name, i) => ({
     id: ['A','B','C'][i], duty: ['emotion','continuity','feature'][i],
     name, basis: source, claim: name + '的主张', mechanism: name + '的创意方法', strategyLink: name + '承接策略',
-    main: name + '原稿主文', secondary: name + '的副文', touchpoints: [{label:'瓶侧',text:name + '瓶侧文案'}], risk: name + '的风险',
+    main: name + '原稿主文', risk: name + '的风险',
   }));
+  if (!['CREATE','REVISE'].includes(step) && (input.includes('的创意方法') || input.includes('承接策略'))) throw Error('评审泄露作者创作说明');
   if (step === 'CREATE') {
     if (action === 'badcopy') directions[2].duty = directions[0].duty;
     if (!input.includes('slogan-engine') || !input.includes('寻找连接与改句')) throw Error('创作没有加载口号方法');
@@ -25,7 +26,7 @@ function copyFixture(input, action) {
   if (step === 'ANONYMOUS') {
     if (Object.keys(packet).sort().join() !== 'candidates,role' || input.includes(source) || input.includes('盲测污染哨兵')) throw Error('匿名首读泄露任务');
     return {items:packet.candidates.map(c => {
-      if (Object.keys(c).sort().join() !== 'directionId,main,secondary') throw Error('匿名稿泄露创意解释');
+      if (Object.keys(c).sort().join() !== 'directionId,main') throw Error('匿名稿泄露创意解释');
       return {directionId:c.directionId,reading:'读到'+c.main,uncertainty:'品牌身份待了解'};
     })};
   }
@@ -44,7 +45,7 @@ function copyFixture(input, action) {
     const items=packet.draft.directions.map(d => ({directionId:d.id,risk:'检查能否读懂该案',evidence:d.main}));
     if (packet.role === 'brand') {
       const d=packet.draft.directions.find(d=>d.id==='B');
-      items.push({directionId:d.id,risk:'副文还可能误读产品身份',evidence:d.secondary});
+      items.push({directionId:d.id,risk:'标题还可能误读产品身份',evidence:d.main});
     }
     return {items};
   }
@@ -54,7 +55,7 @@ function copyFixture(input, action) {
       const low = action !== 'copy-clean' && d.id === 'B' && packet.role === 'user' && (step === 'FIRST' || action === 'copy-blocked' || action==='copy-polish-recheck' && !packet.priorAdjudication);
       return {directionId:d.id,decision:low?'revise':'pass',reason:'本案说明'+d.main,
         hardRejects:[],blockers:low?['需澄清用途']:[], scores:packet.dimensions.map((dimension) => ({
-          dimension,score:low && dimension==='直接理解'?3:4,evidence:d.main,reason:'据同版主文可以判断',scope:'本组文字概念',
+          dimension,score:low && dimension==='直接理解'?3:4,evidence:action==='copy-meta-evidence'?source:d.main,reason:'据同版主文可以判断',scope:'本组文字概念',
         }))};
     })};
   }
@@ -90,7 +91,7 @@ function copyFixture(input, action) {
   if (step === 'ADJUDICATE') return {ready:true,reason:'本地概念阶段完成',
     recommendation:{directionId:'B',reason:'说明清楚',tradeoff:'适用范围有限'},
     rulings:packet.requiredRulingIds.map(challengeId=>({challengeId,verdict:'resolved',reason:'已按原始裁定核验'})),
-    single:directions.map(d=>({directionId:d.id,ready:true,reason:'主副文可以同读'})),
+    single:directions.map(d=>({directionId:d.id,ready:true,reason:'主标题能独立阅读'})),
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:pair==='AC' || distinct,reason:'逐对比对表达和使用情境'})),
     set:{ready:distinct,reason:'三案组内比较结论'}};
   throw Error('未知文案测试步骤');
@@ -170,7 +171,9 @@ test('copy releases three reviewed directions only after blind votes, revision, 
   f.project.feedback=[{stage:'copy',text:'盲测污染哨兵'}];
   const result=await f.run('copy');
   assert.deepEqual(result.directions,['山风','晨雾','旧街']);
-  assert.match(await readFile(join(f.dir,result.artifacts[0].name),'utf8'),/旧街/);
+  assert.equal((await readFile(join(f.dir,result.artifacts[0].name),'utf8')).trim(),
+    '## 山风\n主标题：山风原稿主文\n\n## 晨雾\n主标题：晨雾修改后主文\n\n## 旧街\n主标题：旧街原稿主文');
+  assert.equal(result.copyReview.protocol,'dual-panel-headline-v3');
   assert.equal(result.copyReview.status,'ready');
   assert.equal(result.copyReview.recommendation.directionId,'B');
   assert.equal(result.copyReview.initialDraft.directions[1].main,'晨雾原稿主文');
@@ -194,6 +197,10 @@ test('copy releases three reviewed directions only after blind votes, revision, 
   assert.deepEqual(coverage.map(c=>c.independentRead),brandReads);
   assert.deepEqual(result.copyReview.adjudication.pairs.map(p=>p.pair).sort(),['AB','AC','BC']);
   assert.ok(receipts.every(r=>r.exitCode===0));
+});
+test('copy rejects factual background as quoted headline evidence',async t=>{
+  const f=await fixture(t,'copy-meta-evidence');
+  await assert.rejects(f.run('copy'),/缺少可定位的稿件原文/);
 });
 test('copy blocks when one of two risks on the same direction lacks coverage',async t=>{
   const f=await fixture(t,'copy-missing-coverage');

@@ -46,17 +46,18 @@ export function CopyReviewPanel({ review, direction, scoreRecord = review, showO
   review: CopyReview; direction: ReviewedDirection; scoreRecord?: CopyReview; showOriginal?: boolean;
 }) {
   const recommended = review.draft.directions.find((d) => d.id === review.recommendation.directionId);
+  const label = '方向 ' + direction.id;
   const original = scoreRecord.initialDraft.directions.find((d) => d.id === direction.id);
-  const dual = review.protocol === 'dual-panel-v2';
-  const dualScores = scoreRecord.protocol === 'dual-panel-v2';
+  const dual = review.protocol === 'dual-panel-headline-v3';
+  const dualScores = scoreRecord.protocol === 'dual-panel-headline-v3';
   const single = dual && review.adjudication.single?.find((entry) => entry.directionId === direction.id);
   const comparison = dual && review.adjudication.pairs;
   const set = dual && review.adjudication.set;
-  const nameOf = (id: string) => review.draft.directions.find((item) => item.id === id)?.name ?? id;
+  const nameOf = (id: string) => '方向 ' + id;
   return (
     <section className="copy-review" data-copy-review={direction.id}>
       {single && <div className="block">
-        <h2>单案裁定 · {direction.name}</h2>
+        <h2>单案裁定 · {label}</h2>
         <p>{single.ready ? '可交接' : '待处理'}　{single.reason}</p>
       </div>}
       {comparison && <div className="block">
@@ -70,12 +71,12 @@ export function CopyReviewPanel({ review, direction, scoreRecord = review, showO
         {set && <p>整组{set.ready ? '可交接' : '待处理'}　{set.reason}</p>}
       </div>}
       <h2>推荐与取舍</h2>
-      {recommended && <h3>建议优先讨论「{recommended.name}」</h3>}
+      {recommended && <h3>建议优先讨论「{nameOf(recommended.id)}」</h3>}
       <p>{review.recommendation.reason}</p>
       <p>{review.recommendation.tradeoff}</p>
       {direction.risk && <p>本方向风险　{direction.risk}</p>}
       <details key={direction.id}>
-        <summary>「{direction.name}」的四岗原评与复核</summary>
+        <summary>「{label}」的四岗原评与复核</summary>
         <p className="hint">以下为本地模型审读。目标用户岗模拟阅读，实际受众反应仍待验证。</p>
         {Object.entries(roles).map(([role, title]) => {
           const first = scoreRecord.firstVotes.find((vote) => vote.role === role);
@@ -155,7 +156,7 @@ export function CopyReviewPanel({ review, direction, scoreRecord = review, showO
         })}
         <details>
           <summary>改稿与裁定记录</summary>
-          {showOriginal && original && <><h4>本方向原稿</h4><p>{original.main}</p><p>{original.secondary}</p></>}
+          {showOriginal && original && <><h4>本方向原稿</h4><p>{original.main}</p></>}
           {!!scoreRecord.changes.length && <><h4>整组改稿记录</h4><ul className="plain-list">
             {scoreRecord.changes.map((change, i) => <li key={i}>{change}</li>)}
           </ul></>}

@@ -2263,8 +2263,8 @@
       "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "a154e76eb15a5874593ec6365e3ac4dee9c6de30d93639132d32e0ba11770d81",
-      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。研究页按交接结果呈现结论或待查问题，已有线索可展开。"
+      "sha256": "6c4517f2ea2ed7197738c82a534869a9b6709c3ffd3681c1b4c9ba24a627049e",
+      "reason": "文案页按单标题口径显示当前方向及同版评审，旧原件保存在后台。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",

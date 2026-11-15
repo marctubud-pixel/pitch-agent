@@ -3,11 +3,12 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
+export const headlineProtocol = 'dual-panel-headline-v3';
 const dimensions = {
-  copy: ['主张成立','同组创意机制差异','中文表达与节奏','主副文协作'],
+  copy: ['主张成立','同组创意机制差异','中文表达与节奏','主标题独立完整性'],
   brand: ['策略及产品关联','品牌语义联系','事实边界','品牌/产品归属清楚'],
   user: ['与设定选择情景的关联','利益或情绪的具体可理解性','直接理解','语言可信与不费解'],
-  comms: ['同组三案辨识','核心记忆线索潜力','简洁复述','主文副文的信息分工'],
+  comms: ['同组三案辨识','核心记忆线索潜力','简洁复述','单句信息聚焦'],
 };
 const roles = Object.keys(dimensions);
 const ids = ['A','B','C'];
@@ -18,7 +19,7 @@ const object = properties => ({type:'object',properties,required:Object.keys(pro
 const choice = values => ({type:'string',enum:values});
 const draftSchema = object({directions:list(object({
   id:choice(ids), duty:choice(Object.keys(duties)), basis:str,name:str,claim:str,mechanism:str,
-  strategyLink:str,main:str,secondary:str,touchpoints:list(object({label:str,text:str})),risk:str,
+  strategyLink:str,main:str,risk:str,
 }))});
 const voteSchema = object({items:list(object({
   directionId:choice(ids),decision:choice(['pass','revise','hold','reject']),reason:str,hardRejects:list(str),blockers:list(str),
@@ -81,21 +82,20 @@ function validateDraft(draft, materials) {
   for (const d of ds) {
     requireThat(d.name === d.name.trim() && d.name.length <= 100 && !/[\r\n]/.test(d.name),'方向名须为单行');
     requireThat(materials.some(t=>t.includes(d.basis)),'方向 '+d.id+' 的依据无法定位到当前上游原文');
-    requireThat(d.touchpoints.length,'方向 '+d.id+' 没有本案触点文案');
-    for (const text of [d.claim,d.mechanism,d.main,d.secondary,d.strategyLink,d.risk,...d.touchpoints.flatMap(p=>[p.label,p.text])]) {
+    for (const text of [d.claim,d.mechanism,d.main,d.strategyLink,d.risk]) {
       requireThat(!/[\r\n]/.test(text),'文案字段须逐项填写，不能嵌入其他段落');
     }
   }
 }
-function sourceQuotes(d) {
-  return [d.name,d.basis,d.claim,d.mechanism,d.strategyLink,d.main,d.secondary,...d.touchpoints.map(p=>p.text)];
+function headlines(draft) {
+  return {directions:draft.directions.map(({id,main})=>({id,main}))};
 }
 function validateVote(items, role, draft) {
   requireThat(exactly(items.map(x=>x.directionId),ids),'岗位 '+role+' 原票缺少单案或重复');
   for (const item of items) {
     requireThat(exactly(item.scores.map(s=>s.dimension),dimensions[role]),role+' 的固定必评维度缺失或重复');
     const d=draft.directions.find(x=>x.id===item.directionId);
-    for (const s of item.scores) requireThat(sourceQuotes(d).some(line=>line.includes(s.evidence)),
+    for (const s of item.scores) requireThat(d.main.includes(s.evidence),
       role+' '+d.name+'「'+s.dimension+'」缺少可定位的稿件原文');
   }
 }
@@ -103,29 +103,20 @@ function blocked(vote) {
   return vote.items.filter(i=>i.decision!=='pass' || i.hardRejects.length || i.blockers.length ||
     i.scores.some(s=>s.score === null || s.score < 4));
 }
-const craft = '三个职责各一次，分配给哪案由本案决定：稳健延续使用品牌可识别表达，缺品牌资料可使用有来源的行业/品类/媒介惯例；第二类放大具体品牌或产品特征；第三类放大用户氛围或情绪。依据 basis 逐字摘取一段当前输入，通用做法不能说成品牌资产。每案写独立的主张、机制、主副文、真实触点和风险。各字段写单行，名称不带排序号。提交稿件不附作者推荐、排名、分数或评语。';
+const craft = '三个职责各一次，分配给哪案由本案决定：稳健延续使用品牌可识别表达，缺品牌资料可使用有来源的行业/品类/媒介惯例；第二类放大具体品牌或产品特征；第三类放大用户氛围或情绪。依据 basis 逐字摘取一段当前输入，通用做法不能说成品牌资产。每案只提交一条可独立阅读的主标题 main。创意机制、依据与风险仅用于内部记录。各字段写单行，名称不带排序号。提交稿件不附作者推荐、排名、分数或评语。';
 const anchors = {
   1:'与任务冲突或表达无法成立',2:'需重做才能让读者理解并符合事实',
   3:'部分成立，但仍有具体歧义或关键衔接待解决',4:'在本案给定条件下有明确证据支持成立',
   5:'除达到4外，还能指出相较本组可比写法的具体优势',
 };
 const scope = '当前简报、产品事实及三案范围。品牌联系区分字面提及、语义关联与真实感知；传播仅评估复述潜力，不推断实测效果。两案互换、换品牌、换节点均为诊断，不据此单独扣分。';
-const scoring = '先逐案后比较。仅用指定的每个必评维度逐项打1–5分，关键未知填 null。evidence 逐字摘取该案中的一处短语，reason说明本分与相邻锚点的区别；scope写明本维度就哪个对象、证据范围或哪组候选作比较。不得因缺促销CTA扣品牌主题分。缺证、硬退或阻断不能通过。四岗是独立模型会话，用户岗只模拟阅读。禁止计算平均分。';
-function markdown(draft, adjudication) {
-  const rec=adjudication.recommendation;
-  const chosen=draft.directions.find(d=>d.id===rec.directionId);
-  return ['推荐方向：'+chosen.name,'推荐依据：'+rec.reason,'推荐取舍：'+rec.tradeoff,
-    ...draft.directions.flatMap(d=>['','## '+d.name,'方向职责：'+duties[d.duty],'依据：'+d.basis,
-      '主张：'+d.claim,'创意机制：'+d.mechanism,'策略承接：'+d.strategyLink,'主文案：'+d.main,'副文案：'+d.secondary,
-      ...d.touchpoints.map(t=>t.label+'示例：'+t.text),'误读风险：'+d.risk]),
-    '', '## 单案判断',...adjudication.single.map(s=>s.directionId+'：'+s.reason),
-    '', '## 逐对差异',...adjudication.pairs.map(p=>p.pair+'：'+p.reason),
-    '', '## 整组判断',adjudication.set.reason,
-  ].join('\n');
+const scoring = '先逐案后比较。仅用指定的每个必评维度逐项打1–5分，关键未知填 null。evidence 仅逐字引用该案主标题里的短语。只评标题本身，不以附加文案或作者解释补足标题，reason说明本分与相邻锚点的区别；scope写明本维度就哪个对象、证据范围或哪组候选作比较。不得因缺促销CTA扣品牌主题分。缺证、硬退或阻断不能通过。四岗是独立模型会话，用户岗只模拟阅读。禁止计算平均分。';
+export function headlineMarkdown(draft) {
+  return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main).join('\n\n');
 }
 
 export async function runCopyReview({call, project, inputs, rules, dir, onEvent}) {
-  const attempt = {version:1,protocol:'dual-panel-v2',status:'working',calls:[],anonymousReads:[],firstVotes:[],criticReads:[],challenges:[],finalVotes:[]};
+  const attempt = {version:2,protocol:headlineProtocol,status:'working',calls:[],anonymousReads:[],firstVotes:[],criticReads:[],challenges:[],finalVotes:[]};
   const filename='copy-review-attempt-'+randomUUID()+'.json';
   const threads=new Set(), runs=new Set();
   const materials=[project.brief,...inputs.texts.map(t=>t.text)].filter(nonempty);
@@ -141,29 +132,20 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     validate(result.parsedOutput,schema,phase);
     return {output:result.parsedOutput,receipt};
   }
-  // Only known upstream artifact names and the original brief enter the blind packets.
-  // A submitted attachment enters as a located basis excerpt, never as an entire prior review.
-  const upstream = (project.artifacts || []).filter(a=>['brief','research','strategy'].includes(a.stage));
-  const reviewSources = {brief:project.brief,materials:inputs.texts.flatMap(t=>{
-    const artifact=upstream.find(a=>a.name===t.name);
-    return artifact && t.text ? [{stage:artifact.stage,name:t.name,text:t.text}] : [];
-  })};
   function reviewPacket(draft) {
-    return {
-      upstream:reviewSources,
-      basisSources:draft.directions.map(d=>({directionId:d.id,quote:d.basis,sources:[
-        ...(project.brief?.includes(d.basis)?['原始简报']:[]),
-        ...inputs.texts.filter(t=>t.text?.includes(d.basis)).map(t=>t.name),
-      ]})),
-      draftHash:digest(draft),
-      draft:{directions:draft.directions.map(({risk,...candidate})=>candidate)},
-    };
+    // Ground each review in the brief and verbatim upstream excerpts. Keep the
+    // author's interpretation and the association with a particular title private.
+    const facts = [...new Set(draft.directions.map(d=>d.basis))].map(quote=>({
+      quote,sources:[...(project.brief?.includes(quote)?['原始简报']:[]),
+        ...inputs.texts.filter(t=>t.text?.includes(quote)).map(t=>t.name)],
+    }));
+    return {upstream:{brief:project.brief,facts},draftHash:digest(draft),draft:headlines(draft)};
   }
   async function anonymousReads(draft) {
     const reads=[];
-    const candidates=draft.directions.map(({id,main,secondary})=>({directionId:id,main,secondary}));
+    const candidates=draft.directions.map(({id,main})=>({directionId:id,main}));
     for (const role of roles) {
-      const {output,receipt}=await run('COPY_ANONYMOUS','仅凭匿名主副文，逐案记下自然理解：谁在说什么、会读到什么、哪里不确定。不可自行补背景，不评分。',anonymousSchema,{role,candidates});
+      const {output,receipt}=await run('COPY_ANONYMOUS','仅凭匿名主标题，逐案记下自然理解：谁在说什么、会读到什么、哪里不确定。不可自行补背景，不评分。',anonymousSchema,{role,candidates});
       requireThat(exactly(output.items.map(i=>i.directionId),ids),'匿名首读未覆盖三案');
       reads.push({role,draftHash:digest(draft),...receipt,items:output.items});
     }
@@ -185,7 +167,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     for (const [index,d] of output.draft.directions.entries()) {
       const old=base.directions[index];
       requireThat(d.id===old.id && d.duty===old.duty,'改稿改变了方向身份或顺序');
-      if (targets.has(d.id)) requireThat(!isDeepStrictEqual(d,old),'作品问题尚未改稿：'+d.name);
+      if (targets.has(d.id)) requireThat(d.main.trim()!==old.main.trim(),'作品问题尚未改稿：'+d.name);
       else requireThat(isDeepStrictEqual(d,old),'改稿改动了冻结方向：'+old.name);
     }
     requireThat(output.changes.length,'改稿缺少修改对照');
@@ -209,7 +191,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       for (const item of output.items) {
         const d=draft.directions.find(d=>d.id===item.directionId);
         requireThat(!item.risk.trim() && !item.evidence.trim() || nonempty(item.risk) && nonempty(item.evidence) &&
-          sourceQuotes(d).some(s=>s.includes(item.evidence)),role+' 漏项缺该案证据');
+          d.main.includes(item.evidence),role+' 漏项缺该案证据');
       }
       const items=output.items.map((item,index)=>({...item,readId:role+'-'+receipt.runId+'-'+(index+1)}));
       panel.criticReads.push({role,draftHash:draftHash,...receipt,items});
@@ -225,7 +207,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         '对应异议未逐条覆盖同案首读记录或所指原票有误');
       const items=output.items.map((item,i)=>{
         const d=draft.directions.find(d=>d.id===item.directionId);
-        requireThat(dimensions[vote.role].includes(item.dimension) && sourceQuotes(d).some(s=>s.includes(item.evidence)),'异议未对应该案原文或原岗维度');
+        requireThat(dimensions[vote.role].includes(item.dimension) && d.main.includes(item.evidence),'异议未对应该案原文或原岗维度');
         return {...item,id:prefix+vote.role+'-'+(i+1)};
       });
       const coverage=output.coverage.map(c=>{
@@ -252,11 +234,11 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       ...panel.challenges.flatMap(c=>c.items.map(i=>({...i,role:c.role,origin:'challenge'}))),
     ];
     panel.issues=issues;
-    const references={initialDraft:draft,anonymousReads:reads,firstVotes:votes,
+    const references={initialDraft:headlines(draft),anonymousReads:reads,firstVotes:votes,
       criticReads:panel.criticReads,challenges:panel.challenges,issues};
     const plan=await run('COPY_PLAN',
       '在创作者改稿前独立逐条裁定 issues；每个id必须决定采纳当前/后续、驳回或待核及理由。作品确需修改时 action=revise，评分原判有误或证据需要复核时 action=recheck 且保持原稿，非阻断范围外事项可延后。不得代评分岗改分。没有问题可为空。',
-      planSchema,{upstream:reviewSources,...references});
+      planSchema,{upstream:reviewPacket(draft).upstream,...references});
     const decisionPlan={...plan.output,...plan.receipt,draftHash};
     panel.decisionPlan=decisionPlan;
     requireThat(exactly(decisionPlan.rulings.map(r=>r.challengeId),issues.map(i=>i.id)),'改稿前的独立裁定缺项');
@@ -273,7 +255,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
   try {
     const source={brief:project.brief,materials:inputs.texts,feedback:project.feedback || []};
     await onEvent?.('文案负责人正在创作三个方向');
-    const generated=await run('COPY_CREATE',craft+' 使用本次加载的 slogan-engine 创作步骤展开、淘汰和打磨主副文。',draftSchema,source,true);
+    const generated=await run('COPY_CREATE',craft+' 使用本次加载的 slogan-engine 创作步骤展开、淘汰和打磨主标题。',draftSchema,source,true);
     const first=generated.output;
     validateDraft(first,materials);
     attempt.initialDraft=first;
@@ -312,7 +294,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         attempt.finalVotes.push(sameDraftRecheck || {...vote,reused:true});
         continue;
       }
-      const extra={initialDraft:reviewPacket(first).draft,originalVote:vote,sameDraftRecheck,changes,
+      const extra={initialDraft:reviewPacket(first).draft,originalVote:vote,sameDraftRecheck,
         objections:attempt.challenges.find(c=>c.role===vote.role),decisionPlan};
       attempt.finalVotes.push(await score('COPY_RECHECK',vote.role,draft,attempt.finalAnonymousReads,extra));
     }
@@ -331,9 +313,9 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         draftHash:p.draftHash,issues:p.issues,decisionPlan:p.decisionPlan,
       }));
       const requiredRulingIds=allActions.map(r=>r.challengeId);
-      const verdict=await run('COPY_ADJUDICATE','独立总监按当前稿分别给A/B/C单案准入、AB/AC/BC逐对差异及整组是否成立。逐对比较主张、情绪、品牌语义桥梁与视觉载体假设，不把换词换色当创意差别。按 requiredRulingIds 逐条核实本版与前版遗留裁定是否在当前稿解决。若本版决定需改稿或同稿复核且尚无执行证据，不得视为已解决。阻断/关键缺证/必评不足4不得放行。独立说明推荐谁、为什么、牺牲什么；不平均、改票或代替人类采用。',adjudicateSchema,{
-        upstream:reviewSources,...activePanel.references,decisionPlan:current.decisionPlan,priorPlans,requiredRulingIds,
-        sameDraftRechecks:attempt.sameDraftRechecks,draft,changes,finalVotes:attempt.finalVotes,previousRepair:attempt.polishRounds.at(-1)?.repair,
+      const verdict=await run('COPY_ADJUDICATE','独立总监按当前稿分别给A/B/C单案准入、AB/AC/BC逐对差异及整组是否成立。逐对比较主张、情绪、品牌语义桥梁与文字可唤起的不同画面，限标题可读到的线索，不要求提交视觉或场景文案。按 requiredRulingIds 逐条核实本版与前版遗留裁定是否在当前稿解决。若本版决定需改稿或同稿复核且尚无执行证据，不得视为已解决。阻断/关键缺证/必评不足4不得放行。独立说明推荐谁、为什么、牺牲什么；不平均、改票或代替人类采用。',adjudicateSchema,{
+        upstream:reviewPacket(draft).upstream,...activePanel.references,decisionPlan:current.decisionPlan,priorPlans,requiredRulingIds,
+        sameDraftRechecks:attempt.sameDraftRechecks,draft:headlines(draft),finalVotes:attempt.finalVotes,previousRepair:attempt.polishRounds.at(-1)?.repair,
       });
       const adjudication=verdict.output;
       attempt.adjudication=adjudication;
@@ -367,7 +349,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         failures.push({id:'set',eligible:ids,reason:'整组裁定未通过：'+(adjudication.set.ready?adjudication.reason:adjudication.set.reason)});
       }
       if (!failures.length) {
-        const body=markdown(draft,adjudication);
+        const body=headlineMarkdown(draft);
         Object.assign(attempt,{status:'ready',bodyHash:hash(body),recommendation:adjudication.recommendation});
         return {body,directions:draft.directions.map(x=>x.name),copyReview:attempt};
       }
@@ -391,7 +373,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       for (const action of repair.actions) {
         const failure=failures.find(f=>f.id===action.issueId);
         const d=draft.directions.find(d=>d.id===action.directionId);
-        requireThat(failure.eligible.includes(d.id) && sourceQuotes(d).some(q=>q.includes(action.evidence)),
+        requireThat(failure.eligible.includes(d.id) && d.main.includes(action.evidence),
           '打磨裁定与退回方向或原文不符');
         requireThat(action.action!=='pause',failure.reason+'；暂停打磨：'+action.reason);
         requireThat(!failure.requiredAction || action.action===failure.requiredAction,'打磨动作与本版独立裁定不符：'+failure.reason);
@@ -411,8 +393,9 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       if (targets.size) {
         const result=await revise(draft,targets,{...source,decisionPlan:repair,currentPlan:current.decisionPlan,
           objections:current.challenges,failures,priorVotes,sameDraftRechecks:corrected});
-        requireThat(!attempt.polishRounds.some(r=>isDeepStrictEqual(r.draft,result.draft)) &&
-          !isDeepStrictEqual(attempt.initialDraft,result.draft),'文案打磨重复已退回的稿件：'+reasons);
+        const revisedHeadlines=headlines(result.draft);
+        requireThat(![attempt.initialDraft,...attempt.polishRounds.map(r=>r.draft)].some(previous=>
+          isDeepStrictEqual(headlines(previous),revisedHeadlines)),'文案打磨重复已退回的主标题：'+reasons);
         draft=result.draft;
         changes=[...changes,...result.changes];
         Object.assign(history,{changes:result.changes,revisedHash:digest(draft)});
@@ -423,7 +406,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         for (const role of roles) {
           const originalVote=corrected.find(v=>v.role===role) || priorVotes.find(v=>v.role===role);
           attempt.finalVotes.push(await score('COPY_RECHECK',role,draft,attempt.finalAnonymousReads,{
-            originalVote,initialDraft:reviewPacket(history.draft).draft,changes:result.changes,decisionPlan:repair,
+            originalVote,initialDraft:reviewPacket(history.draft).draft,decisionPlan:repair,
           }));
         }
       } else {

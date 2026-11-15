@@ -202,7 +202,7 @@ export function DetailSheet({
           {id === p.stage && (p.status === 'failed' || id === 'visual') && id !== 'research' && (
             <Decisions p={p} act={act} busy={busy} />
           )}
-          {a.length > 0 && (
+          {id !== 'copy' && a.length > 0 && (
             <details key={id + '-originals'} className="research-original">
               <summary>原始文件与下载（{a.length}）</summary>
               {a.map((x) =>
@@ -218,7 +218,7 @@ export function DetailSheet({
               )}
             </details>
           )}
-          {e.length > 0 && (
+          {id !== 'copy' && e.length > 0 && (
             <details key={id + '-events'} className="research-original">
               <summary>执行记录（{e.length}）</summary>
               <ul className="plain-list">
