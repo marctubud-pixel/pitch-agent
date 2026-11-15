@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Project } from '../live';
+import { briefCard } from './briefCard';
 import { directionBody, firstStatement, rowOf, sectionsOf, type Row } from './stageText';
 
 type TextStage = 'brief' | 'research' | 'strategy' | 'copy';
@@ -23,42 +24,13 @@ function Pending({ children }: { children: ReactNode }) {
 }
 
 function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
-  const sections = sectionsOf(text);
-  const task = sections.find(
-    (s) => /任务概况|基本信息|项目概况|任务信息|项目任务卡/.test(s.heading) && s.lines.length,
-  );
-  const rows = (task ? task.lines : sections.flatMap((s) => s.lines)).map(rowOf).filter((r): r is Row => !!r);
-  const assumptions = sections.filter((s) => /假设/.test(s.heading)).flatMap((s) => s.lines);
+  const { rows, assumptions } = briefCard(text);
   return (
     <>
-      <section className="block">
-        <h2>你的原始需求</h2>
-        {p.brief && <blockquote className="quote">{p.brief}</blockquote>}
-        {!!p.attachments?.length && (
-          <ul className="plain-list">
-            {p.attachments.map((file) => (
-              <li key={file.url}>{file.name}</li>
-            ))}
-          </ul>
-        )}
-      </section>
       {text ? (
         <section className="block" data-artifact={name}>
           <h2>项目任务卡</h2>
-          {rows.length ? (
-            <Rows rows={rows} />
-          ) : (
-            sections
-              .filter((s) => s.lines.length)
-              .map((s, i) => (
-                <div key={i}>
-                  {s.heading && <h3>{s.heading}</h3>}
-                  {s.lines.map((line, j) => (
-                    <p key={j}>{line}</p>
-                  ))}
-                </div>
-              ))
-          )}
+          {rows.length ? <Rows rows={rows} /> : <p>尚无可单列的已知项目信息，可展开原始需求或原稿核对。</p>}
           {!!assumptions.length && (
             <>
               <h3>你没有提到、主理人先按假设处理的部分</h3>
@@ -73,6 +45,17 @@ function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
       ) : (
         <Pending>尚无任务卡。</Pending>
       )}
+      <details className="research-original">
+        <summary>你的原始需求</summary>
+        {p.brief && <blockquote className="quote">{p.brief}</blockquote>}
+        {!!p.attachments?.length && (
+          <ul className="plain-list">
+            {p.attachments.map((file) => (
+              <li key={file.url}>{file.name}</li>
+            ))}
+          </ul>
+        )}
+      </details>
     </>
   );
 }

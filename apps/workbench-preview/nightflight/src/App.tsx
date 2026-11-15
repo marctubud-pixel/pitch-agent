@@ -47,7 +47,8 @@ export function App() {
     [seen, mark] = useState(0),
     [notice, setNotice] = useState(false);
   const [routePath, query] = route.split('?');
-  const requestedResearch = new URLSearchParams(query).get('stage') === 'research';
+  const stageParam = new URLSearchParams(query).get('stage');
+  const requestedStage = stageParam === 'research' || stageParam === 'brief' ? stageParam : undefined;
   const id = routePath.startsWith('/p/') ? routePath.slice(3) : '',
     workspace = !!id && p?.id === id,
     start = route === '/new',
@@ -75,7 +76,7 @@ export function App() {
     setConnection('');
     setLog(false);
     setLibrary(false);
-    open(id && requestedResearch ? { id: 'research' } : undefined);
+    open(id && requestedStage ? { id: requestedStage } : undefined);
     setParty(false);
     setNotice(false);
     lastStatus.current = '';
@@ -106,7 +107,7 @@ export function App() {
       alive = false;
       clearTimeout(t);
     };
-  }, [id, reload, requestedResearch]);
+  }, [id, reload, requestedStage]);
   useEffect(() => {
     if (!workspace || !p) return;
     if (p.status === 'waiting' && p.stage !== 'research' && lastStatus.current !== 'waiting') setChat(true);

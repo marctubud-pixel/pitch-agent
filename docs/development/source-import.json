@@ -2251,8 +2251,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "597916c568f97835295f4b2f0e4cd989fc5faa0a36d0a35d18f9c1656d1b40e3",
-      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+      "sha256": "1e43fcf4bd6d49b0d63589059232b65d484c9859fc37fa6cbab704b60c5f47cc",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作；支持直达指定项目的简报详情"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",

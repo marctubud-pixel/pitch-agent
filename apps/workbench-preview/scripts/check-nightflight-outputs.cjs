@@ -44,7 +44,7 @@ const project = {
     next: '',
   },
   artifacts: [
-    file('brief', '任务卡.md', 'text', '## 项目任务卡\n品类：测试品类\n目标：节日海报'),
+    file('brief', '任务卡.md', 'text', '## 已掌握的项目信息\n品类：测试品类\n提案目标：节日海报\n## 影响下一步的未知项\n渠道未定：先分别比较门店与社交媒体案例。\n## 原稿记录\n规范版本：测试版本'),
     file('research', '研究.md', 'text', '研究正文'),
     file(
       'strategy',
@@ -67,7 +67,7 @@ const project = {
   ],
 };
 const stages = [
-  ['你的原始需求', '项目任务卡'],
+  ['项目任务卡'],
   ['关键发现', '研究交接'],
   ['核心策略'],
   ['三个创意方向', '主题文案'],
@@ -109,13 +109,20 @@ async function main() {
     });
     await page.goto(origin + '/nightflight/#/p/ui');
     await page.locator('.stage-head').first().click();
-    for (const [i, headings] of stages.entries()) {
+    const briefOnly = process.argv.includes('--brief');
+    for (const [i, headings] of (briefOnly ? stages.slice(0, 1) : stages).entries()) {
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
       assert.deepEqual(
         visible.map((s, n) => (s.startsWith(headings[n]) ? headings[n] : s)),
         headings,
       );
+      if (i === 0) {
+        const visible = await page.locator('.sheet-doc').innerText();
+        assert.match(visible, /测试品类/);
+        assert.match(visible, /先分别比较门店与社交媒体案例/);
+        assert.doesNotMatch(visible, /规范版本|测试版本/);
+      }
       if (i === 1) {
         const details = page.locator('.findings details');
         await details.locator('summary').click();
@@ -126,7 +133,7 @@ async function main() {
       if (i === 5) await page.locator('.deck-stage').waitFor();
     }
     assert.deepEqual(errors, []);
-    console.log('七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
+    console.log(briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
   } finally {
     await browser.close();
   }
