@@ -140,6 +140,7 @@ button.task:hover { background: linear-gradient(180deg, #fff 0%, #ebeae7 100%); 
 
 .options { display: grid; gap: 8px; margin-top: 12px; }
 .option { display: grid; grid-template-columns: 64px 1fr; gap: 6px 12px; align-items: start; padding: 10px; border: 1px solid var(--ink); border-radius: 3px; }
+.option.copy-choice { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
 .option-art { width: 64px; height: 64px; border-radius: 2px; }
 .option-text { min-width: 0; display: flex; flex-direction: column; font-size: 13px; line-height: 1.6; }
 .option-text strong { font-family: var(--serif); font-size: 16px; }

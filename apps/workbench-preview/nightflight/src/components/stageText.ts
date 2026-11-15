@@ -67,3 +67,8 @@ export function directionBody(sections: Section[], name: string, ordinal: number
         );
   return index >= 0 ? sections[index] : undefined;
 }
+
+export function headlineFromSections(sections: Section[], name: string, index: number) {
+  return directionBody(sections, name, index)?.lines.map(rowOf)
+    .find((row) => row && /^(主文案?|主标题|广告语|标语|口号|主题文案|slogan)$/i.test(row.label))?.value;
+}

@@ -2259,8 +2259,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "e199cd713830038efe4c3c62e6522ec0f7b5b57d610ca87e47b9e4568083af66",
-      "reason": "协作选案按已登记的方向映射显示该案主标题，并保留实际选案身份。"
+      "sha256": "cac954db6828a9c948d3ce2de505bed7a72e7a5af5f30c37a3686e1633f0e955",
+      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "6c4517f2ea2ed7197738c82a534869a9b6709c3ffd3681c1b4c9ba24a627049e",
@@ -2295,16 +2295,16 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/workspace.css": {
-      "sha256": "2e6a425a6573e3c846e70a5ce0e91ce134ad8cd0dd30338cbaabe13e89f21aa5",
-      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
+      "sha256": "a48cdbd74688b579c9c097bc4b21e0ed4425cafcd8df14971fcf6dd4296d5549",
+      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。"
     },
     "apps/workbench-preview/nightflight/src/types.ts": {
       "sha256": "46b83195c3f4545fedfbee1c939a6bf7def283bc8349988eee55bebc67a7b861",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "bd60a174b4055e6bce9bc8e99f1b97804cec48d3e7a15a5e9ab4794cb2f310d6",
-      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
+      "sha256": "953822c241adb2b80d9693fa39ed16685695b4adb15122797f9acd7f1583fb2c",
+      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {
       "sha256": "a08d1671d7b89b8cb9fdc5e50f3ef39d13fd92b5961f6956c7440bb1bfd6388f",

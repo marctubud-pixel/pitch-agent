@@ -187,6 +187,7 @@ details p { font-size: 14.5px; }
 .copy-browse::after { content: ''; position: absolute; inset: 0; cursor: pointer; }
 .copy-browse:focus-visible::after { outline: 2px solid var(--ink); outline-offset: -4px; }
 .copy-theme .statement { margin-bottom: 10px; }
+.copy-review [data-check-group] .kv > div { grid-template-columns: minmax(142px, 22%) minmax(0, 1fr); }
 .copy-theme .copy-review { margin-top: 28px; }
 .copy-theme details { margin-top: 12px; }
 .copy-theme .copy-scenes { margin: 24px 0; }
