@@ -16,6 +16,57 @@ export interface Artifact extends Asset {
   kind: 'text' | 'image' | 'pptx';
   text?: string;
 }
+export type CopyRole = 'copy' | 'brand' | 'user' | 'comms';
+export type CopyDuty = 'continuity' | 'feature' | 'emotion';
+export type DirectionId = 'A' | 'B' | 'C';
+export interface ReviewedDirection {
+  id: DirectionId;
+  duty: CopyDuty;
+  name: string;
+  claim: string;
+  mechanism: string;
+  strategyLink: string;
+  basis: string;
+  main: string;
+  secondary: string;
+  touchpoints: { label: string; text: string }[];
+  risk: string;
+}
+export interface CopyVote {
+  role: CopyRole;
+  draftHash: string;
+  runId: string;
+  items: {
+    directionId: DirectionId;
+    decision: 'pass' | 'revise' | 'hold' | 'reject';
+    reason: string;
+    hardRejects: string[];
+    blockers: string[];
+    scores: { dimension: string; score: number | null; evidence: string; reason: string }[];
+  }[];
+}
+export interface CopyReview {
+  version: 1;
+  status: 'ready';
+  bodyHash: string;
+  draft: { directions: ReviewedDirection[] };
+  initialDraft: { directions: ReviewedDirection[] };
+  firstVotes: CopyVote[];
+  finalVotes: CopyVote[];
+  challenges: {
+    role: CopyRole;
+    runId: string;
+    draftHash: string;
+    items: { id: string; directionId: DirectionId; dimension: string; objection: string; evidence: string; action: string }[];
+  }[];
+  changes: string[];
+  recommendation: { directionId: DirectionId; reason: string; tradeoff: string };
+  adjudication: {
+    ready: boolean;
+    reason: string;
+    rulings: { challengeId: string; verdict: 'resolved' | 'rejected' | 'pending'; reason: string }[];
+  };
+}
 export interface Project extends Summary {
   revision: number;
   mode: Mode;
@@ -31,6 +82,7 @@ export interface Project extends Summary {
     gaps: string[];
     next: string;
   };
+  copyReview?: CopyReview | null;
   directions: string[];
   choice?: string;
   error?: string;

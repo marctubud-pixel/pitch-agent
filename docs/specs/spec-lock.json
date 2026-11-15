@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.32.0",
-  "registrySha256": "08c246a90eca6fc39022cd3a8e8ed86ef8cce602f8fe46f216a78d2dac3b1cb0",
+  "baselineVersion": "1.33.0",
+  "registrySha256": "6be600a70d701156da1850fdfab5a1e4d5560b9928452a0128029e3a308aee3c",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -32,10 +32,10 @@
       }
     },
     "agent.copy-owner": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/copy-owner.md": "2605b02a7aa4029c5574824d6316dde5f92d1d73a5567bc7cb92f1570832d8eb"
+        "docs/agents/copy-owner.md": "078324cbaf173e70eac4cc536bc74f64fcd25d8859ae0bb67d739ed14920ffc6"
       }
     },
     "agent.visual-owner": {
@@ -116,10 +116,10 @@
       }
     },
     "page.themes": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "b4bdf6ecc3426d198175895f83fbf6bf468e53cbb0d37ce5796c62e04d63ceca"
+        "docs/pages/themes.md": "29d3264592b9a8fd53387e2117a98c0897bf289904535f1906d882dfcdf6f694"
       }
     },
     "page.visual": {
@@ -242,10 +242,10 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.10.0",
+      "version": "1.11.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "43cdf4d7e0cf14121b332d7c15abb6525711f1320583139df5b9a391a5966e0d"
+        "docs/specs/nightflight-stage-output.md": "ef858c83e5806ee334478f2d6ad83de3e2d7312e7ccd18bb4ead53a41329485f"
       }
     },
     "contract.workflow": {
@@ -464,6 +464,13 @@
       "files": {
         "docs/development/proposal-prelayout.md": "a214366227920c35813ac07418d1747d6d9dc6cf404103f64923d249757945cc"
       }
+    },
+    "method.copy-generation": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/specs/copy-generation.md": "5d511c80d349976ba226846906cc09e8482a06e4be1ce2b8b10b256e896d2bba"
+      }
     }
   },
   "entryDocuments": {
@@ -473,7 +480,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "3eece22255300f5f2e870a7886aa91e6a77e5e035b65cdb27637027117d7bf7e",
+    "docs/specs/README.md": "1ad64f24b73bc80afdd6b3a334a574bcda12dc27efa9f4662830d0a37f44fdae",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

@@ -1,8 +1,9 @@
 import { useState, type ReactNode } from 'react';
-import type { Project } from '../live';
+import type { CopyDuty, Project } from '../live';
+import { CopyReviewPanel } from './CopyReviewPanel';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
-import { directionBody, firstStatement, rowOf, sectionsOf, type Row } from './stageText';
+import { directionBody, rowOf, sectionsOf, type Row } from './stageText';
 
 type TextStage = 'brief' | 'research' | 'strategy' | 'copy';
 
@@ -112,6 +113,12 @@ function Research({ p, name }: { p: Project; name?: string }) {
   );
 }
 
+const copyDuties: Record<CopyDuty, string> = {
+  continuity: '稳健延续',
+  feature: '放大品牌或产品特征',
+  emotion: '放大用户氛围或情绪',
+};
+
 export function CopyOutput({
   name,
   p,
@@ -120,7 +127,7 @@ export function CopyOutput({
   busy,
   renderReview,
 }: {
-  p: Pick<Project, 'id' | 'directions' | 'mode' | 'stage' | 'status' | 'artifacts' | 'choice'>;
+  p: Pick<Project, 'id' | 'directions' | 'mode' | 'stage' | 'status' | 'artifacts' | 'choice' | 'copyReview'>;
   text: string;
   name?: string;
   onChoose?: (name: string) => void;
@@ -132,7 +139,10 @@ export function CopyOutput({
     return <Pending>{text ? '已有文案原稿，尚未登记候选方向。' : '尚无创意方向。'}</Pending>;
   const sections = sectionsOf(text);
   const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
-  const recommended = rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
+  const ticket = p.copyReview?.version === 1 && p.copyReview.status === 'ready' ? p.copyReview : undefined;
+  const recommended = ticket
+    ? ticket.draft.directions.find((d) => d.id === ticket.recommendation.directionId)?.name
+    : rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
   const recommendationSection = sections.find((s) => !p.directions.some((d) => s.heading.includes(d))
     && s.lines.some((line) => {
       const row = rowOf(line);
@@ -140,11 +150,8 @@ export function CopyOutput({
     }));
   const recommendationNotes = (recommendationSection?.lines || []).map(rowOf)
     .filter((r): r is Row => !!r && /^(推荐理由|推荐取舍|取舍)$/.test(r.label));
-  const strategyText = p.artifacts.findLast((a) => a.stage === 'strategy' && a.kind === 'text' && a.text)?.text;
-  const focus = sectionsOf(strategyText || '').find((s) => /策略发力点|核心策略|策略主张/.test(s.heading));
-  const shared = rows.find((r) => r.label === '共同策略')?.value
-    || firstStatement(focus?.lines || []).replace(/^(?:发力点|核心策略|优先放大)[：:]\s*/, '');
   const directions = p.directions.map((name, i) => {
+    const signed = ticket?.draft.directions.find((entry) => entry.name === name);
     const body = directionBody(sections, name, i);
     const fields = (body?.lines || []).map(rowOf).filter((r): r is Row => !!r);
     const value = (pattern: RegExp) => fields.find((r) => pattern.test(r.label))?.value;
@@ -160,14 +167,19 @@ export function CopyOutput({
       }
     }
     const scenes = new Map<string, string[]>();
-    for (const row of fields) {
-      if (!/场景文案|示例|样例|短句/.test(row.label)) continue;
+    const sceneRows = signed
+      ? signed.touchpoints.map((point) => ({ label: point.label, value: point.text }))
+      : fields.filter((row) => /场景文案|示例|样例|短句/.test(row.label));
+    for (const row of sceneRows) {
       const label = row.label.replace(/(?:示例|样例)$/, '') || row.label;
       const lines = scenes.get(label) || [];
       if (!lines.includes(row.value)) lines.push(row.value);
       scenes.set(label, lines);
     }
-    return { name, main, secondary, idea, review, scenes };
+    return {
+      name, main: signed?.main ?? main, secondary: signed?.secondary ?? secondary,
+      idea: signed?.mechanism ?? idea, review, scenes, signed,
+    };
   });
   const current = directions.find((d) => d.name === browsing)
     || directions.find((d) => d.name === p.choice)
@@ -177,13 +189,12 @@ export function CopyOutput({
     <>
       <section className="block copy-compare" data-artifact={name}>
         <h2>{directions.length === 3 ? '三个创意方向' : '创意方向'}</h2>
-        {shared && <p className="lead"><strong>共同策略　</strong>{shared.split(/(?<=[。！？])/, 1)[0]}</p>}
         <div className="dir-grid">
           {directions.map((d, index) => (
             <article key={d.name} className={'dir' + (d === current ? ' is-picked' : '')}>
               <p className="mono-label">
-                方向 {String.fromCharCode(65 + index)}
-                {d.name === recommended && ' · 原稿推荐'}
+                {d.signed ? copyDuties[d.signed.duty] : '方向 ' + String.fromCharCode(65 + index)}
+                {d.name === recommended && (ticket ? ' · 推荐' : ' · 原稿推荐')}
                 {d.name === p.choice && ' · 已选定'}
               </p>
               <h3>
@@ -199,6 +210,7 @@ export function CopyOutput({
         <h2>主题文案 · {current.name}</h2>
         {current.main && <p className="statement">{current.main}</p>}
         {current.secondary && <p className="lead">{current.secondary}</p>}
+        {current.signed?.basis && <p><strong>方向依据　</strong>{current.signed.basis}</p>}
         {current.scenes.size > 0 && (
           <div className="copy-scenes">
             <h3>场景文案</h3>
@@ -220,12 +232,14 @@ export function CopyOutput({
             </dl>
           </div>
         )}
-        {renderReview ? renderReview(current.name) : current.review.length > 0 && (
+        {current.signed && ticket ? <CopyReviewPanel review={ticket} direction={current.signed} />
+          : renderReview ? renderReview(current.name) : current.review.length > 0 && (
           <div className="copy-review">
             <h3>推荐与取舍</h3>
             <Rows rows={current.review} />
           </div>
         )}
+        {!ticket && !renderReview && <p className="hint">本版未登记四岗评审票，可在原稿中查看创作记录。</p>}
         {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (
           <button type="button" className="btn btn-dark" disabled={busy}
             onClick={() => onChoose(current.name)}>采用「{current.name}」</button>

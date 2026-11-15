@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
@@ -67,7 +68,13 @@ test('a personal run waits for direction and current image adoption, saves user 
     return {
       research,
       researchReturn,
-      artifacts: [{ kind, name }],
+      artifacts: [{ kind, name, ...(stage === 'copy' ? { text: 'isolated copy' } : {}) }],
+      copyReview: stage === 'copy' ? {
+        version: 1, status: 'ready', adjudication: { ready: true }, bodyHash: createHash('sha256').update('isolated copy').digest('hex'),
+        draft: { directions: ['A', 'B', 'C'].map((name) => ({ name })) },
+        firstVotes: ['copy', 'brand', 'user', 'comms'].map((role) => ({role})),
+        finalVotes: ['copy', 'brand', 'user', 'comms'].map((role) => ({role})),
+      } : undefined,
       directions: stage === 'copy' ? ['A', 'B', 'C'] : undefined,
     };
   }
@@ -117,6 +124,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   await action({ kind: 'research_again', expectedRevision: returned.revision });
   const copy = await wait('waiting');
   assert.equal(copy.stage, 'copy');
+  assert.equal(copy.copyReview.status, 'ready');
   assert.equal(
     (await action({ kind: 'choice', text: 'A', expectedRevision: copy.revision - 1 })).status,
     409,
@@ -142,6 +150,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   assert.equal(resumed.choice, null);
   assert.equal(resumed.visualAdoption, null);
   assert.deepEqual(resumed.versions.at(-1).artifacts, finished.artifacts);
+  assert.deepEqual(resumed.versions.at(-1).copyReview, finished.copyReview);
   assert.equal(calls.filter((s) => s === 'brief').length, 1);
 });
 

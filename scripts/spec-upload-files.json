@@ -388,6 +388,7 @@
     "docs/specs/GITHUB-PREPARED.md",
     "docs/specs/README.md",
     "docs/specs/change-control.md",
+    "docs/specs/copy-generation.md",
     "docs/specs/decisions.md",
     "docs/specs/final-review.md",
     "docs/specs/handoff.md",

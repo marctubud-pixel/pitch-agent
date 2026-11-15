@@ -9,7 +9,6 @@ export function QingyuCopyBody() {
   const directions = draft.directions;
   const recommended = directions.find((d) => d.id === archive.recommendation.directionId);
   const text = [
-    '共同策略：先让人看清茶种和无糖属性，再放大青屿配方使用虎跑泉水这一具体选择。',
     recommended && '推荐方向：' + recommended.name,
     ...directions.flatMap((d) => [
       '## ' + d.name,

@@ -45,6 +45,7 @@ function archiveVersion(p) {
     artifacts: [...p.artifacts],
     research: p.research ?? null,
     directions: p.directions,
+    copyReview: p.copyReview ?? null,
     choice: p.choice,
     visualAdoption: p.visualAdoption ?? null,
   });
@@ -229,6 +230,21 @@ export function createNightflight({ root, runStage, runLayout }) {
           const live = get(id);
           check(live?.claim === claim, '该次运行已结束', 409);
           check(Array.isArray(result.artifacts) && result.artifacts.length, '这一阶段没有交回文件', 422);
+          if (p.stage === 'copy') {
+            const names = result.directions;
+            const review = result.copyReview;
+            const text = result.artifacts.find((a) => a.kind === 'text' && typeof a.text === 'string')?.text;
+            check(Array.isArray(names) && names.length === 3 && names.every((d) => typeof d === 'string' && d.trim())
+              && new Set(names).size === 3, '文案未交回三个不同方向', 422);
+            check(review?.version === 1 && review.status === 'ready' && review.adjudication?.ready === true && text && hash(text) === review.bodyHash
+              && review.draft?.directions?.length === 3 && names.every((name, i) => review.draft.directions[i].name === name)
+              && [review.firstVotes, review.finalVotes].every((votes) =>
+                Array.isArray(votes) && votes.length === 4 &&
+                ['copy', 'brand', 'user', 'comms'].every((role) => votes.some((v) => v.role === role))),
+            '本版文案尚无完整的四岗原票、复核及裁定，不能交接', 422);
+            live.directions = names;
+            live.copyReview = review;
+          }
           const occupied = new Set(
             [...live.attachments, ...live.artifacts].map((a) => a.name.normalize('NFC').toLowerCase()),
           );
@@ -244,16 +260,6 @@ export function createNightflight({ root, runStage, runLayout }) {
               ...(typeof a.text === 'string' ? { text: a.text } : {}),
             };
           });
-          if (p.stage === 'copy') {
-            check(
-              result.directions?.length === 3 &&
-                result.directions.every((d) => typeof d === 'string' && d.trim()) &&
-                new Set(result.directions).size === 3,
-              '文案未交回三个不同方向',
-              422,
-            );
-            live.directions = result.directions;
-          }
           live.artifacts.push(...outputs);
           live.claim = null;
           live.owner = null;
@@ -458,6 +464,7 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
       p.error = null;
       p.research = null;
+      p.copyReview = null;
       p.directions = [];
       p.choice = null;
       p.visualAdoption = null;
@@ -491,6 +498,7 @@ export function createNightflight({ root, runStage, runLayout }) {
           p.researchFollowup = false;
           p.researchQuestionAnswered = false;
           p.research = null;
+          p.copyReview = null;
           p.directions = [];
           p.choice = null;
         }

@@ -7,6 +7,41 @@ import { tmpdir } from 'node:os';
 import { createStageRunner } from './codex-runner.mjs';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
+// Used only by the test CLI, which gets a new thread and private request for each call.
+function copyFixture(input, action) {
+  const step = input.match(/COPY_(CREATE|FIRST|CRITIC_BLIND|CHALLENGE|REVISE|RECHECK|ADJUDICATE)/)?.[1];
+  const packet = JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+  const source = '制作测试茶的包装概念稿';
+  const directions = ['山风', '晨雾', '旧街'].map((name, i) => ({
+    id: ['A','B','C'][i], duty: ['emotion','continuity','feature'][i],
+    name, basis: source, claim: name + '的主张', mechanism: name + '的创意方法', strategyLink: name + '承接策略',
+    main: name + '原稿主文', secondary: name + '的副文', touchpoints: [{label:'瓶侧',text:name + '瓶侧文案'}], risk: name + '的风险',
+  }));
+  if (step === 'CREATE') {
+    if (action === 'badcopy') directions[2].duty = directions[0].duty;
+    return {directions};
+  }
+  if (step === 'REVISE') {
+    directions[1].main = '晨雾修改后主文';
+    return {draft:{directions},changes:['澄清晨雾主文']};
+  }
+  if (['FIRST','CRITIC_BLIND','RECHECK'].includes(step)) {
+    if (step !== 'RECHECK' && (input.includes('盲测污染哨兵') || packet.firstVotes || packet.finalVotes)) throw Error('首读盲评泄露');
+    return {items:packet.draft.directions.map((d) => {
+      const low = d.id === 'B' && packet.role === 'user' && (step === 'FIRST' || action === 'copy-blocked');
+      return {directionId:d.id,decision:low?'revise':'pass',reason:'本案说明'+d.main,
+        hardRejects:[],blockers:low?['需澄清用途']:[], scores:packet.dimensions.map((dimension) => ({
+          dimension,score:low?3:4,evidence:d.main,reason:'据同版主文可以判断',
+        }))};
+    })};
+  }
+  if (step === 'CHALLENGE') return {items:packet.role === 'user' ? [{
+    directionId:'B',dimension:'直接理解',objection:'措辞需调整',evidence:'晨雾原稿主文',action:'澄清使用情境',
+  }] : []};
+  if (step === 'ADJUDICATE') return {ready:true,reason:'三个职责均有独立表达',recommendation:{directionId:'B',reason:'说明清楚',tradeoff:'适用范围有限'},rulings:[{challengeId:'user-1',verdict:'resolved',reason:'新版已澄清使用情境'}]};
+  throw Error('未知文案测试步骤');
+}
+
 const fake = `#!${process.execPath}
 const fs = require('node:fs'); const path = require('node:path');
 const args = process.argv.slice(2);
@@ -23,7 +58,7 @@ process.stdin.on('data',x=>input+=x);
 process.stdin.on('end',()=>{
  console.log(JSON.stringify({type:'thread.started',thread_id:id}));
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!input.includes('测试茶')) process.exit(4);
+ if(!['copy','badcopy','copy-blocked'].includes(action) && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -42,8 +77,7 @@ process.stdin.on('end',()=>{
    } else process.exit(12);
  }
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
- if(action==='copy') body={body:'方向一 山风／方向二 晨雾／方向三 旧街',directions:['山风','晨雾','旧街']};
- if(action==='badcopy') body={body:'山风',directions:['山风','山风','山风']};
+ if(['copy','badcopy','copy-blocked'].includes(action)) body=(${copyFixture.toString()})(input,action);
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
  if(action==='image' || action==='other-thread'){
    if(args[args.indexOf('code_mode_host')-1]!=='--enable'||args[args.indexOf('image_generation')-1]!=='--enable')process.exit(9);
@@ -77,16 +111,33 @@ async function fixture(t, action) {
   return {dir, project, requests, run:(stage,overrides={})=>runner({stage,dir,project,...overrides})};
 }
 
-test('copy returns three labels bound to the output file and an isolated CLI receipt',async t=>{
+test('copy releases three reviewed directions only after blind votes, revision, rechecks and independent ruling',async t=>{
   const f=await fixture(t,'copy');
+  f.project.feedback=[{stage:'copy',text:'盲测污染哨兵'}];
   const result=await f.run('copy');
   assert.deepEqual(result.directions,['山风','晨雾','旧街']);
   assert.match(await readFile(join(f.dir,result.artifacts[0].name),'utf8'),/旧街/);
-  const [run]=await readdir(join(f.dir,'.codex-runs'));
-  const receipt=JSON.parse(await readFile(join(f.dir,'.codex-runs',run,'receipt.json')));
-  assert.equal(receipt.exitCode,0);
-  assert.ok(receipt.threadId);
+  assert.equal(result.copyReview.status,'ready');
+  assert.equal(result.copyReview.recommendation.directionId,'B');
+  assert.equal(result.copyReview.initialDraft.directions[1].main,'晨雾原稿主文');
+  assert.equal(result.copyReview.draft.directions[1].main,'晨雾修改后主文');
+  for (const [votes,expected] of [[result.copyReview.firstVotes,3],[result.copyReview.finalVotes,4]]) {
+    assert.deepEqual(new Set(votes.map(v=>v.role)),new Set(['copy','brand','user','comms']));
+    const item=votes.find(v=>v.role==='user').items.find(d=>d.directionId==='B');
+    assert.equal(item.scores[0].score,expected);
+  }
+  const runs=await readdir(join(f.dir,'.codex-runs'));
+  const receipts=await Promise.all(runs.map(async(id)=>JSON.parse(await readFile(join(f.dir,'.codex-runs',id,'receipt.json'),'utf8'))));
+  assert.equal(receipts.length,19);
+  assert.equal(new Set(receipts.map(r=>r.threadId)).size,19);
+  assert.ok(receipts.every(r=>r.exitCode===0));
 });
+test('copy stays unpublished when final review still contains a blocking score',async t=>{
+  const f=await fixture(t,'copy-blocked');
+  await assert.rejects(f.run('copy'), /文案复核未通过/);
+  assert.ok(!(await readdir(f.dir)).some(n=>n.endsWith('.md')));
+});
+
 test('collaboration generates the chosen direction using the current thread PNG bytes',async t=>{
   const f=await fixture(t,'image');
   const result=await f.run('visual');
@@ -95,11 +146,11 @@ test('collaboration generates the chosen direction using the current thread PNG 
   assert.equal((await readFile(join(f.dir,result.artifacts[0].name))).toString('base64'),png);
   assert.match(result.artifacts[1].text,/晨雾/);
 });
-for (const [action,stage,error] of [['disabled-host','visual',/工具宿主未启用/],['other-thread','visual',/未留下原生生图文件/],['badcopy','copy',/三个/],['failed','brief',/调用失败/],['api-key','brief',/ChatGPT 账户/]]) {
+for (const [action,stage,error] of [['disabled-host','visual',/工具宿主未启用/],['other-thread','visual',/未留下原生生图文件/],['badcopy','copy',/方向|职责|探索/],['failed','brief',/调用失败/],['api-key','brief',/ChatGPT 账户/]]) {
   test('reject '+action+' without publishing business artifacts',async t=>{
     const f=await fixture(t,action);
     await assert.rejects(f.run(stage),error);
-    assert.deepEqual((await readdir(f.dir)).filter(n=>!n.startsWith('.')),[]);
+    assert.deepEqual((await readdir(f.dir)).filter(n=>!n.startsWith('.') && !n.startsWith('copy-review-attempt-')),[]);
   });
 }
 test('no unselected collaborative image, invented review or path traversal',async t=>{

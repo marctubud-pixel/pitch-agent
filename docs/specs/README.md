@@ -1,6 +1,6 @@
 # 提案工作台 · 规范基线
 
-基线版本 **1.32.0**，整理日期 **2026-11-15**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、3个固定Skill入口、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
+基线版本 **1.33.0**，整理日期 **2026-11-15**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、3个固定Skill入口、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
 
 先看[Agent组织与职责总览](../agents/README.md)，了解业务与开发两条统筹线、各岗位内部执行者和独立评审关系；再看[页面基线与责任索引](../pages/README.md)，按页面找责任、既有结构、实际路由和待定范围。
 
@@ -17,7 +17,7 @@
 | 简报 | [简报负责人](../agents/brief-owner.md) | [新建](../pages/new.md)、[简报与任务](../pages/brief.md) | 任务卡、确认和版本合同 |
 | 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r8](../../skills/design-research-lead/SKILL.md) |
 | 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | 两项基础要求，三个板块；无强制复杂Skill |
-| 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | 三方向、四岗评分及异议处理 |
+| 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [三方向创作、四岗盲评与交付](copy-generation.md) |
 | 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.0.0](../../skills/visual-development-lead/SKILL.md) |
 | 排版 | [排版负责人](../agents/layout-owner.md) | [整案排版](../pages/layout.md) | Deck Studio 1.7适配模板与原生对象 |
 | 终审交付 | [终审负责人](../agents/final-review-owner.md) | [终审](../pages/delivery.md)、[交付中心](../pages/delivery_center.md) | 真实页面／产物核验与人类决定 |

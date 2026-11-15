@@ -145,6 +145,7 @@ async function main() {
         assert.match(await rows.nth(1).innerText(), /可核对的原文/);
       }
       if (i === 3) {
+        assert.doesNotMatch(await page.locator('.copy-compare').innerText(), /共同策略/);
         assert.equal(await page.locator('.dir-grid .dir').count(), 3);
         const theme = page.locator('.copy-theme');
         const visible = await theme.innerText();
@@ -177,6 +178,7 @@ async function main() {
       await page.goto(origin + '/nightflight/#/reference/qingyu/copy');
       for (const d of round.draft.directions) {
         await page.getByRole('button', { name: d.name, exact: true }).click();
+        assert.doesNotMatch(await page.locator('.copy-compare').innerText(), /共同策略|稳健延续|放大品牌或产品特征|放大用户氛围或情绪/);
         const review = page.locator('[data-copy-review="' + d.id + '"]');
         assert.equal(await page.locator('.copy-theme .statement').innerText(), d.slogan);
         assert.equal(await page.locator('.copy-theme .lead').innerText(), d.subline);
