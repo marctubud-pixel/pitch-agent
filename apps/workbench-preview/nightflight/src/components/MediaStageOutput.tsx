@@ -147,29 +147,30 @@ export function MediaStageOutput({
     );
   }
   const reviews = p.artifacts.filter((file) => file.stage === 'final' && file.kind === 'text');
+  if (!deck && !pptx.length && !reviews.length) {
+    return <p className="pending">等待排版稿，随后进入终审。</p>;
+  }
   return (
     <>
-      <section className="block" data-artifact={deck?.name}>
-        <h2>{p.status === 'done' ? '终稿提案' : '待审提案'}</h2>
-        {deck ? <DeckPreview file={deck} /> : <p className="pending">尚无排版预览。</p>}
+      {(deck || !!pptx.length) && (
+        <section className="block" data-artifact={deck?.name}>
+          <h2>本版提案</h2>
+          {deck && <DeckPreview key={deck.url} file={deck} foldIndex />}
+        </section>
+      )}
+      <section className="block">
+        <h2>终审记录</h2>
+        {reviews.length ? (
+          <>
+            <p className="demo-banner">本地审读演练 · 正式签收待人类比稿负责人确认</p>
+            {reviews.map((review) => <ReviewRecord key={review.url} file={review} />)}
+          </>
+        ) : (
+          <p className="pending">{p.stage === 'final' && p.status === 'running' ? '正在审读本版排版稿。' : '本版尚无终审记录。'}</p>
+        )}
         <DeckDownloads files={pptx} />
       </section>
-      {id === 'final' && (
-        <>
-          <section className="block">
-            <h2>终审记录</h2>
-            {!!reviews.length && (
-              <p className="demo-banner">本地终审演练记录，正式业务签收由人类比稿负责人确认。</p>
-            )}
-            {reviews.length ? (
-              reviews.map((review) => <ReviewRecord key={review.url} file={review} />)
-            ) : (
-              <p className="pending">尚无本版终审记录。</p>
-            )}
-          </section>
-          {p.status === 'done' && <Feedback p={p} act={act} busy={busy} />}
-        </>
-      )}
+      {p.status === 'done' && <Feedback p={p} act={act} busy={busy} />}
     </>
   );
 }
@@ -209,62 +210,63 @@ function ReviewRecord({ file }: { file: Artifact }) {
         查看审读原件
       </a>
     );
+  const paragraphs = text.split(/\n\s*\n/);
+  const summary = paragraphs.find((paragraph) => /^(?:本次|本轮|本地|终审|审读|审核|综合|结论|裁定|建议|待修|待核|需修)/.test(paragraph));
   return (
     <div data-artifact={file.name} className="media-review">
-      {text.split(/\n\s*\n/).map((paragraph, i) => {
-        const lines = paragraph.split(/\r?\n/);
-        const cells = (line: string) =>
-          line
-            .trim()
-            .replace(/^\||\|$/g, '')
-            .split('|')
-            .map((cell) => cell.trim());
-        if (
-          lines.length > 1 &&
-          lines[0].startsWith('|') &&
-          cells(lines[1]).every((cell) => /^:?-+:?$/.test(cell))
-        ) {
-          const headers = cells(lines[0]);
-          return (
-            <div key={i} className="media-table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    {headers.map((h, j) => (
-                      <th key={j}>{inlineText(h)}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {lines.slice(2).map((row, k) => (
-                    <tr key={k}>
-                      {cells(row).map((cell, j) => (
-                        <td key={j}>{inlineText(cell)}</td>
+      {summary && <p>{inlineText(summary)}</p>}
+      <details>
+        <summary>查看完整审读记录</summary>
+        {paragraphs.map((paragraph, i) => {
+          const lines = paragraph.split(/\r?\n/);
+          const cells = (line: string) =>
+            line
+              .trim()
+              .replace(/^\||\|$/g, '')
+              .split('|')
+              .map((cell) => cell.trim());
+          if (
+            lines.length > 1 &&
+            lines[0].startsWith('|') &&
+            cells(lines[1]).every((cell) => /^:?-+:?$/.test(cell))
+          ) {
+            const headers = cells(lines[0]);
+            return (
+              <div key={i} className="media-table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      {headers.map((h, j) => (
+                        <th key={j}>{inlineText(h)}</th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {lines.slice(2).map((row, k) => (
+                      <tr key={k}>
+                        {cells(row).map((cell, j) => (
+                          <td key={j}>{inlineText(cell)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          }
+          return (
+            <div key={i}>
+              {lines.map((line, j) =>
+                /^#{1,6} /.test(line) ? (
+                  <h3 key={j}>{inlineText(line.replace(/^#{1,6} /, ''))}</h3>
+                ) : (
+                  <p key={j}>{inlineText(line)}</p>
+                ),
+              )}
             </div>
           );
-        }
-        return (
-          <ul className="review" key={i}>
-            <li>
-              <span className="review-mark">审读记录</span>
-              <div>
-                {lines.map((line, j) =>
-                  /^#{1,6} /.test(line) ? (
-                    <h3 key={j}>{inlineText(line.replace(/^#{1,6} /, ''))}</h3>
-                  ) : (
-                    <p key={j}>{inlineText(line)}</p>
-                  ),
-                )}
-              </div>
-            </li>
-          </ul>
-        );
-      })}
+        })}
+      </details>
     </div>
   );
 }

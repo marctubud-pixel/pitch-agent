@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.28.0",
-  "registrySha256": "4c568919a1d1ba24966aeb763cbfc363b9ab453700817dfc572703db79832e7a",
+  "baselineVersion": "1.29.0",
+  "registrySha256": "e8dd852a05b785e2708ed99454a36c90214ee7cdc1dfe89b44cfc1e89dc20b7d",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -137,10 +137,10 @@
       }
     },
     "page.delivery": {
-      "version": "1.0.2",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/delivery.md": "8922cce01276b691f3793c10c4317796d402c0d5a84c89d69e424e509cff6db5"
+        "docs/pages/delivery.md": "5b50be5ec09b24b3a9aecbdd48d269f7f4aa814733aebe7ac0f6529313b06b42"
       }
     },
     "page.content_review": {
@@ -242,10 +242,10 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "84fc792e21a03c6c11871e899cd94faede9af39e80b401c7a5a003d4540ea55f"
+        "docs/specs/nightflight-stage-output.md": "edadc4057c92ec4b6e65aa51c73904c1094627d81b159c2e0eab90ea546a2967"
       }
     },
     "contract.workflow": {
@@ -473,7 +473,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "2ab87b6814b4ba506f70d9a1a1d304c5ca777af02f35d03f345cb8cb57b5c0d3",
+    "docs/specs/README.md": "9e5a8384395740c9dab3ff088aea8ed007bd65f92dda72cdbcb4023acd773658",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

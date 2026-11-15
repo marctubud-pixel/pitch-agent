@@ -73,7 +73,7 @@ const stages = [
   ['三个创意方向', '主题文案'],
   ['草图与主视觉'],
   ['提案预览'],
-  ['终稿提案', '终审记录', '你的反馈'],
+  ['本版提案', '终审记录', '你的反馈'],
 ];
 async function main() {
   const macChrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -115,6 +115,7 @@ async function main() {
       if (process.argv.includes('--themes') && i !== 3) continue;
       if (process.argv.includes('--visual') && i !== 4) continue;
       if (process.argv.includes('--layout') && i !== 5) continue;
+      if (process.argv.includes('--delivery') && i !== 6) continue;
       if (process.argv.includes('--strategy') && i !== 2) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
