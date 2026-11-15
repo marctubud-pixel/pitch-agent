@@ -1,6 +1,7 @@
 import {gunzipSync} from 'node:zlib';
 import test from'node:test';import assert from'node:assert/strict';import{mkdtemp,realpath,readFile,readdir,rm}from'node:fs/promises';import{tmpdir}from'node:os';import{join}from'node:path';import{createHash}from'node:crypto';import{DatabaseSync}from'node:sqlite';
-import{openStore}from'./store.mjs';import{createResearchService}from'./research-service.mjs';import{createSketchNativeReader}from'./sketch-native-reader.mjs';
+import{openStore}from'./store.mjs';import{createResearchService}from'./research-service.mjs';import{createSketchNativeReader,sketchImageReadCoverage}from'./sketch-native-reader.mjs';
+import {createImageEvidenceStore} from './image-evidence.mjs';
 const hash=v=>createHash('sha256').update(typeof v==='string'||v instanceof Uint8Array?v:JSON.stringify(v)).digest('hex');
 async function files(root){const result={};async function visit(dir){for(const item of await readdir(dir,{withFileTypes:true})){const path=join(dir,item.name);if(item.isDirectory())await visit(path);else if(!path.endsWith('-shm'))result[path.slice(root.length)]=hash(await readFile(path));}}await visit(root);return result;}
 async function setup(t){const root=await realpath(await mkdtemp(join(tmpdir(),'sketch-native-read-'))),store=openStore(join(root,'db'));t.after(async()=>{store.close();await rm(root,{recursive:true,force:true})});const p=store.create({id:'read-fixture',name:'Native read engineering',brief:JSON.stringify({format:'proposal-workbench-brief-v1',fields:{proposalType:'packaging',background:'New no-model readonly fixture'}})},{actorType:'human',actorId:'fixture',runId:'fixture-run',contextId:'fixture-context',now:'2026-11-12T00:00:00.000Z'});return{root,store,p};}
@@ -11,3 +12,15 @@ test('concurrent actual second-store revision is refused instead of mixed-snapsh
 test('store admission itself rejects all command effects, independent of reader outcome',async t=>{const f=await setup(t),before=hash(f.store.read(f.p.id));const result=await f.store.withReadAdmission(f.p.id,{readAttempts:2,snapshotBytes:1000000,decodedBytes:2000000,storedBytes:2000000},()=>{assert.throws(()=>f.store.command(f.p.id,{kind:'revise-task-card',taskCardId:'should-not-exist',brief:'No write',commandId:'forbidden',expectedRevision:0},{actorType:'human',actorId:'x',runId:'x',contextId:'x'}),{code:'SNAPSHOT_READ_WRITE_FORBIDDEN'});});assert.equal(result.kind,'refused');assert.equal(hash(f.store.read(f.p.id)),before)});
 test('concurrent real semantic configuration epoch change refuses a mixed qualification',async t=>{const f=await setup(t),second=openStore(join(f.root,'db'));t.after(()=>second.close());const reader=createSketchNativeReader({store:f.store,rootDir:f.root}),reading=reader.inspect(f.p.id,{generationId:'missing',expectedRevision:0});second.registerSemanticConfiguration({readinessBinding:{providerId:'local',model:'none',role:'readiness-reviewer'},challengeBinding:{providerId:'local',model:'none',role:'semantic-challenger'},rubricVersion:'research-semantic-challenge-v1'},{expectedEpoch:0});await assert.rejects(()=>reading,{code:'SKETCH_READ_ADMISSION_FAILED'});assert.equal(f.store.read(f.p.id).revision,0);assert.equal(second.semanticConfiguration().epoch,1)});
 test('same revision raw snapshot substitution is detected by digest, not revision alone',async t=>{const f=await setup(t),reader=createSketchNativeReader({store:f.store,rootDir:f.root}),reading=reader.inspect(f.p.id,{generationId:'missing',expectedRevision:0}),other=new DatabaseSync(join(f.root,'db'));const changed=structuredClone(f.p);changed.name='Explicit new fixture raw-byte substitution';other.prepare('UPDATE revisions SET snapshot=? WHERE project_id=? AND revision=0').run(JSON.stringify(changed),f.p.id);other.close();await assert.rejects(()=>reading,e=>e.code==='SKETCH_READ_ADMISSION_FAILED'&&e.message==='SKETCH_READ_SNAPSHOT_CHANGED');assert.equal(f.store.read(f.p.id).revision,0)});
+
+test('sketch read coverage reports the digest of the reopened PNG bytes',async t=>{
+ const {root}=await setup(t);
+ const images=createImageEvidenceStore({rootDir:join(root,'images')});
+ const bytes=await readFile(new URL('./fixtures/intake/blue.png',import.meta.url));
+ const asset=await images.ingest({projectId:'read-fixture',bytes,metadata:{originalFilename:'blue.png',representation:'screenshot'}});
+ const loaded=await images.read({projectId:'read-fixture',imageId:asset.id,expectedHash:asset.sha256});
+ const coverage=sketchImageReadCoverage(loaded);
+ assert.equal(coverage.sha256,asset.sha256);
+ assert.equal(coverage.sha256,'509a5569fd3202a762be0e2c578d4965f57e2e5db5d805aa92eb9bc1de390b36');
+ assert.equal(coverage.byteLength,bytes.length);
+});
