@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.39.1",
-  "registrySha256": "80dda2fec4bf4e48117ad3810767dc5b76af0efaf5fa66934704c45bf00e6a4c",
+  "baselineVersion": "1.40.0",
+  "registrySha256": "84c2e61fb81d7e0374db8f949f1c79a07f5609f908a66a3e8f6ac7ad4d07a8e8",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -123,10 +123,10 @@
       }
     },
     "page.visual": {
-      "version": "1.4.1",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "2e8e5b7184a34be41ececa3184240a79832202d04b42e408855019981ae4991b"
+        "docs/pages/visual.md": "51b8dfb3f1bc6e53b77c361cbd4402c40fe6954759e422e99c3363a696f1e9d7"
       }
     },
     "page.layout": {
@@ -242,10 +242,10 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.15.1",
+      "version": "1.16.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "812b081f4b28952078144a5e489dbbc59560e1fcdcb3cb13417d042faa2459bf"
+        "docs/specs/nightflight-stage-output.md": "dda5bfbb1ffa89172049ac8305a7ad8b01e95309ab9f2b8c322b82200383c226"
       }
     },
     "contract.workflow": {
@@ -298,10 +298,10 @@
       }
     },
     "contract.pages": {
-      "version": "1.4.0",
+      "version": "1.4.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/README.md": "44987ccb75bf7f31e87d727ad32e0fd83d67ed7bb75149de988cead7112f0dc0"
+        "docs/pages/README.md": "b9dbeece835a37a0dc52326deb2bf54756227e1ee94e8bbe1e250ed1da5fd52d"
       }
     },
     "contract.final-review": {
@@ -480,7 +480,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "93f14c51e4fd61a3f8f7a3c2d54681b584eac948f7ab4b57fff90319f16dec19",
+    "docs/specs/README.md": "d6df45aadb4e39591ff744138cec0fb88a653854ae48b6b6e93da0264dabcbca",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

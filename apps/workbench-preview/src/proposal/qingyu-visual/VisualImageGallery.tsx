@@ -1,41 +1,66 @@
 import { useId, useRef, useState, type ReactNode } from 'react';
 import './visual-image-gallery.css';
 
-export interface GalleryImage { src: string; title: string; alt: string; thumbnailScale?: number }
+export interface GalleryImage { src: string; title: string; alt: string }
 export interface GalleryDirection {
   id: string; name: string; description?: string;
-  references: readonly GalleryImage[]; sketches: readonly GalleryImage[];
-  main?: GalleryImage; mockup?: GalleryImage;
+  references: readonly GalleryImage[]; sketch?: GalleryImage;
+  mains: readonly GalleryImage[]; extensions?: readonly GalleryImage[];
+  format?: 'portrait' | 'landscape'; extensionLabel?: string;
+  mockup?: GalleryImage;
 }
 
-function Picture({ image, thumbnail = false }: { image: GalleryImage; thumbnail?: boolean }) {
+function Picture({ image, loaded }: { image: GalleryImage; loaded?: (image: HTMLImageElement) => void }) {
   const [failed, setFailed] = useState(false);
   return failed ? <span className="vg-missing" role="status">图片暂未载入</span> :
-    <img src={image.src} alt={image.alt} style={thumbnail && image.thumbnailScale ? { transform: `scale(${image.thumbnailScale})` } : undefined} onError={() => setFailed(true)} />;
+    <img src={image.src} alt={image.alt} onLoad={event => loaded?.(event.currentTarget)} onError={() => setFailed(true)} />;
 }
 
-function CurrentArtwork({ direction, zoom }: { direction: GalleryDirection; zoom: (image: GalleryImage) => void }) {
-  const [index, select] = useState(0);
-  const sketch = direction.sketches[index] ?? direction.sketches[0];
-  function art(image: GalleryImage | undefined, empty: string) {
-    return image ? <button type="button" className="vg-zoom" aria-label={'放大' + image.title} aria-haspopup="dialog" onClick={() => zoom(image)}>
-      <Picture key={image.src} image={image} />
-    </button> : <p className="vg-missing" role="status">{empty}</p>;
-  }
+type Zoom = (image: GalleryImage) => void;
+
+function Artwork({ images, label, zoom, loaded }: {
+  images: readonly GalleryImage[]; label: string; zoom: Zoom; loaded?: (image: HTMLImageElement) => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const [ratio, setRatio] = useState<number>();
+  const image = images[index] ?? images[0];
+  if (!image) return <figure><figcaption className="vg-missing">{label}待补</figcaption></figure>;
+  return <figure>
+    <button type="button" className="vg-zoom" style={images.length > 1 && ratio ? { aspectRatio: ratio } : undefined} aria-label={'放大' + image.title} aria-haspopup="dialog" onClick={() => zoom(image)}>
+      <Picture key={image.src} image={image} loaded={index === 0 ? element => {
+        if (images.length > 1) setRatio(element.naturalWidth / element.naturalHeight);
+        loaded?.(element);
+      } : undefined} />
+    </button>
+    <figcaption>{label}
+      {images.length > 1 && <span className="vg-pager">
+        <button type="button" aria-label={label + '上一张'} onClick={() => setIndex((index + images.length - 1) % images.length)}>←</button>
+        <span aria-live="polite">{index + 1} / {images.length}</span>
+        <button type="button" aria-label={label + '下一张'} onClick={() => setIndex((index + 1) % images.length)}>→</button>
+      </span>}
+    </figcaption>
+  </figure>;
+}
+
+function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirection; letter: string; zoom: Zoom }) {
+  const [measuredPortrait, setMeasuredPortrait] = useState(false);
+  const portrait = direction.format ? direction.format === 'portrait' : measuredPortrait;
+  const extensionLabel = direction.extensionLabel ?? '延展图';
+  const extension = <Artwork label={extensionLabel} images={direction.extensions ?? []} zoom={zoom} />;
   return <>
     <section className="vg-section" data-visual-direction={direction.id}>
-      <h3>草图与主视觉 · {direction.name}</h3>
-      <div className="vg-pair">
-        <figure><figcaption>构图草图</figcaption>{art(sketch, '草图待交回')}
-          {direction.sketches.length > 1 && <div className="vg-sketch-choices" role="group" aria-label="切换构图草图">
-            {direction.sketches.map((image, i) => <button key={image.src} type="button" aria-pressed={image === sketch}
-              aria-label={'查看' + image.title} onClick={() => select(i)}><Picture image={image} /></button>)}
-          </div>}
-        </figure>
-        <figure><figcaption>主视觉</figcaption>{art(direction.main, '主视觉待交回')}</figure>
+      <h3>草图与主视觉 · 方向 {letter} · {direction.name}</h3>
+      <div className={'vg-pair' + (portrait ? ' vg-portrait' : '')}>
+        <Artwork label="构图草图" images={direction.sketch ? [direction.sketch] : []} zoom={zoom} />
+        <Artwork label="主视觉" images={direction.mains} zoom={zoom}
+          loaded={image => setMeasuredPortrait(image.naturalHeight > image.naturalWidth)} />
+        {portrait && extension}
       </div>
     </section>
-    <section className="vg-section vg-mockup"><h3>样机 · {direction.name}</h3>{art(direction.mockup, '样机待交回')}</section>
+    {!portrait && <section className="vg-section vg-extension"><h3>{extensionLabel}</h3>{extension}</section>}
+    <section className="vg-section vg-mockup"><h3>样机 · {direction.name}</h3>
+      {direction.mockup ? <Artwork label="样机" images={[direction.mockup]} zoom={zoom} /> : <p className="vg-missing">样机待交回</p>}
+    </section>
   </>;
 }
 
@@ -62,11 +87,11 @@ export function VisualImageGallery({ directions, currentId, onDirectionChange, d
         </button>
         <div className="vg-references">{direction.references.length ? direction.references.map((image) =>
           <figure key={image.src}><button type="button" className="vg-zoom" aria-label={'放大' + image.title}
-            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} thumbnail /></button>
+            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} /></button>
             <figcaption>{image.title}</figcaption></figure>) : <p className="vg-missing">参考图待补</p>}</div>
       </div>)}
     </section>
-    <CurrentArtwork key={current.id} direction={current} zoom={zoom} />
+    <CurrentArtwork key={current.id} direction={current} letter={String.fromCharCode(65 + directions.indexOf(current))} zoom={zoom} />
     {details && <details key={'notes-' + current.id} className="vg-details"><summary>评审与说明 · {current.name}</summary>{details}</details>}
     <dialog ref={dialog} className="vg-dialog" aria-labelledby={headingId}
       onClick={event => { if (event.target === dialog.current) dialog.current?.close(); }}>

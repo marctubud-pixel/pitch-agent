@@ -8,7 +8,7 @@ type MediaStage = 'visual' | 'layout' | 'final';
 
 export function visualCaption(p: Project, file: Artifact) {
   const ordinal = /^visual-(\d+)-[\da-f]+\.png$/i.exec(file.name);
-  return visualRecord(p, file)?.title || (ordinal && p.directions[Number(ordinal[1]) - 1]) || file.name;
+  return file.visual?.direction || visualRecord(p, file)?.title || (ordinal && p.directions[Number(ordinal[1]) - 1]) || file.name;
 }
 
 function visualRecord(p: Project, image: Artifact) {
@@ -29,14 +29,23 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   const initial = reports.find(item => item.file.name === name)?.title;
   const [selected, setSelected] = useState(initial || p.choice || p.directions[0]);
   const directions: GalleryDirection[] = [...new Set(p.directions)].map(title => {
-    const current = reports.find(item => item.title === title);
-    const src = current && safeURL(current.file.url);
-    return { id: title, name: title, description: current?.record?.description?.split(/[。\n]/)[0], references: [], sketches: [],
-      main: src ? { src, title: title + ' · 概念稿', alt: title + '的视觉概念稿' } : undefined };
+    const group = reports.filter(item => item.title === title);
+    const current = group.find(item => !item.file.visual || item.file.visual.role === 'main');
+    const metadata = current?.file.visual ?? group.find(item => item.file.visual)?.file.visual;
+    function pictures(role: 'sketch' | 'main' | 'extension' | 'mockup') {
+      return group.filter(item => (item.file.visual?.role ?? 'main') === role)
+        .flatMap(({ file }) => {
+          const src = safeURL(file.url);
+          return src ? [{ src, title: file.name, alt: title + ' · ' + file.name }] : [];
+        });
+    }
+    return { id: title, name: title, description: current?.record?.description?.split(/[。\n]/)[0], references: [],
+      format: metadata?.format, extensionLabel: metadata?.output === 'packaging' ? '包装延展' : metadata?.output === 'kv' ? 'KV 延展' : '延展图',
+      sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: pictures('mockup')[0] };
   });
   const active = directions.find(item => item.id === selected) ?? directions[0];
   const current = reports.find(item => item.title === active?.id);
-  const other = reports.filter(item => !directions.some(direction => direction.main?.src === safeURL(item.file.url)));
+  const other = reports.filter(item => !directions.some(direction => direction.id === item.title));
   return <>
     {!!directions.length && active && <div data-artifact={current?.file.name}>
       <VisualImageGallery directions={directions} currentId={active.id} onDirectionChange={setSelected}

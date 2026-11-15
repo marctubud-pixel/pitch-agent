@@ -71,7 +71,7 @@ const stages = [
   ['关键发现'],
   ['核心策略'],
   ['三个创意方向'],
-  ['视觉参考', '草图与主视觉', '样机'],
+  ['视觉参考', '草图与主视觉', '延展图', '样机'],
   ['提案预览'],
   ['本版提案', '终审记录', '你的反馈'],
 ];
@@ -161,6 +161,21 @@ async function main() {
       await page.getByRole('button', {name:/方向 B.*明月/}).click();
       assert.equal(await page.locator('.vg-pair img, .vg-mockup img').count(), 0);
       assert.deepEqual(actions, []);
+      const slides = ['main', 'extension', 'extension'].map((role, index) => ({
+        ...image, name: '横版图' + index, url: image.url + '?slide=' + index,
+        visual: { direction: '明月', role, output: 'kv', format: 'landscape' },
+      }));
+      project.artifacts.push(...slides);
+      await page.reload();
+      await page.locator('.stage-head').nth(4).click();
+      await page.getByRole('button', {name:/方向 B.*明月/}).click();
+      assert.equal(await page.locator('.vg-pair > figure').count(), 2);
+      const extension = page.locator('.vg-extension');
+      assert.equal(await extension.locator('h3').innerText(), 'KV 延展');
+      await extension.getByRole('button', {name:'KV 延展下一张'}).click();
+      assert.equal(await extension.locator('img').getAttribute('src'), origin + slides[2].url);
+      await extension.getByRole('button', {name:'KV 延展上一张'}).click();
+      assert.equal(await extension.locator('img').getAttribute('src'), origin + slides[1].url);
       await page.goto(origin + '/nightflight/#/reference/qingyu/visual?dir=v2');
       await page.locator('[data-visual-direction="v2"]').waitFor();
       assert.equal(await page.locator('.vg-reference-row').count(), 3);
@@ -168,13 +183,14 @@ async function main() {
         const row = page.locator('[data-reference-direction="' + id + '"]');
         assert.equal(await row.locator('.vg-references img').count(), 3);
         assert.ok((await row.locator('.vg-description').innerText()).trim());
-        assert.deepEqual(await row.locator('.vg-references img').evaluateAll(images => images.map(img => getComputedStyle(img).objectFit)), ['cover', 'cover', 'cover']);
+        assert.deepEqual(await row.locator('.vg-references img').evaluateAll(images => images.map(img => getComputedStyle(img).objectFit)), ['contain', 'contain', 'contain']);
         await row.locator('.vg-direction').click();
         const pair = page.locator('[data-visual-direction="' + id + '"]');
         await pair.waitFor();
         assert.ok(page.url().endsWith('dir=' + id));
-        await pair.getByRole('group').getByRole('button').nth(2).click();
-        assert.match(await pair.locator('.vg-zoom img').first().getAttribute('src'), new RegExp(id + '-sketch-3'));
+        assert.equal(await pair.locator('.vg-portrait > figure').count(), 3);
+        assert.match(await pair.locator('figure').last().innerText(), /包装延展待补/);
+        assert.match(await pair.locator('.vg-zoom img').first().getAttribute('src'), new RegExp(id + '-sketch-1'));
         assert.match(await pair.locator('.vg-zoom img').last().getAttribute('src'), new RegExp(id + '-main'));
         assert.match(await page.locator('.vg-mockup img').getAttribute('src'), new RegExp(id + '-mockups'));
         assert.equal(await page.locator('.vg-details').evaluate(el => el.open), false);

@@ -15,6 +15,12 @@ export interface Artifact extends Asset {
   stage: StageId;
   kind: 'text' | 'image' | 'pptx';
   text?: string;
+  visual?: {
+    direction: string;
+    role: 'sketch' | 'main' | 'extension' | 'mockup';
+    output?: 'packaging' | 'kv';
+    format?: 'portrait' | 'landscape';
+  };
 }
 export type CopyRole = 'copy' | 'brand' | 'user' | 'comms';
 export type CopyDuty = 'continuity' | 'feature' | 'emotion';

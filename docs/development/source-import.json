@@ -2319,8 +2319,8 @@
       "reason": " 接入按方向查看的视觉图册。"
     },
     "apps/workbench-preview/src/proposal/qingyu-visual/visual-preview.test.ts": {
-      "sha256": "69e5782bcfc249cb6975acfc7779fe54e6548357ea2d444695937d1f4d44f165",
-      "reason": " 接入按方向查看的视觉图册。"
+      "sha256": "e9ad1f2bb78557baa32bfc3d9d7eead7a494080f58c2384469266413c223a5a4",
+      "reason": " 接入按方向查看的视觉图册。 视觉图稿按画幅与产物用途展示。"
     }
   },
   "nightflightArchive": {

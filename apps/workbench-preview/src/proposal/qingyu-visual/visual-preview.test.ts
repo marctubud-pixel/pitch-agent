@@ -68,7 +68,7 @@ beforeEach(async () => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Qingyu visual layout preview', () => {
-  it('shows the bound reference rows, switchable sketches, main concept and mockup without writing to the proposal', async () => {
+  it('shows the bound reference rows, one representative sketch, main concept and mockup without writing to the proposal', async () => {
     const input = await data();
     const before = JSON.stringify(input);
     const result = resolveQingyuThemesPreview(input);
@@ -86,8 +86,9 @@ describe('Qingyu visual layout preview', () => {
       expect(html).toContain(`data-visual-direction="${direction.id}"`);
       expect(html).toContain(`/${direction.id}-main.png`);
       expect(html).toContain(`/${direction.id}-mockups.png`);
-      for (const i of [1,2,3]) expect(html).toContain(`/${direction.id}-sketch-${i}.png`);
-      expect(html).toContain('aria-label="切换构图草图"');
+      expect(html).toContain(`/${direction.id}-sketch-1.png`);
+      expect(html).not.toContain(`/${direction.id}-sketch-2.png`);
+      expect(html).toContain('包装延展');
       expect(html.split('<details class="vg-details">')[0]).not.toContain(direction.slogan);
       expect(html).toContain('尚无独立视觉评分或正式采用');
       expect(html).not.toContain(direction.subline);
