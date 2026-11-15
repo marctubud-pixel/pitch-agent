@@ -1,6 +1,6 @@
 # 夜航本机实操入口 · 2026-11-15
 
-根目录 `npm run dev` 提供夜航首页及本机项目服务。填写 Brief 后使用已登录的 Codex，视觉采用后由原 Deck Studio 排版并下载。隔离夹具已验证长正文分页、PPTX 原生文字、人工选定方向和原图字节；用户自己的夜航提案及外部 API 实测留给接下来的试用。见[本机操作说明](../docs/development/nightflight-local.md)。
+根目录 `npm run dev` 提供夜航首页及本机项目服务。填写 Brief 后使用已登录的 Codex，视觉采用后由原 Deck Studio 排版并下载。隔离夹具已验证长正文分页、PPTX 原生文字、人工选定方向和原图字节；夜航当前可在原项目启动新一轮研究。继续使用本机 Codex 的项目从研究详情发起补查，研究不足以支撑策略时留在该阶段。真实外部 API 属后续验收。见[本机操作说明](../docs/development/nightflight-local.md)。
 
 # 下一轮计划 · 夜航 UI、真实 API 与上线
 

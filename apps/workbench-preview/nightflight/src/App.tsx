@@ -14,7 +14,7 @@ import {
   clock,
   encodeFile,
   endpoint,
-  statusName,
+  projectStatus,
   type Action,
   type Project,
   type Summary,
@@ -46,7 +46,9 @@ export function App() {
     lastStatus = useRef(''),
     [seen, mark] = useState(0),
     [notice, setNotice] = useState(false);
-  const id = route.startsWith('/p/') ? route.slice(3) : '',
+  const [routePath, query] = route.split('?');
+  const requestedResearch = new URLSearchParams(query).get('stage') === 'research';
+  const id = routePath.startsWith('/p/') ? routePath.slice(3) : '',
     workspace = !!id && p?.id === id,
     start = route === '/new',
     mode = route === '/mode' && !!brief;
@@ -73,7 +75,7 @@ export function App() {
     setConnection('');
     setLog(false);
     setLibrary(false);
-    open(undefined);
+    open(id && requestedResearch ? { id: 'research' } : undefined);
     setParty(false);
     setNotice(false);
     lastStatus.current = '';
@@ -104,10 +106,10 @@ export function App() {
       alive = false;
       clearTimeout(t);
     };
-  }, [id, reload]);
+  }, [id, reload, requestedResearch]);
   useEffect(() => {
     if (!workspace || !p) return;
-    if (p.status === 'waiting' && lastStatus.current !== 'waiting') setChat(true);
+    if (p.status === 'waiting' && p.stage !== 'research' && lastStatus.current !== 'waiting') setChat(true);
     if (p.status === 'done' && lastStatus.current && lastStatus.current !== 'done') {
       setParty(true);
       setNotice(true);
@@ -166,11 +168,12 @@ export function App() {
         kind,
         text,
         attachments,
-        expectedRevision: kind === 'choice' || kind === 'adopt' ? p.revision : undefined,
+        expectedRevision:
+          kind === 'choice' || kind === 'adopt' || kind === 'research_again' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;
-      if (hash() === '/p/' + id) put(d.project);
+      if (hash().split('?')[0] === '/p/' + id) put(d.project);
       return true;
     } catch (e) {
       error(String(e));
@@ -205,7 +208,7 @@ export function App() {
         mode={workspace ? p.mode : null}
         live={workspace && p.status === 'running'}
         idleText="就绪。把 Brief 交给我。"
-        status={workspace ? statusName[p.status] : undefined}
+        status={workspace ? projectStatus(p) : undefined}
       />
       <TopBar
         projectTitle={workspace ? p.title : undefined}
@@ -329,7 +332,14 @@ export function App() {
             )}
           </div>
           {chat ? (
-            <ChatPanel p={p} projects={projects} close={() => setChat(false)} act={act} busy={busy} />
+            <ChatPanel
+              openResearch={() => openDetail('research')}
+              p={p}
+              projects={projects}
+              close={() => setChat(false)}
+              act={act}
+              busy={busy}
+            />
           ) : (
             <button className="chat-fab" onClick={() => setChat(true)} aria-label="打开与主理人的对话">
               <Icon name="chat" size={26} />

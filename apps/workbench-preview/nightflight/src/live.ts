@@ -23,14 +23,22 @@ export interface Project extends Summary {
   events: { stage: StageId; text: string; at: string }[];
   artifacts: Artifact[];
   versions?: { at: string; stage: StageId; artifacts: Artifact[] }[];
+  research?: {
+    ready: boolean;
+    findings: { conclusion: string; evidence: string; source: string; url: string; implication: string }[];
+    gaps: string[];
+    next: string;
+  };
   directions: string[];
   choice?: string;
   error?: string;
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'message' | 'choice' | 'retry' | 'adopt';
-export const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
+export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again';
+const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
+export const projectStatus = (p: Summary) =>
+  p.stage === 'research' && p.status === 'waiting' ? '待补查' : statusName[p.status];
 export function phase(p: Project, s: StageId) {
   const n = STAGES.findIndex((x) => x.id === s),
     current = STAGES.findIndex((x) => x.id === p.stage);
@@ -43,7 +51,7 @@ export function phase(p: Project, s: StageId) {
         : 'active';
 }
 export const stageLabel = (p: Project, s: StageId) =>
-  s === p.stage ? statusName[p.status] : phase(p, s) === 'done' ? '已完成' : '未开始';
+  s === p.stage ? projectStatus(p) : phase(p, s) === 'done' ? '已完成' : '未开始';
 export const endpoint = (id: string) => '/api/projects/' + encodeURIComponent(id);
 export async function api<T>(path: string, body?: unknown): Promise<T> {
   const r = await fetch(

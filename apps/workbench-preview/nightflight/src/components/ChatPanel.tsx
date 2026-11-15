@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { clock, fileIssue, statusName, type Action, type Project, type Summary } from '../live';
+import { clock, fileIssue, projectStatus, type Action, type Project, type Summary } from '../live';
 import { BotFigure } from './Bot';
 import { AttachButton, AttachmentChips } from './Attachments';
 export type Act = (kind: Action, text: string, files?: File[]) => Promise<boolean>;
@@ -13,7 +13,7 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
         </button>
       </div>
     );
-  if (p.status !== 'waiting') return null;
+  if (p.status !== 'waiting' || p.stage === 'research') return null;
   return (
     <div className="msg-body">
       <p className="msg-flag">需要你决定</p>
@@ -48,12 +48,14 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
 export function ChatPanel({
   p,
   projects,
+  openResearch,
   close,
   act,
   busy,
 }: {
   p: Project;
   projects: Summary[];
+  openResearch: () => void;
   close: () => void;
   act: Act;
   busy: boolean;
@@ -90,7 +92,7 @@ export function ChatPanel({
         <BotFigure state={p.status === 'running' ? 'working' : 'idle'} size={38} />
         <div>
           <strong>主理人</strong>
-          <span>{statusName[p.status]}</span>
+          <span>{projectStatus(p)}</span>
         </div>
         <button className="chat-close" onClick={close} aria-label="关闭对话">
           ×
@@ -106,6 +108,14 @@ export function ChatPanel({
             <span className="time">{clock(r.at)}</span>
           </div>
         ))}
+        {p.stage === 'research' && p.status === 'waiting' && (
+          <div className="msg-body">
+            <p>研究还需要补充依据。</p>
+            <button className="btn" onClick={openResearch}>
+              查看研究与补查
+            </button>
+          </div>
+        )}
         <Decisions p={p} act={act} busy={busy} />
       </div>
       <div className="composer">

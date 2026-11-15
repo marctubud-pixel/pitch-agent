@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { StageId } from '../types';
 import { STAGES, STAGE_BY_ID } from '../data/project';
 import { DeckPreview } from './DeckPreview';
-import { isDeckPreview, phase, safeURL, stageLabel, statusName, type Project } from '../live';
+import { isDeckPreview, phase, safeURL, stageLabel, projectStatus, type Project } from '../live';
 import { BotCard } from './Bot';
 import { Icon } from './Icon';
 export function Workspace({
@@ -33,9 +33,11 @@ export function Workspace({
     p.status === 'failed'
       ? '查看中断原因，确认后重新尝试。'
       : p.status === 'waiting'
-        ? p.stage === 'visual'
-          ? '打开视觉稿，确认是否采用这一版做本地排版。'
-          : '在对话里查看备选方向，选定后继续。'
+        ? p.stage === 'research'
+          ? '查看研究缺口，补查后再交给策略。'
+          : p.stage === 'visual'
+            ? '打开视觉稿，确认是否采用这一版做本地排版。'
+            : '在对话里查看备选方向，选定后继续。'
         : p.status === 'done'
           ? '查看终审记录，下载可编辑提案。'
           : st.summary;
@@ -45,7 +47,7 @@ export function Workspace({
         <h2 className="col-title">主理人</h2>
         <BotCard
           bot={{
-            label: statusName[p.status],
+            label: projectStatus(p),
             detail: st.name,
             state: ({ waiting: 'waiting', done: 'done', failed: 'blocked', running: 'working' } as const)[
               p.status
@@ -63,9 +65,12 @@ export function Workspace({
             <Icon name="log" />
             执行记录
           </button>
-          <button className="btn" onClick={chat}>
+          <button
+            className="btn"
+            onClick={p.stage === 'research' && p.status === 'waiting' ? () => open('research') : chat}
+          >
             <Icon name="chat" />
-            {p.status === 'waiting' ? '去做决定' : '和主理人说话'}
+            {p.status === 'waiting' ? (p.stage === 'research' ? '查看研究' : '去做决定') : '和主理人说话'}
           </button>
         </div>
         <h2 className="col-title col-title-gap">接下来</h2>

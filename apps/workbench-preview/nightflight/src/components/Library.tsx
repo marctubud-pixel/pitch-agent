@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, endpoint, safeURL, statusName, type Asset, type Project, type Summary } from '../live';
+import { api, endpoint, safeURL, projectStatus, type Asset, type Project, type Summary } from '../live';
 import { Icon } from './Icon';
 
 export function Library({
@@ -105,7 +105,7 @@ export function Library({
                   }}
                 >
                   <span className="lib-row-name">{x.title}</span>
-                  <span className="lib-row-meta">{statusName[x.status]}</span>
+                  <span className="lib-row-meta">{projectStatus(x)}</span>
                 </button>
               ))}
             </section>

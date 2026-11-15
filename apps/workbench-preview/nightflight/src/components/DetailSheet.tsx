@@ -5,6 +5,122 @@ import { isDeckPreview, clock, phase, safeURL, stageLabel, type Artifact, type P
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
 
+function sourceURL(raw: string) {
+  try {
+    const url = new URL(raw);
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
+  const [focus, setFocus] = useState('');
+  const handoff = p.research;
+  const isResearch = p.stage === 'research';
+  const isChecking = isResearch && p.status === 'running';
+  const canStart = p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
+  if (p.stage === 'brief') return null;
+  return (
+    <div className="research-review">
+      <section className="block">
+        <h2>研究结论</h2>
+        {isChecking ? (
+          <p className="lead" role="status">
+            正在取证，完成后会在这里显示结论和依据。
+          </p>
+        ) : handoff ? (
+          <>
+            <p className="research-state">{handoff.ready ? '可交给策略' : '待补查，暂缓交给策略'}</p>
+            {!handoff.findings.length && <p>本轮尚无可供策略使用的研究结论。</p>}
+            {handoff.findings.map((finding, i) => {
+              const url = sourceURL(finding.url);
+              return (
+                <section className="research-finding" key={i}>
+                  <h3>{finding.conclusion}</h3>
+                  <dl className="kv">
+                    <div>
+                      <dt>依据</dt>
+                      <dd>
+                        {finding.evidence}
+                        {finding.source && (
+                          <small>
+                            {url ? (
+                              <a href={url} target="_blank" rel="noopener noreferrer">
+                                {finding.source}
+                              </a>
+                            ) : (
+                              finding.source
+                            )}
+                          </small>
+                        )}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>对策略的用处</dt>
+                      <dd>{finding.implication}</dd>
+                    </div>
+                  </dl>
+                </section>
+              );
+            })}
+            {!!handoff.gaps.length && (
+              <>
+                <h3>仍需补查</h3>
+                <ul className="plain-list">
+                  {handoff.gaps.map((g, i) => (
+                    <li key={i}>{g}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {handoff.next && (
+              <p className="research-next">
+                <strong>{handoff.ready ? '交接建议' : '下一步'}</strong>　{handoff.next}
+              </p>
+            )}
+          </>
+        ) : (
+          <p>
+            {p.artifacts.some((a) => a.stage === 'research')
+              ? '这份历史研究稿尚无逐条依据及策略交接记录，可查看原稿或从研究重新开始。'
+              : '尚未取得本轮研究结论。'}
+          </p>
+        )}
+        {isResearch && p.status === 'failed' && (
+          <p className="notice" role="status">
+            {p.error}
+          </p>
+        )}
+      </section>
+      {canStart && (
+        <form
+          className="research-action"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (await act('research_again', focus.trim())) setFocus('');
+          }}
+        >
+          <label htmlFor="research-focus">补查重点（选填）</label>
+          <input
+            id="research-focus"
+            value={focus}
+            onChange={(e) => setFocus(e.target.value)}
+            placeholder="例如，优先比较门店海报与社交媒体海报"
+          />
+          <p>
+            {isResearch
+              ? '可直接按现有简报和缺口继续取证。'
+              : '本次将沿用原简报，保存现有研究及后续产物为历史版本，重新检索。'}
+          </p>
+          <button type="submit" className="btn btn-dark" disabled={busy}>
+            {isResearch ? '开始补查' : '从研究重新开始'}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
 function FileView({ a }: { a: Artifact }) {
   const [text, show] = useState(a.text || ''),
     [err, setErr] = useState('');
@@ -95,6 +211,7 @@ export function DetailSheet({
             </p>
             <h1>{stage.name}</h1>
           </header>
+          {id === 'research' && <ResearchReview key={p.id} p={p} act={act} busy={busy} />}
           {id === 'brief' && (
             <section className="block">
               <h2>原始需求</h2>
@@ -104,17 +221,28 @@ export function DetailSheet({
           {id === 'final' && (
             <p className="demo-banner">此处记录本地终审与交付。业务批准需要由负责人另行确认。</p>
           )}
-          {a.map((x) =>
-            isDeckPreview(x) ? (
-              <section key={x.url} className="block" data-artifact={x.name}>
-                <h2>提案预览</h2>
-                <DeckPreview file={x} />
-              </section>
-            ) : (
-              <FileView key={x.url} a={x} />
-            ),
+          {id === 'research' && a.length > 0 && (
+            <details key={name ?? 'research-report'} className="research-original" open={!!name || undefined}>
+              <summary>研究原稿与下载</summary>
+              {a.map((x) => (
+                <FileView key={x.url} a={x} />
+              ))}
+            </details>
           )}
-          {a.length === 0 && <p className="pending">这个阶段还没有交付文件。</p>}
+          {id !== 'research' &&
+            a.map((x) =>
+              isDeckPreview(x) ? (
+                <section key={x.url} className="block" data-artifact={x.name}>
+                  <h2>提案预览</h2>
+                  <DeckPreview file={x} />
+                </section>
+              ) : (
+                <FileView key={x.url} a={x} />
+              ),
+            )}
+          {a.length === 0 && (id !== 'research' || p.stage === 'brief') && (
+            <p className="pending">这个阶段还没有交付文件。</p>
+          )}
           {e.length > 0 && (
             <section className="block">
               <h2>执行记录</h2>
@@ -128,7 +256,7 @@ export function DetailSheet({
               </ul>
             </section>
           )}
-          {id === p.stage && <Decisions p={p} act={act} busy={busy} />}
+          {id === p.stage && id !== 'research' && <Decisions p={p} act={act} busy={busy} />}
         </article>
       </div>
     </div>

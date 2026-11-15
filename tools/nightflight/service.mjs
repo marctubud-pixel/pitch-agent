@@ -38,6 +38,34 @@ function filename(value) {
 function note(p, text) {
   p.events.push({ stage: p.stage, at: now(), text });
 }
+function archiveVersion(p) {
+  p.versions.push({
+    at: now(),
+    stage: p.stage,
+    artifacts: [...p.artifacts],
+    research: p.research ?? null,
+    directions: p.directions,
+    choice: p.choice,
+    visualAdoption: p.visualAdoption ?? null,
+  });
+}
+
+function researchHandoff(report) {
+  const text = (value) => typeof value === 'string' && value.trim().length > 0;
+  const findings = Array.isArray(report?.findings)
+    ? report.findings.filter((f) => f && [f.conclusion, f.evidence, f.source, f.implication].every(text))
+    : [];
+  const gaps = Array.isArray(report?.gaps) ? report.gaps.filter(text) : [];
+  const ready = report?.ready === true && findings.length > 0 && findings.length === report.findings.length;
+  if (!ready && !gaps.length) gaps.push('当前材料尚未提供可供策略使用的研究判断。');
+  return {
+    ready,
+    findings,
+    gaps,
+    next: text(report?.next) ? report.next : ready ? '' : '补查与本案决策相关的公开资料和实际案例。',
+  };
+}
+
 function publicView(p) {
   const { owner, claim, inputHash, commands, ...visible } = p;
   const unstore = ({ storageKey, ...record }) => record;
@@ -141,6 +169,18 @@ export function createNightflight({ root, runStage, runLayout }) {
           save(p);
           const dir = mkdtempSync(join(root, id, 'attempt-'));
           const input = publicView(p);
+          if (p.stage === 'research') {
+            const previous = p.versions.findLast(
+              (v) => v.research || v.artifacts.some((a) => a.stage === 'research'),
+            );
+            if (previous)
+              input.previousResearch = previous.research ?? {
+                legacyText: previous.artifacts
+                  .filter((a) => a.stage === 'research' && a.kind === 'text')
+                  .map((a) => a.text)
+                  .join('\n'),
+              };
+          }
           for (const type of ['artifacts', 'attachments']) {
             input[type] = p[type].map((record) => {
               const path = join(dir, filename(record.name));
@@ -194,7 +234,23 @@ export function createNightflight({ root, runStage, runLayout }) {
           live.claim = null;
           live.owner = null;
           note(live, '已保存' + outputs.length + '份' + labels[stages.indexOf(p.stage)] + '产物');
-          if (p.stage === 'copy' && p.mode === 'collab') {
+          if (p.stage === 'research') {
+            live.research = researchHandoff(result.research);
+            if (live.research.ready) {
+              note(live, '研究已形成有依据的判断，交给策略');
+              live.stage = 'strategy';
+            } else {
+              live.status = 'waiting';
+              note(live, '研究待补查：' + live.research.next);
+            }
+          } else if (p.stage === 'strategy' && result.researchReturn) {
+            archiveVersion(live);
+            live.artifacts = live.artifacts.filter((a) => a.stage !== 'strategy');
+            live.stage = 'research';
+            live.status = 'waiting';
+            live.research = { ...researchHandoff(live.research), ready: false, next: result.researchReturn };
+            note(live, '策略退回研究：' + result.researchReturn);
+          } else if (p.stage === 'copy' && p.mode === 'collab') {
             live.status = 'waiting';
             note(live, '等待你选择创意方向');
           } else if (p.stage === 'visual') {
@@ -332,7 +388,7 @@ export function createNightflight({ root, runStage, runLayout }) {
         return p;
       }
     }
-    if (kind === 'choice' || kind === 'adopt')
+    if (kind === 'choice' || kind === 'adopt' || kind === 'research_again')
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
     if (kind === 'choice') {
       check(
@@ -354,6 +410,26 @@ export function createNightflight({ root, runStage, runLayout }) {
       note(p, '用户采用本版视觉稿，继续本地排版');
       p.stage = 'layout';
       p.status = 'running';
+    } else if (kind === 'research_again') {
+      check(
+        !p.claim &&
+          p.status !== 'running' &&
+          p.stage !== 'brief' &&
+          p.artifacts.some((a) => a.stage === 'brief'),
+        '当前无法从研究重新开始，请在本次运行结束后查看',
+        409,
+      );
+      archiveVersion(p);
+      p.artifacts = p.artifacts.filter((a) => a.stage === 'brief');
+      p.stage = 'research';
+      p.status = 'running';
+      p.error = null;
+      p.research = null;
+      p.directions = [];
+      p.choice = null;
+      p.visualAdoption = null;
+      if (text) p.feedback.push({ at: now(), stage: 'research', text });
+      note(p, '已保存前版，沿用原简报重新研究' + (text ? '：' + text.slice(0, 180) : ''));
     } else if (kind === 'retry') {
       check(p.status === 'failed', '当前阶段无需重试', 409);
       p.status = 'running';
@@ -367,17 +443,13 @@ export function createNightflight({ root, runStage, runLayout }) {
       note(p, '收到你的意见：' + text.slice(0, 180));
       if ((p.status === 'waiting' && p.stage === 'visual') || p.status === 'done') {
         const restart = p.status === 'done' ? 'brief' : 'visual';
-        p.versions.push({
-          at: now(),
-          stage: p.stage,
-          artifacts: [...p.artifacts],
-          visualAdoption: p.visualAdoption ?? null,
-        });
+        archiveVersion(p);
         p.artifacts = p.artifacts.filter((a) => stages.indexOf(a.stage) < stages.indexOf(restart));
         p.stage = restart;
         p.status = 'running';
         p.visualAdoption = null;
         if (restart === 'brief') {
+          p.research = null;
           p.directions = [];
           p.choice = null;
         }

@@ -150,3 +150,17 @@ details p { font-size: 14.5px; }
   .deck-strip { grid-template-columns: repeat(4, 1fr); }
   .kv > div { grid-template-columns: 84px 1fr; }
 }
+
+.research-review .block { margin-bottom: 26px; }
+.research-state { font-weight: 600; margin-bottom: 14px; }
+.research-finding { margin: 22px 0 28px; overflow-wrap: anywhere; }
+.research-finding .kv div { grid-template-columns: minmax(80px, 100px) minmax(0, 1fr); }
+.research-finding small { display: block; margin-top: 4px; color: var(--mute); }
+.research-finding a { text-decoration: underline; text-underline-offset: 3px; }
+.research-next { margin-top: 14px; }
+.research-action { padding: 18px 20px; background: var(--paper-2); margin-bottom: 28px; }
+.research-action label { display: block; font-weight: 600; margin-bottom: 8px; }
+.research-action input { width: 100%; padding: 9px 12px; background: var(--paper); border: 1px solid var(--line-soft); font: inherit; }
+.research-action p { font-size: 14px; color: var(--mute); margin: 8px 0 14px; }
+.research-original { margin-bottom: 35px; }
+.research-original summary { font-size: 15px; }

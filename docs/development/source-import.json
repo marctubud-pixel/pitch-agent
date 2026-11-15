@@ -2251,28 +2251,28 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "a74616750eaa97203f7101518f6737445f0d28844a570e0c88ac73bfbabe08ae",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "597916c568f97835295f4b2f0e4cd989fc5faa0a36d0a35d18f9c1656d1b40e3",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "bd05717751b33679f94129049371db42d3316479c8b6b15a8acaa6bda01c8c00",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "0a2680e1d820ea7c4977331cf16d5b1a6d620484fad877d3077b3d56f9b3be1c",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "ed2c4a8022aae796b4bc29b1ec53a035e6388f88b3ede2a60d02885ab4c033be",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "8255cadadbbf5f4f07d27c80b7f67c114e5e03f225fef1f16785620e901eb364",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "26400f45a926d9654937ae68558b99be3549dcfa0642e8a72c44cb651a3b8925",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/Library.tsx": {
-      "sha256": "a643bc453c5461667945d264bd380b7035af7d61b1bbe98186463e712b52973f",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "3489826272cdc7ad3208c9c92bfdc0e78b106d598cd025abbd4111748c6ca177",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
     },
     "apps/workbench-preview/nightflight/src/components/LogBar.tsx": {
       "sha256": "03275b5753a4013a0d907530633f8331d5781cdfc6576d38b5147be6cd2c9bfb",
@@ -2287,8 +2287,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "16bb1d2cfe95b537a2113ca353a955b5510eae92dd4d67b988dd7da8c5b748c3",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "4571ed493a790b9018c341d42b409badb7150c42cb58692966297bce4576ede2",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",
@@ -2301,6 +2301,10 @@
     "apps/workbench-preview/nightflight/src/types.ts": {
       "sha256": "46b83195c3f4545fedfbee1c939a6bf7def283bc8349988eee55bebc67a7b861",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
+    },
+    "apps/workbench-preview/nightflight/src/styles/detail.css": {
+      "sha256": "e866c522352d0596d7ea8875f2d37fbdcc42420d7c893832a1d55ea8ab33c6d4",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
     }
   },
   "nightflightArchive": {

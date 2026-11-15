@@ -27,8 +27,20 @@ process.stdin.on('end',()=>{
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
- if(action==='search') console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',query:'测试公开品类'}}));
  let body = {body:'按材料制订测试茶任务卡'};
+ if(action.startsWith('research-')){
+   const schema=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1],'utf8')).properties;
+   if(!input.includes('上次的待补问题'))process.exit(10);
+   if(schema.queries) body={queries:['公开茶类年报']};
+   else if(schema.findings) {
+     console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'search',queries:['测试公开品类']}}}));
+     body={findings:[{chapter:'行业与市场',conclusion:'茶礼场景更强调赠礼用途',source:'合成行业报告',url:'https://source.example.org/report',evidence:action==='research-fiction'?'这是虚构引文':'本次样本单列礼盒用途',implication:'策略需比较礼赠与日常使用情境'}],gaps:['渠道尚未选定'],next:'比较可核实的渠道样本'};
+   } else if(schema.accepted){
+     if(!input.includes('独立会话') || !input.includes('本次样本单列礼盒用途'))process.exit(11);
+     body={ready:action!=='research-blocked',accepted:[0],gaps:[],next:'结合渠道验证礼赠方向'};
+   } else process.exit(12);
+ }
+ if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
  if(action==='copy') body={body:'方向一 山风／方向二 晨雾／方向三 旧街',directions:['山风','晨雾','旧街']};
  if(action==='badcopy') body={body:'山风',directions:['山风','山风','山风']};
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
@@ -49,9 +61,19 @@ async function fixture(t, action) {
   const home = join(root,'home'),dir=join(root,'attempt'),binary=join(root,'fake-codex');
   await Promise.all([mkdir(home),mkdir(dir),writeFile(binary,fake,{mode:0o700})]);
   await writeFile(join(home,'action'),action);
-  const runner = createStageRunner({binary,codexHome:home,model:'fixture'});
+  const requests=[];
+  const researchDependencies={
+    lookup:async()=>[{address:'93.184.216.34',family:4}],
+    transport:async ({url})=>{
+      requests.push(url.href);
+      if(url.hostname==='lite.duckduckgo.com') throw Error('fixture discovery unavailable');
+      if(url.hostname==='cn.bing.com') return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>合成报告</title><link>https://source.example.org/report</link></item></channel></rss>')};
+      return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<html><title>合成行业报告</title><p>本次样本单列礼盒用途。</p></html>')};
+    },
+  };
+  const runner = createStageRunner({binary,codexHome:home,model:'fixture',researchDependencies});
   const project = {title:'测试茶',brief:'制作测试茶的包装概念稿',mode:'collab',attachments:[],artifacts:[],directions:['山风','晨雾','旧街'],choice:'晨雾'};
-  return {dir, project, run:(stage,overrides={})=>runner({stage,dir,project,...overrides})};
+  return {dir, project, requests, run:(stage,overrides={})=>runner({stage,dir,project,...overrides})};
 }
 
 test('copy returns three labels bound to the output file and an isolated CLI receipt',async t=>{
@@ -95,10 +117,24 @@ test('reads attachment bytes and gives real image paths to Codex',async t=>{
   f.project.attachments.push({name:'参考.md'},{name:'产品.png'});
   assert.equal((await f.run('brief')).artifacts.length,1);
 });
-test('research traces actual search events and reports evidence boundaries',async t=>{
-  const f=await fixture(t,'search');
-  const result=await f.run('research');
-  assert.match(result.artifacts[0].text,/测试公开品类/);
+for (const [action,ready,count] of [['research-ok',true,1],['research-blocked',false,1],['research-fiction',false,0]]) {
+  test(action+' executes discovery from a sparse brief and gates only on grounded findings and review',async t=>{
+    const f=await fixture(t,action);
+    f.project.brief='测试茶';
+    f.project.previousResearch={legacyText:'上次的待补问题'};
+    const {research,artifacts}=await f.run('research');
+    assert.equal(research.ready,ready);
+    assert.equal(research.findings.length,count);
+    assert.ok(f.requests.some(url=>url.startsWith('https://cn.bing.com/search?')));
+    assert.ok(f.requests.includes('https://source.example.org/report'));
+    assert.match(artifacts[0].text,/测试公开品类/);
+    if(count)assert.match(artifacts[0].text,/本次样本单列礼盒用途/);
+    else assert.match(research.gaps.join(' '),/未从.*核对/);
+  });
+}
+test('strategy returns specific research question when the handoff cannot support a decision',async t=>{
+  const f=await fixture(t,'strategy-return');
+  assert.match((await f.run('strategy')).researchReturn,/实际接触场景/);
 });
 test('final reads native slide XML, excludes bulky deck JSON and records missing rendered pages',async t=>{
   const f=await fixture(t,'final');

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.19.0",
-  "registrySha256": "c59d91b46863e70a6978d0df9d885edcfcb42188bb633c3425c7dbc9fdc6e7c2",
+  "baselineVersion": "1.20.0",
+  "registrySha256": "8f6500dfdb02f6a31f42e14ceb59b60b366f91defa78ce12e3a998db465af259",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -18,10 +18,10 @@
       }
     },
     "agent.research-owner": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/research-owner.md": "9a336cbd50ac1df3989b3989ca9679870b26c102c5a4db6216937ad57734438a"
+        "docs/agents/research-owner.md": "bd4d46940f34233d760839dfe79be47e2511db4c087b62000d0c993e5074fb19"
       }
     },
     "agent.strategy-owner": {
@@ -102,10 +102,10 @@
       }
     },
     "page.research": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/research.md": "68d63fcf182aaa75bda0fbf32dd73a1ac38af0d00c7748a1d040d3eab1532f7f"
+        "docs/pages/research.md": "8ea7b84a6fbd7b669017e7a39604c333859487124fcae83f3bd0b8a4c2e6c00c"
       }
     },
     "page.strategy": {
@@ -465,7 +465,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "e634ced68318ba1048cd7602db84b84f8ca593245801306109537cec32940605",
+    "docs/specs/README.md": "dc46352c7928c2d2cda26a6f705aeb1b1c0eed96b42abacdfee030d72dfd3ab0",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
