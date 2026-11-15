@@ -31,7 +31,9 @@ process.stdin.on('end',()=>{
  let body = {body:'按材料制订测试茶任务卡'};
  if(action==='copy') body={body:'方向一 山风／方向二 晨雾／方向三 旧街',directions:['山风','晨雾','旧街']};
  if(action==='badcopy') body={body:'山风',directions:['山风','山风','山风']};
+ if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
  if(action==='image' || action==='other-thread'){
+   if(args[args.indexOf('code_mode_host')-1]!=='--enable'||args[args.indexOf('image_generation')-1]!=='--enable')process.exit(9);
    if (!input.includes('指定方向："晨雾"')) process.exit(5);
    const folder=path.join(home,'generated_images',action==='image'?id:require('node:crypto').randomUUID());
    fs.mkdirSync(folder,{recursive:true});
@@ -70,7 +72,7 @@ test('collaboration generates the chosen direction using the current thread PNG 
   assert.equal((await readFile(join(f.dir,result.artifacts[0].name))).toString('base64'),png);
   assert.match(result.artifacts[1].text,/晨雾/);
 });
-for (const [action,stage,error] of [['other-thread','visual',/未留下原生生图文件/],['badcopy','copy',/三个/],['failed','brief',/调用失败/],['api-key','brief',/ChatGPT 账户/]]) {
+for (const [action,stage,error] of [['disabled-host','visual',/工具宿主未启用/],['other-thread','visual',/未留下原生生图文件/],['badcopy','copy',/三个/],['failed','brief',/调用失败/],['api-key','brief',/ChatGPT 账户/]]) {
   test('reject '+action+' without publishing business artifacts',async t=>{
     const f=await fixture(t,action);
     await assert.rejects(f.run(stage),error);

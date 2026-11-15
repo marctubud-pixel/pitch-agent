@@ -150,7 +150,20 @@ function textOutput(result) {
 async function ownGeneratedImage(result, codexHome) {
   if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(result.threadId)) throw Error('生图缺少有效的 Codex 会话身份');
   const folder = join(codexHome, 'generated_images', result.threadId);
-  if (await realpath(folder).catch(()=>null) !== folder) throw Error('本次 Codex 会话未留下原生生图文件，请重试视觉阶段');
+  if (await realpath(folder).catch(()=>null) !== folder) {
+    const stderr = await readFile(result.paths.stderr, 'utf8');
+    const events = await readFile(result.paths.stdout, 'utf8');
+    const errors = events.split('\n').flatMap(line => {
+      try {
+        const {item} = JSON.parse(line);
+        return item?.type === 'error' ? [item.message] : [];
+      } catch { return []; }
+    });
+    if (/code.mode.host is disabled|enable .features.code_mode_host/i.test([stderr, ...errors].join('\n'))) {
+      throw Error('Codex 工具宿主未启用，生图工具未能执行。请重启已更新的夜航服务，再重试视觉阶段。');
+    }
+    throw Error('本次 Codex 会话未留下原生生图文件，未能交付图稿。'+(errors[0] ? '执行记录：'+String(errors[0]).slice(0,350) : '请查看视觉阶段的本机执行回执。'));
+  }
   const names = (await readdir(folder,{withFileTypes:true})).filter(entry=>entry.isFile() && /\.png$/i.test(entry.name));
   if (names.length !== 1) throw Error('本次生图未交回唯一的 PNG，请重试视觉阶段');
   const path = join(folder,names[0].name);
@@ -188,8 +201,9 @@ export function createStageRunner({binary, model, codexHome = process.env.CODEX_
     const provider = createCodexProvider({
       binary:programPath, model:selectedModel, rootDir:join(dir,'.codex-runs'), timeoutMs:900000,
       spawn(program, args, options) {
-        const disabled = ['apps','code_mode_host','workspace_dependencies','in_app_local_automation','hooks','plugins','shell_tool','unified_exec','multi_agent','skill_search','computer_use','browser_use','browser_use_external','in_app_browser','view_image','skill_mcp_dependency_install'];
+        const disabled = ['apps','workspace_dependencies','in_app_local_automation','hooks','plugins','shell_tool','unified_exec','multi_agent','skill_search','computer_use','browser_use','browser_use_external','in_app_browser','view_image','skill_mcp_dependency_install'];
         const flags = ['--ignore-rules', ...disabled.flatMap(name=>['--disable',name]), '-c','model_provider="openai"','-c','forced_login_method="chatgpt"','-c','web_search='+JSON.stringify(stage==='research'?'live':'disabled')];
+        flags.push(['visual','research'].includes(stage)?'--enable':'--disable','code_mode_host');
         flags.push(stage==='visual'?'--enable':'--disable','image_generation');
         const child = spawn(program,[...args.slice(0,-1), ...flags,'-'], {...options,env});
         // npm's codex launcher starts a native executable. Cancel the whole owned group.
