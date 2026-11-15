@@ -12,7 +12,7 @@ import {isDeepStrictEqual as equal} from 'node:util';
 import {copyDeliveryEnvelope} from './project.mjs';
 import {loadImageProvider} from './image-api-provider.mjs';
 import {sketchHash as hash,sketchRequire as need} from './sketch-authority.mjs';
-import {FINAL_VISUAL_PROTOCOL,selectFinalVisualRun,validateFinalReviewAdjustment,FINAL_AGGREGATE_PARSER,FINAL_VISUAL_PURPOSES,finalVisualSource,requireFinalCurrent,finalPanelNodes,finalBinding,finalEnvelope,finalRequest,finalOutcome,finalPayload,finalImageTask,requireFinalVisual,validateFinalReceipt,ingestFinalResponse,finalTargets,finalImages,finalReviewRequirement,requireFinalRevisionOwner} from './final-visual.mjs';
+import {FINAL_VISUAL_PROTOCOL,selectFinalVisualRun,validateFinalReviewAdjustment,FINAL_AGGREGATE_PARSER,FINAL_VISUAL_PURPOSES,finalVisualSource,requireFinalCurrent,finalPanelNodes,finalBinding,finalEnvelope,finalRequest,finalOutcome,finalAggregateMatches,finalPayload,finalImageTask,requireFinalVisual,validateFinalReceipt,ingestFinalResponse,finalTargets,finalImages,finalReviewRequirement,requireFinalRevisionOwner} from './final-visual.mjs';
 
 export function createFinalVisualRuntime({store,root,sketchReviews,providers,bindings,imageStore,imageProvider,configuration}) {
  const localImages=loadImageProvider({resolveCredential:()=>undefined});
@@ -114,10 +114,11 @@ export function createFinalVisualRuntime({store,root,sketchReviews,providers,bin
       queue({key:'aggregate',phase:'aggregate',role:'visual-lead',dependencies:finalPanelNodes().map(n=>n.key)});run=currentRun(id);
       const agg=run.reports.find(r=>r.nodeKey==='aggregate');
       if(agg) {
-       need(agg.valid&&agg.raw.decision==='accept'&&equal(agg.raw.payload,finalPayload(store.read(id),run)),'FINAL_AGGREGATE_RETURNED','Visual owner must accept all actual pixels, copy, claims, limitations and dissent');
+       const expectedPayload = finalPayload(store.read(id),run);
+       need(agg.valid&&agg.raw.decision==='accept'&&finalAggregateMatches(agg.raw,expectedPayload),'FINAL_AGGREGATE_RETURNED','Visual owner must accept all actual pixels, copy, claims, limitations and dissent');
        let a=store.read(id).artifacts.find(a=>a.finalVisual?.runId===run.id);
        if(!a) {
-        const payload=JSON.stringify(agg.raw.payload),folder=join(root,'final-visual-drafts',run.id,agg.id.replace(/[^A-Za-z0-9_-]/g,'_')),payloadRef=join(folder,'reviewed-final-visual.json');await mkdir(folder,{recursive:true});try{await writeFile(payloadRef,payload,{flag:'wx'});}catch(e){if(e.code!=='EEXIST')throw e;need(await readFile(payloadRef,'utf8')===payload,'FINAL_DRAFT_CHANGED','Existing exact draft changed');}
+        const payload=JSON.stringify(agg.raw.payload ?? expectedPayload),folder=join(root,'final-visual-drafts',run.id,agg.id.replace(/[^A-Za-z0-9_-]/g,'_')),payloadRef=join(folder,'reviewed-final-visual.json');await mkdir(folder,{recursive:true});try{await writeFile(payloadRef,payload,{flag:'wx'});}catch(e){if(e.code!=='EEXIST')throw e;need(await readFile(payloadRef,'utf8')===payload,'FINAL_DRAFT_CHANGED','Existing exact draft changed');}
         const job=store.read(id).jobs.find(j=>j.finalVisualRunId===run.id&&j.nodeKey==='aggregate');a={id:`visual-${run.id}`,stage:'visual',provenance:'reviewed_final_visual',finalVisual:{protocol:FINAL_VISUAL_PROTOCOL,runId:run.id,sourceHash:run.source.sourceHash,planHash:run.plan.planHash,payloadHash:hash(payload)},inputVersionIds:[run.source.copyArtifactId,run.source.sketchArtifact.id],payloadRef,contentHash:hash(payload),claims:run.plan.directions.flatMap(d=>d.claims),author:job.attempts.at(-1).executor,technicalReceipts:{},executionReceipt:job.attempts.at(-1).receipt};await checked(id,run);send(id,{kind:'register-final-visual',runId:run.id,artifact:a});
        }
        await verifyFinalVisual(id,a);

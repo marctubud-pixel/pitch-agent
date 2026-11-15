@@ -18,7 +18,7 @@ const digest=value=>hash(JSON.stringify(value));
 const need=(value,code)=>{if(!value)throw new DomainError(code,code);};
 const text=value=>typeof value==='string'&&value.trim().length>0&&value.length<=512;
 const hex=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
-const limits=Object.freeze({readAttempts:2,snapshotBytes:32*1024*1024,decodedBytes:64*1024*1024,storedBytes:64*1024*1024});
+const limits=Object.freeze({readAttempts:2,snapshotBytes:256*1024**2,decodedBytes:512*1024**2,storedBytes:512*1024**2});
 const requestKeys=['projectId','expectedRevision','taskCardId','policyVersion','copyArtifactId','copyContentHash','sourceHash'].sort();
 const physicalProofs=new WeakMap();
 const proofRequest=record=>Object.fromEntries(requestKeys.map(k=>[k,record.identity[k]]));

@@ -41,7 +41,7 @@ export function createProposalPrelayoutNative(configuration){
  async function sources(request){
   check();const capture=await reader.capture(request);check();if(capture.kind==='rejected')return {kind:'awaiting_sources',diagnostic:capture};
   const native=await reader.assertCurrent(capture.token),mapped=await mapNativeSources(native);need(mapped.kind==='mapped','PRELAYOUT_FIVE_SOURCES_REQUIRED');const method=await directorMethod();let policy;
-  const admitted=await store.withReadAdmission(request.projectId,{readAttempts:1,snapshotBytes:64*1024*1024,decodedBytes:128*1024*1024,storedBytes:128*1024*1024},()=>{check();assertStoreReadAdmission(store,request.projectId);const p=store.read(request.projectId);need(prelayoutHash(p)===native.identity.snapshotHash,'PRELAYOUT_SOURCE_CHANGED');policy=structuredClone(p.policies.at(-1));return policy;});
+  const admitted=await store.withReadAdmission(request.projectId,{readAttempts:1,snapshotBytes:256*1024**2,decodedBytes:256*1024**2,storedBytes:256*1024**2},()=>{check();assertStoreReadAdmission(store,request.projectId);const p=store.read(request.projectId);need(prelayoutHash(p)===native.identity.snapshotHash,'PRELAYOUT_SOURCE_CHANGED');policy=structuredClone(p.policies.at(-1));return policy;});
   need(admitted.kind==='complete'&&policy&&admitted.value===policy,'PRELAYOUT_NATIVE_READ_REQUIRED');
   const input=derivePrelayoutBasis({mapped,policy,databaseBindingHash:prelayoutHash(selected),directorMethod:method}),images=[];
   for(const image of input.images){const loaded=await reader.readImage(capture.token,image.imageId);images.push(loaded);}

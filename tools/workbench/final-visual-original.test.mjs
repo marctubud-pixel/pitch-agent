@@ -6,7 +6,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {verifyFinalVisualOriginal} from './final-visual-original.mjs';
 import {createFinalVisualRuntime} from './final-visual-runtime.mjs';
-import {finalRequest,ingestFinalResponse,FINAL_VISUAL_PROTOCOL} from './final-visual.mjs';
+import {finalRequest,finalAggregateMatches,ingestFinalResponse,FINAL_VISUAL_PROTOCOL} from './final-visual.mjs';
 import {sketchHash as hash} from './sketch-authority.mjs';
 
 async function fixture(){
@@ -49,4 +49,31 @@ test('aggregate archive parser exception retains only the exact original diagnos
  assert.equal((await f.verify()).kind,'final-visual-text-original');
  run.reports[0].diagnostics=['different'];await assert.rejects(f.verify,{code:'FINAL_ORIGINAL_CHANGED'});
  run.reports[0].diagnostics=['incomplete_or_invalid_original'];run.reports[0].slots=[{changed:true}];await assert.rejects(f.verify,{code:'FINAL_ORIGINAL_CHANGED'});
+});
+
+test('compact aggregate binds full review payload and preserves original reply', async () => {
+ const {p,run,job} = await fixture();
+ run.plan = {directions: [], planHash: 'fixture'};
+ run.source.selected = [];
+ run.source.referenceRecords.reports = [{id: 'retained', notes: 'x'.repeat(2200000)}];
+ run.assignments.aggregate = job.binding;
+ const node = {key:'aggregate', phase:'aggregate',role:'visual-lead',dependencies:[]};
+ const legacy = finalRequest(p,run,node);
+ assert.equal(legacy.input.production.expectedPayloadSha256, undefined);
+ run.capabilities.owner.version = 'final-payload-digest-v1';
+ const {input} = finalRequest(p,run,node);
+ const payload = input.production.expectedPayload;
+ const raw = {protocol: FINAL_VISUAL_PROTOCOL, nodeKey:node.key, envelopeHash:input.envelopeHash,
+  kind:'aggregate',decision:'accept',understanding:'Reviewed archived references', findings:[],
+  payloadSha256:input.production.expectedPayloadSha256};
+ const parse = reply => ingestFinalResponse(input,{responseText:JSON.stringify(reply)});
+ assert.equal(raw.payloadSha256, hash(payload));
+ assert(Buffer.byteLength(JSON.stringify(payload)) > 2097152);
+ assert(Buffer.byteLength(JSON.stringify(raw)) < 1024);
+ assert.deepEqual(parse(raw).raw,raw);
+ assert.equal(parse(raw).valid,true);
+ assert.equal(parse({...raw,payloadSha256:'0'.repeat(64)}).valid,false);
+ assert.equal(parse({...raw,payload}).valid,false);
+ assert.equal(finalAggregateMatches(raw,{...payload,planHash:'changed'}),false);
+ assert.equal(ingestFinalResponse(legacy.input,{responseText:JSON.stringify({...raw,envelopeHash:legacy.input.envelopeHash})}).valid,false);
 });

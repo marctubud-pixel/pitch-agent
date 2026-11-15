@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.17.0",
-  "date": "2026-11-12",
-  "status": "排版前专用原生检查、通用输入映射及只读记录；完整App后段和两案例整链仍待实际验收",
+  "baselineVersion": "1.18.0",
+  "date": "2026-11-15",
+  "status": "成稿汇总支持同版完整内容摘要，排版前读取支持较大快照。整链验收继续。",
   "workflow": [
     "brief",
     "research",
@@ -556,7 +556,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.14.0",
+      "version": "1.15.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -736,7 +736,7 @@
       "kind": "contract",
       "title": "视觉参考、草图与成稿受限接线",
       "path": "docs/development/visual-workflow.md",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.simple-copy",
@@ -764,7 +764,7 @@
       "kind": "contract",
       "title": "排版前比稿检查与通用输入映射",
       "path": "docs/development/proposal-prelayout.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.proposal-director",

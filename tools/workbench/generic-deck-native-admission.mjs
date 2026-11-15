@@ -11,7 +11,7 @@ import {requireLoadedImplementation,selectDeckDatabase,assertDeckDatabase} from 
 const hash=value=>createHash('sha256').update(typeof value==='string'||Buffer.isBuffer(value)?value:JSON.stringify(value)).digest('hex');
 const need=(ok,code)=>{if(!ok)throw new DomainError(code,code);};
 const keys=['projectId','expectedRevision','taskCardId','policyVersion','copyArtifactId','copyContentHash','sourceHash','visualArtifactId','visualContentHash'].sort();
-const limits=Object.freeze({readAttempts:2,snapshotBytes:64*1024*1024,decodedBytes:128*1024*1024,storedBytes:128*1024*1024});
+const limits=Object.freeze({readAttempts:2,snapshotBytes:256*1024**2,decodedBytes:512*1024**2,storedBytes:512*1024**2});
 /** Native source qualification only; no builder/renderer, prelayout or final approval. */
 export function createGenericDeckNativeAdmission(configuration){
  need(configuration&&equal(Object.keys(configuration).sort(),['consumerBinding','dbPath','executionRoot','imageRoot','pin','store']),'DECK_ADMISSION_CONFIGURATION_INVALID');
