@@ -6,6 +6,7 @@
 .vg-reference-row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 12px; align-items: start; padding: 16px 0; border-top: 1px solid var(--vg-soft); }
 .vg-direction { display: grid; row-gap: 5px; background: transparent; border: 0; padding: 0; text-align: left; cursor: pointer; }
 .vg-letter { font: 400 12px/1.6 var(--mono, monospace); letter-spacing: .096em; color: var(--mute, currentColor); }
+.vg-section > h3 .vg-letter { margin-inline-start: 8px; color: var(--mute, #6a6761); }
 .vg-direction strong { font: 700 22px/1.5 var(--serif, Georgia, serif); }
 .vg-direction[aria-pressed=true] .vg-letter { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .vg-description { margin-top: 5px; font: 400 13px/1.6 var(--sans, sans-serif); color: var(--mute, currentColor); }
@@ -16,6 +17,10 @@
 .visual-image-gallery .vg-zoom img { display: block; width: 100%; height: auto; object-fit: contain; }
 .visual-image-gallery .vg-references .vg-zoom img { aspect-ratio: 4 / 3; background: white; }
 .vg-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.vg-pair > figure { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 8px; align-self: stretch; }
+.vg-pair > figure > .vg-zoom { align-self: end; }
+.vg-pair > figure > figcaption { grid-row: 2; margin: 0; align-self: start; align-items: flex-start; }
+.vg-pair .vg-zoom img { object-position: center bottom; }
 .vg-pair.vg-portrait { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .visual-image-gallery .vg-zoom[style] img { height: 100%; }
 .vg-pair figcaption, .vg-extension figcaption { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }

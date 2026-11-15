@@ -197,6 +197,18 @@ async function main() {
         await page.locator('.visual-image-gallery img').evaluateAll(async imgs => {
           await Promise.all(imgs.map(img => img.decode()));
         });
+        const letter = await row.locator('.vg-letter').innerText();
+        for (const [heading, title] of [[pair.locator('h3'), '草图与主视觉'], [page.locator('.vg-mockup h3'), '样机']]) {
+          assert.equal(await heading.innerText(), title + ' ' + letter);
+          assert.equal(await heading.locator('.vg-letter').evaluate(el => getComputedStyle(el).fontSize), '12px');
+        }
+        assert.equal(await row.locator('.vg-references').innerText(), '');
+        assert.equal(await page.locator('.vg-mockup figcaption').count(), 0);
+        const positions = await pair.locator('figure:has(img)').evaluateAll(figures => figures.map(figure => [
+          figure.querySelector('img').getBoundingClientRect().bottom,
+          figure.querySelector('figcaption').getBoundingClientRect().top,
+        ]));
+        assert.ok(positions[0].every((value, i) => Math.abs(value - positions[1][i]) <= 1));
         const zoom = page.locator('.vg-mockup .vg-zoom');
         await zoom.click();
         await page.getByRole('dialog').getByRole('button', { name:'关闭' }).click();

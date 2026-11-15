@@ -18,8 +18,8 @@ function Picture({ image, loaded }: { image: GalleryImage; loaded?: (image: HTML
 
 type Zoom = (image: GalleryImage) => void;
 
-function Artwork({ images, label, zoom, loaded }: {
-  images: readonly GalleryImage[]; label: string; zoom: Zoom; loaded?: (image: HTMLImageElement) => void;
+function Artwork({ images, label, zoom, loaded, showCaption = true }: {
+  images: readonly GalleryImage[]; label: string; showCaption?: boolean; zoom: Zoom; loaded?: (image: HTMLImageElement) => void;
 }) {
   const [index, setIndex] = useState(0);
   const [ratio, setRatio] = useState<number>();
@@ -32,13 +32,13 @@ function Artwork({ images, label, zoom, loaded }: {
         loaded?.(element);
       } : undefined} />
     </button>
-    <figcaption>{label}
+    {showCaption && <figcaption>{label}
       {images.length > 1 && <span className="vg-pager">
         <button type="button" aria-label={label + '上一张'} onClick={() => setIndex((index + images.length - 1) % images.length)}>←</button>
         <span aria-live="polite">{index + 1} / {images.length}</span>
         <button type="button" aria-label={label + '下一张'} onClick={() => setIndex((index + 1) % images.length)}>→</button>
       </span>}
-    </figcaption>
+    </figcaption>}
   </figure>;
 }
 
@@ -49,7 +49,7 @@ function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirecti
   const extension = <Artwork label={extensionLabel} images={direction.extensions ?? []} zoom={zoom} />;
   return <>
     <section className="vg-section" data-visual-direction={direction.id}>
-      <h3>草图与主视觉 · 方向 {letter} · {direction.name}</h3>
+      <h3>草图与主视觉 <span className="vg-letter">方向 {letter}</span></h3>
       <div className={'vg-pair' + (portrait ? ' vg-portrait' : '')}>
         <Artwork label="构图草图" images={direction.sketch ? [direction.sketch] : []} zoom={zoom} />
         <Artwork label="主视觉" images={direction.mains} zoom={zoom}
@@ -58,8 +58,8 @@ function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirecti
       </div>
     </section>
     {!portrait && <section className="vg-section vg-extension"><h3>{extensionLabel}</h3>{extension}</section>}
-    <section className="vg-section vg-mockup"><h3>样机 · {direction.name}</h3>
-      {direction.mockup ? <Artwork label="样机" images={[direction.mockup]} zoom={zoom} /> : <p className="vg-missing">样机待交回</p>}
+    <section className="vg-section vg-mockup"><h3>样机 <span className="vg-letter">方向 {letter}</span></h3>
+      {direction.mockup ? <Artwork showCaption={false} label="样机" images={[direction.mockup]} zoom={zoom} /> : <p className="vg-missing">样机待交回</p>}
     </section>
   </>;
 }
@@ -86,9 +86,8 @@ export function VisualImageGallery({ directions, currentId, onDirectionChange, d
           {direction.description && <span className="vg-description">{direction.description}</span>}
         </button>
         <div className="vg-references">{direction.references.length ? direction.references.map((image) =>
-          <figure key={image.src}><button type="button" className="vg-zoom" aria-label={'放大' + image.title}
-            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} /></button>
-            <figcaption>{image.title}</figcaption></figure>) : <p className="vg-missing">参考图待补</p>}</div>
+          <button key={image.src} type="button" className="vg-zoom" aria-label={'放大' + image.title}
+            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} /></button>) : <p className="vg-missing">参考图待补</p>}</div>
       </div>)}
     </section>
     <CurrentArtwork key={current.id} direction={current} letter={String.fromCharCode(65 + directions.indexOf(current))} zoom={zoom} />
