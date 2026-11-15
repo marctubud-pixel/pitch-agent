@@ -5,6 +5,7 @@ import { Home } from './components/Home';
 import { StartScreen, ModeScreen } from './components/StartScreen';
 import { Workspace } from './components/Workspace';
 import { Library } from './components/Library';
+import { QingyuStrategyReading } from './components/QingyuStrategyReading';
 import { DetailSheet } from './components/DetailSheet';
 import { ChatPanel } from './components/ChatPanel';
 import { Celebration } from './components/Celebration';
@@ -48,7 +49,7 @@ export function App() {
     [notice, setNotice] = useState(false);
   const [routePath, query] = route.split('?');
   const stageParam = new URLSearchParams(query).get('stage');
-  const requestedStage = stageParam === 'research' || stageParam === 'brief' ? stageParam : undefined;
+  const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' ? stageParam : undefined;
   const id = routePath.startsWith('/p/') ? routePath.slice(3) : '',
     workspace = !!id && p?.id === id,
     start = route === '/new',
@@ -200,6 +201,7 @@ export function App() {
     kind: 'info' as const,
     simulated: false,
   }));
+  if (routePath === '/reference/qingyu/strategy') return <QingyuStrategyReading />;
   return (
     <div className={'app phase-' + (workspace ? 'workspace' : start ? 'start' : mode ? 'mode' : 'home')}>
       <LogBar

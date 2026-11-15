@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import type { Project } from '../live';
+import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
-import { directionBody, firstStatement, rowOf, sectionsOf, type Row } from './stageText';
+import { directionBody, rowOf, sectionsOf, type Row } from './stageText';
 
 type TextStage = 'brief' | 'research' | 'strategy' | 'copy';
 
@@ -107,39 +108,6 @@ function Research({ p, name }: { p: Project; name?: string }) {
             : '尚无研究发现。'}
         </Pending>
       )}
-    </section>
-  );
-}
-
-function Strategy({ text, name }: { text: string; name?: string }) {
-  if (!text) return <Pending>尚无策略稿。</Pending>;
-  const sections = sectionsOf(text).filter((s) => s.lines.length);
-  const core = sections.find((s) => /核心策略|策略发力点|策略主张/.test(s.heading)) || sections[0];
-  const lead = core && firstStatement(core.lines);
-  const headline = lead?.split(/(?<=[。！？])|(?<=[.!?])\s+/u, 1)[0];
-  return (
-    <section className="block" data-artifact={name}>
-      <h2>核心策略</h2>
-      {headline && <p className="statement">{headline}</p>}
-      <div className="two-col">
-        {sections.map((section, i) => {
-          const lines =
-            section === core && headline
-              ? section.lines
-                  .map((line) => (line === lead ? line.slice(headline.length).trim() : line))
-                  .filter(Boolean)
-              : section.lines;
-          if (!lines.length) return null;
-          return (
-            <div key={i}>
-              {section.heading && <h3>{section.heading}</h3>}
-              {lines.map((line, j) => (
-                <p key={j}>{line}</p>
-              ))}
-            </div>
-          );
-        })}
-      </div>
     </section>
   );
 }
@@ -251,7 +219,7 @@ export function TextStageOutput({
     case 'research':
       return <Research p={p} name={name} />;
     case 'strategy':
-      return <Strategy text={text} name={name} />;
+      return <StrategyOutput p={p} text={text} name={name} />;
     case 'copy':
       return <Copy p={p} name={name} text={text} onChoose={onChoose} busy={busy} />;
   }

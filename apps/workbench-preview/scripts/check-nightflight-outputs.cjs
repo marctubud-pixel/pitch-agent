@@ -50,7 +50,7 @@ const project = {
       'strategy',
       '策略.md',
       'text',
-      '## 研究结论\n研究内容。\n## 方向交叉点\n交叉内容。\n## 策略发力点\n提炼句。第二句展开。',
+      '## 研究结论\n不对应上游的旧稿结论。\n测试发现\n## 方向交叉点\n交叉内容。\n## 策略发力点\n提炼句。第二句展开。',
     ),
     file(
       'copy',
@@ -112,6 +112,7 @@ async function main() {
     const briefOnly = process.argv.includes('--brief');
     for (const [i, headings] of (briefOnly ? stages.slice(0, 1) : stages).entries()) {
       if (process.argv.includes('--research') && i !== 1) continue;
+      if (process.argv.includes('--strategy') && i !== 2) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
       assert.deepEqual(
@@ -131,7 +132,13 @@ async function main() {
         await details.locator('summary').click();
         assert.match(await details.innerText(), /可核对的原文/);
       }
-      if (i === 2) assert.equal(await page.locator('.statement').innerText(), '提炼句。');
+      if (i === 2) {
+        assert.equal(await page.locator('.statement').innerText(), '提炼句。');
+        const rows = page.locator('.strategy-findings li');
+        assert.equal(await rows.first().locator('details').count(), 0);
+        await rows.nth(1).locator('summary').click();
+        assert.match(await rows.nth(1).innerText(), /可核对的原文/);
+      }
       if (i === 3) assert.equal(await page.locator('.dir-grid .dir').count(), 3);
       if (i === 5) await page.locator('.deck-stage').waitFor();
     }
@@ -155,7 +162,7 @@ async function main() {
       assert.equal(await doc.getByLabel('先查哪个渠道？').count(), 1);
     }
     assert.deepEqual(errors, []);
-    console.log(process.argv.includes('--research') ? '研究页结论、策略用途与来源展开通过。' : briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
+    console.log(process.argv.includes('--strategy') ? '策略旧稿逐条依据匹配与核心主句通过。' : process.argv.includes('--research') ? '研究页结论、策略用途与来源展开通过。' : briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
   } finally {
     await browser.close();
   }
