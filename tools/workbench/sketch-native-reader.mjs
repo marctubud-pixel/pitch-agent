@@ -18,7 +18,7 @@ function methodOrigin(p,g,method){const source=g.source,copy=source.referenceSou
 }
 export function createSketchNativeReader({store,rootDir}){
  const scope=new AsyncLocalStorage(),disk=createImageEvidenceStore({rootDir:rootDir+'/images'});
- async function observedImage(identity,inspection){const result=await disk[inspection?'readWithInspection':'read'](identity);scope.getStore()?.push({imageId:result.asset.id,sha256:hash(result.bytes),mediaType:result.asset.mediaType,byteLength:result.bytes.length,width:result.asset.width,height:result.asset.height,verifier:'image-evidence checkedImageDescriptor'});return result;}
+ async function observedImage(identity,inspection){const result=await disk[inspection?'readWithInspection':'read'](identity);scope.getStore()?.push({imageId:result.asset.id,sha256:createHash('sha256').update(result.bytes).digest('hex'),mediaType:result.asset.mediaType,byteLength:result.bytes.length,width:result.asset.width,height:result.asset.height,verifier:'image-evidence checkedImageDescriptor'});return result;}
  const imageStore=Object.freeze({read:i=>observedImage(i,false),readWithInspection:i=>observedImage(i,true)});
  const references=createReferenceRuntime({store,root:rootDir,providers:{},bindings:{},imageStore,sourceEnvelope:copyDeliveryEnvelope});
  const sketches=createSketchRuntime({store,root:rootDir,references,providers:{},bindings:{},imageStore});
