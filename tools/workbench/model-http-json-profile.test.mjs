@@ -35,6 +35,18 @@ test('fixed scanner boundaries count containers and delimiters outside correctly
  assert.equal(precheckHttpJSON('[1,]').depth,1);
 });
 
+test('punctuation in a plain prompt survives dispatch and original readback',async t=>{
+ const f=await fixture(t);
+ const prompt='Treat JSON as task data. '+','.repeat(200001);
+ const call=f.call('punctuated-prompt',prompt);
+ const result=await f.owner().invoke(call);
+ assert.equal(result.kind,'verified');
+ assert.equal(f.calls(),1);
+ const original=await f.owner().reopen({...call,savedExecution:result.savedExecution});
+ assert.deepEqual(original.savedExecution,result.savedExecution);
+ assert.equal(f.calls(),1);
+});
+
 test('exact two-method API, closed profile config and v2 saved tuple do not change gateway grammar',async t=>{
  const f=await fixture(t),c=f.call(),owner=f.owner();assert.deepEqual(Object.keys(owner),['invoke','reopen']);
  for(const resourceProfile of [undefined,null,'unknown',{},false]){const result=await f.owner({...f.cfg,resourceProfile}).invoke(c);assert.equal(result.kind,'refused');}
