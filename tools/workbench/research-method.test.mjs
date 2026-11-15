@@ -10,6 +10,7 @@ import {WORKFLOW_VERSION} from './seven-stage-workflow.mjs';
 const ctx={actorId:'test-owner',actorType:'human',runId:'test-owner-run',contextId:'test-owner-context'};
 test('fixed method uses actual retained r7 bytes and refuses changed identities',()=>{
  const identity=researchMethodIdentity(), original={prompt:'NATIVE CONTRACT',outputSchema:{}};
+ assert.equal(identity.sha256,'ebd616b74559263847c44aa3adcf6e92bfc8306a0657107dba103dd937f39a2c');
  const request=applyResearchMethod(original,identity);
  assert.match(request.prompt,/PROJECT_RESEARCH_METHOD r7-20261109 [a-f0-9]{64}/);
  assert.ok(request.prompt.includes('关键问题已有适用回答'));

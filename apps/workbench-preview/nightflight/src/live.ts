@@ -23,8 +23,10 @@ export interface Project extends Summary {
   events: { stage: StageId; text: string; at: string }[];
   artifacts: Artifact[];
   versions?: { at: string; stage: StageId; artifacts: Artifact[] }[];
+  researchFollowup?: boolean;
   research?: {
     ready: boolean;
+    question?: string;
     findings: { conclusion: string; evidence: string; source: string; url: string; implication: string }[];
     gaps: string[];
     next: string;
@@ -37,8 +39,21 @@ export interface Project extends Summary {
 }
 export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
-export const projectStatus = (p: Summary) =>
-  p.stage === 'research' && p.status === 'waiting' ? '待补查' : statusName[p.status];
+type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup'>>;
+export const researchQuestion = (p: ResearchStatus) =>
+  p.stage === 'research' &&
+  p.status === 'waiting' &&
+  p.mode === 'collab' &&
+  p.research &&
+  !p.research.ready &&
+  p.research.findings.length
+    ? p.research.question?.trim() || ''
+    : '';
+export const projectStatus = (p: ResearchStatus) => {
+  if (researchQuestion(p)) return '等待你的判断';
+  if (p.stage === 'research' && p.status === 'running' && p.researchFollowup) return '定向补查中';
+  return p.stage === 'research' && p.status === 'waiting' ? '待补查' : statusName[p.status];
+};
 export function phase(p: Project, s: StageId) {
   const n = STAGES.findIndex((x) => x.id === s),
     current = STAGES.findIndex((x) => x.id === p.stage);

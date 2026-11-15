@@ -30,14 +30,15 @@ process.stdin.on('end',()=>{
  let body = {body:'按材料制订测试茶任务卡'};
  if(action.startsWith('research-')){
    const schema=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1],'utf8')).properties;
-   if(!schema.accepted && !input.includes('上次的待补问题'))process.exit(10);
+   if(action==='research-followup' && !input.includes('用户暂不确定渠道'))process.exit(10);
    if(schema.queries) body={queries:['公开茶类年报']};
    else if(schema.findings) {
      console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'search',queries:['测试公开品类']}}}));
      body={findings:[{chapter:'行业与市场',conclusion:'茶礼场景更强调赠礼用途',source:'合成行业报告',url:'https://source.example.org/report',evidence:action==='research-fiction'?'这是虚构引文':'本次样本单列礼盒用途',implication:'策略需比较礼赠与日常使用情境'}],gaps:['渠道尚未选定'],next:'比较可核实的渠道样本'};
+     if(action==='research-followup')body.findings=[];
    } else if(schema.accepted){
      if(!input.includes('独立会话') || !input.includes('本次样本单列礼盒用途'))process.exit(11);
-     body={ready:action!=='research-blocked',accepted:[0],gaps:[],next:'结合渠道验证礼赠方向'};
+     body={ready:action==='research-ok',accepted:[0],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
    } else process.exit(12);
  }
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
@@ -130,6 +131,8 @@ for (const [action, ready, count] of [
       f.project.previousResearch = { legacyText: '上次的待补问题' };
       const { research, artifacts } = await f.run('research');
       assert.equal(research.ready, ready);
+      assert.equal(research.question, action === 'research-blocked' ? '优先门店还是线上？' : '');
+      assert.ok(artifacts[0].text.includes('调研方法版本：' + research.methodVersion));
       assert.equal(research.findings.length, count);
       assert.ok(f.requests.some((url) => url.startsWith('https://cn.bing.com/search?')));
       assert.ok(f.requests.includes('https://source.example.org/report'));
@@ -139,6 +142,39 @@ for (const [action, ready, count] of [
     },
   );
 }
+test('automatic research keeps a key gap without asking for a user decision', async (t) => {
+  const f = await fixture(t, 'research-blocked');
+  f.project.mode = 'auto';
+  const {research} = await f.run('research');
+  assert.equal(research.ready, false);
+  assert.equal(research.question, '');
+  assert.equal(research.findings.length, 1);
+});
+
+test('collaboration can ask its first decision after a follow-up obtains usable evidence', async (t) => {
+  const f = await fixture(t, 'research-blocked');
+  f.project.researchFollowup = true;
+  f.project.previousResearch = {ready:false,findings:[],question:'',next:'定位礼赠的来源'};
+  const {research} = await f.run('research');
+  assert.equal(research.ready,false);
+  assert.equal(research.findings.length,1);
+  assert.equal(research.question,'优先门店还是线上？');
+});
+
+test('follow-up rechecks earlier evidence, considers user feedback and does not repeat a question', async (t) => {
+  const f = await fixture(t, 'research-followup');
+  const earlier = {chapter:'行业与市场', conclusion:'礼赠是此次样本中的一个场景', source:'上轮报告', url:'https://source.example.org/older', evidence:'本次样本单列礼盒用途', implication:'礼赠和日常用途可分别比较'};
+  f.project.previousResearch = {question:'优先门店还是线上？',findings:[earlier]};
+  f.project.researchFollowup = true;
+  f.project.researchQuestionAnswered = true;
+  f.project.feedback = [{stage:'research',text:'用户暂不确定渠道'}];
+  const {research} = await f.run('research');
+  assert.ok(f.requests.includes(earlier.url));
+  assert.deepEqual(research.findings,[earlier]);
+  assert.equal(research.question,'');
+  assert.equal(research.ready,false);
+});
+
 test('strategy returns specific research question when the handoff cannot support a decision', async (t) => {
   const f = await fixture(t, 'strategy-return');
   assert.match((await f.run('strategy')).researchReturn, /实际接触场景/);

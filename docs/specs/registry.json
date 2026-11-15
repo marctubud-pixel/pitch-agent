@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.20.0",
+  "baselineVersion": "1.21.0",
   "date": "2026-11-15",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -42,7 +42,7 @@
       "kind": "agent",
       "title": "调研负责人",
       "path": "docs/agents/research-owner.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.research",
@@ -202,7 +202,7 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
@@ -371,10 +371,10 @@
     {
       "id": "method.research",
       "kind": "method",
-      "title": "调研负责人Skill r7",
+      "title": "调研负责人 Skill r8",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.0.0",
-      "sourceVersion": "r7-20261109",
+      "version": "1.1.0",
+      "sourceVersion": "r8-20261115",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -423,7 +423,7 @@
       "kind": "contract",
       "title": "七阶段现行工作流",
       "path": "docs/workflows/提案工作流_现行规则.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -486,7 +486,7 @@
       "kind": "contract",
       "title": "Agent组织与职责总览",
       "path": "docs/agents/README.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"
@@ -656,7 +656,7 @@
       "title": "研究独立读者运行合同",
       "kind": "contract",
       "path": "docs/development/research-reader.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": [
         "contract.seven-stage-runtime",

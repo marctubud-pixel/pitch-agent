@@ -91,7 +91,9 @@ export function StartScreen({
         <button type="button" className="btn btn-dark btn-xl" onClick={submit}>
           继续 →
         </button>
-        <p className="entry-foot">下一步选择合作方式。点击开始后，才会调用这台电脑已登录的 Codex。</p>
+        <p className="entry-foot">
+          写清想做什么、产品属于什么品类、有哪些卖点，就可以开始调研。下一步选择合作方式。
+        </p>
       </div>
     </main>
   );
@@ -102,12 +104,12 @@ const MODES: { id: Mode; en: string; name: string; lead: string; points: string[
     id: 'auto',
     en: 'SURPRISE ME',
     name: '全自动模式',
-    lead: '交代完就可以去睡。主理人从研究一路做到终审，在视觉稿交给排版时等你确认。',
+    lead: '自动调研先查公开资料；渠道或人群未定时，按不同条件比较。',
     points: [
+      '关键依据不足时自动定向补查一轮',
+      '补查后仍缺关键依据，项目留在研究',
       '保留三个创意方向，分别生成视觉稿',
-      '全部完成后在对话里通知你',
-      '完成后可以提意见、要求修改',
-      '原始资料在开始前随需求提交',
+      '视觉稿由你确认后进入排版',
     ],
     cta: '全自动开始',
   },
@@ -115,12 +117,12 @@ const MODES: { id: Mode; en: string; name: string; lead: string; points: string[
     id: 'collab',
     en: 'IDEA',
     name: '协作模式',
-    lead: '常规工作它自己推进，到了该由人拿主意的地方会停下来问你。',
+    lead: '协作调研先查公开资料。有了初步发现，才请你判断影响方向的问题。',
     points: [
-      '主理人先根据需求拟定创意方向',
-      '由你从备选方向中选定一个',
-      '你决定之后它继续往下做',
-      '视觉稿完成后由你决定是否采用',
+      '每次只问一个关键问题',
+      '可作答，也可按不同条件继续补查',
+      '有依据的结论能支持取舍后，再交给策略',
+      '由你选创意方向、确认采用视觉稿',
     ],
     cta: '协作开始',
   },
@@ -185,7 +187,7 @@ export function ModeScreen({
           ))}
         </div>
         <p className="entry-foot">
-          两种模式共用同一个工作区、主理人、交付物和执行记录。运行开始后不能切换模式。
+          点击开始后会调用本机已登录的 Codex。项目沿用选定模式，研究结论经核对后交给策略。
         </p>
       </div>
     </main>

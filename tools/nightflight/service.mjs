@@ -50,7 +50,7 @@ function archiveVersion(p) {
   });
 }
 
-function researchHandoff(report) {
+function researchHandoff(report, project) {
   const text = (value) => typeof value === 'string' && value.trim().length > 0;
   const findings = Array.isArray(report?.findings)
     ? report.findings.filter((f) => f && [f.conclusion, f.evidence, f.source, f.implication].every(text))
@@ -60,10 +60,34 @@ function researchHandoff(report) {
   if (!ready && !gaps.length) gaps.push('当前材料尚未提供可供策略使用的研究判断。');
   return {
     ready,
+    ...(text(report?.methodVersion) ? { methodVersion: report.methodVersion } : {}),
     findings,
+    question:
+      !ready &&
+      findings.length &&
+      project.mode === 'collab' &&
+      !project.researchQuestionAnswered &&
+      text(report?.question)
+        ? report.question.trim()
+        : '',
     gaps,
     next: text(report?.next) ? report.next : ready ? '' : '补查与本案决策相关的公开资料和实际案例。',
   };
+}
+
+// A round can schedule one evidence follow-up. Persist the flag before dispatch so a restart or retry
+// cannot run another automatic round or repeat a question the customer has already answered.
+function continueResearch(p) {
+  if (p.research.question || p.researchFollowup) {
+    p.status = 'waiting';
+    note(p, p.research.question || '定向补查后仍缺关键依据：' + p.research.next);
+    return;
+  }
+  archiveVersion(p);
+  p.artifacts = p.artifacts.filter((a) => a.stage === 'brief');
+  p.researchFollowup = true;
+  p.status = 'running';
+  note(p, '按研究缺口开始定向补查：' + p.research.next);
 }
 
 function publicView(p) {
@@ -235,21 +259,25 @@ export function createNightflight({ root, runStage, runLayout }) {
           live.owner = null;
           note(live, '已保存' + outputs.length + '份' + labels[stages.indexOf(p.stage)] + '产物');
           if (p.stage === 'research') {
-            live.research = researchHandoff(result.research);
+            live.research = researchHandoff(result.research, live);
             if (live.research.ready) {
               note(live, '研究已形成有依据的判断，交给策略');
               live.stage = 'strategy';
             } else {
-              live.status = 'waiting';
-              note(live, '研究待补查：' + live.research.next);
+              continueResearch(live);
             }
           } else if (p.stage === 'strategy' && result.researchReturn) {
             archiveVersion(live);
             live.artifacts = live.artifacts.filter((a) => a.stage !== 'strategy');
             live.stage = 'research';
-            live.status = 'waiting';
-            live.research = { ...researchHandoff(live.research), ready: false, next: result.researchReturn };
+            live.research = {
+              ...researchHandoff(live.research, live),
+              ready: false,
+              question: '',
+              next: result.researchReturn,
+            };
             note(live, '策略退回研究：' + result.researchReturn);
+            continueResearch(live);
           } else if (p.stage === 'copy' && p.mode === 'collab') {
             live.status = 'waiting';
             note(live, '等待你选择创意方向');
@@ -419,7 +447,12 @@ export function createNightflight({ root, runStage, runLayout }) {
         '当前无法从研究重新开始，请在本次运行结束后查看',
         409,
       );
+      const continuing = p.stage === 'research' && (p.status === 'waiting' || p.researchFollowup === true);
+      const question = p.research?.question;
+      if (continuing && question) check(text, '请回答研究问题，或选择按现有条件继续', 400);
       archiveVersion(p);
+      p.researchQuestionAnswered = Boolean(continuing && (question || p.researchQuestionAnswered));
+      p.researchFollowup = continuing;
       p.artifacts = p.artifacts.filter((a) => a.stage === 'brief');
       p.stage = 'research';
       p.status = 'running';
@@ -428,7 +461,13 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.directions = [];
       p.choice = null;
       p.visualAdoption = null;
-      if (text) p.feedback.push({ at: now(), stage: 'research', text });
+      if (text)
+        p.feedback.push({
+          at: now(),
+          stage: 'research',
+          text,
+          ...(continuing && question ? { question } : {}),
+        });
       note(p, '已保存前版，沿用原简报重新研究' + (text ? '：' + text.slice(0, 180) : ''));
     } else if (kind === 'retry') {
       check(p.status === 'failed', '当前阶段无需重试', 409);
@@ -449,6 +488,8 @@ export function createNightflight({ root, runStage, runLayout }) {
         p.status = 'running';
         p.visualAdoption = null;
         if (restart === 'brief') {
+          p.researchFollowup = false;
+          p.researchQuestionAnswered = false;
           p.research = null;
           p.directions = [];
           p.choice = null;

@@ -58,6 +58,7 @@ const reportSchema = objectSchema({
 const verdictSchema = objectSchema({
   ready: { type: 'boolean' },
   accepted: { type: 'array', items: { type: 'integer' } },
+  question: stringField,
   gaps: stringList,
   next: stringField,
 });
@@ -133,8 +134,17 @@ print(json.dumps([{'title':item.findtext('title'),'url':item.findtext('link')} f
 
 async function researchReport({ call, dir, inputs, project, onEvent, dependencies, signal }) {
   const storeRoot = join(dir, '.research-evidence');
+  const mode = project.mode;
+  const collaborative = mode === 'collab';
+  const canAsk = collaborative && !project.researchQuestionAnswered;
+  const modeInstruction = collaborative
+    ? '协作调研先完成取证、列出初步发现。用户已给的选择和补充意见属于项目条件。'
+    : '自动调研自行分析不同条件下的适用范围，自行定向补查，保留需要客户确认的假设。';
+  const planning = project.researchFollowup
+    ? '本轮为定向补查。以本轮反馈和上轮缺口确定一个最影响策略的证据问题，优先更换来源或具体比较场景。用户暂时无法确认时，对备选情境分别取证。'
+    : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
   const plan = await call(
-    '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出至多三条不同角度的短查询，优先查原始案例、行业或消费者研究。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    modeInstruction + planning + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出至多三条不同角度的短查询，优先查原始案例、行业或消费者研究。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     querySchema,
   );
@@ -190,7 +200,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const material = originals.map(({ url, source, text }) => ({ url, source, text: text.slice(0, 7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
-    '现在完成研究。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
+    modeInstruction + planning + '现在完成研究。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
       JSON.stringify(material),
     inputs.images,
     reportSchema,
@@ -203,7 +213,10 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     passages = [],
     gaps = strings(draft.parsedOutput.gaps);
   const normalized = (text) => text.normalize('NFKC').replace(/\s+/gu, '');
-  for (const f of offered.slice(0, 24)) {
+  // Include prior findings in the same verification and review as new candidates.
+  const previousFindings = Array.isArray(project.previousResearch?.findings) ? project.previousResearch.findings : [];
+  const seenFindings = new Set();
+  for (const f of [...offered.slice(0, 24), ...previousFindings]) {
     signal?.throwIfAborted();
     if (
       !f ||
@@ -226,6 +239,9 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       gaps.push('尚未从「' + f.source + '」原文核对这条依据：' + f.evidence.slice(0, 120));
       continue;
     }
+    const key = JSON.stringify([original.url || f.source, quote, normalized(f.conclusion)]);
+    if (seenFindings.has(key)) continue;
+    seenFindings.add(key);
     findings.push({ ...f, url: original.url || '' });
     passages.push(passage.slice(Math.max(0, offset - 240), offset + quote.length + 240));
   }
@@ -233,6 +249,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     gaps.push('本轮尚未取得可用公开原文，请换用更具体的品类、发布渠道或案例机构继续补查。');
   let research = {
     ready: false,
+    question: '',
     findings,
     gaps,
     next: draft.parsedOutput.next || '定向补查影响策略取舍的关键依据。',
@@ -240,27 +257,36 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   if (findings.length) {
     await onEvent?.('比稿 Agent 正在检查这些判断能否供策略使用');
     const role = await readFile(join(repo, 'docs/agents/proposal-director.md'), 'utf8');
+    const questionInstruction = canAsk
+      ? '研究者已经完成第一轮取证。仅在已采纳发现表明存在改变策略方向、且需要人作决定的项目取舍时，question 填一句直接询问该取舍的问题；next 说明答案将影响哪项判断。可带条件推进、公开资料可继续查或用户已回答的事项，question 填空字符串。'
+      : 'question 填空字符串。根据已知条件及反馈复核；未确定的分支分别说明适用条件。';
     const review = await call(
-      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。非关键资料仍待确认时可交付有依据的条件性结论。gaps 给出关键缺口，next 用中文解释交接理由或具体补查行动。',
+      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。非关键资料仍待确认时可交付有依据的条件性结论。gaps 给出关键缺口，next 用中文解释交接理由或具体补查行动。关键依据不足时，无论哪个模式都保留待补状态。' + questionInstruction,
       [],
       verdictSchema,
       {
         rules: [role],
         assignment: '审核当前研究的交接充分性。',
-        context: JSON.stringify({ brief: project.brief, materials: inputs.texts, research, passages }),
+        context: JSON.stringify({ brief: project.brief, mode, feedback: project.feedback || [], materials: inputs.texts, research, passages }),
       },
     );
     const v = review.parsedOutput;
     if (
       typeof v?.ready !== 'boolean' ||
+      typeof v.question !== 'string' ||
       !Array.isArray(v.accepted) ||
       !Array.isArray(v.gaps) ||
       !v.next?.trim()
     )
       throw Error('比稿交接检查未返回有效判断，请重试研究');
     const accepted = findings.filter((_, i) => v.accepted.includes(i));
+    const ready = v.ready && accepted.length > 0;
+    const question = canAsk && !ready && accepted.length
+      ? v.question.trim().split(/(?<=[？?])/u, 1)[0]
+      : '';
     research = {
-      ready: v.ready && accepted.length > 0,
+      ready,
+      question,
       findings: accepted,
       gaps: strings([...gaps, ...v.gaps]),
       next: v.next.trim(),
@@ -297,6 +323,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     ...chapters,
     '## 待补问题',
     ...research.gaps,
+    ...(research.question ? ['## 需要你决定', research.question] : []),
     '## 下一步',
     research.next,
     '## 取证范围',
@@ -466,7 +493,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
     const rules = await Promise.all(['docs/agents/'+role+'.md', ...(extraRules[stage] || [])].map(p=>readFile(join(repo,p),'utf8')));
     const inputs = await readInputs(dir,project,stage,signal);
     if (stage === 'final' && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
-    const context = JSON.stringify({title:project.title, brief:project.brief, mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null, materials:inputs.texts,...(stage==='research'?{previousResearch:project.previousResearch || null}:{})});
+    const context = JSON.stringify({title:project.title, brief:project.brief, mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null, materials:inputs.texts,...(stage==='research'?{previousResearch:project.previousResearch || null,researchFollowup:!!project.researchFollowup}:{})});
     const programPath = binary || await executable('codex');
     const env = Object.fromEntries(['PATH','HOME','TMPDIR','LANG','LC_ALL','USER','LOGNAME','SSL_CERT_FILE'].filter(k=>process.env[k]).map(k=>[k,process.env[k]]));
     env.CODEX_HOME = home;
@@ -552,8 +579,11 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
     }
     if (stage === 'research') {
       const {research,body} = await researchReport({call,dir,inputs,project,onEvent,dependencies:researchDependencies,signal});
-      await addText(body);
-      return {artifacts,research};
+      const skill = rules.find(rule => /^name: design-research-lead$/m.test(rule));
+      const methodVersion = skill?.match(/^  version: (\S+)$/m)?.[1];
+      if (!methodVersion) throw Error('未取得当前调研 Skill 的方法版本');
+      await addText(body + '\n\n调研方法版本：' + methodVersion);
+      return {artifacts,research:{...research,methodVersion}};
     }
     if (stage === 'strategy') {
       const result=await call('依据本轮有效研究输出三个板块。确实无法形成有依据的策略判断时，把具体应退回研究补查的问题写入 researchReturn；可以根据明确条件推进时填空字符串。',inputs.images,strategySchema);

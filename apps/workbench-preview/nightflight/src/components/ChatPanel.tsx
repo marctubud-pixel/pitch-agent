@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { clock, fileIssue, projectStatus, type Action, type Project, type Summary } from '../live';
+import {
+  clock,
+  fileIssue,
+  projectStatus,
+  researchQuestion,
+  type Action,
+  type Project,
+  type Summary,
+} from '../live';
 import { BotFigure } from './Bot';
 import { AttachButton, AttachmentChips } from './Attachments';
 export type Act = (kind: Action, text: string, files?: File[]) => Promise<boolean>;
@@ -110,7 +118,7 @@ export function ChatPanel({
         ))}
         {p.stage === 'research' && p.status === 'waiting' && (
           <div className="msg-body">
-            <p>研究还需要补充依据。</p>
+            <p>{researchQuestion(p) ? '研究有了一项需要你判断的方向问题。' : '研究还需要补充依据。'}</p>
             <button className="btn" onClick={openResearch}>
               查看研究与补查
             </button>

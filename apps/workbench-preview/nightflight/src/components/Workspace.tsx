@@ -2,7 +2,15 @@ import { useState } from 'react';
 import type { StageId } from '../types';
 import { STAGES, STAGE_BY_ID } from '../data/project';
 import { DeckPreview } from './DeckPreview';
-import { isDeckPreview, phase, safeURL, stageLabel, projectStatus, type Project } from '../live';
+import {
+  isDeckPreview,
+  phase,
+  safeURL,
+  stageLabel,
+  researchQuestion,
+  projectStatus,
+  type Project,
+} from '../live';
 import { BotCard } from './Bot';
 import { Icon } from './Icon';
 export function Workspace({
@@ -34,7 +42,9 @@ export function Workspace({
       ? '查看中断原因，确认后重新尝试。'
       : p.status === 'waiting'
         ? p.stage === 'research'
-          ? '查看研究缺口，补查后再交给策略。'
+          ? researchQuestion(p)
+            ? '查看研究发现，回答影响方向的问题。'
+            : '查看研究缺口，补查后再交给策略。'
           : p.stage === 'visual'
             ? '打开视觉稿，确认是否采用这一版做本地排版。'
             : '在对话里查看备选方向，选定后继续。'

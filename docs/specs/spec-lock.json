@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.20.0",
-  "registrySha256": "8f6500dfdb02f6a31f42e14ceb59b60b366f91defa78ce12e3a998db465af259",
+  "baselineVersion": "1.21.0",
+  "registrySha256": "89e271754c4339283d9c9feb76edebf137bb75a5386a55c4485d2ff6ed4bc4a7",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -18,10 +18,10 @@
       }
     },
     "agent.research-owner": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/research-owner.md": "bd4d46940f34233d760839dfe79be47e2511db4c087b62000d0c993e5074fb19"
+        "docs/agents/research-owner.md": "8eb2e07790ff032c6222123c7e7c5b00c424af5ee8d447e8054b0057cfe2a626"
       }
     },
     "agent.strategy-owner": {
@@ -102,10 +102,10 @@
       }
     },
     "page.research": {
-      "version": "1.3.0",
+      "version": "1.4.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/research.md": "8ea7b84a6fbd7b669017e7a39604c333859487124fcae83f3bd0b8a4c2e6c00c"
+        "docs/pages/research.md": "1da1369f8cfa7d15316e89f5481bd785e1606da32b2fb98b83ce85b2d377c920"
       }
     },
     "page.strategy": {
@@ -186,10 +186,11 @@
       }
     },
     "method.research": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
+        "skills/design-research-lead/SKILL.md": "8c406f596b57994d1b20116fa5ea7fceb520c634666582c1993a437e0ac30382",
+        "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
         "skills/design-research-lead/references/contracts.md": "0fd12ab71ceccf16744a12872a6a942a4b0c89bfc9aac768e11f777079ad3003",
@@ -241,10 +242,10 @@
       }
     },
     "contract.workflow": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "files": {
-        "docs/workflows/提案工作流_现行规则.md": "4fdbbe3082d252126237c58764f8089c3756f751bff39a7ecbb1e448a9a68ab1"
+        "docs/workflows/提案工作流_现行规则.md": "fc1ecab6c8bf198754063df125754f8cc2fd0b0bdf06b7d4ba43161265d1ab4c"
       }
     },
     "contract.change": {
@@ -283,10 +284,10 @@
       }
     },
     "contract.organization": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/README.md": "520c434afa64480d22aa1d217e521460dca0eac062961e9394bb2a395a8c45ea"
+        "docs/agents/README.md": "4a314d1a49ee2c22c1d7d085dbcaef2f528e2ebf6675f9907d8942345ea142ff"
       }
     },
     "contract.pages": {
@@ -395,10 +396,10 @@
       }
     },
     "contract.research-reader": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "files": {
-        "docs/development/research-reader.md": "fb02d15bd9424aad92569c80a7e193ce739e391b3083c492d7b20c40ef10cc83"
+        "docs/development/research-reader.md": "20d1cd157cf8e8ddd1f5ac727c778387dbcb7fd9c6c7ec7efdb7a933bf0d3798"
       }
     },
     "contract.brief-extraction": {
@@ -465,7 +466,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "dc46352c7928c2d2cda26a6f705aeb1b1c0eed96b42abacdfee030d72dfd3ab0",
+    "docs/specs/README.md": "528c15287070dc54f16bc92f9bf6981351f852a18f24cd1517f0938640f44271",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

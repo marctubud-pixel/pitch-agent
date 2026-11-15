@@ -86,12 +86,12 @@ export function Home({ hasProject, onStart, onNew }: { hasProject: boolean; onSt
           <div>
             <p className="mono-label">SURPRISE ME</p>
             <h3>全自动模式</h3>
-            <p>交代完就可以去睡。它为三个方向分别生成视觉稿。进入排版之前，由你决定是否采用。</p>
+            <p>自动调研会按现有简报取证，遇到关键缺口先补查。策略有据可用后继续推进，三个方向分别生图，由你确认采用。</p>
           </div>
           <div>
             <p className="mono-label">IDEA</p>
             <h3>协作模式</h3>
-            <p>常规工作它自己推进。到了该由人拿主意的地方，比如三个创意方向选哪个，它会停下来问你。</p>
+            <p>协作调研先展示已查到的依据。遇到影响方向的问题，问你一次再补查；到创意阶段，由你选择方向。</p>
           </div>
         </div>
       </section>

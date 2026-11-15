@@ -2259,16 +2259,16 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "0a2680e1d820ea7c4977331cf16d5b1a6d620484fad877d3077b3d56f9b3be1c",
-      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+      "sha256": "824856e40137987bf2985e9748615b00c8a7f823c0729bd6f898d2c6f97d369a",
+      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "8255cadadbbf5f4f07d27c80b7f67c114e5e03f225fef1f16785620e901eb364",
-      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+      "sha256": "2577c45a269db0bf15b815c7c484dd7ccdae09045cd039105f50fcf98fc59f19",
+      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
-      "sha256": "26400f45a926d9654937ae68558b99be3549dcfa0642e8a72c44cb651a3b8925",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
+      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/Library.tsx": {
       "sha256": "3489826272cdc7ad3208c9c92bfdc0e78b106d598cd025abbd4111748c6ca177",
@@ -2279,16 +2279,16 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/StartScreen.tsx": {
-      "sha256": "b6ac4280ecd9da0aa1a4206dc02f7b7bab3cda9ad52f9438d4839bfa9335b652",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "19833296c0c07b3de7d73fbc18ec1fea19d39ff6d428f9134875837a0992414b",
+      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/TopBar.tsx": {
       "sha256": "249fd9c4d3237a88ebccb19bec259a4f8a3b8e17f2c354d5d4bd9a7bf7d563d8",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "4571ed493a790b9018c341d42b409badb7150c42cb58692966297bce4576ede2",
-      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+      "sha256": "8ef1c27306a719ad5067c818e14cf27f62b1f45c00e52d91b9cc1f52541e9f30",
+      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",

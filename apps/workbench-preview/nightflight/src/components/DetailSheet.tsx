@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { STAGES, STAGE_BY_ID } from '../data/project';
 import { DeckPreview } from './DeckPreview';
-import { isDeckPreview, clock, phase, safeURL, stageLabel, type Artifact, type Project } from '../live';
+import {
+  isDeckPreview,
+  clock,
+  phase,
+  researchQuestion,
+  safeURL,
+  stageLabel,
+  type Artifact,
+  type Project,
+} from '../live';
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
 
@@ -19,19 +28,33 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
   const handoff = p.research;
   const isResearch = p.stage === 'research';
   const isChecking = isResearch && p.status === 'running';
+  const question = researchQuestion(p);
+  const modeName = p.mode === 'auto' ? '自动调研' : '协作调研';
+  const submitResearch = async (text: string) => {
+    if (await act('research_again', text)) setFocus('');
+  };
   const canStart = p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
   if (p.stage === 'brief') return null;
   return (
     <div className="research-review">
       <section className="block">
+        <p className="mono-label">{modeName}</p>
         <h2>研究结论</h2>
         {isChecking ? (
           <p className="lead" role="status">
-            正在取证，完成后会在这里显示结论和依据。
+            {p.researchFollowup
+              ? '正在根据本轮缺口定向补查，完成后重新核对策略能否接手。'
+              : '正在根据已有简报查找来源，首轮发现和依据将在这里显示。'}
           </p>
         ) : handoff ? (
           <>
-            <p className="research-state">{handoff.ready ? '可交给策略' : '待补查，暂缓交给策略'}</p>
+            <p className="research-state">
+              {handoff.ready
+                ? '可交给策略'
+                : question
+                  ? '已有初步发现，需要你判断方向'
+                  : '待补查，暂缓交给策略'}
+            </p>
             {!handoff.findings.length && <p>本轮尚无可供策略使用的研究结论。</p>}
             {handoff.findings.map((finding, i) => {
               const url = sourceURL(finding.url);
@@ -98,24 +121,41 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
           className="research-action"
           onSubmit={async (e) => {
             e.preventDefault();
-            if (await act('research_again', focus.trim())) setFocus('');
+            if (!question || focus.trim()) await submitResearch(focus.trim());
           }}
         >
-          <label htmlFor="research-focus">补查重点（选填）</label>
+          <label htmlFor="research-focus">{question || '补查重点（选填）'}</label>
           <input
             id="research-focus"
             value={focus}
             onChange={(e) => setFocus(e.target.value)}
-            placeholder="例如，优先比较门店海报与社交媒体海报"
+            required={!!question}
+            placeholder={question ? '写下你的判断或使用条件' : '例如，优先比较门店海报与社交媒体海报'}
           />
           <p>
-            {isResearch
-              ? '可直接按现有简报和缺口继续取证。'
-              : '本次将沿用原简报，保存现有研究及后续产物为历史版本，重新检索。'}
+            {question
+              ? '你的回答将用于下一轮定向补查。'
+              : isResearch
+                ? '可补充新线索，继续核实影响策略取舍的缺口。'
+                : p.mode === 'auto'
+                  ? '保留历史版本，沿用原简报自动取证和补查；关键依据仍不足时停在研究。'
+                  : '保留历史版本，沿用原简报先查资料；有初步发现后再请你判断影响方向的问题。'}
           </p>
-          <button type="submit" className="btn btn-dark" disabled={busy}>
-            {isResearch ? '开始补查' : '从研究重新开始'}
-          </button>
+          <div className="btn-row">
+            <button type="submit" className="btn btn-dark" disabled={busy || (!!question && !focus.trim())}>
+              {question ? '按此回答补查' : isResearch ? '开始补查' : '从研究重新开始'}
+            </button>
+            {question && (
+              <button
+                type="button"
+                className="btn"
+                disabled={busy}
+                onClick={() => submitResearch('暂不确定，请比较不同条件，标明各自的适用范围。')}
+              >
+                暂不确定，按条件继续
+              </button>
+            )}
+          </div>
         </form>
       )}
     </div>
