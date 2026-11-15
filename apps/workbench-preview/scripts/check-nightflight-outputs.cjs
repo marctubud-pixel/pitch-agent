@@ -71,7 +71,7 @@ const stages = [
   ['关键发现'],
   ['核心策略'],
   ['三个创意方向'],
-  ['方向参考', '草图与主视觉', '样机'],
+  ['视觉参考', '草图与主视觉', '样机'],
   ['提案预览'],
   ['本版提案', '终审记录', '你的反馈'],
 ];
@@ -158,7 +158,7 @@ async function main() {
     if (process.argv.includes('--visual')) {
       assert.equal(await page.locator('.vg-references img').count(), 0);
       assert.match(await page.locator('.vg-pair img').getAttribute('src'), /visual-1-abc/);
-      await page.getByRole('button', {name:'明月', exact:true}).click();
+      await page.getByRole('button', {name:/方向 B.*明月/}).click();
       assert.equal(await page.locator('.vg-pair img, .vg-mockup img').count(), 0);
       assert.deepEqual(actions, []);
       await page.goto(origin + '/nightflight/#/reference/qingyu/visual?dir=v2');
@@ -167,6 +167,8 @@ async function main() {
       for (const id of ['v2', 'n7', 'k4']) {
         const row = page.locator('[data-reference-direction="' + id + '"]');
         assert.equal(await row.locator('.vg-references img').count(), 3);
+        assert.ok((await row.locator('.vg-description').innerText()).trim());
+        assert.deepEqual(await row.locator('.vg-references img').evaluateAll(images => images.map(img => getComputedStyle(img).objectFit)), ['cover', 'cover', 'cover']);
         await row.locator('.vg-direction').click();
         const pair = page.locator('[data-visual-direction="' + id + '"]');
         await pair.waitFor();

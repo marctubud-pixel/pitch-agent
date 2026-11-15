@@ -1,17 +1,17 @@
 import { useId, useRef, useState, type ReactNode } from 'react';
 import './visual-image-gallery.css';
 
-export interface GalleryImage { src: string; title: string; alt: string }
+export interface GalleryImage { src: string; title: string; alt: string; thumbnailScale?: number }
 export interface GalleryDirection {
-  id: string; name: string;
+  id: string; name: string; description?: string;
   references: readonly GalleryImage[]; sketches: readonly GalleryImage[];
   main?: GalleryImage; mockup?: GalleryImage;
 }
 
-function Picture({ image }: { image: GalleryImage }) {
+function Picture({ image, thumbnail = false }: { image: GalleryImage; thumbnail?: boolean }) {
   const [failed, setFailed] = useState(false);
   return failed ? <span className="vg-missing" role="status">图片暂未载入</span> :
-    <img src={image.src} alt={image.alt} onError={() => setFailed(true)} />;
+    <img src={image.src} alt={image.alt} style={thumbnail && image.thumbnailScale ? { transform: `scale(${image.thumbnailScale})` } : undefined} onError={() => setFailed(true)} />;
 }
 
 function CurrentArtwork({ direction, zoom }: { direction: GalleryDirection; zoom: (image: GalleryImage) => void }) {
@@ -52,13 +52,17 @@ export function VisualImageGallery({ directions, currentId, onDirectionChange, d
   }
   if (!current) return <p className="vg-missing">视觉稿待交回</p>;
   return <div className="visual-image-gallery">
-    <section className="vg-section"><h3>方向参考</h3>
-      {directions.map((direction) => <div className="vg-reference-row" data-reference-direction={direction.id} key={direction.id}>
+    <section className="vg-section"><h3>视觉参考</h3>
+      {directions.map((direction, index) => <div className="vg-reference-row" data-reference-direction={direction.id} key={direction.id}>
         <button type="button" className="vg-direction" aria-pressed={current.id === direction.id}
-          onClick={() => onDirectionChange(direction.id)}>{direction.name}</button>
+          onClick={() => onDirectionChange(direction.id)}>
+          <span className="vg-letter">方向 {String.fromCharCode(65 + index)}</span>
+          <strong>{direction.name}</strong>
+          {direction.description && <span className="vg-description">{direction.description}</span>}
+        </button>
         <div className="vg-references">{direction.references.length ? direction.references.map((image) =>
           <figure key={image.src}><button type="button" className="vg-zoom" aria-label={'放大' + image.title}
-            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} /></button>
+            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} thumbnail /></button>
             <figcaption>{image.title}</figcaption></figure>) : <p className="vg-missing">参考图待补</p>}</div>
       </div>)}
     </section>

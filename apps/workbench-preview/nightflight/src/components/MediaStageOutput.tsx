@@ -31,7 +31,7 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   const directions: GalleryDirection[] = [...new Set(p.directions)].map(title => {
     const current = reports.find(item => item.title === title);
     const src = current && safeURL(current.file.url);
-    return { id: title, name: title, references: [], sketches: [],
+    return { id: title, name: title, description: current?.record?.description?.split(/[。\n]/)[0], references: [], sketches: [],
       main: src ? { src, title: title + ' · 概念稿', alt: title + '的视觉概念稿' } : undefined };
   });
   const active = directions.find(item => item.id === selected) ?? directions[0];
