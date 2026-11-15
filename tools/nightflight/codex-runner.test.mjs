@@ -146,6 +146,10 @@ process.stdin.on('end',()=>{
      body={ready:action==='research-ok',accepted:[0],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
    } else process.exit(12);
  }
+ if(action==='strategy-ready'){
+   if(!input.includes('已接收结论') || !input.includes('夹具对照了两类陈列'))process.exit(21);
+   body={findingNumbers:[1], intersection:'瓶侧面积与顾客视线相交', focus:'优先突出侧面识别',researchReturn:''};
+ }
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
@@ -516,4 +520,12 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
   assert.equal(missing.winner,null);
   assert.match(missing.candidates[0].research,/补充同类/);
   await assert.rejects(rank([4,0,5], []), /分数无效/);
+});
+
+test('strategy hands its exact accepted research and three sections to copy', async t => {
+  const f = await fixture(t, 'strategy-ready');
+  f.project.research = {ready:true, findings:[{conclusion:'货架侧面先被看到', evidence:'夹具对照了两类陈列', source:'陈列原件', implication:'先讲侧面的识别'}]};
+  const result = await f.run('strategy');
+  assert.equal(result.artifacts[0].text, '## 研究结论\n\n结论：货架侧面先被看到\n依据：夹具对照了两类陈列\n来源：陈列原件\n\n## 方向交叉点\n\n瓶侧面积与顾客视线相交\n\n## 策略发力点\n\n优先突出侧面识别');
+  assert.equal(await readFile(join(f.dir, result.artifacts[0].name),'utf8'), result.artifacts[0].text+'\n');
 });

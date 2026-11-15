@@ -5,6 +5,8 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
+import { DatabaseSync } from 'node:sqlite';
+import { strategyMarkdown } from './strategy-handoff.mjs';
 import { createNightflight } from './service.mjs';
 
 async function localRequest(service, path, data, origin = 'http://localhost:4420') {
@@ -71,7 +73,13 @@ test('a personal run waits for direction and current image adoption, saves user 
     const kind = stage === 'layout' ? 'pptx' : stage === 'visual' ? 'image' : 'text';
     const name = 'output-' + stage + { pptx: '.pptx', image: '.png', text: '.md' }[kind];
     const draft = { directions: ['A','B','C'].map((name,i) => ({id:name, name, duty:['emotion','continuity','feature'][i], main:name+' 标题'})) };
-    const body = stage === 'copy' ? draft.directions.map(d => '## '+d.name+'\n主标题：'+d.main).join('\n\n') : 'isolated '+stage;
+    const strategy = {findingNumbers:[1], intersection:'产品的展示面积与人群的观看距离有关。', focus:'优先放大主要场景下可辨认的图形。'};
+    const strategyBody = stage === 'strategy' && !researchReturn ? strategyMarkdown(strategy, project.research) : null;
+    if (stage === 'copy') {
+      const [received] = project.artifacts.filter(a => a.stage === 'strategy');
+      assert.equal(await readFile(received.path, 'utf8'), strategyMarkdown(strategy, project.research) + '\n');
+    }
+    const body = stage === 'copy' ? draft.directions.map(d => '## '+d.name+'\n主标题：'+d.main).join('\n\n') : strategyBody ?? 'isolated '+stage;
     if (stage === 'visual') {
       const artifacts=[];
       for (const candidate of [1,2,3]) {
@@ -86,11 +94,12 @@ test('a personal run waits for direction and current image adoption, saves user 
       return {artifacts};
     }
     if(stage==='layout') assert.deepEqual((await import('node:fs/promises').then(fs=>fs.readdir(dir))).filter(n=>n.endsWith('.png')),['稿2.png']);
-    await writeFile(join(dir, name), body);
+    await writeFile(join(dir, name), strategyBody ? body + '\n' : body);
     return {
       research,
       researchReturn,
-      artifacts: [{ kind, name, ...(stage === 'copy' ? { text: body } : {}) }],
+      strategy,
+      artifacts: [{ kind, name, ...(stage === 'copy' || strategyBody ? { text: body } : {}) }],
       copyReview: stage === 'copy' ? {
         version: 3, protocol: 'dual-panel-headline-v4', status: 'ready',
         adjudication: { ready: true, set: { ready: true },
@@ -235,3 +244,63 @@ for (const mode of ['auto', 'collab']) {
     assert.equal(project.artifacts.filter((a) => a.stage === 'research').length, 1);
   });
 }
+
+test('strategy stays put until every block refers to the accepted research and saved draft', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'nightflight-strategy-handoff-'));
+  const finding = {conclusion:'门店以侧面展示', evidence:'夹具照片中的货架', source:'门店夹具', implication:'突出侧面识别'};
+  const plan = {findingNumbers:[1], intersection:'瓶侧面对门店顾客', focus:'先放大侧面标志'};
+  let attempt = 0;
+  const stages = [];
+  const service = createNightflight({root, runStage:async ({stage, dir, project}) => {
+    stages.push(stage);
+    const name = stage + '.md';
+    if (stage === 'copy') throw Error('已收到核验策略稿');
+    let text = stage, strategy;
+    if (stage === 'strategy') {
+      strategy = [
+        {...plan, findingNumbers:[]}, {...plan, intersection:''}, {...plan, focus:''},
+        {...plan, findingNumbers:[2]}, plan, plan,
+      ][attempt++];
+      text = strategyMarkdown(plan, project.research);
+    }
+    await writeFile(join(dir, name), (stage === 'strategy' && attempt === 5 ? '另一稿' : text) + '\n');
+    return {artifacts:[{kind:'text', name, text}], strategy, research:{ready:true, findings:[finding]}};
+  }});
+  t.after(async () => {service.close(); await rm(root, {recursive:true, force:true});});
+  const url = '/api/projects/handoff-006';
+  await localRequest(service, '/api/projects', {id:'handoff-006', brief:'包装', mode:'auto'});
+  for (const [i, reason] of ['研究结论','方向交叉点','策略发力点','无法定位','原件与交接正文不符','已收到核验策略稿'].entries()) {
+    let p;
+    for (let n=0; n<200; n++) {
+      p = (await localRequest(service, url)).data.project;
+      if (p.status === 'failed') break;
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    assert.equal(p.status, 'failed');
+    assert.ok(p.error.includes(reason), p.error);
+    assert.equal(p.stage, i === 5 ? 'copy' : 'strategy');
+    assert.equal(p.artifacts.filter(a => a.stage === 'strategy').length, i === 5 ? 1 : 0);
+    if (i < 5) await localRequest(service, url+'/action', {kind:'retry'});
+  }
+  assert.equal(stages.filter(s => s === 'copy').length, 1);
+  // Reopen a previously saved project at copy. A new attempt must retain its old strategy
+  // and prepare a current handoff, without sending that old draft into copy.
+  const db = new DatabaseSync(join(root, 'nightflight.sqlite'));
+  const original = JSON.parse(db.prepare('SELECT state FROM projects WHERE id=?').get('handoff-006').state);
+  const oldDraft = original.artifacts.find(a => a.stage === 'strategy');
+  delete oldDraft.strategyHandoff;
+  db.prepare('UPDATE projects SET state=? WHERE id=?').run(JSON.stringify(original), original.id);
+  db.close();
+  attempt = 5;
+  await localRequest(service, url+'/action', {kind:'retry'});
+  let restored;
+  for (let n=0; n<200; n++) {
+    restored = (await localRequest(service, url)).data.project;
+    if (restored.status === 'failed') break;
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  assert.deepEqual(stages.slice(-2), ['strategy','copy']);
+  assert.ok(restored.versions.at(-1).artifacts.some(a => a.url === oldDraft.url));
+  assert.ok(restored.artifacts.some(a => a.stage === 'strategy' && a.url !== oldDraft.url && a.strategyHandoff));
+
+});

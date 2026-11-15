@@ -1484,6 +1484,7 @@
     "tools/nightflight/service.mjs",
     "tools/nightflight/service.test.mjs",
     "tools/nightflight/start.mjs",
+    "tools/nightflight/strategy-handoff.mjs",
     "tools/nightflight/visual-batch.mjs",
     "tools/nightflight/visual-comparison.mjs",
     "tools/nightflight/visual-comparison.py",

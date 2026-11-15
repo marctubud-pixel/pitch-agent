@@ -14,6 +14,7 @@ import {
 } from 'node:fs';
 import { resolve, join, basename, extname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
+import { strategyMarkdown } from './strategy-handoff.mjs';
 import { normalizeOutlineOptions } from './proposal-outline.mjs';
 import { headlineMarkdown, headlineProtocol, validSingleReview } from './copy-review.mjs';
 
@@ -186,7 +187,7 @@ export function createNightflight({ root, runStage, runLayout }) {
   function disk(p, key) {
     return join(root, p.id, 'files', key);
   }
-  function storeFile(p, name, source, kind) {
+  function storeFile(p, name, source, kind, expectedStrategyHash) {
     const storageKey = randomUUID() + extname(name);
     const path = disk(p, storageKey);
     if (Buffer.isBuffer(source)) writeFileSync(path, source, { flag: 'wx', mode: 0o600 });
@@ -195,7 +196,9 @@ export function createNightflight({ root, runStage, runLayout }) {
       try {
         const stat = fstatSync(fd);
         check(stat.isFile() && stat.size > 0 && stat.size <= 128 * 1024 * 1024, '产物为空或过大');
-        writeFileSync(path, readFileSync(fd), { flag: 'wx', mode: 0o600 });
+        const bytes = readFileSync(fd);
+        if (expectedStrategyHash) check(hash(bytes) === expectedStrategyHash, '策略原件与交接正文不符，请在策略阶段核对。', 422);
+        writeFileSync(path, bytes, { flag: 'wx', mode: 0o600 });
       } finally {
         closeSync(fd);
       }
@@ -212,6 +215,24 @@ export function createNightflight({ root, runStage, runLayout }) {
         while (!closing) {
           const p = get(id);
           if (!p || p.status !== 'running' || p.claim) break;
+          if (p.stage === 'copy' && !p.artifacts.some(a => a.stage === 'strategy' && a.strategyHandoff)) {
+            // Only a newly dispatched copy job needs the new handoff. Keep completed history readable.
+            archiveVersion(p);
+            p.artifacts = p.artifacts.filter(a => stages.indexOf(a.stage) < stages.indexOf('strategy'));
+            p.stage = 'strategy';
+            note(p, '旧策略尚无可核对的交接记录，已保留原稿并重新准备策略。');
+            save(p);
+            continue;
+          }
+          if (p.stage === 'strategy' && !researchHandoff(p.research, p).ready) {
+            archiveVersion(p);
+            p.stage = 'research';
+            p.research = {...researchHandoff(p.research, p), question:'', next:'补齐策略所需的研究结论、出处及实际依据。'};
+            note(p, p.research.next);
+            continueResearch(p);
+            save(p);
+            continue;
+          }
           claim = randomUUID();
           p.claim = claim;
           p.owner = process.pid;
@@ -258,6 +279,17 @@ export function createNightflight({ root, runStage, runLayout }) {
               return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, path };
             });
           }
+          if (p.stage === 'copy') {
+            const drafts = p.artifacts.filter(a => a.stage === 'strategy');
+            check(drafts.length === 1, '文案需要唯一的当前策略稿', 422);
+            const draft = drafts[0];
+            const handoff = draft.strategyHandoff;
+            const canonical = strategyMarkdown(handoff.plan, p.research);
+            const bytes = readFileSync(join(dir, draft.name));
+            check(draft.text === canonical && hash(JSON.stringify(p.research.findings)) === handoff.researchSha256 &&
+              hash(bytes) === handoff.sha256 &&
+              bytes.equals(Buffer.from(canonical + '\n')), '策略交接稿与当前研究或文件不一致，请核对原稿', 422);
+          }
           const onEvent = (text) => {
             const live = get(id);
             if (live?.claim === claim && typeof text === 'string' && text.trim()) {
@@ -275,6 +307,14 @@ export function createNightflight({ root, runStage, runLayout }) {
           const live = get(id);
           check(live?.claim === claim, '该次运行已结束', 409);
           check(Array.isArray(result.artifacts) && result.artifacts.length, '这一阶段没有交回文件', 422);
+          let strategyHandoff;
+          if (p.stage === 'strategy' && !result.researchReturn) {
+            const canonical = strategyMarkdown(result.strategy, live.research);
+            const [draft] = result.artifacts;
+            check(result.artifacts.length === 1 && draft.kind === 'text' && draft.text === canonical,
+              '策略原稿与三板块交接内容不符，请在策略阶段核对。', 422);
+            strategyHandoff = {plan:result.strategy, researchSha256:hash(JSON.stringify(live.research.findings)), sha256:hash(canonical + '\n')};
+          }
           if (p.stage === 'copy') {
             const names = result.directions;
             const review = result.copyReview;
@@ -310,7 +350,8 @@ export function createNightflight({ root, runStage, runLayout }) {
             occupied.add(key);
             check(['image', 'pptx', 'text'].includes(a.kind), '产物类型无效', 422);
             return {
-              ...storeFile(live, name, join(dir, name), a.kind),
+              ...storeFile(live, name, join(dir, name), a.kind, strategyHandoff?.sha256),
+              ...(strategyHandoff ? {strategyHandoff} : {}),
               stage: p.stage,
               ...(p.stage === 'visual' && a.visual ? {visual:a.visual} : {}),
               ...(typeof a.text === 'string' ? { text: a.text } : {}),

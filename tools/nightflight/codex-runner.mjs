@@ -11,6 +11,7 @@ import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison } from './visual-comparison.mjs';
 import { reviewVisualBatch } from './visual-batch.mjs';
+import { strategyMarkdown } from './strategy-handoff.mjs';
 import { runCopyReview } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -70,7 +71,9 @@ const verdictSchema = objectSchema({
   gaps: stringList,
   next: stringField,
 });
-const strategySchema = objectSchema({ body: stringField, researchReturn: stringField });
+const strategySchema = objectSchema({
+  findingNumbers: {type:'array', items:{type:'integer'}}, intersection: stringField, focus: stringField, researchReturn: stringField,
+});
 const strings = (values) =>
   Array.isArray(values)
     ? [...new Set(values.filter((v) => typeof v === 'string' && v.trim()).map((v) => v.trim()))]
@@ -628,10 +631,19 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
       return {artifacts,research:{...research,methodVersion}};
     }
     if (stage === 'strategy') {
-      const result=await call('依据本轮有效研究输出三个板块。确实无法形成有依据的策略判断时，把具体应退回研究补查的问题写入 researchReturn；可以根据明确条件推进时填空字符串。',inputs.images,strategySchema);
-      if (typeof result.parsedOutput?.researchReturn!=='string') throw Error('策略未明确研究交接判断，请重试');
-      await addText(textOutput(result));
-      return {artifacts,researchReturn:result.parsedOutput.researchReturn.trim()};
+      const findings = project.research?.findings ?? [];
+      const instruction = '从本轮已接收研究结论中选择直接支持方向的序号（从 1 开始）。intersection 说明研究、真实产品与目标人群的交叉点，focus 说明优先放大什么及原因。缺关键依据时将具体待查问题写入 researchReturn，其余留空。已接收结论：' + JSON.stringify(findings);
+      const result = await call(instruction, inputs.images, strategySchema);
+      const plan = result.parsedOutput;
+      if (typeof plan?.researchReturn !== 'string') throw Error('策略未明确研究交接判断，请重试');
+      const researchReturn = plan.researchReturn.trim();
+      if (researchReturn) {
+        await addText('## 策略退回研究\n\n' + researchReturn);
+        return {artifacts, researchReturn};
+      }
+      const strategy = {findingNumbers:plan.findingNumbers, intersection:plan.intersection, focus:plan.focus};
+      await addText(strategyMarkdown(strategy, project.research));
+      return {artifacts, strategy};
     }
     if (stage === 'copy') {
       const {body,directions,copyReview} = await runCopyReview({call,project,inputs,rules,dir,onEvent});
