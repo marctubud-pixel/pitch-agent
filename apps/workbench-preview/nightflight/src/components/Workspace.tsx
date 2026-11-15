@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { StageId } from '../types';
 import { STAGES, STAGE_BY_ID } from '../data/project';
+import { visualCaption } from './MediaStageOutput';
 import { DeckPreview } from './DeckPreview';
 import {
   isDeckPreview,
@@ -10,9 +11,17 @@ import {
   researchQuestion,
   projectStatus,
   type Project,
+  type Artifact,
 } from '../live';
 import { BotCard } from './Bot';
 import { Icon } from './Icon';
+function documentTitle(p: Project, file: Artifact) {
+  if (isDeckPreview(file)) return '提案预览';
+  if (file.kind === 'pptx') return '可编辑提案';
+  if (file.kind === 'image') return visualCaption(p, file) + ' · 概念稿';
+  return file.text?.match(/^# (.+)$/m)?.[1] || STAGE_BY_ID[file.stage].name + '原稿';
+}
+
 export function Workspace({
   p,
   open,
@@ -28,7 +37,7 @@ export function Workspace({
   library: () => void;
   celebrate: () => void;
 }) {
-  const [show, setShow] = useState(false),
+  const [show, setShow] = useState<boolean | null>(null),
     st = STAGE_BY_ID[p.stage],
     done = STAGES.filter((s) => phase(p, s.id) === 'done');
   const pending = STAGES.filter((s) => phase(p, s.id) !== 'done'),
@@ -38,6 +47,9 @@ export function Workspace({
     decks = p.artifacts.filter((a) => a.kind === 'pptx');
   const preview = p.artifacts.find(isDeckPreview);
   const researchPaused = p.stage === 'research' && p.status === 'waiting' && !researchQuestion(p);
+  const revisions = (p.feedback || []).filter(
+    (item) => 'stage' in item && (item.stage === 'visual' || item.stage === 'final'),
+  );
   const next =
     p.status === 'failed'
       ? '查看中断原因，确认后重新尝试。'
@@ -60,15 +72,21 @@ export function Workspace({
           bot={{
             label: projectStatus(p),
             detail: st.name,
-            state: researchPaused ? 'idle' : ({ waiting: 'waiting', done: 'done', failed: 'blocked', running: 'working' } as const)[
-              p.status
-            ],
+            state: researchPaused
+              ? 'idle'
+              : ({ waiting: 'waiting', done: 'done', failed: 'blocked', running: 'working' } as const)[
+                  p.status
+                ],
           }}
           onPoke={p.status === 'done' ? celebrate : undefined}
         />
         <p className="mode-line">{p.mode === 'auto' ? '全自动 · SURPRISE ME' : '协作 · IDEA'}</p>
         <div className={'now-box ' + (p.status === 'failed' ? 'is-blocked' : '')}>
-          <p>{researchPaused ? '本轮研究暂停：现有依据不足以交给策略。无需作选择。' : p.error || latest || '项目已建立。'}</p>
+          <p>
+            {researchPaused
+              ? '本轮研究暂停：现有依据不足以交给策略。无需作选择。'
+              : p.error || latest || '项目已建立。'}
+          </p>
           {p.status === 'running' && <span className="block-cursor" />}
         </div>
         <div className="btn-row">
@@ -117,12 +135,30 @@ export function Workspace({
           </button>
         ))}
         {pending.length > 4 && <p className="more">+ 还有 {pending.length - 4} 个待处理任务</p>}
+        {!!revisions.length && (
+          <>
+            <h3 className="sub-title">修订请求</h3>
+            {revisions.map((r, i) => (
+              <div className="task is-revision" key={i}>
+                <span className="task-detail is-full">{r.text}</span>
+                <span className="task-foot">
+                  <span className="chip">你的意见</span>
+                  <span className="task-state">已记录</span>
+                </span>
+              </div>
+            ))}
+          </>
+        )}
         {done.length > 0 && (
           <>
-            <button className="done-toggle" aria-expanded={show} onClick={() => setShow(!show)}>
-              已完成 {done.length} 项 {show ? '▴' : '▾'}
+            <button
+              className="done-toggle"
+              aria-expanded={show ?? !pending.length}
+              onClick={() => setShow(!(show ?? !pending.length))}
+            >
+              已完成 {done.length} 项 {(show ?? !pending.length) ? '▴' : '▾'}
             </button>
-            {show && (
+            {(show ?? !pending.length) && (
               <ul className="done-list">
                 {done.map((s) => (
                   <li key={s.id}>
@@ -144,12 +180,14 @@ export function Workspace({
                 <span className="stage-name">{s.name}</span>
                 <span className="stage-status">{stageLabel(p, s.id)}</span>
               </button>
-              <p className="stage-summary">{s.summary}</p>
+              {!p.artifacts.some((a) => a.stage === s.id) && phase(p, s.id) !== 'done' && (
+                <p className="stage-summary">{s.summary}</p>
+              )}
               {p.artifacts
                 .filter((f) => f.stage === s.id)
                 .map((f) => (
                   <button key={f.url} className="stage-item" onClick={() => open(s.id, f.name)}>
-                    {isDeckPreview(f) ? '提案预览' : f.name}
+                    {documentTitle(p, f)}
                   </button>
                 ))}
             </li>
@@ -165,8 +203,8 @@ export function Workspace({
               <button onClick={() => open(d.stage, d.name)}>
                 <Icon name="doc" className="doc-ico" />
                 <span className="doc-text">
-                  <span className="doc-title">{d.name}</span>
-                  <span className="doc-blurb">{STAGE_BY_ID[d.stage].name}</span>
+                  <span className="doc-title">{documentTitle(p, d)}</span>
+                  <span className="doc-blurb">{STAGE_BY_ID[d.stage].summary}</span>
                 </span>
               </button>
             </li>
@@ -176,29 +214,37 @@ export function Workspace({
         {!images.length && <p className="empty">生成的视觉稿会出现在这里。</p>}
         <div className="thumbs">
           {images.map((f) => (
-            <button key={f.url} className="thumb" onClick={() => open(f.stage, f.name)}>
-              <img loading="lazy" src={safeURL(f.url)} alt={f.name} />
-              <span>{f.name}</span>
+            <button key={f.url} className="thumb is-tall appear" onClick={() => open(f.stage, f.name)}>
+              <img loading="lazy" src={safeURL(f.url)} alt={visualCaption(p, f)} />
+              <span>{visualCaption(p, f)} · 概念稿</span>
             </button>
           ))}
         </div>
         <h2 className="col-title col-title-gap">提案预览</h2>
-        {preview && <DeckPreview file={preview} open={() => open('layout', preview.name)} />}
+        {preview && (
+          <DeckPreview
+            file={preview}
+            open={() => open(p.status === 'done' ? 'final' : 'layout', preview.name)}
+          />
+        )}
         {!decks.length && <p className="empty">版式完成后，可在这里下载可编辑的 PPTX。</p>}
         {decks.map((f) => (
           <a className="btn lib-entry" key={f.url} href={safeURL(f.url)} download={f.name}>
-            {f.name} ↓
+            下载可编辑 PPTX ↓
           </a>
         ))}
-        <h2 className="col-title col-title-gap">参考资料</h2>
+        <h2 className="col-title col-title-gap">过往资料</h2>
         {p.attachments?.length ? (
-          p.attachments.map((f) => (
-            <p key={f.url}>
-              <a href={safeURL(f.url)} download={f.name}>
-                {f.name}
-              </a>
-            </p>
-          ))
+          <ul className="linked">
+            {p.attachments.map((f) => (
+              <li key={f.url}>
+                <a className="linked-open" href={safeURL(f.url)} download={f.name}>
+                  <span className="doc-title">{f.name}</span>
+                  <span className="doc-blurb">项目附件 · 下载原件</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         ) : (
           <p className="empty">这个项目没有附带参考资料。</p>
         )}

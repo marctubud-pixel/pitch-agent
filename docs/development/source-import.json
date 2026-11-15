@@ -2263,8 +2263,8 @@
       "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "2577c45a269db0bf15b815c7c484dd7ccdae09045cd039105f50fcf98fc59f19",
-      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
+      "sha256": "4ab2e5db2aca5935fc7f4a256f1ccd7b9e03d7baa9ac0d9c4b629b357b7d2359",
+      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
@@ -2287,24 +2287,28 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "c9e25e018dae6a986fd80b790374f060f5ebbd73a4e6cc4a7498519533ce85f6",
-      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
+      "sha256": "f46d2521aa8882a608d2ca5af1d76deebbeab8af0f1172289b29642b2dceb81a",
+      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/workspace.css": {
-      "sha256": "deb5987fc198934cf276a7e9738eab5354c4660af1c0f1f7f5e7492712c668b4",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "2e6a425a6573e3c846e70a5ce0e91ce134ad8cd0dd30338cbaabe13e89f21aa5",
+      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
     },
     "apps/workbench-preview/nightflight/src/types.ts": {
       "sha256": "46b83195c3f4545fedfbee1c939a6bf7def283bc8349988eee55bebc67a7b861",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "e866c522352d0596d7ea8875f2d37fbdcc42420d7c893832a1d55ea8ab33c6d4",
-      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+      "sha256": "001d4d6cb649f497ce33bb72087c7df145ae2532d07ce97b754d8984dea02fd1",
+      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
+    },
+    "apps/workbench-preview/nightflight/src/styles/shell.css": {
+      "sha256": "a08d1671d7b89b8cb9fdc5e50f3ef39d13fd92b5961f6956c7440bb1bfd6388f",
+      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
     }
   },
   "nightflightArchive": {

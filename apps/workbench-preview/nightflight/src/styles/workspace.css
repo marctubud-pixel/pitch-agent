@@ -242,3 +242,4 @@ button.task:hover { background: linear-gradient(180deg, #fff 0%, #ebeae7 100%); 
 .entry .lib { position: fixed; z-index: 8; }
 .attach-library { position: fixed; inset: 0; z-index: 100; background: var(--paper); }
 .lib-panes { margin-top: 24px; }
+.thumb.is-tall img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: contain; border: 1px solid var(--ink); border-radius: 2px; background: var(--paper-2); }

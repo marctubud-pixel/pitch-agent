@@ -164,3 +164,14 @@ details p { font-size: 14.5px; }
 .research-action p { font-size: 14px; color: var(--mute); margin: 8px 0 14px; }
 .research-original { margin-bottom: 35px; }
 .research-original summary { font-size: 15px; }
+
+/* Preserve the original reference board and concept captions with uploaded raster artwork. */
+.media-reference { display: block; object-fit: contain; background: var(--paper-2); }
+.media-concepts { grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); }
+.media-concepts figure { min-width: 0; }
+.media-concepts img { display: block; width: 100%; max-height: 58vh; object-fit: contain; border: 1px solid var(--ink); border-radius: 2px; background: var(--paper-2); }
+.media-concepts figure p { margin-top: 8px; font-size: 14px; }
+.media-review { overflow-wrap: anywhere; }
+.media-table-scroll { max-width: 100%; overflow-x: auto; }
+.media-review table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.media-review th, .media-review td { padding: 8px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line-soft); }

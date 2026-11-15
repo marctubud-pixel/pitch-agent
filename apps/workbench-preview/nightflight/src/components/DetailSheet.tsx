@@ -1,27 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { STAGES, STAGE_BY_ID } from '../data/project';
-import { DeckPreview } from './DeckPreview';
-import {
-  isDeckPreview,
-  clock,
-  phase,
-  researchQuestion,
-  safeURL,
-  stageLabel,
-  type Artifact,
-  type Project,
-} from '../live';
+import { MediaStageOutput } from './MediaStageOutput';
+import { TextStageOutput } from './TextStageOutput';
+import { clock, phase, researchQuestion, safeURL, stageLabel, type Artifact, type Project } from '../live';
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
-
-function sourceURL(raw: string) {
-  try {
-    const url = new URL(raw);
-    return ['https:', 'http:'].includes(url.protocol) ? url.href : undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
   const [focus, setFocus] = useState('');
@@ -39,7 +22,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
     <div className="research-review">
       <section className="block">
         <p className="mono-label">{modeName}</p>
-        <h2>研究结论</h2>
+        <h2>研究交接</h2>
         {isChecking ? (
           <p className="lead" role="status">
             {p.researchFollowup
@@ -55,38 +38,6 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
                   ? '已有初步发现，需要你判断方向'
                   : '待补查，暂缓交给策略'}
             </p>
-            {!handoff.findings.length && <p>本轮尚无可供策略使用的研究结论。</p>}
-            {handoff.findings.map((finding, i) => {
-              const url = sourceURL(finding.url);
-              return (
-                <section className="research-finding" key={i}>
-                  <h3>{finding.conclusion}</h3>
-                  <dl className="kv">
-                    <div>
-                      <dt>依据</dt>
-                      <dd>
-                        {finding.evidence}
-                        {finding.source && (
-                          <small>
-                            {url ? (
-                              <a href={url} target="_blank" rel="noopener noreferrer">
-                                {finding.source}
-                              </a>
-                            ) : (
-                              finding.source
-                            )}
-                          </small>
-                        )}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>对策略的用处</dt>
-                      <dd>{finding.implication}</dd>
-                    </div>
-                  </dl>
-                </section>
-              );
-            })}
             {!!handoff.gaps.length && (
               <>
                 <h3>仍需补查</h3>
@@ -218,8 +169,11 @@ export function DetailSheet({
     const target = Array.from(el?.querySelectorAll<HTMLElement>('[data-artifact]') || []).find(
       (x) => x.dataset.artifact === name,
     );
-    if (target) target.scrollIntoView({ block: 'start' });
-    else el?.scrollTo(0, 0);
+    if (target) {
+      const disclosure = target.closest('details');
+      if (disclosure) disclosure.open = true;
+      target.scrollIntoView({ block: 'start' });
+    } else el?.scrollTo(0, 0);
   }, [id, name]);
   const a = p.artifacts.filter((x) => x.stage === id),
     e = p.events.filter((x) => x.stage === id);
@@ -251,41 +205,34 @@ export function DetailSheet({
             </p>
             <h1>{stage.name}</h1>
           </header>
+          {id === 'visual' || id === 'layout' || id === 'final' ? (
+            <MediaStageOutput p={p} id={id} act={act} busy={busy} />
+          ) : (
+            <TextStageOutput p={p} id={id} busy={busy} onChoose={(value) => act('choice', value)} />
+          )}
           {id === 'research' && <ResearchReview key={p.id} p={p} act={act} busy={busy} />}
-          {id === 'brief' && (
-            <section className="block">
-              <h2>原始需求</h2>
-              <blockquote className="quote">{p.brief}</blockquote>
-            </section>
+          {id === p.stage && (p.status === 'failed' || id === 'visual') && id !== 'research' && (
+            <Decisions p={p} act={act} busy={busy} />
           )}
-          {id === 'final' && (
-            <p className="demo-banner">此处记录本地终审与交付。业务批准需要由负责人另行确认。</p>
-          )}
-          {id === 'research' && a.length > 0 && (
-            <details key={name ?? 'research-report'} className="research-original" open={!!name || undefined}>
-              <summary>研究原稿与下载</summary>
-              {a.map((x) => (
-                <FileView key={x.url} a={x} />
-              ))}
+          {a.length > 0 && (
+            <details key={id + '-originals'} className="research-original">
+              <summary>原始文件与下载（{a.length}）</summary>
+              {a.map((x) =>
+                x.kind === 'text' && !x.name.endsWith('.deck.json') ? (
+                  <FileView key={x.url} a={x} />
+                ) : (
+                  <p key={x.url} data-artifact={x.name}>
+                    <a href={safeURL(x.url)} download={x.name}>
+                      {x.name} ↓
+                    </a>
+                  </p>
+                ),
+              )}
             </details>
           )}
-          {id !== 'research' &&
-            a.map((x) =>
-              isDeckPreview(x) ? (
-                <section key={x.url} className="block" data-artifact={x.name}>
-                  <h2>提案预览</h2>
-                  <DeckPreview file={x} />
-                </section>
-              ) : (
-                <FileView key={x.url} a={x} />
-              ),
-            )}
-          {a.length === 0 && (id !== 'research' || p.stage === 'brief') && (
-            <p className="pending">这个阶段还没有交付文件。</p>
-          )}
           {e.length > 0 && (
-            <section className="block">
-              <h2>执行记录</h2>
+            <details key={id + '-events'} className="research-original">
+              <summary>执行记录（{e.length}）</summary>
               <ul className="plain-list">
                 {e.map((v, i) => (
                   <li key={i}>
@@ -294,9 +241,8 @@ export function DetailSheet({
                   </li>
                 ))}
               </ul>
-            </section>
+            </details>
           )}
-          {id === p.stage && id !== 'research' && <Decisions p={p} act={act} busy={busy} />}
         </article>
       </div>
     </div>

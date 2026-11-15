@@ -151,3 +151,10 @@ button.logo:hover .logo-name { text-decoration: underline; text-underline-offset
   .topbar .tag-demo { display: none; }
   .logo-name { font-size: 26px; }
 }
+
+/* Keep project titles inside their column alongside the desktop controls. */
+@media (min-width: 1001px) {
+  .topbar { flex-wrap: nowrap; }
+  .topbar-left { flex: 1; overflow: hidden; }
+  .topbar-right { flex: none; }
+}
