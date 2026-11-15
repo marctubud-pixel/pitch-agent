@@ -73,6 +73,22 @@ export async function searchVisualImages({query,dir,signal}, {
         byteLength:bytes.length,sourceUrl:record.finalUrl,pageUrl,title,query,captureSha256:recordHash});
     } catch { signal?.throwIfAborted(); }
   }
+  try {
+    const {receipt}=await search({query,storeRoot:root,limits:{maxResults:3}});
+    for (const item of receipt.results) {
+      if (found.size>=3) break;
+      try {
+        const {record}=await acquire(item.url,1024*1024);
+        if (record.mimeType!=='text/html') continue;
+        const previews=socialPreview(await readFile(join(root,record.raw.file)),record.finalUrl);
+        const images=record.extraction.images ?? [];
+        for (const image of [...previews,...images.filter(i=>i.discovery),...images.filter(i=>!i.discovery)].slice(0,2)) {
+          await collect(image.url,record.finalUrl,item.title);
+        }
+      } catch { signal?.throwIfAborted(); }
+    }
+  } catch { signal?.throwIfAborted(); }
+  if (found.size>=3) return [...found.values()];
   const api=new URL('https://commons.wikimedia.org/w/api.php');
   api.search=new URLSearchParams({action:'query',format:'json',generator:'search',gsrnamespace:'6',gsrlimit:'8',
     gsrsearch:query,prop:'imageinfo',iiprop:'url|mime|size'});
@@ -89,22 +105,5 @@ export async function searchVisualImages({query,dir,signal}, {
       if (found.size>=3) break;
     }
   } catch { signal?.throwIfAborted(); }
-  if (found.size<3) {
-    try {
-      const {receipt}=await search({query,storeRoot:root,limits:{maxResults:3}});
-      for (const item of receipt.results) {
-        if (found.size>=3) break;
-        try {
-          const {record}=await acquire(item.url,1024*1024);
-          if (record.mimeType!=='text/html') continue;
-          const previews=socialPreview(await readFile(join(root,record.raw.file)),record.finalUrl);
-          const images=record.extraction.images ?? [];
-          for (const image of [...previews,...images.filter(i=>i.discovery),...images.filter(i=>!i.discovery)].slice(0,2)) {
-            await collect(image.url,record.finalUrl,item.title);
-          }
-        } catch { signal?.throwIfAborted(); }
-      }
-    } catch { signal?.throwIfAborted(); }
-  }
   return [...found.values()];
 }

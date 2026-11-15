@@ -51,7 +51,7 @@ export function evaluateStage(input, evidence) {
   const current = evidence.documents.get(input.currentInput?.sha256);
   const authorization = evidence.documents.get(input.authorization?.sha256);
   const stageIndex = stages.indexOf(input.stage);
-  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0'].includes(input.skillVersion) || stageIndex < 0 || input.stage === 'delivery'
+  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0'].includes(input.skillVersion) || stageIndex < 0 || input.stage === 'delivery'
     || !['record', 'advance', 'revise'].includes(input.action)
     || !isText(task.id) || !isText(task.scopeVersion) || !isText(task.inputVersion)
     || typeof task.requiresNode !== 'boolean' || !list(task.creatorIds).length || task.creatorIds.some(id => !isText(id))
@@ -65,7 +65,7 @@ export function evaluateStage(input, evidence) {
   }
   if (current.reviewTask !== object.task || current.requiresNode !== task.requiresNode
     || JSON.stringify(current.creatorIds) !== JSON.stringify(task.creatorIds) || authorization.currentInputSha256 !== input.currentInput.sha256) return result('re_review', 'Actual input content or declared review task differs from the frozen authorization');
-  const directVisual = ['1.2.0', '1.3.0'].includes(input.skillVersion) && input.stage === 'reference_review' && input.nextStage === 'refine_review';
+  const directVisual = ['1.2.0', '1.3.0', '1.4.0'].includes(input.skillVersion) && input.stage === 'reference_review' && input.nextStage === 'refine_review';
   const next = directVisual ? 'refine_review' : stages[stageIndex + 1];
   const expectedNext = input.action === 'advance' ? next : input.stage;
   if (input.nextStage !== expectedNext) return result('reject', 'Stage transition skips or misstates the requested action');

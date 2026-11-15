@@ -152,6 +152,7 @@ process.stdin.on('end',()=>{
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
  if(input.includes('视觉参考检索词')){
    const ctx=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   fs.writeFileSync(path.join(home,'视觉参考检索词.json'),JSON.stringify(ctx));
    body={queries:[ctx.previousQueries?.length?'tea cup':'tea ceremony']};
  } else if(input.includes('公开参考包独立评分')){
    const ctx=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
@@ -165,6 +166,7 @@ process.stdin.on('end',()=>{
    body={observations:rows.map(r=>({source:r.source,visible:'原图可见的画面特征'}))};
  } else if(input.includes('视觉负责人分派参考图')){
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   fs.writeFileSync(path.join(home,'视觉负责人分派参考图.json'),JSON.stringify(packet));
    body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:packet.directions.map((d,i)=>{
      const refs=packet.sources.filter(s=>s.searchDirection===d.name || s.name.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
      const use=r=>({source:r.source,borrow:'参考图可见的局部',apply:'作为本案用色依据',why:'帮助说明产品特征',avoid:'不沿用对方的标志与瓶标图案'});
@@ -402,7 +404,14 @@ test('empty uploads automatically acquire public bytes and deliver their provena
     await writeFile(path,fetched);
     return [{path,name:'tea.png',sha256:createHash('sha256').update(fetched).digest('hex'),byteLength:fetched.length,mediaType:'image/png',query,pageUrl:'https://gallery.example/tea',sourceUrl:'https://gallery.example/tea.png'}];
   }});
+  const strategy = '用可辨识的地景解释产品用水选择';
+  await writeFile(join(f.dir,'strategy.md'),strategy);
+  f.project.artifacts.push({kind:'text',stage:'strategy',name:'strategy.md'});
   const {artifacts}=await f.run('visual');
+  for (const task of ['视觉参考检索词','视觉负责人分派参考图']) {
+    const packet=JSON.parse(await readFile(join(f.home,task+'.json'),'utf8'));
+    assert.equal(packet.strategy,strategy);
+  }
   const original=artifacts.find(a=>a.visual?.role==='reference');
   assert.equal(calls,2);
   assert.equal(original.visual.direction,'晨雾');

@@ -551,8 +551,8 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
       for (const direction of error.missing) {
         signal?.throwIfAborted();
         const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
-        const packet = {brief:project.brief, direction, creative, previousQueries:[...attempted],gaps:diagnostics};
-        const plan = await call('按本方向职责给出两条简短的公开图片检索词，可用英文。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{assignment:'视觉参考检索词',context:JSON.stringify(packet)});
+        const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],gaps:diagnostics};
+        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系，给出两条不同的简短公开检索词，可用英文。一条组合品类、目标载体与该关系找设计案例，另一条找不同表达手法或可核实的场所细节。优先品牌、设计机构或奖项的作品图。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{assignment:'视觉参考检索词',context:JSON.stringify(packet)});
         const queries=publicVisualQueries(plan,project).slice(0,2);
         for (const query of queries) {
           const key=direction+' / '+query;
@@ -648,7 +648,9 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       const directions = project.mode==='collab' ? [project.choice] : all;
       if (directions.some(d=>!all.includes(d))) throw Error('请先选定本案的视觉方向');
       const search = visualSearch ?? (async args => (await import('./public-visual-search.mjs')).searchVisualImages(args));
-      const plans = await prepareVisualPlans({call,project,images:inputs.images,active:directions,dir,signal,search,onEvent});
+      const strategyFile = project.artifacts?.filter(a=>a.stage==='strategy' && a.kind==='text').at(-1);
+      const strategyText = inputs.texts.find(t=>t.name===strategyFile?.name)?.text ?? '';
+      const plans = await prepareVisualPlans({call,project:{...project,strategyText},images:inputs.images,active:directions,dir,signal,search,onEvent});
       const seen = new Set(), summaries = [];
       for (const direction of directions) {
         const batch = [], images = [];

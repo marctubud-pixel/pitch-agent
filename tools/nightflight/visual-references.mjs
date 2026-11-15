@@ -20,8 +20,8 @@ export async function selectVisualReferences({call, project, images, active}) {
       previousOwners.set(ref.sha256, ref.role==='sharedBrand' ? 'sharedBrand' : item.visual.direction);
     }
   }
-  const packet = {brief:project.brief,directions,previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],feedback:project.feedback ?? [],sources:sources.map(s=>({
-    source:s.imageId,name:s.name,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
+  const packet = {brief:project.brief,strategy:project.strategyText,directions,previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],feedback:project.feedback ?? [],sources:sources.map(s=>({
+    source:s.imageId,name:s.name,pageUrl:s.pageUrl,title:s.title,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
   }))};
   if (!sources.length) throw Object.assign(Error('视觉主参考缺失：'+active.join('、')+'。可在对话区补充原图后重试。'),{missing:active});
 
@@ -38,7 +38,7 @@ export async function selectVisualReferences({call, project, images, active}) {
       packet.observations.push(...rows);
     }
   }
-  const result = await call('逐案按文案方向的职责选一张主参考、至多两张用途不同的辅助图。陈述借哪一处、如何转译到本案。无适用主参考则 main 留空并写 gap。专用参考只给一个方向，已有归属必须保留。searchDirection 标注的公开图只供该方向选用；按方向任务核对主图，稳健方向观察品类惯例，特征方向观察产品特点，情绪方向观察具体使用情境。稳健方向依据画面只能识别品类惯例，没有销售来源不得断言热销。公开图写明 why（与任务的可见关系）和 avoid（禁止照搬的具体部分）。sharedBrand 只列确属本案的品牌标志、官方 VI 等全案约束；不要把普通同类图放入共享。每案生图最多附四张，改稿还需给原稿留一个位置。辅助按重要性排序。',sources.length<=4 ? sources : [],planSchema(sources.some(s=>s.sourceUrl)?publicUse:use),{
+  const result = await call('逐案按文案方向的职责选一张主参考、至多两张用途不同的辅助图。先对照策略和该案创意，横向比较同用途候选。先看实际图上的载体、层级和视觉机制，再判断如何让观众读出本案主张。转载、同系列换角度或借法重复的图只留最清楚的一张。主参考须能转译方向创意，纯材质或局部动作只按具体用途选作辅助。陈述借哪一处、如何转译到本案；在 why 中说明相近候选的取舍。无适用主参考则 main 留空并写 gap。专用参考只给一个方向，已有归属必须保留。searchDirection 标注的公开图只供该方向选用；按方向任务核对主图，稳健方向观察品类惯例，特征方向观察产品特点，情绪方向观察具体使用情境。稳健方向依据画面只能识别品类惯例，没有销售来源不得断言热销。公开图写明 why（与任务的可见关系）和 avoid（禁止照搬的具体部分）。sharedBrand 只列确属本案的品牌标志、官方 VI 等全案约束；不要把普通同类图放入共享。每案生图最多附四张，改稿还需给原稿留一个位置。辅助按重要性排序。',sources.length<=4 ? sources : [],planSchema(sources.some(s=>s.sourceUrl)?publicUse:use),{
     assignment:'视觉负责人分派参考图',context:JSON.stringify(packet),
   });
   const rows=result.parsedOutput?.directions;
@@ -79,7 +79,7 @@ const challengeSchema = object({issue:string, evidence:string});
 const rulingSchema = object({decisions:list(object({role:string,accepted:{type:'boolean'},reason:string})), compatible:{type:'boolean'}, reason:string});
 
 export async function reviewReferencePlan({call, project, direction, images, handoff, otherDirections}) {
-  const packet = {brief:project.brief, directions:project.copyReview?.draft?.directions ?? project.directions, direction, references:handoff.references,otherDirections};
+  const packet = {brief:project.brief,strategy:project.strategyText, directions:project.copyReview?.draft?.directions ?? project.directions, direction, references:handoff.references,otherDirections};
   const instruction='本次审整组 direction 而非独立材质 component。两项维度均须判断。证据说明画面位置、所见、影响与本案转译。1事实抵触，2机制不成立，3连接或执行条件缺失，4有图卡依据，5另需具体对照优势。关键未知填 null。没有销售依据不能断言销量。只换品牌文案或配色而整体复制参考结构等有证硬退写入 hardReject，无则留空。';
   const votes=await Promise.all(Object.entries(roles).map(async ([role,dimensions])=>{
     const result=await call(instruction,images,voteSchema,{rules:[],assignment:'公开参考包独立评分',context:JSON.stringify({...packet,role,dimensions})});
