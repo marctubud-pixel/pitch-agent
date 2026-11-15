@@ -136,14 +136,15 @@ function Copy({
     const secondary = rows.find((r) => /^(副文案?|副标题|副标)$/.test(r.label));
     const samples = rows.filter((r) => /示例|样例|短句/.test(r.label));
     const other = rows.filter((r) => r !== main && r !== concept && r !== secondary && !samples.includes(r));
-    return { name, main, concept, secondary, samples, other, body };
+    const notes = body?.lines.filter((line) => !rowOf(line)) || [];
+    return { name, main, concept, secondary, samples, other, notes };
   });
   const chosen = directions.find((d) => d.name === p.choice);
   const themes = chosen ? [chosen] : p.mode === 'auto' ? directions : [];
   return (
     <>
       <section className="block" data-artifact={name}>
-        <h2>三个创意方向</h2>
+        <h2>{directions.length === 3 ? '三个创意方向' : '创意方向'}</h2>
         <div className="dir-grid">
           {directions.map((d, i) => (
             <article key={d.name} className={'dir' + (d === chosen ? ' is-picked' : '')}>
@@ -154,19 +155,15 @@ function Copy({
               <h3>{d.name}</h3>
               {d.main && <p className="dir-line">{d.main.value}</p>}
               {d.concept && <p>{d.concept.value}</p>}
-              <Rows rows={d.other} mini />
-              {(d.secondary || d.samples.length > 0) && (
-                <ul className="samples">
-                  {[...(d.secondary ? [d.secondary] : []), ...d.samples].map((r, j) => (
-                    <li key={j}>{r.value}</li>
-                  ))}
-                </ul>
+              {(d.other.length > 0 || d.notes.length > 0 ||
+                (!themes.includes(d) && (d.secondary || d.samples.length > 0))) && (
+                <details className="research-original">
+                  <summary>方向细节</summary>
+                  <Rows rows={d.other} mini />
+                  {!themes.includes(d) && <Rows rows={[...(d.secondary ? [d.secondary] : []), ...d.samples]} mini />}
+                  {d.notes.map((line, j) => <p key={j}>{line}</p>)}
+                </details>
               )}
-              {d.body?.lines
-                .filter((line) => !rowOf(line))
-                .map((line, j) => (
-                  <p key={j}>{line}</p>
-                ))}
               {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (
                 <button
                   type="button"
@@ -183,10 +180,9 @@ function Copy({
       </section>
       {themes.map(
         (d) =>
-          d.main && (
+          (d.secondary || d.samples.length > 0) && (
             <section className="block" key={d.name}>
               <h2>主题文案 · {d.name}</h2>
-              <p className="statement">{d.main.value}</p>
               {d.secondary && <p className="lead">{d.secondary.value}</p>}
               <Rows rows={d.samples} />
             </section>

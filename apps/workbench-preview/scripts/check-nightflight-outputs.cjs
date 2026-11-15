@@ -57,7 +57,7 @@ const project = {
       '文案.md',
       'text',
       directions
-        .map((s, i) => '## 方向' + (i + 1) + '：' + s + '\n主文案：' + s + '主题\n主张：' + s + '说明')
+        .map((s, i) => '## 方向' + (i + 1) + '：' + s + '\n主文案：' + s + '主题\n主张：' + s + '说明\n副文案：' + s + '副句')
         .join('\n'),
     ),
     image,
@@ -112,6 +112,7 @@ async function main() {
     const briefOnly = process.argv.includes('--brief');
     for (const [i, headings] of (briefOnly ? stages.slice(0, 1) : stages).entries()) {
       if (process.argv.includes('--research') && i !== 1) continue;
+      if (process.argv.includes('--themes') && i !== 3) continue;
       if (process.argv.includes('--strategy') && i !== 2) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
@@ -162,7 +163,7 @@ async function main() {
       assert.equal(await doc.getByLabel('先查哪个渠道？').count(), 1);
     }
     assert.deepEqual(errors, []);
-    console.log(process.argv.includes('--strategy') ? '策略旧稿逐条依据匹配与核心主句通过。' : process.argv.includes('--research') ? '研究页结论、策略用途与来源展开通过。' : briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
+    console.log(process.argv.includes('--themes') ? '文案与主题页面专项通过。' : process.argv.includes('--strategy') ? '策略旧稿逐条依据匹配与核心主句通过。' : process.argv.includes('--research') ? '研究页结论、策略用途与来源展开通过。' : briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
   } finally {
     await browser.close();
   }
