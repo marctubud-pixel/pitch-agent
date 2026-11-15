@@ -217,6 +217,7 @@
     "apps/workbench-preview/nightflight/src/components/TopBar.tsx",
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx",
     "apps/workbench-preview/nightflight/src/components/briefCard.ts",
+    "apps/workbench-preview/nightflight/src/components/researchDisplay.ts",
     "apps/workbench-preview/nightflight/src/components/stageText.ts",
     "apps/workbench-preview/nightflight/src/data/project.ts",
     "apps/workbench-preview/nightflight/src/live.ts",

@@ -68,7 +68,7 @@ const project = {
 };
 const stages = [
   ['项目任务卡'],
-  ['关键发现', '研究交接'],
+  ['关键发现'],
   ['核心策略'],
   ['三个创意方向', '主题文案'],
   ['视觉参考', '草图与主视觉'],
@@ -111,6 +111,7 @@ async function main() {
     await page.locator('.stage-head').first().click();
     const briefOnly = process.argv.includes('--brief');
     for (const [i, headings] of (briefOnly ? stages.slice(0, 1) : stages).entries()) {
+      if (process.argv.includes('--research') && i !== 1) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
       assert.deepEqual(
@@ -125,6 +126,8 @@ async function main() {
       }
       if (i === 1) {
         const details = page.locator('.findings details');
+        assert.equal(await details.evaluate((el) => el.open), false);
+        assert.match(await details.locator('..').innerText(), /测试发现[\s\S]+作为方向比较条件/);
         await details.locator('summary').click();
         assert.match(await details.innerText(), /可核对的原文/);
       }
@@ -132,8 +135,27 @@ async function main() {
       if (i === 3) assert.equal(await page.locator('.dir-grid .dir').count(), 3);
       if (i === 5) await page.locator('.deck-stage').waitFor();
     }
+    if (process.argv.includes('--research')) {
+      project.stage = 'research';
+      project.status = 'waiting';
+      Object.assign(project.research, {
+        ready: false,
+        gaps: ['问题：优先门店还是线上？原因：决定比较哪组传播素材。', '已有线索：两组素材清单'],
+        question: '先查哪个渠道？',
+      });
+      await page.goto(origin + '/nightflight/#/p/ui?stage=research');
+      await page.reload();
+      const doc = page.locator('.sheet-doc');
+      await doc.getByRole('heading', { name: '影响策略的待查问题' }).waitFor();
+      assert.match(await doc.innerText(), /优先门店还是线上[\s\S]+决定比较哪组传播素材/);
+      assert.doesNotMatch(await doc.innerText(), /两组素材清单|测试发现/);
+      await doc.locator('summary', { hasText: '已有线索' }).click();
+      assert.match(await doc.innerText(), /两组素材清单/);
+      assert.match(await doc.innerText(), /测试发现/);
+      assert.equal(await doc.getByLabel('先查哪个渠道？').count(), 1);
+    }
     assert.deepEqual(errors, []);
-    console.log(briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
+    console.log(process.argv.includes('--research') ? '研究页结论、策略用途与来源展开通过。' : briefOnly ? '简报任务卡专项通过。' : '七阶段栏目顺序、研究来源、策略主句、方向卡和逐页预览通过。');
   } finally {
     await browser.close();
   }

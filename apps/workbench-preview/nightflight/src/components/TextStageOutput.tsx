@@ -60,50 +60,51 @@ function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
   );
 }
 
+export function ResearchFindings({ report }: { report: NonNullable<Project['research']> }) {
+  return (
+    <ol className="findings">
+      {report.findings.map((finding, i) => (
+        <li key={i}>
+          <span className="finding-no">{i + 1}</span>
+          <div>
+            <h3>{finding.conclusion}</h3>
+            <p>{finding.implication}</p>
+            <details>
+              <summary>依据与来源</summary>
+              <p>{finding.evidence}</p>
+              <ul className="sources">
+                <li>
+                  {/^https?:\/\//i.test(finding.url) ? (
+                    <a href={finding.url} target="_blank" rel="noopener noreferrer">
+                      {finding.source || finding.url}
+                    </a>
+                  ) : (
+                    finding.source
+                  )}
+                </li>
+              </ul>
+            </details>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function Research({ p, name }: { p: Project; name?: string }) {
   const report = p.research;
+  if (report && !report.ready) return null;
+  if (!report && p.stage === 'research' && p.status === 'running') return null;
   return (
     <section className="block" data-artifact={name}>
       <h2>关键发现</h2>
       {report?.findings.length ? (
-        <>
-          <p className="demo-banner">
-            {report.ready ? '本轮已有可交给策略的发现。' : '以下为本轮已核发现，研究仍待补查。'}
-          </p>
-          <ol className="findings">
-            {report.findings.map((finding, i) => (
-              <li key={i}>
-                <span className="finding-no">{i + 1}</span>
-                <div>
-                  <h3>{finding.conclusion}</h3>
-                  <p>{finding.implication}</p>
-                  <details>
-                    <summary>依据与来源</summary>
-                    <p>{finding.evidence}</p>
-                    <ul className="sources">
-                      <li>
-                        {/^https?:\/\//i.test(finding.url) ? (
-                          <a href={finding.url} target="_blank" rel="noopener noreferrer">
-                            {finding.source || finding.url}
-                          </a>
-                        ) : (
-                          finding.source
-                        )}
-                      </li>
-                    </ul>
-                  </details>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </>
+        <ResearchFindings report={report} />
       ) : (
         <Pending>
-          {report
-            ? '本轮尚无可供策略使用的研究结论。'
-            : p.artifacts.some((a) => a.stage === 'research')
-              ? '旧版原稿尚无逐条核对的发现，可在下方查看原稿。'
-              : '尚无研究发现。'}
+          {p.artifacts.some((a) => a.stage === 'research')
+            ? '旧版原稿尚无逐条核对的发现，可在下方查看原稿。'
+            : '尚无研究发现。'}
         </Pending>
       )}
     </section>

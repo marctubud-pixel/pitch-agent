@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { STAGES, STAGE_BY_ID } from '../data/project';
+import { researchDisplay } from './researchDisplay';
 import { MediaStageOutput } from './MediaStageOutput';
-import { TextStageOutput } from './TextStageOutput';
+import { ResearchFindings, TextStageOutput } from './TextStageOutput';
 import { clock, phase, researchQuestion, safeURL, stageLabel, type Artifact, type Project } from '../live';
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
@@ -9,10 +10,12 @@ import { Decisions, type Act } from './ChatPanel';
 function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
   const [focus, setFocus] = useState('');
   const handoff = p.research;
+  const { questions, clues } = researchDisplay(handoff?.gaps || []);
+  const clueCount = clues.length + (handoff && !handoff.ready ? handoff.findings.length : 0);
   const isResearch = p.stage === 'research';
   const isChecking = isResearch && p.status === 'running';
   const question = researchQuestion(p);
-  const modeName = p.mode === 'auto' ? '自动调研' : '协作调研';
+  const returned = handoff?.next && p.events.some((event) => event.text === '策略退回研究：' + handoff.next);
   const submitResearch = async (text: string) => {
     if (await act('research_again', text)) setFocus('');
   };
@@ -21,45 +24,37 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
   return (
     <div className="research-review">
       <section className="block">
-        <p className="mono-label">{modeName}</p>
-        <h2>研究交接</h2>
-        {isChecking ? (
-          <p className="lead" role="status">
-            {p.researchFollowup
-              ? '正在根据本轮缺口定向补查，完成后重新核对策略能否接手。'
-              : '正在根据已有简报查找来源，首轮发现和依据将在这里显示。'}
-          </p>
-        ) : handoff ? (
+        {isChecking && (
+          <p role="status">{p.researchFollowup ? '正在按本轮缺口补查。' : '正在查找与简报相关的来源。'}</p>
+        )}
+        {handoff?.ready && <p className="research-state">可交给策略</p>}
+        {!!handoff && !handoff.ready && (
           <>
-            <p className="research-state">
-              {handoff.ready
-                ? '可交给策略'
-                : question
-                  ? '已有初步发现，需要你判断方向'
-                  : '待补查，暂缓交给策略'}
-            </p>
-            {!!handoff.gaps.length && (
-              <>
-                <h3>仍需补查</h3>
-                <ul className="plain-list">
-                  {handoff.gaps.map((g, i) => (
-                    <li key={i}>{g}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-            {handoff.next && (
-              <p className="research-next">
-                <strong>{handoff.ready ? '交接建议' : '下一步'}</strong>　{handoff.next}
-              </p>
+            <h2>影响策略的待查问题</h2>
+            {returned && <p>策略退回原因　{handoff.next}</p>}
+            {questions.length ? (
+              <ol className="findings">
+                {questions.map((item, i) => (
+                  <li key={item.question}>
+                    <span className="finding-no">{i + 1}</span>
+                    <div>
+                      <h3>{item.question}</h3>
+                      <p>{item.reason}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p>现有依据仍不足以交给策略，具体缺口见研究原稿。</p>
             )}
           </>
-        ) : (
-          <p>
-            {p.artifacts.some((a) => a.stage === 'research')
-              ? '这份历史研究稿尚无逐条依据及策略交接记录，可查看原稿或从研究重新开始。'
-              : '尚未取得本轮研究结论。'}
-          </p>
+        )}
+        {!!clueCount && (
+          <details className="research-original">
+            <summary>已有线索（{clueCount}）</summary>
+            {handoff && !handoff.ready && !!handoff.findings.length && <ResearchFindings report={handoff} />}
+            <ul className="plain-list">{clues.map((clue) => <li key={clue}>{clue}</li>)}</ul>
+          </details>
         )}
         {isResearch && p.status === 'failed' && (
           <p className="notice" role="status">
@@ -83,15 +78,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
             required={!!question}
             placeholder={question ? '写下你的判断或使用条件' : '例如，优先比较门店海报与社交媒体海报'}
           />
-          <p>
-            {question
-              ? '你的回答将用于下一轮定向补查。'
-              : isResearch
-                ? '可补充新线索，继续核实影响策略取舍的缺口。'
-                : p.mode === 'auto'
-                  ? '保留历史版本，沿用原简报自动取证和补查；关键依据仍不足时停在研究。'
-                  : '保留历史版本，沿用原简报先查资料；有初步发现后再请你判断影响方向的问题。'}
-          </p>
+          {!isResearch && <p>沿用原简报重新研究，历史版本可继续查看。</p>}
           <div className="btn-row">
             <button type="submit" className="btn btn-dark" disabled={busy || (!!question && !focus.trim())}>
               {question ? '按此回答补查' : isResearch ? '开始补查' : '从研究重新开始'}
@@ -202,6 +189,7 @@ export function DetailSheet({
           <header className="sheet-head">
             <p className="mono-label">
               阶段 {stage.index} / 7　·　{stageLabel(p, id)}
+              {id === 'research' && (p.mode === 'auto' ? '　·　自动调研' : '　·　协作调研')}
             </p>
             <h1>{stage.name}</h1>
           </header>

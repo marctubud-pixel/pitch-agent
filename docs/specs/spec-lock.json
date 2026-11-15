@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.23.0",
-  "registrySha256": "54028965e5518616ace5c6ae52a21723e2c47ef7a8ee15fcffb356ef3e720ec7",
+  "baselineVersion": "1.24.0",
+  "registrySha256": "c403485b295f077c978c442fd290e403953f135dfb69ca4d0f9214405c50aba7",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -102,10 +102,10 @@
       }
     },
     "page.research": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/research.md": "1da1369f8cfa7d15316e89f5481bd785e1606da32b2fb98b83ce85b2d377c920"
+        "docs/pages/research.md": "6802d07aa2d2a6b6477cb8ae75568a5173aad67f179b419fe4615a39c43e2139"
       }
     },
     "page.strategy": {
@@ -242,10 +242,10 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "9c0eb115e7d0c48c4b1f53d300beaa5b136f8053f04d81410e44e73974b671fa"
+        "docs/specs/nightflight-stage-output.md": "a5fb10300c141509123cd37a78b6fabaee794707ffdb8d4e363907b295e5af31"
       }
     },
     "contract.workflow": {
@@ -473,7 +473,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "c06dbace4354bd5121a2d8ea3afd665e1de79ccf691596bf980013e8beafa68f",
+    "docs/specs/README.md": "40ee1a01ccec39ef8809f9a4eb75948d76b0404881da256005cd76d7ce1a63be",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

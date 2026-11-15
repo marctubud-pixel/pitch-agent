@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.23.0",
+  "baselineVersion": "1.24.0",
   "date": "2026-11-15",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -203,13 +203,14 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
-        "contract.ui"
+        "contract.ui",
+        "contract.nightflight-stage-output"
       ],
-      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "confirmedScope": "夜航研究页按本轮交接结果展示结论或补查问题",
       "routeKey": "research"
     },
     {
@@ -424,7 +425,7 @@
       "kind": "contract",
       "title": "夜航七阶段产出展示规范",
       "path": "docs/specs/nightflight-stage-output.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",
