@@ -5,6 +5,7 @@
     ".github/workflows/specifications.yml",
     ".gitignore",
     "AGENTS.md",
+    "apps/workbench-preview/test-fixtures/provenance/originals/022-REVIEW-PROTOCOL.md",
     "CONTRIBUTING.md",
     "GLOSSARY.md",
     "README.history-20261111.md",

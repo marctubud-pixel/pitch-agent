@@ -70,10 +70,15 @@ test('a personal run waits for direction and current image adoption, saves user 
       researchReturn,
       artifacts: [{ kind, name, ...(stage === 'copy' ? { text: 'isolated copy' } : {}) }],
       copyReview: stage === 'copy' ? {
-        version: 1, status: 'ready', adjudication: { ready: true }, bodyHash: createHash('sha256').update('isolated copy').digest('hex'),
-        draft: { directions: ['A', 'B', 'C'].map((name) => ({ name })) },
-        firstVotes: ['copy', 'brand', 'user', 'comms'].map((role) => ({role})),
-        finalVotes: ['copy', 'brand', 'user', 'comms'].map((role) => ({role})),
+        version: 1, protocol: 'dual-panel-v2', status: 'ready',
+        adjudication: { ready: true, set: { ready: true },
+          single: ['A','B','C'].map(directionId => ({directionId, ready:true})),
+          pairs: ['AB','AC','BC'].map(pair => ({pair, distinct:true})),
+        }, bodyHash: createHash('sha256').update('isolated copy').digest('hex'),
+        draft: { directions: ['A', 'B', 'C'].map((name) => ({ id:name, name })) },
+        recommendation: {directionId:'A'},
+        ...Object.fromEntries(['anonymousReads','firstVotes','criticReads','challenges','finalVotes']
+          .map(field => [field, ['copy','brand','user','comms'].map(role => ({role}))])),
       } : undefined,
       directions: stage === 'copy' ? ['A', 'B', 'C'] : undefined,
     };

@@ -33,6 +33,7 @@ export interface ReviewedDirection {
   risk: string;
 }
 export interface CopyVote {
+  reused?: boolean;
   role: CopyRole;
   draftHash: string;
   runId: string;
@@ -42,10 +43,32 @@ export interface CopyVote {
     reason: string;
     hardRejects: string[];
     blockers: string[];
-    scores: { dimension: string; score: number | null; evidence: string; reason: string }[];
+    scores: { dimension: string; score: number | null; evidence: string; reason: string; scope?: string }[];
   }[];
 }
+interface CopyFirstRead {
+  role: CopyRole;
+  runId: string;
+  items: { directionId: DirectionId; reading: string; uncertainty: string }[];
+}
 export interface CopyReview {
+  protocol?: 'dual-panel-v2';
+  anonymousReads?: CopyFirstRead[];
+  finalAnonymousReads?: CopyFirstRead[];
+  sameDraftRechecks?: CopyVote[];
+  issues?: { id: string; role: CopyRole; directionId: DirectionId; origin: 'score' | 'challenge'; dimension?: string; reason?: string }[];
+  criticReads?: {
+    role: CopyRole;
+    items: { directionId: DirectionId; risk: string; evidence: string }[];
+  }[];
+  decisionPlan?: {
+    rulings: {
+      challengeId: string;
+      verdict: 'accepted_now' | 'accepted_later' | 'rejected' | 'pending';
+      action: 'revise' | 'recheck' | 'none';
+      reason: string;
+    }[];
+  };
   version: 1;
   status: 'ready';
   bodyHash: string;
@@ -54,6 +77,9 @@ export interface CopyReview {
   firstVotes: CopyVote[];
   finalVotes: CopyVote[];
   challenges: {
+    coverage?: {
+      directionId: DirectionId; dimension: string; reason: string; originalClaim: string; originalEvidence: string;
+    }[];
     role: CopyRole;
     runId: string;
     draftHash: string;
@@ -64,6 +90,9 @@ export interface CopyReview {
   adjudication: {
     ready: boolean;
     reason: string;
+    single?: { directionId: DirectionId; ready: boolean; reason: string }[];
+    pairs?: { pair: 'AB' | 'AC' | 'BC'; reason: string }[];
+    set?: { ready: boolean; reason: string };
     rulings: { challengeId: string; verdict: 'resolved' | 'rejected' | 'pending'; reason: string }[];
   };
 }

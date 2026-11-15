@@ -51,6 +51,24 @@ function archiveVersion(p) {
   });
 }
 
+// This gate is used only when accepting a new run. Historical tickets keep their original shape.
+function copyHandoffReady(review, names, text) {
+  if (review?.protocol !== 'dual-panel-v2' || review.version !== 1 || review.status !== 'ready' ||
+      !text || hash(text) !== review.bodyHash) return false;
+  const draft = review.draft?.directions;
+  if (draft?.length !== 3 || !names.every((name, i) => draft[i].name === name)) return false;
+  const roles = ['copy', 'brand', 'user', 'comms'];
+  const reports = [review.anonymousReads, review.firstVotes, review.criticReads, review.challenges, review.finalVotes];
+  if (!reports.every(group => Array.isArray(group) && group.length === roles.length &&
+      roles.every(role => group.some(report => report.role === role)))) return false;
+  const verdict = review.adjudication;
+  return verdict?.ready === true && verdict.set?.ready === true && verdict.single?.length === 3 &&
+    ['A', 'B', 'C'].every(id => verdict.single.some(item => item.directionId === id && item.ready === true)) &&
+    verdict.pairs?.length === 3 && ['AB', 'AC', 'BC'].every(pair =>
+      verdict.pairs.some(item => item.pair === pair && item.distinct === true)) &&
+    draft.some(item => item.id === review.recommendation?.directionId);
+}
+
 function researchHandoff(report, project) {
   const text = (value) => typeof value === 'string' && value.trim().length > 0;
   const findings = Array.isArray(report?.findings)
@@ -236,12 +254,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             const text = result.artifacts.find((a) => a.kind === 'text' && typeof a.text === 'string')?.text;
             check(Array.isArray(names) && names.length === 3 && names.every((d) => typeof d === 'string' && d.trim())
               && new Set(names).size === 3, '文案未交回三个不同方向', 422);
-            check(review?.version === 1 && review.status === 'ready' && review.adjudication?.ready === true && text && hash(text) === review.bodyHash
-              && review.draft?.directions?.length === 3 && names.every((name, i) => review.draft.directions[i].name === name)
-              && [review.firstVotes, review.finalVotes].every((votes) =>
-                Array.isArray(votes) && votes.length === 4 &&
-                ['copy', 'brand', 'user', 'comms'].every((role) => votes.some((v) => v.role === role))),
-            '本版文案尚无完整的四岗原票、复核及裁定，不能交接', 422);
+            check(copyHandoffReady(review, names, text), '本版文案尚无完整的双团记录、单案或整组裁定，不能交接', 422);
             live.directions = names;
             live.copyReview = review;
           }
