@@ -292,7 +292,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       ? '研究者已经完成第一轮取证。仅在已采纳发现表明存在改变策略方向、且需要人作决定的项目取舍时，question 填一句直接询问该取舍的问题；next 说明答案将影响哪项判断。可带条件推进、公开资料可继续查或用户已回答的事项，question 填空字符串。'
       : 'question 填空字符串。根据已知条件及反馈复核；未确定的分支分别说明适用条件。';
     const review = await call(
-      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。gaps 给出关键缺口，next 用中文解释交接理由或具体补查行动。关键依据不足时，无论哪个模式都保留待补状态。' + questionInstruction,
+      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。本包每条正文引用都有执行器实际取回的原文片段，组图附本地实际原图。以这些已核原件为准。gaps 只列复核后仍存在、与具体策略取舍有关的缺口。next 只解释下一步取舍；已定位和已看图的来源无需再次索取。草稿的过程说明和旧状态留在执行记录。关键依据不足时，无论哪个模式都保留待补状态。' + questionInstruction,
       board?.images ?? [],
       verdictSchema,
       {
@@ -321,7 +321,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       ready,
       question,
       findings: accepted,
-      gaps: strings([...gaps, ...v.gaps]),
+      gaps: ready ? strings(v.gaps) : strings([...gaps, ...v.gaps]),
       next: v.next.trim(),
     };
   } else {
