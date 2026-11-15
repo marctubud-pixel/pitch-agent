@@ -9,7 +9,7 @@ import { resolveVisualIntake, type IntakeResult } from './workflow-intake';
 import { resolveDirectionConcept, type ConceptImage } from './concept-images';
 import { visualIntakeMetadata, visualIntakePacket } from './workflow-record';
 import { displayReferences } from './display-references';
-import { qingyuGalleryDirections } from './gallery-directions';
+import { currentSketches, qingyuGalleryDirections } from './gallery-directions';
 import { VisualImageGallery } from './VisualImageGallery';
 import './visual-preview.css';
 
@@ -165,7 +165,7 @@ function Comparison({ bundle }: { bundle: AvailableResult['preview']['bundle'] }
     <div className="pw-sim"><div className="pw-sim__row">{bundle.currentRound.directions.map((direction, index) => {
       const refs = resolvePackagingReferences({ bundle, directionId: direction.id });
       const concept = resolveDirectionConcept(bundle, direction.id);
-      return <figure key={direction.id} data-visual-comparison={direction.id} data-comparison-stage={stage}><figcaption><span className="qv-direction-label">方向{ordinals[index]}</span><strong>{direction.name}</strong><button type="button" className="text-link" onClick={() => setParams({ dir: direction.id, part: stage === 'refined' ? 'current' : 'process', version: null })}>查看此方向 <ArrowLeftRight size={12} aria-hidden="true" /></button></figcaption>{stage === 'reference' ? refs.kind === 'ready' ? <div className="qv-comparison-references">{displayReferences(direction.id).map(reference => <a key={reference.id} href={reference.image} target="_blank" rel="noreferrer" aria-label={`放大查看${reference.title}原图`}><ReferenceImage reference={reference} /><span>{reference.title}</span></a>)}</div> : <p role="status" className="small">{refs.message}</p> : <div className="qv-comparison-art">{concept ? (stage === 'sketch' ? concept.sketches : [concept.main]).map(image => <a key={image.url} href={image.url} target="_blank" rel="noreferrer" aria-label={`放大${image.alt}`}><ConceptPicture image={image} /></a>) : <p className="qv-comparison-empty">设计试稿未匹配当前输入。</p>}</div>}</figure>;
+      return <figure key={direction.id} data-visual-comparison={direction.id} data-comparison-stage={stage}><figcaption><span className="qv-direction-label">方向{ordinals[index]}</span><strong>{direction.name}</strong><button type="button" className="text-link" onClick={() => setParams({ dir: direction.id, part: stage === 'refined' ? 'current' : 'process', version: null })}>查看此方向 <ArrowLeftRight size={12} aria-hidden="true" /></button></figcaption>{stage === 'reference' ? refs.kind === 'ready' ? <div className="qv-comparison-references">{displayReferences(direction.id).map(reference => <a key={reference.id} href={reference.image} target="_blank" rel="noreferrer" aria-label={`放大查看${reference.title}原图`}><ReferenceImage reference={reference} /><span>{reference.title}</span></a>)}</div> : <p role="status" className="small">{refs.message}</p> : <div className="qv-comparison-art">{concept ? (stage === 'sketch' ? currentSketches(concept) : [concept.main]).map(image => <a key={image.url} href={image.url} target="_blank" rel="noreferrer" aria-label={`放大${image.alt}`}><ConceptPicture image={image} /></a>) : <p className="qv-comparison-empty">设计试稿未匹配当前输入。</p>}</div>}</figure>;
     })}</div></div>
   </section>;
 }
