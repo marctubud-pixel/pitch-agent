@@ -29,7 +29,7 @@ export function normalizeOutlineOptions(kind, value = {}) {
 const positiveClauses = text => text.split(/[，,。；;\n]/u).map(s => s.trim()).filter(s =>
   s && !/(?:不需要|无需|不必|不要|不做|暂缓|仅供参考|只作参考|仅作参考|^参考)/u.test(s));
 
-function taskKind(target, structured) {
+export function taskKind(target, structured) {
   const kinds = new Set();
   for (const clause of positiveClauses(target)) {
     // In free text, require an actual requested output. A market or reference description is insufficient.
@@ -133,7 +133,7 @@ function clientPage(slot, input) {
     case 'audience': {
       const isPeer = type === 'competitors';
       const report = findingsPage(group(isPeer ? '竞争与同类传播' : '人群与接触情境'), researchRef);
-      const images = asset?.images ?? (isPeer && kind === 'packaging' ? input.competitorRefs : []);
+      const images = asset?.images ?? (isPeer ? input.competitorRefs : []);
       if (!report && !images.length) return null;
       const page = filled(report?.client_title || (isPeer ? '同类作品对照' : '目标人群的接触情境'),
         paragraphs(report?.content, asset && ('项目提供 · ' + asset.identity + '。' + asset.caption)),
@@ -251,7 +251,9 @@ export async function buildProposalOutline(project, dir) {
   }
   const sourceMaterials = await readPageMaterials(root, project, slots, mains);
   const pictures = (project.attachments ?? []).filter(a => /\.(png|jpe?g)$/iu.test(a.name)).map(a => a.name);
-  const competitorRefs = unique((project.layoutCompetitorReferences ?? []).filter(n => pictures.includes(n)));
+  const researchImages = new Set(artifacts.filter(a=>a.stage==='research' && a.kind==='image').map(a=>a.name));
+  const observed = (project.research?.findings ?? []).flatMap(f=>(f.images ?? []).map(i=>i.name)).filter(name=>researchImages.has(name));
+  const competitorRefs = unique([...observed, ...(kind==='packaging' ? project.layoutCompetitorReferences ?? [] : []).filter(n=>pictures.includes(n))]);
   const title = fields.find(f => /^项目名(?:称)?$/u.test(f.label))?.value ||
     fields.find(f => /^品牌(?:名称)?$/u.test(f.label))?.value || project.title;
   const briefRef = brief.name || '原始简报';

@@ -27,7 +27,11 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {isChecking && (
           <p role="status">{p.researchFollowup ? '正在按本轮缺口补查。' : '正在查找与简报相关的来源。'}</p>
         )}
-        {handoff?.ready && <p className="research-state">可交给策略</p>}
+        {handoff?.ready && (
+          isResearch && p.status === 'waiting'
+            ? <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>进入策略</button>
+            : <p className="research-state">可交给策略</p>
+        )}
         {!!handoff && !handoff.ready && (
           <>
             <h2>影响策略的待查问题</h2>
@@ -52,7 +56,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {!!clueCount && (
           <details className="research-original">
             <summary>已有线索（{clueCount}）</summary>
-            {handoff && !handoff.ready && !!handoff.findings.length && <ResearchFindings report={handoff} />}
+            {handoff && !handoff.ready && !!handoff.findings.length && <ResearchFindings report={handoff} artifacts={p.artifacts} />}
             <ul className="plain-list">{clues.map((clue) => <li key={clue}>{clue}</li>)}</ul>
           </details>
         )}

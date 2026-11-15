@@ -43,11 +43,11 @@ export function Workspace({
     done = STAGES.filter((s) => phase(p, s.id) === 'done');
   const pending = STAGES.filter((s) => phase(p, s.id) !== 'done'),
     latest = p.events.at(-1)?.text;
-  const images = p.artifacts.filter((a) => a.kind === 'image' && a.visual?.role !== 'comparison' && a.visual?.role !== 'reference'),
+  const images = p.artifacts.filter((a) => a.kind === 'image' && a.stage !== 'research' && a.visual?.role !== 'comparison' && a.visual?.role !== 'reference'),
     docs = p.artifacts.filter((a) => a.kind === 'text' && !isDeckPreview(a)),
     decks = p.artifacts.filter((a) => a.kind === 'pptx');
   const preview = p.artifacts.find(isDeckPreview);
-  const researchPaused = p.stage === 'research' && p.status === 'waiting' && !researchQuestion(p);
+  const researchPaused = p.stage === 'research' && p.status === 'waiting' && !p.research?.ready && !researchQuestion(p);
   const revisions = (p.feedback || []).filter(
     (item) => 'stage' in item && (item.stage === 'visual' || item.stage === 'final'),
   );
@@ -58,7 +58,7 @@ export function Workspace({
         ? p.stage === 'research'
           ? researchQuestion(p)
             ? '查看研究发现，回答影响方向的问题。'
-            : '查看研究缺口，补查后再交给策略。'
+            : p.research?.ready ? '查看研究结果，准备好后进入策略。' : '查看研究缺口，补查后再交给策略。'
           : p.stage === 'visual'
             ? '打开视觉稿，确认是否采用这一版做本地排版。'
             : '在对话里查看备选方向，选定后继续。'
@@ -185,7 +185,7 @@ export function Workspace({
                 <p className="stage-summary">{s.summary}</p>
               )}
               {p.artifacts
-                .filter((f) => f.stage === s.id)
+                .filter((f) => f.stage === s.id && !(f.stage === 'research' && f.kind === 'image'))
                 .map((f) => (
                   <button key={f.url} className="stage-item" onClick={() => open(s.id, f.name)}>
                     {documentTitle(p, f)}

@@ -124,6 +124,14 @@ export interface CopyReview {
     rulings: { challengeId: string; verdict: 'resolved' | 'rejected' | 'pending'; reason: string }[];
   };
 }
+export interface ResearchImage {
+  name: string;
+  sha256: string;
+  title: string;
+  pageUrl: string;
+  sourceUrl: string;
+  observation: string;
+}
 export interface Project extends Summary {
   revision: number;
   mode: Mode;
@@ -135,7 +143,7 @@ export interface Project extends Summary {
   research?: {
     ready: boolean;
     question?: string;
-    findings: { conclusion: string; evidence: string; source: string; url: string; implication: string }[];
+    findings: { conclusion: string; evidence: string; source: string; url: string; implication: string; images?: ResearchImage[] }[];
     gaps: string[];
     next: string;
   };
@@ -146,7 +154,7 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again';
+export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup'>>;
 export const researchQuestion = (p: ResearchStatus) =>
@@ -161,7 +169,11 @@ export const researchQuestion = (p: ResearchStatus) =>
 export const projectStatus = (p: ResearchStatus) => {
   if (researchQuestion(p)) return '等待你的判断';
   if (p.stage === 'research' && p.status === 'running' && p.researchFollowup) return '定向补查中';
-  return p.stage === 'research' && p.status === 'waiting' ? '待补查' : statusName[p.status];
+  if (p.stage === 'research' && p.status === 'waiting') {
+    if (!p.research) return '查看研究';
+    return p.research.ready ? '可进入策略' : '待补查';
+  }
+  return statusName[p.status];
 };
 export function phase(p: Project, s: StageId) {
   const n = STAGES.findIndex((x) => x.id === s),

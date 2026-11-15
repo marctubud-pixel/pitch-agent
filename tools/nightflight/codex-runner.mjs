@@ -1,3 +1,5 @@
+import {taskKind} from './proposal-outline.mjs';
+import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
@@ -60,6 +62,7 @@ const findingSchema = objectSchema({
   implication: stringField,
 });
 const reportSchema = objectSchema({
+  competitorPages: {type:'array',items:objectSchema({title:stringField,url:stringField,imageUrl:stringField})},
   findings: { type: 'array', items: findingSchema },
   gaps: stringList,
   next: stringField,
@@ -150,10 +153,10 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     ? '协作调研先完成取证、列出初步发现。用户已给的选择和补充意见属于项目条件。'
     : '自动调研自行分析不同条件下的适用范围，自行定向补查，保留需要客户确认的假设。';
   const planning = project.researchFollowup
-    ? '本轮为定向补查。以本轮反馈和上轮缺口确定一个最影响策略的证据问题，优先更换来源或具体比较场景。用户暂时无法确认时，对备选情境分别取证。'
+    ? '本轮为定向补查。沿用已核发现，先检查四线中哪些公开材料可以补足。旧版要求门店实拍、访谈或回忆测试的缺口只约束相应说法。用户暂时无法确认时，对备选情境分别取证。'
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
   const plan = await call(
-    modeInstruction + planning + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出至多三条不同角度的短查询，优先查原始案例、行业或消费者研究。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    modeInstruction + planning + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多四条宽口径查询，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     querySchema,
   );
@@ -164,7 +167,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
         !/[\r\n@:/]|\b1[3-9]\d{9}\b/u.test(q) &&
         !(project.brief?.length >= 12 && q.includes(project.brief.trim())),
     )
-    .slice(0, 3);
+    .slice(0, 4);
   const captures = new Map();
   const capture = (url) => {
     if (!captures.has(url))
@@ -203,13 +206,17 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     queries.map((query) => discoverPublicPages(query, storeRoot, dependencies, signal)),
   );
   signal?.throwIfAborted();
-  const urls = [...new Set(discovered.flatMap((r) => r.results.map((s) => s.url)))];
+  const suppliedPages = (project.feedback ?? [])
+    .filter(item => item.stage === 'research')
+    .flatMap(item => item.text?.match(/https:\/\/[^\s<>"，。；）)]+/gu) ?? [])
+    .slice(-8);
+  const urls = [...new Set([...suppliedPages, ...discovered.flatMap(r => r.results.map(s => s.url))])];
   const originals = (await Promise.all(urls.map(capture))).filter(Boolean);
   await onEvent?.('公开检索取得 ' + urls.length + ' 个候选链接，其中 ' + originals.length + ' 份可读取原文');
   const material = originals.map(({ url, source, text }) => ({ url, source, text: text.slice(0, 7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
-    modeInstruction + planning + '现在完成研究。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
+    modeInstruction + planning + '现在完成设计提案案头研究。先归纳行业、总体偏好、产品事实、竞品包装或KV四线，再解释这些材料共同提出什么策略取舍。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串）。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
       JSON.stringify(material),
     inputs.images,
     reportSchema,
@@ -225,7 +232,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   // Include prior findings in the same verification and review as new candidates.
   const previousFindings = Array.isArray(project.previousResearch?.findings) ? project.previousResearch.findings : [];
   const seenFindings = new Set();
-  for (const f of [...offered.slice(0, 24), ...previousFindings]) {
+  for (const f of [...offered.slice(0, 24), ...previousFindings.filter(f=>!f.images?.length)]) {
     signal?.throwIfAborted();
     if (
       !f ||
@@ -238,7 +245,8 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     let original;
     if (f.url) {
       original = await capture(f.url);
-    } else if (project.attachments?.some((a) => a.name === f.source)) {
+    } else if (project.attachments?.some(a => a.name === f.source) ||
+               project.artifacts?.some(a => a.stage === 'brief' && a.kind === 'text' && a.name === f.source)) {
       original = inputs.texts.find((t) => t.name === f.source && t.text);
     }
     const passage = original ? normalized(original.text) : '';
@@ -253,6 +261,20 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     seenFindings.add(key);
     findings.push({ ...f, url: original.url || '' });
     passages.push(passage.slice(Math.max(0, offset - 240), offset + quote.length + 240));
+  }
+  const carrier = project.proposalKind || taskKind(project.brief || '',false);
+  const pages = [
+    ...(draft.parsedOutput.competitorPages ?? []),
+    ...originals.filter(item=>/产品|商品|包装|海报|案例|campaign|packaging|products?/iu.test(item.source+' '+item.url))
+      .map(item=>({title:item.source,url:item.url})),
+  ];
+  const board = carrier && await researchCompetitors({call, dir, project, carrier, signal, dependencies, onEvent,
+    pages, previous:project.previousResearchImages});
+  if (board) {
+    findings.push(board.finding);
+    passages.push(board.finding.evidence);
+  } else if (carrier) {
+    gaps.push('缺可核对的同类作品原图，当前无法形成包装或KV的画面比较结论。');
   }
   if (!originals.length && !findings.length)
     gaps.push('本轮尚未取得可用公开原文，请换用更具体的品类、发布渠道或案例机构继续补查。');
@@ -270,8 +292,8 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       ? '研究者已经完成第一轮取证。仅在已采纳发现表明存在改变策略方向、且需要人作决定的项目取舍时，question 填一句直接询问该取舍的问题；next 说明答案将影响哪项判断。可带条件推进、公开资料可继续查或用户已回答的事项，question 填空字符串。'
       : 'question 填空字符串。根据已知条件及反馈复核；未确定的分支分别说明适用条件。';
     const review = await call(
-      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。非关键资料仍待确认时可交付有依据的条件性结论。gaps 给出关键缺口，next 用中文解释交接理由或具体补查行动。关键依据不足时，无论哪个模式都保留待补状态。' + questionInstruction,
-      [],
+      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。gaps 给出关键缺口，next 用中文解释交接理由或具体补查行动。关键依据不足时，无论哪个模式都保留待补状态。' + questionInstruction,
+      board?.images ?? [],
       verdictSchema,
       {
         rules: [role],
@@ -289,7 +311,9 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     )
       throw Error('比稿交接检查未返回有效判断，请重试研究');
     const accepted = findings.filter((_, i) => v.accepted.includes(i));
-    const ready = v.ready && accepted.length > 0;
+    const hasExternalEvidence = accepted.some(f => f.url || f.images?.length ||
+      project.attachments?.some(a => a.name === f.source));
+    const ready = v.ready && hasExternalEvidence;
     const question = canAsk && !ready && accepted.length
       ? v.question.trim().split(/(?<=[？?])/u, 1)[0]
       : '';
@@ -319,7 +343,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
               f.evidence +
               '\n来源：' +
               f.source +
-              (f.url ? ' ' + f.url : '（项目附件）') +
+              (f.url ? ' ' + f.url : '（项目材料）') +
               '\n对策略的用途：' +
               f.implication,
           )
@@ -340,7 +364,8 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   ]
     .filter(Boolean)
     .join('\n\n');
-  return { research, body };
+  const imageArtifacts = board && research.findings.includes(board.finding) ? await board.publish() : [];
+  return { research, body, imageArtifacts };
 }
 
 async function executable(command) {
@@ -734,12 +759,12 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       return {artifacts};
     }
     if (stage === 'research') {
-      const {research,body} = await researchReport({call,dir,inputs,project,onEvent,dependencies:researchDependencies,signal});
+      const {research,body,imageArtifacts} = await researchReport({call,dir,inputs,project,onEvent,dependencies:researchDependencies,signal});
       const skill = rules.find(rule => /^name: design-research-lead$/m.test(rule));
       const methodVersion = skill?.match(/^  version: (\S+)$/m)?.[1];
       if (!methodVersion) throw Error('未取得当前调研 Skill 的方法版本');
       await addText(body + '\n\n调研方法版本：' + methodVersion);
-      return {artifacts,research:{...research,methodVersion}};
+      return {artifacts:[...artifacts,...imageArtifacts],research:{...research,methodVersion}};
     }
     if (stage === 'strategy') {
       const result=await call('依据本轮有效研究输出三个板块。确实无法形成有依据的策略判断时，把具体应退回研究补查的问题写入 researchReturn；可以根据明确条件推进时填空字符串。',inputs.images,strategySchema);

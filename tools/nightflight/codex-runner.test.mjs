@@ -141,10 +141,13 @@ process.stdin.on('end',()=>{
    else if(schema.findings) {
      console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'search',queries:['测试公开品类']}}}));
      body={findings:[{chapter:'行业与市场',conclusion:'茶礼场景更强调赠礼用途',source:'合成行业报告',url:'https://source.example.org/report',evidence:action==='research-fiction'?'这是虚构引文':'本次样本单列礼盒用途',implication:'策略需比较礼赠与日常使用情境'}],gaps:['渠道尚未选定'],next:'比较可核实的渠道样本'};
+     if(action==='research-brief-only') Object.assign(body.findings[0],{
+       chapter:'产品与品牌',conclusion:'演练产品条件',source:'brief-test.md',url:'',evidence:'配料为水和燕麦',implication:'以配方为条件比较表达'
+     });
      if(action==='research-followup')body.findings=[];
    } else if(schema.accepted){
-     if(!input.includes('独立会话') || !input.includes('本次样本单列礼盒用途'))process.exit(11);
-     body={ready:action==='research-ok',accepted:[0],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
+     if(!input.includes('独立会话') || !(input.includes('本次样本单列礼盒用途') || input.includes('配料为水和燕麦')))process.exit(11);
+     body={ready:['research-ok','research-brief-only'].includes(action),accepted:[0],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
    } else process.exit(12);
  }
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
@@ -532,6 +535,15 @@ for (const [action, ready, count] of [
     },
   );
 }
+test('keeps a verified brief fact without releasing strategy on the brief alone',async t=>{
+  const f=await fixture(t,'research-brief-only');
+  await writeFile(join(f.dir,'brief-test.md'),'项目输入：配料为水和燕麦');
+  f.project.artifacts.push({stage:'brief',kind:'text',name:'brief-test.md'});
+  const {research}=await f.run('research');
+  assert.equal(research.findings[0]?.source,'brief-test.md');
+  assert.equal(research.ready,false);
+});
+
 test('automatic research keeps a key gap without asking for a user decision', async (t) => {
   const f = await fixture(t, 'research-blocked');
   f.project.mode = 'auto';

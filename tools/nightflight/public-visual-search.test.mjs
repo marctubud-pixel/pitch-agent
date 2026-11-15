@@ -53,3 +53,33 @@ test('web discovery uses a public page and its captured image when the Commons r
   assert.equal(images[0]?.sourceUrl,'https://tea.brand.org/pack.png');
   assert.equal(images[0].pageUrl,page);
 });
+
+test('competitor board binds a read image to its declaring page, disregards invented URLs and preserves the accepted bytes',async t=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const dir=await mkdtemp(join(tmpdir(),'research-competitors-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const sample=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAKAAAADwCAAAAACiKjAGAAAAPElEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPBpbwAAHEOZGbAAAAAElFTkSuQmCC','base64');
+  const page='https://brand.example/products/original', product='https://brand.example/pack.png';
+  const requests=[];
+  const dependencies={lookup:async()=>[{address:'93.184.216.34',family:4}],
+    transport:async({url})=>{
+      requests.push(url.href);
+      if(url.href===page)return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>Example</title><img src="/pack.png">')};
+      if(url.href===product)return {status:200,headers:{'content-type':'image/png'},body:sample};
+      throw Error('Unexpected URL');
+    }};
+  const call=async(_prompt,images)=>({parsedOutput:{samples:[
+    {source:images[0].imageId,title:'同类原味纸盒',observation:'包装正面品类名置顶。'},
+    {source:'invented',title:'无原图案例',observation:'无依据'}],
+    conclusion:'所示单品把品类信息放在正面上部。',implication:'可比较正面品类名与品牌名的层级。'}});
+  const board=await researchCompetitors({call,dir,project:{brief:'燕麦饮包装设计'},carrier:'packaging',dependencies,
+    pages:[{title:'燕麦饮纸盒',url:page,imageUrl:'https://unrelated.example/unverified.png'}]});
+  assert.deepEqual(requests,[page,product]);
+  const [ref]=board.finding.images;
+  assert.equal(board.finding.images.length,1);
+  assert.equal(ref.pageUrl,page);
+  assert.equal(ref.sourceUrl,product);
+  assert.equal(ref.sha256,createHash('sha256').update(sample).digest('hex'));
+  assert.deepEqual(await board.publish(),[{name:ref.name,kind:'image'}]);
+  assert.deepEqual(await readFile(join(dir,ref.name)),sample);
+});
