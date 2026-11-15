@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.35.0",
-  "registrySha256": "9967bffb336d1f8cb3900c8a0edbd09e01ca434b3e588aac3d9e69633ad7a0b1",
+  "baselineVersion": "1.36.0",
+  "registrySha256": "847320b56c847669bd5290288430d57de20095130fc88b1c3c693a20705d5d1e",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -32,10 +32,10 @@
       }
     },
     "agent.copy-owner": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/copy-owner.md": "b7ac9eced14b3c35603b45b26d8326d7e88376780c57bd66957f56565a163cd5"
+        "docs/agents/copy-owner.md": "4eb880c67b6b76a8702cf0822e727880588dd184ac4da15202d96a2e832262c5"
       }
     },
     "agent.visual-owner": {
@@ -116,10 +116,10 @@
       }
     },
     "page.themes": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "6a6b9f63de143c524d6694c5a205e0312572eeecf5f198ca829bca6158681fd5"
+        "docs/pages/themes.md": "ac9493463e87bddaa2cf0ff7aff8226847b7ceea340673d933db76bc9347e3e2"
       }
     },
     "page.visual": {
@@ -466,10 +466,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "2f8f4fc652c7a7e83649c42b1f2fd860180b2a9d083582d0d5e8d825eda20914"
+        "docs/specs/copy-generation.md": "2069995ed42c8ec666c606fc5dbff8e59bcf1d9bb7b3dbde67f3dff523df62ee"
       }
     }
   },
@@ -480,7 +480,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "e9a8249f38b25788d5b639adbc0cab74ed236d591bd365efc16d070aa95afe64",
+    "docs/specs/README.md": "e0ff4d806cfdf2ed4ff5e08a6c85c635ac6254aa23679dff7112d5f00e79e461",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

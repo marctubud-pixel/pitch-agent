@@ -205,7 +205,7 @@ export function App() {
   }));
   if (routePath === '/reference/qingyu/copy') return (
     <Suspense fallback={<p className="pending">正在读取青屿文案…</p>}>
-      <QingyuCopyReading historical={new URLSearchParams(query).get('edition') === 'archive'} />
+      <QingyuCopyReading edition={new URLSearchParams(query).get('edition')} />
     </Suspense>
   );
   if (routePath === '/reference/qingyu/strategy') return <QingyuStrategyReading />;

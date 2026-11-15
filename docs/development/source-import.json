@@ -2251,8 +2251,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "272e9ea042dd955b9a25e2e9042fd1226528c0754ec24be72caf4ac11980de66",
-      "reason": "适配夜航研究及策略交接、简报直达，以及青屿文案历史原稿只读入口。"
+      "sha256": "e9bb6d3393494f4a9a01b1a1d975baa84a687b865e6ef3acdf5799e9641be46f",
+      "reason": "适配夜航研究及策略交接、简报直达，以及青屿文案实验、上一版与历史原稿的只读入口。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",

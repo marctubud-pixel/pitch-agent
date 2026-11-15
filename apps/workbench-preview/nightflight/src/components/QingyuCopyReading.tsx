@@ -10,33 +10,46 @@ interface Publication {
   status: 'published';
   copyReview: CopyReview;
   reviewsByDirection?: Partial<Record<ReviewedDirection['id'], CopyReview>>;
-  retainedA: { draftId: string; verdict: string; source: string };
+  retainedA?: { draftId: string; verdict: string; source: string };
+  receipt: { director: string; contentSha256: string };
 }
 
 // The publication is written only after the review closes. Working drafts are outside this path.
-const snapshots = import.meta.glob<Publication>('../../../src/proposal/qingyu-themes/published-copy.json', {
+const snapshots = import.meta.glob<Publication>([
+  '../../../src/proposal/qingyu-themes/published-copy.json',
+  '../../../src/proposal/qingyu-themes/published-experiment.json',
+], {
   eager: true, import: 'default',
 });
 
-function currentPublication() {
-  const snapshot = Object.values(snapshots)[0];
-  if (snapshot?.version !== 1 || snapshot.status !== 'published') return;
+function retainedOriginalsMatch(snapshot: Publication) {
   const original = archiveRound?.draft.directions.find((d) => d.id === 'n7');
+  const originalC = archiveRound?.draft.directions.find((d) => d.id === 'v2');
+  const directions = snapshot.copyReview.draft.directions;
+  const kept = directions.find((d) => d.id === 'A');
+  return original && originalC && snapshot.retainedA?.draftId === original.id && snapshot.retainedA.verdict &&
+    snapshot.retainedA.source && kept && kept.name === original.name && kept.main === original.slogan &&
+    kept.secondary === original.subline && kept.mechanism === original.mechanism &&
+    kept.touchpoints.length === original.extensions.length && original.extensions.every((point, i) =>
+      point.label === kept.touchpoints[i].label && point.text === kept.touchpoints[i].text) &&
+    directions.find((d) => d.id === 'C')?.main === originalC.slogan;
+}
+
+function publication(edition: 'distilled' | 'experiment') {
+  const file = edition === 'experiment' ? 'published-experiment.json' : 'published-copy.json';
+  const snapshot = snapshots['../../../src/proposal/qingyu-themes/' + file];
+  if (snapshot?.version !== 1 || snapshot.status !== 'published' ||
+      !snapshot.receipt?.director || !snapshot.receipt.contentSha256) return;
   const review = snapshot.copyReview;
-  if (!original || snapshot.retainedA?.draftId !== original.id || !snapshot.retainedA.verdict ||
-      !snapshot.retainedA.source || review?.protocol !== 'dual-panel-v2' || review.status !== 'ready' ||
+  if (review?.protocol !== 'dual-panel-v2' || review.status !== 'ready' ||
       !review.adjudication?.ready || !review.adjudication.set?.ready) return;
-  const directions = review.draft.directions;
-  if (directions.length !== 3 || !['A', 'B', 'C'].every((id) =>
+  const directions = review.draft?.directions;
+  const ids = ['A', 'B', 'C'] as const;
+  if (directions?.length !== 3 || !ids.every((id) =>
     directions.some((d) => d.id === id) && review.adjudication.single?.some((entry) => entry.directionId === id && entry.ready))) return;
   if (!['AB', 'AC', 'BC'].every((pair) => review.adjudication.pairs?.some((entry) => entry.pair === pair && entry.distinct === true))) return;
-  const originalC = archiveRound?.draft.directions.find((d) => d.id === 'v2');
-  if (!originalC || directions.find((d) => d.id === 'C')?.main !== originalC.slogan) return;
-  const kept = directions.find((d) => d.id === 'A');
-  if (!kept || kept.name !== original.name || kept.main !== original.slogan || kept.secondary !== original.subline ||
-      kept.mechanism !== original.mechanism || kept.touchpoints.length !== original.extensions.length ||
-      !original.extensions.every((point, i) => point.label === kept.touchpoints[i].label && point.text === kept.touchpoints[i].text)) return;
-  const candidateIds = ['B', 'C'] as const;
+  if (edition === 'distilled' && !retainedOriginalsMatch(snapshot)) return;
+  const candidateIds = edition === 'experiment' ? ids : (['B', 'C'] as const);
   const roles = ['copy', 'brand', 'user', 'comms'] as const;
   for (const id of candidateIds) {
     const published = directions.find((d) => d.id === id);
@@ -47,8 +60,9 @@ function currentPublication() {
         scored.touchpoints.length !== published.touchpoints.length ||
         !scored.touchpoints.every((point, i) => point.label === published.touchpoints[i].label && point.text === published.touchpoints[i].text)) return;
     if (!roles.every((role) => {
-      const item = ticket.finalVotes?.find((vote) => vote.role === role)?.items.find((entry) => entry.directionId === id);
-      return item?.decision === 'pass' && !item.blockers.length && !item.hardRejects.length &&
+      const vote = ticket.finalVotes?.find((vote) => vote.role === role);
+      const item = vote?.items.find((entry) => entry.directionId === id);
+      return vote?.runId && item?.decision === 'pass' && !item.blockers.length && !item.hardRejects.length &&
         item.scores.length === 4 && item.scores.every((score) => score.score !== null && score.score >= 4);
     })) return;
   }
@@ -78,10 +92,23 @@ function ArchivedCopy() {
   );
 }
 
-function PublishedReview({ direction, snapshot }: { direction: ReviewedDirection; snapshot: Publication }) {
+function PublishedReview({ direction, snapshot, compare }: { direction: ReviewedDirection; snapshot: Publication; compare?: Publication }) {
+  const previous = compare?.copyReview.draft.directions.find((entry) => entry.id === direction.id);
   return (
     <>
-      {direction.id === 'A' && <details>
+      {previous && <details className="block" data-compare-direction={direction.id}>
+        <summary>对照提炼规则稿 · 方向 {direction.id}</summary>
+        <div className="two-col">{[previous, direction].map((copy, i) => <div key={i} data-edition={i ? 'experiment' : 'distilled'}>
+          <p className="mono-label">{i ? '完整 Skill 实验稿' : '提炼规则稿'}</p>
+          <h3>{copy.name}</h3>
+          <p className="lead">{copy.main}</p>
+          <p>{copy.secondary}</p>
+          <dl>{copy.touchpoints.map((point, index) => <div key={index}>
+            <dt>{point.label}</dt><dd style={{ whiteSpace: 'pre-line', marginInlineStart: 0 }}>{point.text}</dd>
+          </div>)}</dl>
+        </div>)}</div>
+      </details>}
+      {direction.id === 'A' && snapshot.retainedA && <details>
         <summary>A 原稿通过记录</summary>
         <p>{snapshot.retainedA.verdict}</p>
         <p className="hint">来源　{snapshot.retainedA.source}</p>
@@ -92,8 +119,7 @@ function PublishedReview({ direction, snapshot }: { direction: ReviewedDirection
   );
 }
 
-export function QingyuCopyBody() {
-  const snapshot = currentPublication();
+function QingyuCopyBody({ snapshot, compare }: { snapshot?: Publication; compare?: Publication }) {
   if (!snapshot) return <p className="pending" role="status">文案打磨中</p>;
   const review = snapshot.copyReview;
   const directions = review.draft.directions;
@@ -110,21 +136,33 @@ export function QingyuCopyBody() {
     mode: 'auto', stage: 'copy', status: 'waiting',
   }} renderReview={(name) => {
     const direction = directions.find((d) => d.name === name);
-    return direction && <PublishedReview key={direction.id} direction={direction} snapshot={snapshot} />;
+    return direction && <PublishedReview key={direction.id} direction={direction} snapshot={snapshot} compare={compare} />;
   }} />;
 }
 
-export default function QingyuCopyReading({ historical = false }: { historical?: boolean }) {
+export default function QingyuCopyReading({ edition }: { edition: string | null }) {
+  const distilled = publication('distilled');
+  const experiment = publication('experiment');
+  const historical = edition === 'archive';
+  const selected = edition === 'distilled' ? distilled : (experiment ?? distilled);
+  const isExperiment = !!experiment && selected === experiment;
+  const versionName = historical ? '历史原稿' : isExperiment ? '完整 Skill 实验稿' : '提炼规则稿';
+  const base = '#/reference/qingyu/copy';
   return (
     <div className="sheet">
       <div className="sheet-bar"><a className="back-link" href="#/">← 回到提案台</a></div>
-      <div className="sheet-scroll" key={historical ? 'archive' : 'published'}>
+      <div className="sheet-scroll" key={versionName}>
         <article className="sheet-doc">
           <header className="sheet-head">
-            <p className="mono-label">青屿 · {historical ? '历史原稿' : '本地演练稿'} · 只读</p>
+            <p className="mono-label">青屿 · {versionName} · 只读</p>
             <h1>文案与主题</h1>
           </header>
-          {historical ? <ArchivedCopy /> : <QingyuCopyBody />}
+          {!historical && experiment && distilled && <p>
+            <a className="back-link" href={isExperiment ? base + '?edition=distilled' : base}>
+              {isExperiment ? '查看提炼规则稿' : '查看完整 Skill 实验稿'}
+            </a>
+          </p>}
+          {historical ? <ArchivedCopy /> : <QingyuCopyBody snapshot={selected} compare={isExperiment ? distilled : undefined} />}
           <a className="back-link" href={historical ? '#/reference/qingyu/copy' : '#/reference/qingyu/copy?edition=archive'}>
             {historical ? '查看当前发布版' : '历史原稿与原票'}
           </a>
