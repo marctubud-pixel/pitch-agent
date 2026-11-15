@@ -133,7 +133,14 @@ export function ChatPanel({
             </button>
           </div>
         )}
-        <Decisions p={p} act={act} busy={busy} />
+        <Decisions p={p} busy={busy} act={async (kind, text) => {
+          if (kind !== 'adopt') return act(kind, text);
+          const issue = fileIssue(files);
+          if (issue) { setError(issue); return false; }
+          const ok = await act(kind, text, files);
+          if (ok) setFiles([]);
+          return ok;
+        }} />
       </div>
       <div className="composer">
         {error && (
@@ -146,7 +153,7 @@ export function ChatPanel({
           <p className="composer-hint">
             {p.status === 'done'
               ? '发送修改意见会保存当前版本，并从简报重新生成。'
-              : '发送修改意见会保存本版并重新生成视觉稿。'}
+              : '点「采用这版做本地排版」可一并提交排版材料。发送修改意见会重新生成视觉稿。'}
           </p>
         )}
         <div className="chat-input">

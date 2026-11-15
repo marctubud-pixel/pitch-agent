@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { LogBar } from './components/LogBar';
 import { TopBar } from './components/TopBar';
 import { Home } from './components/Home';
-import { StartScreen, ModeScreen } from './components/StartScreen';
+import { defaultOutline, type OutlineSelection, StartScreen, ModeScreen } from './components/StartScreen';
 import { Workspace } from './components/Workspace';
 import { Library } from './components/Library';
 import { QingyuStrategyReading } from './components/QingyuStrategyReading';
@@ -39,6 +39,7 @@ export function App() {
     [busy, setBusy] = useState(false);
   const [brief, setBrief] = useState(''),
     [files, setFiles] = useState<File[]>([]),
+    [outline, setOutline] = useState<OutlineSelection>(defaultOutline),
     draft = useRef(crypto.randomUUID()),
     lock = useRef(false);
   const [chat, setChat] = useState(false),
@@ -53,7 +54,7 @@ export function App() {
     [notice, setNotice] = useState(false);
   const [routePath, query] = route.split('?');
   const stageParam = new URLSearchParams(query).get('stage');
-  const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' ? stageParam : undefined;
+  const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' || stageParam === 'layout' ? stageParam : undefined;
   const id = routePath.startsWith('/p/') ? routePath.slice(3) : '',
     workspace = !!id && p?.id === id,
     start = route === '/new',
@@ -138,6 +139,7 @@ export function App() {
   function newProject() {
     setBrief('');
     setFiles([]);
+    setOutline(defaultOutline);
     draft.current = crypto.randomUUID();
     navigate('/new');
   }
@@ -152,6 +154,9 @@ export function App() {
         id: draft.current,
         brief,
         mode: m,
+        ...(outline.kind ? { proposalKind: outline.kind } : {}),
+        ...(outline.include.length || outline.singleTouchpoint
+          ? { outlineOptions: { include: outline.include, singleTouchpoint: outline.singleTouchpoint } } : {}),
         attachments,
       });
       navigate('/p/' + d.project.id);
@@ -265,8 +270,10 @@ export function App() {
         <StartScreen
           initialBrief={brief}
           initialFiles={files}
+          initialOutline={outline}
           projects={projects}
-          onSubmit={(b, f) => {
+          onSubmit={(b, f, options) => {
+            setOutline(options);
             setBrief(b);
             setFiles(f);
             navigate('/mode');

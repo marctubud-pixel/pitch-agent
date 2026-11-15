@@ -2251,16 +2251,16 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "dea02e8df2c77e3293dad4e9380965bd7dc515601836f6f9a8ab786506c0525e",
-      "reason": "适配夜航研究及策略交接、简报直达，以及青屿文案实验、上一版与历史原稿的只读入口。 接入按方向查看的视觉图册。"
+      "sha256": "c1db7579304eabc51647761d1b0f5b09b4c792a2f31e589d654b975dc08fd0c9",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "5f779390e06e42c672de3407277f1c5bdf75effbf3cdb5c1141a326c03c044d3",
-      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。 主视觉三稿同评。"
+      "sha256": "16e4ed0ae53d798e52953f58af285d911748ca5e50fee169eef5f07ee1b4476d",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "5cb9391753c2bfd0f04387597934911edca9be4866216614aaafb6c023207530",
@@ -2279,8 +2279,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/StartScreen.tsx": {
-      "sha256": "d0023b37baa349abf49cbe72ec93acb3b00da7e2f67167757ef344079bae3710",
-      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。 主视觉三稿同评。"
+      "sha256": "b39bce45b9c386bea7a43ee3e4cc5870b8c8c6ae4765ebf52a4cf7274dea6e83",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     },
     "apps/workbench-preview/nightflight/src/components/TopBar.tsx": {
       "sha256": "249fd9c4d3237a88ebccb19bec259a4f8a3b8e17f2c354d5d4bd9a7bf7d563d8",
@@ -2303,12 +2303,12 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "953822c241adb2b80d9693fa39ed16685695b4adb15122797f9acd7f1583fb2c",
-      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。"
+      "sha256": "1227ba35eaa6f0966bbb73a71b88f071f6e65dc185da4cd6407bbcb1b596f012",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {
-      "sha256": "a08d1671d7b89b8cb9fdc5e50f3ef39d13fd92b5961f6956c7440bb1bfd6388f",
-      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。"
+      "sha256": "5a52a2343c4c95ac3e08e4098a16e8ce005e5e537b3ad69a7c0868ff75299e42",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     },
     "apps/workbench-preview/src/proposal/qingyu-visual/QingyuVisualPreview.tsx": {
       "sha256": "92f680ff08324b427da79ef9549ad8e7e83545d373c4e1dbe63920b8f896d282",
@@ -2325,6 +2325,14 @@
     "apps/workbench-preview/src/proposal/qingyu-visual/concept-images.ts": {
       "sha256": "5997d0df0bba622a5ce3b0c8db5e5d1968f39fadaff938fc8cf3847197940532",
       "reason": " 接入视觉草图选择、版本或相应方法身份。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/model.ts": {
+      "sha256": "a48ea7d18c0f07e3cf41e043ca8f599f89f6d507213c1d1186b53e4b052a4e0b",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/templates.ts": {
+      "sha256": "078554412abcb7139f63d1071ebe898fcf7e535d07148419d475d976d8e23053",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     }
   },
   "nightflightArchive": {

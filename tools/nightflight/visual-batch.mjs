@@ -58,5 +58,5 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
     return {...row,blocked:row.blocked || missing,research:missing?'补充同类包装正面原图。'+(row.research==='无'?'':row.research):row.research,blind:blind[row.candidate-1],scores,mean:scores.reduce((sum,v)=>sum+v.score,0)/roles.length};
   });
   const winner = candidates.filter(c=>!c.blocked && c.mean>=4).sort((a,b)=>b.mean-a.mean || a.priority-b.priority)[0];
-  return {direction,board:board?.name,references:references.map(ref=>({name:ref.name,sha256:ref.sha256})),selectionThread:selection.threadId,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,winner:winner?.candidate ?? null};
+  return {direction,packaging,board:board?.name,references:references.map(ref=>({name:ref.name,sha256:ref.sha256})),selectionThread:selection.threadId,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,winner:winner?.candidate ?? null};
 }

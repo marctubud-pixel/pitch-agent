@@ -32,6 +32,8 @@ export type Template =
   | { kind: 'summary.list'; points: Pair[]; }
   | { kind: 'summary.statement' | 'summary.question'; statement: string; sub: string; }
   | { kind: 'cover.split'; image: Media; sub: string; meta: string; }
+  | { kind: 'cover.type' | 'closing.type'; sub: string; meta: string; }
+  | { kind: 'contents.list'; items: { title: string; page: number; }[]; }
   | { kind: 'design.half' | 'design.stage'; image: Media; intro: string; points: Pair[]; };
 export type Draft = { id: string; title: string; eyebrow: string; chapter: string; notes: string; caption: string; template: Template; };
 export type Theme = { primary: string; accent: string; style: 'business' | 'elegant' | 'modern' | 'editorial' | 'bold'; mode: 'light'; };

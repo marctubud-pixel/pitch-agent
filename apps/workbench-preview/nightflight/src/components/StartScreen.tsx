@@ -6,20 +6,34 @@ import { EXAMPLE_BRIEF } from '../data/project';
 import { BotFigure } from './Bot';
 import { Icon } from './Icon';
 
+export type OutlineSelection = {
+  kind: '' | 'packaging' | 'kv';
+  include: string[];
+  singleTouchpoint: boolean;
+};
+export const defaultOutline: OutlineSelection = { kind: '', include: [], singleTouchpoint: false };
+const extras = {
+  packaging: [['series', '系列 SKU']],
+  kv: [['adaptation', '第二画幅'], ['process', '制作过程'], ['motion', '动效']],
+} as const;
+
 /** A. 起始页：一个大输入框 + 上传 Brief（模拟） */
 export function StartScreen({
   initialBrief,
   initialFiles,
+  initialOutline,
   projects,
   onSubmit,
 }: {
   initialBrief: string;
   initialFiles: File[];
+  initialOutline: OutlineSelection;
   projects: Summary[];
-  onSubmit: (brief: string, files: File[]) => void;
+  onSubmit: (brief: string, files: File[], outline: OutlineSelection) => void;
 }) {
   const [brief, setBrief] = useState(initialBrief);
   const [files, setFiles] = useState<File[]>(initialFiles);
+  const [outline, setOutline] = useState(initialOutline);
   const [error, setError] = useState('');
   const file = useRef<HTMLInputElement>(null);
   const add = (items: File[]) => {
@@ -36,7 +50,7 @@ export function StartScreen({
       setError('先写下项目需求，或上传一份 Brief。');
       return;
     }
-    onSubmit(brief.trim() || '请根据随附的 Brief 制作提案。', files);
+    onSubmit(brief.trim() || '请根据随附的 Brief 制作提案。', files, outline);
   };
   return (
     <main className="entry">
@@ -83,6 +97,29 @@ export function StartScreen({
           </button>
         </div>
         <AttachmentChips items={files} remove={(i) => setFiles((fs) => fs.filter((_, n) => n !== i))} />
+        <details className="outline-settings">
+          <summary>提案结构 · {outline.kind === 'kv' ? 'KV' : outline.kind === 'packaging' ? '包装' : '按简报识别'}</summary>
+          <div>
+            <label>提案类型{' '}
+              <select value={outline.kind} onChange={(e) => setOutline({
+                ...defaultOutline, kind: e.target.value as OutlineSelection['kind'],
+              })}>
+                <option value="">按简报识别</option>
+                <option value="packaging">包装</option>
+                <option value="kv">KV</option>
+              </select>
+            </label>
+            {outline.kind && <fieldset>
+              <legend>本次委托</legend>
+              {[...extras[outline.kind], ['activation', '营销延展']].map(([key, label]) =>
+                <label key={key}><input type="checkbox" checked={outline.include.includes(key)}
+                  onChange={(e) => setOutline(prev => ({ ...prev, include: e.target.checked
+                    ? [...prev.include, key] : prev.include.filter(x => x !== key) }))} /> {label}</label>)}
+              <label><input type="checkbox" checked={outline.singleTouchpoint}
+                onChange={(e) => setOutline({ ...outline, singleTouchpoint: e.target.checked })} /> 仅一个应用触点</label>
+            </fieldset>}
+          </div>
+        </details>
         {error && (
           <p className="form-error" role="alert">
             {error}

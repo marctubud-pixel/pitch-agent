@@ -158,3 +158,10 @@ button.logo:hover .logo-name { text-decoration: underline; text-underline-offset
   .topbar-left { flex: 1; overflow: hidden; }
   .topbar-right { flex: none; }
 }
+
+.outline-settings { margin: 0; font-size: 14px; }
+.outline-settings > div { display: grid; gap: 12px; margin-top: 12px; }
+.outline-settings fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.outline-settings legend { margin-bottom: 4px; }
+.outline-settings input { accent-color: var(--ink); }
+.outline-settings select { font: inherit; color: inherit; background: var(--paper); }

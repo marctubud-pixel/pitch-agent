@@ -1,9 +1,10 @@
-import { existsSync } from 'node:fs';
-import { readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
+import { constants, existsSync } from 'node:fs';
+import { open, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { buildProposalOutline } from './proposal-outline.mjs';
 
 const app = fileURLToPath(new URL('../../apps/workbench-preview/', import.meta.url));
 const requireApp = createRequire(join(app, 'package.json'));
@@ -24,12 +25,36 @@ async function buildRenderer() {
           "export { compile } from '/src/proposal/deck-studio/engine.ts'",
           "export { exportDeckStudio } from '/src/proposal/deck-studio/export.ts'",
           "export { paginateText } from '/src/proposal/generic-deck/pagination.ts'",
+          'export { compileOutline, legacyPages } from ' + JSON.stringify(fileURLToPath(new URL('./layout-pages.mjs', import.meta.url))),
         ].join(';');
       },
     }],
     build: { write: false, minify: false, lib: { entry: id, name: 'NightflightDeck', formats: ['iife'] } },
   });
   return (Array.isArray(result) ? result[0] : result).output.find(item => item.type === 'chunk').code;
+}
+
+async function readOutlineImages(outline, project, dir) {
+  const allowed = new Map([...project.artifacts, ...(project.attachments ?? [])].filter(a =>
+    a.kind === 'image' || a.kind === 'attachment').map(a => [a.name, a]));
+  const images = [];
+  for (const name of new Set(outline.pages.flatMap(p => p.images))) {
+    const record = allowed.get(name);
+    if (!record || basename(name) !== name || name.startsWith('.') || /[\\/:\x00-\x1f]/u.test(name)) {
+      throw Error('逐页稿引用了本次输入以外的图片：' + name);
+    }
+    const file = await open(join(dir, name), constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+    try {
+      const info = await file.stat();
+      if (!info.isFile() || info.size <= 0 || info.size > 128 * 1024 * 1024) throw Error('排版图片文件无效：' + name);
+      const bytes = await file.readFile();
+      const mime = bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex')) ? 'image/png'
+        : bytes[0] === 0xff && bytes[1] === 0xd8 ? 'image/jpeg' : null;
+      if (!mime) throw Error('排版支持 PNG 或 JPEG 原图：' + name);
+      images.push({ id: name, alt: record.visual?.direction || name.replace(/\.[^.]+$/u, ''), data: 'data:' + mime + ';base64,' + bytes.toString('base64') });
+    } finally { await file.close(); }
+  }
+  return images;
 }
 
 async function readSources(project, dir) {
@@ -64,62 +89,29 @@ async function readSources(project, dir) {
   return sections;
 }
 
-// Runs inside headless Chromium with its actual font metrics and image decoder.
-async function render({ title, sections }) {
-  const { compile, exportDeckStudio, paginateText } = globalThis.NightflightDeck;
+async function render({ title, sections, outline, images }) {
+  const renderer = globalThis.NightflightDeck;
   const theme = { primary: '#143F9B', accent: '#08746D', style: 'business', mode: 'light' };
-  // The engine repeats its brand argument in a fixed-width page footer.
-  // Nightflight project titles come from the Brief and belong in the deck metadata.
-  const footerBrand = '夜航提案台';
-  const drafts = [];
-  const inventory = [];
-  for (const section of sections) {
-    const base = { title: section.chapter, eyebrow: section.chapter, chapter: section.chapter, caption: '', notes: section.name };
-    const first = drafts.length + 1;
-    if (section.data) {
-      const img = new Image();
-      img.src = section.data;
-      await img.decode();
-      drafts.push({ ...base, id: 'page-' + first, template: {
-        kind: 'design.stage', intro: '', points: [], image: {
-          id: section.name, data: section.data, width: img.naturalWidth, height: img.naturalHeight, alt: section.name,
-        },
-      } });
-    } else {
-      const makeDraft = (text, ordinal = 0) => ({
-        ...base, id: 'page-' + (first + ordinal), notes: section.name + '\n' + text,
-        template: { kind: 'summary.statement', statement: text.trim(), sub: '' },
-      });
-      const normalized = text => text.replace(/\s/gu, '');
-      const fits = text => {
-        try {
-          const page = compile([makeDraft(text)], footerBrand, theme)[0];
-          return page.nodes.some(node => node.kind === 'text' && node.size >= 42
-            && normalized(node.lines.join('')) === normalized(text));
-        } catch { return false; }
-      };
-      const text = section.text.trim();
-      const fragments = fits(text) ? [{ raw: text }] : paginateText(text, fits);
-      for (const [i, fragment] of fragments.entries()) drafts.push(makeDraft(fragment.raw, i));
-    }
-    inventory.push({ source: section.name, first, last: drafts.length });
-  }
-  const pages = compile(drafts, footerBrand, theme);
-  const blob = await exportDeckStudio({ title, pages, status: '本地试运行' }, new AbortController().signal);
+  const result = outline ? await renderer.compileOutline(outline, images, renderer, theme)
+    : await renderer.legacyPages(sections, renderer, theme);
+  const deck = { title, pages: result.pages, status: result.status };
+  const blob = await renderer.exportDeckStudio(deck, new AbortController().signal);
   const data = await new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result.split(',')[1]);
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(blob);
   });
-  return { data, inventory, deck: { title, pages } };
+  return { data, deck, outline: result.outline };
 }
 
 export async function runLayout({ project, dir, onEvent = () => {}, signal = new AbortController().signal }) {
   signal.throwIfAborted();
   const root = await realpath(dir);
-  const sections = await readSources(project, root);
-  onEvent('正在将本次简报、各阶段正文与原图编入 Deck Studio');
+  const outline = await buildProposalOutline(project, root);
+  const sections = outline ? [] : await readSources(project, root);
+  const images = outline ? await readOutlineImages(outline, project, root) : [];
+  onEvent(outline ? '正在按客户逐页稿排版并核对目录与材料' : '正在将现有材料按原阶段顺序排版');
   const code = await buildRenderer();
   signal.throwIfAborted();
   const { chromium } = requireApp('playwright');
@@ -131,19 +123,32 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
   const id = randomUUID();
   const name = '提案-' + id + '.pptx';
   const preview = '提案预览-' + id + '.deck.json';
+  const outlineName = '客户逐页稿-' + id + '.outline.json';
   const tmp = join(root, '.' + id + '.tmp');
+  const artifacts = [{ kind: 'pptx', name }, { kind: 'text', name: preview }];
+  const created = [];
   try {
     signal.throwIfAborted();
     const page = await browser.newPage({ offline: true });
     await page.addScriptTag({ content: code });
-    const { data, inventory, deck } = await page.evaluate(render, { title: project.title, sections });
+    const { data, deck, outline: fitted } = await page.evaluate(render, { title: project.title, sections, outline, images });
     signal.throwIfAborted();
     await writeFile(tmp, Buffer.from(data, 'base64'), { flag: 'wx', signal });
     signal.throwIfAborted();
-    onEvent('已排成 ' + inventory.at(-1).last + ' 页，正在保存可编辑 PPTX');
+    onEvent('已排成 ' + deck.pages.length + ' 页，正在保存可编辑 PPTX');
+    if (fitted) {
+      await writeFile(join(root, outlineName), JSON.stringify(fitted), { flag: 'wx', signal });
+      created.push(outlineName);
+      artifacts.push({ kind: 'text', name: outlineName });
+    }
     await writeFile(join(root, preview), JSON.stringify(deck), { flag: 'wx', signal });
+    created.push(preview);
+    signal.throwIfAborted();
     await rename(tmp, join(root, name));
-    return { artifacts: [{ kind: 'pptx', name }, { kind: 'text', name: preview }], pages: deck.pages.length };
+    return { artifacts, pages: deck.pages.length };
+  } catch (error) {
+    await Promise.all(created.map(filename => rm(join(root, filename), { force: true })));
+    throw error;
   } finally {
     signal.removeEventListener('abort', abort);
     await browser.close();

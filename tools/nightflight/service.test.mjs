@@ -61,7 +61,13 @@ test('a personal run waits for direction and current image adoption, saves user 
           };
     const researchReturn = stage === 'strategy' && round === 2 ? '请补查第二种渠道的实际案例' : undefined;
     assert.equal(await readFile(join(dir, 'brief.md'), 'utf8'), 'brief attachment');
-    if (stage === 'layout') assert.equal(await readFile(join(dir, 'update.md'), 'utf8'), 'update');
+    if (stage === 'layout') {
+      assert.equal(await readFile(join(dir, 'update.md'), 'utf8'), 'update');
+      assert.equal(project.proposalKind, 'packaging');
+      assert.deepEqual(project.outlineOptions, { include: ['series'], singleTouchpoint: true });
+      assert.deepEqual(project.layoutCompetitorReferences, []);
+      assert.equal(await readFile(join(dir, '逐页材料.md'), 'utf8'), '指定版次');
+    }
     const kind = stage === 'layout' ? 'pptx' : stage === 'visual' ? 'image' : 'text';
     const name = 'output-' + stage + { pptx: '.pptx', image: '.png', text: '.md' }[kind];
     const draft = { directions: ['A','B','C'].map((name,i) => ({id:name, name, duty:['emotion','continuity','feature'][i], main:name+' 标题'})) };
@@ -119,8 +125,14 @@ test('a personal run waits for direction and current image adoption, saves user 
   };
   const file = (name, body) => ({ name, data: Buffer.from(body).toString('base64') });
   const input = { id, brief: 'test', mode: 'collab', attachments: [file('brief.md', 'brief attachment')] };
+  input.proposalKind = 'packaging';
+  input.outlineOptions = { include: ['series'], singleTouchpoint: true };
+  assert.equal((await request(base, { ...input, proposalKind: 'tvc' })).status, 400);
+  assert.equal((await request(base, { ...input, outlineOptions: { include: ['motion'] } })).status, 400);
   assert.equal((await request(base, input, 'http://foreign.invalid')).status, 403);
   assert.equal((await request(base, input)).status, 201);
+  assert.equal((await request(base, input)).status, 201);
+  assert.equal((await request(base, { ...input, outlineOptions: {} })).status, 409);
   const pending = await wait('waiting');
   assert.equal(pending.stage, 'research');
   assert.equal(pending.research.ready, false);
@@ -157,7 +169,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   const revised = await wait('waiting');
   assert.equal(revised.versions.length, 4);
   assert.equal((await action({ kind: 'adopt', expectedRevision: visual.revision })).status, 409);
-  const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice' };
+  const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice', attachments: [file('逐页材料.md', '指定版次')] };
   assert.equal((await action(adoption)).status, 200);
   const finished = await wait('done');
   assert.equal(finished.artifacts.length, 10);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.44.0",
+  "baselineVersion": "1.46.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -18,10 +18,11 @@
       "kind": "agent",
       "title": "比稿 Agent",
       "path": "docs/agents/proposal-director.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
-        "contract.handoff"
+        "contract.handoff",
+        "method.proposal-structure"
       ],
       "stage": "全阶段"
     },
@@ -94,10 +95,11 @@
       "kind": "agent",
       "title": "排版负责人",
       "path": "docs/agents/layout-owner.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
-        "contract.handoff"
+        "contract.handoff",
+        "method.proposal-layout"
       ],
       "stage": "layout"
     },
@@ -161,7 +163,7 @@
       "kind": "page",
       "title": "新建提案",
       "path": "docs/pages/new.md",
-      "version": "1.0.3",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -263,12 +265,13 @@
       "kind": "page",
       "title": "版式与整案排版",
       "path": "docs/pages/layout.md",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.layout-owner",
         "contract.ui",
-        "contract.proposal-prelayout"
+        "contract.proposal-prelayout",
+        "contract.proposal-outline"
       ],
       "confirmedScope": "已确认要求汇编；本次整理待核对",
       "routeKey": "layout"
@@ -403,6 +406,39 @@
       "dependsOn": []
     },
     {
+      "id": "contract.proposal-outline",
+      "kind": "contract",
+      "title": "客户逐页提案与排版交接（本地试行）",
+      "path": "docs/plans/客户提案结构与排版交接_试行.md",
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ]
+    },
+    {
+      "id": "method.proposal-structure",
+      "kind": "method",
+      "title": "包装与 KV 客户逐页编稿（本地试行）",
+      "path": "skills/proposal-structure-pilot/SKILL.md",
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.proposal-outline"
+      ]
+    },
+    {
+      "id": "method.proposal-layout",
+      "kind": "method",
+      "title": "据逐页稿匹配模板与排版（本地试行）",
+      "path": "skills/proposal-layout-pilot/SKILL.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.proposal-outline"
+      ]
+    },
+    {
       "id": "contract.handoff",
       "kind": "contract",
       "title": "版本与阶段交接",
@@ -427,7 +463,7 @@
       "kind": "contract",
       "title": "夜航七阶段产出展示规范",
       "path": "docs/specs/nightflight-stage-output.md",
-      "version": "1.18.0",
+      "version": "1.19.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",

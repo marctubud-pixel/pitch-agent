@@ -44,8 +44,13 @@ export function templateInput(d: Draft) {
       case 'summary.list': capacity(t.kind, t.points.length, 2, 6); return { ...fields, points: t.points, statement: '', sub: '', highlight: false };
       case 'summary.statement': case 'summary.question': return { ...fields, statement: t.statement, sub: t.sub, points: [], highlight: false };
       case 'cover.split': return { ...fields, kicker: d.eyebrow, sub: t.sub, meta: t.meta, img: bind('img', t.image), fit: 'contain' };
+      case 'cover.type': case 'closing.type': return { ...fields, kicker: d.eyebrow, sub: t.sub, meta: t.meta };
+      case 'contents.list': capacity(t.kind, t.items.length, 1, 8); return {
+        ...fields, en: '', auto: false,
+        items: t.items.map(item => ({ t: item.title, en: 'P' + String(item.page).padStart(2, '0') }))
+      };
       case 'design.half': case 'design.stage': capacity(t.kind, t.points.length, 0, 4); return { ...fields, intro: t.intro, points: t.points, img: bind('img', t.image), fit: 'contain' };
     }
   }
-  return { slide: { id: d.id, type, tone: t.kind === 'summary.question' ? 'brand' : 'light', data: data() }, slots };
+  return { slide: { id: d.id, type, tone: t.kind === 'summary.question' || t.kind === 'closing.type' ? 'brand' : 'light', data: data() }, slots };
 }

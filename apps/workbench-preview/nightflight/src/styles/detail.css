@@ -199,3 +199,9 @@ details p { font-size: 14.5px; }
 .copy-theme [data-review-role] > summary { font-size: 15px; color: var(--ink); }
 .copy-theme [data-dimension], .copy-theme [data-review-followup] { margin: 18px 0; line-height: 1.65; }
 .copy-theme [data-dimension] h4 { margin-bottom: 4px; }
+
+.outline-reading ol, .outline-reading ul { list-style: none; margin: 0; padding: 0; }
+.outline-reading li { padding: 6px 0; overflow-wrap: anywhere; }
+.outline-reading details { margin: 12px 0; }
+.outline-reading small { display: block; color: var(--mute); }
+.outline-reading .link-btn { text-align: left; }

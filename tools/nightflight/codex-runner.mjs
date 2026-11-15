@@ -421,6 +421,14 @@ async function readInputs(dir, project, stage, signal) {
     if (item.stage === 'layout' && item.name.endsWith('.deck.json')) continue;
     const path = await source(dir, item.name);
     const ext = extname(path).toLowerCase();
+    if (item.stage === 'layout' && item.name.endsWith('.outline.json')) {
+      if (stage === 'final') {
+        const outline = JSON.parse(await readFile(path, 'utf8'));
+        const gaps = (outline.gaps ?? []).map(gap => [gap.chapter, gap.reason].join(' · '));
+        if (gaps.length) append(item.name, '逐页编稿仍待补的材料：\n' + gaps.join('\n'));
+      }
+      continue;
+    }
     if (item.kind === 'image' || ['.jpg','.jpeg','.png'].includes(ext)) {
       if (!item.uploaded && stage !== 'final') continue;
       // Deck renders take precedence at final review. Unseen visual assets are never claimed as reviewed.
@@ -504,7 +512,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
       : project;
     const inputs = await readInputs(dir,inputProject,stage,signal);
     if (stage === 'final' && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
-    const context = JSON.stringify({title:project.title, brief:project.brief, mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null, materials:inputs.texts,...(stage==='research'?{previousResearch:project.previousResearch || null,researchFollowup:!!project.researchFollowup}:{})});
+    const context = JSON.stringify({title:project.title, brief:project.brief, ...(project.proposalKind ? {proposalKind:project.proposalKind} : {}), ...(project.outlineOptions ? {outlineOptions:project.outlineOptions} : {}), mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null, materials:inputs.texts,...(stage==='research'?{previousResearch:project.previousResearch || null,researchFollowup:!!project.researchFollowup}:{})});
     const programPath = binary || await executable('codex');
     const env = Object.fromEntries(['PATH','HOME','TMPDIR','LANG','LC_ALL','USER','LOGNAME','SSL_CERT_FILE'].filter(k=>process.env[k]).map(k=>[k,process.env[k]]));
     env.CODEX_HOME = home;
@@ -590,7 +598,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
         for (const [i,record] of batch.entries()) {
           const verdict = review.candidates.find(row=>row.candidate===i+1);
-          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,candidate:i+1,mean:verdict.mean,
+          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
         }
         if (review.board) artifacts.push({name:review.board,kind:'image',visual:{direction,role:'comparison',references:review.references.map(r=>r.name)}});

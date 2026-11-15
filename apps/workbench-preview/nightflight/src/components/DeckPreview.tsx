@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DeckStudioPage } from '../../../src/proposal/deck-studio/Viewer';
 import type { Page } from '../../../src/proposal/deck-studio/model';
 import { safeURL, type Artifact } from '../live';
 
-export function DeckPreview({ file, open, foldIndex = false }: { file: Artifact; open?: () => void; foldIndex?: boolean }) {
+import { OutlineReading } from './OutlineReading';
+
+export function DeckPreview({ file, open, foldIndex = false, outline }: {
+  file: Artifact; open?: () => void; foldIndex?: boolean; outline?: Artifact;
+}) {
+  const stage = useRef<HTMLDivElement>(null);
   const [indexOpen, setIndexOpen] = useState(false);
   const [pages, setPages] = useState<Page[]>([]),
     [index, setIndex] = useState(0),
@@ -47,13 +52,18 @@ export function DeckPreview({ file, open, foldIndex = false }: { file: Artifact;
       </button>
     );
   const go = (to: number) => setIndex(Math.max(0, Math.min(pages.length - 1, to)));
+  const jump = (to: number) => {
+    go(to);
+    stage.current?.focus({ preventScroll: true });
+    stage.current?.scrollIntoView({ block: 'center' });
+  };
   const thumbnails = (!foldIndex || indexOpen) && (
     <div className="deck-strip">
       {pages.map((p, i) => (
         <button
           key={p.id}
           className={i === index ? 'is-on' : ''}
-          onClick={() => go(i)}
+          onClick={() => jump(i)}
           aria-label={'第 ' + (i + 1) + ' 页'}
           aria-current={i === index}
         >
@@ -74,7 +84,7 @@ export function DeckPreview({ file, open, foldIndex = false }: { file: Artifact;
         }
       }}
     >
-      <div className="deck-stage">
+      <div className="deck-stage" ref={stage} tabIndex={-1}>
         <DeckStudioPage page={pages[index]} />
       </div>
       <div className="deck-ctrl">
@@ -94,6 +104,7 @@ export function DeckPreview({ file, open, foldIndex = false }: { file: Artifact;
           {thumbnails}
         </details>
       ) : thumbnails}
+      {outline && <OutlineReading key={outline.url} file={outline} pageCount={pages.length} go={jump} />}
     </div>
   );
 }

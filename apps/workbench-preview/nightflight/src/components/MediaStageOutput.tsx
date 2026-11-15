@@ -130,6 +130,9 @@ export function MediaStageOutput({
 }) {
   if (id === 'visual') return <VisualOutput key={JSON.stringify([p.id, name])} p={p} name={name} />;
   const deck = p.artifacts.find(isDeckPreview);
+  const outlineId = deck?.name.match(/([0-9a-f-]{36})\.deck\.json$/i)?.[1];
+  const outline = outlineId ? p.artifacts.find(file => file.stage === 'layout' && file.kind === 'text' &&
+    file.name.endsWith(outlineId + '.outline.json')) : undefined;
   const pptx = p.artifacts.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
   if (id === 'layout') {
     if (!deck && !pptx.length) {
@@ -141,7 +144,7 @@ export function MediaStageOutput({
     return (
       <section className="block" data-artifact={deck?.name}>
         <h2>提案预览</h2>
-        {deck ? <DeckPreview key={deck.url} file={deck} foldIndex /> : <p>本版可下载 PPTX，在线预览尚未就绪。</p>}
+        {deck ? <DeckPreview key={deck.url} file={deck} foldIndex outline={outline} /> : <p>本版可下载 PPTX，在线预览尚未就绪。</p>}
         <DeckDownloads files={pptx} />
       </section>
     );

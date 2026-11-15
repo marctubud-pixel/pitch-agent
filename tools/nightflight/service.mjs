@@ -14,6 +14,7 @@ import {
 } from 'node:fs';
 import { resolve, join, basename, extname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
+import { normalizeOutlineOptions } from './proposal-outline.mjs';
 import { headlineMarkdown, headlineProtocol, validSingleReview } from './copy-review.mjs';
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
@@ -240,8 +241,17 @@ export function createNightflight({ root, runStage, runLayout }) {
               return {visual:a.visual,image:{path,imageId:'previous',sha256:hash(bytes),byteLength:bytes.length,mediaType:'image/png'}};
             });
           }
+          if (p.stage === 'layout') {
+            const adopted = new Set(p.visualAdoption?.artifacts ?? []);
+            const directions = new Set(p.artifacts.filter(a => adopted.has(a.storageKey)).map(a => a.visual?.direction));
+            const compared = p.artifacts.filter(a => a.stage === 'visual' && a.visual?.role === 'comparison' &&
+              directions.has(a.visual.direction)).flatMap(a => a.visual.references ?? []);
+            input.layoutCompetitorReferences = p.attachments.filter(a => compared.includes(a.name)).map(a => a.name);
+          }
           for (const type of ['artifacts', 'attachments']) {
-            const records = p[type].filter(a=>!(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
+            const source = type === 'attachments' && p.stage === 'layout'
+              ? [...p.attachments, ...(p.visualAdoption?.materials ?? [])] : p[type];
+            const records = source.filter(a=>!(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
@@ -384,11 +394,11 @@ export function createNightflight({ root, runStage, runLayout }) {
         save(p);
       }
     }
-  function parseAttachments(attachments, existing = []) {
+  function parseAttachments(attachments, existing = [], layoutOnly = false) {
     check(Array.isArray(attachments) && attachments.length <= 32, '单次最多 32 个附件');
     const isImage = (a) => /\.(png|jpe?g)$/i.test(a.name);
     check(
-      [...existing.filter((a) => a.kind === 'attachment'), ...attachments].filter(isImage).length <= 4,
+      layoutOnly || [...existing.filter((a) => a.kind === 'attachment'), ...attachments].filter(isImage).length <= 4,
       '一个项目最多上传四张参考图',
     );
     const names = new Set(existing.map((a) => a.name.normalize('NFC').toLowerCase()));
@@ -420,7 +430,16 @@ export function createNightflight({ root, runStage, runLayout }) {
     );
     check(['auto', 'collab'].includes(input.mode), '工作模式无效');
     check(Array.isArray(attachments) && attachments.length <= 32, '单次最多 32 个附件');
-    const inputHash = hash(JSON.stringify([brief, input.mode, attachments.map((a) => [a.name, a.data])]));
+    const kind = input.proposalKind;
+    check(kind === undefined || ['packaging', 'kv'].includes(kind), '提案类型无效');
+    const options = normalizeOutlineOptions(kind, input.outlineOptions);
+    const config = {
+      ...(kind ? { proposalKind: kind } : {}),
+      ...(options.include.length || options.singleTouchpoint ? { outlineOptions: options } : {}),
+    };
+    const identity = [brief, input.mode, attachments.map((a) => [a.name, a.data])];
+    if (Object.keys(config).length) identity.push(config);
+    const inputHash = hash(JSON.stringify(identity));
     const existing = get(id);
     if (existing) {
       check(existing.inputHash === inputHash, '此项目编号已用于不同任务', 409);
@@ -430,6 +449,7 @@ export function createNightflight({ root, runStage, runLayout }) {
     const p = {
       id,
       inputHash,
+      ...config,
       brief,
       mode: input.mode,
       title: (brief.split('\n')[0] || files[0]?.name || '新提案').slice(0, 64),
@@ -488,7 +508,9 @@ export function createNightflight({ root, runStage, runLayout }) {
         .filter((a) => a.stage === 'visual' && a.kind === 'image' && (!candidates.length || a.visual?.recommended))
         .map((a) => a.storageKey);
       check(chosen.length, '没有图稿可采用', 409);
-      p.visualAdoption = { at: now(), artifacts: chosen };
+      const files = parseAttachments(attachments, [...p.attachments, ...p.artifacts], true);
+      p.visualAdoption = { at: now(), artifacts: chosen,
+        materials: files.map(f => storeFile(p, f.name, f.bytes, 'attachment')) };
       note(p, '用户采用本版视觉稿，继续本地排版');
       p.stage = 'layout';
       p.status = 'running';
@@ -599,7 +621,7 @@ export function createNightflight({ root, runStage, runLayout }) {
         return;
       }
       if (parts.length === 5 && parts[3] === 'files' && req.method === 'GET') {
-        const a = [...p.artifacts, ...p.attachments, ...p.versions.flatMap((v) => v.artifacts)].find(
+        const a = [...p.artifacts, ...p.attachments, ...(p.visualAdoption?.materials ?? []), ...p.versions.flatMap(v => [...v.artifacts, ...(v.visualAdoption?.materials ?? [])])].find(
           (x) => x.storageKey === parts[4],
         );
         check(a, '文件不存在', 404);
