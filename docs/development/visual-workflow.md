@@ -1,6 +1,6 @@
 # 视觉参考、草图与成稿的受限接线
 
-规范版本：1.2.0。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
+规范版本：1.3.0。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
 
 ## 输入与方法
 
@@ -94,3 +94,7 @@ canonical项目GET附带sketchSourceReadback，复用已有project原对象；�
 前端分别读取完整native原件资格与只读unresolved图谱；unknown仍unknown、physicalIOVerified/writeEligible/appCapabilityGranted保持false，不能成为queued或执行票。当前仍未开启sketchAppSupported/referenceChoiceAppSupported，未签实际九草图、54报告或B页面可用。实际采用、独立反例和UI范围见[本轮核验](visual-storage-sketch-verification-20261112.md)。
 
 A新命令使用实际ISO签发时间，claim开始与完成保留同一claimOwner；旧audit.at=null及旧回执不补时间。源码纳管或Git合并不自动升级已启动的旧Node进程。
+
+## 大型成稿汇总回执
+
+新运行可用负责人能力版本 `final-payload-digest-v1`。汇总请求携带完整的三方向成稿、原图描述、参考资格、交接意见及这些内容序列化后的 SHA-256。负责人检查这些原件后，在接受回执中返回 `payloadSha256`、决定、理解和发现。运行时重新计算同版完整内容的摘要，再保存完整成稿文件。回执正文、请求及图片仍按原执行记录核验。摘要不匹配或同时返回摘要与完整成稿会被拒绝。以前的运行继续按其原能力版本生成请求和检验完整回执。

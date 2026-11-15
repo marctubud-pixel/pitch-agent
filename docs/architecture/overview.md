@@ -1,3 +1,7 @@
+# 成稿汇总与原件读取 · 2026-11-15
+
+成稿运行时从原任务、图像、评审及交接记录重建完整内容。启用大型汇总回执时，负责人和运行时核对同一 SHA-256，交给排版的仍是完整成稿文件。文案及成稿接收器、通用 Deck 输入口和排版前配置读取按[排版前合同](../development/proposal-prelayout.md)限制单次快照大小。
+
 # 排版前检查与通用输入 · 2026-11-12
 
 proposal-prelayout-contract/domain/native复用普通HTTP和实际store原件接收，专用layout job保存同版五源、原report与未知结果。generic-deck-input-mapper只经私票接当前原件并消费实际检查；前端prelayoutReadback独立只读scope与ProcessArea折叠报告不授执行、B生产或终审资格。source/semantic/方法、snapshot与稳定元组分别核对，不借本检查的入账假造上游变更。

@@ -1,3 +1,7 @@
+# 成稿汇总容量修复 · 2026-11-15
+
+[PR #15](https://github.com/marctubud-pixel/pitch-agent/pull/15) 已合并，应用和规范 CI 均成功。包装工程案保存点为版本 1238，共有 129 份参考报告。提取这些报告加入隔离汇总样例后，完整内容占 2,294,807 字节，工程回执占 317 字节，一次本地 HTTP 调用保存成功并可从原件恢复。此项覆盖汇总容量与读取，包装和 KV 从 Brief 到 PPTX 的结果仍以各自整链回执为准。
+
 # 排版前检查与通用映射根采用 · 2026-11-12
 
 `codex/prelayout-deck-20261112`基于PR #14合并79089b92，按原SHA采用native21源及App r2九源，旧文件另存。根类型/16mjs语法通过，新增native17、mapper13及受影响前端44通过；规范准备1.17.0/62项。测试已便携移植并登记平台边界，完整check已退出0（834前端通过/1既有skip、526 native通过/0skip、构建通过），合流窄审无新增可证P1/P2；PR #15准确head CI尚待。见[核验](../docs/development/proposal-prelayout-verification-20261112.md)。
