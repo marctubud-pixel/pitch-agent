@@ -204,10 +204,13 @@ async function main() {
         }
         assert.equal(await row.locator('.vg-references').innerText(), '');
         assert.equal(await page.locator('.vg-mockup figcaption').count(), 0);
-        const positions = await pair.locator('figure:has(img)').evaluateAll(figures => figures.map(figure => [
-          figure.querySelector('img').getBoundingClientRect().bottom,
-          figure.querySelector('figcaption').getBoundingClientRect().top,
-        ]));
+        const positions = await pair.locator('figure:has(img)').evaluateAll(figures => figures.map(figure => {
+          const img = figure.querySelector('img');
+          const rect = img.getBoundingClientRect();
+          // Measure the contained artwork, including any letterboxing inside the element.
+          const height = Math.min(rect.height, rect.width * img.naturalHeight / img.naturalWidth);
+          return [rect.top, rect.top + height, figure.querySelector('figcaption').getBoundingClientRect().top];
+        }));
         assert.ok(positions[0].every((value, i) => Math.abs(value - positions[1][i]) <= 1));
         const zoom = page.locator('.vg-mockup .vg-zoom');
         await zoom.click();

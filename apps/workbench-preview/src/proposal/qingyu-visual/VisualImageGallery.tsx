@@ -18,19 +18,20 @@ function Picture({ image, loaded }: { image: GalleryImage; loaded?: (image: HTML
 
 type Zoom = (image: GalleryImage) => void;
 
-function Artwork({ images, label, zoom, loaded, showCaption = true }: {
-  images: readonly GalleryImage[]; label: string; showCaption?: boolean; zoom: Zoom; loaded?: (image: HTMLImageElement) => void;
+function Artwork({ images, label, zoom, loaded, rowRatio, showCaption = true }: {
+  images: readonly GalleryImage[]; label: string; showCaption?: boolean; rowRatio?: number; zoom: Zoom; loaded?: (image: HTMLImageElement, index: number) => void;
 }) {
   const [index, setIndex] = useState(0);
   const [ratio, setRatio] = useState<number>();
   const image = images[index] ?? images[0];
+  const displayRatio = rowRatio || (images.length > 1 ? ratio : undefined);
   if (!image) return <figure><figcaption className="vg-missing">{label}待补</figcaption></figure>;
   return <figure>
-    <button type="button" className="vg-zoom" style={images.length > 1 && ratio ? { aspectRatio: ratio } : undefined} aria-label={'放大' + image.title} aria-haspopup="dialog" onClick={() => zoom(image)}>
-      <Picture key={image.src} image={image} loaded={index === 0 ? element => {
-        if (images.length > 1) setRatio(element.naturalWidth / element.naturalHeight);
-        loaded?.(element);
-      } : undefined} />
+    <button type="button" className="vg-zoom" style={displayRatio ? { aspectRatio: displayRatio } : undefined} aria-label={'放大' + image.title} aria-haspopup="dialog" onClick={() => zoom(image)}>
+      <Picture key={image.src} image={image} loaded={element => {
+        if (index === 0 && images.length > 1) setRatio(element.naturalWidth / element.naturalHeight);
+        loaded?.(element, index);
+      }} />
     </button>
     {showCaption && <figcaption>{label}
       {images.length > 1 && <span className="vg-pager">
@@ -44,16 +45,24 @@ function Artwork({ images, label, zoom, loaded, showCaption = true }: {
 
 function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirection; letter: string; zoom: Zoom }) {
   const [measuredPortrait, setMeasuredPortrait] = useState(false);
+  const [rowRatio, setRowRatio] = useState(0);
+  function measure(image: HTMLImageElement) {
+    const aspect = image.naturalWidth / image.naturalHeight;
+    setRowRatio(previous => Math.max(previous, aspect));
+  }
   const portrait = direction.format ? direction.format === 'portrait' : measuredPortrait;
   const extensionLabel = direction.extensionLabel ?? '延展图';
-  const extension = <Artwork label={extensionLabel} images={direction.extensions ?? []} zoom={zoom} />;
+  const extension = <Artwork label={extensionLabel} rowRatio={portrait ? rowRatio : undefined} loaded={portrait ? measure : undefined} images={direction.extensions ?? []} zoom={zoom} />;
   return <>
     <section className="vg-section" data-visual-direction={direction.id}>
       <h3>草图与主视觉 <span className="vg-letter">方向 {letter}</span></h3>
       <div className={'vg-pair' + (portrait ? ' vg-portrait' : '')}>
-        <Artwork label="构图草图" images={direction.sketch ? [direction.sketch] : []} zoom={zoom} />
-        <Artwork label="主视觉" images={direction.mains} zoom={zoom}
-          loaded={image => setMeasuredPortrait(image.naturalHeight > image.naturalWidth)} />
+        <Artwork label="构图草图" rowRatio={rowRatio} loaded={measure} images={direction.sketch ? [direction.sketch] : []} zoom={zoom} />
+        <Artwork label="主视觉" rowRatio={rowRatio} images={direction.mains} zoom={zoom}
+          loaded={(image, index) => {
+            measure(image);
+            if (index === 0) setMeasuredPortrait(image.naturalHeight > image.naturalWidth);
+          }} />
         {portrait && extension}
       </div>
     </section>

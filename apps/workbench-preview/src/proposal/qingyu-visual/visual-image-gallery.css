@@ -20,7 +20,7 @@
 .vg-pair > figure { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 8px; align-self: stretch; }
 .vg-pair > figure > .vg-zoom { align-self: end; }
 .vg-pair > figure > figcaption { grid-row: 2; margin: 0; align-self: start; align-items: flex-start; }
-.vg-pair .vg-zoom img { object-position: center bottom; }
+.vg-pair .vg-zoom img { object-position: left top; }
 .vg-pair.vg-portrait { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .visual-image-gallery .vg-zoom[style] img { height: 100%; }
 .vg-pair figcaption, .vg-extension figcaption { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
