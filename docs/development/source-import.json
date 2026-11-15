@@ -1969,13 +1969,138 @@
       "source": ".scratch/frontend-ui-optimization-20261108/source/proposal-workbench/HANDOFF.md",
       "path": "apps/workbench-preview/HANDOFF.md",
       "sha256": "8c69d8e16b0013720c42af3cdfe809b2ed6bc596885c8e70ef7839bd821e85b0"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/index.html",
+      "path": "apps/workbench-preview/nightflight/index.html",
+      "sha256": "f179c6969ea3fe4e823f4ff64a1163dd65bbe2a21d5e882f19532e821e25d4ba"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/App.tsx",
+      "path": "apps/workbench-preview/nightflight/src/App.tsx",
+      "sha256": "0051445043035b53ce4d87d04e8f14185fac170153467577f46f7abe794a2c18"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/Attachments.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/Attachments.tsx",
+      "sha256": "137b8356ed49245e3097b05df090eccaf940e1ea04ba932735ae17cb2e82bcfc"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/Bot.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/Bot.tsx",
+      "sha256": "503fcc913a9de7c4f51d63c2dafb1640864b155ae745fcc045f87bbafbe59de7"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/Celebration.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/Celebration.tsx",
+      "sha256": "ea136701494e5915ea042f092046ac7e1643a4fa150b72fcb068c050dfde37b3"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/ChatPanel.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx",
+      "sha256": "758ea9cf834bdac2ddf26e5ca776ea3da110f4da58d4ede5e4f7cc489db9b630"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/DetailSheet.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx",
+      "sha256": "ee06829eb3d7f545eace0293c9da300bf6188fd97ac6fc2ea08f91e5f8bbda9d"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/Home.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/Home.tsx",
+      "sha256": "7770fd44d0044d85477d91b66f89acca2d90eeb3542043317f24b331de856d2a"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/Icon.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/Icon.tsx",
+      "sha256": "25136b74fd902de844b5bcaeb63c78b3f99d1130e4fe43b1a26d87126c7eee33"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/Library.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/Library.tsx",
+      "sha256": "0d8eddfd0ce91138dea8840fbfc3778a61014ccb5422c3b7a77f52439ad93e8d"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/LogBar.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/LogBar.tsx",
+      "sha256": "f3cbd358cf2f6ac178fe2637bba31bc4e19aeae03740270a8e71cff067fecab7"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/StartScreen.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/StartScreen.tsx",
+      "sha256": "4f6d05118f6ea1f70aee5605fdc77aa6797084eaaf542db74826c94210291ee0"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/TopBar.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/TopBar.tsx",
+      "sha256": "3fc509d4c0a41adc39b09b55ed504d3798203e56b7de0bb99d21cfc356d667bf"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/components/Workspace.tsx",
+      "path": "apps/workbench-preview/nightflight/src/components/Workspace.tsx",
+      "sha256": "11239743ee485f28b37f01928cb10c7d4494b64defb80e13e530dc2bfe2696e9"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/data/project.ts",
+      "path": "apps/workbench-preview/nightflight/src/data/project.ts",
+      "sha256": "5fbba3f2e45e8b04a2d3baeec7c788aa7f46ff8d6a95f730be27907323324266"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/main.tsx",
+      "path": "apps/workbench-preview/nightflight/src/main.tsx",
+      "sha256": "a948cbe1d054ff7d6ce4c38d198730353a7ae910b1563b687d83964e4693d835"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/base.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/base.css",
+      "sha256": "4d064e9d9272868eabb6f4f2b94eb529d28138274a138cd32a7a9eba6696545c"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/detail.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/detail.css",
+      "sha256": "0c90951ebc56f684c445f6241b688e4f0147fe5e8f754b5dd4979da7be98e996"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/home.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/home.css",
+      "sha256": "6d66aec769b8c15027c590b4e0582ecf0e5fe2e9d695ab308e969d69184ed71c"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/library.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/library.css",
+      "sha256": "d8ea3993965bec97a78909a8fd9bfde1c34d794d2c49ae36501332ae38112510"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/motion.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/motion.css",
+      "sha256": "e407fa275cce274714eee8500a7d877832a374af72a772f50f19b63559575515"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/shell.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/shell.css",
+      "sha256": "db86bdc46297d55f301d0c499c0042187ef0682d347f7c8c9c923cc798750abb"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/tokens.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/tokens.css",
+      "sha256": "f873d3c83f9e3e8c27160e54fbba14cc9c7e0f32db0f05e0c6faed391fbe9b8d"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/styles/workspace.css",
+      "path": "apps/workbench-preview/nightflight/src/styles/workspace.css",
+      "sha256": "53f068b134b85ae364a730273611000ffda5163716e5d3dc6604f9fe983a24c7"
+    },
+    {
+      "source": "proposal-workbench-source.zip!/proposal-workbench/src/types.ts",
+      "path": "apps/workbench-preview/nightflight/src/types.ts",
+      "sha256": "f29d36bca2a4f53f0b6fe5280c359074166dc5c062255552fecae7d3e39c63c8"
     }
   ],
   "proofFiles": 147,
   "adaptations": {
     "apps/workbench-preview/README.md": {
-      "reason": "更新为七阶段当前仓库启动与模块入口；不修改案例内容",
-      "sha256": "530b6de45d27a240421f9bf4fa37a8dd245d7180ae9055696a7a35f5d723da75"
+      "sha256": "0a96b658126bdf12cc59e326df02a06775bf6edaa50d90bbfe9bb0b4dd51db9f",
+      "reason": "登记默认夜航启动入口及经典页面路径"
     },
     "apps/workbench-preview/src/proposal/qingyu-themes/bundle.test.ts": {
       "reason": "原95来源及bundle从仓库封存证据映射读取，断言和原字节保持",
@@ -1994,8 +2119,8 @@
       "sha256": "4d72dc2d5248ad153f1004bd158c8e60ba5243d06e6ef1bf4b6b6e271bbbed02"
     },
     "apps/workbench-preview/tsconfig.json": {
-      "reason": "显式加载测试实际使用的Node类型，移除间接依赖类型泄漏",
-      "sha256": "72cd5a6d1aac1e94fc114634712dc72a3cb74a2aefa56c97fe4b21f8a1d228c0"
+      "sha256": "9917c25245659225feef6028bb1c4b2149d8f52ddae5029a806f4eab467155ca",
+      "reason": "覆盖夜航页面的 TypeScript 类型检查"
     },
     "apps/workbench-preview/src/domain/service.ts": {
       "sha256": "3a4ced72ccc63b5c84a590c0caee08788a5ac218bddb614b7d5222945baf6b90",
@@ -2116,6 +2241,105 @@
     "apps/workbench-preview/src/views/project/ProcessArea.tsx": {
       "sha256": "034a8bd0f5002c36710d972c549dfdcb1543f655ae711bdba37417358f490210",
       "reason": " 本轮新增排版前专用只读记录/历史展示，不授B生产或正式批准资格；原导入SHA仍保留。"
+    },
+    "apps/workbench-preview/vite.config.ts": {
+      "sha256": "bef898e23d935180b174f46049c64650d1d12b52264d01337d3228bbfa6139bb",
+      "reason": "增加夜航构建入口，保留经典页面与原有单文件构建"
+    },
+    "apps/workbench-preview/nightflight/index.html": {
+      "sha256": "8cf2212ba00afe55a3e9a6f56873e33492f2085ed17a6e465fd2e4356cd926eb",
+      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+    },
+    "apps/workbench-preview/nightflight/src/App.tsx": {
+      "sha256": "c1db7579304eabc51647761d1b0f5b09b4c792a2f31e589d654b975dc08fd0c9",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
+      "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
+      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+    },
+    "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
+      "sha256": "16e4ed0ae53d798e52953f58af285d911748ca5e50fee169eef5f07ee1b4476d",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
+      "sha256": "5cb9391753c2bfd0f04387597934911edca9be4866216614aaafb6c023207530",
+      "reason": "文案页按单标题口径显示当前方向及同版评审，旧原件保存在后台。 接入按方向查看的视觉图册。"
+    },
+    "apps/workbench-preview/nightflight/src/components/Home.tsx": {
+      "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
+      "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
+    },
+    "apps/workbench-preview/nightflight/src/components/Library.tsx": {
+      "sha256": "3489826272cdc7ad3208c9c92bfdc0e78b106d598cd025abbd4111748c6ca177",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+    },
+    "apps/workbench-preview/nightflight/src/components/LogBar.tsx": {
+      "sha256": "03275b5753a4013a0d907530633f8331d5781cdfc6576d38b5147be6cd2c9bfb",
+      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+    },
+    "apps/workbench-preview/nightflight/src/components/StartScreen.tsx": {
+      "sha256": "b39bce45b9c386bea7a43ee3e4cc5870b8c8c6ae4765ebf52a4cf7274dea6e83",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/nightflight/src/components/TopBar.tsx": {
+      "sha256": "249fd9c4d3237a88ebccb19bec259a4f8a3b8e17f2c354d5d4bd9a7bf7d563d8",
+      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+    },
+    "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
+      "sha256": "579c26aca4e19aefedcf275aa6fb9809557ce5fbda9c3ce2685e3013adf79821",
+      "reason": "按夜巡 HTML 的栏目和组件展示本案阶段产物、真实状态与来源。 视觉评审与证据展示。"
+    },
+    "apps/workbench-preview/nightflight/src/data/project.ts": {
+      "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",
+      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+    },
+    "apps/workbench-preview/nightflight/src/styles/workspace.css": {
+      "sha256": "a48cdbd74688b579c9c097bc4b21e0ed4425cafcd8df14971fcf6dd4296d5549",
+      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。"
+    },
+    "apps/workbench-preview/nightflight/src/types.ts": {
+      "sha256": "46b83195c3f4545fedfbee1c939a6bf7def283bc8349988eee55bebc67a7b861",
+      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+    },
+    "apps/workbench-preview/nightflight/src/styles/detail.css": {
+      "sha256": "1227ba35eaa6f0966bbb73a71b88f071f6e65dc185da4cd6407bbcb1b596f012",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/nightflight/src/styles/shell.css": {
+      "sha256": "5a52a2343c4c95ac3e08e4098a16e8ce005e5e537b3ad69a7c0868ff75299e42",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/src/proposal/qingyu-visual/QingyuVisualPreview.tsx": {
+      "sha256": "92f680ff08324b427da79ef9549ad8e7e83545d373c4e1dbe63920b8f896d282",
+      "reason": " 接入按方向查看的视觉图册。 接入视觉草图选择、版本或相应方法身份。"
+    },
+    "apps/workbench-preview/src/proposal/qingyu-visual/visual-preview.css": {
+      "sha256": "6e665e2d42a947eb10ded1f2ecd75449c02e712d10df336c9d4162c81074d7c3",
+      "reason": " 接入按方向查看的视觉图册。"
+    },
+    "apps/workbench-preview/src/proposal/qingyu-visual/visual-preview.test.ts": {
+      "sha256": "7535c86d53ae4a897d11f18ce957986699d81b18ffb95b464fc3e13748651782",
+      "reason": " 接入按方向查看的视觉图册。 视觉图稿按画幅与产物用途展示。 接入视觉草图选择、版本或相应方法身份。"
+    },
+    "apps/workbench-preview/src/proposal/qingyu-visual/concept-images.ts": {
+      "sha256": "5997d0df0bba622a5ce3b0c8db5e5d1968f39fadaff938fc8cf3847197940532",
+      "reason": " 接入视觉草图选择、版本或相应方法身份。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/model.ts": {
+      "sha256": "a48ea7d18c0f07e3cf41e043ca8f599f89f6d507213c1d1186b53e4b052a4e0b",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/templates.ts": {
+      "sha256": "078554412abcb7139f63d1071ebe898fcf7e535d07148419d475d976d8e23053",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     }
+  },
+  "nightflightArchive": {
+    "name": "proposal-workbench-source.zip",
+    "sha256": "2a5add2ebb4f829a752576c8b0a1302d13916aee1a0283d90719fbe33ff35b8d",
+    "memberRoot": "proposal-workbench/",
+    "targetRoot": "apps/workbench-preview/nightflight",
+    "standaloneHtmlSha256": "3c45cdcf3f3f9d9701fd7311e090d6e138925ba4544e5719d2877d90bc7b1a3e"
   }
 }

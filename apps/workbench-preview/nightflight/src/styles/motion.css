@@ -1,0 +1,72 @@
+/* 动效：主理人的状态动作、完成时的彩带与提示、图标对齐 */
+
+.ico { flex: none; display: block; }
+.btn .ico { margin: 0 -1px; }
+
+/* ── 主理人 ─────────────────────────────── */
+.bot-figure { overflow: visible; }
+.bot-all, .bot-shadow, .bot-moon, .bot-sun, .bot-eyes, .bot-pencil, .bot-pupils, .bot-mark { will-change: transform; }
+.bot-all { transform-origin: 46px 104px; }
+.bot-shadow { transform-origin: 46px 108px; }
+.bot-eyes { transform-origin: 44px 52px; }
+
+/* 待命：呼吸、眨眼 */
+.bot-idle .bot-all { animation: bot-breathe 4s ease-in-out infinite; }
+.bot-idle .bot-eyes { animation: bot-blink 4.6s infinite; }
+@keyframes bot-breathe { 50% { transform: translateY(-1.6px); } }
+@keyframes bot-blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+
+/* 工作：伏案微晃，眼睛扫读，铅笔写字，月亮轻摆 */
+.bot-working .bot-all { animation: bot-write 1.8s ease-in-out infinite; }
+.bot-working .bot-scan { animation: bot-scan 2.6s ease-in-out infinite; }
+.bot-working .bot-scribble { stroke-dasharray: 100; animation: bot-draw 2.4s linear infinite; }
+.bot-working .bot-pencil { animation: bot-pencil 2.4s linear infinite; }
+.bot-working .bot-moon { transform-origin: 74px 12px; animation: bot-swing 3.2s ease-in-out infinite; }
+@keyframes bot-write { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg) translateY(-0.6px); } }
+@keyframes bot-scan { 0%, 100% { transform: translateX(-2.2px); } 45% { transform: translateX(2.2px); } 55% { transform: translateX(2.2px) scaleY(0.15); } 60% { transform: translateX(2.2px); } }
+@keyframes bot-draw { 0% { stroke-dashoffset: 100; } 80%, 100% { stroke-dashoffset: 0; } }
+@keyframes bot-pencil { 0% { transform: translate(0, 0); } 20% { transform: translate(8px, -1.5px); } 40% { transform: translate(16px, 0); } 60% { transform: translate(24px, -1.5px); } 80%, 92% { transform: translate(32px, 0); } 100% { transform: translate(0, 0); } }
+@keyframes bot-swing { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+
+/* 等待：歪头看向你，问号跳动 */
+.bot-waiting .bot-all { animation: bot-tilt 3.4s ease-in-out infinite; }
+.bot-waiting .bot-pupils { animation: bot-look 3.4s ease-in-out infinite; }
+.bot-waiting .bot-mark { animation: bot-bounce 1s ease-in-out infinite; }
+@keyframes bot-tilt { 0%, 100% { transform: rotate(0); } 30%, 60% { transform: rotate(5deg); } 80% { transform: rotate(-2deg); } }
+@keyframes bot-look { 0%, 100% { transform: translateX(-1px); } 30%, 60% { transform: translateX(1.6px); } }
+@keyframes bot-bounce { 50% { transform: translateY(-4px); } }
+
+/* 完成：小跳两下，太阳转动 */
+.bot-done .bot-all { animation: bot-hop 2.8s ease-out infinite; }
+.bot-done .bot-shadow { animation: bot-shadow 2.8s ease-out infinite; }
+.bot-done .bot-sun { transform-origin: 74px 12px; animation: bot-spin 9s linear infinite; }
+@keyframes bot-hop { 0%, 34%, 100% { transform: translateY(0); } 8% { transform: translateY(-10px) rotate(-3deg); } 16% { transform: translateY(0); } 24% { transform: translateY(-5px) rotate(2deg); } 30% { transform: translateY(0) scaleY(0.97); } }
+@keyframes bot-shadow { 0%, 34%, 100% { transform: scaleX(1); opacity: 0.14; } 8% { transform: scaleX(0.7); opacity: 0.07; } 16% { transform: scaleX(1); } 24% { transform: scaleX(0.85); opacity: 0.1; } }
+@keyframes bot-spin { to { transform: rotate(360deg); } }
+
+/* 中断：摇头，感叹号闪 */
+.bot-blocked .bot-all { animation: bot-shake 3s ease-in-out infinite; }
+.bot-blocked .bot-bang { animation: blink 0.9s steps(1) infinite; }
+@keyframes bot-shake { 0%, 16%, 100% { transform: translateX(0); } 3%, 9% { transform: translateX(-2.5px) rotate(-1.5deg); } 6%, 12% { transform: translateX(2.5px) rotate(1.5deg); } }
+
+.bot-poke { flex: none; border-radius: 6px; }
+.bot-poke:active .bot-all { animation-duration: 0.9s; }
+
+/* ── 完成庆祝 ─────────────────────────────── */
+.confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 90; pointer-events: none; }
+.done-toast {
+  position: absolute; left: 50%; top: 22px; z-index: 35; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 14px; max-width: calc(100% - 32px);
+  padding: 12px 14px 12px 18px;
+  background: var(--paper); border: var(--rule); border-radius: 4px; box-shadow: 5px 5px 0 var(--ink);
+  animation: toast-in 0.6s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.done-toast-mark { flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--orange); color: #fff; animation: stamp 0.7s 0.2s cubic-bezier(0.2, 1.6, 0.4, 1) backwards; }
+.done-toast div { min-width: 0; display: flex; flex-direction: column; line-height: 1.5; }
+.done-toast strong { font-family: var(--serif); font-size: 17px; white-space: nowrap; }
+.done-toast span { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; color: var(--mute); }
+.done-toast .toast-x { flex: none; width: 26px; height: 26px; border-radius: 50%; text-align: center; font-size: 17px; line-height: 1; color: var(--mute); }
+.done-toast .toast-x:hover { background: var(--ink); color: #fff; }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, -24px); } }
+@keyframes stamp { from { transform: scale(0) rotate(-40deg); } }
+@media (max-width: 1000px) { .done-toast { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); z-index: 45; } .done-toast strong { white-space: normal; } }

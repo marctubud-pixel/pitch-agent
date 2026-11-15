@@ -5,7 +5,11 @@ const base = new URL('../../skills/design-research-lead/', import.meta.url);
 const paths = ['SKILL.md', 'references/contracts.md', 'references/task-methods.md', 'references/analysis-models.md', 'references/reference-judgment.md', 'references/review.md', 'references/reader-loop.md', 'references/visual-boards.md', 'references/layout-templates.md'];
 const hash = text => createHash('sha256').update(text).digest('hex');
 export function researchMethod() {
-  const documents = paths.map(path => ({path, text: readFileSync(new URL(path, base), 'utf8')}));
+  // Keep the classic protocol's original logical paths and bytes in its method hash.
+  const documents = paths.map(path => ({
+    path,
+    text: readFileSync(new URL(path === 'SKILL.md' ? 'SKILL.r7.md' : path, base), 'utf8')
+  }));
   return {id: 'design-research-lead', version: 'r7-20261109', sha256: hash(JSON.stringify(documents)), documents};
 }
 export function researchMethodIdentity() {

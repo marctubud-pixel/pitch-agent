@@ -1,6 +1,6 @@
 # 提案工作台 · 规范基线
 
-基线版本 **1.18.0**，整理日期 **2026-11-15**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、3个固定Skill入口、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
+基线版本 **1.46.0**，整理日期 **2026-11-16**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、研究、视觉、UI 三个固定 Skill 及两份本地提案编稿／排版试行方法、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
 
 先看[Agent组织与职责总览](../agents/README.md)，了解业务与开发两条统筹线、各岗位内部执行者和独立评审关系；再看[页面基线与责任索引](../pages/README.md)，按页面找责任、既有结构、实际路由和待定范围。
 
@@ -8,18 +8,18 @@
 
 1. 先读[七阶段现行工作流](../workflows/提案工作流_现行规则.md)及[已确认决定](decisions.md)。
 2. 从下表选当前岗位、页面，只加载该任务需要的 Skill 附录和上游原件。
-3. 按[交接合同](handoff.md)记录本轮所用版本；页面修改按[中文桌面UI基线](ui-system.md)与对应页面规格复验。
+3. 按[交接合同](handoff.md)记录本轮所用版本；页面修改按[中文桌面UI基线](ui-system.md)、[夜航七阶段产出展示规范](nightflight-stage-output.md)与对应页面规格复验。
 4. 修改规范时按[变更与PR](change-control.md)更新版本、变更记录及锁。执行 `python3 scripts/check-specs.py`。
 
 | 阶段／职责 | 执行规范 | 页面开发规格 | 方法 |
 | --- | --- | --- | --- |
-| 比稿统筹 | [比稿 Agent](../agents/proposal-director.md) | [项目概览](../pages/overview.md) | 逐阶段及排版前简短后台检查 |
+| 比稿统筹 | [比稿 Agent](../agents/proposal-director.md) | [项目概览](../pages/overview.md) | 逐阶段及排版前简核；包装、KV 使用[客户提案逐页编稿](../../skills/proposal-structure-pilot/SKILL.md)试行 |
 | 简报 | [简报负责人](../agents/brief-owner.md) | [新建](../pages/new.md)、[简报与任务](../pages/brief.md) | 任务卡、确认和版本合同 |
-| 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r7](../../skills/design-research-lead/SKILL.md) |
+| 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r8](../../skills/design-research-lead/SKILL.md) |
 | 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | 两项基础要求，三个板块；无强制复杂Skill |
-| 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | 三方向、四岗评分及异议处理 |
-| 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.0.0](../../skills/visual-development-lead/SKILL.md) |
-| 排版 | [排版负责人](../agents/layout-owner.md) | [整案排版](../pages/layout.md) | Deck Studio 1.7适配模板与原生对象 |
+| 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [三方向创作、四岗盲评与交付](copy-generation.md) |
+| 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.3.0](../../skills/visual-development-lead/SKILL.md) |
+| 排版 | [排版负责人](../agents/layout-owner.md) | [整案排版](../pages/layout.md) | 据[客户逐页稿](../plans/客户提案结构与排版交接_试行.md)按[排版方法](../../skills/proposal-layout-pilot/SKILL.md)匹配 Deck Studio 模板。夜航包装、KV 排版已接同一页库 |
 | 终审交付 | [终审负责人](../agents/final-review-owner.md) | [终审](../pages/delivery.md)、[交付中心](../pages/delivery_center.md) | 真实页面／产物核验与人类决定 |
 | 独立业务评审 | [独立评审者](../agents/independent-reviewer.md) | 对应当前阶段 | 按阶段协议，不能互换门槛 |
 | 开发统筹 | [开发统筹Agent](../agents/development-lead.md) | 本轮涉及页面与实现 | 任务范围、实现、独立复核与接续 |

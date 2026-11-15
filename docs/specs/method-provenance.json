@@ -1,7 +1,13 @@
 [
   {
-    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
+    "source": "项目内由 r7-20261109 修订，原文件见 SKILL.r7.md",
     "path": "skills/design-research-lead/SKILL.md",
+    "sourceVersion": "r8-20261115",
+    "sha256": "8c406f596b57994d1b20116fa5ea7fceb520c634666582c1993a437e0ac30382"
+  },
+  {
+    "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
+    "path": "skills/design-research-lead/SKILL.r7.md",
     "sourceVersion": "r7-20261109",
     "sha256": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e"
   },

@@ -1,0 +1,31 @@
+/* 版式思路：上黑下白。顶部是终端式执行记录，下方是细黑线分栏的编辑部式工作区；橙色只用于"正在发生"。 */
+:root {
+  --ink: #0c0c0b;
+  --paper: #ffffff;
+  --paper-2: #f5f4f1;
+  --paper-3: #e8e6e1;
+  --line-soft: #d8d5cf;
+  --mute: #6a6761;
+  --orange: #d8602a;
+  --orange-soft: #f6dccf;
+  --term: #000000;
+  --term-fg: #f4f1ea;
+  --term-mute: #8f8c85;
+
+  --display: "Instrument Serif", "Noto Serif SC", "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  --serif: "Noto Serif SC", "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
+  --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", monospace;
+
+  --pad: 28px;
+  --gl: max(var(--pad), env(safe-area-inset-left, 0px));
+  --gr: max(var(--pad), env(safe-area-inset-right, 0px));
+  --rule: 1.5px solid var(--ink);
+  --chat-w: 392px;
+
+  color-scheme: light;
+}
+
+@media (max-width: 1000px) {
+  :root { --pad: 16px; }
+}

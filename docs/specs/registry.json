@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.18.0",
-  "date": "2026-11-15",
-  "status": "成稿汇总支持同版完整内容摘要，排版前读取支持较大快照。整链验收继续。",
+  "baselineVersion": "1.46.0",
+  "date": "2026-11-16",
+  "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
     "brief",
     "research",
@@ -18,10 +18,11 @@
       "kind": "agent",
       "title": "比稿 Agent",
       "path": "docs/agents/proposal-director.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
-        "contract.handoff"
+        "contract.handoff",
+        "method.proposal-structure"
       ],
       "stage": "全阶段"
     },
@@ -42,7 +43,7 @@
       "kind": "agent",
       "title": "调研负责人",
       "path": "docs/agents/research-owner.md",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.research",
@@ -67,11 +68,12 @@
       "kind": "agent",
       "title": "文案与主题负责人",
       "path": "docs/agents/copy-owner.md",
-      "version": "1.0.1",
+      "version": "1.7.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",
-        "method.review"
+        "method.review",
+        "method.copy-generation"
       ],
       "stage": "themes"
     },
@@ -80,7 +82,7 @@
       "kind": "agent",
       "title": "视觉开发负责人",
       "path": "docs/agents/visual-owner.md",
-      "version": "1.0.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.visual",
@@ -93,10 +95,11 @@
       "kind": "agent",
       "title": "排版负责人",
       "path": "docs/agents/layout-owner.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
-        "contract.handoff"
+        "contract.handoff",
+        "method.proposal-layout"
       ],
       "stage": "layout"
     },
@@ -160,7 +163,7 @@
       "kind": "page",
       "title": "新建提案",
       "path": "docs/pages/new.md",
-      "version": "1.0.3",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
@@ -188,13 +191,14 @@
       "kind": "page",
       "title": "简报与任务",
       "path": "docs/pages/brief.md",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.brief-owner",
-        "contract.ui"
+        "contract.ui",
+        "contract.nightflight-stage-output"
       ],
-      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "confirmedScope": "夜航任务卡展示；经典编辑与版本合同保留",
       "routeKey": "brief"
     },
     {
@@ -202,13 +206,14 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.2.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
-        "contract.ui"
+        "contract.ui",
+        "contract.nightflight-stage-output"
       ],
-      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "confirmedScope": "夜航研究页按本轮交接结果展示结论或补查问题",
       "routeKey": "research"
     },
     {
@@ -216,7 +221,7 @@
       "kind": "page",
       "title": "策略",
       "path": "docs/pages/strategy.md",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.strategy-owner",
@@ -230,13 +235,14 @@
       "kind": "page",
       "title": "文案与主题",
       "path": "docs/pages/themes.md",
-      "version": "1.2.0",
+      "version": "1.12.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.copy-owner",
-        "contract.ui"
+        "contract.ui",
+        "contract.nightflight-stage-output"
       ],
-      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "confirmedScope": "方向创意、触点文案、推荐取舍与同版四岗原分",
       "routeKey": "themes"
     },
     {
@@ -244,7 +250,7 @@
       "kind": "page",
       "title": "视觉开发",
       "path": "docs/pages/visual.md",
-      "version": "1.2.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.visual-owner",
@@ -259,12 +265,13 @@
       "kind": "page",
       "title": "版式与整案排版",
       "path": "docs/pages/layout.md",
-      "version": "1.1.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.layout-owner",
         "contract.ui",
-        "contract.proposal-prelayout"
+        "contract.proposal-prelayout",
+        "contract.proposal-outline"
       ],
       "confirmedScope": "已确认要求汇编；本次整理待核对",
       "routeKey": "layout"
@@ -274,7 +281,7 @@
       "kind": "page",
       "title": "终审与交付",
       "path": "docs/pages/delivery.md",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.final-review-owner",
@@ -371,10 +378,10 @@
     {
       "id": "method.research",
       "kind": "method",
-      "title": "调研负责人Skill r7",
+      "title": "调研负责人 Skill r8",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.0.0",
-      "sourceVersion": "r7-20261109",
+      "version": "1.1.0",
+      "sourceVersion": "r8-20261115",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -383,8 +390,8 @@
       "kind": "method",
       "title": "视觉开发负责人Skill",
       "path": "skills/visual-development-lead/SKILL.md",
-      "version": "1.0.0",
-      "sourceVersion": "1.0.0",
+      "version": "1.3.0",
+      "sourceVersion": "1.3.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -397,6 +404,39 @@
       "sourceVersion": "无原版号；2026-11-11快照",
       "lifecycle": "current",
       "dependsOn": []
+    },
+    {
+      "id": "contract.proposal-outline",
+      "kind": "contract",
+      "title": "客户逐页提案与排版交接（本地试行）",
+      "path": "docs/plans/客户提案结构与排版交接_试行.md",
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ]
+    },
+    {
+      "id": "method.proposal-structure",
+      "kind": "method",
+      "title": "包装与 KV 客户逐页编稿（本地试行）",
+      "path": "skills/proposal-structure-pilot/SKILL.md",
+      "version": "1.1.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.proposal-outline"
+      ]
+    },
+    {
+      "id": "method.proposal-layout",
+      "kind": "method",
+      "title": "据逐页稿匹配模板与排版（本地试行）",
+      "path": "skills/proposal-layout-pilot/SKILL.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.proposal-outline"
+      ]
     },
     {
       "id": "contract.handoff",
@@ -412,18 +452,31 @@
       "kind": "contract",
       "title": "中文桌面UI基线",
       "path": "docs/specs/ui-system.md",
-      "version": "1.1.2",
+      "version": "1.3.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.ui"
       ]
     },
     {
+      "id": "contract.nightflight-stage-output",
+      "kind": "contract",
+      "title": "夜航七阶段产出展示规范",
+      "path": "docs/specs/nightflight-stage-output.md",
+      "version": "1.19.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.ui",
+        "contract.handoff"
+      ],
+      "confirmedScope": "夜航阶段产出采用各阶段页面规范所列信息顺序。"
+    },
+    {
       "id": "contract.workflow",
       "kind": "contract",
       "title": "七阶段现行工作流",
       "path": "docs/workflows/提案工作流_现行规则.md",
-      "version": "1.0.1",
+      "version": "1.1.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -473,7 +526,7 @@
       "kind": "agent",
       "title": "工作台UI负责人",
       "path": "docs/agents/workbench-ui-owner.md",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",
@@ -486,7 +539,7 @@
       "kind": "contract",
       "title": "Agent组织与职责总览",
       "path": "docs/agents/README.md",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"
@@ -497,11 +550,12 @@
       "kind": "contract",
       "title": "页面基线与责任索引",
       "path": "docs/pages/README.md",
-      "version": "1.1.1",
+      "version": "1.4.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.workbench-ui-owner",
-        "contract.ui"
+        "contract.ui",
+        "contract.nightflight-stage-output"
       ]
     },
     {
@@ -520,7 +574,7 @@
       "kind": "contract",
       "title": "Git纳管范围与源码边界",
       "path": "docs/specs/repository-scope.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -529,7 +583,7 @@
       "kind": "contract",
       "title": "开发启动与工程入口",
       "path": "docs/development/README.md",
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -538,7 +592,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.11.0",
+      "version": "1.12.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -547,7 +601,7 @@
       "kind": "contract",
       "title": "配置与服务边界",
       "path": "docs/development/configuration.md",
-      "version": "1.10.0",
+      "version": "1.11.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -583,7 +637,7 @@
       "kind": "contract",
       "title": "工作台操作说明",
       "path": "docs/usage/README.md",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -656,7 +710,7 @@
       "title": "研究独立读者运行合同",
       "kind": "contract",
       "path": "docs/development/research-reader.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": [
         "contract.seven-stage-runtime",
@@ -736,7 +790,7 @@
       "kind": "contract",
       "title": "视觉参考、草图与成稿受限接线",
       "path": "docs/development/visual-workflow.md",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.simple-copy",
@@ -772,6 +826,17 @@
         "contract.seven-stage-runtime"
       ],
       "stage": "layout"
+    },
+    {
+      "id": "method.copy-generation",
+      "kind": "method",
+      "title": "文案三方向创作与交付",
+      "path": "docs/specs/copy-generation.md",
+      "version": "1.5.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "method.review"
+      ]
     }
   ],
   "entryDocuments": [

@@ -1,0 +1,38 @@
+{
+  "distilled": {
+    "sourceSha256": "b15e4ad2fab262e5d00e6c540f6137e94c2ba664dd7c1b056644c430831e91ea",
+    "recommended": "B",
+    "directions": [
+      {
+        "id": "A",
+        "main": "一瓶无糖茶，两张名片。"
+      },
+      {
+        "id": "B",
+        "main": "每天喝的茶，水也有来处。"
+      },
+      {
+        "id": "C",
+        "main": "上回你带我去虎跑，这回换我给你带茶。"
+      }
+    ]
+  },
+  "archive": {
+    "sourceSha256": "0b0f66606986f6b934edefdddabf4495aaa6eaa14abc8fcf3431f88343fe8256",
+    "recommended": "A",
+    "directions": [
+      {
+        "id": "A",
+        "main": "一瓶无糖茶，两张名片。"
+      },
+      {
+        "id": "B",
+        "main": "鼠标放一放，去趟虎跑。"
+      },
+      {
+        "id": "C",
+        "main": "上回你带我去虎跑，这回换我给你带茶。"
+      }
+    ]
+  }
+}

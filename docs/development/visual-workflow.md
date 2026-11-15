@@ -1,12 +1,12 @@
 # 视觉参考、草图与成稿的受限接线
 
-规范版本：1.3.0。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
+规范版本：1.3.1。复用原参考、草图和sketch-review-v2运行时，接当前七阶段HTTP与参考组件。默认不执行模型；源码接线、工程测试、实际图像质量与人类批准分别记录。本合同不声明草图、深化、样机或整案已验收。
 
 ## 输入与方法
 
 新项目必须保存proposal-seven-v1。当前同版SIMPLE策略、实际双负责人、唯一三方向文案、全文核验与原四岗评审继续按[文案合同](simple-copy.md)核对，参考入口不替它们补通过。只接manual_supplied，旧业务和旧数据库不自动迁入。
 
-`visual-a-service.mjs`读取项目固定visual-development-lead 1.0.0及stage-review、对应packaging或kv、records附录字节。原任务、policy、问题登记、研究放行、策略、copy正文hash、参考材料、固定target/sourceHash和job binding进入原技术ledger。方法或上游变化时不能续用旧请求。
+`visual-a-service.mjs`读取项目固定visual-development-lead 1.1.0及stage-review、对应packaging或kv、records附录字节。原任务、policy、问题登记、研究放行、策略、copy正文hash、参考材料、固定target/sourceHash和job binding进入原技术ledger。方法或上游变化时不能续用旧请求。
 
 | phase | 固定target | sourceHash | 原实际claim |
 | --- | --- | --- | --- |

@@ -39,5 +39,11 @@ jobs:
         run: npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:simple-copy && npm run test:dependency
       - name: Test image readback and visual boundaries with configured Python
         run: PATH="$(dirname "$PITCH_PDF_TEST_PYTHON"):$PATH" npm run test:image-scope && PATH="$(dirname "$PITCH_PDF_TEST_PYTHON"):$PATH" npm run test:visual-workflow && PATH="$(dirname "$PITCH_PDF_TEST_PYTHON"):$PATH" npm run test:prelayout
+      - name: Test Nightflight with isolated projects and local Chrome
+        env:
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+          NIGHTFLIGHT_PYTHON: ${{ github.workspace }}/.scratch/pdf-test-runtime/bin/python
+          NIGHTFLIGHT_TEST_PDF: "1"
+        run: PATH="$(dirname "$PITCH_PDF_TEST_PYTHON"):$PATH" npm run test:nightflight
       - name: Build current application
         run: npm run build
