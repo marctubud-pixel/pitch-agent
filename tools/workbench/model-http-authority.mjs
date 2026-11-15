@@ -86,6 +86,8 @@ function inspectBoundedJSON(bytes,secret,scope,cfg){
   if(typeof item==='string'){
    const size=Buffer.byteLength(item);work+=size;if(work>allowance)fail('size');
    if(secret&&item.includes(secret))return true;
+   // Only strings starting with a JSON token can contain a second encoded value.
+   if(!/^[\x20\t\r\n]*[\[{"0-9tfn-]/.test(item))continue;
    let decoded;try{decoded=parseBoundedHttpJSON(item);}catch(error){if(error.code==='size')throw error;continue;}
    if(decoded!==item){if(frame.generation>=HTTP_JSON_PROFILE.decodingGenerations||++entries>HTTP_JSON_PROFILE.inspectionEntries)fail('size');pending.push({value:decoded,generation:frame.generation+1});}
   }else if(item&&typeof item==='object')pending.push({iterator:children(item),generation:frame.generation});
