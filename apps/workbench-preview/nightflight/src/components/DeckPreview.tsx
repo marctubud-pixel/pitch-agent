@@ -3,7 +3,8 @@ import { DeckStudioPage } from '../../../src/proposal/deck-studio/Viewer';
 import type { Page } from '../../../src/proposal/deck-studio/model';
 import { safeURL, type Artifact } from '../live';
 
-export function DeckPreview({ file, open }: { file: Artifact; open?: () => void }) {
+export function DeckPreview({ file, open, foldIndex = false }: { file: Artifact; open?: () => void; foldIndex?: boolean }) {
+  const [indexOpen, setIndexOpen] = useState(false);
   const [pages, setPages] = useState<Page[]>([]),
     [index, setIndex] = useState(0),
     [err, setErr] = useState('');
@@ -12,6 +13,7 @@ export function DeckPreview({ file, open }: { file: Artifact; open?: () => void 
     const url = safeURL(file.url);
     setPages([]);
     setIndex(0);
+    setIndexOpen(false);
     setErr('');
     if (!url) {
       setErr('预览文件地址无效。');
@@ -45,6 +47,21 @@ export function DeckPreview({ file, open }: { file: Artifact; open?: () => void 
       </button>
     );
   const go = (to: number) => setIndex(Math.max(0, Math.min(pages.length - 1, to)));
+  const thumbnails = (!foldIndex || indexOpen) && (
+    <div className="deck-strip">
+      {pages.map((p, i) => (
+        <button
+          key={p.id}
+          className={i === index ? 'is-on' : ''}
+          onClick={() => go(i)}
+          aria-label={'第 ' + (i + 1) + ' 页'}
+          aria-current={i === index}
+        >
+          <DeckStudioPage page={p} />
+        </button>
+      ))}
+    </div>
+  );
   return (
     <div
       className="deck"
@@ -71,19 +88,12 @@ export function DeckPreview({ file, open }: { file: Artifact; open?: () => void 
           下一页 →
         </button>
       </div>
-      <div className="deck-strip">
-        {pages.map((p, i) => (
-          <button
-            key={p.id}
-            className={i === index ? 'is-on' : ''}
-            onClick={() => go(i)}
-            aria-label={'第 ' + (i + 1) + ' 页'}
-            aria-current={i === index}
-          >
-            <DeckStudioPage page={p} />
-          </button>
-        ))}
-      </div>
+      {foldIndex ? (
+        <details open={indexOpen} onToggle={(event) => setIndexOpen(event.currentTarget.open)}>
+          <summary>页面目录（{pages.length}）</summary>
+          {thumbnails}
+        </details>
+      ) : thumbnails}
     </div>
   );
 }

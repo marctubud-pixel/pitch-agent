@@ -131,27 +131,28 @@ export function MediaStageOutput({
   if (id === 'visual') return <VisualOutput p={p} />;
   const deck = p.artifacts.find(isDeckPreview);
   const pptx = p.artifacts.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
+  if (id === 'layout') {
+    if (!deck && !pptx.length) {
+      const message = p.stage === 'layout'
+        ? p.status === 'running' ? '正在排版。' : '本版排版稿尚未就绪。'
+        : '等待视觉稿进入排版。';
+      return <p className="pending">{message}</p>;
+    }
+    return (
+      <section className="block" data-artifact={deck?.name}>
+        <h2>提案预览</h2>
+        {deck ? <DeckPreview key={deck.url} file={deck} foldIndex /> : <p>本版可下载 PPTX，在线预览尚未就绪。</p>}
+        <DeckDownloads files={pptx} />
+      </section>
+    );
+  }
   const reviews = p.artifacts.filter((file) => file.stage === 'final' && file.kind === 'text');
   return (
     <>
       <section className="block" data-artifact={deck?.name}>
-        <h2>{id === 'layout' ? '提案预览' : p.status === 'done' ? '终稿提案' : '待审提案'}</h2>
+        <h2>{p.status === 'done' ? '终稿提案' : '待审提案'}</h2>
         {deck ? <DeckPreview file={deck} /> : <p className="pending">尚无排版预览。</p>}
-        {!!pptx.length && (
-          <div className="deliver">
-            {pptx.map((file) => (
-              <a
-                key={file.url}
-                data-artifact={file.name}
-                className="btn btn-dark"
-                href={safeURL(file.url)}
-                download={file.name}
-              >
-                下载可编辑 PPTX
-              </a>
-            ))}
-          </div>
-        )}
+        <DeckDownloads files={pptx} />
       </section>
       {id === 'final' && (
         <>
@@ -170,6 +171,19 @@ export function MediaStageOutput({
         </>
       )}
     </>
+  );
+}
+
+function DeckDownloads({ files }: { files: Artifact[] }) {
+  if (!files.length) return null;
+  return (
+    <div className="deliver">
+      {files.map((file) => (
+        <a key={file.url} data-artifact={file.name} className="btn btn-dark" href={safeURL(file.url)} download={file.name}>
+          {files.length === 1 ? '下载可编辑 PPTX' : '下载 ' + file.name}
+        </a>
+      ))}
+    </div>
   );
 }
 

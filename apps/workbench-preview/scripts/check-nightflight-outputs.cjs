@@ -114,6 +114,7 @@ async function main() {
       if (process.argv.includes('--research') && i !== 1) continue;
       if (process.argv.includes('--themes') && i !== 3) continue;
       if (process.argv.includes('--visual') && i !== 4) continue;
+      if (process.argv.includes('--layout') && i !== 5) continue;
       if (process.argv.includes('--strategy') && i !== 2) continue;
       await page.locator('.sheet-tabs button').nth(i).click();
       const visible = await page.locator('.sheet-doc h2:visible').allTextContents();
