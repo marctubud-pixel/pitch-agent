@@ -921,8 +921,9 @@ function validatedResearchAssessmentWithin(evaluation, p,artifactId){
  requireValue(valid.length===1,'RESEARCH_ASSESSMENT_REQUIRED','Exactly one current validated assessment required');return valid[0];
  });
 }
-export function semanticChallengeInput(p,artifactId){
- const primary=validatedResearchAssessment(p,artifactId),config=semanticConfiguration(p),job=p.jobs.find(j=>j.id===p.readinessReports.find(r=>r.id===primary.id)?.jobId);
+export function semanticChallengeInput(p,artifactId){return semanticChallengeInputWithin(new WeakMap(),p,artifactId);}
+function semanticChallengeInputWithin(evaluation,p,artifactId){
+ const primary=validatedResearchAssessmentWithin(evaluation,p,artifactId),config=semanticConfiguration(p),job=p.jobs.find(j=>j.id===p.readinessReports.find(r=>r.id===primary.id)?.jobId);
  requireValue(primary.input.evidenceLinkPolicy===RESEARCH_EVIDENCE_LINK_POLICY&&isDeepStrictEqual(job?.binding,config.readinessBinding),'SEMANTIC_PRIMARY_CHANGED','Current primary reviewer and evidence policy required');
  requireValue(!validateResearchReadinessOutput(primary.rawReport,primary.input).hasBlockingFindings,'RESEARCH_READINESS_BLOCKED','Primary must be ready');
  return buildSemanticInput(primary,config);
@@ -931,11 +932,12 @@ export function semanticChallengeCurrent(p,job){
  requireValue(job?.purpose==='coverage_challenge'&&isDeepStrictEqual(job.task.semanticInput,semanticChallengeInput(p,job.targetArtifactId))&&isDeepStrictEqual(job.binding,semanticConfiguration(p).challengeBinding),'SEMANTIC_REVIEW_STALE','Semantic source, primary or configuration changed');
  return artifact(p,job.targetArtifactId);
 }
-export function requireSemanticCoverage(p,artifactId){
- const input=semanticChallengeInput(p,artifactId),reports=(p.coverageChallenges??[]).filter(r=>r.artifactId===artifactId);
+export function requireSemanticCoverage(p,artifactId){return requireSemanticCoverageWithin(new WeakMap(),p,artifactId);}
+function requireSemanticCoverageWithin(evaluation,p,artifactId){
+ const input=semanticChallengeInputWithin(evaluation,p,artifactId),reports=(p.coverageChallenges??[]).filter(r=>r.artifactId===artifactId);
  let matched=false;
  for(const r of reports){
-  const verified=validateStoredReview(p,'coverage_challenge',r).source.validatedReport;
+  const verified=validateStoredReviewWithin(evaluation,p,'coverage_challenge',r).source.validatedReport;
   requireValue(!(verified.basisHash===input.basisHash&&verified.hasBlockingFindings),'SEMANTIC_REVIEW_BLOCKED','A negative semantic judgment remains unresolved on this evidence basis');
   const job=p.jobs.find(j=>j.id===r.jobId);
   if(!verified.hasBlockingFindings&&isDeepStrictEqual(job.task.semanticInput,input))matched=true;
@@ -1120,7 +1122,7 @@ function researchWorkflowViewWithin(evaluation, p,{bindings={},providers={}}={})
 
 export function researchHandlingBlocked(p,artifactId) { return researchHandlingBlockedWithin(new WeakMap(), ...arguments); }
 function researchHandlingBlockedWithin(evaluation, p,artifactId){const a=artifact(p,artifactId);if(!a.revision)return false;try{requireCorrectionReviewWithin(evaluation, p,a);return false;}catch{return true;}}
-function requireResearchReadinessWithin(evaluation,p,a){requirePrimaryReadinessWithin(evaluation,p,a);requireSemanticCoverage(p,a.id);}
+function requireResearchReadinessWithin(evaluation,p,a){requirePrimaryReadinessWithin(evaluation,p,a);requireSemanticCoverageWithin(evaluation,p,a.id);}
 function requirePrimaryReadinessWithin(evaluation, p, a) {
   if((p.readinessReports??[]).some(r=>r.artifactId===a.id&&r.protocolVersion===APPLICABILITY_PROTOCOL)){const assessment=validatedResearchAssessmentWithin(evaluation, p,a.id),report=validateResearchReadinessOutput(assessment.rawReport,assessment.input);requireValue(assessment.input.evidenceLinkPolicy===RESEARCH_EVIDENCE_LINK_POLICY,'RESEARCH_READINESS_UPGRADE_REQUIRED','A new evidence-linked readiness review is required; historical reports remain readable');requireValue(report.verdict==='ready'&&!report.hasBlockingFindings,'RESEARCH_READINESS_BLOCKED','Current assessed research gaps remain blocking');return;}
   const reports = (p.readinessReports ?? []).filter(report => report.artifactId === a.id);
@@ -2432,7 +2434,7 @@ function releaseReadinessWithin(evaluation, p, artifactId) {
 }
 export function researchAssessmentState(p,artifactId) { return researchAssessmentStateWithin(new WeakMap(), ...arguments); }
 function researchAssessmentStateWithin(evaluation, p,artifactId){
- try{const assessment=validatedResearchAssessmentWithin(evaluation, p,artifactId),report=validateResearchReadinessOutput(assessment.rawReport,assessment.input);requireValue(assessment.input.evidenceLinkPolicy===RESEARCH_EVIDENCE_LINK_POLICY,'RESEARCH_READINESS_UPGRADE_REQUIRED','A new evidence-linked readiness review is required');requireSemanticCoverage(p,artifactId);return {current:true,ready:report.verdict==='ready'&&!report.hasBlockingFindings,assessmentId:assessment.id,handlingBlocked:researchHandlingBlockedWithin(evaluation, p,artifactId),...report.applicabilityEvaluation};}
+ try{const assessment=validatedResearchAssessmentWithin(evaluation, p,artifactId),report=validateResearchReadinessOutput(assessment.rawReport,assessment.input);requireValue(assessment.input.evidenceLinkPolicy===RESEARCH_EVIDENCE_LINK_POLICY,'RESEARCH_READINESS_UPGRADE_REQUIRED','A new evidence-linked readiness review is required');requireSemanticCoverageWithin(evaluation,p,artifactId);return {current:true,ready:report.verdict==='ready'&&!report.hasBlockingFindings,assessmentId:assessment.id,handlingBlocked:researchHandlingBlockedWithin(evaluation, p,artifactId),...report.applicabilityEvaluation};}
  catch(error){return {current:false,ready:false,blockedReason:error.code??'INVALID_RESEARCH_APPLICABILITY'};}
 }
 export function projectView(p) { return projectViewWithin(new WeakMap(), ...arguments); }

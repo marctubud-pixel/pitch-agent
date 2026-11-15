@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createProject, applyCommand, projectView, releaseReadiness, STAGES, REVIEW_ROLES} from './project.mjs';
+import {createProject, applyCommand, projectView, releaseReadiness, researchAssessmentState, validatedResearchAssessment, STAGES, REVIEW_ROLES} from './project.mjs';
 import {createHash} from 'node:crypto';
+import {syntheticResearch} from './research-operator-fixture.mjs';
 import {deriveSketchReviewOutcome, CONDITIONS} from './sketch-review-v2.mjs';
 import {COPY_CONTRACT_VERSION, validateStageOutput} from './stage-content.mjs';
 // All runs, evidence and receipts here are synthetic fixtures, never real provider calls.
@@ -378,4 +379,32 @@ test('generic completion cannot convert old in-flight sketch or native jobs into
     assert.equal(f.p.artifacts.some(a => a.id === `forged-${stage}`), false);
     assert.equal(f.p.jobs.find(j => j.id === jobId).status, 'requested');
   }
+});
+
+test('one readiness evaluation scans primary evidence once and rereads current semantic authority on the next call', async t => {
+  const f = await syntheticResearch();
+  t.after(f.close);
+  const p = f.store.read('p');
+  const id = f.artifact.id;
+  let scans = 0;
+  Object.defineProperty(p.readinessReports, 'filter', {
+    value(...args) {
+      scans++;
+      return Array.prototype.filter.apply(this, args);
+    },
+  });
+
+  validatedResearchAssessment(p, id);
+  const primaryScans = scans;
+  assert.ok(primaryScans > 0);
+  scans = 0;
+  assert.equal(researchAssessmentState(p, id).ready, true);
+  assert.equal(scans, primaryScans);
+
+  const config = f.semanticConfiguration;
+  f.store.registerSemanticConfiguration({
+    ...config,
+    challengeBinding: {...config.challengeBinding, model: 'changed-reviewer'},
+  }, {expectedEpoch: 1});
+  assert.equal(researchAssessmentState(p, id).blockedReason, 'SEMANTIC_REVIEW_REQUIRED');
 });
