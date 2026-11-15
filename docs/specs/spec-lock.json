@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.42.0",
-  "registrySha256": "a280e489ec86e010ee9af31ddc55362e550eb9170a2a6da4774d74202030942a",
+  "baselineVersion": "1.43.0",
+  "registrySha256": "da2da825358ad6200915e5c324afaaad0ddc9aaaca686571db24be821bc2b3f7",
   "entries": {
     "agent.proposal-director": {
       "version": "1.0.1",
@@ -39,10 +39,10 @@
       }
     },
     "agent.visual-owner": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/visual-owner.md": "7cca703777c4076505220814b638d7c4c0a251ba323f36241cd15f4388347ff2"
+        "docs/agents/visual-owner.md": "5178d5fe0333495b16739e1b94cd03bc655f94bda0070fc0d7fc922fdd0d1cb0"
       }
     },
     "agent.layout-owner": {
@@ -203,15 +203,15 @@
       }
     },
     "method.visual": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "85fd8afd8766a6f1997acb910b568c5d322df3195e5c468385ceab9f408ceedd",
+        "skills/visual-development-lead/SKILL.md": "82a26759045caacd8dde1ed27919a60fbe90b1ded447a08e28c5a5c77457b1e1",
         "skills/visual-development-lead/references/kv.md": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
-        "skills/visual-development-lead/references/packaging.md": "b9e26d96400bd18dc1940975ca3ea2b9f1a5bf75cef54bdba9a9590d9406406a",
+        "skills/visual-development-lead/references/packaging.md": "3a7f3663123243968c9257ce22fe73771a42e31a2435cea6722d35135480eb64",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
         "skills/visual-development-lead/references/stage-review.md": "a1059333fc2da94e49b15b7be19ba24dacf19e036dc7f9ac2fcc7c48cae68295",
-        "skills/visual-development-lead/scripts/check-stage.mjs": "4eb212466bd64e26a88d318989957eadcd8b170026797373301651f5ecc2f503",
+        "skills/visual-development-lead/scripts/check-stage.mjs": "fdf39fad4e172cd42adb1f483001ee0fdf608fdbfd492aee7d83e2e7fba5393c",
         "skills/visual-development-lead/tests/check-stage.test.mjs": "d3e8fa7e48ac35ddaf0d2c585681c224bd6e14230fc133bb32fefe9fdbd93adc"
       }
     },
@@ -480,7 +480,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "f835434114fae0aac9347a807f5bd96a70b6ca1f203f51c66ed84d1a2bb3f576",
+    "docs/specs/README.md": "7194e37dd695d20a85d6008f72f76da1f9af6fd7fc5699757c4cd1ce2d2de3e1",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

@@ -28,7 +28,7 @@ export function freezeStep({request, target, snapshot, method, jobs}) {
     hash(request.sourceHash) && request.sourceHash === target.sourceHash, 'VISUAL_B_TARGET_CHANGED');
   need(Array.isArray(request.jobIds) && request.jobIds.length >= 1 && request.jobIds.length <= 4 &&
     new Set(request.jobIds).size === request.jobIds.length, 'VISUAL_B_JOB_SET_INVALID');
-  need(method?.path === 'skills/visual-development-lead/SKILL.md' && ['1.0.0', '1.1.0', '1.2.0'].includes(method.version) && hash(method.sha256) &&
+  need(method?.path === 'skills/visual-development-lead/SKILL.md' && ['1.0.0', '1.1.0', '1.2.0', '1.3.0'].includes(method.version) && hash(method.sha256) &&
     ['packaging', 'kv'].includes(method.carrier) && Array.isArray(method.appendices) &&
     equal(method.appendices.map(a => a.path).sort(), ['stage-review', 'records', method.carrier].map(a => `skills/visual-development-lead/references/${a}.md`).sort()) &&
     method.appendices.every(a => hash(a.sha256)), 'VISUAL_B_METHOD_REQUIRED');
