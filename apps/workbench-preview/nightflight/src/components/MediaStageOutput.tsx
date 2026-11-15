@@ -6,6 +6,11 @@ import { VisualImageGallery, type GalleryDirection } from '../../../src/proposal
 import { DeckPreview } from './DeckPreview';
 
 type MediaStage = 'visual' | 'layout' | 'final';
+const reviewLabels: Record<string,string> = {
+  visual:'视觉', brand:'品牌', user:'用户', spread:'传播',
+  quality:'表现质量', composition:'构图适用性', compatibility:'品牌兼容', translation:'主题转译',
+  understanding:'可理解性', feasibility:'场景可行性', memory:'记忆机制', difference:'差异',
+};
 
 export function visualCaption(p: Project, file: Artifact) {
   const ordinal = /^visual-(\d+)-[\da-f]+\.png$/i.exec(file.name);
@@ -24,10 +29,21 @@ function visualRecord(p: Project, image: Artifact) {
 }
 
 function VisualOutput({ p, name }: { p: Project; name?: string }) {
-  const images = p.artifacts.filter(file => file.stage === 'visual' && file.kind === 'image' && file.visual?.role !== 'comparison');
+  const images = p.artifacts.filter(file => file.stage === 'visual' && file.kind === 'image' && file.visual?.role !== 'comparison' && file.visual?.role !== 'reference');
   const refs = (p.attachments || []).filter(file => /\.(png|jpe?g|webp)$/i.test(file.name) && safeURL(file.url));
+  const sourced = p.artifacts.filter(file => file.stage === 'visual' && file.visual?.role === 'reference');
+  const referencesByDirection = new Map(p.directions.map(direction => {
+    const handoff = images.find(file => file.visual?.direction === direction && file.visual.referenceHandoff)?.visual?.referenceHandoff;
+    const bound = (handoff?.references ?? []).flatMap(ref => {
+      const original = sourced.find(file => file.visual?.direction === direction && file.visual.sha256 === ref.sha256 && file.name === ref.name);
+      const asset = original ?? refs.find(file => file.name === ref.name);
+      const src = asset && safeURL(asset.url);
+      return src ? [{ ...ref, src, title: original?.visual?.title || ref.borrow, pageUrl: original?.visual?.pageUrl }] : [];
+    });
+    return [direction, bound] as const;
+  }));
   const reports = images.map(file => ({ file, record: visualRecord(p, file), title: visualCaption(p, file) }));
-  const initial = reports.find(item => item.file.name === name)?.title;
+  const initial = reports.find(item => item.file.name === name)?.title ?? sourced.find(file => file.name === name)?.visual?.direction;
   const [selected, setSelected] = useState(initial || p.choice || p.directions[0]);
   const directions: GalleryDirection[] = [...new Set(p.directions)].map(title => {
     const group = reports.filter(item => item.title === title).sort((a,b)=>Number(!!b.file.visual?.recommended)-Number(!!a.file.visual?.recommended));
@@ -46,30 +62,48 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
     return { id: title, name: title,
       batchSummary: group.some(item=>item.file.visual?.candidate) ?
         (winner ? '推荐第 '+winner.candidate+' 稿 · '+winner.mean+'/5　'+winner.reason : '本批暂无达标稿，查看评审后修改。') : undefined,
-      description: current?.record?.description?.split(/[。\n]/)[0], references: [],
+      description: current?.record?.description?.split(/[。\n]/)[0], references: (referencesByDirection.get(title) ?? []).filter(ref => ref.role !== 'sharedBrand').map(ref => ({src: ref.src, title: ref.title, alt: title + ' · ' + ref.borrow})),
       format: metadata?.format, extensionLabel: metadata?.output === 'packaging' ? '包装延展' : metadata?.output === 'kv' ? 'KV 延展' : '延展图',
       sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: pictures('mockup')[0] };
   });
   const active = directions.find(item => item.id === selected) ?? directions[0];
   const current = reports.find(item => item.title === active?.id);
   const board = p.artifacts.find(a=>a.visual?.role==='comparison' && a.visual.direction===active?.id);
+  const admission = current?.file.visual?.referenceHandoff?.admission;
   const candidates = reports.filter(item=>item.title===active?.id && item.file.visual?.candidate).map(({file})=>{
     const v = file.visual!;
     return {image:safeURL(file.url) || undefined,title:'第 '+v.candidate+' 稿 · '+v.mean+'/5',readings:v.blind?[v.blind]:[],scores:v.scores || [],reason:v.reason,edit:v.edit,research:v.research};
   });
+  const selectedRefs = referencesByDirection.get(active?.id) ?? [];
+  const assigned = new Set([...referencesByDirection.values()].flat().map(ref => ref.name));
+  const remainingRefs = refs.filter(ref => !assigned.has(ref.name));
   const other = reports.filter(item => !directions.some(direction => direction.id === item.title));
   return <>
     {!!directions.length && active && <div data-artifact={current?.file.name}>
       <VisualImageGallery directions={directions} currentId={active.id} onDirectionChange={setSelected}
-        details={candidates.length ? <VisualReview board={board && safeURL(board.url) || undefined}
-          order={[...candidates.map(c=>c.title.split(' · ')[0]),...(board?.visual?.references || [])]} candidates={candidates} /> : current?.record?.description && <p>{current.record.description}</p>} />
+        details={(selectedRefs.length || candidates.length || current?.record?.description) ? <>
+          {!!selectedRefs.length && <section><h4>参考依据</h4><ul className="plain-list">{selectedRefs.map(ref =>
+            <li key={ref.sha256}><strong>{{main:'主参考',auxiliary:'辅助参考',sharedBrand:'品牌共用'}[ref.role]}</strong>
+              <p>{ref.borrow}</p><p>{ref.apply}</p>
+              {ref.why && <p>选图依据：{ref.why}</p>}{ref.avoid && <p>使用边界：{ref.avoid}</p>}
+              {ref.pageUrl?.startsWith('https://') && <a href={ref.pageUrl} target="_blank" rel="noopener noreferrer">查看来源页</a>}
+            </li>)}</ul></section>}
+          {admission && <details><summary>查看参考图准入原票</summary>
+            <p>{admission.ruling.reason}</p>
+            {admission.votes.map(vote => <section key={vote.role}><h4>{reviewLabels[vote.role] ?? vote.role}</h4>
+              <ul>{vote.items.map(item => <li key={item.dimension}>{reviewLabels[item.dimension] ?? item.dimension} · {item.score === null ? '待核' : item.score+'/5'}　{item.evidence}</li>)}</ul>
+            </section>)}
+          </details>}
+          {candidates.length ? <VisualReview board={board && safeURL(board.url) || undefined}
+            order={[...candidates.map(c=>c.title.split(' · ')[0]),...(board?.visual?.references || [])]} candidates={candidates} /> : current?.record?.description && <p>{current.record.description}</p>}
+        </> : undefined} />
     </div>}
     {!active && !other.length && <p className="pending">主视觉稿尚未交回。</p>}
     {!!other.length && <section className="block"><h2>其他已存图稿</h2>
       {other.map(({ file, title }) => <a key={file.url} href={safeURL(file.url)} target="_blank" rel="noopener noreferrer">{title}</a>)}
     </section>}
-    {!!refs.length && <details className="research-original"><summary>项目参考图（未分方向）</summary>
-      <div className="ref-row">{refs.map(ref => <a href={safeURL(ref.url)} key={ref.url} target="_blank" rel="noopener noreferrer">
+    {!!remainingRefs.length && <details className="research-original"><summary>项目参考图（未分方向）</summary>
+      <div className="ref-row">{remainingRefs.map(ref => <a href={safeURL(ref.url)} key={ref.url} target="_blank" rel="noopener noreferrer">
         <img className="ref-art media-reference" src={safeURL(ref.url)} alt={ref.name} /><span>{ref.name}</span>
       </a>)}</div>
     </details>}

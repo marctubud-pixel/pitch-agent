@@ -150,14 +150,24 @@ process.stdin.on('end',()=>{
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
- if(input.includes('视觉参考原图登记')){
+ if(input.includes('视觉参考检索词')){
+   const ctx=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   body={queries:[ctx.previousQueries?.length?'tea cup':'tea ceremony']};
+ } else if(input.includes('公开参考包独立评分')){
+   const ctx=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   body={items:ctx.dimensions.map(d=>({dimension:d,score:ctx.role==='brand' && ctx.references.some(r=>r.query==='tea ceremony')?3:4,evidence:'瓶口的色块与当前产品层次'})),hardReject:''};
+ } else if(input.includes('公开参考包对抗')){
+   body={issue:'',evidence:'核对瓶口和品牌色'};
+ } else if(input.includes('公开参考包独立裁定')){
+   body={decisions:['visual','brand','user','spread'].map(role=>({role,accepted:false,reason:'已核原票'})),compatible:true,reason:'画面与用途互补'};
+ } else if(input.includes('视觉参考原图登记')){
    const rows=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    body={observations:rows.map(r=>({source:r.source,visible:'原图可见的画面特征'}))};
  } else if(input.includes('视觉负责人分派参考图')){
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:packet.directions.map((d,i)=>{
-     const refs=packet.sources.filter(s=>s.name.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
-     const use=r=>({source:r.source,borrow:'参考图可见的局部',apply:'作为本案用色依据'});
+     const refs=packet.sources.filter(s=>s.searchDirection===d.name || s.name.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
+     const use=r=>({source:r.source,borrow:'参考图可见的局部',apply:'作为本案用色依据',why:'帮助说明产品特征',avoid:'不沿用对方的标志与瓶标图案'});
      return {direction:d.name,main:refs.slice(0,1).map(use),auxiliary:refs.slice(1,3).map(use),gap:refs.length?'':'缺原图'};
    })};
  } else if(action==='image' && args.includes('--output-schema')){
@@ -192,7 +202,7 @@ process.stdin.on('end',()=>{
  console.log('{"type":"turn.completed"}');
 });`;
 
-async function fixture(t, action) {
+async function fixture(t, action, options={}) {
   const root = await mkdtemp(join(tmpdir(),'nightflight-model-test-'));
   t.after(()=>rm(root,{recursive:true,force:true}));
   const home = join(root,'home'),dir=join(root,'attempt'),binary=join(root,'fake-codex');
@@ -208,7 +218,7 @@ async function fixture(t, action) {
       return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<html><title>合成行业报告</title><p>本次样本单列礼盒用途。</p></html>')};
     },
   };
-  const runner = createStageRunner({binary,codexHome:home,model:'fixture',researchDependencies});
+  const runner = createStageRunner({binary,codexHome:home,model:'fixture',researchDependencies,...options});
   const project = {title:'测试茶',brief:'制作测试茶的包装概念稿',mode:'collab',attachments:[],artifacts:[],directions:['山风','晨雾','旧街'],choice:'晨雾'};
   return {home,dir, project, requests, run:(stage,overrides={})=>runner({stage,dir,project,...overrides})};
 }
@@ -380,6 +390,36 @@ test('collaboration generates the chosen direction using the current thread PNG 
   assert.match(result.artifacts[0].name,/^visual-2-/);
   assert.deepEqual(result.artifacts.slice(0,3).map(a=>a.visual.recommended),[false,true,false]);
   assert.match(result.artifacts[4].text,/晨雾/);
+});
+test('empty uploads automatically acquire public bytes and deliver their provenance with the matching visual',async t=>{
+  const bytes=Buffer.from(png,'base64'), sha256=createHash('sha256').update(bytes).digest('hex');
+  let calls=0;
+  const first=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC','base64');
+  const f=await fixture(t,'image',{visualSearch:async ({query,dir})=>{
+    calls++; assert.equal(query,calls===1?'tea ceremony':'tea cup');
+    const fetched=calls===1?first:bytes;
+    const path=join(dir,'source.png');
+    await writeFile(path,fetched);
+    return [{path,name:'tea.png',sha256:createHash('sha256').update(fetched).digest('hex'),byteLength:fetched.length,mediaType:'image/png',query,pageUrl:'https://gallery.example/tea',sourceUrl:'https://gallery.example/tea.png'}];
+  }});
+  const {artifacts}=await f.run('visual');
+  const original=artifacts.find(a=>a.visual?.role==='reference');
+  assert.equal(calls,2);
+  assert.equal(original.visual.direction,'晨雾');
+  assert.deepEqual(await readFile(join(f.dir,original.name)),bytes);
+  const mains=artifacts.filter(a=>a.visual?.role==='main');
+  assert.equal(mains.length,3);
+  for(const main of mains) {
+    const {priorAdmissions,admission}=main.visual.referenceHandoff;
+    assert.equal(priorAdmissions[0].passed,false);
+    assert.equal(admission.votes.length,4);
+    assert.equal(admission.passed,true);
+    const [ref]=main.visual.referenceHandoff.references;
+    assert.equal(ref.pageUrl,original.visual.pageUrl);
+    assert.equal(ref.name,original.name);
+  }
+  const inputs=(await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
+  assert.deepEqual(inputs.map(i=>i.received),[[sha256],[sha256],[sha256]]);
 });
 test('reference handoff rejects missing primary, duplicated originals and a reassigned private image before dispatch',async()=>{
   const {selectVisualReferences}=await import('./visual-references.mjs');
@@ -566,12 +606,13 @@ test('extracts a real uploaded PDF with the pinned local runtime and passes its 
 
 test('visual batch ranks only eligible images, resolves ties and leaves an unsuccessful batch open', async () => {
   const { reviewVisualBatch } = await import('./visual-batch.mjs');
-  async function rank(scores, blocked, packaging = false) {
+  async function rank(scores, blocked, packaging = false, findComparators) {
     return reviewVisualBatch({
+      findComparators, makeBoard:async (_images,refs)=>({name:refs[0].name+' board'}),
       direction: '产品', context: '测试', images: [1,2,3].map(n => ({sha256: String(n)})),
       call: async (_prompt, _images, schema) => {
         if (schema.properties.first) return {parsedOutput:{first:'一瓶茶',action:'水入杯',words:'无糖',alternative:'不确定'}};
-        if (schema.properties.indices) return {parsedOutput:{packaging,indices:[]}};
+        if (schema.properties.indices) return {parsedOutput:{packaging,indices:_images.length?[1]:[]}};
         const fields = schema.properties.items.items.properties;
         const items = scores.map((score, i) => ({
           candidate: i+1, reason: '测试依据',
@@ -586,6 +627,9 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
   assert.equal((await rank([5,3,3], [1])).winner, null);
   const missing = await rank([5,5,5],[],true);
   assert.equal(missing.winner,null);
+  const searched=await rank([5,5,5],[],true,async()=>[{name:'公开同类正面对照',sha256:'comparator'}]);
+  assert.equal(searched.winner,3);
+  assert.equal(searched.board,'公开同类正面对照 board');
   assert.match(missing.candidates[0].research,/补充同类/);
   await assert.rejects(rank([4,0,5], []), /分数无效/);
 });

@@ -18,6 +18,7 @@ import { Icon } from './Icon';
 function documentTitle(p: Project, file: Artifact) {
   if (isDeckPreview(file)) return '提案预览';
   if (file.kind === 'pptx') return '可编辑提案';
+  if (file.visual?.role === 'reference') return visualCaption(p, file) + ' · 参考原图';
   if (file.kind === 'image') return visualCaption(p, file) + ' · 概念稿';
   return file.text?.match(/^# (.+)$/m)?.[1] || STAGE_BY_ID[file.stage].name + '原稿';
 }
@@ -42,7 +43,7 @@ export function Workspace({
     done = STAGES.filter((s) => phase(p, s.id) === 'done');
   const pending = STAGES.filter((s) => phase(p, s.id) !== 'done'),
     latest = p.events.at(-1)?.text;
-  const images = p.artifacts.filter((a) => a.kind === 'image' && a.visual?.role !== 'comparison'),
+  const images = p.artifacts.filter((a) => a.kind === 'image' && a.visual?.role !== 'comparison' && a.visual?.role !== 'reference'),
     docs = p.artifacts.filter((a) => a.kind === 'text' && !isDeckPreview(a)),
     decks = p.artifacts.filter((a) => a.kind === 'pptx');
   const preview = p.artifacts.find(isDeckPreview);

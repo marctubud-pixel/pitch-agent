@@ -7,7 +7,7 @@ function schema(fields) {
   }};
 }
 
-export async function reviewVisualBatch({call, direction, images, context, sources = [], makeBoard}) {
+export async function reviewVisualBatch({call, direction, images, context, sources = [], findComparators, makeBoard}) {
   if (images.length !== 3 || new Set(images.map(img => img.sha256)).size !== 3) throw Error('同方向需要三张不同的主视觉原图');
   const blindFields = ['first','action','words','alternative'];
   const blindSchema = {type:'object',additionalProperties:false,properties:Object.fromEntries(blindFields.map(k=>[k,text])),required:blindFields};
@@ -22,19 +22,26 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
   const references = [], selectionThreads = [];
   let packaging;
   // Three candidates and one comparison board leave four places for original comparators.
-  for (let offset=0; offset<Math.max(sources.length,1) && references.length<4; offset+=4) {
-    const group=sources.slice(offset,offset+4);
-    const selection = await call('根据本案载体和图片内容判定是否为包装任务。仅选择与本方向同品类、可见包装正面的独立商品参考；排除本案原稿、标志、跨行业技法与非商品图。按适用性排序，用从1开始的原图序号返回，无合适图时返回空数组。',
-      group,{type:'object',additionalProperties:false,properties:{packaging:{type:'boolean'},indices:{type:'array',items:numeric}},required:['packaging','indices']},
-      {rules:[],assignment:'核对同类参考',context:context+' 当前方向：'+direction+' 输入图片按序：'+JSON.stringify(group.map(s=>s.name))});
-    const result = selection.parsedOutput;
-    if (typeof result?.packaging!=='boolean' || (packaging!==undefined && packaging!==result.packaging) || !Array.isArray(result.indices) ||
-      !result.indices.every(i=>Number.isInteger(i)&&i>0&&i<=group.length) || new Set(result.indices).size!==result.indices.length) throw Error('同类参考指向无效');
-    packaging=result.packaging;
-    selectionThreads.push(selection.threadId);
-    for (const i of result.indices) {
-      if (references.length<4 && !references.some(s=>s.sha256===group[i-1].sha256)) references.push(group[i-1]);
+  async function assessSources(pool) {
+    for (let offset=0; offset<Math.max(pool.length,1) && references.length<4; offset+=4) {
+      const group=pool.slice(offset,offset+4);
+      const selection = await call('根据本案载体和图片内容判定是否为包装任务。仅选择与本方向同品类、可见包装正面的独立商品参考；排除本案原稿、标志、跨行业技法与非商品图。按适用性排序，用从1开始的原图序号返回，无合适图时返回空数组。',
+        group,{type:'object',additionalProperties:false,properties:{packaging:{type:'boolean'},indices:{type:'array',items:numeric}},required:['packaging','indices']},
+        {rules:[],assignment:'核对同类参考',context:context+' 当前方向：'+direction+' 输入图片按序：'+JSON.stringify(group.map(s=>s.name))});
+      const result = selection.parsedOutput;
+      if (typeof result?.packaging!=='boolean' || (packaging!==undefined && packaging!==result.packaging) || !Array.isArray(result.indices) ||
+        !result.indices.every(i=>Number.isInteger(i)&&i>0&&i<=group.length) || new Set(result.indices).size!==result.indices.length) throw Error('同类参考指向无效');
+      packaging=result.packaging;
+      selectionThreads.push(selection.threadId);
+      for (const i of result.indices) {
+        if (references.length<4 && !references.some(s=>s.sha256===group[i-1].sha256)) references.push(group[i-1]);
+      }
     }
+  }
+  await assessSources(sources);
+  if (packaging && !references.length && findComparators) {
+    const extra=await findComparators();
+    if (extra.length) await assessSources(extra);
   }
   const missing = packaging && !references.length;
   const board = references.length ? await makeBoard(images,references) : null;

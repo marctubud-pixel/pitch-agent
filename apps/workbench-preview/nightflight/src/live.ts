@@ -21,7 +21,9 @@ export interface Artifact extends Asset {
     candidate?: number; mean?: number; recommended?: boolean; blocked?: boolean; reason?: string;
     scores?: {role:string; score:number; reason:string}[];
     blind?: BlindReading; edit?: string; research?: string; references?: string[];
-    role: 'comparison' | 'sketch' | 'main' | 'extension' | 'mockup';
+    sha256?: string; pageUrl?: string; sourceUrl?: string; title?: string;
+    referenceHandoff?: { admission?: { passed: boolean; ruling: {reason: string}; votes: {role: string; items: {dimension: string; score: number | null; evidence: string}[]}[] }; references: { why?: string; avoid?: string; role: 'main' | 'auxiliary' | 'sharedBrand'; name: string; sha256: string; borrow: string; apply: string }[] };
+    role: 'reference' | 'comparison' | 'sketch' | 'main' | 'extension' | 'mockup';
     output?: 'packaging' | 'kv';
     format?: 'portrait' | 'landscape';
   };
