@@ -12,6 +12,7 @@ import {verifyFinalVisualOriginal} from './final-visual-original.mjs';
 import {verifySketchOriginal} from './sketch-original.mjs';
 import {verifyReviewedSketchOriginal} from './sketch-review-original.mjs';
 import {requireCurrentSketchGeneration} from './sketch-authority.mjs';
+import {REVIEW_PURPOSES} from './sketch-review-v2.mjs';
 import {createImageEvidenceStore} from './image-evidence.mjs';
 import {briefVisualRequirements} from './brief-visual-requirements.mjs';
 import {visualMethod} from './visual-a-service.mjs';
@@ -28,6 +29,24 @@ function requestIdentity(value){need(value&&equal(Object.keys(value).sort(),keys
 const semantic=p=>{const c=semanticConfiguration(p);return {epoch:c.epoch,configurationHash:c.configurationHash};};
 const fact=r=>structuredClone({...r,kind:'originals_read',executionAllowed:false,semanticApproval:false,humanApproval:false,scope:'Current native B physical originals only; not layout or final delivery approval. Diagnostic JSON is not a capability.'});
 export async function requireCurrentBOriginals(token,request){const p=proofs.get(token);need(p&&!p.state.closed,'B_ORIGINAL_TOKEN_REQUIRED');const expected=requestIdentity(request);need(equal(expected,p.request),'B_ORIGINAL_IDENTITY_CHANGED');const current=await p.inspect(expected);p.checkDatabase();need(equal(p.record,current),'B_ORIGINAL_SOURCE_CHANGED');return fact(current);}
+
+// The reviewed original already covers every panel and handoff job in its run.
+export function sketchProductionJobsForDeck(jobs,generationId,reviewed) {
+ const remaining=new Set(reviewed.reports.map(report=>report.jobId));
+ need(reviewed.generationId===generationId && remaining.size===reviewed.reports.length,'B_ORIGINAL_SKETCH_REVIEW_CHANGED');
+ const production=[];
+ for(const job of jobs) {
+  if(job.generationId!==generationId || job.status!=='succeeded')continue;
+  if(REVIEW_PURPOSES.includes(job.purpose)) {
+   need(job.reviewRunId===reviewed.reviewRunId && remaining.delete(job.id),'B_ORIGINAL_SKETCH_REVIEW_CHANGED');
+  } else {
+   need(['sketch_owner','sketch_plan','image_candidate'].includes(job.purpose),'B_ORIGINAL_SKETCH_REVIEW_CHANGED');
+   production.push(job);
+  }
+ }
+ need(remaining.size===0,'B_ORIGINAL_SKETCH_REVIEW_CHANGED');
+ return production;
+}
 
 /** Only a real native store and real native image store can establish this proof. No caller verifier. */
 export function createBPhysicalOriginalReceiver(configuration){
@@ -80,8 +99,11 @@ export function createBPhysicalOriginalReceiver(configuration){
     requireCurrentSketchGeneration(p,generation,copyDeliveryEnvelope,{complete:true});
     const dossier=p.referenceDossiers?.find(d=>d.id===generation.source.dossierId);need(dossier,'B_ORIGINAL_REFERENCE_REQUIRED');
     await verifyOrdinaryReferenceProject(p,dossier,{executionRoot:root,imageStore});
-    for(const job of p.jobs.filter(j=>j.generationId===generation.id&&j.status==='succeeded'))sketches.push(await verifySketchOriginal(p,generation,job,{executionRoot:root,imageStore}));
-    sketches.push(await verifyReviewedSketchOriginal(p,sketch,{executionRoot:root,imageStore}));
+    const reviewed=await verifyReviewedSketchOriginal(p,sketch,{executionRoot:root,imageStore});
+    for(const job of sketchProductionJobsForDeck(p.jobs,generation.id,reviewed)){
+     sketches.push(await verifySketchOriginal(p,generation,job,{executionRoot:root,imageStore}));
+    }
+    sketches.push(reviewed);
     const sketchBody=await readArtifactContent(p,sketch.id,root);need(equal(sketchBody.content,sketch.sketchGeneration),'B_ORIGINAL_SKETCH_CHANGED');verifiedSketches.add(sketch.id);
     }
     const jobs=p.jobs.filter(j=>j.finalVisualRunId===r.id&&FINAL_VISUAL_PURPOSES.includes(j.purpose));

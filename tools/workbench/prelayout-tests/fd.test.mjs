@@ -3,3 +3,28 @@ import {openStore} from '../store.mjs';import {createProposalPrelayoutNative} fr
 function own(proof){const root=realpathSync(mkdtempSync(join(tmpdir(),'prelayout-fd-'))),dbPath=join(root,'db');writeFileSync(dbPath,'');const {dev,ino}=statSync(dbPath),store=openStore(dbPath,proof?{openedFileProof:true}:{});return {store,config:{store,dbPath,pin:{dev,ino},executionRoot:root,imageRoot:join(root,'images'),consumerBinding:{providerId:'owned',model:'no-model',role:'references-lead'}}};}
 test('actual FD program constructor remains read-only/off and refuses false pin, copied store facade, callbacks and DTO flags',async t=>{if(process.platform!=='darwin'){assert.throws(()=>own(true),{code:'STORE_OPENED_FILE_UNSUPPORTED'});t.diagnostic('Platform refusal only; actual-FD positive is exercised on Darwin.');return;}const {store,config}=own(true);t.after(()=>store.close());const r=createProposalPrelayoutNative(config);assert.equal(r.capability().executionAllowed,false);assert.equal(r.capability().configured,false);const binding={providerId:'component-provider',model:'component-model',role:'proposal-director'},operatorConfig={adapter:'workbench-model-http-v1',endpoint:'http://127.0.0.1:1/model',model:binding.model,serviceIdentity:'owned-capability-only',authentication:{kind:'none'},allowLoopbackHttp:true,timeoutMs:1000,maxRequestBytes:8*1024*1024,maxResponseBytes:4*1024*1024,maxOutputBytes:1024*1024,vision:true,envelopes:['proposal-prelayout-v1']},configured=createProposalPrelayoutNative({...config,binding,provider:{adapter:operatorConfig.adapter,model:binding.model,operatorConfig},executionAllowed:true,prelayoutExecutionAllowed:true});assert.equal(configured.capability().configured,true);assert.equal(configured.capability().executionAllowed,true);configured.close();await assert.rejects(r.consumeCheck({protocol:'proposal-prelayout-current-check-v1',valid:true}),{code:'PRELAYOUT_PRIVATE_TOKEN_REQUIRED'});for(const bad of [{...config,pin:{...config.pin,ino:config.pin.ino+1}},{...config,store:new Proxy(store,{})},{...config,verifier:()=>true},{...config,valid:true}])assert.throws(()=>createProposalPrelayoutNative(bad));r.close();await assert.rejects(r.consumeCheck({}),{code:'PRELAYOUT_CLOSED'});});
 test('a path-only ordinary native store cannot acquire report qualification',t=>{const {store,config}=own(false);t.after(()=>store.close());assert.throws(()=>createProposalPrelayoutNative(config));});
+
+import {sketchProductionJobsForDeck} from '../generic-deck-b-original-receiver.mjs';
+
+test('deck separates sketch production originals from the reviewed panel and handoff originals',()=>{
+ const generationId='generation',reviewRunId='review';
+ const job=(id,purpose,extra={})=>({id,purpose,generationId,status:'succeeded',...extra});
+ const production=[job('producer','sketch_owner'),job('consumer','sketch_owner'),job('plan','sketch_plan'),job('image','image_candidate')];
+ const panel=job('panel','sketch_review_v2',{reviewRunId});
+ const handoff=job('handoff','sketch_refinement_handoff',{reviewRunId});
+ const reviewed={generationId,reviewRunId,reports:[{jobId:panel.id},{jobId:handoff.id}]};
+ const jobs=[...production,panel,handoff];
+ const select=(items,proof=reviewed)=>sketchProductionJobsForDeck(items,generationId,proof);
+ assert.deepEqual(select([...jobs,{...panel,generationId:'other'}]),production);
+ const changed={code:'B_ORIGINAL_SKETCH_REVIEW_CHANGED'};
+ for(const invalid of [
+  [...production,panel],
+  [...jobs,panel],
+  [...jobs,job('extra','sketch_review_v2',{reviewRunId})],
+  [...production,{...panel,reviewRunId:'other'},handoff],
+  [...production,{...panel,status:'queued'},handoff],
+  [...jobs,job('unrecognized','future_purpose')]
+ ])assert.throws(()=>select(invalid),changed);
+ assert.throws(()=>select(jobs,{...reviewed,reports:[...reviewed.reports,reviewed.reports[0]]}),changed);
+ assert.throws(()=>select(jobs,{...reviewed,generationId:'other'}),changed);
+});
