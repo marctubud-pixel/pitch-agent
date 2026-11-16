@@ -189,7 +189,12 @@ test('a personal run waits for direction and current image adoption, saves user 
   service.close();
   service = createNightflight(options);
   assert.deepEqual(await project(), finished);
-  await action({ kind: 'research_again', expectedRevision: finished.revision });
+  await action({ kind: 'research_again', expectedRevision: finished.revision, researchOnly:true });
+  const deskReport = await wait('waiting');
+  assert.equal(deskReport.stage, 'research');
+  assert.equal(deskReport.research.ready, true);
+  assert.equal((await action({kind:'research_continue', expectedRevision:finished.revision})).status,409);
+  await action({kind:'research_continue', expectedRevision:deskReport.revision});
   const resumed = await wait('waiting');
   assert.equal(resumed.stage, 'copy');
   assert.equal(resumed.choice, null);

@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { headlineReviewProtocol, type CopyDuty, type Project } from '../live';
+import { headlineReviewProtocol, safeURL, type Artifact, type CopyDuty, type Project, type ResearchImage } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
@@ -62,7 +62,34 @@ function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
   );
 }
 
-export function ResearchFindings({ report }: { report: NonNullable<Project['research']> }) {
+function ResearchImageGallery({ images, artifacts }: { images: ResearchImage[]; artifacts: Artifact[] }) {
+  return (
+    <div className="research-image-gallery">
+      {images.map((image) => {
+        const original = artifacts.find((a) => a.stage === 'research' && a.kind === 'image' && a.name === image.name);
+        const url = original && safeURL(original.url);
+        return (
+          <figure key={image.sha256}>
+            {url ? (
+              <a href={url} target="_blank" rel="noopener noreferrer" aria-label={`放大查看${image.title}`}>
+                <img src={url} alt={image.title} loading="lazy" />
+              </a>
+            ) : <p className="pending">本版原图暂不可用</p>}
+            <figcaption>
+              <strong>{image.title}</strong>
+              <p>{image.observation}</p>
+              {/^https?:\/\//i.test(image.pageUrl) && (
+                <a href={image.pageUrl} target="_blank" rel="noopener noreferrer" aria-label={`查看${image.title}的出处`}>查看出处 ↗</a>
+              )}
+            </figcaption>
+          </figure>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ResearchFindings({ report, artifacts }: { report: NonNullable<Project['research']>; artifacts: Artifact[] }) {
   return (
     <ol className="findings">
       {report.findings.map((finding, i) => (
@@ -72,19 +99,25 @@ export function ResearchFindings({ report }: { report: NonNullable<Project['rese
             <h3>{finding.conclusion}</h3>
             <p>{finding.implication}</p>
             <details>
-              <summary>依据与来源</summary>
-              <p>{finding.evidence}</p>
-              <ul className="sources">
-                <li>
-                  {/^https?:\/\//i.test(finding.url) ? (
-                    <a href={finding.url} target="_blank" rel="noopener noreferrer">
-                      {finding.source || finding.url}
-                    </a>
-                  ) : (
-                    finding.source
-                  )}
-                </li>
-              </ul>
+              <summary>{finding.images?.length ? `查看竞品原图与依据（${finding.images.length}）` : '依据与来源'}</summary>
+              {finding.images?.length ? (
+                <ResearchImageGallery images={finding.images} artifacts={artifacts} />
+              ) : (
+                <>
+                  <p>{finding.evidence}</p>
+                  <ul className="sources">
+                    <li>
+                      {/^https?:\/\//i.test(finding.url) ? (
+                        <a href={finding.url} target="_blank" rel="noopener noreferrer">
+                          {finding.source || finding.url}
+                        </a>
+                      ) : (
+                        finding.source
+                      )}
+                    </li>
+                  </ul>
+                </>
+              )}
             </details>
           </div>
         </li>
@@ -101,7 +134,7 @@ function Research({ p, name }: { p: Project; name?: string }) {
     <section className="block" data-artifact={name}>
       <h2>关键发现</h2>
       {report?.findings.length ? (
-        <ResearchFindings report={report} />
+        <ResearchFindings report={report} artifacts={p.artifacts} />
       ) : (
         <Pending>
           {p.artifacts.some((a) => a.stage === 'research')

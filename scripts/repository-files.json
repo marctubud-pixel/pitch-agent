@@ -1483,6 +1483,7 @@
     "tools/nightflight/proposal-outline.test.mjs",
     "tools/nightflight/public-visual-search.mjs",
     "tools/nightflight/public-visual-search.test.mjs",
+    "tools/nightflight/research-competitors.mjs",
     "tools/nightflight/service.mjs",
     "tools/nightflight/service.test.mjs",
     "tools/nightflight/start.mjs",

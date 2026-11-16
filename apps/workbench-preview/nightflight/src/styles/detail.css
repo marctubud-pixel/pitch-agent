@@ -157,6 +157,14 @@ details p { font-size: 14.5px; }
 .research-finding .kv div { grid-template-columns: minmax(80px, 100px) minmax(0, 1fr); }
 .research-finding small { display: block; margin-top: 4px; color: var(--mute); }
 .research-finding a { text-decoration: underline; text-underline-offset: 3px; }
+.research-image-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(205px, 100%), 1fr)); gap: 24px 18px; margin: 12px 0 16px; }
+.research-image-gallery figure { margin: 0; min-width: 0; }
+.research-image-gallery figure > a { display: block; cursor: zoom-in; }
+.research-image-gallery img { display: block; width: 100%; height: clamp(190px, 26vw, 290px); object-fit: contain; }
+.research-image-gallery figcaption { margin-top: 8px; overflow-wrap: anywhere; }
+.research-image-gallery figcaption strong { font-size: 15px; }
+.research-image-gallery figcaption p { margin: 4px 0; }
+.research-image-gallery figcaption a { color: var(--mute); font-size: 13px; text-underline-offset: 3px; }
 .research-next { margin-top: 14px; }
 .research-action { padding: 18px 20px; background: var(--paper-2); margin-bottom: 28px; }
 .research-action label { display: block; font-weight: 600; margin-bottom: 8px; }

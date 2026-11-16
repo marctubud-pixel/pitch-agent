@@ -230,6 +230,18 @@ export function createNightflight({ root, runStage, runLayout }) {
                   .map((a) => a.text)
                   .join('\n'),
               };
+            if (previous?.research) {
+              const refs = previous.research.findings?.flatMap(f=>f.images ?? []) ?? [];
+              input.previousResearchImages = refs.map(ref=>{
+                const file = previous.artifacts.find(a=>a.stage==='research' && a.kind==='image' && a.name===ref.name);
+                check(file,'上一版竞品研究图片缺失',422);
+                const bytes = readFileSync(disk(p,file.storageKey));
+                check(hash(bytes)===ref.sha256,'上一版竞品研究图片发生变化',422);
+                const path = join(dir,'previous-'+filename(file.name));
+                writeFileSync(path,bytes,{flag:'wx',mode:0o600});
+                return {...ref,path,imageId:'ref_'+ref.sha256,byteLength:bytes.length,mediaType:mime[extname(file.name).toLowerCase()]};
+              });
+            }
           }
           if (p.stage === 'visual') {
             const last = p.versions.at(-1);
@@ -334,6 +346,14 @@ export function createNightflight({ root, runStage, runLayout }) {
           for (const ref of outputs.filter(file => file.visual?.role === 'reference')) {
             check(hash(readFileSync(disk(live, ref.storageKey))) === ref.visual.sha256, '公开参考原件与来源记录不一致', 422);
           }
+          if (p.stage === 'research') {
+            for (const ref of result.research?.findings?.flatMap(f=>f.images ?? []) ?? []) {
+              const file = outputs.find(a=>a.kind==='image' && a.name===ref.name);
+              check(file && [ref.sourceUrl,ref.pageUrl].every(url=>URL.canParse(url) && new URL(url).protocol==='https:') &&
+                ref.observation?.trim() && ref.title?.trim() && hash(readFileSync(disk(live,file.storageKey)))===ref.sha256,
+                '竞品观察需要本轮原图、来源和匹配的图片哈希',422);
+            }
+          }
           live.artifacts.push(...outputs);
           live.claim = null;
           live.owner = null;
@@ -341,8 +361,13 @@ export function createNightflight({ root, runStage, runLayout }) {
           if (p.stage === 'research') {
             live.research = researchHandoff(result.research, live);
             if (live.research.ready) {
-              note(live, '研究已形成有依据的判断，交给策略');
-              live.stage = 'strategy';
+              if (live.researchOnly) {
+                live.status = 'waiting';
+                note(live, '本轮研究已完成，可查看证据后进入策略');
+              } else {
+                note(live, '研究已形成有依据的判断，交给策略');
+                live.stage = 'strategy';
+              }
             } else {
               continueResearch(live);
             }
@@ -498,7 +523,7 @@ export function createNightflight({ root, runStage, runLayout }) {
       text = (input.text ?? '').trim();
     check(typeof text === 'string' && text.length <= 64000, '消息过长');
     const attachments = input.attachments ?? [];
-    const commandHash = hash(JSON.stringify([kind, text, attachments, input.expectedRevision]));
+    const commandHash = hash(JSON.stringify([kind, text, attachments, input.expectedRevision, ...(input.researchOnly === true ? [true] : [])]));
     if (opId) {
       check(safeId.test(opId) && !Object.hasOwn(Object.prototype, opId), '动作编号无效');
       if (Object.hasOwn(p.commands, opId)) {
@@ -506,7 +531,7 @@ export function createNightflight({ root, runStage, runLayout }) {
         return p;
       }
     }
-    if (kind === 'choice' || kind === 'adopt' || kind === 'research_again')
+    if (kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue')
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
     if (kind === 'choice') {
       check(
@@ -532,6 +557,13 @@ export function createNightflight({ root, runStage, runLayout }) {
       note(p, '用户采用本版视觉稿，继续本地排版');
       p.stage = 'layout';
       p.status = 'running';
+    } else if (kind === 'research_continue') {
+      check(p.stage === 'research' && p.status === 'waiting' && p.research?.ready && p.researchOnly,
+        '没有等待交接的研究成果', 409);
+      p.researchOnly = false;
+      p.stage = 'strategy';
+      p.status = 'running';
+      note(p, '已确认查看研究结果，继续策略');
     } else if (kind === 'research_again') {
       check(
         !p.claim &&
@@ -547,6 +579,7 @@ export function createNightflight({ root, runStage, runLayout }) {
       archiveVersion(p);
       p.researchQuestionAnswered = Boolean(continuing && (question || p.researchQuestionAnswered));
       p.researchFollowup = continuing;
+      p.researchOnly = input.researchOnly === true;
       p.artifacts = p.artifacts.filter((a) => a.stage === 'brief');
       p.stage = 'research';
       p.status = 'running';

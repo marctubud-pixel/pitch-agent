@@ -41,7 +41,7 @@ function socialPreview(bytes,base) {
   return urls;
 }
 
-export async function searchVisualImages({query,dir,signal}, {
+export async function searchVisualImages({query,dir,signal,pages}, {
   capture=capturePublicSource, search=searchPublicReferences,
 }={}) {
   if (typeof query !== 'string' || !query.trim() || query.length>180 || /[\x00-\x1f]/.test(query)) throw Error('参考检索词为空、过长或含控制字符');
@@ -74,21 +74,24 @@ export async function searchVisualImages({query,dir,signal}, {
     } catch { signal?.throwIfAborted(); }
   }
   try {
-    const {receipt}=await search({query,storeRoot:root,limits:{maxResults:3}});
-    for (const item of receipt.results) {
+    const candidates = pages ?? (await search({query,storeRoot:root,limits:{maxResults:3}})).receipt.results;
+    for (const item of candidates) {
       if (found.size>=3) break;
       try {
         const {record}=await acquire(item.url,1024*1024);
         if (record.mimeType!=='text/html') continue;
         const previews=socialPreview(await readFile(join(root,record.raw.file)),record.finalUrl);
         const images=record.extraction.images ?? [];
-        for (const image of [...previews,...images.filter(i=>i.discovery),...images.filter(i=>!i.discovery)].slice(0,2)) {
-          await collect(image.url,record.finalUrl,item.title);
+        const declared = [...previews,...images.filter(i=>i.discovery),...images.filter(i=>!i.discovery)];
+        // A proposed image is a hint. Only acquire URLs actually declared by the public page.
+        const ordered = [...new Set([...declared.filter(i=>i.url===item.imageUrl), ...declared].map(i=>i.url))];
+        for (const url of ordered.slice(0,pages ? 8 : 2)) {
+          await collect(url,record.finalUrl,record.extraction.title || item.title);
         }
       } catch { signal?.throwIfAborted(); }
     }
   } catch { signal?.throwIfAborted(); }
-  if (found.size>=3) return [...found.values()];
+  if (pages || found.size>=3) return [...found.values()];
   const api=new URL('https://commons.wikimedia.org/w/api.php');
   api.search=new URLSearchParams({action:'query',format:'json',generator:'search',gsrnamespace:'6',gsrlimit:'8',
     gsrsearch:query,prop:'imageinfo',iiprop:'url|mime|size'});

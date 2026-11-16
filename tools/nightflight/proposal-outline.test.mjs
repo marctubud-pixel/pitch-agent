@@ -79,6 +79,19 @@ test('collaborative adopted route and KV options do not expose other routes or i
   assert.doesNotMatch(deck.pages.map(p => p.content).join(' '), /春山入杯|青石入杯/);
 });
 
+test('only competitor images attached to accepted research reach the packaging and KV comparison page', async t => {
+  const { project, dir } = await fixture(t);
+  project.attachments = [];
+  project.layoutCompetitorReferences = [];
+  project.research.findings[0].images = [{name:'competitor.jpg'}, {name:'old-version.jpg'}];
+  project.artifacts.push({name:'competitor.jpg',stage:'research',kind:'image'},
+    {name:'unused.jpg',stage:'research',kind:'image'});
+  for (const kind of ['packaging','kv']) {
+    const outline=await buildProposalOutline({...project,proposalKind:kind},dir);
+    assert.deepEqual(outline.pages.find(p=>p.type_id==='competitors').images,['competitor.jpg']);
+  }
+});
+
 test('mixed, unclassified and negative briefs retain the legacy path; explicit options validate', async t => {
   const { project, dir } = await fixture(t);
   project.artifacts = [];
