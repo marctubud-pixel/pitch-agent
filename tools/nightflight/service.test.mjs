@@ -500,3 +500,29 @@ test('a saved finding can go to strategy for a conditional assessment while rese
   const empty=await legacyService(t,{stage:'research',research:{...research,findings:[]}},()=>{throw Error('unexpected')});
   assert.equal((await empty.action({kind:'research_continue',expectedRevision:1})).status,409);
 });
+
+test('auto hands conditional evidence to strategy and funds one targeted follow-up after a real return',async t=>{
+  const stages=[];
+  const finding={source:'报告',url:'https://example.org/report',evidence:'报告原文',passage:'报告原文',conclusion:'新品增加',implication:'先解决新品识别'};
+  const research={ready:false,findings:[finding],gaps:['渠道未定'],next:'可按新品识别推进'};
+  const reason='首销点是店内还是外卖列表，决定第一触点。';
+  const p=await legacyService(t,{stage:'research',mode:'auto',status:'failed',researchFollowup:true},async({stage,project,dir})=>{
+    stages.push(stage);
+    const name=stage+'.md';
+    await writeFile(join(dir,name),stage);
+    const artifacts=[{kind:'text',name,text:stage}];
+    if(stage==='strategy'){
+      assert.equal(project.research.conditional,true);
+      assert.deepEqual(project.research.gaps,research.gaps);
+      return {artifacts,researchReturn:reason};
+    }
+    if(stages.length>1) assert.equal(project.previousResearch.next,reason);
+    return {artifacts,research};
+  });
+  await p.action({kind:'retry'});
+  const state=await p.settled();
+  assert.deepEqual(stages,['research','strategy','research','strategy']);
+  assert.equal(state.status,'waiting');
+  assert.equal(state.autoStrategyResume,false);
+  assert.equal(state.research.next,reason);
+});

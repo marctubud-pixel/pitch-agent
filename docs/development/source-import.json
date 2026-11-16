@@ -2251,7 +2251,7 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "8ffe3eb42f835767000094418506ce839f7f078329641e72635dad00733858e5",
+      "sha256": "a7c1e6e5bb276136bd1e490d21926d1fb3b4a596bfc7dcad12c0eac1a6b18637",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
@@ -2263,7 +2263,7 @@
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "e0ee7b752a1398f2aadba8efe87d7c8e249d3cbcc933c514629950e355e78fb5",
+      "sha256": "ab1ef16a0d053aa01ff0f18fbdc5b7f4e536e307ac40bff18570cd705a38872e",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {

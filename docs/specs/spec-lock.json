@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.62.0",
-  "registrySha256": "858ca470c0597b6722f14f698294200c10e39f48a88d46676c09ad3173a64f3c",
+  "baselineVersion": "1.62.1",
+  "registrySha256": "fccd63b83776b9ae4025348516bfe4b439bb22b83a60ede362d13919544f8240",
   "entries": {
     "agent.proposal-director": {
       "version": "1.1.0",
@@ -25,10 +25,10 @@
       }
     },
     "agent.strategy-owner": {
-      "version": "1.6.0",
+      "version": "1.6.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/strategy-owner.md": "8d85bef80a1e3d4c836f453a3db83d1ee1fbc42590d32d99ae9dd7e6e30d209f"
+        "docs/agents/strategy-owner.md": "e9983cbcc408ae46c6e8e7f95e203fa2ebb894f27b783e486e6e6988e8c6c064"
       }
     },
     "agent.copy-owner": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "91d3a238fba7f7cb47cfcfa8ee480de008487709f496aa9c3b04838f23936212"
+        "docs/specs/nightflight-runtime.md": "e45a91e38ec7e95ea2db48f257eb38b93d247dd7de5690ddc3e1b30edc332fc5"
       }
     },
     "contract.nightflight-final-reader": {
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "378c567ca6b7aeda3dc2d361e67ebf03c4e254d2f8836a73f65fe28554821a9a",
+    "docs/specs/README.md": "9d27188b288454764f6efb5192ee73626ccc83013bc015e55a2bd08f0a6272d4",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
