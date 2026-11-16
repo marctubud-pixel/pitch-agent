@@ -698,8 +698,8 @@ test('packaging retries a short brand query, publishes its reviewed original and
 test('industry search switches short category terms and verifies segment data deep inside the report',async t=>{
   const f=await fixture(t,'research-report-lookup');
   const {research}=await f.run('research');
-  assert.deepEqual(research.searchScope.queries.slice(0,2),['即饮茶报告','茶饮报告']);
-  assert.deepEqual(research.searchScope.queries,['即饮茶报告','茶饮报告','茶叶包装']);
+  assert.deepEqual(research.searchScope.queries,['即饮茶报告','即饮茶','茶饮报告','茶饮','茶叶包装']);
+  assert.equal(research.searchScope.attempts[1].source,'199IT 报告目录');
   assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
 });
 
