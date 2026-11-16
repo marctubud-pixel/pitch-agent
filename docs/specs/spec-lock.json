@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.51.0",
-  "registrySha256": "0d53f4ca40f43e10eae3ffc6a841630124c7a649dadda46c1682354a1514d787",
+  "baselineVersion": "1.57.0",
+  "registrySha256": "78f97a487e43f70617bac082d2f5f50e645b0e658bec7b3cac43f3ecaced295e",
   "entries": {
     "agent.proposal-director": {
       "version": "1.1.0",
@@ -25,10 +25,10 @@
       }
     },
     "agent.strategy-owner": {
-      "version": "1.0.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/strategy-owner.md": "be43986012f3dd3e1d7446e451454261fa19fbf22459178716223106ef2a4534"
+        "docs/agents/strategy-owner.md": "8d85bef80a1e3d4c836f453a3db83d1ee1fbc42590d32d99ae9dd7e6e30d209f"
       }
     },
     "agent.copy-owner": {
@@ -109,10 +109,10 @@
       }
     },
     "page.strategy": {
-      "version": "1.3.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "a53614fb0387ec946a2362b13d7ba45e0817173f0868ee4578826b888e91b835"
+        "docs/pages/strategy.md": "07003c1de93d680461d0eb2831aa0b3b05c76dc278ca445c9d0b5c61a4e0bf9d"
       }
     },
     "page.themes": {
@@ -202,6 +202,13 @@
         "skills/design-research-lead/references/visual-boards.md": "09210d56294636dc3e9f98622a2134f10a99c8e2e6922468b1fa5beb9087be31"
       }
     },
+    "method.strategy-one-pager": {
+      "version": "1.5.0",
+      "lifecycle": "current",
+      "files": {
+        "skills/strategy-one-pager/SKILL.md": "56867ceb84569672f303128d4521941d3e02180399ab771f38a838c4bc7f791a"
+      }
+    },
     "method.visual": {
       "version": "1.4.0",
       "lifecycle": "current",
@@ -266,17 +273,17 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.22.0",
+      "version": "1.24.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "9f1af4bf06b956aae23e196dd9661a0fd56ef2428851dfe9e394db7a8e4039a6"
+        "docs/specs/nightflight-stage-output.md": "e33326a54025199082e410e9568596f61a6112db82c4a5650e6ba8358a5d31b5"
       }
     },
     "contract.workflow": {
-      "version": "1.1.1",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/workflows/提案工作流_现行规则.md": "89f8e279f2676b801aff9d8a998acb3a6fcb11b422f363dccac6c3b0c7be0afa"
+        "docs/workflows/提案工作流_现行规则.md": "6158c6504fc3388173d865727177655628bf0202d1ea2e3a0b8176fd202e493c"
       }
     },
     "contract.change": {
@@ -287,10 +294,10 @@
       }
     },
     "contract.decisions": {
-      "version": "1.0.2",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/decisions.md": "7c7df28d2962b26f398c4470e2a728e7308590e9f99486b2efb6243056189e37"
+        "docs/specs/decisions.md": "2cee2a4a8dcc10b2959735926238d01cfa09357647cda53b15660f4e58a673a5"
       }
     },
     "method.review": {
@@ -315,17 +322,17 @@
       }
     },
     "contract.organization": {
-      "version": "1.0.2",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/README.md": "48962752f9c7f858a587616f0af0a2dce3b0d8bd182962621373506e39e00935"
+        "docs/agents/README.md": "45881399aa07736cd884a37e480d2175515d32d9f5250ffa77da64e7ffc7bf3a"
       }
     },
     "contract.pages": {
-      "version": "1.4.1",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/README.md": "b9dbeece835a37a0dc52326deb2bf54756227e1ee94e8bbe1e250ed1da5fd52d"
+        "docs/pages/README.md": "debdf781a661d231a5168ad042ecea0d168bf66f1316fd3c3cec53d2399c1737"
       }
     },
     "contract.final-review": {
@@ -504,7 +511,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "7da18cb813c96e0828914bce93ec4f824ec8b809d4c08d3d71f9b73ed40910b4",
+    "docs/specs/README.md": "34c59ae26bd69760bf217a66ecb308dd19a576d31df567d8d46ab23926239d6c",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.51.0",
+  "baselineVersion": "1.57.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -56,12 +56,21 @@
       "kind": "agent",
       "title": "策略负责人",
       "path": "docs/agents/strategy-owner.md",
-      "version": "1.0.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"
       ],
-      "stage": "strategy"
+      "stage": "strategy",
+      "scopedMethod": {
+        "method": "method.strategy-one-pager",
+        "scope": [
+          "packaging",
+          "kv",
+          "packaging+kv"
+        ],
+        "runtime": "nightflight"
+      }
     },
     {
       "id": "agent.copy-owner",
@@ -221,13 +230,13 @@
       "kind": "page",
       "title": "策略",
       "path": "docs/pages/strategy.md",
-      "version": "1.3.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.strategy-owner",
         "contract.ui"
       ],
-      "confirmedScope": "已确认要求汇编；本次整理待核对",
+      "confirmedScope": "夜航按策略稿身份展示一页策略或三板块稿，研究待补时返回待查问题",
       "routeKey": "strategy"
     },
     {
@@ -386,6 +395,16 @@
       "dependsOn": []
     },
     {
+      "id": "method.strategy-one-pager",
+      "kind": "method",
+      "title": "包装与 KV 一页策略",
+      "path": "skills/strategy-one-pager/SKILL.md",
+      "version": "1.5.0",
+      "sourceVersion": "v1.5-20261116",
+      "lifecycle": "current",
+      "dependsOn": []
+    },
+    {
       "id": "method.visual",
       "kind": "method",
       "title": "视觉开发负责人Skill",
@@ -463,7 +482,7 @@
       "kind": "contract",
       "title": "夜航七阶段产出展示规范",
       "path": "docs/specs/nightflight-stage-output.md",
-      "version": "1.22.0",
+      "version": "1.24.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",
@@ -476,7 +495,7 @@
       "kind": "contract",
       "title": "七阶段现行工作流",
       "path": "docs/workflows/提案工作流_现行规则.md",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -494,7 +513,7 @@
       "kind": "contract",
       "title": "已确认决定与待定范围",
       "path": "docs/specs/decisions.md",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -539,7 +558,7 @@
       "kind": "contract",
       "title": "Agent组织与职责总览",
       "path": "docs/agents/README.md",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"
@@ -550,7 +569,7 @@
       "kind": "contract",
       "title": "页面基线与责任索引",
       "path": "docs/pages/README.md",
-      "version": "1.4.1",
+      "version": "1.5.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.workbench-ui-owner",

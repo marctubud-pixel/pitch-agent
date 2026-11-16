@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { validateStrategyAdvice, validateResearchDigest, reviewedFindings, missingResearchCoverage } from './research-digest.mjs';
+import { strategyCarrier } from './strategy-one-pager.mjs';
 import { createStageRunner } from './codex-runner.mjs';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
@@ -183,6 +184,22 @@ process.stdin.on('end',()=>{
        body.accepted=labels.map((_,i)=>i);
      }
    } else process.exit(12);
+ }
+ if(action.startsWith('onepager-')) {
+   const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   if (!input.includes('包装与 KV 一页策略') || packet.researchAdvice[0]?.findingNumbers?.join()!=='2' ||
+       packet.findings.map(f=>f.findingNumber).join()!=='2' || !packet.brief.includes('测试茶')) process.exit(55);
+   const derivation={text:'现有场景资料支持在盒面先放品类名。',findingNumbers:[action==='onepager-wrong-ref'?1:2]};
+   const outcome={coreStrategy:'让顾客在货架前一眼认出这盒原味茶。（发现2）',insight:'顾客想选原味，又担心买到调味饮品。',brandRole:'让品类和配方读得清。',proposition:'优先表达原味。',actions:['正面放大茶类名。','品名旁写口味。','侧面并列配料。'],
+     touchpoints:[{kind:'front',name:'正面',action:'展示品类。'},{kind:'side',name:'侧面',action:'解释配料。'},{kind:'back',name:'背面',action:'放产品说明。'}],
+     metrics:[{name:'待测：品类识别率',method:'货架盲看记录正确人数占比（待测）'},{name:'口味复述准确率',method:'看图后口述并计数'},{name:'配料查找时间',method:'计时查找配料用时'}],
+     constraints:'价格与配料属于任务卡的模拟设定。',opportunity:derivation,decision:derivation,priority:derivation,intersection:'货架辨认和原味表达相交。'};
+   if (packet.carrier==='kv') outcome.touchpoints=[];
+   if (packet.carrier!=='packaging') outcome.touchpoints.push({kind:'kv',name:'门店海报',action:'用瓶身衔接货架。'});
+   if(action==='onepager-wrong-touch') outcome.touchpoints.pop();
+   if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
+   if(action==='onepager-internal') outcome.insight='模拟设定的测试茶。';
+   body={outcome:action==='onepager-return'?{researchReturn:'请补查本地渠道的实际接触场景'}:outcome};
  }
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
@@ -626,6 +643,7 @@ test('follow-up rechecks earlier evidence, considers user feedback and does not 
 
 test('strategy returns specific research question when the handoff cannot support a decision', async (t) => {
   const f = await fixture(t, 'strategy-return');
+  f.project.brief='为测试茶制作一条 TVC';
   assert.match((await f.run('strategy')).researchReturn, /实际接触场景/);
 });
 test('final reads native slide XML, excludes bulky deck JSON and records missing rendered pages',async t=>{
@@ -806,4 +824,41 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
   assert.match(artifacts[0].text,/研究载体：包装与KV/);
   assert.match(research.gaps.join(' '),/包装仅核实 0 种同品类创作策略/);
   assert.match(research.gaps.join(' '),/KV 缺少实际发布的主画面/);
+});
+
+
+for (const action of ['ok','kv','linked','return','wrong-ref','wrong-touch','scored','internal']) {
+  test('one-page packaging strategy from verified findings: '+action,async t=>{
+    const f=await fixture(t,'onepager-'+action);
+    if (action==='kv') f.project.brief='制作测试茶的春节KV';
+    if (action==='linked') f.project.brief='设计测试茶包装与KV';
+    const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
+    f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
+    if (!['ok','kv','linked','return'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    const result=await f.run('strategy');
+    if (action==='return') {
+      assert.match(result.researchReturn,/实际接触场景/);
+      assert.equal(result.strategy,undefined);
+      return;
+    }
+    const md=result.artifacts[0].text,front=md.split('## 研究结论')[0];
+    assert.deepEqual(result.strategy.findingNumbers,[2]);
+    assert.match(md,/## 核心策略[\s\S]*## 衡量方式[\s\S]*## 研究结论[\s\S]*研究 2/);
+    assert.ok(md.includes(action==='kv'?'## 视觉与 KV 触点':action==='linked'?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
+    assert.equal(md.includes('- 正面：'),action!=='kv');
+    assert.equal(md.includes('- 门店海报：'),action==='kv' || action==='linked');
+    assert.equal(front.match(/（待测）/g)?.length,3);
+    assert.doesNotMatch(front,/模拟设定|待测：|发现2/);
+    assert.doesNotMatch(result.strategy.focus,/发现2/);
+    assert.match(md.split('## 推导依据')[1],/模拟设定/);
+  });
+}
+
+test('strategy carrier handles excluded and linked outputs while preserving other briefs',()=>{
+  const detect=brief=>strategyCarrier({brief,artifacts:[]},{texts:[]});
+  assert.equal(detect('设计春节KV，包装仅作参考'),'kv');
+  assert.equal(detect('制作包装，不需要包装与KV联动'),'packaging');
+  assert.equal(detect('制作包装与KV'),'packaging+kv');
+  assert.equal(detect('做包装，另需设计海报'),'packaging+kv');
+  assert.equal(detect('只需要制作TVC，参考包装与KV'),null);
 });

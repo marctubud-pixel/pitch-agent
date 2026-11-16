@@ -57,6 +57,16 @@ details p { font-size: 14.5px; }
 .two-col > div { padding: 16px 0 18px; border-top: 1px solid var(--line-soft); }
 .two-col h3 { margin-bottom: 4px; }
 
+/* 固定四栏标题的夜航字形，离线预览也使用同一组粗宋字。 */
+@font-face {
+  font-family: "Nightflight Strategy Headings";
+  src: url("./fonts/noto-serif-sc-strategy-bold.ttf?inline") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+.strategy-one-pager .two-col h3 { font-family: "Nightflight Strategy Headings", var(--serif); }
+
 .dir-grid { overflow: hidden; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); border: var(--rule); border-radius: 3px; }
 .dir { display: flex; flex-direction: column; gap: 10px; padding: 20px 20px 22px; min-width: 0; border-right: var(--rule); margin-right: -1.5px; border-bottom: var(--rule); margin-bottom: -1.5px; }
 .dir h3 { font-size: 28px; line-height: 1.3; }

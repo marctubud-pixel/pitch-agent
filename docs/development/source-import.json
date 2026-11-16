@@ -2303,8 +2303,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "6806b90a096d2fdfd38d25920eeca6a639a9e4218bf6f86da942dfe498eeee15",
-      "reason": "研究图片证据按逐图观察、创作者说明和本案启发分层，策略建议可就地核对依据。"
+      "sha256": "4df9cf019b2c8a34c77efbf9ee296df3118881ec2c56aac5687118a0f9145f88",
+      "reason": "研究图片证据按逐图观察、创作者说明和本案启发分层，策略建议可就地核对依据。 策略一页纸四个小标题使用随项目提供的夜航粗宋字形。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {
       "sha256": "5a52a2343c4c95ac3e08e4098a16e8ce005e5e537b3ad69a7c0868ff75299e42",

@@ -100,5 +100,11 @@
     "path": "skills/ui-review/references/visual-evidence.md",
     "sourceVersion": "原版无版本号；2026-11-11字节快照",
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
+  },
+  {
+    "source": "2026-11-16 用户确认策略阶段定稿为直接盲推。",
+    "path": "skills/strategy-one-pager/SKILL.md",
+    "sourceVersion": "v1.5-20261116",
+    "sha256": "56867ceb84569672f303128d4521941d3e02180399ab771f38a838c4bc7f791a"
   }
 ]
