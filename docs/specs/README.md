@@ -1,6 +1,6 @@
 # 提案工作台 · 规范基线
 
-基线版本 **1.51.0**，整理日期 **2026-11-16**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、研究、视觉、UI 三个固定 Skill 及两份本地提案编稿／排版试行方法、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
+基线版本 **1.52.0**，整理日期 **2026-11-16**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、研究、视觉、UI 三个固定 Skill、包装／KV 一页策略 Skill 及两份本地提案编稿／排版试行方法、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
 
 先看[Agent组织与职责总览](../agents/README.md)，了解业务与开发两条统筹线、各岗位内部执行者和独立评审关系；再看[页面基线与责任索引](../pages/README.md)，按页面找责任、既有结构、实际路由和待定范围。
 
@@ -16,7 +16,7 @@
 | 比稿统筹 | [比稿 Agent](../agents/proposal-director.md) | [项目概览](../pages/overview.md) | 逐阶段及排版前简核；包装、KV 使用[客户提案逐页编稿](../../skills/proposal-structure-pilot/SKILL.md)试行 |
 | 简报 | [简报负责人](../agents/brief-owner.md) | [新建](../pages/new.md)、[简报与任务](../pages/brief.md) | 任务卡、确认和版本合同 |
 | 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r12](../../skills/design-research-lead/SKILL.md) |
-| 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | 两项基础要求，三个板块；无强制复杂Skill |
+| 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | [包装／KV 一页策略](../../skills/strategy-one-pager/SKILL.md)，其他载体沿用三板块 |
 | 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [三方向创作、四岗盲评与交付](copy-generation.md) |
 | 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.4.0](../../skills/visual-development-lead/SKILL.md) |
 | 排版 | [排版负责人](../agents/layout-owner.md) | [整案排版](../pages/layout.md) | 据[客户逐页稿](../plans/客户提案结构与排版交接_试行.md)按[排版方法](../../skills/proposal-layout-pilot/SKILL.md)匹配 Deck Studio 模板。夜航包装、KV 排版已接同一页库 |
@@ -60,7 +60,7 @@ Git最初无提交和远程是历史起点。2026-11-11已按用户授权提交�
 
 当前[采集合同](../development/research-acquisition.md)复用既有四分支、物理封口和唯一r7生产者，限定明确原job、原请求恢复、当前PDF共根资格与历史生产者未支持范围。默认零执行，采集成功不提升研究批准。页面和PR是否通过各按真实回执登记，简洁策略生产与全文核验已接，双负责人到文案评审已接，后续视觉、PPT及包装/KV整链继续总目标。
 
-## 简洁三板块策略
+## 经典 HTTP 简洁三板块策略
 
 当前[策略运行合同](../development/simple-strategy.md)复用原研究放行、continuation与独立全文核验，不恢复旧复杂Skill。默认research授权，服务器显式配置只影响新建；技术请求和原IO恢复不签客户批准。策略稿保存保持needs_acceptance，双负责人至copy另按文案合同接线，视觉至交付整链仍待接，最终UI/门禁/PR按实际回执登记。
 

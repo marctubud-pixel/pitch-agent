@@ -70,7 +70,12 @@ def snapshot(registry, freezing=False):
     if by_id['page.content_review']['lifecycle'] != 'retired':
         raise ValueError('Old content review must remain retired')
     if any(x.startswith('method.') for x in by_id['agent.strategy-owner']['dependsOn']):
-        raise ValueError('Strategy unexpectedly requires a method/Skill')
+        raise ValueError('Strategy must not require a method for every carrier')
+    strategy_method = by_id['agent.strategy-owner'].get('scopedMethod', {})
+    if (strategy_method.get('method') not in by_id or strategy_method.get('runtime') != 'nightflight'
+            or set(strategy_method.get('scope', [])) != {'packaging', 'kv', 'packaging+kv'}
+            or by_id[strategy_method['method']]['path'] != 'skills/strategy-one-pager/SKILL.md'):
+        raise ValueError('Missing packaging/KV One-Pager scope for Nightflight strategy')
     images = load('docs/specs/screenshot-provenance.json')
     for image in images:
         if sha(local(image['path'])) != image['sha256']:

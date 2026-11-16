@@ -100,5 +100,11 @@
     "path": "skills/ui-review/references/visual-evidence.md",
     "sourceVersion": "原版无版本号；2026-11-11字节快照",
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
+  },
+  {
+    "source": "2026-11-16 用户在项目对话提供的 One-Pager 策略方法，结合夜航现行研究与文案交接整理。",
+    "path": "skills/strategy-one-pager/SKILL.md",
+    "sourceVersion": "v1-20261116",
+    "sha256": "7d7de06a810060360817178183f3549fda277514c1afd7ce10c0046abd427129"
   }
 ]
