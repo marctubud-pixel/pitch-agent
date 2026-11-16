@@ -2259,11 +2259,11 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "de24c3bb64cccab86d8d270806fca3f2bdc36c0b78171ee290faf336e3bc37ff",
+      "sha256": "f5565c20167a230aeb05bd8c6efdc8eccee5672f8d61e70957f5318fd2f0c5a9",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "ab1ef16a0d053aa01ff0f18fbdc5b7f4e536e307ac40bff18570cd705a38872e",
+      "sha256": "db21e95ad640df0c796873b1e4c197065d59671014fa9f7e8236e47213edbddd",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
@@ -2287,7 +2287,7 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "5281c155ea824c68c2786d0602dde0c37dd7f912c1c20b5ee4ab62bc72d7543b",
+      "sha256": "3ddd250e82a20fb348d3a0ff13cb3d8fce07d148414f9008b209f3618e5443a8",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {

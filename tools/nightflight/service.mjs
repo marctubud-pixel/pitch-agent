@@ -132,15 +132,10 @@ function hasStrategyEvidence(r) {
     [f.passage, f.source, f.evidence, f.conclusion, f.implication].every(v => typeof v === 'string' && v.trim()));
 }
 
-function legacyStrategyRetry(p) {
-  return p.research?.strategyReturned && !p.research.returnProtocol &&
-    p.versions.at(-1)?.research?.conditional && hasStrategyEvidence(p.research);
-}
-
 function canRequestStrategy(p) {
   const r = p.research;
   return p.stage === 'research' && p.status === 'waiting' && !p.claim && r && !r.ready &&
-    !r.digestPending && !r.strategyReturned && !p.events.some(e => e.text === '策略退回研究：' + r.next) &&
+    !r.digestPending &&
     hasStrategyEvidence(r);
 }
 
@@ -151,7 +146,7 @@ function publicView(p) {
     ...visible,
     canRequestStrategy: Boolean(canRequestStrategy(p)),
     autoStrategyResume: Boolean(p.mode === 'auto' && !p.researchOnly && p.stage === 'research' && p.status === 'waiting' &&
-      !p.claim && (canRequestStrategy(p) || legacyStrategyRetry(p))),
+      !p.claim && canRequestStrategy(p)),
     artifacts: p.artifacts.map(unstore),
     attachments: p.attachments.map(unstore),
     versions: p.versions.map((v) => ({ ...v, artifacts: v.artifacts.map(unstore) })),
@@ -526,28 +521,10 @@ export function createNightflight({ root, runStage, runLayout }) {
             } else if (live.mode === 'auto' && !live.researchOnly && hasStrategyEvidence(live.research)) {
               live.research.conditional = true;
               live.stage = 'strategy';
-              note(live,'自动交给策略研判，已传入已核结论、用途及未决问题');
+              note(live,'自动交给策略撰写，已传入已核结论、用途及未决问题');
             } else {
               continueResearch(live);
             }
-          } else if (p.stage === 'strategy' && result.researchReturn) {
-            archiveVersion(live);
-            live.artifacts = live.artifacts.filter((a) => a.stage !== 'strategy');
-            live.stage = 'research';
-            live.research = {
-              ...researchHandoff(live.research, live),
-              ready: false,
-              question: '',
-              strategyReturned: true,
-              returnProtocol: 2,
-              next: result.researchReturn,
-            };
-            note(live, '策略退回研究：' + result.researchReturn);
-            if (live.mode === 'auto' && !live.strategyFollowupUsed) {
-              live.strategyFollowupUsed = true;
-              live.researchFollowup = false;
-            }
-            continueResearch(live,true);
           } else if (p.stage === 'brief' && p.mode==='collab') {
             live.status='waiting';
             note(live,'请确认任务卡后开始研究');
@@ -714,7 +691,7 @@ export function createNightflight({ root, runStage, runLayout }) {
     const start=stages.indexOf(target);
     for (const stage of stages.slice(start)) bumpVersion(p,stage);
     p.artifacts=p.artifacts.filter(a=>stages.indexOf(a.stage)<start);
-    if (start<=1) { delete p.strategyFollowupUsed; p.research=null; p.researchOnly=false; p.researchFollowup=false; p.researchQuestionAnswered=false; delete p.researchDigestOnly; }
+    if (start<=1) { p.research=null; p.researchOnly=false; p.researchFollowup=false; p.researchQuestionAnswered=false; delete p.researchDigestOnly; }
     if (start<=3) { delete p.copyHandoff; p.copyReview=null; p.directions=[]; p.choice=null; }
     if (start<=4) {p.visualAdoption=null; p.layoutChanges=[];}
     if (start<4) p.visualRevisions=0;
@@ -783,21 +760,19 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
       note(p,'开始从当前已核研究发现重新编辑摘要');
     } else if (kind === 'research_continue') {
-      const legacy = p.mode === 'auto' && !p.researchOnly && !p.claim && p.stage === 'research' && p.status === 'waiting' && legacyStrategyRetry(p);
-      const conditional = canRequestStrategy(p) || legacy;
+      const conditional = canRequestStrategy(p);
       check(!p.claim && (conditional || (p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly)),
         '没有等待交接的研究成果', 409);
-      if (legacy) {
-        const previous = p.versions.at(-1).research;
+      if (conditional && p.research.strategyReturned) {
+        const previous=p.versions.findLast(v=>v.stage==='strategy' && v.research)?.research;
         archiveVersion(p);
-        p.research = {...previous, conditional:true};
-        note(p,'原策略退回保存在历史，按修订的交接规则复核同一份研究');
+        p.research={...p.research,strategyReturned:false,next:previous?.next || ''};
       }
       if (conditional) p.research.conditional = true;
       p.researchOnly = false;
       p.stage = 'strategy';
       p.status = 'running';
-      note(p, conditional ? '带已核发现和未决问题进入策略，由策略负责人判断能否成稿' : '已确认查看研究结果，继续策略');
+      note(p, conditional ? '带已核发现和未决问题进入策略，开始撰写策略' : '已确认查看研究结果，继续策略');
     } else if (kind === 'research_again') {
       check(
         !p.claim &&
@@ -812,7 +787,6 @@ export function createNightflight({ root, runStage, runLayout }) {
       if (continuing && question) check(text, '请回答研究问题，或选择按现有条件继续', 400);
       archiveVersion(p);
       p.researchQuestionAnswered = Boolean(continuing && (question || p.researchQuestionAnswered));
-      delete p.strategyFollowupUsed;
       p.researchFollowup = continuing;
       p.researchOnly = input.researchOnly === true;
       p.artifacts = p.artifacts.filter((a) => a.stage === 'brief');

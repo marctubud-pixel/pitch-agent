@@ -74,7 +74,7 @@ function onePager(sections: Section[], project: Project, name?: string) {
 
 export function StrategyOutput({ p, text, name }: { p: Project; text: string; name?: string }) {
   if (p.research && !p.research.ready && !p.research.conditional) return (
-    <div className="block strategy-wait"><p>{p.canRequestStrategy ? '已有研究依据，可在研究页交给策略负责人研判。' : '研究仍在补查，策略方向待定。'}</p>
+    <div className="block strategy-wait"><p>{p.canRequestStrategy ? '已有研究依据，可在研究页交给策略负责人撰写。' : '研究仍在补查，策略方向待定。'}</p>
       <a className="btn btn-sm" href={'#/p/' + encodeURIComponent(p.id) + '?stage=research'}>{p.canRequestStrategy ? '查看研究并进入策略' : '查看待查问题'}</a>
     </div>
   );

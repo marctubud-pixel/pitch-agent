@@ -88,7 +88,7 @@ const verdictSchema = (indices) => objectSchema({
   gaps: stringList,
   next: stringField,
 });
-const strategySchema = objectSchema({ body: stringField, researchReturn: stringField });
+const strategySchema = objectSchema({ conclusions: stringField, intersection: stringField, focus: stringField });
 const strings = (values) =>
   Array.isArray(values)
     ? [...new Set(values.filter((v) => typeof v === 'string' && v.trim()).map((v) => v.trim()))]
@@ -901,15 +901,11 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       const research = project.research;
       const packet = {brief:project.brief,feedback:project.feedback,materials:inputs.texts,
         findings:research?.findings ?? [],scope:research?.next,gaps:research?.gaps ?? [],strategyAdvice:research?.strategyAdvice ?? []};
-      const instruction='按已核结论、用途与适用范围写研究结论、方向交叉点和策略发力点。先检验现有研究提出的条件性方向能否成立。品牌名、渠道、画面、节点与实测数据暂缺时，写成边界或后续执行条件。单来源只限制论断范围。可以推到方向就成稿，researchReturn 留空。若所有可行方向都无法取舍，只退一个决定性问题，用一句话说明缺什么、答案将改变哪两个选择，禁止资料清单。';
-      for (let attempt=0;attempt<2;attempt++) {
-        const result=await call(instruction+(attempt?' 上次退回格式无效，请重新评估条件性方向，成立就出稿，否则只写一个具体取舍。':''),inputs.images,strategySchema,{context:JSON.stringify(packet)});
-        const reason=result.parsedOutput?.researchReturn;
-        if (typeof reason!=='string' || /[\r\n]/u.test(reason.trim())) continue;
-        await addText(textOutput(result));
-        return {artifacts,researchReturn:reason.trim()};
-      }
-      throw Error('策略未交出成稿或单个影响方向的补查问题，请重试策略');
+      const result=await call('依据本轮研究直接撰写三个板块。把资料缺口和未确定的渠道、卖点写为适用范围或假设，提出本轮证据能支持的优先方向。',inputs.images,strategySchema,{context:JSON.stringify(packet)});
+      const {conclusions,intersection,focus}=result.parsedOutput ?? {};
+      if (![conclusions,intersection,focus].every(v=>typeof v==='string' && v.trim())) throw Error('策略输出缺少正文，请重试策略');
+      await addText(['# 策略','## 研究结论',conclusions,'## 方向交叉点',intersection,'## 策略发力点',focus].join('\n\n'));
+      return {artifacts};
     }
     if (stage === 'copy') {
       const {body,directions,copyReview} = await runCopyReview({call,project,inputs,rules,dir,onEvent});

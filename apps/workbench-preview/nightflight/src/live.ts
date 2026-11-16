@@ -196,7 +196,7 @@ export const projectStatus = (p: ResearchStatus) => {
   if (p.stage === 'research' && p.status === 'waiting') {
     if (!p.research) return '查看研究';
     if (p.research.digestPending) return '摘要待编辑';
-    return p.research.ready ? '可进入策略' : p.canRequestStrategy ? '可交策略研判' : '待补查';
+    return p.research.ready ? '可进入策略' : p.canRequestStrategy ? '可进入策略' : '待补查';
   }
   return statusName[p.status];
 };

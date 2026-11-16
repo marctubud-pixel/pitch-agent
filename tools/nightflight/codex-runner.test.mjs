@@ -223,7 +223,7 @@ process.stdin.on('end',()=>{
    if(action==='onepager-internal') outcome.insight='模拟设定的测试茶。';
    body={outcome:action==='onepager-return'?{researchReturn:'请补查本地渠道的实际接触场景'}:outcome};
  }
- if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
+ if(action==='strategy-direct')body={conclusions:'新品密集',intersection:'让人认出新品',focus:'优先识别，渠道待定'};
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
  if(input.includes('视觉参考检索词')){
@@ -705,10 +705,10 @@ test('follow-up preserves earlier verified evidence, considers user feedback and
   assert.equal(research.ready,false);
 });
 
-test('strategy returns specific research question when the handoff cannot support a decision', async (t) => {
-  const f = await fixture(t, 'strategy-return');
+test('strategy writes three sections with limits from existing research', async (t) => {
+  const f = await fixture(t, 'strategy-direct');
   f.project.brief='为测试茶制作一条 TVC';
-  assert.match((await f.run('strategy')).researchReturn, /实际接触场景/);
+  assert.match((await f.run('strategy')).artifacts[0].text,/## 策略发力点\n\n优先识别，渠道待定/);
 });
 test('final reads native slide XML, excludes bulky deck JSON and records missing rendered pages',async t=>{
   const f=await fixture(t,'final');
@@ -914,13 +914,8 @@ for (const action of ['ok','kv','linked','return','wrong-ref','wrong-touch','sco
     if (action==='linked') f.project.brief='设计测试茶包装与KV';
     const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
     f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
-    if (!['ok','kv','linked','return'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    if (!['ok','kv','linked'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
     const result=await f.run('strategy');
-    if (action==='return') {
-      assert.match(result.researchReturn,/实际接触场景/);
-      assert.equal(result.strategy,undefined);
-      return;
-    }
     const md=result.artifacts[0].text,front=md.split('## 研究结论')[0];
     assert.deepEqual(result.strategy.findingNumbers,[2]);
     assert.match(md,/## 核心策略[\s\S]*## 衡量方式[\s\S]*## 研究结论[\s\S]*研究 2/);
