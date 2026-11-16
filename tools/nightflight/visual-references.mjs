@@ -40,7 +40,7 @@ export async function selectVisualReferences({call, project, images, active}) {
     }
   }
   const result = await call('逐案按文案方向的职责选一张主参考、至多两张用途不同的辅助图。先对照策略和该案创意，横向比较同用途候选。先看实际图上的载体、层级和视觉机制，再判断如何让观众读出本案主张。转载、同系列换角度或借法重复的图只留最清楚的一张。主参考须能转译方向创意，纯材质或局部动作只按具体用途选作辅助。陈述借哪一处、如何转译到本案；在 why 中说明相近候选的取舍。无适用主参考则 main 留空并写 gap。专用参考只给一个方向，已有归属必须保留。searchDirection 标注的公开图只供该方向选用；按方向任务核对主图，稳健方向观察品类惯例，特征方向观察产品特点，情绪方向观察具体使用情境。稳健方向依据画面只能识别品类惯例，没有销售来源不得断言热销。公开图写明 why（与任务的可见关系）和 avoid（禁止照搬的具体部分）。sharedBrand 只列确属本案的品牌标志、官方 VI 等全案约束；不要把普通同类图放入共享。每案生图最多附四张，改稿还需给原稿留一个位置。辅助按重要性排序。',sources.length<=4 ? sources : [],planSchema(sources.some(s=>s.sourceUrl)?publicUse:use),{
-    assignment:'视觉负责人分派参考图',context:JSON.stringify(packet),
+    assignment:'比稿负责人分配参考图',context:JSON.stringify(packet),
   });
   const rows=result.parsedOutput?.directions;
   if (!Array.isArray(rows) || rows.length!==names.length || !names.every(n=>rows.some(r=>r?.direction===n))) throw invalidOutput('参考图分派与三份文案方向不一致。');
@@ -83,7 +83,7 @@ export async function reviewReferencePlan({call, project, direction, images, han
   const packet = {brief:project.brief,strategy:project.strategyText, directions:project.copyReview?.draft?.directions ?? project.directions, direction, references:handoff.references,otherDirections};
   const instruction='本次审整组 direction 而非独立材质 component。两项维度均须判断。证据说明画面位置、所见、影响与本案转译。1事实抵触，2机制不成立，3连接或执行条件缺失，4有图卡依据，5另需具体对照优势。关键未知填 null。没有销售依据不能断言销量。只换品牌文案或配色而整体复制参考结构等有证硬退写入 hardReject，无则留空。';
   const votes=await independentCalls(Object.entries(roles),async ([role,dimensions])=>{
-    const result=await call(instruction,images,voteSchema,{rules:[],assignment:'公开参考包独立评分',context:JSON.stringify({...packet,role,dimensions})});
+    const result=await call(instruction,images,voteSchema,{delegate:true,rules:[],assignment:'公开参考包独立评分',context:JSON.stringify({...packet,role,dimensions})});
     const vote=result.parsedOutput;
     if (!Array.isArray(vote?.items) || vote.items.length!==2 || !dimensions.every(key=>vote.items.some(i=>i.dimension===key && nonempty(i.evidence) &&
         (i.score===null || (Number.isInteger(i.score) && i.score>=1 && i.score<=5)))) || typeof vote.hardReject!=='string') throw invalidOutput('公开参考包缺少完整的本岗原票及图证。');
@@ -91,14 +91,14 @@ export async function reviewReferencePlan({call, project, direction, images, han
   });
   const challenges=await independentCalls(votes,async vote=>{
     const ctx={...packet,role:vote.role};
-    const task={rules:[],assignment:'公开参考包对抗',context:JSON.stringify(ctx)};
+    const task={delegate:true,rules:[],assignment:'公开参考包对抗',context:JSON.stringify(ctx)};
     const first=await call('先独立检查本岗两维有无遗漏或过度推断，写明可见依据。不另打分，无异议填空 issue。',images,challengeSchema,task);
     if(typeof first.parsedOutput?.issue!=='string' || !nonempty(first.parsedOutput.evidence)) throw invalidOutput('公开参考对抗缺少核对依据。');
     const checked=await call('结合独立发现核对原票，写出仍成立的问题与依据，不另打分。',images,challengeSchema,{...task,context:JSON.stringify({...ctx,findings:first.parsedOutput,vote})});
     if(typeof checked.parsedOutput?.issue!=='string' || !nonempty(checked.parsedOutput.evidence)) throw invalidOutput('公开参考对抗缺少核对依据。');
     return {role:vote.role,independent:{threadId:first.threadId,...first.parsedOutput},threadId:checked.threadId,...checked.parsedOutput};
   });
-  const result=await call('按岗逐条裁定对抗意见，accepted 表示仍有成立阻断问题，reason 给出依据；另核主参考机制、辅助互补性、跨方向重复和禁止整体照搬边界，compatible 表示整组相容。不可改原分。',images,rulingSchema,{rules:[],assignment:'公开参考包独立裁定',context:JSON.stringify({...packet,votes,challenges})});
+  const result=await call('按岗逐条裁定对抗意见，accepted 表示仍有成立阻断问题，reason 给出依据；另核主参考机制、辅助互补性、跨方向重复和禁止整体照搬边界，compatible 表示整组相容。不可改原分。',images,rulingSchema,{delegate:true,rules:[],assignment:'公开参考包独立裁定',context:JSON.stringify({...packet,votes,challenges})});
   const ruling=result.parsedOutput;
   if (typeof ruling?.compatible!=='boolean' || !nonempty(ruling.reason) || ruling.decisions?.length!==4 ||
       !Object.keys(roles).every(role=>ruling.decisions.some(d=>d.role===role && typeof d.accepted==='boolean' && nonempty(d.reason)))) throw invalidOutput('公开参考包裁定不完整。');

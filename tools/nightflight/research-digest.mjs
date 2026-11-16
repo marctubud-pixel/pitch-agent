@@ -111,7 +111,7 @@ export async function editResearchDigest(call, findings, project) {
   const task = {
     editorial: true,
     rules: [],
-    assignment: '独立研究编辑',
+    assignment: '比稿负责人整理研究摘要',
     context: JSON.stringify({
       project: {title: project.title, brief: project.brief, proposalKind: project.proposalKind, productFacts},
       findings: eligible,
@@ -131,7 +131,7 @@ export async function editResearchDigest(call, findings, project) {
     '删除“摘要未确认样本量”“不能据此推断销量”等逐条局限尾注。若局限确实改变判断，在陈述中缩小范围：渠道数据只说调查中的购买渠道，样本只代表受访者。范围仍说不清或结论不能成立时，舍弃整条。不要删去会改变结论的年份、人群或场景。',
     '相关且口径明确的数据应保留数字、单位、样本范围，原文不能支持的数据一律不写。',
     '不得把相邻品类或外国样本写成本案调查，不下购买效果断言。',
-    'strategyAdvice 写一至三条给策略负责人的具体设计建议，每条的 findingIndices 只引用本版所选 digest 的原 findingIndex，不写市场预测或未经证实的功能承诺。建议应明确在本案的哪个触点、优先讲什么、用什么方式测试。',
+    'strategyAdvice 写一至三条供下一步策略使用的具体设计建议，每条的 findingIndices 只引用本版所选 digest 的原 findingIndex，不写市场预测或未经证实的功能承诺。建议应明确在本案的哪个触点、优先讲什么、用什么方式测试。',
     '只输出客户读得懂的短句，不写流程、来源编号和执行说明。',
   ].join('');
   let correction = '';

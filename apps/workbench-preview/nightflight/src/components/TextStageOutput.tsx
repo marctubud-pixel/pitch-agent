@@ -293,7 +293,7 @@ export function CopyOutput({
               <p className="mono-label">
                 {'方向 ' + String.fromCharCode(65 + index)}
                 {d.signed?.duty && ' · ' + copyDuties[d.signed.duty]}
-                {d.name === recommended && ' · ' + (recommendationLabel ?? (headlineReview ? '本版推荐' : '旧版推荐'))}
+                {d.name === recommended && ' · ' + (recommendationLabel ?? (headlineReview || ticket?.protocol === 'director-headline-v1' ? '本版推荐' : '旧版推荐'))}
                 {d.name === p.choice && ' · 已选定'}
               </p>
               <h3>
@@ -305,7 +305,13 @@ export function CopyOutput({
         </div>
       </section>
       <section className="block copy-theme" key={current.name}>
-        {renderReview ? renderReview(current.name) : current.signed && headlineReview && ticket ? (
+        {renderReview ? renderReview(current.name) : ticket?.protocol === 'director-headline-v1' ? (
+          <details className="research-original">
+            <summary>盲读与取舍</summary>
+            {ticket.sloganWorkbook?.second?.map((read,i)=><p key={i}><strong>{i===0?'是否读得懂':'是否愿意转述'}</strong>　{read.output.items.find(item=>item.text===current.main)?.observation}</p>)}
+            <p>{ticket.recommendation.reason}　{ticket.recommendation.tradeoff}</p>
+          </details>
+        ) : current.signed && headlineReview && ticket ? (
           <details className="research-original">
             <summary>本标题的评审与推荐</summary>
             <CopyReviewPanel review={ticket} direction={current.signed} />

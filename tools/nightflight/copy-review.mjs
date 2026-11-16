@@ -122,14 +122,14 @@ export function headlineMarkdown(draft) {
   return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main).join('\n\n');
 }
 
-export async function runCopyReview({call, project, inputs, rules, dir, onEvent}) {
+export async function runCopyReview({call, project, inputs, rules, dir, onEvent, singleOwner=false}) {
   const attempt = {version:3,protocol:headlineProtocol,status:'working',calls:[],anonymousReads:[],firstVotes:[],criticReads:[],challenges:[],finalVotes:[]};
   const filename='copy-review-attempt-'+randomUUID()+'.json';
   const threads=new Set(), runs=new Set();
   const materials=[project.brief,...inputs.texts.map(t=>t.text)].filter(nonempty);
   async function run(phase, instruction, schema, packet, author=false, outputSchema=schema) {
     const result=await call(phase+'\n'+instruction,author?inputs.images:[],outputSchema,{
-      rules:author?rules:[],assignment:'只完成当前职责。',context:JSON.stringify(packet),
+      delegate:!author,rules:author?rules:[],assignment:'只完成当前职责。',context:JSON.stringify(packet),
     });
     const receipt={runId:result.runId,threadId:result.threadId,model:result.model,inputPacketHash:result.inputPacketHash};
     requireThat(nonempty(receipt.runId) && nonempty(receipt.threadId) && !threads.has(receipt.threadId) && !runs.has(receipt.runId),
@@ -285,16 +285,24 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
   }
   try {
     const source={brief:project.brief,materials:inputs.texts,feedback:project.feedback || []};
-    await onEvent?.('文案负责人正在创作三个方向');
+    await onEvent?.('比稿负责人正在创作三个方向');
     const skill=rules.find(rule=>rule.includes('name: slogan-engine'));
     requireThat(skill,'缺少完整版 slogan-engine');
-    const workbook=await buildSloganWorkbook(run,source);
+    const workbook=await buildSloganWorkbook(run,source,{freezeAccepted:singleOwner});
     attempt.sloganWorkbook={...workbook,skillHash:fullSloganHash(skill)};
     const generated=await run('COPY_CREATE',craft+' 从本案版本族中选经两位独立读者均判断 usable 的一句作为各案 main，逐字保留，保持职责及连接。仅归档工作稿另附。',draftSchema,{...source,workbook},true);
     const first=generated.output;
     validateDraft(first,materials);
     checkSloganChoices(first,workbook);
     attempt.initialDraft=first;
+    if (singleOwner) {
+      const {output:recommendation}=await run('DIRECTOR_SELECT','比较三种创意各自的发力点，给出推荐、取舍、适用场景和复述潜力，仅依据策略与本次真实盲读。',recommendationSchema,{...source,draft:first,reads:workbook.second.map(r=>r.output)},true);
+      const body=headlineMarkdown(first);
+      const copyReview={protocol:'director-headline-v1',version:1,status:'ready',bodyHash:hash(body),
+        draft:first,recommendation,sloganWorkbook:attempt.sloganWorkbook,calls:attempt.calls};
+      await onEvent?.('比稿负责人已完成三案取舍，保留两次独立盲读原话');
+      return {body,directions:first.directions.map(d=>d.name),copyReview};
+    }
     await onEvent?.('四岗分别首读文案初稿');
     attempt.anonymousReads=await anonymousReads(first);
     for (const role of roles) attempt.firstVotes.push(await score('COPY_FIRST',role,first,attempt.anonymousReads));

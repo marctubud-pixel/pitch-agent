@@ -2251,8 +2251,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "a7c1e6e5bb276136bd1e490d21926d1fb3b4a596bfc7dcad12c0eac1a6b18637",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "f5ea5cee39407fc2026c35cef510ec8e8f5fe35540aefe28ae8adae8d57ad74b",
+      "reason": "单负责人实验的研究提示、文案盲读与取舍及对应页面入口。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
@@ -2263,8 +2263,8 @@
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "db21e95ad640df0c796873b1e4c197065d59671014fa9f7e8236e47213edbddd",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "3708bad6623eeb87db28a021def1617a793199ff134ced0ba7f9ec3fdabd58f8",
+      "reason": "单负责人实验的研究提示、文案盲读与取舍及对应页面入口。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
@@ -2287,8 +2287,8 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "3ddd250e82a20fb348d3a0ff13cb3d8fce07d148414f9008b209f3618e5443a8",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "d8ad0e9624944cd97d728aaa0b1b4eb330795b880a3306e4468a39b7534c94d8",
+      "reason": "单负责人实验的研究提示、文案盲读与取舍及对应页面入口。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",

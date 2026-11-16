@@ -21,6 +21,7 @@ function copyFixture(input, action) {
     name, basis: source, claim: name + '的主张', mechanism: name + '的创意方法', strategyLink: name + '承接策略',
     main: name + '原稿主文', risk: name + '的风险',
   }));
+  if(input.includes('DIRECTOR_SELECT')) return {directionId:'B',reason:'适合简报',tradeoff:'偏稳健',memory:'特征',retell:'可复述',scene:'点单'};
   if (step==='EXPLORE') return {directions:directions.map(d=>({id:d.id,coordinates:'坐标',motive:'动机',connection:'连接',methods:'方法',candidates:[0,1,2].map(i=>({text:i?d.main+i:d.main,method:'短句'}))}))};
   if (['READING','APPEAL'].includes(step)) return {items:packet.lines.map(text=>({text,observation:'独立阅读',usable:true}))};
   if (step==='POLISH') return {directions:packet.plan.directions.map(d=>({id:d.id,original:d.candidates[0].text,killed:d.candidates.slice(1).map(c=>({text:c.text,reason:'不同的选择'})),versions:['','短','顺'].map(s=>({text:d.candidates[0].text+s,use:'包装',tradeoff:'取舍'})),sound:'节奏',backup:'备选',edits:'记录',extensions:'延展',risks:'风险'}))};
@@ -140,7 +141,7 @@ process.stdin.on('end',()=>{
    fs.unlinkSync(stop);process.exit(78);
  }
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('独立研究编辑') && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -183,7 +184,7 @@ process.stdin.on('end',()=>{
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
      body={samples:[{source:packet.sources[0].source,title:'样本茶盒',observation:'包装中央标有茶类',sameCategory:true,strategyGroup:'突出品类名称',creatorRationale:'以品类字突出茶类',rationaleSourceUrl:packet.sources[0].pageUrl,rationaleQuote:'设计方把茶类名放在中央',takeaway:'可借品类字读序，仅适用于正面展示。'}],conclusion:'该样本正面标出品类',implication:'比较正面字序'};
    } else if(schema.digest) {
-     if (!args.includes('web_search="disabled"') || input.includes('用户暂不确定渠道') || !input.includes('独立研究编辑')) process.exit(19);
+     if (!args.includes('web_search="disabled"') || input.includes('用户暂不确定渠道') || !input.includes('比稿负责人整理研究摘要')) process.exit(19);
      const {findings}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      body={strategyAdvice:[{recommendation:'优先测试品类信息',findingIndices:[findings[0].findingIndex]}],digest:findings.map(f=>({chapter:f.chapter,findingIndex:f.findingIndex,title:f.conclusion,detail:f.evidence}))};
    } else if(schema.accepted){
@@ -241,9 +242,9 @@ process.stdin.on('end',()=>{
  } else if(input.includes('视觉参考原图登记')){
    const rows=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    body={observations:rows.map(r=>({source:r.source,visible:'原图可见的画面特征'}))};
- } else if(input.includes('视觉负责人分派参考图')){
+ } else if(input.includes('比稿负责人分配参考图')){
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
-   fs.writeFileSync(path.join(home,'视觉负责人分派参考图.json'),JSON.stringify(packet));
+   fs.writeFileSync(path.join(home,'比稿负责人分配参考图.json'),JSON.stringify(packet));
    body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:packet.directions.map((d,i)=>{
      const refs=packet.sources.filter(s=>s.searchDirection===d.name || s.name.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
      const use=r=>({source:r.source,borrow:'参考图可见的局部',apply:'作为本案用色依据',why:'帮助说明产品特征',avoid:'不沿用对方的标志与瓶标图案'});
@@ -272,9 +273,9 @@ process.stdin.on('end',()=>{
    fs.mkdirSync(folder,{recursive:true});
    const z=require('node:zlib');
    const chunk=(name,bytes)=>{ const data=Buffer.concat([Buffer.from(name),bytes]);const n=Buffer.alloc(4),crc=Buffer.alloc(4);n.writeUInt32BE(bytes.length);crc.writeUInt32BE(z.crc32(data));return Buffer.concat([n,data,crc]); };
-   const count=fs.readdirSync(path.join(home,'generated_images')).length;
+   const rgb=require('node:crypto').createHash('sha256').update(input).digest().subarray(0,3);
    const header=Buffer.from('00000001000000010802000000','hex');
-   const output=Buffer.concat([Buffer.from('89504e470d0a1a0a','hex'),chunk('IHDR',header),chunk('IDAT',z.deflateSync(Buffer.from([0,count,78,90]))),chunk('IEND',Buffer.alloc(0))]);
+   const output=Buffer.concat([Buffer.from('89504e470d0a1a0a','hex'),chunk('IHDR',header),chunk('IDAT',z.deflateSync(Buffer.from([0,...rgb]))),chunk('IEND',Buffer.alloc(0))]);
    fs.writeFileSync(path.join(folder,'exec-'+id+'.png'),output);
  }
  const invalidOnce=path.join(home,'invalid-once');
@@ -304,7 +305,7 @@ async function fixture(t, action, options={}) {
       return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<html><title>合成行业报告</title><p>本次样本单列礼盒用途。礼盒上架、供应商进入、礼盒容量、包装品类字、购买渠道、茶味偏好。</p></html>')};
     },
   };
-  const runner = createStageRunner({binary,codexHome:home,model:'fixture',researchDependencies,...options});
+  const runner = createStageRunner({binary,codexHome:home,model:'fixture',historicalPanels:true,researchDependencies,...options});
   const project = {title:'测试茶',brief:'制作测试茶的包装概念稿',mode:'collab',attachments:[],artifacts:[],directions:['山风','晨雾','旧街'],choice:'晨雾'};
   return {home,dir, project, requests, run:(stage,overrides={})=>runner({stage,dir,project,...overrides})};
 }
@@ -529,7 +530,7 @@ test('empty uploads automatically acquire public bytes and deliver their provena
   await writeFile(join(f.dir,'strategy.md'),strategy);
   f.project.artifacts.push({kind:'text',stage:'strategy',name:'strategy.md'});
   const {artifacts}=await f.run('visual');
-  for (const task of ['视觉参考检索词','视觉负责人分派参考图']) {
+  for (const task of ['视觉参考检索词','比稿负责人分配参考图']) {
     const packet=JSON.parse(await readFile(join(f.home,task+'.json'),'utf8'));
     assert.equal(packet.strategy,strategy);
   }
@@ -986,4 +987,41 @@ test('operator-provided RSS search preserves query and bypasses default provider
   assert.equal(calls[0].searchParams.get('q'),'茶礼盒');
   assert.equal(calls[0].searchParams.get('locale'),'zh');
   assert.equal(result.results[0].url,'https://brand.example.org/original');
+});
+
+test('single director creates three directions with blind readers and owns selection',async t=>{
+  const f=await fixture(t,'copy-clean',{historicalPanels:false});
+  const {copyReview}=await f.run('copy');
+  assert.equal(copyReview.protocol,'director-headline-v1');
+  assert.equal(copyReview.recommendation.directionId,'B');
+  assert.equal(copyReview.sloganWorkbook.second.length,2);
+  assert.deepEqual(copyReview.calls.map(c=>c.phase).sort(),[
+    'COPY_CREATE','COPY_EXPLORE','COPY_POLISH','DIRECTOR_SELECT','SLOGAN_APPEAL','SLOGAN_APPEAL','SLOGAN_READING','SLOGAN_READING',
+  ]);
+});
+
+test('director keeps approved A and B while repairing only C after blind reading',async()=>{
+  const {buildSloganWorkbook,checkSloganChoices}=await import('./slogan-workbook.mjs');
+  const polished=[];
+  let round=0;
+  async function run(phase,instruction,schema,packet){
+    let output;
+    if(phase==='COPY_POLISH'){
+      round++;
+      const plan={directions:packet.plan.directions.filter(d=>round===1 || d.id==='C')};
+      output=copyFixture(phase+'实际项目输入（JSON）'+JSON.stringify({plan}),'copy-clean');
+      polished.push(output.directions.map(d=>d.id));
+      if(round===2) output.directions[0].versions[1].text='仅修订C';
+    } else {
+      output=copyFixture(phase+'实际项目输入（JSON）'+JSON.stringify(packet),'copy-clean');
+      if(phase==='SLOGAN_READING' && round===1) {
+        for(const item of output.items) if(item.text.startsWith('旧街')) item.usable=false;
+      }
+    }
+    return {output,receipt:{runId:phase+round}};
+  }
+  const book=await buildSloganWorkbook(run,{},{freezeAccepted:true});
+  assert.deepEqual(polished,[['A','B','C'],['C']]);
+  checkSloganChoices({directions:['山风原稿主文','晨雾原稿主文','仅修订C'].map((main,i)=>({id:'ABC'[i],main}))},book);
+  assert.equal(book.discarded.length,1);
 });

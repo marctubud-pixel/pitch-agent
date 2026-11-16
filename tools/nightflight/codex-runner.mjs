@@ -1,4 +1,4 @@
-import {runCheckpointed,invalidOutput} from './call-checkpoints.mjs';
+import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
 import {followupSources,matchesDomain,locateQuote,researchGap} from './research-sources.mjs';
@@ -28,17 +28,17 @@ const executeFile = promisify(execFile);
 const repo = fileURLToPath(new URL('../../', import.meta.url));
 const hash = value => createHash('sha256').update(value).digest('hex');
 const stages = {
-  brief: ['简报与任务', 'brief-owner', [
+  brief: ['简报与任务', [
     '生成一份中文 Markdown 简报原稿。首段标题固定为「## 已掌握的项目信息」，每行「字段：值」。',
     '只列本案已提供的品牌、产品与品类、品牌自述卖点、输出目标，以及其他确已掌握且有用的项目条件。合并重复事实，未知字段略去。',
     '下段「## 影响下一步的未知项」只在确有内容时出现，每行「未知项：主理人当前暂定怎样处理」。只收会改变接下来取证或比较的事项，做法要具体。不得把暂定市场、人群、预算或产品功效写成已知事实。',
     '其余追溯与交接信息放入「## 原稿记录」及后续独立章节，保存必要的版本、附件读取情况、确认状态和执行限制。',
   ].join('')],
-  research: ['研究', 'research-owner', '根据实际取得的来源列出出处、观察、推论和缺口。网络检索只用无保密内容的品类词；不把模型常识当作已核来源。'],
-  strategy: ['策略', 'strategy-owner', '先交一句核心策略，再写人群洞察、品牌角色、核心主张与触点。研究依据保留在底稿。'],
-  copy: ['文案与主题', 'copy-owner', '依据研究与策略创作三案，组织匿名首读和对应对抗。总监按证据裁定改稿或同稿复核，分别记录单案、整组差异和推荐。'],
-  visual: ['视觉开发', 'visual-owner', '按指定文案方向和真实简报直接制作同方向的三张不同主视觉候选。'],
-  final: ['终审与交付', 'final-review-owner', '逐页核对实际PPTX提取的文案、次序、图片数量与上游。给出页码、问题、证据、责任和需复核项。只记录本次本地审读，未经检查的维度明示待审。'],
+  research: ['研究', '根据实际取得的来源列出出处、观察、推论和缺口。网络检索只用无保密内容的品类词；不把模型常识当作已核来源。'],
+  strategy: ['策略', '先交一句核心策略，再写人群洞察、品牌角色、核心主张与触点。研究依据保留在底稿。'],
+  copy: ['文案与主题', '依据研究与策略创作三案，组织匿名首读和对应对抗。总监按证据裁定改稿或同稿复核，分别记录单案、整组差异和推荐。'],
+  visual: ['视觉开发', '按指定文案方向和真实简报直接制作同方向的三张不同主视觉候选。'],
+  final: ['终审与交付', '逐页核对实际PPTX提取的文案、次序、图片数量与上游。给出页码、问题、证据、责任和需复核项。只记录本次本地审读，未经检查的维度明示待审。'],
 };
 const extraRules = {
   copy: ['docs/specs/copy-generation.md', 'skills/slogan-engine/SKILL.md'],
@@ -347,7 +347,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   };
   if (findings.length) {
     await onEvent?.('比稿 Agent 正在检查这些判断能否供策略使用');
-    const role = await readFile(join(repo, 'docs/agents/proposal-director.md'), 'utf8');
+    const role = '你独立复核收到的研究证据，返回逐条意见给比稿负责人。';
     const questionInstruction = canAsk
       ? '研究者已经完成第一轮取证。仅在已采纳发现表明存在改变策略方向、且需要人作决定的项目取舍时，question 填一句直接询问该取舍的问题；next 说明答案将影响哪项判断。可带条件推进、公开资料可继续查或用户已回答的事项，question 填空字符串。'
       : 'question 填空字符串。根据已知条件及反馈复核；未确定的分支分别说明适用条件。';
@@ -358,7 +358,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       [...new Map(boards.flatMap(b=>b.images).map(i=>[i.sha256,i])).values()],
       verdictSchema(indexedFindings.map(f => f.findingIndex)),
       {
-        comparison:boards.length>1, rules: [role],
+        delegate:true, comparison:boards.length>1, rules: [role],
         assignment: '审核当前研究的交接充分性。',
         context: JSON.stringify({ brief: project.brief, mode, feedback: project.feedback || [], materials: inputs.texts, research: { ...research, findings: indexedFindings }, passages }),
       },
@@ -647,21 +647,24 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         signal?.throwIfAborted();
         const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
         const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],gaps:diagnostics};
-        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系，给出两条不同的简短公开检索词，可用英文。一条组合品类、目标载体与该关系找设计案例，另一条找不同表达手法或可核实的场所细节。优先品牌、设计机构或奖项的作品图。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{assignment:'视觉参考检索词',context:JSON.stringify(packet)});
+        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系，给出两条不同的简短公开检索词，可用英文。一条组合品类、目标载体与该关系找设计案例，另一条找不同表达手法或可核实的场所细节。优先品牌、设计机构或奖项的作品图。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
         const queries=publicVisualQueries(plan,project).slice(0,2);
-        for (const query of queries) {
+        const remaining=queries.filter(query=>!attempted.has(direction+' / '+query));
+        const results=await independentCalls(remaining,async query=>{
           const key=direction+' / '+query;
-          if (attempted.has(key)) continue;
           attempted.add(key);
           await onEvent?.('正在为「'+direction+'」查找公开参考图：'+query);
           try {
             const found=await search({query,dir,signal});
-            addCandidates(found.slice(0,3),direction);
-            diagnostics.push(key+'，取得 '+found.length+' 张');
+            return {found,message:key+'，取得 '+found.length+' 张'};
           } catch(error) {
             signal?.throwIfAborted();
-            diagnostics.push(key+'，'+String(error.message).slice(0,120));
+            return {found:[],message:key+'，'+String(error.message).slice(0,120)};
           }
+        });
+        for (const {found,message} of results) {
+          addCandidates(found.slice(0,3),direction);
+          diagnostics.push(message);
         }
         if (!queries.length) diagnostics.push(direction+'，没有可公开发送的检索词');
       }
@@ -669,15 +672,15 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   }
 }
 
-export function createStageRunner({binary, model, researchDependencies = {}, visualSearch, codexHome = process.env.CODEX_HOME || join(homedir(),'.codex')} = {}) {
+export function createStageRunner({binary, model, historicalPanels = false, researchDependencies = {}, visualSearch, codexHome = process.env.CODEX_HOME || join(homedir(),'.codex')} = {}) {
   return async function run({stage, project, dir, checkpointDir, onEvent, signal}) {
     if (!Object.hasOwn(stages, stage)) throw Error('不支持的模型阶段');
     signal?.throwIfAborted();
     dir = await realpath(dir);
     const desktop = process.env.ONEPITCH_TEXT_EXECUTABLE
       ? await desktopTextProvider(process.env.ONEPITCH_TEXT_EXECUTABLE,signal,onEvent) : null;
-    const [label, role, assignment] = stages[stage];
-    const rules = await Promise.all([...(stage==='final' ? [] : ['docs/agents/'+role+'.md']), ...(extraRules[stage] || [])].map(p=>readFile(join(repo,p),'utf8')));
+    const [label, assignment] = stages[stage];
+    const rules = await Promise.all((extraRules[stage] || []).map(p=>readFile(join(repo,p),'utf8')));
     const inputProject = stage === 'copy'
       ? {...project, artifacts: (project.artifacts || []).filter(a=>['brief','research','strategy'].includes(a.stage))}
       : project;
@@ -734,7 +737,8 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
     const reviewer = makeProvider(false);
     const editor = makeProvider(false,false);
     const creator = stage === 'visual' && desktop ? desktopImageProvider(process.env.ONEPITCH_TEXT_EXECUTABLE,dir,signal,onEvent) : stage === 'visual' ? makeProvider(true) : reviewer;
-    const promptFor=(instruction,task)=>[common,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n');
+    const owner = await readFile(join(repo,'docs/agents/proposal-director.md'),'utf8');
+    const promptFor=(instruction,task)=>[common,task.delegate ? '你是比稿负责人此次委托的临时执行者，仅完成所给任务。' : owner,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n');
     const directCall = async (instruction, images = inputs.images, schema = textSchema, task = {}, correction='') => {
       signal?.throwIfAborted();
       try {
@@ -783,7 +787,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       for (const direction of directions) {
         const batch = [], images = [];
         const previous = project.previousVisual?.filter(item => item.visual?.direction === direction) ?? [];
-        const best = previous.sort((a,b)=>Number(b.visual.recommended)-Number(a.visual.recommended) || b.visual.mean-a.visual.mean)[0];
+        const best = previous.sort((a,b)=>Number(Boolean(b.adopted))-Number(Boolean(a.adopted)) || Number(b.visual.recommended)-Number(a.visual.recommended) || b.visual.mean-a.visual.mean)[0];
         const {images:references,handoff} = plans.get(direction);
         const publicImages = references.filter(ref=>ref.sourceUrl);
         async function publishReference(ref) {
@@ -796,12 +800,12 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
         const sourceImages = best ? [best.image, ...references] : references;
         const generationContext = JSON.stringify({...JSON.parse(context),materials:inputs.texts.filter(item=>!item.imageNumber),
           direction:project.copyReview?.draft?.directions?.find(d=>d.name===direction) ?? direction, referenceHandoff:handoff});
-        for (const [index, focus] of ['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'].entries()) {
+        const generated = await independentCalls(['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'], async (focus,index) => {
           await onEvent?.('正在为「'+direction+'」生成主视觉 '+(index+1)+'/3');
           const instruction = (desktop ? '生成一张完整主视觉。' : '只用内置 image_generation 工具生成一张完整主视觉。')+'保留同方向的核心卖点及必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。本张从'+focus+'做实质不同的处理。'+
             (best ? '第一张输入图为上一批原稿。'+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
-            '同批已有方案描述：'+JSON.stringify(batch.map(item=>item.description))+'。完成后简述设计。指定方向：'+JSON.stringify(direction);
-          const result = await call(instruction,sourceImages,null,{context:generationContext});
+            '同批三张各按指定侧重点独立展开。完成后简述设计。指定方向：'+JSON.stringify(direction);
+          const result = await call(instruction,sourceImages,null,{delegate:true,context:generationContext});
           const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
           const digest = hash(original.bytes);
           if (seen.has(digest)) throw invalidOutput('主视觉候选返回了重复图片，请重试视觉阶段');
@@ -811,9 +815,9 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
           const record = {direction,name,referenceHandoff:handoff,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
-          batch.push(record);
-          images.push({imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'});
-        }
+          return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
+        });
+        for(const item of generated){batch.push(item.record);images.push(item.image);}
         await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
         const comparatorPool=[];
         const review = await reviewVisualBatch({call,direction,images,context,sources:[...inputs.images,...publicImages],
@@ -865,7 +869,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       if(complete) {
         for(let i=0;i<renders.length;i+=4) {
           const chunk=renders.slice(i,i+4);
-          const result=await call('逐张检查页面 '+(i+1)+' 至 '+(i+chunk.length)+'，记录实际可见问题、具体页码和证据。',chunk.map(r=>r.image));
+          const result=await call('逐张检查页面 '+(i+1)+' 至 '+(i+chunk.length)+'，记录实际可见问题、具体页码和证据。',chunk.map(r=>r.image),textSchema,{delegate:true});
           notes.push(textOutput(result));
         }
         const schema=objectSchema({outcome:{type:'string',enum:['pass','return']},returnStage:{type:'string',enum:['',...targets]},reason:stringField});
@@ -897,7 +901,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       return {artifacts,...handoff};
     }
     if (stage === 'copy') {
-      const {body,directions,copyReview} = await runCopyReview({call,project,inputs,rules,dir,onEvent});
+      const {body,directions,copyReview} = await runCopyReview({call,project,inputs,rules,dir,onEvent,singleOwner:!historicalPanels});
       await addText(body);
       return {artifacts,directions,copyReview};
     }
@@ -912,7 +916,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       const call=async(instruction,images=inputs.images,schema=textSchema,task={})=>{
         const mode=!schema?'--image-model':images.length?'--vision-model':'--text-model';
         const identity=desktop ? await modelProfile(process.env.ONEPITCH_TEXT_EXECUTABLE,signal,mode) : codexIdentity;
-        const key={version:1,stage,mode,identity,prompt:promptFor(instruction,task),schema,comparison:!!task.comparison,
+        const key={version:2,stage,mode,identity:desktop ? [identity.host,identity.base,identity.model] : identity,prompt:promptFor(instruction,task),schema,comparison:!!task.comparison,
           images:images.map(image=>[image.imageId,image.mediaType,image.sha256])};
         return cached(key,async correction=>{
           const result=await directCall(instruction,images,schema,task,correction);

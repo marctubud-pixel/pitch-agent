@@ -62,6 +62,15 @@ function archiveVersion(p) {
 
 // This gate is used only when accepting a new run. Historical tickets keep their original shape.
 function copyHandoffReady(review, names, text) {
+  if(review?.protocol==='director-headline-v1') {
+    const draft=review.draft?.directions;
+    const reads=review.sloganWorkbook?.second;
+    return review.status==='ready' && review.bodyHash===hash(text || '') &&
+      draft?.length===3 && headlineMarkdown(review.draft)===text && reads?.length===2 &&
+      new Set(draft.map(d=>d.duty)).size===3 && new Set(draft.map(d=>d.main)).size===3 &&
+      names.every((name,i)=>name===draft[i].name && reads.every(r=>r.output.items.some(v=>v.text===draft[i].main && v.usable===true))) &&
+      draft.some(d=>d.id===review.recommendation?.directionId) && Boolean(review.recommendation?.reason?.trim());
+  }
   if (review?.protocol !== headlineProtocol || review.version !== 3 || review.status !== 'ready' ||
       !text || hash(text) !== review.bodyHash) return false;
   const draft = review.draft?.directions;
@@ -362,7 +371,7 @@ export function createNightflight({ root, runStage, runLayout }) {
               const path = join(dir, 'previous-'+filename(a.name));
               copyFileSync(disk(p,a.storageKey),path,constants.COPYFILE_EXCL);
               const bytes = readFileSync(path);
-              return {visual:a.visual,image:{path,imageId:'previous',sha256:hash(bytes),byteLength:bytes.length,mediaType:'image/png'}};
+              return {adopted:previous.visualAdoption?.artifacts?.includes(a.storageKey)===true,visual:a.visual,image:{path,imageId:'previous',sha256:hash(bytes),byteLength:bytes.length,mediaType:'image/png'}};
             });
           }
           if (p.stage === 'layout') {
@@ -403,6 +412,7 @@ export function createNightflight({ root, runStage, runLayout }) {
               db.prepare("INSERT INTO project_events(project_id,entry) SELECT id,? FROM projects WHERE id=? AND json_extract(state,'$.claim')=?").run(event,id,claim);
             }
           };
+          onEvent('比稿负责人执行「'+labels[stages.indexOf(p.stage)]+'」');
           const result = await (p.stage === 'layout' ? runLayout : runStage)({
             stage: p.stage,
             project: input,
@@ -439,7 +449,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             const text = result.artifacts.find((a) => a.kind === 'text' && typeof a.text === 'string')?.text;
             check(Array.isArray(names) && names.length === 3 && names.every((d) => typeof d === 'string' && d.trim())
               && new Set(names).size === 3, '文案未交回三个不同方向', 422);
-            check(copyHandoffReady(review, names, text), '本版文案尚无完整的双团记录、单案或整组裁定，不能交接', 422);
+            check(copyHandoffReady(review, names, text), '本版文案尚无对应协议要求的评审记录，不能交接', 422);
             live.directions = names;
             live.copyReview = review;
             live.copyHandoff={projectId:live.id,strategy:input.strategyHandoff};

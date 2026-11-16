@@ -86,7 +86,7 @@ export function Workspace({
           <p>
             {researchPaused
               ? '本轮研究暂停：现有依据不足以交给策略。无需作选择。'
-              : p.canRequestStrategy ? '已核发现可交策略负责人撰写，未决问题随稿保留。' : p.error || latest || '项目已建立。'}
+              : p.canRequestStrategy ? '已核发现可用于撰写策略，未决问题随稿保留。' : p.error || latest || '项目已建立。'}
           </p>
           {p.status === 'running' && <span className="block-cursor" />}
         </div>

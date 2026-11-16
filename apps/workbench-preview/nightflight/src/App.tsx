@@ -57,7 +57,7 @@ export function App() {
   const [routePath, query] = route.split('?');
   const requestedLibrary = new URLSearchParams(query).get('view') === 'library';
   const stageParam = new URLSearchParams(query).get('stage');
-  const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' || stageParam === 'layout' ? stageParam : undefined;
+  const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' || stageParam === 'copy' || stageParam === 'layout' ? stageParam : undefined;
   const id = routePath.startsWith('/p/') ? routePath.slice(3) : '',
     workspace = !!id && p?.id === id,
     start = route === '/new',

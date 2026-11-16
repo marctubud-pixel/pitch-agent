@@ -15,7 +15,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
   const blind = [];
   for (const image of images) {
     const result = await call('只看这张原图。第一眼看到什么？画面里发生什么动作？哪些信息靠读字才知道？还有什么合理的读法？逐项用自己的话回答。',
-      [{...image,imageId:'anonymous'}],blindSchema,{rules:[],assignment:'独立读图者',context:'仅本张图片，保留图上文字。'});
+      [{...image,imageId:'anonymous'}],blindSchema,{delegate:true,rules:[],assignment:'独立读图者',context:'仅本张图片，保留图上文字。'});
     const words = result.parsedOutput;
     if (!blindFields.every(k=>typeof words?.[k]==='string' && words[k].trim())) throw invalidOutput('匿名盲读原话不完整');
     blind.push({sha256:image.sha256,thread:result.threadId,...words});
@@ -28,7 +28,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
       const group=pool.slice(offset,offset+4);
       const selection = await call('根据本案载体和图片内容判定是否为包装任务。仅选择与本方向同品类、可见包装正面的独立商品参考；排除本案原稿、标志、跨行业技法与非商品图。按适用性排序，用从1开始的原图序号返回，无合适图时返回空数组。',
         group,{type:'object',additionalProperties:false,properties:{packaging:{type:'boolean'},indices:{type:'array',items:numeric}},required:['packaging','indices']},
-        {rules:[],assignment:'核对同类参考',context:context+' 当前方向：'+direction+' 输入图片按序：'+JSON.stringify(group.map(s=>s.name))});
+        {delegate:true,rules:[],assignment:'核对同类参考',context:context+' 当前方向：'+direction+' 输入图片按序：'+JSON.stringify(group.map(s=>s.name))});
       const result = selection.parsedOutput;
       if (typeof result?.packaging!=='boolean' || (packaging!==undefined && packaging!==result.packaging) || !Array.isArray(result.indices) ||
         !result.indices.every(i=>Number.isInteger(i)&&i>0&&i<=group.length) || new Set(result.indices).size!==result.indices.length) throw invalidOutput('同类参考指向无效');
@@ -49,7 +49,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
   const packet = [...images,...references,...(board?[board]:[])];
   const rules = ['候选为第1至3张，仅给候选评分。'+(board?'其后是同类原图，最后一张是同序等框缩图。逐对定位相似与不同，区分单图和并排可见性。参考顺序：'+references.map(r=>r.name).join('、')+'。':'本批没有可用同类包装，不得推断已完成同类对照。')];
   async function read(assignment, instruction, fields, extra = '') {
-    const result = await call(instruction, packet, schema(fields), {rules, assignment, comparison:!!board, context: context + '\n本批方向：' + direction + extra});
+    const result = await call(instruction, packet, schema(fields), {delegate:true,rules, assignment, comparison:!!board, context: context + '\n本批方向：' + direction + extra});
     const rows = result.parsedOutput?.items;
     if (rows?.length !== 3 || ![1,2,3].every(n => rows.some(row => row.candidate === n && row.reason?.trim()))) {
       throw invalidOutput('主视觉评审未逐张交回三份可核对意见');
