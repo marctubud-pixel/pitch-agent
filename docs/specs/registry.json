@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.46.0",
+  "baselineVersion": "1.47.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -82,7 +82,7 @@
       "kind": "agent",
       "title": "视觉开发负责人",
       "path": "docs/agents/visual-owner.md",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.visual",
@@ -390,8 +390,8 @@
       "kind": "method",
       "title": "视觉开发负责人Skill",
       "path": "skills/visual-development-lead/SKILL.md",
-      "version": "1.3.0",
-      "sourceVersion": "1.3.0",
+      "version": "1.4.0",
+      "sourceVersion": "1.4.0",
       "lifecycle": "current",
       "dependsOn": []
     },

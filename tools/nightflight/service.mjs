@@ -234,6 +234,13 @@ export function createNightflight({ root, runStage, runLayout }) {
           if (p.stage === 'visual') {
             const last = p.versions.at(-1);
             const previous = last?.stage === 'visual' ? last : undefined;
+            input.previousReferences = (previous?.artifacts ?? []).filter(a => a.visual?.role === 'reference').map(a => {
+              const path = join(dir, 'previous-'+filename(a.name));
+              copyFileSync(disk(p,a.storageKey), path, constants.COPYFILE_EXCL);
+              const bytes = readFileSync(path);
+              check(hash(bytes) === a.visual.sha256, '上版公开参考图与原件身份不一致', 422);
+              return {...a.visual, name:a.name, path, byteLength:bytes.length, mediaType:mime[extname(a.name).toLowerCase()]};
+            });
             input.previousVisual = previous?.artifacts.filter(a=>a.visual?.candidate).map(a => {
               const path = join(dir, 'previous-'+filename(a.name));
               copyFileSync(disk(p,a.storageKey),path,constants.COPYFILE_EXCL);
@@ -246,16 +253,18 @@ export function createNightflight({ root, runStage, runLayout }) {
             const directions = new Set(p.artifacts.filter(a => adopted.has(a.storageKey)).map(a => a.visual?.direction));
             const compared = p.artifacts.filter(a => a.stage === 'visual' && a.visual?.role === 'comparison' &&
               directions.has(a.visual.direction)).flatMap(a => a.visual.references ?? []);
-            input.layoutCompetitorReferences = p.attachments.filter(a => compared.includes(a.name)).map(a => a.name);
+            const originals = p.artifacts.filter(a => a.visual?.role === 'reference' && directions.has(a.visual.direction));
+            input.layoutCompetitorReferences = [...p.attachments, ...originals].filter(a => compared.includes(a.name)).map(a => a.name);
           }
           for (const type of ['artifacts', 'attachments']) {
             const source = type === 'attachments' && p.stage === 'layout'
-              ? [...p.attachments, ...(p.visualAdoption?.materials ?? [])] : p[type];
-            const records = source.filter(a=>!(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
+              ? [...p.attachments, ...(p.visualAdoption?.materials ?? []), ...p.artifacts.filter(a =>
+                a.visual?.role === 'reference' && input.layoutCompetitorReferences.includes(a.name))] : p[type];
+            const records = source.filter(a=>!(type==='artifacts' && a.visual?.role==='reference') && !(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
-              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, path };
+              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, visualOnly:record.visualOnly, path };
             });
           }
           const onEvent = (text) => {
@@ -287,7 +296,13 @@ export function createNightflight({ root, runStage, runLayout }) {
           }
           if (p.stage === 'visual') {
             const expected = p.mode==='collab' ? [p.choice] : p.directions;
-            const images = result.artifacts.filter(a=>a.kind==='image' && a.visual?.role!=='comparison');
+            for (const ref of result.artifacts.filter(a => a.visual?.role === 'reference')) {
+              const v = ref.visual;
+              check(ref.kind === 'image' && /\.(?:png|jpe?g)$/i.test(ref.name) && expected.includes(v.direction) &&
+                /^[a-f0-9]{64}$/.test(v.sha256) && [v.pageUrl,v.sourceUrl].every(url => URL.canParse(url) && new URL(url).protocol === 'https:') &&
+                typeof v.query === 'string' && v.query.trim() && !v.candidate && !v.recommended, '公开参考图来源或方向记录无效', 422);
+            }
+            const images = result.artifacts.filter(a=>a.kind==='image' && !['comparison','reference'].includes(a.visual?.role));
             check(images.length===expected.length*3 && expected.every(direction=>{
               const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
               if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
@@ -316,6 +331,9 @@ export function createNightflight({ root, runStage, runLayout }) {
               ...(typeof a.text === 'string' ? { text: a.text } : {}),
             };
           });
+          for (const ref of outputs.filter(file => file.visual?.role === 'reference')) {
+            check(hash(readFileSync(disk(live, ref.storageKey))) === ref.visual.sha256, '公开参考原件与来源记录不一致', 422);
+          }
           live.artifacts.push(...outputs);
           live.claim = null;
           live.owner = null;
@@ -394,11 +412,11 @@ export function createNightflight({ root, runStage, runLayout }) {
         save(p);
       }
     }
-  function parseAttachments(attachments, existing = [], layoutOnly = false) {
+  function parseAttachments(attachments, existing = [], scope = 'project') {
     check(Array.isArray(attachments) && attachments.length <= 32, '单次最多 32 个附件');
     const isImage = (a) => /\.(png|jpe?g)$/i.test(a.name);
     check(
-      layoutOnly || [...existing.filter((a) => a.kind === 'attachment'), ...attachments].filter(isImage).length <= 4,
+      scope !== 'project' || [...existing.filter((a) => a.kind === 'attachment' && !a.visualOnly), ...attachments].filter(isImage).length <= 4,
       '一个项目最多上传四张参考图',
     );
     const names = new Set(existing.map((a) => a.name.normalize('NFC').toLowerCase()));
@@ -505,10 +523,10 @@ export function createNightflight({ root, runStage, runLayout }) {
       const candidates = p.artifacts.filter(a=>a.visual?.candidate);
       if (candidates.length) check((p.mode==='collab' ? [p.choice] : p.directions).every(d=>candidates.some(a=>a.visual.direction===d && a.visual.recommended)), '本批有方向尚无达标主视觉，请修改后再采用',409);
       const chosen = p.artifacts
-        .filter((a) => a.stage === 'visual' && a.kind === 'image' && (!candidates.length || a.visual?.recommended))
+        .filter((a) => a.stage === 'visual' && a.kind === 'image' && !['reference','comparison'].includes(a.visual?.role) && (!candidates.length || a.visual?.recommended))
         .map((a) => a.storageKey);
       check(chosen.length, '没有图稿可采用', 409);
-      const files = parseAttachments(attachments, [...p.attachments, ...p.artifacts], true);
+      const files = parseAttachments(attachments, [...p.attachments, ...p.artifacts], 'layout');
       p.visualAdoption = { at: now(), artifacts: chosen,
         materials: files.map(f => storeFile(p, f.name, f.bytes, 'attachment')) };
       note(p, '用户采用本版视觉稿，继续本地排版');
@@ -552,9 +570,12 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.error = null;
       note(p, '用户重试当前阶段');
     } else if (kind === 'message') {
-      const files = parseAttachments(attachments, [...p.artifacts, ...p.attachments]);
+      const visual = p.stage === 'visual';
+      check(!visual || p.attachments.length + attachments.length <= 32, '视觉资料累计最多 32 个附件');
+      const files = parseAttachments(attachments, [...p.artifacts, ...p.attachments], visual ? 'visual' : 'project');
       check(text || files.length, '请输入意见或添加文件');
-      p.attachments.push(...files.map((f) => storeFile(p, f.name, f.bytes, 'attachment')));
+      p.attachments.push(...files.map(f => ({...storeFile(p, f.name, f.bytes, 'attachment'),
+        ...(visual && /\.(png|jpe?g)$/i.test(f.name) ? {visualOnly:true} : {})})));
       p.feedback.push({ at: now(), stage: p.stage, text });
       note(p, '收到你的意见：' + text.slice(0, 180));
       if ((p.status === 'waiting' && p.stage === 'visual') || p.status === 'done') {

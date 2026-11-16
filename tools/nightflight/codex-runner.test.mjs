@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
@@ -128,7 +129,7 @@ process.stdin.on('data',x=>input+=x);
 process.stdin.on('end',()=>{
  console.log(JSON.stringify({type:'thread.started',thread_id:id}));
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && input.includes('独立读图者')) && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -149,7 +150,29 @@ process.stdin.on('end',()=>{
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
- if(action==='image' && args.includes('--output-schema')){
+ if(input.includes('视觉参考检索词')){
+   const ctx=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   fs.writeFileSync(path.join(home,'视觉参考检索词.json'),JSON.stringify(ctx));
+   body={queries:[ctx.previousQueries?.length?'tea cup':'tea ceremony']};
+ } else if(input.includes('公开参考包独立评分')){
+   const ctx=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   body={items:ctx.dimensions.map(d=>({dimension:d,score:ctx.role==='brand' && ctx.references.some(r=>r.query==='tea ceremony')?3:4,evidence:'瓶口的色块与当前产品层次'})),hardReject:''};
+ } else if(input.includes('公开参考包对抗')){
+   body={issue:'',evidence:'核对瓶口和品牌色'};
+ } else if(input.includes('公开参考包独立裁定')){
+   body={decisions:['visual','brand','user','spread'].map(role=>({role,accepted:false,reason:'已核原票'})),compatible:true,reason:'画面与用途互补'};
+ } else if(input.includes('视觉参考原图登记')){
+   const rows=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   body={observations:rows.map(r=>({source:r.source,visible:'原图可见的画面特征'}))};
+ } else if(input.includes('视觉负责人分派参考图')){
+   const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   fs.writeFileSync(path.join(home,'视觉负责人分派参考图.json'),JSON.stringify(packet));
+   body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:packet.directions.map((d,i)=>{
+     const refs=packet.sources.filter(s=>s.searchDirection===d.name || s.name.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
+     const use=r=>({source:r.source,borrow:'参考图可见的局部',apply:'作为本案用色依据',why:'帮助说明产品特征',avoid:'不沿用对方的标志与瓶标图案'});
+     return {direction:d.name,main:refs.slice(0,1).map(use),auxiliary:refs.slice(1,3).map(use),gap:refs.length?'':'缺原图'};
+   })};
+ } else if(action==='image' && args.includes('--output-schema')){
    if(args[args.indexOf('image_generation')-1]!=='--disable')process.exit(9);
    const props=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1])).properties;
    const count=args.filter(x=>x==='--image').length;
@@ -159,23 +182,29 @@ process.stdin.on('end',()=>{
    } else if(props.indices){
      body={packaging:true,indices:count?[1]:[]};
    } else {
-     if(count!==5)process.exit(9);
+     if(count!==5 && count!==6)process.exit(9);
      const fields=props.items.items.properties;
      body={items:[1,2,3].map(n=>({candidate:n,reason:'可见依据',...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}))};
    }
  } else if(action==='image' || action==='other-thread'){
    if(args[args.indexOf('code_mode_host')-1]!=='--enable'||args[args.indexOf('image_generation')-1]!=='--enable')process.exit(9);
-   if (!input.includes('指定方向："晨雾"')) process.exit(5);
+   if (!['山风','晨雾','旧街'].some(n=>input.includes('指定方向：'+JSON.stringify(n)))) process.exit(5);
+   const received=args.flatMap((arg,i)=>arg==='--image'?[require('node:crypto').createHash('sha256').update(fs.readFileSync(args[i+1])).digest('hex')]:[]);
+   fs.appendFileSync(path.join(home,'generation-inputs.jsonl'),JSON.stringify({direction:JSON.parse(input.split('实际项目输入（JSON）').at(-1)).referenceHandoff.direction,received})+'\\n');
    const folder=path.join(home,'generated_images',action==='image'?id:require('node:crypto').randomUUID());
    fs.mkdirSync(folder,{recursive:true});
-   const palette=['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMIqDUBAAIiAQIUhcD8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGOYVmsCAAL0AUjegoXyAAAAAElFTkSuQmCC'];
-   fs.writeFileSync(path.join(folder,'exec-'+id+'.png'),Buffer.from(palette[fs.readdirSync(path.join(home,'generated_images')).length-1],'base64'));
+   const z=require('node:zlib');
+   const chunk=(name,bytes)=>{ const data=Buffer.concat([Buffer.from(name),bytes]);const n=Buffer.alloc(4),crc=Buffer.alloc(4);n.writeUInt32BE(bytes.length);crc.writeUInt32BE(z.crc32(data));return Buffer.concat([n,data,crc]); };
+   const count=fs.readdirSync(path.join(home,'generated_images')).length;
+   const header=Buffer.from('00000001000000010802000000','hex');
+   const output=Buffer.concat([Buffer.from('89504e470d0a1a0a','hex'),chunk('IHDR',header),chunk('IDAT',z.deflateSync(Buffer.from([0,count,78,90]))),chunk('IEND',Buffer.alloc(0))]);
+   fs.writeFileSync(path.join(folder,'exec-'+id+'.png'),output);
  }
  fs.writeFileSync(args[args.indexOf('-o')+1],args.includes('--output-schema')?JSON.stringify(body):'茶园晨雾概念稿');
  console.log('{"type":"turn.completed"}');
 });`;
 
-async function fixture(t, action) {
+async function fixture(t, action, options={}) {
   const root = await mkdtemp(join(tmpdir(),'nightflight-model-test-'));
   t.after(()=>rm(root,{recursive:true,force:true}));
   const home = join(root,'home'),dir=join(root,'attempt'),binary=join(root,'fake-codex');
@@ -191,9 +220,9 @@ async function fixture(t, action) {
       return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<html><title>合成行业报告</title><p>本次样本单列礼盒用途。</p></html>')};
     },
   };
-  const runner = createStageRunner({binary,codexHome:home,model:'fixture',researchDependencies});
+  const runner = createStageRunner({binary,codexHome:home,model:'fixture',researchDependencies,...options});
   const project = {title:'测试茶',brief:'制作测试茶的包装概念稿',mode:'collab',attachments:[],artifacts:[],directions:['山风','晨雾','旧街'],choice:'晨雾'};
-  return {dir, project, requests, run:(stage,overrides={})=>runner({stage,dir,project,...overrides})};
+  return {home,dir, project, requests, run:(stage,overrides={})=>runner({stage,dir,project,...overrides})};
 }
 
 test('copy releases three reviewed directions only after blind votes, revision, rechecks and independent ruling',async t=>{
@@ -364,11 +393,103 @@ test('collaboration generates the chosen direction using the current thread PNG 
   assert.deepEqual(result.artifacts.slice(0,3).map(a=>a.visual.recommended),[false,true,false]);
   assert.match(result.artifacts[4].text,/晨雾/);
 });
+test('empty uploads automatically acquire public bytes and deliver their provenance with the matching visual',async t=>{
+  const bytes=Buffer.from(png,'base64'), sha256=createHash('sha256').update(bytes).digest('hex');
+  let calls=0;
+  const first=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC','base64');
+  const f=await fixture(t,'image',{visualSearch:async ({query,dir})=>{
+    calls++; assert.equal(query,calls===1?'tea ceremony':'tea cup');
+    const fetched=calls===1?first:bytes;
+    const path=join(dir,'source.png');
+    await writeFile(path,fetched);
+    return [{path,name:'tea.png',sha256:createHash('sha256').update(fetched).digest('hex'),byteLength:fetched.length,mediaType:'image/png',query,pageUrl:'https://gallery.example/tea',sourceUrl:'https://gallery.example/tea.png'}];
+  }});
+  const strategy = '用可辨识的地景解释产品用水选择';
+  await writeFile(join(f.dir,'strategy.md'),strategy);
+  f.project.artifacts.push({kind:'text',stage:'strategy',name:'strategy.md'});
+  const {artifacts}=await f.run('visual');
+  for (const task of ['视觉参考检索词','视觉负责人分派参考图']) {
+    const packet=JSON.parse(await readFile(join(f.home,task+'.json'),'utf8'));
+    assert.equal(packet.strategy,strategy);
+  }
+  const original=artifacts.find(a=>a.visual?.role==='reference');
+  assert.equal(calls,2);
+  assert.equal(original.visual.direction,'晨雾');
+  assert.deepEqual(await readFile(join(f.dir,original.name)),bytes);
+  const mains=artifacts.filter(a=>a.visual?.role==='main');
+  assert.equal(mains.length,3);
+  for(const main of mains) {
+    const {priorAdmissions,admission}=main.visual.referenceHandoff;
+    assert.equal(priorAdmissions[0].passed,false);
+    assert.equal(admission.votes.length,4);
+    assert.equal(admission.passed,true);
+    const [ref]=main.visual.referenceHandoff.references;
+    assert.equal(ref.pageUrl,original.visual.pageUrl);
+    assert.equal(ref.name,original.name);
+  }
+  const inputs=(await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
+  assert.deepEqual(inputs.map(i=>i.received),[[sha256],[sha256],[sha256]]);
+});
+test('reference handoff rejects missing primary, duplicated originals and a reassigned private image before dispatch',async()=>{
+  const {selectVisualReferences}=await import('./visual-references.mjs');
+  const project={directions:['A','B','C'],brief:'包装'};
+  const source={imageId:'ref_1',sha256:'7'.repeat(64),name:'primary.png'};
+  const alias={...source,name:'alias.png',imageId:'ref_2'};
+  const use={source:source.imageId,borrow:'弧形',apply:'在瓶肩转译弧形'};
+  async function plan(assignments,previousVisual){
+    const call=async(instruction,images)=>{
+      assert.deepEqual(images,[source]);
+      return {threadId:'selection',parsedOutput:{sharedBrand:[],directions:project.directions.map(direction=>({
+        direction,main:assignments.includes(direction)?[use]:[],auxiliary:[],gap:'缺主参考',
+      }))}};
+    };
+    return selectVisualReferences({call,project:{...project,previousVisual},images:[source,alias],active:['B']});
+  }
+  await assert.rejects(plan([]),/B.*缺主参考/);
+  await assert.rejects(plan(['A','B']),/专用参考图发生冲突/);
+  await assert.rejects(plan(['B'],[{visual:{direction:'A',referenceHandoff:{references:[source]}}}]),/专用参考图发生冲突/);
+  await assert.rejects(selectVisualReferences({project,images:[],active:['B']}),/对话区.*重试/);
+});
+
+test('all nine generator packets contain exactly the reference bytes assigned to that direction',async t=>{
+  const f=await fixture(t,'image');
+  const originals=[png,'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC','iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMIqDUBAAIiAQIUhcD8AAAAAElFTkSuQmCC','iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGOYVmsCAAL0AUjegoXyAAAAAElFTkSuQmCC'];
+  const names=['山风主参考.png','晨雾主参考.png','旧街主参考.png','晨雾辅助.png','测试茶标志.png'];
+  const hashes=[];
+  for(const [i,name] of names.entries()){
+    const bytes=Buffer.from(originals[i] ?? 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAE0lEQVR4nGP8//8/AwMDEwMYAAAkBgMBXaJOiAAAAABJRU5ErkJggg==','base64');
+    hashes.push(createHash('sha256').update(bytes).digest('hex'));
+    await writeFile(join(f.dir,name),bytes);
+    f.project.attachments.push({name,visualOnly:i===4});
+  }
+  f.project.mode='auto';
+  const result=await f.run('visual'),main=result.artifacts.filter(a=>a.visual?.role==='main');
+  assert.equal(main.length,9);
+  const runs=join(f.dir,'.codex-runs');
+  const packets=await Promise.all((await readdir(runs)).map(async id=>JSON.parse(await readFile(join(runs,id,'input.json'),'utf8'))));
+  const actual=(await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+  for(const [i,direction] of f.project.directions.entries()){
+    const expected=i===1?[hashes[1],hashes[4],hashes[3]]:[hashes[i],hashes[4]];
+    const requests=packets.filter(p=>!p.outputSchema && p.prompt.includes('指定方向：'+JSON.stringify(direction)));
+    assert.equal(requests.length,3);
+    assert.deepEqual(actual.filter(r=>r.direction===direction).map(r=>r.received),[expected,expected,expected]);
+    for(const request of requests) assert.deepEqual(request.images.map(s=>s.sha256),expected);
+    for(const a of main.filter(a=>a.visual.direction===direction)){
+      assert.deepEqual(a.visual.referenceHandoff.references.map(r=>r.sha256),expected);
+      assert.ok(a.visual.referenceHandoff.references.every(r=>r.borrow && r.apply));
+    }
+  }
+});
+
 for (const [action,stage,error] of [['disabled-host','visual',/工具宿主未启用/],['other-thread','visual',/未留下原生生图文件/],['badcopy','copy',/方向|职责|探索/],['failed','brief',/调用失败/],['api-key','brief',/ChatGPT 账户/]]) {
   test('reject '+action+' without publishing business artifacts',async t=>{
     const f=await fixture(t,action);
+    if (stage==='visual') {
+      await writeFile(join(f.dir,'晨雾原图.png'),Buffer.from(png,'base64'));
+      f.project.attachments.push({name:'晨雾原图.png'});
+    }
     await assert.rejects(f.run(stage),error);
-    assert.deepEqual((await readdir(f.dir)).filter(n=>!n.startsWith('.') && !n.startsWith('copy-review-attempt-')),[]);
+    assert.deepEqual((await readdir(f.dir)).filter(n=>!n.startsWith('.') && !n.startsWith('copy-review-attempt-') && n!=='晨雾原图.png'),[]);
   });
 }
 test('no unselected collaborative image, invented review or path traversal',async t=>{
@@ -494,12 +615,13 @@ test('extracts a real uploaded PDF with the pinned local runtime and passes its 
 
 test('visual batch ranks only eligible images, resolves ties and leaves an unsuccessful batch open', async () => {
   const { reviewVisualBatch } = await import('./visual-batch.mjs');
-  async function rank(scores, blocked, packaging = false) {
+  async function rank(scores, blocked, packaging = false, findComparators) {
     return reviewVisualBatch({
+      findComparators, makeBoard:async (_images,refs)=>({name:refs[0].name+' board'}),
       direction: '产品', context: '测试', images: [1,2,3].map(n => ({sha256: String(n)})),
       call: async (_prompt, _images, schema) => {
         if (schema.properties.first) return {parsedOutput:{first:'一瓶茶',action:'水入杯',words:'无糖',alternative:'不确定'}};
-        if (schema.properties.indices) return {parsedOutput:{packaging,indices:[]}};
+        if (schema.properties.indices) return {parsedOutput:{packaging,indices:_images.length?[1]:[]}};
         const fields = schema.properties.items.items.properties;
         const items = scores.map((score, i) => ({
           candidate: i+1, reason: '测试依据',
@@ -514,6 +636,9 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
   assert.equal((await rank([5,3,3], [1])).winner, null);
   const missing = await rank([5,5,5],[],true);
   assert.equal(missing.winner,null);
+  const searched=await rank([5,5,5],[],true,async()=>[{name:'公开同类正面对照',sha256:'comparator'}]);
+  assert.equal(searched.winner,3);
+  assert.equal(searched.board,'公开同类正面对照 board');
   assert.match(missing.candidates[0].research,/补充同类/);
   await assert.rejects(rank([4,0,5], []), /分数无效/);
 });

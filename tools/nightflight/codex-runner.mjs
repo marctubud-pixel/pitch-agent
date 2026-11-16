@@ -10,6 +10,7 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison } from './visual-comparison.mjs';
+import { selectVisualReferences, reviewReferencePlan } from './visual-references.mjs';
 import { reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -412,9 +413,9 @@ async function readInputs(dir, project, stage, signal) {
     if (size > 150000) throw Error('本次输入正文过长，请缩减附件或拆分提案');
     texts.push({ name, text });
   };
-  const attachments = project.attachments || [];
+  const attachments = (project.attachments || []).filter(a=>!a.visualOnly || stage==='visual');
   if (attachments.length > 32) throw Error('单次最多上传 32 个附件');
-  if (attachments.filter(a=>/\.(?:png|jpe?g)$/i.test(a.name)).length > 4) throw Error('单次最多上传 4 张 PNG 或 JPEG 品牌参考图');
+  if (stage!=='visual' && attachments.filter(a=>/\.(?:png|jpe?g)$/i.test(a.name)).length > 4) throw Error('单次最多上传 4 张 PNG 或 JPEG 品牌参考图');
   const items = [...attachments.map(a => ({...a, uploaded:true})), ...(project.artifacts || [])];
   for (const item of items) {
     signal?.throwIfAborted();
@@ -457,7 +458,7 @@ async function readInputs(dir, project, stage, signal) {
       throw Error('请将「'+item.name+'」转换成 PDF、DOCX、PPTX、TXT、MD、PNG 或 JPEG 后重试');
     }
   }
-  if (images.length > 4 && stage !== 'final') throw Error('请将本次品牌参考图控制在四张以内');
+  if (images.length > 4 && stage !== 'final' && stage !== 'visual') throw Error('请将本次品牌参考图控制在四张以内');
   return {texts,images};
 }
 
@@ -495,7 +496,85 @@ async function ownGeneratedImage(result, codexHome) {
   return {bytes, inspection, originalName:names[0].name};
 }
 
-export function createStageRunner({binary, model, researchDependencies = {}, codexHome = process.env.CODEX_HOME || join(homedir(),'.codex')} = {}) {
+function publicVisualQueries(result, project) {
+  const privateNames = [project.title,project.brief,...project.directions,
+    ...(project.copyReview?.draft?.directions ?? []).map(d=>d.main),
+    ...Array.from((project.brief ?? '').matchAll(/(?:品牌名?|客户名?|项目名)[：:]\s*([^\n，。；,;]{2,40})/gu), m=>m[1].trim())];
+  return strings(result.parsedOutput?.queries).filter(q=>q.length<=64 && /^[\p{L}\p{M} -]+$/u.test(q) &&
+    !privateNames.some(s=>s && q.toLowerCase().includes(s.toLowerCase())));
+}
+function publicVisualCandidate(item,direction,imageId) {
+  return {...item,direction,imageId,name:'public-'+randomUUID()+(item.mediaType==='image/png'?'.png':'.jpg')};
+}
+
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, onEvent}) {
+  const pool = [...images];
+  const seen = new Set(images.map(i=>i.sha256));
+  function addCandidates(items, direction) {
+    for (const item of items) {
+      if (seen.has(item.sha256)) continue;
+      seen.add(item.sha256);
+      pool.push(publicVisualCandidate(item,direction,'public_'+item.sha256.slice(0,24)));
+    }
+  }
+  for (const image of project.previousReferences ?? []) addCandidates([image], image.direction);
+  const diagnostics = [];
+  const attempted = new Set();
+  const history = [];
+  for (let pass=0; ; pass++) {
+    try {
+      const plans=await selectVisualReferences({call,project,images:pool,active});
+      const missing=[];
+      for (const direction of active) {
+        const plan=plans.get(direction);
+        if (!plan.images.some(i=>i.sourceUrl)) continue;
+        const otherDirections=active.filter(n=>n!==direction).map(n=>({direction:n,references:plans.get(n).handoff.references}));
+        const admission=await reviewReferencePlan({call,project,direction,otherDirections,...plan});
+        history.push(admission);
+        await writeFile(join(dir,'reference-admission-'+randomUUID()+'.json'),JSON.stringify(admission,null,2),{flag:'wx',mode:0o600});
+        if (!admission.passed) {
+          missing.push(direction);
+          const rejected=new Set(plan.images.filter(i=>i.sourceUrl).map(i=>i.sha256));
+          for (let i=pool.length-1;i>=0;i--) if(rejected.has(pool[i].sha256)) pool.splice(i,1);
+          diagnostics.push(direction+' 准入未过：'+admission.blockers.join('、'));
+        } else {
+          plan.handoff.admission=admission;
+          plan.handoff.priorAdmissions=history.filter(a=>a.direction===direction && !a.passed);
+        }
+      }
+      if (missing.length) throw Object.assign(Error('公开参考未通过：'+missing.join('、')),{missing});
+      return plans;
+    }
+    catch (error) {
+      if (!error.missing) throw error;
+      if (pass===2) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
+      for (const direction of error.missing) {
+        signal?.throwIfAborted();
+        const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
+        const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],gaps:diagnostics};
+        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系，给出两条不同的简短公开检索词，可用英文。一条组合品类、目标载体与该关系找设计案例，另一条找不同表达手法或可核实的场所细节。优先品牌、设计机构或奖项的作品图。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{assignment:'视觉参考检索词',context:JSON.stringify(packet)});
+        const queries=publicVisualQueries(plan,project).slice(0,2);
+        for (const query of queries) {
+          const key=direction+' / '+query;
+          if (attempted.has(key)) continue;
+          attempted.add(key);
+          await onEvent?.('正在为「'+direction+'」查找公开参考图：'+query);
+          try {
+            const found=await search({query,dir,signal});
+            addCandidates(found.slice(0,3),direction);
+            diagnostics.push(key+'，取得 '+found.length+' 张');
+          } catch(error) {
+            signal?.throwIfAborted();
+            diagnostics.push(key+'，'+String(error.message).slice(0,120));
+          }
+        }
+        if (!queries.length) diagnostics.push(direction+'，没有可公开发送的检索词');
+      }
+    }
+  }
+}
+
+export function createStageRunner({binary, model, researchDependencies = {}, visualSearch, codexHome = process.env.CODEX_HOME || join(homedir(),'.codex')} = {}) {
   return async function run({stage, project, dir, onEvent, signal}) {
     if (!Object.hasOwn(stages, stage)) throw Error('不支持的模型阶段');
     signal?.throwIfAborted();
@@ -568,19 +647,33 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
       if (all.length !== 3 || new Set(all).size !== 3) throw Error('视觉阶段需要本案三份文案方向');
       const directions = project.mode==='collab' ? [project.choice] : all;
       if (directions.some(d=>!all.includes(d))) throw Error('请先选定本案的视觉方向');
+      const search = visualSearch ?? (async args => (await import('./public-visual-search.mjs')).searchVisualImages(args));
+      const strategyFile = project.artifacts?.filter(a=>a.stage==='strategy' && a.kind==='text').at(-1);
+      const strategyText = inputs.texts.find(t=>t.name===strategyFile?.name)?.text ?? '';
+      const plans = await prepareVisualPlans({call,project:{...project,strategyText},images:inputs.images,active:directions,dir,signal,search,onEvent});
       const seen = new Set(), summaries = [];
       for (const direction of directions) {
         const batch = [], images = [];
         const previous = project.previousVisual?.filter(item => item.visual?.direction === direction) ?? [];
         const best = previous.sort((a,b)=>Number(b.visual.recommended)-Number(a.visual.recommended) || b.visual.mean-a.visual.mean)[0];
-        const attachPrevious = best && inputs.images.length < 4;
-        const sourceImages = attachPrevious ? [best.image, ...inputs.images] : inputs.images;
+        const {images:references,handoff} = plans.get(direction);
+        const publicImages = references.filter(ref=>ref.sourceUrl);
+        async function publishReference(ref) {
+          const bytes = await readFile(ref.path);
+          if (hash(bytes)!==ref.sha256) throw Error('公开参考原图字节与登记不一致');
+          await writeFile(join(dir,ref.name),bytes,{flag:'wx',mode:0o600});
+          artifacts.push({kind:'image',name:ref.name,visual:{role:'reference',direction,title:ref.title ?? ref.name,sha256:ref.sha256,pageUrl:ref.pageUrl,sourceUrl:ref.sourceUrl,query:ref.query}});
+        }
+        for (const ref of publicImages) await publishReference(ref);
+        const sourceImages = best ? [best.image, ...references] : references;
+        const generationContext = JSON.stringify({...JSON.parse(context),materials:inputs.texts.filter(item=>!item.imageNumber),
+          direction:project.copyReview?.draft?.directions?.find(d=>d.name===direction) ?? direction, referenceHandoff:handoff});
         for (const [index, focus] of ['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'].entries()) {
           await onEvent?.('正在为「'+direction+'」生成主视觉 '+(index+1)+'/3');
           const instruction = '只用内置 image_generation 工具生成一张完整主视觉，保留同方向的核心卖点及必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。本张从'+focus+'做实质不同的处理。'+
-            (best ? (attachPrevious ? '第一张输入图为上一批原稿。' : '本轮附全部四张品牌参考。')+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
+            (best ? '第一张输入图为上一批原稿。'+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
             '同批已有方案描述：'+JSON.stringify(batch.map(item=>item.description))+'。完成后简述设计。指定方向：'+JSON.stringify(direction);
-          const result = await call(instruction,sourceImages,null);
+          const result = await call(instruction,sourceImages,null,{context:generationContext});
           const original = await ownGeneratedImage(result,home);
           const digest = hash(original.bytes);
           if (seen.has(digest)) throw Error('主视觉候选返回了重复图片，请重试视觉阶段');
@@ -588,17 +681,38 @@ export function createStageRunner({binary, model, researchDependencies = {}, cod
           const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
           const path = join(dir,name);
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const record = {direction,name,sha256:digest,thread:result.threadId,originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          const record = {direction,name,referenceHandoff:handoff,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(result.paths.runDir,'generated-image.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
           batch.push(record);
           images.push({imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'});
         }
         await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
-        const review = await reviewVisualBatch({call,direction,images,context,sources:inputs.images,makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
+        const comparatorPool=[];
+        const review = await reviewVisualBatch({call,direction,images,context,sources:[...inputs.images,...publicImages],
+          findComparators:async()=>{
+            const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
+            const [query]=publicVisualQueries(result,project);
+            if (!query) return [];
+            await onEvent?.('正在补查同类包装对照：'+query);
+            try {
+              const originals=await search({query,dir,signal});
+              const known=new Set([...inputs.images,...publicImages].map(i=>i.sha256));
+              for(const item of originals.slice(0,3)) if(!known.has(item.sha256)) {
+                known.add(item.sha256);
+                comparatorPool.push(publicVisualCandidate(item,direction,'comparator_'+comparatorPool.length));
+              }
+            } catch(error) {
+              signal?.throwIfAborted();
+              await onEvent?.('同类包装对照搜图未取得原件：'+String(error.message).slice(0,120));
+            }
+            return comparatorPool;
+          },
+          makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
+        for (const ref of comparatorPool) if (review.references.some(r=>r.name===ref.name)) await publishReference(ref);
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
         for (const [i,record] of batch.entries()) {
           const verdict = review.candidates.find(row=>row.candidate===i+1);
-          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
+          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
         }
         if (review.board) artifacts.push({name:review.board,kind:'image',visual:{direction,role:'comparison',references:review.references.map(r=>r.name)}});

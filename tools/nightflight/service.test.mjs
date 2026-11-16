@@ -65,7 +65,9 @@ test('a personal run waits for direction and current image adoption, saves user 
       assert.equal(await readFile(join(dir, 'update.md'), 'utf8'), 'update');
       assert.equal(project.proposalKind, 'packaging');
       assert.deepEqual(project.outlineOptions, { include: ['series'], singleTouchpoint: true });
-      assert.deepEqual(project.layoutCompetitorReferences, []);
+      assert.deepEqual(project.layoutCompetitorReferences, ['公开包装.jpg']);
+      assert.equal(project.artifacts.some(a => a.visual?.role === 'reference'), false);
+      assert.equal(await readFile(join(dir, '公开包装.jpg'), 'utf8'), '公开原图');
       assert.equal(await readFile(join(dir, '逐页材料.md'), 'utf8'), '指定版次');
     }
     const kind = stage === 'layout' ? 'pptx' : stage === 'visual' ? 'image' : 'text';
@@ -80,9 +82,16 @@ test('a personal run waits for direction and current image adoption, saves user 
         const score=candidate===2?5:4;
         artifacts.push({name,kind:'image',visual:{direction:'A',role:'main',blind:{first:'茶',action:'入杯',words:'青屿',alternative:'山泉'},edit:'放大文字',research:'无',candidate,mean:score,blocked:false,reason:'合成评语',recommended:candidate===2,scores:['视觉','品牌','用户','传播'].map(role=>({role,score,reason:'合成依据'}))}});
       }
+      if (project.previousVisual?.length) {
+        assert.equal(project.previousReferences[0].direction, 'A');
+        assert.equal(await readFile(project.previousReferences[0].path,'utf8'), '公开原图');
+      } else assert.equal(project.attachments.some(a=>/\.(jpg|png)$/i.test(a.name)),false);
+      const ref = '公开包装.jpg';
+      await writeFile(join(dir,ref),'公开原图');
+      artifacts.push({name:ref,kind:'image',visual:{role:'reference',direction:'A',query:'茶饮包装',sha256:createHash('sha256').update('公开原图').digest('hex'),pageUrl:'https://example.org/product',sourceUrl:'https://example.org/product.jpg'}});
       const board='同类并排.png';
       await writeFile(join(dir,board),'合成对照');
-      artifacts.push({name:board,kind:'image',visual:{role:'comparison',direction:'A',references:['同类']}});
+      artifacts.push({name:board,kind:'image',visual:{role:'comparison',direction:'A',references:[ref]}});
       return {artifacts};
     }
     if(stage==='layout') assert.deepEqual((await import('node:fs/promises').then(fs=>fs.readdir(dir))).filter(n=>n.endsWith('.png')),['稿2.png']);
@@ -165,14 +174,17 @@ test('a personal run waits for direction and current image adoption, saves user 
   await action({ kind: 'choice', text: 'A', expectedRevision: copy.revision });
   const visual = await wait('waiting');
   assert.equal(visual.stage, 'visual');
-  await action({ kind: 'message', text: 'change', attachments: [file('update.md', 'update')] });
+  await action({ kind: 'message', text: 'change', attachments: [file('update.md', 'update'), ...Array.from({length:5},(_,i)=>file('补图'+i+'.jpg','reference'+i))] });
   const revised = await wait('waiting');
   assert.equal(revised.versions.length, 4);
+  assert.equal(revised.attachments.filter(a=>a.visualOnly).length,5);
   assert.equal((await action({ kind: 'adopt', expectedRevision: visual.revision })).status, 409);
   const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice', attachments: [file('逐页材料.md', '指定版次')] };
   assert.equal((await action(adoption)).status, 200);
   const finished = await wait('done');
-  assert.equal(finished.artifacts.length, 10);
+  assert.equal(finished.artifacts.length, 11);
+  assert.equal(finished.visualAdoption.artifacts.length,1);
+  assert.equal(finished.artifacts.find(a=>a.visual?.role==='reference').visual.query,'茶饮包装');
   assert.equal((await action(adoption)).status, 200);
   service.close();
   service = createNightflight(options);
