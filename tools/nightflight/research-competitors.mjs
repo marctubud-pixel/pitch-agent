@@ -63,7 +63,10 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   }
   const images = [...pool.values()].slice(0,4);
   if (!images.length) return null;
+  const isNamedProduct=image=>carrier==='packaging' && Boolean(image.casePage?.brand) && !image.imageAttachment;
+  const blindPackaging=images.some(isNamedProduct);
   const caseSources = await Promise.all(images.map(async image => {
+    if (isNamedProduct(image)) return {sourceUrl:'',passages:[]};
     const candidate = image.casePage ?? uniquePages.get(image.pageUrl);
     const sourceUrl = candidate?.rationaleSourceUrl || image.rationaleSourceUrl || image.pageUrl;
     if (!publicPage(sourceUrl)) return {sourceUrl:'',passages:[]};
@@ -81,14 +84,17 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     imageNumber:index+1,source:image.imageId,title:image.title,pageUrl:image.pageUrl,
     rationaleSourceUrl:caseSources[index].sourceUrl,sourcePassages:caseSources[index].passages.map(p=>p.text),
   }))};
-  const {parsedOutput: result}=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。同类商品的原图可以支持可见外观比较；创作者用意必须另有出处。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。优先同品类、同渠道的可比项目；同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。',images,observations(images.map(i=>i.imageId)),{
-    rules:[],assignment:'竞品原图观察',context:JSON.stringify(packet),
+  const imagePacket=blindPackaging ? {carrier,sources:packet.sources.map((entry,i)=>isNamedProduct(images[i]) ? {imageNumber:entry.imageNumber,source:entry.source} : entry)} : packet;
+  const reading=blindPackaging ? '这次只根据图片像素。title 写图上辨认的品牌与商品名；observation 描述可定位的印字、图案、颜色与相对位置。看不清楚的字不猜，无法识别具名商品或只有网站标志就跳过。不得补写配料、产地、价格、健康属性、受众、设计意图或销售效果。每条只描述对应的一张图。没有作者材料时，作者说明各项留空。单图结论须点名该商品，并限于其可见正面。' : '';
+  const {parsedOutput: result}=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。同类商品的原图可以支持可见外观比较；创作者用意必须另有出处。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。优先同品类、同渠道的可比项目；同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。'+reading,images,observations(images.map(i=>i.imageId)),{
+    rules:[],assignment:'竞品原图观察',context:JSON.stringify(imagePacket),
   });
   if (!Array.isArray(result?.samples) || !result.conclusion?.trim() || !result.implication?.trim()) return null;
   const selected = [], seen = new Set();
   for (const row of result.samples) {
     const image = images.find(i=>i.imageId===row.source);
     if (!image || seen.has(row.source) || !row.title?.trim() || !row.observation?.trim()) continue;
+    if (isNamedProduct(image) && !quoteText(row.title).toLowerCase().includes(quoteText(image.casePage.brand).toLowerCase())) continue;
     seen.add(row.source);
     const source = caseSources[images.indexOf(image)];
     const quote = row.rationaleQuote?.trim();
@@ -105,7 +111,7 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   const visualOnly = grounded.length===0;
   const finding = {
     chapter:'竞争与同类传播', visualOnly,
-    conclusion:visualOnly ? '已核实同类作品图像，创作者意图待核。' : result.conclusion.trim(),
+    conclusion:blindPackaging && !visualOnly ? grounded.map(ref=>ref.title+'：'+ref.observation).join('；') : visualOnly ? '已核实同类作品图像，创作者意图待核。' : result.conclusion.trim(),
     implication:visualOnly ? '仅供查看公开作品的画面。' : result.implication.trim(),
     evidence:(visualOnly?refs:grounded).map(r=>r.title+'：'+r.observation+
       (r.creatorRationale?'；创作者说明：'+r.creatorRationale+'（原文：'+r.rationaleQuote+'）':'')).join('\n'),

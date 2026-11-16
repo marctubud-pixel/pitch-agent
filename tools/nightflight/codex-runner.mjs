@@ -436,7 +436,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     const board = await researchCompetitors({call,dir,project,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
       acquiredByPage:new Map(packaging.pages.map(p=>[p.url,p.acquired])),
       pages:pages.filter(p=>(!p.carrier || p.carrier===type) && (type!=='packaging' || !brands.length ||
-        brands.some(b=>isPackagingSource(p.url,b?.officialDomain)) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
+        packaging.pages.includes(p) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
       previous:(project.previousResearchImages ?? []).filter(image=>!image.carrier || image.carrier===type)});
     if (board) {
       boards.push(board);

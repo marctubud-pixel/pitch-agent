@@ -141,7 +141,7 @@ process.stdin.on('end',()=>{
    fs.unlinkSync(stop);process.exit(78);
  }
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('只读所附网页原文') && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('竞品原图观察') && !input.includes('只读所附网页原文') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -194,7 +194,8 @@ process.stdin.on('end',()=>{
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
-     body={samples:[{source:packet.sources[0].source,title:'样本茶盒',observation:'包装中央标有茶类',sameCategory:true,strategyGroup:'突出品类名称',creatorRationale:'以品类字突出茶类',rationaleSourceUrl:packet.sources[0].pageUrl,rationaleQuote:'设计方把茶类名放在中央',takeaway:'可借品类字读序，仅适用于正面展示。'}],conclusion:'该样本正面标出品类',implication:'比较正面字序'};
+     if(action==='research-pack-lookup' && (packet.brief || packet.sources[0].pageUrl || packet.sources[0].sourcePassages))process.exit(56);
+     body={samples:[{source:packet.sources[0].source,title:action==='research-pack-lookup'?'测试茶 · 样本茶盒':'样本茶盒',observation:'包装中央标有茶类',sameCategory:true,strategyGroup:'突出品类名称',creatorRationale:'以品类字突出茶类',rationaleSourceUrl:packet.sources[0].pageUrl,rationaleQuote:'设计方把茶类名放在中央',takeaway:'可借品类字读序，仅适用于正面展示。'}],conclusion:'该样本正面标出品类',implication:'比较正面字序'};
    } else if(schema.digest) {
      if (!args.includes('web_search="disabled"') || input.includes('用户暂不确定渠道') || !input.includes('比稿负责人整理研究摘要')) process.exit(19);
      const {findings}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
@@ -204,7 +205,7 @@ process.stdin.on('end',()=>{
      body={ready:['research-ok','research-brief-only','research-thin'].includes(action),accepted:[0],labels:[],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
      if(action.startsWith('research-board') || action==='research-pack-lookup') {
        const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
-       const index=packet.research.findings.findIndex(f=>f.images?.[0]?.title==='样本茶盒');
+       const index=packet.research.findings.findIndex(f=>f.images?.[0]?.title?.endsWith('样本茶盒'));
        if (!args.includes('--image') || index<0) process.exit(26);
        if (action==='research-board-accept' || action==='research-pack-lookup') {
          body.accepted.push(index);
