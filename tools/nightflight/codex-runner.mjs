@@ -68,10 +68,10 @@ const reportSchema = objectSchema({
   gaps: stringList,
   next: stringField,
 });
-const verdictSchema = objectSchema({
+const verdictSchema = (indices) => objectSchema({
   ready: { type: 'boolean' },
-  accepted: { type: 'array', items: { type: 'integer' } },
-  labels: {type:'array',items:objectSchema({findingIndex:{type:'integer'},chapter:{type:'string',enum:Object.keys(researchAngles)},angle:{type:'string',enum:Object.values(researchAngles).flat()}})},
+  accepted: { type: 'array', items: { type: 'integer', enum: indices } },
+  labels: {type:'array',items:objectSchema({findingIndex:{type:'integer',enum:indices},chapter:{type:'string',enum:Object.keys(researchAngles)},angle:{type:'string',enum:Object.values(researchAngles).flat()}})},
   question: stringField,
   gaps: stringList,
   next: stringField,
@@ -295,15 +295,16 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     const questionInstruction = canAsk
       ? '研究者已经完成第一轮取证。仅在已采纳发现表明存在改变策略方向、且需要人作决定的项目取舍时，question 填一句直接询问该取舍的问题；next 说明答案将影响哪项判断。可带条件推进、公开资料可继续查或用户已回答的事项，question 填空字符串。'
       : 'question 填空字符串。根据已知条件及反馈复核；未确定的分支分别说明适用条件。';
+    const indexedFindings = findings.map((finding, findingIndex) => ({ ...finding, findingIndex }));
     const review = await call(
       '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。本包每条正文引用都有执行器实际取回的原文片段，组图附本地实际原图。以这些已核原件为准。gaps 只列复核后仍存在、与具体策略取舍有关的缺口。next 只解释下一步取舍；已定位和已看图的来源无需再次索取。草稿的过程说明和旧状态留在执行记录。关键依据不足时，无论哪个模式都保留待补状态。' + coverageInstruction +
       '按观察对象重新核对分类。labels 为适合展示的 accepted 发现逐条填写 findingIndex、纠正后的 chapter、该观察最相关的一个 angle。保留与本案相关且独立有据的观察，多个角度需来自不同发现，不能用多种角度名称掩盖同一观察。可保留其他已核材料作交接底稿并不列入 labels。项目条件、泛行业和相邻品类的无关调查不能凑入。已经定向补查且剩余缺口不妨碍具体策略取舍时，允许按真实已有角度交接，gaps保留缺口和影响。若某个缺口确实让关键策略选择无依据才判待补。' + questionInstruction,
       board?.images ?? [],
-      verdictSchema,
+      verdictSchema(indexedFindings.map(f => f.findingIndex)),
       {
         rules: [role],
         assignment: '审核当前研究的交接充分性。',
-        context: JSON.stringify({ brief: project.brief, mode, feedback: project.feedback || [], materials: inputs.texts, research, passages }),
+        context: JSON.stringify({ brief: project.brief, mode, feedback: project.feedback || [], materials: inputs.texts, research: { ...research, findings: indexedFindings }, passages }),
       },
     );
     const v = review.parsedOutput;
