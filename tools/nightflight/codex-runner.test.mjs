@@ -190,12 +190,13 @@ process.stdin.on('end',()=>{
    if (!input.includes('包装与 KV 一页策略') || packet.researchAdvice[0]?.findingNumbers?.join()!=='2' ||
        packet.findings.map(f=>f.findingNumber).join()!=='2' || !packet.brief.includes('测试茶')) process.exit(55);
    const derivation={text:'现有场景资料支持在盒面先放品类名。',findingNumbers:[action==='onepager-wrong-ref'?1:2]};
-   const outcome={coreStrategy:'把陌生茶品变成在货架前看得懂的日常选择。（发现2）',insight:'顾客想选原味，又担心买到调味饮品。',brandRole:'让品类和配方读得清。',proposition:'优先表达原味。',actions:['正面放大茶类名。','品名旁写口味。','侧面并列配料。'],
+   const outcome={coreStrategy:'把茶从礼盒里的客套，变成午休时顺手泡的一杯。（发现2）',insight:'顾客想选原味，又担心买到调味饮品。',brandRole:'让品类和配方读得清。',proposition:'优先表达原味。',actions:['正面放大茶类名。','品名旁写口味。','侧面并列配料。'],
      touchpoints:[{kind:'front',name:'正面',action:'展示品类。'},{kind:'side',name:'侧面',action:'解释配料。'},{kind:'back',name:'背面',action:'放产品说明。'}],
      metrics:[{name:'待测：品类识别率',method:'货架盲看记录正确人数占比（待测）'},{name:'口味复述准确率',method:'看图后口述并计数'},{name:'配料查找时间',method:'计时查找配料用时'}],
      constraints:'价格与配料属于任务卡的模拟设定。',opportunity:derivation,decision:derivation,priority:derivation,intersection:'货架辨认和原味表达相交。'};
    if (packet.carrier==='kv') outcome.touchpoints=[];
    if (packet.carrier!=='packaging') outcome.touchpoints.push({kind:'kv',name:'门店海报',action:'用瓶身衔接货架。'});
+   if(action==='onepager-no-shift') outcome.coreStrategy='让包装上的信息更容易理解。';
    if(action==='onepager-wrong-touch') outcome.touchpoints.pop();
    if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
    if(action==='onepager-internal') outcome.insight='模拟设定的测试茶。';
@@ -827,7 +828,7 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
 });
 
 
-for (const action of ['ok','kv','linked','return','wrong-ref','wrong-touch','scored','internal']) {
+for (const action of ['ok','kv','linked','return','no-shift','wrong-ref','wrong-touch','scored','internal']) {
   test('one-page packaging strategy from verified findings: '+action,async t=>{
     const f=await fixture(t,'onepager-'+action);
     if (action==='kv') f.project.brief='制作测试茶的春节KV';

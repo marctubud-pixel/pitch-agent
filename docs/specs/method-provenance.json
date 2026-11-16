@@ -102,9 +102,9 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "2026-11-16 用户提供 One-Pager 方法，并确认四节双栏阅读顺序与待测指标收进原稿。前版见 PR #48 提交 4da5edbe2c038a817973f71473bae1543d8803dd。",
+    "source": "2026-11-16 用户补充 One-Pager 核心策略的写作与复核方法，并给定谷间白定位示例。前版见 PR #48 提交 2199c7b0de74409c1c45324711ddd11c651101ae。",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.1-20261116",
-    "sha256": "9ef355b19519c88aab236de74933cf948d8a7d73dca2bf25109b88853c2890f2"
+    "sourceVersion": "v1.2-20261116",
+    "sha256": "031be79ee48c39a34bb9b6f7d205555c7f59135b001db768c1a144752189a5c0"
   }
 ]

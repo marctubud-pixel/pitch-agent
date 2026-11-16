@@ -64,6 +64,9 @@ function renderStrategy(out, findings, eligible, carrier) {
   }
   if (![out.coreStrategy,out.insight,out.brandRole,out.proposition,out.constraints,out.intersection].every(singleLine))
     throw Error('策略正文或事实边界不完整');
+  const focus=customerText(out.coreStrategy);
+  if (!/^把[^。！？]+?从[^。！？]+?[，,]?变成[^。！？]+[。！]?$/u.test(focus))
+    throw Error('核心策略要用一句话把品类从具体旧认知变成特定场景里的新意义');
   if (!Array.isArray(out.actions) || out.actions.length!==3 || !out.actions.every(singleLine) || !distinct(out.actions))
     throw Error('核心主张需要三项不同的可执行动作');
   const touchpoints = out.touchpoints;
@@ -81,7 +84,7 @@ function renderStrategy(out, findings, eligible, carrier) {
   const groups=[out.opportunity,out.decision,out.priority];
   const findingNumbers=[...new Set(groups.flatMap(g=>referenceList(g,eligible)))];
   const sections=[
-    '# 策略一页纸','## 核心策略',customerText(out.coreStrategy),'## 人群洞察',customerText(out.insight),'## 品牌角色',customerText(out.brandRole),
+    '# 策略一页纸','## 核心策略',focus,'## 人群洞察',customerText(out.insight),'## 品牌角色',customerText(out.brandRole),
     '## 核心主张',customerText(out.proposition),out.actions.map(a=>'- '+customerText(a)).join('\n'),
     '## '+({packaging:'视觉与包装触点',kv:'视觉与 KV 触点','packaging+kv':'视觉与包装／KV 触点'}[carrier]),
     touchpoints.map(t=>'- '+customerText(t.name)+'：'+customerText(t.action)).join('\n'),'## 衡量方式',
@@ -93,7 +96,7 @@ function renderStrategy(out, findings, eligible, carrier) {
     '## 方向交叉点',out.intersection,'## 推导依据','- 产品与任务约束：'+out.constraints+'\n'+
       groups.map((g,i)=>'- '+['竞品资源与空隙','人群与决策链','触点优先级与取舍'][i]+'：'+g.text+'（研究 '+g.findingNumbers.join('、')+'）').join('\n'),
   ];
-  return {body:sections.join('\n\n'),researchReturn:'',strategy:{findingNumbers,intersection:out.intersection,focus:customerText(out.coreStrategy)}};
+  return {body:sections.join('\n\n'),researchReturn:'',strategy:{findingNumbers,intersection:out.intersection,focus}};
 }
 
 export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) {
@@ -105,7 +108,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
     const gap=project.research?.next || '请补查目标人群在实际接触场景中的选择依据，交回一条能与产品条件对应的已核发现。';
     return {body:'# 策略待补\n\n'+gap,researchReturn:gap};
   }
-  const instruction='按本次载体完成一页策略及后台依据。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。核心策略一句把原有意义转为这个场景的新意义。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。只在没有依据作核心取舍时返回 researchReturn，其中说明影响取舍的窄问题。对客做减法：每个模块一到两句，核心策略优先一句；每个动作、触点和指标尽量一句一行，一项只讲一次。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
+  const instruction='按本次载体完成一页策略及后台依据。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。核心策略固定为一句「把[品类]从[旧认知]，变成[真实场景中的新意义]」。从已核传播或用户给定定位中找A面，不虚构消费者厌烦或竞品动机；从产品真相、场景与日常感受中找B面。打磨掉产品说明书和抽象形容词。有用户给定定稿时沿用原句。逐栏核对：洞察写这个具体的人为什么需要新意义；角色说明品牌如何兑现；主张把承诺转成三个可见动作；第一接触面必须能当场兑现首要承诺。四栏各自写不同的信息，读起来像给客户讲方案。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。只在没有依据作核心取舍时返回 researchReturn，其中说明影响取舍的窄问题。对客做减法：每个模块一到两句，核心策略优先一句；每个动作、触点和指标尽量一句一行，一项只讲一次。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
   const advice=(project.research.strategyAdvice ?? []).flatMap(a=>{
     if (!Array.isArray(a.findingIndices) || !a.findingIndices.length) return [];
     const findingNumbers=a.findingIndices.map(i=>i+1);
