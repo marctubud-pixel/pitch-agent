@@ -711,6 +711,7 @@ test('editorial selections keep their source, chapter, quantities and visual boa
   assert.throws(()=>validateResearchDigest([row(0,'口味占51%。'),rows[1]],findings),/数值或单位/);
   assert.throws(()=>validateResearchDigest([row(0,'销量为50.1万'),rows[1]],findings),/数值或单位/);
   assert.throws(()=>validateResearchDigest([{...rows[1],chapter:rows[0].chapter}],findings),/归组/);
+  assert.doesNotThrow(()=>validateResearchDigest([{chapter:'行业与市场',title:'零售额回落',detail:'2023年为6.12亿元，2024年为5.12亿元。',findingIndex:0}],[{chapter:'行业与市场',conclusion:'2023和2024年分别为6.12亿元和5.12亿元。'}]));
   const oldChannel=[{chapter:'行业与市场',evidence:'受访者中40.79%选择便利店'}];
   assert.equal(validateResearchDigest([{chapter:'人群与接触情境',title:'受访者在便利店购买',detail:'调查中40.79%选便利店。',findingIndex:0}],oldChannel)[0].chapter,'人群与接触情境');
   assert.throws(()=>validateResearchDigest([rows[0],{...rows[1],findingIndex:9}],findings),/不存在/);

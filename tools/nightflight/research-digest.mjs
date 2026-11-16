@@ -40,7 +40,8 @@ const schema = {type:'object',additionalProperties:false,required:['digest'],pro
 }}};
 
 function numbers(text) {
-  const normalized = text.normalize('NFKC').toLowerCase();
+  const normalized = text.normalize('NFKC').toLowerCase()
+    .replace(/((?:19|20)\d{2})(?=\s*(?:和|、|至|到|—|–|-)\s*(?:19|20)\d{2}年)/gu,'$1年');
   return [...normalized.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?\s*(?:%|‰|亿|万|毫升|ml|升|公斤|千克|克|元|年|人|家|倍)?/g)]
     .map(([value])=>value.replace(/[,\s]/g,'').replace('毫升','ml').replace(/^[\d.]+/,n=>String(Number(n))));
 }
@@ -66,7 +67,8 @@ export function validateResearchDigest(rows, findings) {
     const source = [finding.conclusion,finding.evidence,...(finding.images ?? []).map(img=>img.observation)].join(' ');
     const sourceYears = String(finding.source ?? '').match(/(?:19|20)\d{2}年/g) ?? [];
     const allowed = new Set(numbers([source,...sourceYears].join(' ')));
-    if (numbers(row.title+' '+row.detail).some(n=>!allowed.has(n))) throw Error('研究精选引入原发现没有的数值或单位');
+    const unsupported = numbers(row.title+' '+row.detail).filter(n=>!allowed.has(n));
+    if (unsupported.length) throw Error('发现 '+index+' 引入原发现没有的数值或单位：'+unsupported.join('、'));
   }
   for (const chapter of chapters) {
     const entries=rows.filter(r=>r.chapter===chapter);
@@ -85,8 +87,9 @@ export function validateResearchDigest(rows, findings) {
 }
 
 export async function editResearchDigest(call, findings, project) {
+  const reviewed = findings.some(f => f.editorialAngle);
   const eligible = findings.map((f,findingIndex)=>({findingIndex,chapter:f.chapter,conclusion:f.conclusion,evidence:f.evidence,
-    source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).map(image=>image.observation)})).filter(f=>chapters.includes(f.chapter));
+    source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).map(image=>image.observation)})).filter(f=>chapters.includes(f.chapter) && (!reviewed || f.angle));
   if (!eligible.length) return [];
   const productFacts = findings.filter(f => f.chapter === '产品与品牌').map(f => f.conclusion);
   const task = {
