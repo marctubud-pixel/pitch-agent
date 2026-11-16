@@ -5,7 +5,7 @@ import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop
 import {followupSources,matchesDomain,locateQuote,researchGap,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
-import {editResearchDigest} from './research-digest.mjs';
+import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
 import {searchVisualImages} from './public-visual-search.mjs';
 import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
@@ -502,6 +502,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
         chapter:researchChapters[1],conclusion:f.conclusion,explanation:'本次观察覆盖'+f.images.map(image=>image.title).join('、')+'。',evidenceIndices:[i],
       });
     }
+    research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal);
     research.gaps = output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter))
       .map(g=>researchGap('decision',g.message,g.chapter));
     research.ready = output.ready===true && research.sections.some(row=>row.evidenceIndices.some(i=>{

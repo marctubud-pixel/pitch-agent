@@ -141,7 +141,7 @@ process.stdin.on('end',()=>{
    fs.unlinkSync(stop);process.exit(78);
  }
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('单张包装') && !input.includes('竞品原图观察') && !input.includes('只读所附网页原文') && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('发布前精简自己的文案') && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('单张包装') && !input.includes('竞品原图观察') && !input.includes('只读所附网页原文') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -207,6 +207,11 @@ process.stdin.on('end',()=>{
      if (!args.includes('web_search="disabled"') || input.includes('用户暂不确定渠道') || !input.includes('比稿负责人整理研究摘要')) process.exit(19);
      const {findings}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      body={strategyAdvice:[{recommendation:'优先测试品类信息',findingIndices:[findings[0].findingIndex]}],digest:findings.map(f=>({chapter:f.chapter,findingIndex:f.findingIndex,title:f.conclusion,detail:f.evidence}))};
+   } else if(schema.edits) {
+     if(input.includes('你是比稿负责人此次委托的临时执行者') || !args.includes('web_search="disabled"')) process.exit(27);
+     const items=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     body={edits:items.map(({index})=>({index,conclusion:'礼盒主要用于赠礼',explanation:'样本将礼赠列为单独用途。',sourceDetail:'限本次样本。'}))};
+     if(action==='research-compact' && !input.includes('上一版仍有长句')) body.edits[0].explanation='先说一个事实。又重复一次。';
    } else if(schema.rows) {
      if (input.includes('你是比稿负责人此次委托的临时执行者') || !input.includes('直接撰写客户读到的四块研究页')) process.exit(26);
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
@@ -215,6 +220,7 @@ process.stdin.on('end',()=>{
        question:action==='research-blocked' && packet.followup?'优先门店还是线上？还有多少预算？':'',
        gaps:packet.gaps.map(g=>({chapter:g.chapter || '产品与品牌',message:g.message})),next:'结合渠道验证礼赠方向'};
      if(action==='research-thin') body.gaps.push({chapter:'行业与市场',message:'行业与市场还需补查可比年份的销量'});
+     if(action==='research-compact') rows[0].explanation='本次样本单列礼盒用途。对不同用途的逐项统计以及样本范围，均可在原报告中查看。';
      if(action==='research-scope') body.rows.unshift({...rows[0],chapter:'行业与市场'});
    } else process.exit(12);
  }
@@ -913,6 +919,18 @@ test('the director publishes the observed packaging and its exact original bytes
     assert.deepEqual(published,[ref.name]);
     assert.deepEqual(await readFile(join(f.dir,ref.name)),competitorPng);
   });
+
+test('new research automatically compacts crowded copy before publishing and keeps its original citations',async t=>{
+  const f=await fixture(t,'research-compact');
+  const {research,artifacts}=await f.run('research');
+  const [row]=research.sections;
+  assert.equal(row.conclusion,'礼盒主要用于赠礼');
+  assert.equal(row.explanation,'样本将礼赠列为单独用途。');
+  assert.equal(row.sourceDetail,'限本次样本。');
+  assert.deepEqual(row.evidenceIndices,[0]);
+  assert.equal(research.findings[0].evidence,'本次样本单列礼盒用途');
+  assert.match(artifacts[0].text,/礼盒主要用于赠礼/);
+});
 
 test('a single competitor quote cannot support an industry row',async t=>{
   const f=await fixture(t,'research-scope');

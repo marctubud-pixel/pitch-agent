@@ -148,3 +148,50 @@ export async function editResearchDigest(call, findings, project) {
     }
   }
 }
+
+// These are rewrite triggers, not display limits. Never truncate a qualifier or a quotation.
+function crowdedResearchCopy({conclusion, explanation}) {
+  return [...conclusion].length > 32 || [...explanation].length > 60 ||
+    /[，,；;]\s*(?:但|不过)?(?:不能外推|不能推广|不能据此)/u.test(conclusion) ||
+    [conclusion,explanation].some(text=>/[。！？；;\n]\s*[^“”‘’。！？\s]/u.test(text.trim()));
+}
+
+export async function compactResearchPage(call, sections, findings, onEvent, signal) {
+  const pending = sections.map((row,index)=>({row,index})).filter(({row})=>crowdedResearchCopy(row));
+  if (!pending.length) return sections;
+  const packet = pending.map(({row,index})=>({...row,index,
+    evidence:row.evidenceIndices.map(i=>({source:findings[i].source,quote:findings[i].evidence,passage:findings[i].passage})),
+  }));
+  const rowSchema = {type:'object',additionalProperties:false,required:['index','conclusion','explanation','sourceDetail'],
+    properties:{index:{type:'integer',enum:pending.map(item=>item.index)},conclusion:string,explanation:string,sourceDetail:string}};
+  const responseSchema = {type:'object',additionalProperties:false,required:['edits'],
+    properties:{edits:{type:'array',items:rowSchema}}};
+  const written = [...sections];
+  await onEvent?.('比稿负责人正在精简研究页标题与副文');
+  let remaining = packet;
+  const instruction = '发布前精简自己的文案。每条标题只说一个判断，副文只说一个例子、数字或比较理由。标题用对象和动词限定范围，比如“受访者更愿意……”已交代这是受访者的意愿。“样本仅限……，不能外推……”等说明移到 sourceDetail。避免在标题和副文加上同一个限制尾句。每个 index 只写一次，保留时期、关键条件和原意。仅返回 edits。';
+  try {
+    for (let attempt=0;remaining.length && attempt<2;attempt++) {
+      const retry = attempt ? '上一版仍有长句、多个判断或缺项。只处理这次给出的条目，删掉重复解释。' : '';
+      const response = await call(instruction+retry,[],responseSchema,
+        {editorial:true,context:JSON.stringify(remaining)});
+      const edits = response.parsedOutput?.edits;
+      if (!Array.isArray(edits)) continue;
+      const next = [];
+      for (const item of remaining) {
+        const matches = edits.filter(edit=>edit?.index===item.index);
+        const edit = matches[0];
+        if (matches.length===1 && typeof edit.sourceDetail==='string' &&
+            [edit.conclusion,edit.explanation].every(v=>typeof v==='string' && v.trim()) && !crowdedResearchCopy(edit)) {
+          written[item.index]={...sections[item.index],conclusion:edit.conclusion.trim(),explanation:edit.explanation.trim(),
+            sourceDetail:edit.sourceDetail.trim() || item.sourceDetail || ''};
+        } else next.push(item);
+      }
+      remaining=next;
+    }
+  } catch {
+    signal?.throwIfAborted();
+  }
+  if (remaining.length) await onEvent?.('部分条目未完成精简，已保留对应的有据原句。');
+  return written;
+}
