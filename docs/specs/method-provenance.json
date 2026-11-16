@@ -1,9 +1,9 @@
 [
   {
-    "source": "统一夜航研究至策略的直接交接，移除旧策略退回指令。",
+    "source": "四维研究出页前自动精简",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r15-20261116",
-    "sha256": "d752baa4bb39be3490b5c4ab1b5fe256b72251bad9cbd7484200cd1ef34917be"
+    "sourceVersion": "r21-20261117",
+    "sha256": "171d3450e022035a2ffab09eb305eefd4fe7aaa6f67ab17198fe5da045d2d454"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",

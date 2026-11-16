@@ -141,7 +141,7 @@ process.stdin.on('end',()=>{
    fs.unlinkSync(stop);process.exit(78);
  }
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('发布前精简自己的文案') && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('单张包装') && !input.includes('竞品原图观察') && !input.includes('只读所附网页原文') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -165,12 +165,22 @@ process.stdin.on('end',()=>{
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
      body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
+     if(action==='research-pack-lookup') body.packagingBrands=[{name:'测试茶',officialDomain:'source.example.org'}];
+     if(action==='research-report-lookup') Object.assign(body,{queries:['即饮茶 市场 销量 销售额 价格带 报告','茶叶包装'],reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
+   }
+   else if(schema.reads) {
+     const {documents}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     if(!documents[0].text.includes('无糖茶占20%'))process.exit(36);
+     body={reads:[{url:documents[0].url,title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]};
    }
    else if(schema.anchorQuestions) { body={anchorQuestions:['渠道？','竞品？','人群？','节点？']}; }
    else if(schema.findings) {
-     if (action==='research-combined' && !(input.includes('Step 2.5 包装') && input.includes('Step 3.5 KV'))) process.exit(31);
+     if (action==='research-combined' && !(input.includes('包装竞品：') && input.includes('KV竞品：'))) process.exit(31);
      console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'search',queries:['测试公开品类']}}}));
      body={findings:[{chapter:'行业与市场',conclusion:'茶礼场景更强调赠礼用途',source:'合成行业报告',url:'https://source.example.org/report',evidence:action==='research-fiction'?'这是虚构引文':'本次样本单列礼盒用途',implication:'策略需比较礼赠与日常使用情境'}],gaps:['渠道尚未选定'],next:'比较可核实的渠道样本'};
+     if(action==='research-pack-lookup') body.findings.push({...body.findings[0],chapter:'竞争与同类传播',conclusion:'文字称茶盒透明',describesPackagingAppearance:true});
+     if(action==='research-scope') Object.assign(body.findings[0],{subject:'competitor',chapter:'竞争与同类传播'});
+     if(action==='research-thin') Object.assign(body.findings[0],{subject:'audience',chapter:'人群与接触情境'});
      if(action==='research-repair') Object.assign(body.findings[0],{url:'https://source.example.org/blocked',source:'未能打开的报告',evidence:'改写过的、不见于网页的引文'});
      if(action==='research-brief-only') Object.assign(body.findings[0],{
        chapter:'产品与品牌',conclusion:'演练产品条件',source:'brief-test.md',url:'',evidence:'配料为水和燕麦',implication:'以配方为条件比较表达'
@@ -183,33 +193,35 @@ process.stdin.on('end',()=>{
      if(action==='research-followup')body.findings=[];
    } else if(schema.evidence) {
      body=action==='research-repair' ? {url:'https://source.example.org/report',evidence:'本次样本单列礼盒用途'} : {url:'',evidence:''};
+   } else if(schema.front) {
+     if(!args.includes('--image') || input.includes('source.example.org') || input.includes('测试茶'))process.exit(56);
+     body={brand:'测试茶',front:'包装中央标有茶类'};
+   } else if(schema.verifiedFront) {
+     body={verifiedFront:'包装中央标有茶类'};
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
-     body={samples:[{source:packet.sources[0].source,title:'样本茶盒',observation:'包装中央标有茶类',sameCategory:true,strategyGroup:'突出品类名称',creatorRationale:'以品类字突出茶类',rationaleSourceUrl:packet.sources[0].pageUrl,rationaleQuote:'设计方把茶类名放在中央',takeaway:'可借品类字读序，仅适用于正面展示。'}],conclusion:'该样本正面标出品类',implication:'比较正面字序'};
+     if(action==='research-pack-lookup' && (packet.brief || packet.sources[0].pageUrl || packet.sources[0].sourcePassages))process.exit(56);
+     body={samples:[{source:packet.sources[0].source,title:action==='research-pack-lookup'?'测试茶 · 样本茶盒':'样本茶盒',observation:'包装中央标有茶类',sameCategory:true,strategyGroup:'突出品类名称',creatorRationale:'以品类字突出茶类',rationaleSourceUrl:packet.sources[0].pageUrl,rationaleQuote:'设计方把茶类名放在中央',takeaway:'可借品类字读序，仅适用于正面展示。'}],conclusion:'该样本正面标出品类',implication:'比较正面字序'};
    } else if(schema.digest) {
      if (!args.includes('web_search="disabled"') || input.includes('用户暂不确定渠道') || !input.includes('比稿负责人整理研究摘要')) process.exit(19);
      const {findings}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      body={strategyAdvice:[{recommendation:'优先测试品类信息',findingIndices:[findings[0].findingIndex]}],digest:findings.map(f=>({chapter:f.chapter,findingIndex:f.findingIndex,title:f.conclusion,detail:f.evidence}))};
-   } else if(schema.accepted){
-     if(!input.includes('独立会话') || !(input.includes('本次样本单列礼盒用途') || input.includes('配料为水和燕麦') || input.includes('礼盒上架')))process.exit(11);
-     body={ready:['research-ok','research-brief-only','research-thin'].includes(action),accepted:[0],labels:[],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
-     if(action.startsWith('research-board')) {
-       const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
-       const index=packet.research.findings.findIndex(f=>f.images?.[0]?.title==='样本茶盒');
-       if (!args.includes('--image') || index<0) process.exit(26);
-       if (action==='research-board-accept') {
-         body.accepted.push(index);
-         body.labels.push({findingIndex:index,chapter:'竞争与同类传播',angle:'画面与信息层级'});
-       }
-     }
-     if(action==='research-thin') body.next='';
-     if(action==='research-thin') body.labels=[{findingIndex:0,chapter:'人群与接触情境',angle:'使用场景与时机'}];
-     if(action==='research-ok') {
-       const labels=[['行业与市场','品类创新与变化'],['行业与市场','供给与竞争格局'],['竞争与同类传播','规格与商品组合'],['竞争与同类传播','画面与信息层级'],['人群与接触情境','购买行为与渠道'],['人群与接触情境','选择偏好与顾虑']];
-       body.labels=labels.map(([chapter,angle],findingIndex)=>({chapter,angle,findingIndex}));
-       body.accepted=labels.map((_,i)=>i);
-     }
+   } else if(schema.edits) {
+     if(input.includes('你是比稿负责人此次委托的临时执行者') || !args.includes('web_search="disabled"')) process.exit(27);
+     const items=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     body={edits:items.map(({index})=>({index,conclusion:'礼盒主要用于赠礼',explanation:'样本将礼赠列为单独用途。',sourceDetail:'限本次样本。'}))};
+     if(action==='research-compact' && !input.includes('上一版仍有长句')) body.edits[0].explanation='先说一个事实。又重复一次。';
+   } else if(schema.rows) {
+     if (input.includes('你是比稿负责人此次委托的临时执行者') || !input.includes('直接撰写客户读到的四块研究页')) process.exit(26);
+     const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     const rows=packet.evidence.map(f=>({chapter:f.chapter,conclusion:f.observation,explanation:f.evidence,evidenceIndices:[f.index]}));
+     body={rows,ready:['research-ok','research-brief-only','research-thin'].includes(action),
+       question:action==='research-blocked' && packet.followup?'优先门店还是线上？还有多少预算？':'',
+       gaps:packet.gaps.map(g=>({chapter:g.chapter || '产品与品牌',message:g.message})),next:'结合渠道验证礼赠方向'};
+     if(action==='research-thin') body.gaps.push({chapter:'行业与市场',message:'行业与市场还需补查可比年份的销量'});
+     if(action==='research-compact') rows[0].explanation='本次样本单列礼盒用途。对不同用途的逐项统计以及样本范围，均可在原报告中查看。';
+     if(action==='research-scope') body.rows.unshift({...rows[0],chapter:'行业与市场'});
    } else process.exit(12);
  }
  if(action.startsWith('onepager-')) {
@@ -305,6 +317,16 @@ async function fixture(t, action, options={}) {
       if (url.href==='https://source.example.org/product') return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>测试茶包装</title><p>设计方把茶类名放在中央。</p><img src="/product.png">')};
       if (url.href==='https://source.example.org/product.png') return {status:200,headers:{'content-type':'image/png'},body:competitorPng};
       if(url.hostname==='lite.duckduckgo.com') throw Error('fixture discovery unavailable');
+      if(action==='research-pack-lookup' && url.hostname==='cn.bing.com' && url.searchParams.get('q')==='测试茶 包装')
+        return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>包装</title><link>https://source.example.org/sku</link></item></channel></rss>')};
+      if(action==='research-pack-lookup' && url.pathname==='/sku') return {status:200,headers:{'content-type':'text/html'},
+        body:Buffer.from('<title>茶盒商品页</title><p>设计方把茶类名放在中央。</p><img src="/blank.gif" alt="测试茶" data-lazy-img="/product.png">')};
+      if(action==='research-report-lookup' && url.hostname==='cn.bing.com' && ['即饮茶报告','茶饮报告'].includes(url.searchParams.get('q')))
+        return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>茶字释义</title><link>https://source.example.org/dictionary</link></item></channel></rss>')};
+      if(action==='research-report-lookup' && url.hostname==='m.so.com' && url.searchParams.get('q')==='茶饮报告')
+        return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<a data-md="{&quot;b&quot;:&quot;title&quot;}" href="https://m.so.com/jump?u=https%3A%2F%2Fsource.example.org%2Freport"><h3 class="res-title"><em>茶饮</em>研究报告</h3></a>')};
+      if(action==='research-report-lookup' && url.pathname==='/report')
+        return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>合成行业报告</title><p>本次样本单列礼盒用途。</p><p>'+'无糖茶定义。'.repeat(3000)+'无糖茶占20%。</p>')};
       if(url.hostname==='cn.bing.com') return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>合成报告</title><link>https://source.example.org/report</link></item></channel></rss>')};
       return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<html><title>合成行业报告</title><p>本次样本单列礼盒用途。礼盒上架、供应商进入、礼盒容量、包装品类字、购买渠道、茶味偏好。</p></html>')};
     },
@@ -641,22 +663,15 @@ for (const [action, ready, count] of [
   ['research-fiction', false, 0],
 ]) {
   test(
-    action + ' executes discovery from a sparse brief and gates only on grounded findings and review',
+    action + ' executes discovery from a sparse brief and gates only on the director’s sourced page',
     async (t) => {
       const f = await fixture(t, action);
       f.project.brief = '测试茶';
       f.project.previousResearch = { legacyText: '上次的待补问题' };
       const { research, artifacts } = await f.run('research');
       assert.equal(research.ready, ready);
-      assert.equal(research.digestPending,ready ? true : undefined);
-      if (ready) {
-        const before = [...f.requests];
-        Object.assign(f.project,{research,researchDigestOnly:true});
-        const edited = await f.run('research');
-        assert.equal(edited.researchDigest[0].findingIndex,0);
-        assert.deepEqual(edited.artifacts,[]);
-        assert.deepEqual(f.requests,before);
-      }
+      assert.equal(research.digestPending,undefined);
+      assert.equal(research.sections.length,count);
       assert.equal(research.question,'');
       if (action==='research-thin') assert.ok(research.next);
       assert.ok(artifacts[0].text.includes('调研方法版本：' + research.methodVersion));
@@ -669,6 +684,25 @@ for (const [action, ready, count] of [
     },
   );
 }
+test('packaging retries a short brand query, publishes its reviewed original and keeps text-only appearance in sourced gaps',async t=>{
+  const f=await fixture(t,'research-pack-lookup');
+  const {research}=await f.run('research');
+  assert.deepEqual(research.searchScope.queries.slice(0,2),['测试茶','测试茶 包装']);
+  const photo=research.findings.flatMap(f=>f.images ?? [])[0];
+  assert.equal(photo.pageUrl,'https://source.example.org/sku');
+  assert.equal(photo.sourceUrl,'https://source.example.org/product.png');
+  assert.ok(!research.findings.some(f=>f.conclusion==='文字称茶盒透明'));
+  assert.ok(research.gaps.some(g=>g.message.includes('合成行业报告') && g.message.includes('缺对应原图') && g.message.includes('/report')));
+});
+
+test('industry search switches short category terms and verifies segment data deep inside the report',async t=>{
+  const f=await fixture(t,'research-report-lookup');
+  const {research}=await f.run('research');
+  assert.deepEqual(research.searchScope.queries.slice(0,2),['即饮茶报告','茶饮报告']);
+  assert.deepEqual(research.searchScope.queries,['即饮茶报告','茶饮报告','茶叶包装']);
+  assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
+});
+
 test('keeps a verified brief fact without releasing strategy on the brief alone',async t=>{
   const f=await fixture(t,'research-brief-only');
   await writeFile(join(f.dir,'brief-test.md'),'项目输入：配料为水和燕麦');
@@ -863,29 +897,20 @@ test('after the targeted search nonblocking coverage gaps can accompany a ground
   assert.equal(research.findings.length,1);
   assert.equal(research.findings[0].chapter,'人群与接触情境');
   assert.match(research.gaps.map(g=>g.message).join(' '),/行业与市场还需补查/);
-  Object.assign(f.project,{research,researchDigestOnly:true});
-  const edited=await f.run('research');
-  assert.equal(edited.researchDigest.length,1);
-  assert.equal(edited.researchDigest[0].chapter,'人群与接触情境');
+  assert.equal(research.sections[0].chapter,'人群与接触情境');
+  assert.deepEqual(research.sections[0].evidenceIndices,[0]);
 });
 
 
-for (const decision of ['accept','reject']) {
-  test('research publishes original packaging bytes only for the classified board the independent reviewer chooses: '+decision,async t=>{
-    const f=await fixture(t,'research-board-'+decision);
+test('the director publishes the observed packaging and its exact original bytes',async t=>{
+    const f=await fixture(t,'research-board-accept');
     const {research,artifacts}=await f.run('research');
     const board=research.findings.find(row=>row.images?.length);
     const files=artifacts.filter(a=>a.kind==='image');
     const published=(await readdir(f.dir)).filter(name=>name.startsWith('research-peer-'));
     assert.ok(f.requests.includes('https://source.example.org/product.png'));
-    if (decision==='reject') {
-      assert.equal(board,undefined);
-      assert.deepEqual(files,[]);
-      assert.deepEqual(published,[]);
-      return;
-    }
-    assert.equal(board.editorialAngle,'画面与信息层级');
-    assert.match(research.gaps.map(g=>g.message).join(' '),/1 种同品类创作策略/);
+    assert.ok(research.sections.some(row=>row.chapter==='竞争与同类传播' && row.evidenceIndices.includes(research.findings.indexOf(board))));
+    assert.ok(!research.gaps.some(g=>g.kind==='visual'));
     const [ref]=board.images;
     assert.equal(ref.sha256,createHash('sha256').update(competitorPng).digest('hex'));
     assert.equal(ref.pageUrl,'https://source.example.org/product');
@@ -894,8 +919,24 @@ for (const decision of ['accept','reject']) {
     assert.deepEqual(published,[ref.name]);
     assert.deepEqual(await readFile(join(f.dir,ref.name)),competitorPng);
   });
-}
 
+test('new research automatically compacts crowded copy before publishing and keeps its original citations',async t=>{
+  const f=await fixture(t,'research-compact');
+  const {research,artifacts}=await f.run('research');
+  const [row]=research.sections;
+  assert.equal(row.conclusion,'礼盒主要用于赠礼');
+  assert.equal(row.explanation,'样本将礼赠列为单独用途。');
+  assert.equal(row.sourceDetail,'限本次样本。');
+  assert.deepEqual(row.evidenceIndices,[0]);
+  assert.equal(research.findings[0].evidence,'本次样本单列礼盒用途');
+  assert.match(artifacts[0].text,/礼盒主要用于赠礼/);
+});
+
+test('a single competitor quote cannot support an industry row',async t=>{
+  const f=await fixture(t,'research-scope');
+  const {research}=await f.run('research');
+  assert.deepEqual(research.sections.map(row=>row.chapter),['竞争与同类传播']);
+});
 
 test('a packaging and KV brief collects and reviews both carrier-specific gaps after the offline anchors',async t=>{
   const f=await fixture(t,'research-combined');
@@ -903,8 +944,8 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
   const {research,artifacts}=await f.run('research');
   assert.equal(research.anchorQuestions.length,4);
   assert.match(artifacts[0].text,/研究载体：包装与KV/);
-  assert.match(research.gaps.map(g=>g.message).join(' '),/包装仅核实 0 种同品类创作策略/);
-  assert.match(research.gaps.map(g=>g.message).join(' '),/KV 缺少实际发布的主画面/);
+  assert.match(research.gaps.map(g=>g.message).join(' '),/包装原图/);
+  assert.match(research.gaps.map(g=>g.message).join(' '),/KV原图/);
 });
 
 

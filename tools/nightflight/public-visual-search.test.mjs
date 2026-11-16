@@ -5,9 +5,19 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {capturePublicSource} from '../workbench/source-acquisition.mjs';
-import {searchVisualImages} from './public-visual-search.mjs';
+import {searchVisualImages,productCardImages} from './public-visual-search.mjs';
 
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC','base64');
+test('matches the named product card and its declared lazy image, ignoring neighbouring products and placeholders',()=>{
+  const html=Buffer.from('<link rel="alternate" media="screen and (max-width: 640px)" href="/mobile/"><section><div><img tsrc="/other.png"><p>别的茶</p></div>'+
+    '<div><img src="data:image/gif;base64,AA" tsrc="/tea.png"><p>测试茶</p></div></section>'+
+    '<a><img src="/blank.gif" data-lazy-img=" //images.example.org/sku.jpg " alt="测试茶 500ml"></a>');
+  const related=[];
+  assert.deepEqual(productCardImages(html,'https://brand.example.org/products','测试茶',related),
+    [{url:'https://brand.example.org/tea.png',title:'测试茶'},{url:'https://images.example.org/sku.jpg',title:'测试茶 500ml'}]);
+  assert.deepEqual(related,['https://brand.example.org/mobile/']);
+});
+
 test('captures decoded original with page, query and hash, discards corrupt and duplicate results',async t=>{
   const dir=await mkdtemp(join(tmpdir(),'visual-search-'));
   t.after(()=>rm(dir,{recursive:true,force:true}));
@@ -69,7 +79,7 @@ test('competitor board binds a read image to its declaring page, disregards inve
       throw Error('Unexpected URL');
     }};
   const call=async(_prompt,images)=>({parsedOutput:{samples:[
-    {source:images[0].imageId,title:'同类原味纸盒',observation:'包装正面品类名置顶。'},
+    {source:images[0].imageId,title:'同类原味纸盒',sameCategory:true,observation:'包装正面品类名置顶。'},
     {source:'invented',title:'无原图案例',observation:'无依据'}],
     conclusion:'所示单品把品类信息放在正面上部。',implication:'可比较正面品类名与品牌名的层级。'}});
   const board=await researchCompetitors({call,dir,project:{brief:'燕麦饮包装设计'},carrier:'packaging',dependencies,
@@ -77,6 +87,8 @@ test('competitor board binds a read image to its declaring page, disregards inve
   assert.deepEqual(requests,[page,product]);
   const [ref]=board.finding.images;
   assert.equal(board.finding.images.length,1);
+  assert.equal(board.finding.visualOnly,false);
+  assert.equal(ref.creatorRationale,'');
   assert.equal(ref.pageUrl,page);
   assert.equal(ref.sourceUrl,product);
   assert.equal(ref.sha256,createHash('sha256').update(sample).digest('hex'));
@@ -123,4 +135,16 @@ test('an uploaded case only binds its image and author quote through their own s
   const unrelated=await researchCompetitors({...args,documents:[{name:'品牌摘录.md',text:supplied.replace(sha256,'无对应原图')}],
     call:()=>assert.fail('unmatched upload must not reach a reviewer')});
   assert.equal(unrelated,null);
+});
+
+test('two named product cards on the same brand homepage keep their own photos and source names',async()=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const url='https://brand.example.org/products';
+  const pages=['茶甲','茶乙'].map(brand=>({url,brand}));
+  const acquiredByPage=new Map(pages.map((page,i)=>[page,[{pageUrl:url,sourceUrl:url+'/'+i+'.png',title:page.brand,
+    name:'case-'+i+'.png',imageId:'ref_'+i,sha256:String(i).repeat(64),width:300,height:480}]]));
+  const board=await researchCompetitors({dir:'.',carrier:'packaging',pages,acquiredByPage,project:{brief:'瓶装茶包装'},
+    call:async (_instruction,[image],schema)=>({parsedOutput:schema.properties.brand
+      ? {brand:image.title,front:'白色标签居中'} : {verifiedFront:'白色标签居中'}})});
+  assert.deepEqual(board.finding.images.map(i=>[i.title,i.sourceUrl]),[['茶甲',url+'/0.png'],['茶乙',url+'/1.png']]);
 });

@@ -210,6 +210,25 @@ function Research({ p }: { p: Project }) {
     ? [...(p.versions ?? [])].reverse().find(v=>v.research?.findings.length) : undefined;
   const report = p.research ?? archived?.research;
   const files = [...p.artifacts,...(p.versions ?? []).flatMap(v=>v.artifacts)];
+  const sections = report?.sections;
+  if (report && sections) {
+    const chapters = [...digestChapters,['产品与品牌','产品与品牌']];
+    return <>{chapters.map(([chapter,label])=>{
+      const rows=sections.filter(row=>row.chapter===chapter);
+      const gaps=report.gaps.flatMap(g=>typeof g!=='string' && g.chapter===chapter ? [g.message] : []);
+      return <section className="block" key={chapter}><h2>{label}</h2>
+        <ol className="findings">{rows.map((row,index)=><li key={index}><span className="finding-no">{index+1}</span>
+          <div><h3>{row.conclusion}</h3><p>{row.explanation}</p><details><summary>依据与来源</summary>
+            {row.sourceDetail && <p>{row.sourceDetail}</p>}
+            {row.evidenceIndices.map(i=>{const f=report.findings[i];return f && <div key={i}><p>{f.evidence}</p>
+              <ResearchSource finding={f} attachments={p.attachments}/>
+              {!!f.images?.length && <ResearchImageGallery images={f.images} artifacts={files} attachments={p.attachments}/>}</div>;})}
+          </details></div></li>)}</ol>
+        {!rows.length && !gaps.length && <p>本轮没有取得能回答此项的依据。</p>}
+        {rows.length ? <ResearchGaps gaps={gaps}/> : gaps.map(message=><p key={message}>{message}</p>)}
+      </section>;
+    })}</>;
+  }
   if (report && !report.digest?.length && report.findings.length) {
     const chapterNames: Record<string,string> = Object.fromEntries(digestChapters);
     const groups = [...new Set(report.findings.map(f=>f.chapter || '已核实的发现'))];

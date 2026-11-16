@@ -31,15 +31,17 @@ function documentPassages(documents, url, relatedUrls = []) {
   return passages;
 }
 
-export async function researchCompetitors({call, dir, pages, previous = [], project, carrier, signal, dependencies, onEvent, readSource, documents = [], uploadedImages = []}) {
+const pageKey = page=>[page.url,page.brand || ''].join('\n');
+
+export async function researchCompetitors({call, dir, pages, acquiredByPage = new Map(), previous = [], project, carrier, signal, dependencies, onEvent, readSource, documents = [], uploadedImages = []}) {
   const uniquePages = new Map();
   for (const page of pages ?? []) {
-    if (page && publicPage(page.url) && !uniquePages.has(page.url)) uniquePages.set(page.url,page);
+    if (page && publicPage(page.url) && !uniquePages.has(pageKey(page))) uniquePages.set(pageKey(page),page);
   }
   if (uniquePages.size || previous.length) await onEvent?.('正在打开竞品原图，核对图上可见的品类、品牌和信息层级');
   const capture = (options, defaults) => capturePublicSource(options,{...defaults,...dependencies});
   const groups = await Promise.all([...uniquePages.values()].slice(0,6).map(async page =>
-    (await searchVisualImages({dir,signal,query:'竞品作品原图',pages:[page]}, {capture}))
+    (acquiredByPage.get(page) ?? await searchVisualImages({dir,signal,query:'竞品作品原图',pages:[page]}, {capture}))
       .filter(image => Math.min(image.width,image.height)>=140)
       .map(image=>({...image,casePage:page}))));
   // A locally supplied case image must be identifiable against the user's provenance material.
@@ -63,8 +65,11 @@ export async function researchCompetitors({call, dir, pages, previous = [], proj
   }
   const images = [...pool.values()].slice(0,4);
   if (!images.length) return null;
+  const isNamedProduct=image=>carrier==='packaging' && Boolean(image.casePage?.brand) && !image.imageAttachment;
+  const blindPackaging=images.some(isNamedProduct);
   const caseSources = await Promise.all(images.map(async image => {
-    const candidate = image.casePage ?? uniquePages.get(image.pageUrl);
+    if (isNamedProduct(image)) return {sourceUrl:'',passages:[]};
+    const candidate = image.casePage ?? [...uniquePages.values()].find(page=>page.url===image.pageUrl);
     const sourceUrl = candidate?.rationaleSourceUrl || image.rationaleSourceUrl || image.pageUrl;
     if (!publicPage(sourceUrl)) return {sourceUrl:'',passages:[]};
     const original = await readSource?.(sourceUrl);
@@ -81,9 +86,31 @@ export async function researchCompetitors({call, dir, pages, previous = [], proj
     imageNumber:index+1,source:image.imageId,title:image.title,pageUrl:image.pageUrl,
     rationaleSourceUrl:caseSources[index].sourceUrl,sourcePassages:caseSources[index].passages.map(p=>p.text),
   }))};
-  const {parsedOutput: result}=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。综合策略结论只使用取得创作者说明的案例，纯图不参加推导。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。优先近三年、同品类、三种不同表达策略的不同项目；同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。',images,observations(images.map(i=>i.imageId)),{
-    rules:[],assignment:'竞品原图观察',context:JSON.stringify(packet),
+  let result;
+  if (blindPackaging) {
+    // Read one SKU at a time; the caller, not the model, binds the source name and URL.
+    const reads=await Promise.all(images.map(async image=>{
+      if (!isNamedProduct(image)) return null;
+      const {parsedOutput:seen}=await call('只观察这一张图片，忽略瓶盒外的电商浮字、价签和背景装饰。brand 写能在包装上辨认的品牌；front 仅写瓶盒本体上看得清的一两个颜色、图案或相对位置。不要猜茶种、配料、产地和效果；不清楚就留空。',[image],
+        object({brand:string,front:string}),{rules:[],assignment:'单张包装读图',context:'{}'});
+      if (!seen?.brand?.trim() || !seen.front?.trim()) return null;
+      const {parsedOutput:review}=await call('把所附原图与候选观察逐项对照。只保留能在这一个瓶盒正面直接指出位置的图形、颜色和排布。电商画面外加的卖点或促销字不得说成瓶身标签。删除不可辨认的小字、推断与风格评价。若图中商品与所查商品或任务品类不符，或没有可核观察，返回空串。',[image],
+        object({verifiedFront:string}),{rules:[],assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,brandReadFromImage:seen.brand,observation:seen.front})});
+      if (!review?.verifiedFront?.trim()) return null;
+      return {source:image.imageId,title:image.title,observation:review.verifiedFront.trim(),sameCategory:true};
+    }));
+    const samples=reads.filter(Boolean);
+    result={samples,conclusion:samples.map(s=>s.title+'：'+s.observation).join('；'),implication:'将上述已核包装当作同货架参照，比较本案商品名、品类和识别图案的位置。'};
+  }
+  const remaining=images.filter(image=>!isNamedProduct(image));
+  if (remaining.length) {
+    const response=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。同类商品的原图可以支持可见外观比较；创作者用意必须另有出处。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。优先同品类、同渠道的可比项目；同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。',remaining,observations(remaining.map(i=>i.imageId)),{
+    rules:[],assignment:'竞品原图观察',context:JSON.stringify({...packet,sources:remaining.map((image,index)=>({...packet.sources[images.indexOf(image)],imageNumber:index+1}))}),
   });
+    const other=response.parsedOutput;
+    if (!result?.samples.length) result=other;
+    else if (other?.samples?.length) result={samples:[...result.samples,...other.samples],conclusion:[result.conclusion,other.conclusion].join('；'),implication:result.implication};
+  }
   if (!Array.isArray(result?.samples) || !result.conclusion?.trim() || !result.implication?.trim()) return null;
   const selected = [], seen = new Set();
   for (const row of result.samples) {
@@ -97,11 +124,11 @@ export async function researchCompetitors({call, dir, pages, previous = [], proj
     const rationale = matched ? {strategyGroup:row.strategyGroup?.trim() || '',creatorRationale:row.creatorRationale.trim(),rationaleSourceUrl:source.sourceUrl,rationaleQuote:quote,
       ...(matched.attachment ? {rationaleAttachment:matched.attachment} : {})} : {strategyGroup:'',creatorRationale:'',rationaleSourceUrl:'',rationaleQuote:''};
     selected.push({image,description:{name:'research-peer-'+image.sha256+extname(basename(image.name)),
-      sha256:image.sha256,sourceUrl:image.sourceUrl,pageUrl:image.pageUrl,carrier,sameCategory:row.sameCategory===true,...(image.imageAttachment ? {imageAttachment:image.imageAttachment,imageProvenanceAttachment:image.imageProvenanceAttachment} : {}),title:row.title.trim(),observation:row.observation.trim(),takeaway:row.takeaway?.trim() || '',...rationale}});
+      sha256:image.sha256,sourceUrl:image.sourceUrl,pageUrl:image.pageUrl,carrier,sameCategory:row.sameCategory===true,...(image.imageAttachment ? {imageAttachment:image.imageAttachment,imageProvenanceAttachment:image.imageProvenanceAttachment} : {}),title:row.title.trim(),observation:row.observation.trim(),takeaway:matched ? row.takeaway?.trim() || '' : '',...rationale}});
   }
   if (!selected.length) return null;
   const refs = selected.map(row=>row.description);
-  const grounded = refs.filter(ref=>ref.creatorRationale);
+  const grounded = refs.filter(ref=>ref.creatorRationale || ref.sameCategory);
   const visualOnly = grounded.length===0;
   const finding = {
     chapter:'竞争与同类传播', visualOnly,

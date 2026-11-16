@@ -2263,8 +2263,8 @@
       "reason": "待澄清时提示用户补充委托，隐藏阶段放行操作。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "9ad05b4a8b94f4323bba28d3dd7aae0f6543387980f7e00ad0fb6adb5ab0db98",
-      "reason": "从简报详情发起委托范围补充。"
+      "sha256": "13196a345d48c86a1a08a88f895c7765d34743e732a9a50c1d768eab9ffc14f3",
+      "reason": "单负责人四维研究页与证据交接"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",

@@ -42,6 +42,66 @@ function socialPreview(bytes,base) {
   return urls;
 }
 
+// Bind a candidate to its product card. A nearby unrelated image or a page-wide logo
+// should not become the picture for a matching product elsewhere on the same page.
+export function productCardImages(bytes, base, brand, relatedPages = []) {
+  const {parse}=createRequire(new URL('../workbench/package.json',import.meta.url))('parse5');
+  const root=parse(bytes.toString('utf8'));
+  const compact=value=>value.replace(/\s+/gu,'').toLowerCase();
+  const needle=compact(brand);
+  const labels=new Map();
+  const counts=new Map();
+  const images=[];
+  function visit(node) {
+    if (['script','style','noscript','template'].includes(node.tagName)) return '';
+    if (node.tagName==='img') images.push(node);
+    const value=node.nodeName==='#text' ? node.value : (node.childNodes ?? []).map(visit).join(' ');
+    const label=compact(value).slice(0,400);
+    counts.set(node,node.tagName==='img' ? 1 : (node.childNodes ?? []).reduce((n,c)=>n+(counts.get(c) || 0),0));
+    labels.set(node,label);
+    return label;
+  }
+  visit(root);
+  const baseHost=new URL(base).hostname.replace(/^www\./,'');
+  for (const [node,label] of labels) {
+    if (node.tagName!=='link' && node.tagName!=='a') continue;
+    const attrs=Object.fromEntries(node.attrs.map(a=>[a.name,a.value]));
+    const alternate=node.tagName==='link' && attrs.rel==='alternate' && /screen|width|mobile/i.test(attrs.media || '');
+    if (!alternate && !(node.tagName==='a' && label.length<100 && label.includes(needle))) continue;
+    try {
+      const target=new URL(attrs.href,base);
+      if (target.protocol==='https:' && target.hostname.replace(/^www\./,'')===baseHost && target.href!==base) relatedPages.push(target.href);
+    } catch { /* Invalid link declaration. */ }
+  }
+  const result=new Map();
+  for (const node of images) {
+    const attr=Object.fromEntries(node.attrs.map(a=>[a.name,a.value]));
+    let card=node.parentNode;
+    const direct=compact([attr.alt,attr.title].filter(Boolean).join(' ')).includes(needle);
+    if (!direct) {
+      for (let depth=0;card && depth<5;depth++,card=card.parentNode) {
+        const label=labels.get(card) || '';
+        if (label.length>100 || counts.get(card)!==1) break;
+        if (label.includes(needle)) break;
+      }
+      const label=labels.get(card) || '';
+      if (!label.includes(needle) || label.length>100 || counts.get(card)!==1) continue;
+    }
+    for (const src of [attr['data-original'],attr['data-zoom-image'],attr['data-lazy-img'],attr['data-src'],attr.tsrc,attr.src]) {
+      if (!src?.trim()) continue;
+      try {
+        const url=new URL(src.trim(),base);
+        if (url.protocol==='https:') {
+          const title=[attr.alt,attr.title].find(t=>t && compact(t).includes(needle)) || brand;
+          if (!result.has(url.href)) result.set(url.href,{url:url.href,title:title.trim()});
+          break;
+        }
+      } catch { /* Invalid declarations are not candidates. */ }
+    }
+  }
+  return [...result.values()];
+}
+
 export async function searchVisualImages({query,dir,signal,pages}, {
   capture=capturePublicSource, search=searchPublicReferences,
 }={}) {
@@ -81,7 +141,28 @@ export async function searchVisualImages({query,dir,signal,pages}, {
       try {
         const {record}=await acquire(item.url,1024*1024);
         if (record.mimeType!=='text/html') continue;
-        const previews=socialPreview(await readFile(join(root,record.raw.file)),record.finalUrl);
+        const bytes=await readFile(join(root,record.raw.file));
+        if (item.brand) {
+          const related=[];
+          for (const product of productCardImages(bytes,record.finalUrl,item.brand,related).slice(0,6)) {
+            await collect(product.url,record.finalUrl,product.title);
+          }
+          if (!found.size && item.official) {
+            for (const href of [...new Set(related)].slice(0,3)) {
+              try {
+                const {record:child}=await acquire(href,1024*1024);
+                if (child.mimeType!=='text/html') continue;
+                const html=await readFile(join(root,child.raw.file));
+                for (const product of productCardImages(html,child.finalUrl,item.brand).slice(0,6)) {
+                  await collect(product.url,child.finalUrl,product.title);
+                }
+                if (found.size) break;
+              } catch { signal?.throwIfAborted(); }
+            }
+          }
+          continue;
+        }
+        const previews=socialPreview(bytes,record.finalUrl);
         const images=record.extraction.images ?? [];
         const declared = [...previews,...images.filter(i=>i.discovery),...images.filter(i=>!i.discovery)];
         // A proposed image is a hint. Only acquire URLs actually declared by the public page.
