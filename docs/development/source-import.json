@@ -2251,20 +2251,20 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "f5ea5cee39407fc2026c35cef510ec8e8f5fe35540aefe28ae8adae8d57ad74b",
-      "reason": "单负责人实验的研究提示、文案盲读与取舍及对应页面入口。"
+      "sha256": "1410f7dbb5ee6046c7cd38a5973b619e7501e70d35f8f02a147aa735c2673a08",
+      "reason": "简报待澄清时打开项目消息并聚焦输入框。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "f5565c20167a230aeb05bd8c6efdc8eccee5672f8d61e70957f5318fd2f0c5a9",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "65e41e58e695200eb662c372b4d18a2f3fab47b86faf16cf44a5a8092ae0d69f",
+      "reason": "待澄清时提示用户补充委托，隐藏阶段放行操作。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "3708bad6623eeb87db28a021def1617a793199ff134ced0ba7f9ec3fdabd58f8",
-      "reason": "单负责人实验的研究提示、文案盲读与取舍及对应页面入口。"
+      "sha256": "9ad05b4a8b94f4323bba28d3dd7aae0f6543387980f7e00ad0fb6adb5ab0db98",
+      "reason": "从简报详情发起委托范围补充。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",

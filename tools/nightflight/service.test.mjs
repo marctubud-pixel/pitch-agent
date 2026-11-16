@@ -104,6 +104,7 @@ test('a personal run waits for direction and current image adoption, saves user 
     await writeFile(join(dir, name), body);
     return {
       research,
+      ...(stage==='brief' ? {briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'}} : {}),
       artifacts: [{ kind, name, ...(stage === 'copy' ? { text: body } : {}) }, ...(stage==='layout' ? [{kind:'image',name:'page-0001.jpg',renderPage:1}] : [])],
       copyReview: stage === 'copy' ? {
         version: 3, protocol: 'dual-panel-headline-v4', status: 'ready',
@@ -232,6 +233,7 @@ for (const mode of ['auto', 'collab']) {
         const name = stage + '.md';
         await writeFile(join(dir, name), stage);
         return {
+          ...(stage==='brief' ? {briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'}} : {}),
           artifacts: [{ name, kind: 'text' }],
           research: {
             ready: false,
@@ -285,7 +287,7 @@ test('editor failure retains accepted research and retry resumes strategy from t
     const name=stage+'.md';
     await writeFile(join(dir,name),stage);
     const artifacts=[{kind:'text',name}];
-    if (stage==='brief') return {artifacts};
+    if (stage==='brief') return {artifacts,briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'}};
     searches++;
     return {artifacts,research:{ready:true,digestPending:true,findings:[finding],gaps:[]}};
   }});
@@ -472,5 +474,49 @@ for (const mode of ['auto','collab']) {
     assert.equal(result.stage,'copy');
     assert.equal(result.error,'文案已收到策略稿');
     assert.deepEqual(stages,mode==='auto'?['research','strategy','copy']:['strategy','copy']);
+  });
+}
+
+for (const [mode,status] of [['auto','unsupported'],['collab','unclear']]) {
+  test(mode+' waits for a rephrased commission before research',async t=>{
+    const root=await mkdtemp(join(tmpdir(),'brief-scope-'));
+    const path='/api/projects/scope-test';
+    const calls=[];
+    const service=createNightflight({root,async runStage({stage,project,dir}){
+      calls.push(stage);
+      if(stage==='research') throw Error('研究已启动');
+      if(!project.feedback.length) return {briefScope:{status,types:[],reason:'请说明提案的交付形式'},artifacts:[]};
+      assert.equal(project.feedback.at(-1).text,'请设计包装和海报');
+      await writeFile(join(dir,'任务卡.md'),'请设计包装和海报');
+      return {briefScope:{status:'accepted',types:['packaging','kv'],reason:'包装和海报'},artifacts:[{name:'任务卡.md',kind:'text'}]};
+    }});
+    t.after(async()=>{service.close();await rm(root,{recursive:true,force:true});});
+    async function settled() {
+      for(let i=0;i<200;i++) {
+        const p=(await localRequest(service,path)).data.project;
+        if(p.status!=='running') return p;
+        await new Promise(resolve=>setTimeout(resolve,5));
+      }
+      assert.fail('未到达检查点');
+    }
+    const action=data=>localRequest(service,path+'/action',data);
+    await localRequest(service,'/api/projects',{id:'scope-test',mode,brief:'请帮我'});
+    const p=await settled();
+    assert.equal(p.stage,'brief');
+    assert.equal(p.status,'waiting');
+    assert.deepEqual(p.artifacts,[]);
+    assert.equal(p.briefScope.status,status);
+    for(const kind of ['confirm_brief','retry']) assert.equal((await action({kind,expectedRevision:p.revision})).status,409);
+    assert.deepEqual(calls,['brief']);
+    assert.equal((await action({kind:'message',text:'请设计包装和海报',expectedRevision:p.revision})).status,200);
+    const revised=await settled();
+    assert.deepEqual(revised.briefScope.types,['packaging','kv']);
+    if(mode==='collab') {
+      assert.equal(revised.status,'waiting');
+      assert.equal(revised.stage,'brief');
+      await action({kind:'confirm_brief',expectedRevision:revised.revision});
+      await settled();
+    }
+    assert.deepEqual(calls,['brief','brief','research']);
   });
 }

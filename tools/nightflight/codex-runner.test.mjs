@@ -148,7 +148,7 @@ process.stdin.on('end',()=>{
  let body = {body:'按材料制订测试茶任务卡'};
  if(['pdf','attachment'].includes(action)) {
    const quote=action==='pdf'?'NIGHTFLIGHT PDF TEST':'只有附件才有的词';
-   body={facts:[{label:'提案任务',quote,value:quote}],unknowns:[]};
+   body={briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'},facts:[{label:'提案任务',quote,value:quote}],unknowns:[]};
  }
  if(action==='final-return'){
    if(input.includes('逐张检查页面')){

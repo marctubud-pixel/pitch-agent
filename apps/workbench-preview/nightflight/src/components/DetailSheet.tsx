@@ -138,6 +138,7 @@ export function DetailSheet({
   name,
   close,
   nav,
+  correct,
   act,
   busy,
 }: {
@@ -146,6 +147,7 @@ export function DetailSheet({
   name?: string;
   close: () => void;
   nav: (s: StageId) => void;
+  correct: () => void;
   act: Act;
   busy: boolean;
 }) {
@@ -197,7 +199,7 @@ export function DetailSheet({
           {id === 'visual' || id === 'layout' || id === 'final' ? (
             <MediaStageOutput p={p} id={id} name={name} act={act} busy={busy} />
           ) : (
-            <TextStageOutput p={p} id={id} busy={busy} onChoose={(value) => act('choice', value)} />
+            <TextStageOutput correct={correct} p={p} id={id} busy={busy} onChoose={(value) => act('choice', value)} />
           )}
           {id === 'research' && <ResearchReview key={p.id} p={p} act={act} busy={busy} />}
           {id === p.stage && (p.status === 'failed' || p.finalReturn || id === 'visual' || id==='brief') && (id !== 'research' || p.finalReturn) && (

@@ -43,6 +43,7 @@ export function App() {
     [outline, setOutline] = useState<OutlineSelection>(defaultOutline),
     draft = useRef(crypto.randomUUID()),
     lock = useRef(false);
+  const composerRef = useRef<HTMLInputElement>(null);
   const [chat, setChat] = useState(false),
     [log, setLog] = useState(false),
     [library, setLibrary] = useState(false),
@@ -360,6 +361,10 @@ export function App() {
                 id={detail.id}
                 name={detail.name}
                 nav={openDetail}
+                correct={() => {
+                  setChat(true);
+                  requestAnimationFrame(() => composerRef.current?.focus());
+                }}
                 close={() => open(undefined)}
                 act={act}
                 busy={busy}
@@ -385,6 +390,7 @@ export function App() {
           </div>
           {chat ? (
             <ChatPanel
+              composerRef={composerRef}
               openResearch={() => openDetail('research')}
               p={p}
               projects={projects}
