@@ -5,9 +5,17 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {capturePublicSource} from '../workbench/source-acquisition.mjs';
-import {searchVisualImages} from './public-visual-search.mjs';
+import {searchVisualImages,productCardImages} from './public-visual-search.mjs';
 
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC','base64');
+test('matches the named product card and its declared lazy image, ignoring neighbouring products and placeholders',()=>{
+  const html=Buffer.from('<section><div><img tsrc="/other.png"><p>别的茶</p></div>'+
+    '<div><img src="data:image/gif;base64,AA" tsrc="/tea.png"><p>测试茶</p></div></section>'+
+    '<a><img src="/blank.gif" data-lazy-img=" //images.example.org/sku.jpg " alt="测试茶 500ml"></a>');
+  assert.deepEqual(productCardImages(html,'https://brand.example.org/products','测试茶'),
+    ['https://brand.example.org/tea.png','https://images.example.org/sku.jpg']);
+});
+
 test('captures decoded original with page, query and hash, discards corrupt and duplicate results',async t=>{
   const dir=await mkdtemp(join(tmpdir(),'visual-search-'));
   t.after(()=>rm(dir,{recursive:true,force:true}));

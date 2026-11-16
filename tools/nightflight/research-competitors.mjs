@@ -31,7 +31,7 @@ function documentPassages(documents, url, relatedUrls = []) {
   return passages;
 }
 
-export async function researchCompetitors({call, dir, pages, previous = [], project, carrier, signal, dependencies, onEvent, readSource, documents = [], uploadedImages = []}) {
+export async function researchCompetitors({call, dir, pages, acquiredByPage = new Map(), previous = [], project, carrier, signal, dependencies, onEvent, readSource, documents = [], uploadedImages = []}) {
   const uniquePages = new Map();
   for (const page of pages ?? []) {
     if (page && publicPage(page.url) && !uniquePages.has(page.url)) uniquePages.set(page.url,page);
@@ -39,7 +39,7 @@ export async function researchCompetitors({call, dir, pages, previous = [], proj
   if (uniquePages.size || previous.length) await onEvent?.('正在打开竞品原图，核对图上可见的品类、品牌和信息层级');
   const capture = (options, defaults) => capturePublicSource(options,{...defaults,...dependencies});
   const groups = await Promise.all([...uniquePages.values()].slice(0,6).map(async page =>
-    (await searchVisualImages({dir,signal,query:'竞品作品原图',pages:[page]}, {capture}))
+    (acquiredByPage.get(page.url) ?? await searchVisualImages({dir,signal,query:'竞品作品原图',pages:[page]}, {capture}))
       .filter(image => Math.min(image.width,image.height)>=140)
       .map(image=>({...image,casePage:page}))));
   // A locally supplied case image must be identifiable against the user's provenance material.

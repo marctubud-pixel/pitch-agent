@@ -42,6 +42,51 @@ function socialPreview(bytes,base) {
   return urls;
 }
 
+// Bind a candidate to its product card. A nearby unrelated image or a page-wide logo
+// should not become the picture for a matching product elsewhere on the same page.
+export function productCardImages(bytes, base, brand) {
+  const {parse}=createRequire(new URL('../workbench/package.json',import.meta.url))('parse5');
+  const root=parse(bytes.toString('utf8'));
+  const compact=value=>value.replace(/\s+/gu,'').toLowerCase();
+  const needle=compact(brand);
+  const labels=new Map();
+  const counts=new Map();
+  const images=[];
+  function visit(node) {
+    if (['script','style','noscript','template'].includes(node.tagName)) return '';
+    if (node.tagName==='img') images.push(node);
+    const value=node.nodeName==='#text' ? node.value : (node.childNodes ?? []).map(visit).join(' ');
+    const label=compact(value).slice(0,400);
+    counts.set(node,node.tagName==='img' ? 1 : (node.childNodes ?? []).reduce((n,c)=>n+(counts.get(c) || 0),0));
+    labels.set(node,label);
+    return label;
+  }
+  visit(root);
+  const result=[];
+  for (const node of images) {
+    const attr=Object.fromEntries(node.attrs.map(a=>[a.name,a.value]));
+    let card=node.parentNode;
+    const direct=compact([attr.alt,attr.title].filter(Boolean).join(' ')).includes(needle);
+    if (!direct) {
+      for (let depth=0;card && depth<5;depth++,card=card.parentNode) {
+        const label=labels.get(card) || '';
+        if (label.length>100 || counts.get(card)!==1) break;
+        if (label.includes(needle)) break;
+      }
+      const label=labels.get(card) || '';
+      if (!label.includes(needle) || label.length>100 || counts.get(card)!==1) continue;
+    }
+    for (const src of [attr['data-original'],attr['data-zoom-image'],attr['data-lazy-img'],attr['data-src'],attr.tsrc,attr.src]) {
+      if (!src?.trim()) continue;
+      try {
+        const url=new URL(src.trim(),base);
+        if (url.protocol==='https:') { result.push(url.href); break; }
+      } catch { /* Invalid declarations are not candidates. */ }
+    }
+  }
+  return [...new Set(result)];
+}
+
 export async function searchVisualImages({query,dir,signal,pages}, {
   capture=capturePublicSource, search=searchPublicReferences,
 }={}) {
@@ -81,7 +126,14 @@ export async function searchVisualImages({query,dir,signal,pages}, {
       try {
         const {record}=await acquire(item.url,1024*1024);
         if (record.mimeType!=='text/html') continue;
-        const previews=socialPreview(await readFile(join(root,record.raw.file)),record.finalUrl);
+        const bytes=await readFile(join(root,record.raw.file));
+        if (item.brand) {
+          for (const url of productCardImages(bytes,record.finalUrl,item.brand).slice(0,6)) {
+            await collect(url,record.finalUrl,item.title);
+          }
+          continue;
+        }
+        const previews=socialPreview(bytes,record.finalUrl);
         const images=record.extraction.images ?? [];
         const declared = [...previews,...images.filter(i=>i.discovery),...images.filter(i=>!i.discovery)];
         // A proposed image is a hint. Only acquire URLs actually declared by the public page.

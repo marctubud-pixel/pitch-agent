@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.67.0",
+  "baselineVersion": "1.68.0",
   "date": "2026-11-17",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -388,10 +388,10 @@
     {
       "id": "method.research",
       "kind": "method",
-      "title": "调研负责人 Skill r17",
+      "title": "调研负责人 Skill r18",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.10.0",
-      "sourceVersion": "r17-20261117",
+      "version": "1.11.0",
+      "sourceVersion": "r18-20261117",
       "lifecycle": "current",
       "dependsOn": []
     },
