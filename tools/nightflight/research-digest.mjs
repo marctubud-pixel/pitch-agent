@@ -1,4 +1,38 @@
 const chapters = ['行业与市场','竞争与同类传播','人群与接触情境'];
+export const researchAngles = {
+  '行业与市场': ['品类规模与走势','供给与竞争格局','渠道与销售结构','品类价格带','品类创新与变化'],
+  '竞争与同类传播': ['规格与商品组合','定位与主张','画面与信息层级','渠道与传播执行','价格与产品带'],
+  '人群与接触情境': ['人群构成','选择偏好与顾虑','购买行为与渠道','使用场景与时机'],
+};
+export function reviewedFindings(findings, accepted, labels) {
+  const selected = new Set(accepted);
+  const classified = new Map();
+  for (const label of labels) {
+    const index = label.findingIndex;
+    const finding = findings[index];
+    if (!selected.has(index) || !Number.isInteger(index) || !finding || classified.has(index))
+      throw Error('研究复核的观察对象未绑定本版有效发现');
+    if (!researchAngles[label.chapter]?.includes(label.angle)) throw Error('研究复核角度与栏目不符');
+    if (finding.images?.length && label.chapter !== '竞争与同类传播') throw Error('竞品图组只能支持实物或传播案例观察');
+    if (!finding.url && finding.chapter==='产品与品牌') throw Error('本案产品条件不能列作外部研究');
+    classified.set(index,{chapter:label.chapter,editorialAngle:label.angle});
+  }
+  return findings.flatMap((finding,index)=>{
+    if (!selected.has(index)) return [];
+    const {editorialAngle:previousAngle,...record} = finding;
+    return [{...record,...classified.get(index)}];
+  });
+}
+
+export function missingResearchCoverage(findings) {
+  return chapters.flatMap(chapter=>{
+    const available = new Set(findings.filter(f=>f.chapter===chapter && f.editorialAngle).map(f=>f.editorialAngle));
+    if (available.size>=2) return [];
+    const missing=researchAngles[chapter].filter(a=>!available.has(a));
+    return [chapter+'还需补查 '+(2-available.size)+' 个不同角度，可查'+missing.join('、')+'。'];
+  });
+}
+
 const string = {type:'string'};
 const fields = {chapter:{type:'string',enum:chapters}, title:string, detail:string, findingIndex:{type:'integer'}};
 const schema = {type:'object',additionalProperties:false,required:['digest'],properties:{digest:{
@@ -14,11 +48,13 @@ function numbers(text) {
 export function validateResearchDigest(rows, findings) {
   if (!Array.isArray(rows)) throw Error('研究精选必须是一组条目');
   if (!rows.length && findings.some(f=>chapters.includes(f.chapter))) throw Error('至少精选一条与本案有关的已核判断');
+  const reviewed = findings.some(f=>f.editorialAngle);
   const seen = new Set();
   for (const row of rows) {
     const index = row?.findingIndex;
     const finding = findings[index];
-    if (!Number.isInteger(index) || !finding || seen.has(index) || !chapters.includes(row.chapter) || row.chapter!==finding.chapter)
+    if (!Number.isInteger(index) || !finding || seen.has(index) || !chapters.includes(row.chapter) || !chapters.includes(finding.chapter) ||
+        (reviewed && row.chapter!==finding.chapter) || (finding.images?.length && row.chapter!=='竞争与同类传播'))
       throw Error('研究精选引用的发现不存在、重复或归组不符');
     seen.add(index);
     if (![row.title,row.detail].every(s=>typeof s==='string' && s.trim() && !/[\r\n]/.test(s)))
@@ -34,6 +70,13 @@ export function validateResearchDigest(rows, findings) {
   }
   for (const chapter of chapters) {
     const entries=rows.filter(r=>r.chapter===chapter);
+    if (reviewed) {
+      const available = new Set(findings.filter(f=>f.chapter===chapter && f.editorialAngle).map(f=>f.editorialAngle));
+      const minimum = Math.min(2,available.size);
+      const angles = entries.map(r=>findings[r.findingIndex].editorialAngle);
+      if (entries.length<minimum || angles.some(a=>!researchAngles[chapter].includes(a)) || new Set(angles).size!==angles.length)
+        throw Error(chapter+'需要按实际可用证据精选不同角度（本版至少 '+minimum+' 条），不得凑数');
+    }
     if (entries.length>3) throw Error('单个章节最多精选三条');
   }
   return chapters.flatMap(chapter=>rows.filter(row=>row.chapter===chapter).map(({title,detail,findingIndex})=>({
@@ -43,7 +86,7 @@ export function validateResearchDigest(rows, findings) {
 
 export async function editResearchDigest(call, findings, project) {
   const eligible = findings.map((f,findingIndex)=>({findingIndex,chapter:f.chapter,conclusion:f.conclusion,evidence:f.evidence,
-    source:f.source,observations:(f.images ?? []).map(image=>image.observation)})).filter(f=>chapters.includes(f.chapter));
+    source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).map(image=>image.observation)})).filter(f=>chapters.includes(f.chapter));
   if (!eligible.length) return [];
   const productFacts = findings.filter(f => f.chapter === '产品与品牌').map(f => f.conclusion);
   const task = {
@@ -56,10 +99,12 @@ export async function editResearchDigest(call, findings, project) {
     }),
   };
   const instruction = [
-    '只从下列已核发现中精选给客户看的研究判断，按行业、竞品、人群三组，各选一至三条最能帮助本案作出选择的发现；没有与本案直接相关判断的组跳过，不为分组凑条数。',
+    eligible.some(f=>f.angle)
+      ? '按行业、竞品、人群三组各优先选二至三条已复核且角度不同的观察。若定向补查后该组仍只有一个有效角度则只选一条，没有就省略。只选有 angle 的条目，同一角度不重复，同一份材料的一句结论不能拆成两条。'
+      : '从这份旧版已核发现中按行业、竞品、人群精选。各组最多三条，没有相关材料的组跳过。旧版 chapter 只是初拟分组，按观察对象校正，例如受访者自报购买渠道归人群，整个品类各渠道销售额结构归行业，单款产品在某渠道的陈列或包装归竞品。保留原 findingIndex 以便溯源。',
     '先比较项目产品、人群、使用场景、载体和决策，舍弃无关邻近品类或不适用人群的细节，例如与本案无关的泛早餐调查、儿童吸管。',
     '不得每条重复说明与本案相关。',
-    '每条只绑定一条原发现的 findingIndex 与 chapter，不能拼接两条来源。',
+    '每条只绑定一条原发现的 findingIndex，不拼接两条来源。已有复核角度的条目沿用复核确认的 chapter。',
     '有实际包装或KV对照且与本案相关的竞品图组，优先选入。',
     '标题只直陈观察：写谁、有什么特征、出现什么差别或变化。不要用动作指令、建议、问句或设计方案作标题。读者应能从标题看出实际发现。标题宜短，用日常中文概括规律；具体百分比、年份与调查名放在解释中，避免标题和解释重复同一句。例如“便利店是燕麦奶的购买渠道之一”，解释再给占比。',
     '解释只写支撑这个观察的具体事实。年份、人群、地区、样本与统计口径贴在对应事实或数字旁；产品图写图上实际可见的差别。不要再写对本案的用途或建议。',

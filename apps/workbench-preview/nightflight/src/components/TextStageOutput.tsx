@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { headlineReviewProtocol, safeURL, type Artifact, type CopyDuty, type Project, type ResearchImage } from '../live';
+import { headlineReviewProtocol, safeURL, type Artifact, type Asset, type CopyDuty, type Project, type ResearchImage } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
@@ -96,17 +96,38 @@ const digestChapters = [
   ['人群与接触情境', '用户'],
 ] as const;
 
-export function ResearchDigest({ report, artifacts }: { report: ResearchReport; artifacts: Artifact[] }) {
+type Finding = ResearchReport['findings'][number];
+
+export function ResearchSource({ finding, attachments = [] }: { finding: Finding; attachments?: Asset[] }) {
+  const matches = attachments.filter(file => file.name === finding.source);
+  if (/^https?:\/\//i.test(finding.url)) return (
+    <a href={finding.url} target="_blank" rel="noopener noreferrer">{finding.source || finding.url} · 打开网页</a>
+  );
+  const url = matches.length === 1 ? safeURL(matches[0].url) : undefined;
+  return url ? <a href={url} download={finding.source}>{finding.source} · 下载附件</a> : <>{finding.source}</>;
+}
+
+function ResearchGaps({ gaps }: { gaps: string[] }) {
+  if (!gaps.length) return null;
+  return <details className="research-original">
+    <summary>尚缺哪些依据（{gaps.length}）</summary>
+    <ul className="plain-list">{gaps.map(gap => <li key={gap}>{gap}</li>)}</ul>
+  </details>;
+}
+
+export function ResearchDigest({ report, artifacts, attachments }: { report: ResearchReport; artifacts: Artifact[]; attachments?: Asset[] }) {
+  const gaps = report.ready ? [...new Set(report.gaps)] : [];
   return (
     <>
       {digestChapters.map(([chapter, label]) => {
         const rows = report.digest?.filter(item => item.chapter === chapter && report.findings[item.findingIndex]);
-        if (!rows?.length) return null;
+        const chapterGaps = gaps.filter(gap => gap.startsWith(chapter));
+        if (!rows?.length && !chapterGaps.length) return null;
         return (
           <section className="block research-digest" key={chapter}>
             <h2>{label}</h2>
             <ol className="findings">
-              {rows.map(({ title, detail, findingIndex }, index) => {
+              {rows?.map(({ title, detail, findingIndex }, index) => {
                 const finding = report.findings[findingIndex];
                 return (
                   <li key={findingIndex + '-' + index}>
@@ -122,9 +143,7 @@ export function ResearchDigest({ report, artifacts }: { report: ResearchReport; 
                           <>
                             <p>{finding.evidence}</p>
                             <ul className="sources"><li>
-                              {/^https?:\/\//i.test(finding.url)
-                                ? <a href={finding.url} target="_blank" rel="noopener noreferrer">{finding.source || finding.url}</a>
-                                : finding.source}
+                              <ResearchSource finding={finding} attachments={attachments} />
                             </li></ul>
                           </>
                         )}
@@ -134,9 +153,11 @@ export function ResearchDigest({ report, artifacts }: { report: ResearchReport; 
                 );
               })}
             </ol>
+            <ResearchGaps gaps={chapterGaps} />
           </section>
         );
       })}
+      <ResearchGaps gaps={gaps.filter(gap => !digestChapters.some(([chapter]) => gap.startsWith(chapter)))} />
     </>
   );
 }
@@ -145,7 +166,7 @@ function Research({ p }: { p: Project }) {
   const report = p.research;
   if (report && !report.ready) return null;
   if (!report && p.stage === 'research' && p.status === 'running') return null;
-  if (report?.digest?.length) return <ResearchDigest report={report} artifacts={p.artifacts} />;
+  if (report?.digest?.length) return <ResearchDigest report={report} artifacts={p.artifacts} attachments={p.attachments} />;
   if (p.artifacts.some(a => a.stage === 'research')) {
     return <p className="research-archive-note">这版研究可在下方的研究底稿中查看。</p>;
   }
