@@ -28,7 +28,7 @@ Full diff: [`f05ab-f06a.patch`](./f05ab-f06a.patch).
 
 **Now.** The index reads "**3 changed passages**". Each passage keeps its recorded reason exactly as stored ("Edited by you.", "Too long; …"), its struck-through earlier wording and its link. The data has no field that records who changed a passage, so the index makes no distinction. Nothing parses the reason text.
 
-![F05-A](./img-f05ab-f06a/F05A-index-after-edit.png)
+F05-A（归档路径 `./img-f05ab-f06a/F05A-index-after-edit.png`）
 
 ## F05-B: identical text is not adoption or authorship
 
@@ -39,7 +39,7 @@ Full diff: [`f05ab-f06a.patch`](./f05ab-f06a.patch).
 - **No usage claims.** The data has no structured record of where an idea was used, so no "used in" relationship is shown anywhere.
 - **The copy lines.** No line is ever marked as yours. Arriving from a match link marks the identical line "Matching text"; opening the copy lines any other way marks nothing.
 
-![F05-B new idea](./img-f05ab-f06a/F05B-new-idea.png) ![F05-B matching line](./img-f05ab-f06a/F05B-matching-line.png)
+F05-B new idea（归档路径 `./img-f05ab-f06a/F05B-new-idea.png`） F05-B matching line（归档路径 `./img-f05ab-f06a/F05B-matching-line.png`）
 
 ## F06-A: the docked tab covers nothing on screen
 
@@ -52,9 +52,9 @@ Full diff: [`f05ab-f06a.patch`](./f05ab-f06a.patch).
 - **Unchanged:** hiding during input and dialogs, the docked state after reload, focus moving to and from the tab, and the conversation and unsent questions.
 - **No layout changes:** no page whitespace was added.
 
-![F06-A 375: before | after](./img-f05ab-f06a/compare-F06A-375.png)
+F06-A 375: before | after（归档路径 `./img-f05ab-f06a/compare-F06A-375.png`）
 
-390: [before | after](./img-f05ab-f06a/compare-F06A-390.png) · [dialog open](./img-f05ab-f06a/375-F06A-2-dialog.png) · [docked on Overview, 375](./img-f05ab-f06a/375-F06A-3-docked-overview.png) · [390](./img-f05ab-f06a/390-F06A-3-docked-overview.png)
+390: before | after（归档路径 `./img-f05ab-f06a/compare-F06A-390.png`） · dialog open（归档路径 `./img-f05ab-f06a/375-F06A-2-dialog.png`） · docked on Overview, 375（归档路径 `./img-f05ab-f06a/375-F06A-3-docked-overview.png`） · 390（归档路径 `./img-f05ab-f06a/390-F06A-3-docked-overview.png`）
 
 **How overlap is measured** (`tab-overlap.mjs`): it does not look at control centres or the page end. It intersects the tab's rectangle with:
 - the client rectangles of every visible control;

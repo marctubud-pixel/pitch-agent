@@ -120,12 +120,12 @@ function ResearchGaps({ gaps }: { gaps: string[] }) {
 }
 
 export function ResearchDigest({ report, artifacts, attachments }: { report: ResearchReport; artifacts: Artifact[]; attachments?: Asset[] }) {
-  const gaps = report.ready ? [...new Set(report.gaps)] : [];
+  const gaps = report.ready ? report.gaps.map(g=>typeof g==='string' ? {chapter:'',message:g} : g) : [];
   return (
     <>
       {digestChapters.map(([chapter, label]) => {
         const rows = report.digest?.filter(item => item.chapter === chapter && report.findings[item.findingIndex]);
-        const chapterGaps = gaps.filter(gap => gap.startsWith(chapter));
+        const chapterGaps = gaps.filter(gap => gap.chapter===chapter).map(gap=>gap.message);
         if (!rows?.length && !chapterGaps.length) return null;
         return (
           <section className="block research-digest" key={chapter}>
@@ -134,7 +134,7 @@ export function ResearchDigest({ report, artifacts, attachments }: { report: Res
               {rows?.map(({ title, detail, findingIndex }, index) => {
                 const finding = report.findings[findingIndex];
                 return (
-                  <li key={findingIndex + '-' + index}>
+                  <li id={'research-finding-'+findingIndex} key={findingIndex + '-' + index}>
                     <span className="finding-no">{index + 1}</span>
                     <div>
                       <h3>{title}</h3>
@@ -161,7 +161,7 @@ export function ResearchDigest({ report, artifacts, attachments }: { report: Res
           </section>
         );
       })}
-      <ResearchGaps gaps={gaps.filter(gap => !digestChapters.some(([chapter]) => gap.startsWith(chapter)))} />
+      <ResearchGaps gaps={gaps.filter(gap => !digestChapters.some(([chapter]) => gap.chapter===chapter)).map(gap=>gap.message)} />
       {report.ready && !!report.strategyAdvice?.length && (
         <section className="block research-advice">
           <h2>给策略的建议</h2>
@@ -175,14 +175,19 @@ export function ResearchDigest({ report, artifacts, attachments }: { report: Res
                   <h3>{recommendation}</h3>
                   <details>
                     <summary>查看研究依据（{evidence.length}）</summary>
-                    {evidence.map((finding, n) => (
-                      <div className="research-case-note" key={n}>
-                        <h4>{finding.conclusion}</h4>
-                        {finding.images?.length
-                          ? <ResearchImageGallery images={finding.images} artifacts={artifacts} attachments={attachments} />
-                          : <><p>{finding.evidence}</p><ResearchSource finding={finding} attachments={attachments} /></>}
-                      </div>
-                    ))}
+                    {[...new Set(findingIndices)].map(i=>{
+                      const finding=report.findings[i];
+                      if (!finding) return null;
+                      const visible=report.digest?.find(row=>row.findingIndex===i);
+                      if (!visible) return <div key={i}><p>{finding.evidence}</p><ResearchSource finding={finding} attachments={attachments}/>
+                        {finding.images?.length ? <ResearchImageGallery images={finding.images} artifacts={artifacts} attachments={attachments}/> : null}
+                      </div>;
+                      return <button type="button" className="link-btn" key={i} onClick={()=>{
+                        const row=document.getElementById('research-finding-'+i);
+                        row?.querySelector('details')?.setAttribute('open','');
+                        row?.scrollIntoView({block:'center'});
+                      }}>{visible.title}</button>;
+                    })}
                   </details>
                 </div>
               </li>;
@@ -198,7 +203,7 @@ function Research({ p }: { p: Project }) {
   const archived = p.stage==='research' && p.status==='running' && p.researchFollowup
     ? [...(p.versions ?? [])].reverse().find(v=>v.research?.findings.length) : undefined;
   const report = p.research ?? archived?.research;
-  const files = !p.research?.findings.length && archived ? archived.artifacts : p.artifacts;
+  const files = [...p.artifacts,...(p.versions ?? []).flatMap(v=>v.artifacts)];
   if (report && !report.digest?.length && report.findings.length) {
     const chapterNames: Record<string,string> = Object.fromEntries(digestChapters);
     const groups = [...new Set(report.findings.map(f=>f.chapter || '已核实的发现'))];
@@ -215,13 +220,11 @@ function Research({ p }: { p: Project }) {
     const scope = report.searchScope;
     const lastLog = [...p.events].reverse().find(e=>e.stage==='research' && e.text.startsWith('公开检索取得 '));
     const excluded = scope?.pages.find(page=>page.reason);
-    const reason = excluded ? excluded.title + '：' + excluded.reason : report.gaps.find(g=>g.trim());
+    const reason = excluded ? excluded.title + '：' + excluded.reason : undefined;
     return <section className="block"><h2>这轮查到了什么</h2>
       <p>{scope ? `检索取得 ${scope.urls.length} 个候选链接，读到 ${scope.readable} 份原文。` : lastLog?.text}</p>
       <p>本轮没有核实出可用于本案的结论。</p>
       {reason && <p>{reason}</p>}
-      {scope && <details><summary>查看检索词与已读来源</summary><p>{scope.queries.join(' · ')}</p>
-        <ul>{scope.pages.map(page=><li key={page.url}>{page.title} · {page.url}{page.reason && ' · '+page.reason}</li>)}</ul></details>}
     </section>;
   }
   if (!report && p.stage === 'research' && p.status === 'running') return null;

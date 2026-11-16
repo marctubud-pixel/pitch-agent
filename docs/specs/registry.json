@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.59.0",
+  "baselineVersion": "1.60.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -43,7 +43,7 @@
       "kind": "agent",
       "title": "调研负责人",
       "path": "docs/agents/research-owner.md",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "current",
       "dependsOn": [
         "method.research",
@@ -387,10 +387,10 @@
     {
       "id": "method.research",
       "kind": "method",
-      "title": "调研负责人 Skill r13",
+      "title": "调研负责人 Skill r14",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.6.0",
-      "sourceVersion": "r13-20261116",
+      "version": "1.7.0",
+      "sourceVersion": "r14-20261116",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -462,7 +462,7 @@
       "kind": "contract",
       "title": "版本与阶段交接",
       "path": "docs/specs/handoff.md",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -582,7 +582,7 @@
       "kind": "contract",
       "title": "排版后终审协议",
       "path": "docs/specs/final-review.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"
@@ -611,7 +611,7 @@
       "kind": "contract",
       "title": "应用与Agent运行架构",
       "path": "docs/architecture/runtime.md",
-      "version": "1.12.0",
+      "version": "1.12.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -629,7 +629,7 @@
       "kind": "contract",
       "title": "验证范围与已知失败",
       "path": "docs/development/testing.md",
-      "version": "1.15.0",
+      "version": "1.15.1",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -677,7 +677,7 @@
       "kind": "contract",
       "title": "本地简报HTTP合同与联调",
       "path": "docs/development/http-brief.md",
-      "version": "1.6.0",
+      "version": "1.6.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.runtime",
@@ -690,7 +690,7 @@
       "title": "七阶段运行合同",
       "kind": "contract",
       "path": "docs/specs/seven-stage-runtime.md",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.workflow",
@@ -867,6 +867,28 @@
       "sourceVersion": "20261106-b7900017",
       "lifecycle": "current",
       "dependsOn": []
+    },
+    {
+      "id": "contract.nightflight-runtime",
+      "title": "夜航运行合同",
+      "kind": "contract",
+      "path": "docs/specs/nightflight-runtime.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ]
+    },
+    {
+      "id": "contract.nightflight-final-reader",
+      "title": "夜航本地终审",
+      "kind": "contract",
+      "path": "docs/specs/nightflight-final-reader.md",
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "dependsOn": [
+        "contract.handoff"
+      ]
     }
   ],
   "entryDocuments": [

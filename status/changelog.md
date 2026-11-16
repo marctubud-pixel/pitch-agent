@@ -6,8 +6,8 @@
 
 ## 2026-11-03 参考池 V2 运行时
 
-[运行时开发及验证目录](../.scratch/end-to-end-local-20261102/reference-pool-v2-20261103/)记录原件校验、封口、回执证明、版本预检、显式配置与创建重开。新增能力的验证范围见[current](current.md)，不代表完整参考评审或完整静态提案已交付。
+运行时开发及验证目录（归档路径 `../.scratch/end-to-end-local-20261102/reference-pool-v2-20261103/`）记录原件校验、封口、回执证明、版本预检、显式配置与创建重开。新增能力的验证范围见[current](current.md)，不代表完整参考评审或完整静态提案已交付。
 
 ## 更早开发
 
-[原开发说明](../多线调研工作台_开发说明_v0.3.md)、[后端目标](../docs/goals/backend-complete-20261031.md)和[当前任务历史](../.scratch/end-to-end-local-20261102/CHECKPOINT.md)继续保留原文。历史目标中已被用户调整的真实调用、资金和前端范围，以当前目标为准。
+[原开发说明](../多线调研工作台_开发说明_v0.3.md)、[后端目标](../docs/goals/backend-complete-20261031.md)和当前任务历史（归档路径 `../.scratch/end-to-end-local-20261102/CHECKPOINT.md`）继续保留原文。历史目标中已被用户调整的真实调用、资金和前端范围，以当前目标为准。

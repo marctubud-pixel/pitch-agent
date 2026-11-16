@@ -1,3 +1,4 @@
+import {pythonBinary} from './runtime-dependencies.mjs';
 import {execFile} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFile, mkdir} from 'node:fs/promises';
@@ -16,6 +17,10 @@ function invoke(executable, action, input, signal, mode = '--text-model') {
     });
     child.stdin.on('error',()=>{}); child.stdin.end(input);
   });
+}
+
+export function modelProfile(executable, signal, mode) {
+  return invoke(executable,'profile',null,signal,mode);
 }
 
 export async function desktopTextProvider(executable,signal,onEvent) {
@@ -62,7 +67,7 @@ export function desktopImageProvider(executable,dir,signal,onEvent) {
     const item = result.data?.[0];
     if(!item?.b64_json) throw Error('生图接口未返回图像原件');
     const bytes = Buffer.from(item.b64_json,'base64');
-    const inspection = await inspectImage(bytes);
+    const inspection = await inspectImage(bytes,{pythonBinary:await pythonBinary()});
     if(inspection.mediaType!=='image/png') throw Error('生图接口未返回有效 PNG');
     const runDir = join(dir,'.image-api-runs',runId);
     await mkdir(runDir,{recursive:true,mode:0o700});

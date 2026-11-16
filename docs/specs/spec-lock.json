@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.59.0",
-  "registrySha256": "c32435f7548b63ee645d15e4444388966d71ea8f6bdd3340475d176b0945c1fc",
+  "baselineVersion": "1.60.0",
+  "registrySha256": "55a0342802a4b4b8f70ee2f77b5f36c777c1a139b098770d5f47af5c6a383634",
   "entries": {
     "agent.proposal-director": {
       "version": "1.1.0",
@@ -18,10 +18,10 @@
       }
     },
     "agent.research-owner": {
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/research-owner.md": "c0ff3366aac8e04474bd8f401736cde75d7155a36ecfe680707f79832a2b5112"
+        "docs/agents/research-owner.md": "dfd1d8fac371089762102793ed423547333e4c7302409e41cdc71d4f46d13d99"
       }
     },
     "agent.strategy-owner": {
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "aebd62387a90614f229b78fc7689e4a8442e609ff82f4c5290a1b22b6690c978",
+        "skills/design-research-lead/SKILL.md": "670ca91cffe5b0e6747af8fcca00b340d05e57400fe1ce3e523ebd7499dcf5e7",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -259,10 +259,10 @@
       }
     },
     "contract.handoff": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/handoff.md": "beee886c324b84091789873b769b40bf24d1874efd2eae298e0757658cd6c8be"
+        "docs/specs/handoff.md": "1b9751928b8ae922a36851b47b6b5101fbd05a8e9c7d5fbbaaddcca28b8f3390"
       }
     },
     "contract.ui": {
@@ -336,10 +336,10 @@
       }
     },
     "contract.final-review": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/final-review.md": "8ffd851b6e5a6ba446388a14365da3939b033ffa98602ec9b1dcfc8b4bd2bfc5"
+        "docs/specs/final-review.md": "ae40e2fad8370a2ad75e160d9b53359cebe8b23c72813fbc8176f28ad01f7105"
       }
     },
     "contract.repository": {
@@ -357,10 +357,10 @@
       }
     },
     "contract.runtime": {
-      "version": "1.12.0",
+      "version": "1.12.1",
       "lifecycle": "current",
       "files": {
-        "docs/architecture/runtime.md": "16794fbc42358b2cd469ee43e9ab858e578abd43b409201abcf95633915574b9"
+        "docs/architecture/runtime.md": "c3541f77dbf09b8a8545d6005c426931359ed91fef8621b876d9fb29fccb8d91"
       }
     },
     "contract.configuration": {
@@ -371,10 +371,10 @@
       }
     },
     "contract.testing": {
-      "version": "1.15.0",
+      "version": "1.15.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/testing.md": "df8ec1584bd9d55a2463b446d3bb6bd4eb9d23a509f32886305c57382bf22bf5"
+        "docs/development/testing.md": "8522f4a637e0019f3f9785f1666aeb27d8a2a53386c1f6b157224070978aea39"
       }
     },
     "contract.git": {
@@ -406,17 +406,17 @@
       }
     },
     "contract.http-brief": {
-      "version": "1.6.0",
+      "version": "1.6.1",
       "lifecycle": "current",
       "files": {
-        "docs/development/http-brief.md": "2344e6ceacd4ee9ad6008b3d08f08fed08ac8792fdb8a8b91b656fba97ca41e0"
+        "docs/development/http-brief.md": "66b84bbf607a90f250acf0716a79e460088fc7fe3bdb4083f10d157825d95e04"
       }
     },
     "contract.seven-stage-runtime": {
-      "version": "1.5.0",
+      "version": "1.5.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/seven-stage-runtime.md": "48e71d37eb48674a41aba5c0d26b27f26ba16f85302dc8bcbc50b824f9562f92"
+        "docs/specs/seven-stage-runtime.md": "7ce7de5bf4cc865104b82ff9d51051fc7f134191a9a15e8618ecd50c5728ca43"
       }
     },
     "contract.seven-stage-research": {
@@ -509,6 +509,20 @@
       "files": {
         "skills/slogan-engine/SKILL.md": "b79000179b4df961d67acb662e66730bf97df88b7f5d2ca6493fd0beb36bc239"
       }
+    },
+    "contract.nightflight-runtime": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/specs/nightflight-runtime.md": "afcb200018c1cab0ab4a65c044ee863cd40d2d3090ca1eb2ad9af9e5747dceec"
+      }
+    },
+    "contract.nightflight-final-reader": {
+      "version": "1.0.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/specs/nightflight-final-reader.md": "a96abc6dfa8990ce8324066216570eb0adb2dfef7f65f771a2f94c2816ccbcfa"
+      }
     }
   },
   "entryDocuments": {
@@ -517,8 +531,8 @@
     "docs/agents/issue-tracker.md": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e",
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
-    "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "25d0ede138b230ec7ec3f3c3dc0c64ae5081919868de1ab9b1c02c3ebcdab986",
+    "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
+    "docs/specs/README.md": "73f7af190ca1c79788a1c1095e112ec0f0cbe9958bac294f2b6ed97e69ad134a",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

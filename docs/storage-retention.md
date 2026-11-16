@@ -17,25 +17,25 @@
 
 ## 本轮空间处理证据
 
-本轮复用已完成的[5471 项旧副本校验](../.scratch/cleanup-20261103-small-duplicates/SUMMARY.json)及[只读测试数据库去重记录](../.scratch/cleanup-20261103-testdb/VERIFICATION.json)，没有再次执行旧计划，也没有再次计作新增回收。处理采用 APFS 写时复制，保留原路径、内容和后续独立修改能力。包含 11 份未占用的旧测试数据库，不涉及当前两案。
+本轮复用已完成的5471 项旧副本校验（归档路径 `../.scratch/cleanup-20261103-small-duplicates/SUMMARY.json`）及只读测试数据库去重记录（归档路径 `../.scratch/cleanup-20261103-testdb/VERIFICATION.json`），没有再次执行旧计划，也没有再次计作新增回收。处理采用 APFS 写时复制，保留原路径、内容和后续独立修改能力。包含 11 份未占用的旧测试数据库，不涉及当前两案。
 
-[更早的 368 项整理](../.scratch/cleanup-20261103-followup/SUMMARY.json)和[首轮静态素材整理](../.scratch/cleanup-20261103-static/SUMMARY.json)仍保留。各轮的观测空间差值不能直接相加，也不应按 APFS 文件逻辑大小宣称实际物理释放。
+更早的 368 项整理（归档路径 `../.scratch/cleanup-20261103-followup/SUMMARY.json`）和首轮静态素材整理（归档路径 `../.scratch/cleanup-20261103-static/SUMMARY.json`）仍保留。各轮的观测空间差值不能直接相加，也不应按 APFS 文件逻辑大小宣称实际物理释放。
 
-本次最终检查额外删除 22 个未占用的 Vite 依赖预构建临时缓存文件，约 12.7 MB；当前使用的 `deps` 缓存保留。[清理结果](../.scratch/cleanup-20261103-final-cache/RESULT.json)和[6985 条旧去重路径的重新校验](../.scratch/cleanup-20261103-final-cache/REUSED-CLEANUP-VERIFICATION.json)已保存。用途不明、仍引用、冻结或有效的内容继续保留，没有为凑清理量进行额外删除。当前盘点、保留清单、实际忽略规则验证及前后磁盘读数在 [节点检查点](../status/checkpoints/2026-11-03-navigation.json)。
+本次最终检查额外删除 22 个未占用的 Vite 依赖预构建临时缓存文件，约 12.7 MB；当前使用的 `deps` 缓存保留。清理结果（归档路径 `../.scratch/cleanup-20261103-final-cache/RESULT.json`）和6985 条旧去重路径的重新校验（归档路径 `../.scratch/cleanup-20261103-final-cache/REUSED-CLEANUP-VERIFICATION.json`）已保存。用途不明、仍引用、冻结或有效的内容继续保留，没有为凑清理量进行额外删除。当前盘点、保留清单、实际忽略规则验证及前后磁盘读数在 [节点检查点](../status/checkpoints/2026-11-03-navigation.json)。
 
 ## 后续产生物的规则
 
-2026-11-04 清理了 `/private/tmp/backend-content-v6-budget-fix-20261101/tools/auto-layout/node_modules` 和 `/private/tmp/图表联调修复-20261102/tools/auto-layout/node_modules` 两份旧测试依赖。清理前已与现有 bundled runtime 逐项比较，并检查可见进程占用；测试源码、数据库、原件和回执保留。两次观测的可用空间分别增加约 370 MiB 和 369 MiB，记录见 [第一次](../.scratch/disk-dependency-cleanup-20261104.json)和[第二次](../.scratch/disk-dependency-cleanup-charts-20261104.json)。旧目录如需重新运行须恢复依赖。
+2026-11-04 清理了 `/private/tmp/backend-content-v6-budget-fix-20261101/tools/auto-layout/node_modules` 和 `/private/tmp/图表联调修复-20261102/tools/auto-layout/node_modules` 两份旧测试依赖。清理前已与现有 bundled runtime 逐项比较，并检查可见进程占用；测试源码、数据库、原件和回执保留。两次观测的可用空间分别增加约 370 MiB 和 369 MiB，记录见 第一次（归档路径 `../.scratch/disk-dependency-cleanup-20261104.json`）和第二次（归档路径 `../.scratch/disk-dependency-cleanup-charts-20261104.json`）。旧目录如需重新运行须恢复依赖。
 
-同日随后清理了另外两份旧测试依赖，具体位置与校验见[追加记录](../.scratch/disk-dependency-cleanup-extra-20261104.jsonl)。两次观测分别增加约 369 MiB 和 236 MiB；其间另有系统空间波动，不能计入清理收益。
+同日随后清理了另外两份旧测试依赖，具体位置与校验见追加记录（归档路径 `../.scratch/disk-dependency-cleanup-extra-20261104.jsonl`）。两次观测分别增加约 369 MiB 和 236 MiB；其间另有系统空间波动，不能计入清理收益。
 
-同日又清理了三份无可见占用、与现有依赖匹配的旧前端测试依赖；记录见[紧急清理日志](../.scratch/disk-dependency-cleanup-emergency-20261104.jsonl)。三次观测合计增加约 701 MiB。旧测试源码、案例库、原件与回执保留，重新运行相关旧测试需恢复依赖。
+同日又清理了三份无可见占用、与现有依赖匹配的旧前端测试依赖；记录见紧急清理日志（归档路径 `../.scratch/disk-dependency-cleanup-emergency-20261104.jsonl`）。三次观测合计增加约 701 MiB。旧测试源码、案例库、原件与回执保留，重新运行相关旧测试需恢复依赖。
 
-在同日可用空间跌破 3 GiB 后，另清理六份经内容和占用核验的旧测试依赖。逐项路径和观测回收量见[第二次紧急清理记录](../.scratch/disk-dependency-cleanup-emergency2-20261104.jsonl)，六次观测合计约 2.03 GiB；主案例、原件和回执保留。空间读数同时存在系统波动。
+在同日可用空间跌破 3 GiB 后，另清理六份经内容和占用核验的旧测试依赖。逐项路径和观测回收量见第二次紧急清理记录（归档路径 `../.scratch/disk-dependency-cleanup-emergency2-20261104.jsonl`），六次观测合计约 2.03 GiB；主案例、原件和回执保留。空间读数同时存在系统波动。
 
-随后清理一处无可见占用的 Vite 临时预构建缓存，观测增加约 12.3 MiB，文件哈希与空间读数见[记录](../.scratch/disk-vite-temp-cleanup-20261104.json)。已检查的大型恢复归档及历史原件继续保留。
+随后清理一处无可见占用的 Vite 临时预构建缓存，观测增加约 12.3 MiB，文件哈希与空间读数见记录（归档路径 `../.scratch/disk-vite-temp-cleanup-20261104.json`）。已检查的大型恢复归档及历史原件继续保留。
 
-2026-11-03 本轮重新盘点后，删除 5 组无使用者的旧 Vite 测试缓存，共 133 个文件；399 个新重复回执及素材副本改为 APFS 独立写时复制，原路径与内容保留。按“实物核验”原则再次读回全部副本，并核对 1,246 个源码、规格及评分文件哈希未变。执行前后观测可用空间增加约 331 MiB，未将逻辑重复量当成物理回收量。活跃验收、历史数据库、原始评分和恢复归档保持原位，未删除完整项目或 Git 对象。详见[本轮清理记录](../.scratch/space-cleanup-20261103-current-review/README.md)。本轮没有重放早前清理计划。
+2026-11-03 本轮重新盘点后，删除 5 组无使用者的旧 Vite 测试缓存，共 133 个文件；399 个新重复回执及素材副本改为 APFS 独立写时复制，原路径与内容保留。按“实物核验”原则再次读回全部副本，并核对 1,246 个源码、规格及评分文件哈希未变。执行前后观测可用空间增加约 331 MiB，未将逻辑重复量当成物理回收量。活跃验收、历史数据库、原始评分和恢复归档保持原位，未删除完整项目或 Git 对象。详见本轮清理记录（归档路径 `../.scratch/space-cleanup-20261103-current-review/README.md`）。本轮没有重放早前清理计划。
 
 - 活跃任务结束后，先保留运行摘要、原回执、失败和独立审查，再判断可再生成副本；大日志轮转必须保留原版本引用。
 - 不直接重跑旧清理脚本或旧候选清单。每次重新核对用途、引用、打开文件和源身份，归档后先验证恢复。

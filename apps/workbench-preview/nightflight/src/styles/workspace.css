@@ -244,3 +244,12 @@ button.task:hover { background: linear-gradient(180deg, #fff 0%, #ebeae7 100%); 
 .attach-library { position: fixed; inset: 0; z-index: 100; background: var(--paper); }
 .lib-panes { margin-top: 24px; }
 .thumb.is-tall img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: contain; border: 1px solid var(--ink); border-radius: 2px; background: var(--paper-2); }
+
+.adoption-fields { display: grid; gap: 12px; }
+.adoption-fields label, .revision-field { display: grid; gap: 4px; font: 600 13px/1.5 var(--sans); }
+.adoption-fields input, .adoption-fields select, .revision-field select {
+  width: 100%; min-width: 0; padding: 7px 9px; color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line-soft); border-radius: 3px; font: 400 14px/1.5 var(--sans);
+}
+.adoption-fields .btn { justify-self: start; }
+.composer > .revision-field { margin: 0 16px 8px 20px; }

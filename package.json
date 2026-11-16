@@ -15,10 +15,10 @@
     "test:core": "node --test tools/workbench/store-codec.test.mjs tools/workbench/store-opened-file.test.mjs tools/workbench/case-identity.test.mjs tools/workbench/schema-enum-partition.test.mjs tools/local-acceptance/client-flow.test.mjs tools/local-acceptance/browser-pending.test.mjs tools/local-acceptance/reference-input-controller.test.mjs tools/auto-layout/native-charts/chart-data.test.mjs",
     "test:backend:legacy": "npm run test:domain",
     "build": "npm --prefix apps/workbench-preview run build",
-    "check": "npm run check:specs && npm run check:repository && npm run typecheck && npm run test:frontend && npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:simple-copy && npm run test:image-scope && npm run test:visual-workflow && npm run test:prelayout && npm run test:dependency && npm run build",
+    "check": "npm run check:specs && npm run check:repository && npm run typecheck && npm run test:frontend && npm run test:core && npm run test:domain && npm run test:brief-http && npm run test:research-contract && npm run test:research-acquisition && npm run test:simple-strategy && npm run test:simple-copy && npm run test:image-scope && npm run test:visual-workflow && npm run test:prelayout && npm run test:dependency && npm run build && npm run test:nightflight && npm run test:portal",
     "test:domain": "node --test tools/workbench/project.test.mjs",
     "test:dependency": "node scripts/check-pptx-dependency.mjs",
-    "dev:brief": "node tools/workbench/brief-server.mjs --db .data/brief-workbench.sqlite --port 4182 --origin http://127.0.0.1:4420",
+    "dev:brief": "node tools/workbench/brief-server.mjs --db .data/brief-workbench.sqlite --port 4182 --origin http://127.0.0.1:4421",
     "dev:http": "node scripts/dev-http.mjs",
     "test:brief-http": "node --test tools/workbench/brief-server.test.mjs tools/workbench/brief-intake-service.test.mjs tools/workbench/brief-original-http.test.mjs tools/workbench/brief-extraction-http.test.mjs tools/workbench/intake-python-environment.test.mjs",
     "test:research-contract": "node --test tools/workbench/seven-stage-workflow.test.mjs tools/workbench/research-method.test.mjs tools/workbench/research-service.test.mjs tools/workbench/research-reader-loop.test.mjs tools/workbench/research-reader-state.test.mjs tools/workbench/research-reader-service.test.mjs tools/workbench/research-reader-http.test.mjs tools/workbench/reader-correction.test.mjs tools/workbench/reader-handoff.test.mjs tools/workbench/reader-queued-recovery.test.mjs tools/workbench/reader-acquired-history.test.mjs",
@@ -30,6 +30,11 @@
     "test:visual-workflow": "node --test --test-concurrency=1 tools/workbench/visual-a-http.test.mjs tools/workbench/visual-a-bridge-http.test.mjs tools/workbench/visual-a-unknown.test.mjs tools/workbench/visual-a-replay.test.mjs tools/workbench/visual-a-claim.test.mjs tools/workbench/brief-visual-requirements.test.mjs tools/workbench/visual-b-admission.test.mjs tools/workbench/visual-b-boundary.test.mjs tools/workbench/visual-b-claim.test.mjs tools/workbench/visual-b-http.test.mjs tools/workbench/visual-b-plan.test.mjs tools/workbench/visual-b-revision.test.mjs tools/workbench/visual-a-storage.test.mjs tools/workbench/sketch-native-reader.test.mjs tools/workbench/sketch-read-graph.test.mjs tools/workbench/sketch-cold-http.test.mjs tools/workbench/final-visual-original.test.mjs",
     "test:prelayout": "node --test --test-concurrency=1 tools/workbench/prelayout-tests/contract.test.mjs tools/workbench/prelayout-tests/domain.test.mjs tools/workbench/prelayout-tests/fd.test.mjs tools/workbench/prelayout-tests/http-original.test.mjs tools/workbench/prelayout-tests/mapper.test.mjs tools/workbench/prelayout-tests/qualified-mapper.test.mjs",
     "dev:classic": "npm --prefix apps/workbench-preview run dev -- --host 127.0.0.1 --port 4420 --strictPort",
-    "test:nightflight": "node --test tools/nightflight/*.test.mjs"
+    "test:nightflight": "node --test tools/nightflight/*.test.mjs",
+    "test:portal": "node --test deploy/onepitch/*.test.mjs && python3 deploy/onepitch/export_test.py",
+    "setup:python": "python3 -m venv .scratch/pdf-test-runtime && .scratch/pdf-test-runtime/bin/python -m pip install -r tools/workbench/requirements-pdf.txt",
+    "setup:browser": "apps/workbench-preview/node_modules/.bin/playwright install chromium",
+    "build:portal": "npm --prefix apps/workbench-preview run build -- --mode personal",
+    "test:inventory": "node scripts/test-inventory.mjs"
   }
 }

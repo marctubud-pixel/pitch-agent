@@ -1,3 +1,4 @@
+import {invalidOutput} from './call-checkpoints.mjs';
 const roles = ['视觉', '品牌', '用户', '传播'];
 const numeric = { type: 'integer' }, text = { type: 'string' };
 function schema(fields) {
@@ -8,7 +9,7 @@ function schema(fields) {
 }
 
 export async function reviewVisualBatch({call, direction, images, context, sources = [], findComparators, makeBoard}) {
-  if (images.length !== 3 || new Set(images.map(img => img.sha256)).size !== 3) throw Error('同方向需要三张不同的主视觉原图');
+  if (images.length !== 3 || new Set(images.map(img => img.sha256)).size !== 3) throw invalidOutput('同方向需要三张不同的主视觉原图');
   const blindFields = ['first','action','words','alternative'];
   const blindSchema = {type:'object',additionalProperties:false,properties:Object.fromEntries(blindFields.map(k=>[k,text])),required:blindFields};
   const blind = [];
@@ -16,7 +17,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
     const result = await call('只看这张原图。第一眼看到什么？画面里发生什么动作？哪些信息靠读字才知道？还有什么合理的读法？逐项用自己的话回答。',
       [{...image,imageId:'anonymous'}],blindSchema,{rules:[],assignment:'独立读图者',context:'仅本张图片，保留图上文字。'});
     const words = result.parsedOutput;
-    if (!blindFields.every(k=>typeof words?.[k]==='string' && words[k].trim())) throw Error('匿名盲读原话不完整');
+    if (!blindFields.every(k=>typeof words?.[k]==='string' && words[k].trim())) throw invalidOutput('匿名盲读原话不完整');
     blind.push({sha256:image.sha256,thread:result.threadId,...words});
   }
   const references = [], selectionThreads = [];
@@ -30,7 +31,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
         {rules:[],assignment:'核对同类参考',context:context+' 当前方向：'+direction+' 输入图片按序：'+JSON.stringify(group.map(s=>s.name))});
       const result = selection.parsedOutput;
       if (typeof result?.packaging!=='boolean' || (packaging!==undefined && packaging!==result.packaging) || !Array.isArray(result.indices) ||
-        !result.indices.every(i=>Number.isInteger(i)&&i>0&&i<=group.length) || new Set(result.indices).size!==result.indices.length) throw Error('同类参考指向无效');
+        !result.indices.every(i=>Number.isInteger(i)&&i>0&&i<=group.length) || new Set(result.indices).size!==result.indices.length) throw invalidOutput('同类参考指向无效');
       packaging=result.packaging;
       selectionThreads.push(selection.threadId);
       for (const i of result.indices) {
@@ -51,7 +52,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
     const result = await call(instruction, packet, schema(fields), {rules, assignment, comparison:!!board, context: context + '\n本批方向：' + direction + extra});
     const rows = result.parsedOutput?.items;
     if (rows?.length !== 3 || ![1,2,3].every(n => rows.some(row => row.candidate === n && row.reason?.trim()))) {
-      throw Error('主视觉评审未逐张交回三份可核对意见');
+      throw invalidOutput('主视觉评审未逐张交回三份可核对意见');
     }
     return {thread: result.threadId, items: rows};
   }
@@ -59,7 +60,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
   const duties = packaging ? {用户:'卖点动作、误读、哪些只能靠读字',传播:'同类并排辨识度及能否认回品牌',品牌:'品牌、品类、水源等产品信息主次，提案方向名不可自动印上包装',视觉:'逐对核对原创转译、成套相似性与小尺寸完成度'} : {用户:'目标受众理解与可行性',传播:'传播场景、记忆及差异',品牌:'品牌匹配和主题表达',视觉:'美术、构图与视觉层级'};
   for (const role of roles) {
     const report = await read(role+'独立评分岗', '对每张图给一个 1–5 整数整体分，按本岗责任：'+duties[role]+'。同分也要说明差异，写可定位的依据。', {score:numeric},role==='用户'?JSON.stringify(blind):'');
-    if (!report.items.every(row => Number.isInteger(row.score) && row.score >= 1 && row.score <= 5)) throw Error('主视觉原票分数无效');
+    if (!report.items.every(row => Number.isInteger(row.score) && row.score >= 1 && row.score <= 5)) throw invalidOutput('主视觉原票分数无效');
     votes.push({role,...report});
   }
   for (const role of roles) {
@@ -70,7 +71,7 @@ export async function reviewVisualBatch({call, direction, images, context, sourc
   }
   const ruling = await read('独立视觉总监', '逐图裁定原票及对抗意见。仍有成立硬伤或关键未知时 blocked 为 true；reason 写取舍理由、保留处和具体修改建议。为三张图给互不重复的优先次序 priority（1 最优），只用于合格同分时决胜。不得改分。edit 写具体部位与改法；research 写需补的实景、来源或产品资料。没有待办填无。素材不足须说明。',
     {blocked:{type:'boolean'},priority:numeric,edit:text,research:text}, JSON.stringify({votes,challenges,blind}));
-  if (!ruling.items.every(row=>typeof row.blocked==='boolean' && row.edit?.trim() && row.research?.trim()) || ![1,2,3].every(n=>ruling.items.some(row=>row.priority===n))) throw Error('主视觉总监裁定不完整');
+  if (!ruling.items.every(row=>typeof row.blocked==='boolean' && row.edit?.trim() && row.research?.trim()) || ![1,2,3].every(n=>ruling.items.some(row=>row.priority===n))) throw invalidOutput('主视觉总监裁定不完整');
   const candidates = ruling.items.map(row => {
     const scores = votes.map(v=>({role:v.role,...v.items.find(i=>i.candidate===row.candidate)}));
     return {...row,blocked:row.blocked || missing,research:missing?'补充同类包装正面原图。'+(row.research==='无'?'':row.research):row.research,blind:blind[row.candidate-1],scores,mean:scores.reduce((sum,v)=>sum+v.score,0)/roles.length};

@@ -101,11 +101,12 @@ test('a personal run waits for direction and current image adoption, saves user 
       return {artifacts};
     }
     if(stage==='layout') assert.deepEqual((await import('node:fs/promises').then(fs=>fs.readdir(dir))).filter(n=>n.endsWith('.png')),['稿2.png']);
+    if (stage==='layout') await writeFile(join(dir,'page-0001.jpg'),'fixture-page');
     await writeFile(join(dir, name), body);
     return {
       research,
       researchReturn,
-      artifacts: [{ kind, name, ...(stage === 'copy' ? { text: body } : {}) }],
+      artifacts: [{ kind, name, ...(stage === 'copy' ? { text: body } : {}) }, ...(stage==='layout' ? [{kind:'image',name:'page-0001.jpg',renderPage:1}] : [])],
       copyReview: stage === 'copy' ? {
         version: 3, protocol: 'dual-panel-headline-v4', status: 'ready',
         adjudication: { ready: true, set: { ready: true },
@@ -117,6 +118,7 @@ test('a personal run waits for direction and current image adoption, saves user 
         ...Object.fromEntries(['anonymousReads','firstVotes','criticReads','challenges','finalVotes']
           .map(field => [field, ['copy','brand','user','comms'].map(role => ({role}))])),
       } : undefined,
+      finalReview: stage === 'final' ? {outcome:'pass',returnStage:'',reason:'核查完成',pages:[1]} : undefined,
       directions: stage === 'copy' ? ['A', 'B', 'C'] : undefined,
     };
   }
@@ -148,6 +150,9 @@ test('a personal run waits for direction and current image adoption, saves user 
   assert.equal((await request(base, input)).status, 201);
   assert.equal((await request(base, input)).status, 201);
   assert.equal((await request(base, { ...input, outlineOptions: {} })).status, 409);
+  const briefCheck = await wait('waiting');
+  assert.equal(briefCheck.stage, 'brief');
+  await action({kind:'confirm_brief',expectedRevision:briefCheck.revision});
   const pending = await wait('waiting');
   assert.equal(pending.stage, 'research');
   assert.equal(pending.research.ready, false);
@@ -188,7 +193,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice', attachments: [file('逐页材料.md', '指定版次')] };
   assert.equal((await action(adoption)).status, 200);
   const finished = await wait('done');
-  assert.equal(finished.artifacts.length, 11);
+  assert.equal(finished.artifacts.length, 12);
   assert.equal(finished.visualAdoption.artifacts.length,1);
   assert.equal(finished.artifacts.find(a=>a.visual?.role==='reference').visual.query,'茶饮包装');
   assert.equal((await action(adoption)).status, 200);
@@ -258,7 +263,9 @@ for (const mode of ['auto', 'collab']) {
     let project;
     for (let i = 0; i < 200; i++) {
       project = (await localRequest(service, path + '/short-brief')).data.project;
-      if (project.status !== 'running') break;
+      if (mode==='collab' && project.stage==='brief' && project.status==='waiting') {
+        await localRequest(service,path+'/short-brief/action',{kind:'confirm_brief',expectedRevision:project.revision});
+      } else if (project.status !== 'running') break;
       await new Promise((r) => setTimeout(r, 10));
     }
     assert.equal(project.stage, 'research');
@@ -317,4 +324,157 @@ test('editor failure retains accepted research and retry resumes strategy from t
   assert.deepEqual(handedOff.artifacts,waiting.artifacts);
   assert.equal(searches,1);
   assert.equal(edits,2);
+});
+
+async function legacyService(t, state, runner) {
+  const {DatabaseSync}=await import('node:sqlite');
+  const {mkdir}=await import('node:fs/promises');
+  const root=await mkdtemp(join(tmpdir(),'nightflight-legacy-'));
+  await mkdir(join(root,'example','files'),{recursive:true});
+  const database=join(root,'nightflight.sqlite');
+  const db=new DatabaseSync(database);
+  db.exec('CREATE TABLE projects(id TEXT PRIMARY KEY,revision INTEGER,state TEXT)');
+  const project={id:'example',inputHash:'legacy',revision:1,stage:'copy',status:'waiting',mode:'collab',
+    updatedAt:new Date().toISOString(),commands:{},brief:'简报',title:'测试',claim:null,owner:null,choice:null,
+    directions:[],artifacts:[],attachments:[],versions:[],events:[],feedback:[],...state};
+  if (state.artifacts===undefined && ['copy','final'].includes(project.stage)) {
+    const text='原有的一页策略';
+    const name='上次策略.md';
+    await writeFile(join(root,'example','files','strategy.md'),text+'\n');
+    project.artifacts.push({stage:'strategy',kind:'text',name,text,storageKey:'strategy.md'});
+  }
+  db.prepare('INSERT INTO projects VALUES(?,?,?)').run(project.id,project.revision,JSON.stringify(project));
+  db.close();
+  const service=createNightflight({root,runStage:runner,runLayout:runner});
+  t.after(async()=>{service.close();await rm(root,{force:true,recursive:true});});
+  const path='/api/projects/example';
+  const read=async()=>(await localRequest(service,path)).data.project;
+  return {root,database,read,action:data=>localRequest(service,path+'/action',data),
+    async settled() {
+      for(let n=0;n<200;n++) {
+        const p=await read();
+        if (p.status!=='running') return p;
+        await new Promise(r=>setTimeout(r,5));
+      }
+      throw Error('阶段未停到检查点');
+    }};
+}
+
+test('copy feedback archives only the current edition, refusing in-flight edits and invalid text',async t=>{
+  const seen=[];
+  let proceed;
+  const barrier=new Promise(resolve=>{proceed=resolve;});
+  const old={at:'2025-01-01',stage:'copy',text:'上次旧意见'};
+  const project=await legacyService(t,{feedback:[old,{...old,stage:'strategy'}]},async args=>{
+    seen.push(args); await barrier; throw Error('测试止于新一版文案输入');
+  });
+  assert.equal((await project.action({kind:'message',text:42})).status,400);
+  assert.equal((await project.action({kind:'message',text:'本轮仅改主标题'})).status,200);
+  assert.equal((await project.action({kind:'message',text:'中途输入'})).status,409);
+  proceed();
+  const state=await project.settled();
+  assert.equal(state.versions.length,1);
+  assert.equal(seen[0].stage,'copy');
+  assert.deepEqual(seen[0].project.feedback.map(f=>f.text),['本轮仅改主标题']);
+  assert.equal(state.feedback.some(f=>f.text==='中途输入'),false);
+  const first=seen[0];
+  await project.action({kind:'retry'}); await project.settled();
+  assert.equal(seen[1].checkpointDir,first.checkpointDir);
+  assert.notEqual(seen[1].dir,first.dir);
+  const {readdir}=await import('node:fs/promises');
+  assert.equal((await readdir(join(project.root,'example'))).filter(s=>s.startsWith('attempt-')).length,1);
+});
+
+for (const targetStage of [undefined,'copy']) test('finished edits start at '+(targetStage || 'layout')+' and preserve upstream records',async t=>{
+  let ran;
+  const project=await legacyService(t,{status:'done',stage:'final',choice:'A'},async({stage})=>{ran=stage;throw Error('只验证修改起点');});
+  await project.action({kind:'message',text:'第1页改字',targetStage});
+  const state=await project.settled();
+  assert.equal(ran,targetStage || 'layout');
+  assert.equal(state.choice,targetStage==='copy' ? null : 'A');
+  assert.equal(state.versions[0].choice,'A');
+});
+
+test('human adopts a non-recommended candidate with an explicit reason, or revises at most three times',async t=>{
+  const candidates=[1,2].map((n)=>({stage:'visual',kind:'image',storageKey:'candidate-'+n,name:n+'.png',visual:{role:'main',candidate:n,direction:'A',recommended:false}}));
+  const project=await legacyService(t,{stage:'visual',choice:'A',directions:['A'],visualRevisions:3,artifacts:candidates},async()=>{throw Error('停止');});
+  assert.equal((await project.action({kind:'message',text:'第四次修改'})).status,409);
+  const selection={kind:'adopt',expectedRevision:1,candidateIds:['candidate-2']};
+  assert.equal((await project.action({...selection,candidateIds:['other']})).status,409);
+  assert.equal((await project.action(selection)).status,400);
+  const choice=await project.action({...selection,overrideReason:'第二稿让品牌更醒目'});
+  assert.deepEqual(choice.data.project.visualAdoption.artifacts,['candidate-2']);
+  assert.equal(choice.data.project.visualAdoption.overrideReason,'第二稿让品牌更醒目');
+  await project.settled();
+});
+
+test('recovery ignores a reused PID, excludes another server and migrates legacy artifact text and events', async t=>{
+  const {DatabaseSync}=await import('node:sqlite');
+  const before={stage:'brief',at:'2025-01-01',text:'原来的事件'};
+  const file={stage:'brief',name:'任务卡.md',kind:'text',storageKey:'stored.md',text:'之前版本的正文'};
+  const p=await legacyService(t,{stage:'brief',status:'running',owner:process.ppid,claim:'old',
+    events:[before],artifacts:[file],versions:[{stage:'brief',at:before.at,artifacts:[file]}]},async()=>{});
+  const current=await p.read();
+  assert.equal(current.status,'failed');
+  assert.equal(current.events[0].text,before.text);
+  assert.equal(current.versions[0].artifacts[0].text,file.text);
+  assert.throws(()=>createNightflight({root:p.root}),/已有运行中的/);
+  const db=new DatabaseSync(p.database,{readOnly:true});
+  try {
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM artifact_texts').get().n,1);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM project_events').get().n,2);
+    assert.ok(!db.prepare('SELECT state FROM projects').get().state.includes(file.text));
+  } finally {db.close();}
+});
+
+test('final review returns to the named stage and waits for a person; completed attempts are removed',async t=>{
+  const {readdir}=await import('node:fs/promises');
+  const calls=[];
+  const project=await legacyService(t,{status:'failed',stage:'final'},async({stage,dir})=>{
+    calls.push(stage);
+    await writeFile(join(dir,'终审.md'),'缺排版实图');
+    return {artifacts:[{kind:'text',name:'终审.md',text:'缺排版实图'}],
+      finalReview:{outcome:'return',returnStage:'layout',reason:'请按原版补齐排版实图',pages:[]}};
+  });
+  await project.action({kind:'retry'});
+  const state=await project.settled();
+  assert.equal(state.status,'waiting');
+  assert.equal(state.stage,'layout');
+  assert.equal(state.finalReturn.returnStage,'layout');
+  assert.equal(state.versions[0].artifacts.at(-1).text,'缺排版实图');
+  assert.deepEqual(calls,['final']);
+  assert.ok(!(await readdir(join(project.root,'example'))).some(s=>s.startsWith('attempt-')));
+});
+
+test('one strategy return archives one edition and keeps structured research gaps',async t=>{
+  const gap={kind:'coverage',chapter:'人群与接触情境',message:'缺人群公开材料',findingRef:''};
+  const p=await legacyService(t,{status:'failed',stage:'strategy',research:{ready:false,findings:[],gaps:[gap]}},async ({stage,dir,project})=>{
+    if (stage==='research') {
+      assert.deepEqual(project.previousResearch.gaps,[gap]);
+      throw Error('检查定向补查已收到');
+    }
+    await writeFile(join(dir,'待补依据.md'),'请补用户资料');
+    return {researchReturn:'请补用户资料',artifacts:[{kind:'text',name:'待补依据.md',text:'请补用户资料'}]};
+  });
+  await p.action({kind:'retry'});
+  const state=await p.settled();
+  assert.equal(state.versions.length,1);
+  assert.equal(state.error,'检查定向补查已收到');
+});
+
+test('legacy one-page strategy reaches copy with the exact source file hash; changed or missing files block before model calls',async t=>{
+  const seen=[];
+  const p=await legacyService(t,{status:'failed',stage:'copy'},async ({project})=>{
+    seen.push(project);throw Error('文案已收到原稿');
+  });
+  await p.action({kind:'retry'});await p.settled();
+  const sha256=createHash('sha256').update('原有的一页策略\n').digest('hex');
+  assert.deepEqual(seen[0].strategyHandoff,[{name:'上次策略.md',sha256}]);
+  await writeFile(join(p.root,'example','files','strategy.md'),'被更换的一页策略');
+  await p.action({kind:'retry'});
+  assert.match((await p.settled()).error,/策略副本与本项目存档不一致/);
+  assert.equal(seen.length,1);
+  const missing=await legacyService(t,{status:'failed',stage:'copy',artifacts:[]},()=>assert.fail('不应调用文案'));
+  await missing.action({kind:'retry'});
+  assert.match((await missing.settled()).error,/未找到本项目当前策略稿/);
 });

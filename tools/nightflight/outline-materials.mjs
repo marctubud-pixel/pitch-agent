@@ -1,6 +1,6 @@
 import { basename, dirname, join } from 'node:path';
 import { readFile, realpath } from 'node:fs/promises';
-import { rowOf, sectionsOf } from '../../apps/workbench-preview/nightflight/src/components/stageText.ts';
+import { rowOf, sectionsOf } from '../../shared/stage-text.mts';
 
 export const materialSheetName = '逐页材料.md';
 

@@ -1,3 +1,4 @@
+import {checkDependencies} from './runtime-dependencies.mjs';
 import http from 'node:http';
 import { homedir } from 'node:os';
 import { createReadStream, existsSync, statSync, readFileSync } from 'node:fs';
@@ -12,6 +13,11 @@ const dist = fileURLToPath(new URL('../../apps/workbench-preview/dist/', import.
 const dataHome = process.platform === 'darwin' ? 'Library/Application Support' : '.local/share';
 const root = resolve(process.env.NIGHTFLIGHT_DATA || resolve(homedir(), dataHome, 'PitchAgent/nightflight'));
 const mime = {
+  '.mjs': 'application/javascript',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon',
+  '.map': 'application/json',
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css',
   '.js': 'text/javascript',
@@ -59,6 +65,7 @@ const server = http.createServer(async (req, res) => {
     res.end();
   }
 });
+for (const warning of await checkDependencies()) console.warn(warning);
 const port = Number(process.env.NIGHTFLIGHT_PORT || 4420);
 server.listen(port, '127.0.0.1', () => {
   service = createNightflight({ root, runStage, runLayout });

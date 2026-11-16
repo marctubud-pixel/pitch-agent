@@ -8,13 +8,13 @@ export function reviewedFindings(findings, accepted, labels) {
   const selected = new Set(accepted);
   const classified = new Map();
   for (const label of labels) {
-    const index = label.findingIndex;
+    const index = label?.findingIndex;
     const finding = findings[index];
     if (!selected.has(index) || !Number.isInteger(index) || !finding || classified.has(index))
-      throw Error('研究复核的观察对象未绑定本版有效发现');
-    if (!researchAngles[label.chapter]?.includes(label.angle)) throw Error('研究复核角度与栏目不符');
-    if (finding.images?.length && label.chapter !== '竞争与同类传播') throw Error('竞品图组只能支持实物或传播案例观察');
-    if (!finding.url && finding.chapter==='产品与品牌') throw Error('本案产品条件不能列作外部研究');
+      continue;
+    if (!researchAngles[label.chapter]?.includes(label.angle)) continue;
+    if (finding.images?.length && label.chapter !== '竞争与同类传播') continue;
+    if (!finding.url && finding.chapter==='产品与品牌') continue;
     classified.set(index,{chapter:label.chapter,editorialAngle:label.angle});
   }
   return findings.flatMap((finding,index)=>{
@@ -41,8 +41,12 @@ const schema = {type:'object',additionalProperties:false,required:['digest','str
 
 function numbers(text) {
   const normalized = text.normalize('NFKC').toLowerCase()
+    .replace(/([一二两三四五六七八九十零半\d])成([一二三四五六七八九半\d])?/gu, (_, head, tail) => {
+      const digit = ch => ch === '半' ? 0.5 : ch === '十' ? 10 : ch === '两' ? 2 : /\d/.test(ch) ? Number(ch) : '零一二三四五六七八九'.indexOf(ch);
+      return String(digit(head)*10 + (tail === '半' ? 5 : tail ? digit(tail) : 0))+'%';
+    })
     .replace(/((?:19|20)\d{2})(?=\s*(?:和|、|至|到|—|–|-)\s*(?:19|20)\d{2}年)/gu,'$1年');
-  return [...normalized.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?\s*(?:%|‰|亿|万|毫升|ml|升|公斤|千克|克|元|年|人|家|倍)?/g)]
+  return [...normalized.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?\s*(?:%|‰|亿|万|毫升|ml|升|公斤|千克|克|元|年|人|家|倍|种|款|次|份|个|件|天|周|月|小时|分钟|点|岁|瓶|盒|吨|户|杯|个百分点)/g)]
     .map(([value])=>value.replace(/[,\s]/g,'').replace('毫升','ml').replace(/^[\d.]+/,n=>String(Number(n))));
 }
 

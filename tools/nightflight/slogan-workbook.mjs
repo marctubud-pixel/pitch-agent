@@ -1,3 +1,4 @@
+import {invalidOutput,independentCalls} from './call-checkpoints.mjs';
 // The author keeps the working papers. Blind readers only receive the lines.
 import { createHash } from 'node:crypto';
 
@@ -9,7 +10,7 @@ const plans=obj({directions:list(obj({id:str,coordinates:str,motive:str,connecti
 const reading=obj({items:list(obj({text:str,observation:str,usable:{type:'boolean'}}))});
 const family=obj({directions:list(obj({id:str,original:str,killed:list(obj({text:str,reason:str})),
   versions:list(obj({text:str,use:str,tradeoff:str})),sound:str,backup:str,edits:str,extensions:str,risks:str}))});
-function insist(ok,message){if(!ok)throw Error(message)}
+function insist(ok,message){if(!ok)throw invalidOutput(message)}
 function same(actual,expected) {
   return actual.length===expected.length && new Set(actual).size===actual.length && expected.every(text=>actual.includes(text));
 }
@@ -18,12 +19,14 @@ function passesBoth(text,reads) {
 }
 export async function blindSlogans(run,lines) {
   insist(new Set(lines).size===lines.length,'候选或版本间存在重复主标题');
-  const results=await Promise.all([
+  return independentCalls([
     '逐句以自己的话复述，核对朗读、推理步数、现实、视角、时效、替换三个无关品类、撞车及场合。没有比对材料的撞车注明待核。usable 表示能独立读懂。',
     '逐句回答是否愿意转述、经过时会否多看一眼，给具体理由。usable 表示有值得留意或转述的理由。'
-  ].map((question,i)=>run(i?'SLOGAN_APPEAL':'SLOGAN_READING',question+' 每条原文 text 准确抄回，仅据句子。',reading,{lines})));
-  for(const r of results)insist(same(r.output.items.map(i=>i.text),lines),'独立盲读漏句或改动原文');
-  return results;
+  ],async(question,i)=>{
+    const result=await run(i?'SLOGAN_APPEAL':'SLOGAN_READING',question+' 每条原文 text 准确抄回，仅据句子。',reading,{lines});
+    insist(same(result.output.items.map(i=>i.text),lines),'独立盲读漏句或改动原文');
+    return result;
+  });
 }
 
 export async function buildSloganWorkbook(run, source) {

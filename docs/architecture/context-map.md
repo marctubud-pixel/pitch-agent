@@ -5,10 +5,10 @@
 | 信息类型 | 当前保存位置 | 使用与纠正方式 |
 | --- | --- | --- |
 | 开发约定及长期业务决定 | [AGENTS](../../AGENTS.md)、[开发说明](../../多线调研工作台_开发说明_v0.3.md)、[workflows](../workflows/) | 已确认决定沿用；新决定更新原规范，旧讨论保留来源和时间 |
-| 用户偏好与历史审美校准 | [evaluation 规则](../evaluation/)、[历史评分报告](../../output/evaluation/)及各项目人工记录 | 仅适用已确认范围；本轮未同步或重评 Eagle；不能升格为市场事实 |
+| 用户偏好与历史审美校准 | [evaluation 规则](../evaluation/)、历史评分报告（归档路径 `../../output/evaluation/`）及各项目人工记录 | 仅适用已确认范围；本轮未同步或重评 Eagle；不能升格为市场事实 |
 | 项目与任务状态 | [store](../../tools/workbench/store.mjs) 的任务卡、修订、head、jobs、attempts、评审、决定、audit | 由原生命令和版本控制更新；上游变更触发下游失效，历史不覆盖 |
-| 单次执行和恢复上下文 | 实际 executionRoot、运行 metadata、锁及回执；[当前索引](../../.scratch/end-to-end-local-20261102/ACTIVE-RUNS.json) | 当前 PID 或句柄必须重新观察；状态文件本身不证明任务活跃；未知结果先对账 |
-| 经验证经验和局限 | 单次测试、失败及独立审查原件；[当前检查点](../../.scratch/end-to-end-local-20261102/CHECKPOINT.md) | 按实际验证范围引用，不把单元测试扩成整体验收 |
+| 单次执行和恢复上下文 | 实际 executionRoot、运行 metadata、锁及回执；当前索引（归档路径 `../../.scratch/end-to-end-local-20261102/ACTIVE-RUNS.json`） | 当前 PID 或句柄必须重新观察；状态文件本身不证明任务活跃；未知结果先对账 |
+| 经验证经验和局限 | 单次测试、失败及独立审查原件；当前检查点（归档路径 `../../.scratch/end-to-end-local-20261102/CHECKPOINT.md`） | 按实际验证范围引用，不把单元测试扩成整体验收 |
 
 ## 按任务读取上下文
 

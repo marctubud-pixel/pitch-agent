@@ -3,6 +3,8 @@ set -eu
 source_dir=$(cd "$(dirname "$0")" && pwd)
 repo=${1:?请提供含有已构建工作台的仓库目录}
 app=${2:?请提供新的 .app 输出路径}
+profile=${3:-desktop}
+case "$profile" in desktop|review) ;; *) echo "数据配置只能是 desktop 或 review" >&2; exit 1 ;; esac
 test ! -e "$app"
 test -f "$repo/apps/workbench-preview/dist/nightflight/index.html"
 contents="$app/Contents"
@@ -21,8 +23,15 @@ cat > "$contents/Info.plist" <<'PLIST'
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>
 PLIST
+if test "$profile" = review; then
+  /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier cn.onepitch.desktop.review" "$contents/Info.plist"
+fi
+if test -n "${NIGHTFLIGHT_PYTHON:-}"; then
+  test -x "$NIGHTFLIGHT_PYTHON"
+  /usr/bin/plutil -insert NightflightPython -string "$NIGHTFLIGHT_PYTHON" "$contents/Info.plist"
+fi
 cp "$source_dir/OnePitch.icns" "$contents/Resources/"
-for item in tools docs skills scripts package.json; do cp -Rc "$repo/$item" "$runtime/"; done
+for item in tools docs skills scripts shared package.json; do cp -Rc "$repo/$item" "$runtime/"; done
 cp -Rc "$repo/apps/workbench-preview/." "$runtime/apps/workbench-preview/"
 # Include the dependency trees when building from a checkout sharing its node_modules.
 for folder in apps/workbench-preview/node_modules tools/workbench/node_modules; do

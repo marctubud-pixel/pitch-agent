@@ -17,7 +17,8 @@ test('exports the fixture body as editable native text, keeps original PNG bytes
     const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=', 'base64');
     await writeFile(join(dir, 'research.md'), text);
     await writeFile(join(dir, 'kv.png'), png);
-    const { artifacts, pages } = await runLayout({ dir, project: {
+    const { artifacts, pages, layoutChanges } = await runLayout({ dir, project: {
+      feedback:[{stage:'layout',text:'第 1 页，把『独立简报』改为『新简报』'}],
       title, brief: '独立简报', directions: ['原野', '飞鸟', '星空'], choice: '星空',
       artifacts: [{ stage: 'research', kind: 'text', name: 'research.md' }, { stage: 'visual', kind: 'image', name: 'kv.png' }],
     } });
@@ -35,7 +36,8 @@ test('exports the fixture body as editable native text, keeps original PNG bytes
     assert.equal(slides.length, pages);
     assert.ok(pages > 3);
     const words = slides.map(k => [...strFromU8(files[k]).matchAll(/<a:t>([^<]*)<\/a:t>/gu)].map(m => m[1]).join('')).join('');
-    assert.ok(words.includes('独立简报'));
+    assert.ok(words.includes('新简报'));
+    assert.equal(layoutChanges[0].from,'独立简报');
     assert.ok(words.includes('尾端标记'));
     assert.ok(words.includes('采用方向：星空'));
     assert.ok(Object.entries(files).some(([k, bytes]) => k.startsWith('ppt/media/') && Buffer.from(bytes).equals(png)));
@@ -94,6 +96,10 @@ for (const [kind, mode] of [['packaging', 'auto'], ['kv', 'collab']]) {
       const files = unzipSync(await readFile(join(dir, name('.pptx'))));
       const slides = Object.keys(files).filter(k => /^ppt\/slides\/slide\d+\.xml$/u.test(k));
       assert.equal(slides.length, deck.pages.length);
+      const renders = result.artifacts.filter(a=>a.kind==='image' && /^page-\d+-/.test(a.name));
+      assert.equal(renders.length, slides.length);
+      assert.deepEqual(renders.map(a=>a.renderPage), slides.map((_,i)=>i+1));
+      assert.ok((await readFile(join(dir, renders[0].name))).subarray(0,2).equals(Buffer.from([255,216])));
       const slideWords = n => [...strFromU8(files['ppt/slides/slide' + n + '.xml']).matchAll(/<a:t>([^<]*)<\/a:t>/gu)].map(m => m[1]).join('');
       const words = deck.pages.map((p, i) => slideWords(i + 1)).join('');
       assert.ok(words.includes('简报末尾的限制条件'));

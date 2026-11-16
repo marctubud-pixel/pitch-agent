@@ -1,3 +1,4 @@
+import {invalidOutput} from './call-checkpoints.mjs';
 import {blindSlogans,buildSloganWorkbook,checkSloganChoices,fullSloganHash} from './slogan-workbook.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
@@ -56,7 +57,7 @@ const adjudicateSchema = object({
 });
 const hash = text => createHash('sha256').update(text).digest('hex');
 const digest = object => hash(JSON.stringify(object));
-function requireThat(ok, message) { if (!ok) throw Error(message); }
+function requireThat(ok, message) { if (!ok) throw invalidOutput(message); }
 function nonempty(text) { return typeof text === 'string' && !!text.trim(); }
 function exactly(values, expected) {
   return values.length === expected.length && expected.every(value=>values.includes(value));
@@ -394,7 +395,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       }
 
       const reasons=failures.map(f=>f.reason).join('；');
-      requireThat(round<maxFollowups,'文案达到本次打磨上限：'+reasons);
+      if (round>=maxFollowups) throw Error('文案达到本次打磨上限：'+reasons);
       const baseHash=digest(draft);
       const priorVotes=attempt.finalVotes;
       const history={round:round+1,baseHash,draft,anonymousReads:attempt.finalAnonymousReads,votes:priorVotes,
@@ -414,7 +415,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         const d=draft.directions.find(d=>d.id===action.directionId);
         requireThat(failure.eligible.includes(d.id) && d.main.includes(action.evidence),
           '打磨裁定与退回方向或原文不符');
-        requireThat(action.action!=='pause',failure.reason+'；暂停打磨：'+action.reason);
+        if (action.action==='pause') throw Error(failure.reason+'；暂停打磨：'+action.reason);
         requireThat(!failure.requiredAction || action.action===failure.requiredAction,'打磨动作与本版独立裁定不符：'+failure.reason);
         if (action.action==='recheck' && failure.challengeId) completedRechecks.add(failure.challengeId);
         if (action.action==='revise') targets.add(d.id);

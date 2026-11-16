@@ -41,7 +41,12 @@ final class Desktop: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUI
             var env = ProcessInfo.processInfo.environment
             env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/Applications/Codex.app/Contents/Resources:" + (env["PATH"] ?? "/usr/bin:/bin")
             env["ONEPITCH_TEXT_EXECUTABLE"] = Bundle.main.executablePath
-            env["NIGHTFLIGHT_PORT"] = "0"; env["NIGHTFLIGHT_DATA"] = NSHomeDirectory()+"/Library/Application Support/OnePitch/Desktop/projects"
+            let profile = Bundle.main.bundleIdentifier == "cn.onepitch.desktop.review" ? "Review" : "Desktop"
+            env["NIGHTFLIGHT_PORT"] = "0"
+            env["NIGHTFLIGHT_DATA"] = NSHomeDirectory()+"/Library/Application Support/OnePitch/"+profile+"/projects"
+            if env["NIGHTFLIGHT_PYTHON"] == nil, let python = Bundle.main.object(forInfoDictionaryKey: "NightflightPython") as? String {
+                env["NIGHTFLIGHT_PYTHON"] = python
+            }
             runner.environment = env
             let output = Pipe(); runner.standardOutput = output
             output.fileHandleForReading.readabilityHandler = { [weak self] file in

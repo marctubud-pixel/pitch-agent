@@ -169,7 +169,7 @@ export function App() {
       setBusy(false);
     }
   }
-  async function act(kind: Action, text: string, files?: File[]) {
+  async function act(kind: Action, text: string, files?: File[], options?: Parameters<import('./components/ChatPanel').Act>[3]) {
     if (lock.current || !workspace) return false;
     lock.current = true;
     setBusy(true);
@@ -181,8 +181,9 @@ export function App() {
         kind,
         text,
         attachments,
+        ...options,
         expectedRevision:
-          kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
+          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;

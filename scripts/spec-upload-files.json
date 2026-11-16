@@ -395,6 +395,8 @@
     "docs/specs/final-review.md",
     "docs/specs/handoff.md",
     "docs/specs/method-provenance.json",
+    "docs/specs/nightflight-final-reader.md",
+    "docs/specs/nightflight-runtime.md",
     "docs/specs/nightflight-stage-output.md",
     "docs/specs/registry.json",
     "docs/specs/repository-scope.md",

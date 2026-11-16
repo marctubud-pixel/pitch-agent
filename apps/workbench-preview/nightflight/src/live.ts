@@ -142,7 +142,9 @@ export interface ResearchImage {
   rationaleAttachment?: string;
   takeaway?: string;
 }
+export interface ResearchGap {kind:string;chapter:string;message:string;findingRef:string}
 export interface Project extends Summary {
+  finalReturn?:{returnStage:StageId;reason:string};
   revision: number;
   mode: Mode;
   brief: string;
@@ -151,7 +153,7 @@ export interface Project extends Summary {
   versions?: { at: string; stage: StageId; artifacts: Artifact[]; research?: Project['research'] }[];
   researchFollowup?: boolean;
   research?: {
-    searchScope?: {queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};
+    searchScope?: {replacements?:{from:string;to:string}[];attempts?:{query:string;source:string;count:number}[];unreadable?:{url:string;reason:string}[];queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};
     ready: boolean;
     question?: string;
     digestPending?: boolean;
@@ -163,7 +165,7 @@ export interface Project extends Summary {
       findingIndex: number;
     }[];
     findings: { chapter?:string; conclusion: string; evidence: string; source: string; url: string; implication: string; images?: ResearchImage[] }[];
-    gaps: string[];
+    gaps: (string | ResearchGap)[];
     next: string;
   };
   copyReview?: CopyReview | null;
@@ -173,7 +175,7 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
+export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup'>>;
 export const researchQuestion = (p: ResearchStatus) =>

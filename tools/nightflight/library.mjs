@@ -19,7 +19,12 @@ export async function libraryRequest({db, req, res, parts, send, body, filename,
   db.exec('CREATE TABLE IF NOT EXISTS library_files(id TEXT PRIMARY KEY,name TEXT NOT NULL, bytes BLOB NOT NULL)');
   if (parts.length === 2 && req.method === 'GET') {
     const projects = db.prepare('SELECT state FROM projects ORDER BY json_extract(state,\'$.updatedAt\') DESC').all()
-      .map(row => archiveEntry(JSON.parse(row.state)));
+      .map(row => {
+        const project=JSON.parse(row.state);
+        const card=project.artifacts.findLast(a=>a.stage==='brief' && (a.text || a.textHash));
+        if (card?.textHash) card.text=db.prepare('SELECT text FROM artifact_texts WHERE hash=?').get(card.textHash)?.text;
+        return archiveEntry(project);
+      });
     const files = db.prepare('SELECT id,name FROM library_files ORDER BY rowid DESC').all()
       .map(f => ({ name:f.name, url:'/api/library/' + f.id }));
     return send(200,{projects,files});

@@ -1,6 +1,6 @@
 # 提案工作台 · Pitch Agent
 
-中文桌面提案应用，从简报、研究、策略、文案与主题、视觉开发到版式和终审交付。默认打开夜航提案台，通过本机已登录的 Codex 运行文字与生图任务，Deck Studio 生成可编辑 PPTX。
+中文桌面提案应用，从简报、研究、策略、文案与主题、视觉开发到版式和终审交付。交付产品是夜航提案台，桌面和个人网页版使用菜单里设置的模型，本机开发也支持登录 Codex CLI 0.167.0，Deck Studio 生成可编辑 PPTX。
 
 ## 快速开始
 
@@ -11,6 +11,8 @@ git clone git@github.com:marctubud-pixel/pitch-agent.git
 cd pitch-agent
 npm run setup:frontend
 npm run setup:workbench
+npm run setup:python
+npm run setup:browser
 npm run dev
 ```
 

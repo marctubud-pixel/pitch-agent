@@ -33,6 +33,13 @@ class SpecificationChecks(unittest.TestCase):
         return subprocess.run([os.sys.executable, 'scripts/check-specs.py', *args], cwd=self.root,
                               env=self.env, capture_output=True, text=True)
 
+    def test_full_checkout_rejects_a_broken_current_status_link(self):
+        (self.root / 'scripts/repository-files.json').write_text(json.dumps({'files':['status/current.md']}))
+        (self.root / 'status/current.md').write_text('[退修说明](missing-review.md)')
+        result = self.run_check()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Broken documentation link: status/current.md', result.stderr)
+
     def test_clean_selected_checkout_passes(self):
         result = self.run_check()
         self.assertEqual(result.returncode, 0, result.stderr)

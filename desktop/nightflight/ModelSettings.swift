@@ -27,7 +27,7 @@ func profile(_ role: Capability) -> Profile {
 }
 func credential(_ account: String, replacing value: String? = nil) throws -> String {
     let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: "cn.onepitch.desktop.api", kSecAttrAccount as String: account]
+        kSecAttrService as String: (Bundle.main.bundleIdentifier ?? "cn.onepitch.desktop") + ".api", kSecAttrAccount as String: account]
     if let value = value, !value.isEmpty {
         let bytes = Data(value.utf8)
         var status = SecItemUpdate(query as CFDictionary, [kSecValueData: bytes] as CFDictionary)

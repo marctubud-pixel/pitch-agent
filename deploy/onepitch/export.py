@@ -41,13 +41,25 @@ def export(target, roots):
                     if src.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='library_files'").fetchone():
                         for row in src.execute("SELECT id,name,bytes FROM library_files"):
                             out.execute("INSERT INTO library_files VALUES(?,?,?)", row)
+                    tables = {row[0] for row in src.execute("SELECT name FROM sqlite_master WHERE type='table'")}
                     for key, revision, raw in src.execute("SELECT id,revision,state FROM projects"):
                         if key != str(uuid.UUID(key)):
                             raise ValueError("项目 ID 异常")
                         p = json.loads(raw)
                         if p["id"] != key or p["revision"] != revision:
                             raise ValueError("项目身份或版本不一致")
-                        out.execute("INSERT INTO projects VALUES(?,?,?)", (key,revision,raw))
+                        if "project_events" in tables:
+                            rows = src.execute("SELECT entry FROM project_events WHERE project_id=? ORDER BY rowid", (key,))
+                            p["events"] = p.get("events", []) + [json.loads(row[0]) for row in rows]
+                        for group in [p, *p.get("versions", [])]:
+                            for artifact in group.get("artifacts", []):
+                                if "textHash" in artifact:
+                                    fingerprint = artifact.pop("textHash")
+                                    row = src.execute("SELECT text FROM artifact_texts WHERE hash=?", (fingerprint,)).fetchone()
+                                    if row is None or hashlib.sha256(row[0].encode()).hexdigest() != fingerprint:
+                                        raise ValueError("项目正文缺失或摘要不符")
+                                    artifact["text"] = row[0]
+                        out.execute("INSERT INTO projects VALUES(?,?,?)", (key, revision, json.dumps(p, ensure_ascii=False)))
                         files = staging / key / "files"
                         files.mkdir(parents=True)
                         for name in sorted(set(storage_keys(p))):

@@ -46,6 +46,6 @@ jobs:
           NIGHTFLIGHT_TEST_PDF: "1"
         run: PATH="$(dirname "$PITCH_PDF_TEST_PYTHON"):$PATH" npm run test:nightflight
       - name: Test private portal and model adapters
-        run: node --test deploy/onepitch/*.test.mjs && python3 deploy/onepitch/export_test.py
+        run: npm run test:portal
       - name: Build current application
-        run: npm run build
+        run: npm run build && npm run build:portal && test ! -e apps/workbench-preview/dist/research-case

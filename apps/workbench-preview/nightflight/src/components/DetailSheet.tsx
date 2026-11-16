@@ -10,8 +10,7 @@ import { Decisions, type Act } from './ChatPanel';
 function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
   const [focus, setFocus] = useState('');
   const handoff = p.research;
-  const { questions, clues } = researchDisplay(handoff?.gaps || []);
-  const clueCount = clues.length;
+  const gaps = researchDisplay(handoff?.gaps || []);
   const isResearch = p.stage === 'research';
   const isChecking = isResearch && p.status === 'running';
   const question = researchQuestion(p);
@@ -19,7 +18,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
   const submitResearch = async (text: string) => {
     if (await act('research_again', text)) setFocus('');
   };
-  const canStart = !handoff?.digestPending && p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
+  const canStart = !(isResearch && handoff?.ready) && !handoff?.digestPending && p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
   if (p.stage === 'brief') return null;
   return (
     <div className="research-review">
@@ -42,29 +41,18 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
           <>
             <h2>策略交接 · 待补查</h2>
             {returned && <p>策略退回原因　{handoff.next}</p>}
-            {questions.length ? (
-              <ol className="findings">
-                {questions.map((item, i) => (
-                  <li key={item.question}>
-                    <span className="finding-no">{i + 1}</span>
-                    <div>
-                      <h3>{item.question}</h3>
-                      <p>{item.reason}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p>现有依据仍不足以交给策略，具体缺口见研究原稿。</p>
-            )}
+            {gaps.length ? <ul className="findings">{gaps.map((gap,i)=><li key={i}>
+              <div><span className="mono-label">{gap.label}</span><p>{gap.message}</p></div>
+            </li>)}</ul> : <p>{handoff.next}</p>}
           </>
         )}
-        {!!clueCount && (
-          <details className="research-original">
-            <summary>已有线索（{clueCount}）</summary>
-            <ul className="plain-list">{clues.map((clue) => <li key={clue}>{clue}</li>)}</ul>
-          </details>
-        )}
+        {handoff?.searchScope && <details className="research-original"><summary>查看检索记录</summary>
+          <ul>{(handoff.searchScope.attempts ?? handoff.searchScope.queries.map(query=>({query,source:'',count:undefined}))).map((a,i)=>
+            <li key={i}>{a.query}{a.source && ' · '+a.source}{a.count!==undefined && ' · '+a.count+' 个候选'}</li>)}</ul>
+          <ul>{handoff.searchScope.pages.map(page=><li key={page.url}>{page.title} · {page.url}{page.reason && ' · '+page.reason}</li>)}
+            {handoff.searchScope.replacements?.map((r,i)=><li key={'replacement-'+i}>已换来源　{r.from} → {r.to}</li>)}
+            {handoff.searchScope.unreadable?.map(page=><li key={page.url}>{page.url} · {page.reason}</li>)}</ul>
+        </details>}
         {isResearch && p.status === 'failed' && (
           <p className="notice" role="status">
             {p.error}
@@ -209,7 +197,7 @@ export function DetailSheet({
             <TextStageOutput p={p} id={id} busy={busy} onChoose={(value) => act('choice', value)} />
           )}
           {id === 'research' && <ResearchReview key={p.id} p={p} act={act} busy={busy} />}
-          {id === p.stage && (p.status === 'failed' || id === 'visual') && id !== 'research' && (
+          {id === p.stage && (p.status === 'failed' || p.finalReturn || id === 'visual' || id==='brief') && (id !== 'research' || p.finalReturn) && (
             <Decisions p={p} act={act} busy={busy} />
           )}
           {id !== 'copy' && (a.length > 0 || findings.length > 0) && (

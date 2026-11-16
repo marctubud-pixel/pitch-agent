@@ -6,7 +6,7 @@
 
 域名在所有者自己的注册商账户下实名注册。选购可办理 ICP 备案的内地云实例，按接入商流程完成备案。以接入商允许接入的状态为准。域名 A 记录指向实例公网 IPv4。开放 80/443 给 Caddy，管理端口按云账户管理策略限制。工作台进程监听回环 4420，登录网关监听回环 4432。
 
-在 Linux 安装仓库指定版本 Node（见 .node-version）、Python 3.11 或以上、Caddy 和 systemd。代码安装到 /opt/onepitch，在该目录执行 npm run setup:frontend、npm run setup:workbench、npm run build。两个 systemd 单元使用 /usr/bin/node；若安装到其他目录，请改成实际绝对路径。建立专用系统账户 onepitch。以管理员执行以下命令设置账号；密码由所有者在终端输入，环境文件只保存盐与 scrypt 校验值。
+在 Linux 安装仓库指定版本 Node（见 .node-version）、Python 3.11 或以上、Caddy 和 systemd。代码安装到 /opt/onepitch，在该目录执行 npm run setup:frontend、npm run setup:workbench、npm run build:portal。个人网页版只打包夜航入口，不复制经典预览和历史案例图。两个 systemd 单元使用 /usr/bin/node；若安装到其他目录，请改成实际绝对路径。建立专用系统账户 onepitch。以管理员执行以下命令设置账号；密码由所有者在终端输入，环境文件只保存盐与 scrypt 校验值。
 
     install -d -m 700 /etc/onepitch
     python3 deploy/onepitch/configure.py /etc/onepitch/portal.env 你的域名
@@ -36,3 +36,7 @@
 登录后打开「菜单 → 模型与 API」，填写 DeepSeek 文字、OpenAI 视觉理解和生图的模型及 Key。保存后再主动开始项目测试。服务器需要能连接所选模型的官方接口及公开研究来源。账号、API 密钥和历史项目分别保存在部署机器上。复制 Git 仓库只能取得程序，要显示已有项目须先导入项目快照。服务器备份需同时保护私有模型目录及登录环境文件。
 
 桌面版从仓库的 desktop/nightflight/build.sh 构建，使用 macOS 钥匙串。网页版的密钥单独设置。
+
+研究检索可用 NIGHTFLIGHT_SEARCH_RSS_URL 指定接受 q 查询的公开 HTTPS RSS 端点；配置后跳过默认引擎。使用本机 Codex 的进程继承 HTTP_PROXY、HTTPS_PROXY、ALL_PROXY、NO_PROXY 及其小写形式。可从项目执行记录检查每条查询的结果数和来源抓取失败原因。实际部署地区的可达性须在该服务器测试。
+
+历史图片与第三方包装照片保留在原始工程中用于项目核对。私有站构建仅发布夜航入口；对外分发历史项目附件或公开仓库前，由所有者核对对应授权。仓库没有对第三方图片作统一再许可。

@@ -9,40 +9,61 @@ import {
   type Summary,
 } from '../live';
 import { headlineFromSections, sectionsOf } from './stageText';
+import {STAGES} from '../data/project';
+import type {StageId} from '../types';
 import { BotFigure } from './Bot';
 import { AttachButton, AttachmentChips } from './Attachments';
-export type Act = (kind: Action, text: string, files?: File[]) => Promise<boolean>;
+export type Act = (kind: Action, text: string, files?: File[], options?: {targetStage?:StageId; candidateIds?:string[]; overrideReason?:string}) => Promise<boolean>;
+function AdoptVisual({p,act,busy}:{p:Project;act:Act;busy:boolean}) {
+  const [picks,setPicks]=useState<Record<string,string>>({});
+  const [reason,setReason]=useState('');
+  const groups=p.mode==='collab' && p.choice ? [p.choice] : p.directions;
+  const candidates=p.artifacts.filter(a=>a.stage==='visual' && a.visual?.candidate);
+  const selected=groups.map(direction=>{
+    const batch=candidates.filter(a=>a.visual?.direction===direction);
+    return batch.find(a=>a.url===picks[direction]) ?? batch.find(a=>a.visual?.recommended);
+  });
+  const override=selected.some(a=>a && !a.visual?.recommended);
+  return <div className="adoption-fields">
+    {candidates.length>0 && groups.map((direction,i)=><label key={direction}>{direction}
+      <select aria-label={direction+'的采用稿'} value={selected[i]?.url ?? ''} onChange={e=>setPicks({...picks,[direction]:e.target.value})}>
+        <option disabled value="">选择采用稿</option>
+        {candidates.filter(a=>a.visual?.direction===direction).map(a=><option key={a.url} value={a.url}>第 {a.visual?.candidate} 稿{a.visual?.recommended ? ' · 评审推荐' : ''}</option>)}
+      </select>
+    </label>)}
+    {override && <label>采用理由<input value={reason} onChange={e=>setReason(e.target.value)} placeholder="说明选这张稿的原因"/></label>}
+    <button className="btn btn-dark" disabled={busy || (candidates.length>0 && selected.some(a=>!a)) || (override && !reason.trim())}
+      onClick={()=>act('adopt','采用当前视觉稿做本地排版',undefined,candidates.length ? {
+        candidateIds:selected.map(a=>a!.url.split('/').at(-1)!),overrideReason:reason.trim(),
+      }:undefined)}>采用所选稿并排版</button>
+  </div>;
+}
+export function RevisionStage({value,change}:{value:StageId;change:(stage:StageId)=>void}) {
+  return <label className="revision-field">从哪一步修改 <select value={value} onChange={event=>change(event.target.value as StageId)}>
+    {STAGES.map(stage=><option key={stage.id} value={stage.id}>{stage.name}</option>)}
+  </select></label>;
+}
 export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
-  if (p.status === 'failed')
+  if (p.status === 'failed' || (p.status==='waiting' && p.finalReturn))
     return (
       <div className="msg-body">
-        <p>{p.error}</p>
+        <p>{p.finalReturn?.reason || p.error}</p>
         <button className="btn" disabled={busy} onClick={() => act('retry', '')}>
           重试当前阶段
         </button>
       </div>
     );
   if (p.status !== 'waiting' || p.stage === 'research') return null;
+  if (p.stage==='brief') return <div className="msg-body"><button className="btn btn-dark" disabled={busy} onClick={()=>act('confirm_brief','')}>确认任务卡，开始研究</button></div>;
   const copyText = p.stage === 'copy' ? sectionsOf(p.artifacts.filter((a) => a.stage === 'copy' && a.kind === 'text')
     .map((a) => a.text).filter(Boolean).join('\n\n')) : [];
   const reviewed = p.copyReview?.status === 'ready' ? p.copyReview.draft.directions : [];
 
-  const visualBatch = p.artifacts.filter(a=>a.visual?.candidate);
-  const missingWinner = visualBatch.some(a=>!visualBatch.some(w=>w.visual?.direction===a.visual?.direction && w.visual?.recommended));
   return (
     <div className="msg-body">
       <p className="msg-flag">需要你决定</p>
       {p.stage === 'visual' ? (
-        <>
-          <p>{missingWinner ? '有方向尚无达标稿，请查看评审并发送修改意见。' : visualBatch.length ? '本批每方向已推荐一张达标最高稿，采用后进入排版。' : '请先查看视觉稿，确认采用后进入排版。'}</p>
-          <button
-            className="btn btn-dark"
-            disabled={busy || missingWinner}
-            onClick={() => act('adopt', '采用当前视觉稿做本地排版')}
-          >
-            采用这版做本地排版
-          </button>
-        </>
+        <AdoptVisual key={p.id+'-'+p.revision} p={p} act={act} busy={busy} />
       ) : (
         <div className="options">
           {p.directions.map((d, i) => (
@@ -81,7 +102,8 @@ export function ChatPanel({
     scroll = useRef<HTMLDivElement>(null);
   const [files, setFiles] = useState<File[]>([]),
     [error, setError] = useState('');
-  const canAttach = p.mode === 'collab' || p.status !== 'running';
+  const [targetStage,setTargetStage]=useState<StageId>('layout');
+  const canAttach=p.status!=='running';
   const rows = [
     ...p.events.map((e) => ({ ...e, user: false })),
     ...(p.feedback || []).map((e) => ({ ...e, user: true })),
@@ -95,9 +117,9 @@ export function ChatPanel({
     setError(issue);
     if (
       !issue &&
-      !busy &&
+      canAttach && !busy &&
       (draft.trim() || f.length) &&
-      (await act('message', draft.trim() || '请参考随附的资料。', f))
+      (await act('message', draft.trim() || '请参考随附的资料。', f,p.status==='done' ? {targetStage} : undefined))
     ) {
       setDraft('');
       setFiles([]);
@@ -134,11 +156,11 @@ export function ChatPanel({
             </button>
           </div>
         )}
-        <Decisions p={p} busy={busy} act={async (kind, text) => {
+        <Decisions p={p} busy={busy} act={async (kind, text, _unused, options) => {
           if (kind !== 'adopt') return act(kind, text);
           const issue = fileIssue(files);
           if (issue) { setError(issue); return false; }
-          const ok = await act(kind, text, files);
+          const ok = await act(kind, text, files, options);
           if (ok) setFiles([]);
           return ok;
         }} />
@@ -150,25 +172,26 @@ export function ChatPanel({
           </p>
         )}
         <AttachmentChips items={files} remove={(i) => setFiles((fs) => fs.filter((_, n) => n !== i))} />
+        {p.status==='done' && <RevisionStage value={targetStage} change={setTargetStage}/>}
         {(p.status === 'done' || (p.stage === 'visual' && p.status === 'waiting')) && (
           <p className="composer-hint">
             {p.status === 'done'
-              ? '发送修改意见会保存当前版本，并从简报重新生成。'
-              : '点「采用这版做本地排版」可一并提交排版材料。发送修改意见会重新生成视觉稿。'}
+              ? '提交后会保留当前版本，从所选阶段修改。'
+              : '点「采用所选稿并排版」可一并提交排版材料。发送修改意见会重新生成视觉稿。'}
           </p>
         )}
         <div className="chat-input">
           <AttachButton
             projects={projects}
             disabled={!canAttach || busy}
-            disabledHint="全自动运行中不接收新文件"
+            disabledHint="当前阶段运行中，完成后可补充材料"
             inputId="chat-file"
             onAdd={(fs) => setFiles((prev) => [...prev, ...fs])}
           />
           <input
             aria-label="给主理人的消息"
             value={draft}
-            placeholder="写下意见或补充说明…"
+            placeholder={canAttach ? "写下意见或补充说明…" : "当前阶段运行中，完成后可提交意见"}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.nativeEvent.isComposing) send();
@@ -176,7 +199,7 @@ export function ChatPanel({
           />
           <button
             className="btn"
-            disabled={busy || (!draft.trim() && !(canAttach && files.length))}
+            disabled={!canAttach || busy || (!draft.trim() && !(canAttach && files.length))}
             onClick={send}
           >
             发送

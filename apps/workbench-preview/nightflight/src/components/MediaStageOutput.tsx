@@ -1,7 +1,7 @@
 import { VisualReview } from '../../../src/proposal/qingyu-visual/VisualReview';
 import { useState } from 'react';
 import { isDeckPreview, safeURL, type Artifact, type Project } from '../live';
-import type { Act } from './ChatPanel';
+import { RevisionStage, type Act } from './ChatPanel';
 import { VisualImageGallery, type GalleryDirection } from '../../../src/proposal/qingyu-visual/VisualImageGallery';
 import { DeckPreview } from './DeckPreview';
 
@@ -112,6 +112,7 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
 
 function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
   const [text, setText] = useState('');
+  const [targetStage,setTargetStage]=useState<import('../types').StageId>('layout');
   const revisions = (p.feedback || []).filter((item) => 'stage' in item && item.stage === 'final');
   return (
     <section className="block">
@@ -120,9 +121,10 @@ function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
         className="feedback"
         onSubmit={async (e) => {
           e.preventDefault();
-          if (text.trim() && (await act('message', text.trim()))) setText('');
+          if (text.trim() && (await act('message', text.trim(),undefined,p.status==='done' ? {targetStage} : undefined))) setText('');
         }}
       >
+        {p.status==='done' && <RevisionStage value={targetStage} change={setTargetStage}/>}
         <label className="sr-only" htmlFor="final-feedback">
           修改意见
         </label>
@@ -137,7 +139,7 @@ function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
           发给主理人
         </button>
       </form>
-      <p className="hint">发送后保存本版提案，并从简报开始生成修订版。</p>
+      <p className="hint">提交后会保存本版提案，从所选阶段修改。</p>
       {!!revisions.length && (
         <ul className="plain-list">
           {revisions.map((r, i) => (

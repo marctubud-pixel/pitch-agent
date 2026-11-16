@@ -6,9 +6,10 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 // `npm run build:single` produces one self-contained HTML file (fonts and images inlined)
 // that runs offline. The normal `npm run build` emits a standard multi-file bundle.
 export default defineConfig(({ mode }) => ({
+  publicDir: mode === 'personal' ? false : 'public',
   plugins: [react(), ...(mode === 'singlefile' ? [viteSingleFile()] : [])],
   build: {
-    ...(mode === 'singlefile' ? {} : { rollupOptions: { input: ['index.html', 'nightflight/index.html'] } }),
+    ...(mode === 'singlefile' ? {} : { rollupOptions: { input: mode === 'personal' ? ['nightflight/index.html'] : ['index.html', 'nightflight/index.html'] } }),
     outDir: mode === 'singlefile' ? 'dist-single' : 'dist',
   },
   test: {
