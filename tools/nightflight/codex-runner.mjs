@@ -440,7 +440,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const documents = inputs.texts.filter(t=>t.text && project.attachments?.some(a=>a.name===t.name));
   for (const type of carriers) {
     const board = await researchCompetitors({call,dir,project,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
-      acquiredByPage:new Map(packaging.pages.map(p=>[p.url,p.acquired])),
+      acquiredByPage:new Map(packaging.pages.map(p=>[p,p.acquired])),
       pages:pages.filter(p=>(!p.carrier || p.carrier===type) && (type!=='packaging' || !brands.length ||
         packaging.pages.includes(p) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
       previous:(project.previousResearchImages ?? []).filter(image=>!image.carrier || image.carrier===type)});

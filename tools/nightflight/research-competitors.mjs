@@ -31,15 +31,17 @@ function documentPassages(documents, url, relatedUrls = []) {
   return passages;
 }
 
+const pageKey = page=>[page.url,page.brand || ''].join('\n');
+
 export async function researchCompetitors({call, dir, pages, acquiredByPage = new Map(), previous = [], project, carrier, signal, dependencies, onEvent, readSource, documents = [], uploadedImages = []}) {
   const uniquePages = new Map();
   for (const page of pages ?? []) {
-    if (page && publicPage(page.url) && !uniquePages.has(page.url)) uniquePages.set(page.url,page);
+    if (page && publicPage(page.url) && !uniquePages.has(pageKey(page))) uniquePages.set(pageKey(page),page);
   }
   if (uniquePages.size || previous.length) await onEvent?.('正在打开竞品原图，核对图上可见的品类、品牌和信息层级');
   const capture = (options, defaults) => capturePublicSource(options,{...defaults,...dependencies});
   const groups = await Promise.all([...uniquePages.values()].slice(0,6).map(async page =>
-    (acquiredByPage.get(page.url) ?? await searchVisualImages({dir,signal,query:'竞品作品原图',pages:[page]}, {capture}))
+    (acquiredByPage.get(page) ?? await searchVisualImages({dir,signal,query:'竞品作品原图',pages:[page]}, {capture}))
       .filter(image => Math.min(image.width,image.height)>=140)
       .map(image=>({...image,casePage:page}))));
   // A locally supplied case image must be identifiable against the user's provenance material.
@@ -67,7 +69,7 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   const blindPackaging=images.some(isNamedProduct);
   const caseSources = await Promise.all(images.map(async image => {
     if (isNamedProduct(image)) return {sourceUrl:'',passages:[]};
-    const candidate = image.casePage ?? uniquePages.get(image.pageUrl);
+    const candidate = image.casePage ?? [...uniquePages.values()].find(page=>page.url===image.pageUrl);
     const sourceUrl = candidate?.rationaleSourceUrl || image.rationaleSourceUrl || image.pageUrl;
     if (!publicPage(sourceUrl)) return {sourceUrl:'',passages:[]};
     const original = await readSource?.(sourceUrl);
@@ -92,10 +94,8 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
       const {parsedOutput:seen}=await call('只观察这一张图片，忽略瓶盒外的电商浮字、价签和背景装饰。brand 写能在包装上辨认的品牌；front 仅写瓶盒本体上看得清的一两个颜色、图案或相对位置。不要猜茶种、配料、产地和效果；不清楚就留空。',[image],
         object({brand:string,front:string}),{rules:[],delegate:true,assignment:'单张包装读图',context:'{}'});
       if (!seen?.brand?.trim() || !seen.front?.trim()) return null;
-      const normalize=v=>quoteText(v).toLowerCase();
-      if (!normalize(image.title+' '+image.casePage.brand).includes(normalize(seen.brand))) return null;
       const {parsedOutput:review}=await call('把所附原图与候选观察逐项对照。只保留能在这一个瓶盒正面直接指出位置的图形、颜色和排布。电商画面外加的卖点或促销字不得说成瓶身标签。删除不可辨认的小字、推断与风格评价。若图中商品与所查商品或任务品类不符，或没有可核观察，返回空串。',[image],
-        object({verifiedFront:string}),{rules:[],delegate:true,assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,observation:seen.front})});
+        object({verifiedFront:string}),{rules:[],delegate:true,assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,brandReadFromImage:seen.brand,observation:seen.front})});
       if (!review?.verifiedFront?.trim()) return null;
       return {source:image.imageId,title:image.title,observation:review.verifiedFront.trim(),sameCategory:true};
     }));
