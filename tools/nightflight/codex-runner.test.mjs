@@ -165,7 +165,7 @@ process.stdin.on('end',()=>{
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
      body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
-     if(action==='research-report-lookup') Object.assign(body,{reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
+     if(action==='research-report-lookup') Object.assign(body,{queries:['即饮茶 市场 销量 销售额 价格带 报告','茶叶包装'],reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
    }
    else if(schema.reads) {
      const {documents}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
@@ -685,7 +685,7 @@ test('industry search switches short category terms and verifies segment data de
   const f=await fixture(t,'research-report-lookup');
   const {research}=await f.run('research');
   assert.deepEqual(research.searchScope.queries.slice(0,2),['即饮茶报告','茶饮报告']);
-  assert.ok(!research.searchScope.queries.includes('瓶装茶报告'));
+  assert.deepEqual(research.searchScope.queries,['即饮茶报告','茶饮报告','茶叶包装']);
   assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
 });
 
