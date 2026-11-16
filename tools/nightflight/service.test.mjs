@@ -44,7 +44,7 @@ test('a personal run waits for direction and current image adoption, saves user 
     if (project.researchDigestOnly) {
       assert.deepEqual(project.attachments,[]);
       assert.deepEqual(project.artifacts,[]);
-      return {researchDigest:[{chapter:finding.chapter,title:'场景不同',detail:'展示位置不同',findingIndex:0}],artifacts:[]};
+      return {strategyAdvice:[{recommendation:"比较用户能否辨认规格",findingIndices:[0]}],researchDigest:[{chapter:finding.chapter,title:'场景不同',detail:'展示位置不同',findingIndex:0}],artifacts:[]};
     }
     calls.push(stage);
     const round = calls.filter((s) => s === 'research').length;
@@ -280,9 +280,12 @@ test('editor failure retains accepted research and retry resumes strategy from t
     if (project.researchDigestOnly) {
       assert.deepEqual(project.research.findings,[finding]);
       if (++edits===1) throw Error('编辑服务暂时不可用');
-      return {researchDigest:[{chapter:finding.chapter,title:'礼盒与单盒分列',detail:'产品目录按销售形式区分。',findingIndex:0}]};
+      return {strategyAdvice:[{recommendation:"比较用户能否辨认规格",findingIndices:[0]}],researchDigest:[{chapter:finding.chapter,title:'礼盒与单盒分列',detail:'产品目录按销售形式区分。',findingIndex:0}]};
     }
-    if (stage==='strategy') throw Error('测试止于策略收到完整底稿');
+    if (stage==='strategy') {
+      assert.deepEqual(project.research.strategyAdvice,[{recommendation:'比较用户能否辨认规格',findingIndices:[0]}]);
+      throw Error('测试止于策略收到完整底稿');
+    }
     const name=stage+'.md';
     await writeFile(join(dir,name),stage);
     const artifacts=[{kind:'text',name}];
@@ -308,6 +311,7 @@ test('editor failure retains accepted research and retry resumes strategy from t
   assert.equal((await localRequest(service,path+'/action',{kind:'research_digest',expectedRevision:waiting.revision})).status,200);
   const handedOff=await settled();
   assert.equal(handedOff.stage,'strategy');
+  assert.match(handedOff.error,/策略收到完整底稿/);
   assert.equal(handedOff.research.digestPending,undefined);
   assert.deepEqual(handedOff.research.findings,waiting.research.findings);
   assert.deepEqual(handedOff.artifacts,waiting.artifacts);

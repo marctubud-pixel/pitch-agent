@@ -513,6 +513,7 @@
     "apps/workbench-preview/src/proposal/research-case/charts.tsx",
     "apps/workbench-preview/src/proposal/research-case/index.ts",
     "apps/workbench-preview/src/proposal/research-case/luma-report.json",
+    "apps/workbench-preview/src/proposal/research-case/nightflight-digest.test.ts",
     "apps/workbench-preview/src/proposal/research-case/report.test.ts",
     "apps/workbench-preview/src/proposal/research-case/report.ts",
     "apps/workbench-preview/src/proposal/research-method/R7ResearchView.tsx",

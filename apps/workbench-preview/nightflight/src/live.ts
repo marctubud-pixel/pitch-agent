@@ -131,6 +131,11 @@ export interface ResearchImage {
   pageUrl: string;
   sourceUrl: string;
   observation: string;
+  creatorRationale?: string;
+  rationaleSourceUrl?: string;
+  rationaleQuote?: string;
+  rationaleAttachment?: string;
+  takeaway?: string;
 }
 export interface Project extends Summary {
   revision: number;
@@ -144,6 +149,7 @@ export interface Project extends Summary {
     ready: boolean;
     question?: string;
     digestPending?: boolean;
+    strategyAdvice?: { recommendation: string; findingIndices: number[] }[];
     digest?: {
       chapter: '行业与市场' | '竞争与同类传播' | '人群与接触情境';
       title: string;

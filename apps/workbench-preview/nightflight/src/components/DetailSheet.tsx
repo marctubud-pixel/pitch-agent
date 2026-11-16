@@ -222,7 +222,7 @@ export function DetailSheet({
                   <p>{finding.evidence}</p>
                   {finding.source && <p><ResearchSource finding={finding} attachments={p.attachments} /></p>}
                   {finding.implication && <p>{finding.implication}</p>}
-                  {!!finding.images?.length && <ResearchImageGallery images={finding.images} artifacts={a} />}
+                  {!!finding.images?.length && <ResearchImageGallery images={finding.images} artifacts={a} attachments={p.attachments} />}
                 </section>
               ))}
               {a.map((x) =>

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -82,4 +82,45 @@ test('competitor board binds a read image to its declaring page, disregards inve
   assert.equal(ref.sha256,createHash('sha256').update(sample).digest('hex'));
   assert.deepEqual(await board.publish(),[{name:ref.name,kind:'image'}]);
   assert.deepEqual(await readFile(join(dir,ref.name)),sample);
+});
+
+
+test('an uploaded case only binds its image and author quote through their own supplied provenance',async t=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const dir=await mkdtemp(join(tmpdir(),'research-upload-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const page='https://brand.example/case', imageUrl='https://brand.example/pack.png';
+  const name='案例.png', path=join(dir,name), sha256=createHash('sha256').update(png).digest('hex');
+  await writeFile(path,png);
+  const quote='我们把品类名放在显眼的位置。';
+  const supplied=[page,imageUrl,name,sha256,quote].join('\n');
+  const args={dir,project:{brief:'燕麦饮包装'},carrier:'packaging',pages:[{url:page,imageUrl,title:'原味纸盒'}],
+    dependencies:{lookup:async()=>{throw Error('fixture: source not reachable');}},readSource:async()=>null,
+    documents:[{name:'品牌摘录.md',text:supplied}],uploadedImages:[{name,path,sha256}]};
+  const caseCall=(rationaleQuote,rationaleSourceUrl)=>async(_prompt,images,_schema,task)=>{
+    const entry=JSON.parse(task.context).sources[0];
+    assert.ok(entry.sourcePassages.some(s=>s.includes(quote)));
+    return {parsedOutput:{samples:[{source:images[0].imageId,title:'原味纸盒',observation:'正面上方有品类名称',
+      creatorRationale:'让品类名显眼',rationaleSourceUrl,rationaleQuote,takeaway:'在正面测试清楚的品类名，货架效果需验证'}],
+      conclusion:'样本把品类信息放在显眼位置',implication:'先试品类名的位置'}};
+  };
+  const good=await researchCompetitors({...args,call:caseCall(quote,page)});
+  const [ref]=good.finding.images;
+  assert.equal(ref.rationaleQuote,quote);
+  assert.equal(ref.rationaleSourceUrl,page);
+  assert.equal(ref.rationaleAttachment,'品牌摘录.md');
+  assert.equal(ref.imageAttachment,name);
+  assert.equal(ref.sha256,sha256);
+  assert.match(ref.takeaway,/货架效果需验证/);
+  for (const [citation,url] of [['没有这句的转述',page],[quote,'https://other.example/case']]) {
+    const result=await researchCompetitors({...args,call:caseCall(citation,url)});
+    assert.equal(result.finding.visualOnly,true);
+    assert.equal(result.finding.images[0].creatorRationale,'');
+    assert.equal(result.finding.images[0].rationaleSourceUrl,'');
+    assert.equal(result.finding.images[0].rationaleQuote,'');
+    assert.doesNotMatch(result.finding.evidence,/让品类名显眼/);
+  }
+  const unrelated=await researchCompetitors({...args,documents:[{name:'品牌摘录.md',text:supplied.replace(sha256,'无对应原图')}],
+    call:()=>assert.fail('unmatched upload must not reach a reviewer')});
+  assert.equal(unrelated,null);
 });
