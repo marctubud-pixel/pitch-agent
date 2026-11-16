@@ -1,3 +1,4 @@
+import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {editResearchDigest, missingResearchCoverage, researchAngles, reviewedFindings} from './research-digest.mjs';
 import {researchCompetitors} from './research-competitors.mjs';
@@ -832,6 +833,13 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       return {artifacts:[...artifacts,...imageArtifacts],research:{...research,methodVersion}};
     }
     if (stage === 'strategy') {
+      const carrier = strategyCarrier(project,inputs);
+      if (carrier) {
+        const skill=await readFile(join(repo,'skills/strategy-one-pager/SKILL.md'),'utf8');
+        const {body,...handoff}=await makeStrategyOnePager({call,project,inputs,carrier,rules:[...rules,skill]});
+        await addText(body);
+        return {artifacts,...handoff};
+      }
       const result=await call('依据本轮有效研究输出三个板块。确实无法形成有依据的策略判断时，把具体应退回研究补查的问题写入 researchReturn；可以根据明确条件推进时填空字符串。',inputs.images,strategySchema);
       if (typeof result.parsedOutput?.researchReturn!=='string') throw Error('策略未明确研究交接判断，请重试');
       await addText(textOutput(result));

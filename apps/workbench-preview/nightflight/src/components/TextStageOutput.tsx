@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import { headlineReviewProtocol, safeURL, type Artifact, type Asset, type CopyDuty, type Project, type ResearchImage } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
+import { ResearchSource } from './ResearchSource';
+export { ResearchSource } from './ResearchSource';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
 import { headlineFromSections, rowOf, sectionsOf, type Row } from './stageText';
@@ -108,17 +110,6 @@ const digestChapters = [
   ['竞争与同类传播', '竞品'],
   ['人群与接触情境', '用户'],
 ] as const;
-
-type Finding = ResearchReport['findings'][number];
-
-export function ResearchSource({ finding, attachments = [] }: { finding: Pick<Finding, 'source' | 'url'>; attachments?: Asset[] }) {
-  const matches = attachments.filter(file => file.name === finding.source);
-  if (/^https?:\/\//i.test(finding.url)) return (
-    <a href={finding.url} target="_blank" rel="noopener noreferrer">{finding.source || finding.url} · 打开网页</a>
-  );
-  const url = matches.length === 1 ? safeURL(matches[0].url) : undefined;
-  return url ? <a href={url} download={finding.source}>{finding.source} · 下载附件</a> : <>{finding.source}</>;
-}
 
 function ResearchGaps({ gaps }: { gaps: string[] }) {
   if (!gaps.length) return null;
