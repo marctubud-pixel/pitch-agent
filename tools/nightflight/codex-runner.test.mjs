@@ -201,7 +201,7 @@ process.stdin.on('end',()=>{
    if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
    if(action==='onepager-internal') outcome.insight='模拟设定的测试茶。';
    if(!packet.oldFrameSelection) {
-     const candidate={text:'礼盒里的客套',evidenceReading:'参照包装面向送礼',reasonToChange:'在办公室自行饮用时，送礼场景难以借鉴',newMeaning:'午休时顺手泡茶',findingNumbers:[2]};
+     const candidate={evidenceKind:'品类表达',text:'礼盒里的客套',evidenceReading:'参照包装面向送礼',reasonToChange:'在办公室自行饮用时，送礼场景难以借鉴',newMeaning:'午休时顺手泡茶',findingNumbers:[2]};
      body={selection:action==='onepager-gap'?{researchReturn:'请补查第二种有证据的旧认知'}:{candidates:[candidate,{...candidate,text:'茶席上的仪式'}],selected:action==='onepager-invalid-selection'?3:1,tradeoff:'首个案例与当前场景更接近'}};
    } else body={outcome:action==='onepager-return'?{researchReturn:'请补查本地渠道的实际接触场景'}:outcome};
  }

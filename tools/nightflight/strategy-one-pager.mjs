@@ -7,7 +7,7 @@ const exactlyThree = {minItems:3,maxItems:3};
 const numbered = {type:'integer'};
 const basis = object({text:string,findingNumbers:list(numbered)});
 const touchpointSchema = object({kind:{type:'string',enum:['front','side','back','kv']},name:string,action:string});
-const oldFrame = object({text:string,findingNumbers:list(numbered),evidenceReading:string,reasonToChange:string,newMeaning:string});
+const oldFrame = object({evidenceKind:{type:"string",enum:["品类表达","既有用途","用户理解"]},text:string,findingNumbers:list(numbered),evidenceReading:string,reasonToChange:string,newMeaning:string});
 const selectionSchema = object({selection:{anyOf:[
   object({researchReturn:string}),
   object({candidates:list(oldFrame,{minItems:2,maxItems:3}),selected:numbered,tradeoff:string}),
@@ -64,7 +64,7 @@ function measurementText(value) {
 }
 
 async function selectOldFrame(call,task,eligible) {
-  const instruction='先比较A面，不写一页纸。从不同的实物、传播语境、真实用法或用户观察中找2–3种实质不同、有研究支撑的旧认知。每项text用可放进核心句的简短旧认知，findingNumbers引用外部发现，evidenceReading说明原证据实际显示什么；reasonToChange写清沿用这个认知会令谁在何时错过什么、为什么值得改变，若是判断请用条件句；newMeaning写产品条件在该场景让人感受到什么。用途、品类名称、字号、销量本身都不构成改变理由。选择前比较各案针对的问题、证据强弱和能否兑现，selected为候选的一基序号，tradeoff解释为何选它及其余各案为何暂缓。若项目给定了核心句，所选text用该句中从和变成之间的短语。资料不足以支持两个不同候选时，researchReturn写窄缺口，不凑近义词。';
+  const instruction='先比较A面，不写一页纸。从不同的实物、传播语境、真实用法或用户观察中找2–3种实质不同、有研究支撑的旧认知。逐项选择 evidenceKind。给 A 面注明证据身份。竞品物料或设计师说明支持「品类表达」，写清包装或传播在强调什么。单个案例只代表该案例，多案反复出现才可称常见。用途资料支持「既有用途」。只有直接调查或访谈记录了用户如何理解，才可写「用户理解」，且限定研究人群。B 面要连起产品事实、现场可见线索和接下来的选择：这个人在赶时间或其他真实约束下，能据此决定什么、少做哪一步？把这个用途写进核心句。尚未实测的行为收益作为设计目标，避免许诺节省时间或提升购买。每项text用可放进核心句的简短表述，findingNumbers引用外部发现，evidenceReading说明原证据实际显示什么；reasonToChange写清沿用这个认知会令谁在何时错过什么、为什么值得改变，若是判断请用条件句；newMeaning写产品条件在该场景让人感受到什么。用途、品类名称、字号、销量本身都不构成改变理由。选择前比较各案针对的问题、证据强弱和能否兑现，selected为候选的一基序号，tradeoff解释为何选它及其余各案为何暂缓。若项目给定了核心句，所选text用该句中从和变成之间的短语。资料不足以支持两个不同候选时，researchReturn写窄缺口，不凑近义词。';
   let correction='';
   for (let attempt=0;attempt<2;attempt++) {
     const response=await call(instruction+correction,[],selectionSchema,task);
@@ -76,6 +76,7 @@ async function selectOldFrame(call,task,eligible) {
         throw Error('需要2–3个候选、有效选择序号和取舍理由');
       for (const frame of slate.candidates) {
         referenceList(frame,eligible);
+        if (!["品类表达","既有用途","用户理解"].includes(frame.evidenceKind)) throw Error("请标明 A 面的证据身份");
         if (![frame.evidenceReading,frame.reasonToChange,frame.newMeaning].every(singleLine))
           throw Error('每项须交代证据范围、改变理由和用户可感的新意义');
       }
@@ -129,7 +130,7 @@ function renderStrategy(out, findings, eligible, carrier, slate) {
       return '- 研究 '+n+'：'+f.conclusion.replace(/\s+/gu,' ').trim()+'（'+f.source.replace(/\s+/gu,' ').trim()+'）';
     }).join('\n'),
     '## A 面候选与取舍',...slate.candidates.map((c,i)=>
-      (i+1)+'. '+c.text+'（研究 '+c.findingNumbers.join('、')+'）\n依据：'+c.evidenceReading+'\n为什么值得改变：'+c.reasonToChange+'\n用户能感受到什么：'+c.newMeaning),
+      (i+1)+'. '+c.text+'（'+c.evidenceKind+'，研究 '+c.findingNumbers.join('、')+'）\n依据：'+c.evidenceReading+'\n为什么值得改变：'+c.reasonToChange+'\n用户能感受到什么：'+c.newMeaning),
     '选中第 '+slate.selected+' 项。'+slate.tradeoff,
     '## 方向交叉点',out.intersection,'## 推导依据','- 产品与任务约束：'+out.constraints+'\n'+
       groups.map((g,i)=>'- '+['竞品资源与空隙','人群与决策链','触点优先级与取舍'][i]+'：'+g.text+'（研究 '+g.findingNumbers.join('、')+'）').join('\n'),
@@ -160,7 +161,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
   const context=JSON.stringify({...packet,oldFrameSelection:slate});
   let correction='';
   for (let attempt=0;attempt<2;attempt++) {
-    const response=await call(instruction+'核心句从和变成之间沿用oldFrameSelection选中项的text原短语，B面用日常语言表达一个可感的改变。'+correction,inputs.images,schema,{rules,context,assignment:'依据同版已核研究制定本案包装或 KV 的一页策略。'});
+    const response=await call(instruction+'核心句从和变成之间沿用oldFrameSelection选中项的text原短语，保留选中项的证据身份；B面用一句日常话落在具体选择或省下的动作，看见或知道信息只是中间一步。'+correction,inputs.images,schema,{rules,context,assignment:'依据同版已核研究制定本案包装或 KV 的一页策略。'});
     try { return renderStrategy(response.parsedOutput?.outcome ?? {},findings,eligible,carrier,slate); }
     catch(error) {
       if (attempt===1) throw error;

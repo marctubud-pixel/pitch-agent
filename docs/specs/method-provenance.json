@@ -102,9 +102,9 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "2026-11-16 用户确认按已核研究比较多个旧认知，再独立选定方向。前版见 PR #48 提交 ea817c44bddf50c56066ac17e62a3353c6c6eef6。",
+    "source": "2026-11-16 用户要求区分竞品表达与用户理解，推导信息对场景决策的实际用途。",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.3-20261116",
-    "sha256": "2a110fdc14276a3c21ae576b600c8754c9a6058c6d2760a6ea0d178bb86298c5"
+    "sourceVersion": "v1.4-20261116",
+    "sha256": "67511626e99c95e7381e5b09041c27129347471532526e75785015f1520bf840"
   }
 ]
