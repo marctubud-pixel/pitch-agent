@@ -148,7 +148,8 @@ async function discoverPackaging({brands, discover, storeRoot, dependencies, dir
   for (const target of (brands ?? []).slice(0,3)) {
     const name=target?.name?.trim();
     if (!name || !/^[\p{L}\p{N} ·&-]{1,32}$/u.test(name)) continue;
-    const official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(target.officialDomain) ? target.officialDomain : '';
+    const domain=String(target.officialDomain ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
+    const official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
     const seen=new Set();
     const queries=[name,name+' 包装',...(official?[name+' site:'+official]:[])];
     let retailPage;

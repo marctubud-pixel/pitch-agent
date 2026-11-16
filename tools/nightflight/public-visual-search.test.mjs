@@ -13,7 +13,7 @@ test('matches the named product card and its declared lazy image, ignoring neigh
     '<div><img src="data:image/gif;base64,AA" tsrc="/tea.png"><p>测试茶</p></div></section>'+
     '<a><img src="/blank.gif" data-lazy-img=" //images.example.org/sku.jpg " alt="测试茶 500ml"></a>');
   assert.deepEqual(productCardImages(html,'https://brand.example.org/products','测试茶'),
-    ['https://brand.example.org/tea.png','https://images.example.org/sku.jpg']);
+    [{url:'https://brand.example.org/tea.png',title:'测试茶'},{url:'https://images.example.org/sku.jpg',title:'测试茶 500ml'}]);
 });
 
 test('captures decoded original with page, query and hash, discards corrupt and duplicate results',async t=>{

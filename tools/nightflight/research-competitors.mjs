@@ -84,17 +84,38 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     imageNumber:index+1,source:image.imageId,title:image.title,pageUrl:image.pageUrl,
     rationaleSourceUrl:caseSources[index].sourceUrl,sourcePassages:caseSources[index].passages.map(p=>p.text),
   }))};
-  const imagePacket=blindPackaging ? {carrier,sources:packet.sources.map((entry,i)=>isNamedProduct(images[i]) ? {imageNumber:entry.imageNumber,source:entry.source} : entry)} : packet;
-  const reading=blindPackaging ? '这次只根据图片像素。title 写图上辨认的品牌与商品名；observation 描述可定位的印字、图案、颜色与相对位置。看不清楚的字不猜，无法识别具名商品或只有网站标志就跳过。不得补写配料、产地、价格、健康属性、受众、设计意图或销售效果。每条只描述对应的一张图。没有作者材料时，作者说明各项留空。单图结论须点名该商品，并限于其可见正面。' : '';
-  const {parsedOutput: result}=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。同类商品的原图可以支持可见外观比较；创作者用意必须另有出处。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。优先同品类、同渠道的可比项目；同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。'+reading,images,observations(images.map(i=>i.imageId)),{
-    rules:[],assignment:'竞品原图观察',context:JSON.stringify(imagePacket),
+  let result;
+  if (blindPackaging) {
+    // Read one SKU at a time; the caller, not the model, binds the source name and URL.
+    const reads=await Promise.all(images.map(async image=>{
+      if (!isNamedProduct(image)) return null;
+      const {parsedOutput:seen}=await call('只观察这一张图片，忽略瓶盒外的电商浮字、价签和背景装饰。brand 写能在包装上辨认的品牌；front 仅写瓶盒本体上看得清的一两个颜色、图案或相对位置。不要猜茶种、配料、产地和效果；不清楚就留空。',[image],
+        object({brand:string,front:string}),{rules:[],delegate:true,assignment:'单张包装读图',context:'{}'});
+      if (!seen?.brand?.trim() || !seen.front?.trim()) return null;
+      const normalize=v=>quoteText(v).toLowerCase();
+      if (!normalize(image.title+' '+image.casePage.brand).includes(normalize(seen.brand))) return null;
+      const {parsedOutput:review}=await call('把所附原图与候选观察逐项对照。只保留能在这一个瓶盒正面直接指出位置的图形、颜色和排布。电商画面外加的卖点或促销字不得说成瓶身标签。删除不可辨认的小字、推断与风格评价。若图中商品与所查商品或任务品类不符，或没有可核观察，返回空串。',[image],
+        object({verifiedFront:string}),{rules:[],delegate:true,assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,observation:seen.front})});
+      if (!review?.verifiedFront?.trim()) return null;
+      return {source:image.imageId,title:image.title,observation:review.verifiedFront.trim(),sameCategory:true};
+    }));
+    const samples=reads.filter(Boolean);
+    result={samples,conclusion:samples.map(s=>s.title+'：'+s.observation).join('；'),implication:'将上述已核包装当作同货架参照，比较本案商品名、品类和识别图案的位置。'};
+  }
+  const remaining=images.filter(image=>!isNamedProduct(image));
+  if (remaining.length) {
+    const response=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。同类商品的原图可以支持可见外观比较；创作者用意必须另有出处。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。优先同品类、同渠道的可比项目；同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。',remaining,observations(remaining.map(i=>i.imageId)),{
+    rules:[],assignment:'竞品原图观察',context:JSON.stringify({...packet,sources:remaining.map((image,index)=>({...packet.sources[images.indexOf(image)],imageNumber:index+1}))}),
   });
+    const other=response.parsedOutput;
+    if (!result?.samples.length) result=other;
+    else if (other?.samples?.length) result={samples:[...result.samples,...other.samples],conclusion:[result.conclusion,other.conclusion].join('；'),implication:result.implication};
+  }
   if (!Array.isArray(result?.samples) || !result.conclusion?.trim() || !result.implication?.trim()) return null;
   const selected = [], seen = new Set();
   for (const row of result.samples) {
     const image = images.find(i=>i.imageId===row.source);
     if (!image || seen.has(row.source) || !row.title?.trim() || !row.observation?.trim()) continue;
-    if (isNamedProduct(image) && !quoteText(row.title).toLowerCase().includes(quoteText(image.casePage.brand).toLowerCase())) continue;
     seen.add(row.source);
     const source = caseSources[images.indexOf(image)];
     const quote = row.rationaleQuote?.trim();
@@ -111,7 +132,7 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   const visualOnly = grounded.length===0;
   const finding = {
     chapter:'竞争与同类传播', visualOnly,
-    conclusion:blindPackaging && !visualOnly ? grounded.map(ref=>ref.title+'：'+ref.observation).join('；') : visualOnly ? '已核实同类作品图像，创作者意图待核。' : result.conclusion.trim(),
+    conclusion:visualOnly ? '已核实同类作品图像，创作者意图待核。' : result.conclusion.trim(),
     implication:visualOnly ? '仅供查看公开作品的画面。' : result.implication.trim(),
     evidence:(visualOnly?refs:grounded).map(r=>r.title+'：'+r.observation+
       (r.creatorRationale?'；创作者说明：'+r.creatorRationale+'（原文：'+r.rationaleQuote+'）':'')).join('\n'),

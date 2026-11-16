@@ -62,7 +62,7 @@ export function productCardImages(bytes, base, brand) {
     return label;
   }
   visit(root);
-  const result=[];
+  const result=new Map();
   for (const node of images) {
     const attr=Object.fromEntries(node.attrs.map(a=>[a.name,a.value]));
     let card=node.parentNode;
@@ -80,11 +80,15 @@ export function productCardImages(bytes, base, brand) {
       if (!src?.trim()) continue;
       try {
         const url=new URL(src.trim(),base);
-        if (url.protocol==='https:') { result.push(url.href); break; }
+        if (url.protocol==='https:') {
+          const title=[attr.alt,attr.title].find(t=>t && compact(t).includes(needle)) || brand;
+          if (!result.has(url.href)) result.set(url.href,{url:url.href,title:title.trim()});
+          break;
+        }
       } catch { /* Invalid declarations are not candidates. */ }
     }
   }
-  return [...new Set(result)];
+  return [...result.values()];
 }
 
 export async function searchVisualImages({query,dir,signal,pages}, {
@@ -128,8 +132,8 @@ export async function searchVisualImages({query,dir,signal,pages}, {
         if (record.mimeType!=='text/html') continue;
         const bytes=await readFile(join(root,record.raw.file));
         if (item.brand) {
-          for (const url of productCardImages(bytes,record.finalUrl,item.brand).slice(0,6)) {
-            await collect(url,record.finalUrl,item.title);
+          for (const product of productCardImages(bytes,record.finalUrl,item.brand).slice(0,6)) {
+            await collect(product.url,record.finalUrl,product.title);
           }
           continue;
         }
