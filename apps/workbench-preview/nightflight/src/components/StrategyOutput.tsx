@@ -41,8 +41,7 @@ function onePager(sections: Section[], project: Project, name?: string) {
   const brand = section('品牌角色');
   const claim = section('核心主张');
   const touch = sections.find(s => /^视觉与.*触点$/.test(s.heading));
-  const measures = section('衡量方式');
-  if (!lead || !audience || !brand || !claim || !touch || !measures) return null;
+  if (!lead || !audience || !brand || !claim || !touch) return null;
   const references = (section('研究结论')?.lines ?? []).flatMap(line => {
     const match = line.match(/^研究\s+(\d+)[：:]\s*(.+)$/);
     if (!match) return [];
@@ -53,7 +52,7 @@ function onePager(sections: Section[], project: Project, name?: string) {
     <h2>核心策略</h2>
     <p className="statement">{firstStatement(lead.lines)}</p>
     <div className="two-col">
-      {[audience, brand, claim, touch, measures].map(item => <div key={item.heading}>
+      {[audience, brand, claim, touch].map(item => <div key={item.heading}>
         <h3>{item.heading}</h3>
         {(item === audience || item === brand) ? item.lines.map((line, i) => <p key={i}>{line}</p>) : <>
           {item === claim && <p>{item.lines[0]}</p>}

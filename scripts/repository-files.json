@@ -232,6 +232,8 @@
     "apps/workbench-preview/nightflight/src/main.tsx",
     "apps/workbench-preview/nightflight/src/styles/base.css",
     "apps/workbench-preview/nightflight/src/styles/detail.css",
+    "apps/workbench-preview/nightflight/src/styles/fonts/NotoSerifSC-OFL.txt",
+    "apps/workbench-preview/nightflight/src/styles/fonts/noto-serif-sc-strategy-bold.ttf",
     "apps/workbench-preview/nightflight/src/styles/home.css",
     "apps/workbench-preview/nightflight/src/styles/library.css",
     "apps/workbench-preview/nightflight/src/styles/motion.css",

@@ -20,9 +20,11 @@ function render(body: string, p: Project = project) {
   return renderToStaticMarkup(createElement(StrategyOutput, { p, text: body }));
 }
 describe('夜航策略正文', () => {
-  it('保留核心原句及五个交付小节，隐藏后台执行记录', () => {
+  it('保留核心原句及四个交付小节，隐藏后台执行记录', () => {
     const html = render(text);
-    expect(html.match(/<h3>/g)).toHaveLength(5);
+    expect([...html.matchAll(/<h3>(.*?)<\/h3>/g)].map(m=>m[1])).toEqual(['人群洞察','品牌角色','核心主张','视觉与包装触点']);
+    expect(html).not.toContain('衡量方式');
+    expect(render(text.replace(/## 衡量方式[\s\S]*?(?=## 研究结论)/, ''))).toBe(html);
     expect(html).toContain('先认出品类，再辨别风味。');
     expect(html).toContain('收拢规格行');
     expect(html).not.toContain('不相关的执行记录');
