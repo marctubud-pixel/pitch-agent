@@ -101,7 +101,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
   const rows=findings.flatMap((f,i)=>f && !f.visualOnly && [f.conclusion,f.source,f.evidence,f.implication].every(v=>typeof v==='string' && v.trim())
     ? [{...f,findingNumber:i+1}] : []);
   const eligible=new Set(rows.map(f=>f.findingNumber));
-  if (project.research?.ready!==true || !rows.length) {
+  if ((!project.research?.ready && !project.research?.conditional) || !rows.length) {
     const gap=project.research?.next || '请补查目标人群在实际接触场景中的选择依据，交回一条能与产品条件对应的已核发现。';
     return {body:'# 策略待补\n\n'+gap,researchReturn:gap};
   }
@@ -112,7 +112,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
     return findingNumbers.every(n=>eligible.has(n)) ? [{recommendation:a.recommendation,findingNumbers}] : [];
   });
   const context=JSON.stringify({carrier,brief:project.brief,materials:inputs.texts,findings:rows,
-    researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
+    handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
   for (let attempt=0;attempt<2;attempt++) {
     const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据同版已核研究制定本案包装或 KV 的一页策略。'});

@@ -150,7 +150,7 @@ export function ChatPanel({
         {p.stage === 'research' && p.status === 'waiting' && (
           <div className="msg-body">
             <p>{p.research?.digestPending ? '研究底稿已保存，摘要待编辑。' : p.research?.ready ? '研究已完成，可以查看后进入策略。'
-              : researchQuestion(p) ? '研究有了一项需要你判断的方向问题。' : '研究还需要补充依据。'}</p>
+              : researchQuestion(p) ? '研究有了一项需要你判断的方向问题。' : p.canRequestStrategy ? '已有研究可交策略研判，也可以先补查。' : '研究还需要补充依据。'}</p>
             <button className="btn" onClick={openResearch}>
               {p.research?.ready ? '查看研究结果' : '查看研究与补查'}
             </button>

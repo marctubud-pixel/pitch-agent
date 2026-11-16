@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.61.0",
+  "baselineVersion": "1.62.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -215,7 +215,7 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.10.0",
+      "version": "1.10.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
@@ -873,7 +873,7 @@
       "title": "夜航运行合同",
       "kind": "contract",
       "path": "docs/specs/nightflight-runtime.md",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"

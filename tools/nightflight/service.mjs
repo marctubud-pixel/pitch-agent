@@ -127,11 +127,20 @@ function continueResearch(p, archived = false) {
   note(p, '按研究缺口开始定向补查：' + p.research.next);
 }
 
+function canRequestStrategy(p) {
+  const r = p.research;
+  return p.stage === 'research' && p.status === 'waiting' && !p.claim && r && !r.ready &&
+    !r.digestPending && !r.strategyReturned && !p.events.some(e => e.text === '策略退回研究：' + r.next) &&
+    Array.isArray(r.findings) && r.findings.some(f => f && !f.visualOnly && /^https?:\/\//i.test(f.url) &&
+      [f.passage, f.source, f.evidence, f.conclusion, f.implication].every(v => typeof v === 'string' && v.trim()));
+}
+
 function publicView(p) {
   const { owner, claim, attemptKey, inputHash, commands, ...visible } = p;
   const unstore = ({ storageKey, ...record }) => record;
   return {
     ...visible,
+    canRequestStrategy: Boolean(canRequestStrategy(p)),
     artifacts: p.artifacts.map(unstore),
     attachments: p.attachments.map(unstore),
     versions: p.versions.map((v) => ({ ...v, artifacts: v.artifacts.map(unstore) })),
@@ -511,6 +520,7 @@ export function createNightflight({ root, runStage, runLayout }) {
               ...researchHandoff(live.research, live),
               ready: false,
               question: '',
+              strategyReturned: true,
               next: result.researchReturn,
             };
             note(live, '策略退回研究：' + result.researchReturn);
@@ -750,12 +760,14 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
       note(p,'开始从当前已核研究发现重新编辑摘要');
     } else if (kind === 'research_continue') {
-      check(p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly,
+      const conditional = canRequestStrategy(p);
+      check(!p.claim && (conditional || (p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly)),
         '没有等待交接的研究成果', 409);
+      if (conditional) p.research.conditional = true;
       p.researchOnly = false;
       p.stage = 'strategy';
       p.status = 'running';
-      note(p, '已确认查看研究结果，继续策略');
+      note(p, conditional ? '带已核发现和未决问题进入策略，由策略负责人判断能否成稿' : '已确认查看研究结果，继续策略');
     } else if (kind === 'research_again') {
       check(
         !p.claim &&

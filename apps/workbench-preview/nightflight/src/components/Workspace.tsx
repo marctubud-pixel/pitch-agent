@@ -47,7 +47,7 @@ export function Workspace({
     docs = p.artifacts.filter((a) => a.kind === 'text' && !isDeckPreview(a)),
     decks = p.artifacts.filter((a) => a.kind === 'pptx');
   const preview = p.artifacts.find(isDeckPreview);
-  const researchPaused = p.stage === 'research' && p.status === 'waiting' && !p.research?.ready && !researchQuestion(p);
+  const researchPaused = p.stage === 'research' && p.status === 'waiting' && !p.research?.ready && !p.canRequestStrategy && !researchQuestion(p);
   const revisions = (p.feedback || []).filter(
     (item) => 'stage' in item && (item.stage === 'visual' || item.stage === 'final'),
   );
@@ -58,7 +58,7 @@ export function Workspace({
         ? p.stage === 'research'
           ? researchQuestion(p)
             ? '查看研究发现，回答影响方向的问题。'
-            : p.research?.digestPending ? '打开研究，重新编辑摘要。' : p.research?.ready ? '查看研究结果，准备好后进入策略。' : '查看研究缺口，补查后再交给策略。'
+            : p.research?.digestPending ? '打开研究，重新编辑摘要。' : p.research?.ready ? '查看研究结果，准备好后进入策略。' : p.canRequestStrategy ? '查看已核结论，可带着缺口进入策略。' : '查看研究缺口，补查后再交给策略。'
           : p.stage === 'visual'
             ? '打开视觉稿，确认是否采用这一版做本地排版。'
             : '在对话里查看备选方向，选定后继续。'
@@ -86,7 +86,7 @@ export function Workspace({
           <p>
             {researchPaused
               ? '本轮研究暂停：现有依据不足以交给策略。无需作选择。'
-              : p.error || latest || '项目已建立。'}
+              : p.canRequestStrategy ? '已核发现可交策略负责人研判，未决问题随稿保留。' : p.error || latest || '项目已建立。'}
           </p>
           {p.status === 'running' && <span className="block-cursor" />}
         </div>

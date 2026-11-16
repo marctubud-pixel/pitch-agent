@@ -478,3 +478,25 @@ test('legacy one-page strategy reaches copy with the exact source file hash; cha
   await missing.action({kind:'retry'});
   assert.match((await missing.settled()).error,/未找到本项目当前策略稿/);
 });
+
+test('a saved finding can go to strategy for a conditional assessment while research gaps stay open',async t=>{
+  const finding={source:'公开报告',url:'https://example.org/report',evidence:'有可核记录',passage:'有可核记录',conclusion:'新品密集',implication:'先解决新品识别'};
+  const research={ready:false,findings:[finding],gaps:['渠道未定'],next:'新品识别可作条件性方向'};
+  const p=await legacyService(t,{stage:'research',research,researchFollowup:true},async ({stage,project,dir})=>{
+    assert.equal(stage,'strategy');
+    assert.equal(project.research.conditional,true);
+    assert.equal(project.research.ready,false);
+    assert.deepEqual(project.research.gaps,['渠道未定']);
+    await writeFile(join(dir,'待补.md'),'缺实际产品识别点');
+    return {researchReturn:'缺实际产品识别点',artifacts:[{kind:'text',name:'待补.md',text:'缺实际产品识别点'}]};
+  });
+  const current=await p.read();
+  assert.equal(current.canRequestStrategy,true);
+  await p.action({kind:'research_continue',expectedRevision:current.revision});
+  const returned=await p.settled();
+  assert.equal(returned.stage,'research');
+  assert.equal(returned.research.next,'缺实际产品识别点');
+  assert.equal(returned.canRequestStrategy,false);
+  const empty=await legacyService(t,{stage:'research',research:{...research,findings:[]}},()=>{throw Error('unexpected')});
+  assert.equal((await empty.action({kind:'research_continue',expectedRevision:1})).status,409);
+});

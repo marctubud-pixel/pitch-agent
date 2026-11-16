@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.61.0",
-  "registrySha256": "3d92add979f802a8a64ae3f366888abab94d14a54ec9088dcc142721df028240",
+  "baselineVersion": "1.62.0",
+  "registrySha256": "858ca470c0597b6722f14f698294200c10e39f48a88d46676c09ad3173a64f3c",
   "entries": {
     "agent.proposal-director": {
       "version": "1.1.0",
@@ -102,10 +102,10 @@
       }
     },
     "page.research": {
-      "version": "1.10.0",
+      "version": "1.10.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/research.md": "6c0720444341c14fdcfcfa47c86d6a74704f8f51cddb62e6203fa1917e184fdc"
+        "docs/pages/research.md": "4106cc39bb312208fc90563eba604cc143ee14fcd3a849bdf78b7a04446cba1d"
       }
     },
     "page.strategy": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "0a05829804d6e41bfa2f6a107657bb713df4a8829b2c593fcca60f95bad4142b"
+        "docs/specs/nightflight-runtime.md": "91d3a238fba7f7cb47cfcfa8ee480de008487709f496aa9c3b04838f23936212"
       }
     },
     "contract.nightflight-final-reader": {
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "fac833c4b7464f472b186139884b14863477c5d31f2e5d49510d198a5c73dea1",
+    "docs/specs/README.md": "378c567ca6b7aeda3dc2d361e67ebf03c4e254d2f8836a73f65fe28554821a9a",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
