@@ -1,9 +1,9 @@
 [
   {
-    "source": "四维研究出页前自动精简",
+    "source": "四维研究的检索、海报发布证据与全自动交接",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r21-20261117",
-    "sha256": "171d3450e022035a2ffab09eb305eefd4fe7aaa6f67ab17198fe5da045d2d454"
+    "sourceVersion": "r22-20261117",
+    "sha256": "0e184f2f2c330c86ddb95729ce75e5a8f92d07f56f9d667c5a27fcabc03aca06"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",

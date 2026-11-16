@@ -301,7 +301,9 @@ test('editor failure retains accepted research and retry resumes strategy from t
     }
     throw Error('未到检查点');
   }
-  await localRequest(service,'/api/projects',{id:'edit-retry',brief:'测试包装',mode:'auto'});
+  await localRequest(service,'/api/projects',{id:'edit-retry',brief:'测试包装',mode:'collab'});
+  const card=await settled();
+  await localRequest(service,path+'/action',{kind:'confirm_brief',expectedRevision:card.revision});
   const waiting=await settled();
   assert.equal(waiting.status,'waiting');
   assert.equal(waiting.research.digestPending,true);
@@ -455,7 +457,7 @@ test('legacy one-page strategy reaches copy with the exact source file hash; cha
 });
 
 for (const mode of ['auto','collab']) {
-  test(mode+' passes research gaps through strategy to copy without reopening research',async t=>{
+  test(mode+' applies its research handoff rule with a single source',async t=>{
     const stages=[];
     const f={conclusion:'新品密集',source:'报告',url:'https://example.org/report',evidence:'原文',passage:'原文',implication:'优先识别'};
     const research={ready:false,findings:[f],gaps:['渠道未知'],next:'可先解决新品识别'};
@@ -471,9 +473,17 @@ for (const mode of ['auto','collab']) {
     });
     await p.action(mode==='auto'?{kind:'retry'}:{kind:'research_continue',expectedRevision:1});
     const result=await p.settled();
+    if (mode==='auto') {
+      assert.equal(result.stage,'research');
+      assert.equal(result.status,'waiting');
+      assert.equal(result.canRequestStrategy,false);
+      assert.deepEqual(stages,['research','research']);
+      assert.equal((await p.action({kind:'research_continue',expectedRevision:result.revision})).status,409);
+      return;
+    }
     assert.equal(result.stage,'copy');
     assert.equal(result.error,'文案已收到策略稿');
-    assert.deepEqual(stages,mode==='auto'?['research','strategy','copy']:['strategy','copy']);
+    assert.deepEqual(stages,['strategy','copy']);
   });
 }
 
@@ -520,3 +530,56 @@ for (const [mode,status] of [['auto','unsupported'],['collab','unclear']]) {
     assert.deepEqual(calls,['brief','brief','research']);
   });
 }
+
+test('automatic handoff counts independent consumer evidence and published poster originals', async t=>{
+  const {automaticResearchGaps}=await import('./research-sources.mjs');
+  const chapters=['行业与市场','竞争与同类传播','人群与接触情境','产品与品牌'];
+  const project={briefScope:{types:['kv']}};
+  const findings=['market','competitor','audience','audience','audience','product'].map((subject,i)=>({
+    subject,source:'来源'+i,url:subject==='product'?'':'https://example.org/survey',evidence:'引文'+i,
+    passage:'原文'+i,implication:'策略用途',conclusion:'判断'+i,
+  }));
+  const sections=findings.map((f,i)=>({chapter:chapters[[0,1,2,2,2,3][i]],conclusion:f.conclusion,explanation:'解释',
+    evidenceIndices:i===5?[5,1]:[i]}));
+  const image={carrier:'kv',sameCategory:true,sha256:'a'.repeat(64),sourceUrl:'https://example.org/image',pageUrl:'https://example.org/poster'};
+  findings[1].images=[image];
+  const report={ready:true,findings,sections,gaps:['非关键的细分渠道未知']};
+  const missing=()=>automaticResearchGaps(report,project).map(g=>g.message).join(' ');
+  assert.match(missing(),/海报原图/);
+  image.publicationQuote='品牌发布本次宣传海报';
+  assert.equal(missing(),'');
+  findings[4].evidence=findings[3].evidence;
+  assert.match(missing(),/2\/3/);
+  findings[4].evidence='第三个调查问题的答案';
+  sections[5].evidenceIndices=[5];
+  assert.match(missing(),/外部资料/);
+  sections[5].evidenceIndices=[5,1];
+  // Use a nonvisual activity here; service-level image receipt validation is tested separately.
+  delete findings[1].images;
+  const p=await legacyService(t,{stage:'research',status:'failed',mode:'auto',briefScope:{types:['activity']}},async({stage,dir})=>{
+    if(stage==='strategy') throw Error('策略收到了完整研究');
+    await writeFile(join(dir,'研究.md'),'结论');
+    return {artifacts:[{kind:'text',name:'研究.md'}],research:report};
+  });
+  await p.action({kind:'retry'});
+  const state=await p.settled();
+  assert.equal(state.stage,'strategy');
+  assert.equal(state.error,'策略收到了完整研究');
+});
+
+test('a product image and an untraceable poster quote cannot become a published KV example', async()=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const url='https://example.org/campaign', page={url,title:'品牌发布页'};
+  const image={width:800,height:600,sha256:'a'.repeat(64),imageId:'ref-a',name:'ad.png',title:'作品',pageUrl:url,sourceUrl:url+'/ad.png'};
+  const quote='品牌在地铁发布本季主题海报。';
+  async function observe(publishedPoster,publicationQuote,sameCategory=true) {
+    return researchCompetitors({project:{brief:'一张海报'},carrier:'kv',pages:[page],
+      acquiredByPage:new Map([[page,[image]]]),readSource:async()=>({text:quote}),
+      call:async()=>({parsedOutput:{conclusion:'看过的案例',implication:'画面比较',
+        samples:[{source:'ref-a',title:'已看图',observation:'中央为标题',sameCategory,publishedPoster,publicationQuote}]}})});
+  }
+  assert.equal(await observe(false,quote),null);
+  assert.equal(await observe(true,'另一个项目的说明'),null);
+  assert.equal(await observe(true,quote,false),null);
+  assert.equal((await observe(true,quote)).finding.images[0].publicationQuote,quote);
+});

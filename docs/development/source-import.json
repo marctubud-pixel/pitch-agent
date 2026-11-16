@@ -2251,8 +2251,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "1410f7dbb5ee6046c7cd38a5973b619e7501e70d35f8f02a147aa735c2673a08",
-      "reason": "简报待澄清时打开项目消息并聚焦输入框。"
+      "sha256": "755d486744bb7ca1ef2f6bd8fa17f246a4377570a5c2c3158bcae483297ed82b",
+      "reason": "全自动研究交接由后端按四维证据判定，移除浏览器打开项目时带缺口进入策略的动作。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
@@ -2263,8 +2263,8 @@
       "reason": "待澄清时提示用户补充委托，隐藏阶段放行操作。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "13196a345d48c86a1a08a88f895c7765d34743e732a9a50c1d768eab9ffc14f3",
-      "reason": "单负责人四维研究页与证据交接"
+      "sha256": "9e9bb555bbae30a3fcf326912c0726c98b5d61986f91ebf61e6245021e0664fd",
+      "reason": "全自动研究交接由后端按四维证据判定，移除浏览器打开项目时带缺口进入策略的动作。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",

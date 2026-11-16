@@ -1,7 +1,8 @@
 """Extract publisher links from the archived 360 Search results page."""
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, urlsplit, unquote
+import re
 import json
 import sys
 
@@ -42,6 +43,69 @@ class ReportSearchResults(HTMLParser):
             self.in_heading = False
 
 
-parser = ReportSearchResults()
+class YahooResults(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.results = []
+        self.link = ''
+        self.heading = False
+        self.title = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'a':
+            self.link = attrs.get('href') or ''
+        if tag == 'h3' and self.link and 'fc-2015C2-imp' in (attrs.get('class') or '').split():
+            self.heading = True
+            self.title = []
+
+    def handle_data(self, data):
+        if self.heading:
+            self.title.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'h3' and self.heading:
+            self.heading = False
+            url = self.link
+            if '/RU=' in url and '/RK=' in url:
+                url = unquote(url.split('/RU=', 1)[1].split('/RK=', 1)[0])
+            if url.startswith('https://') and not (urlsplit(url).hostname or '').endswith('yahoo.com'):
+                self.results.append({'url': url, 'title': ''.join(self.title).strip()})
+        if tag == 'a':
+            self.link = ''
+
+
+class PublisherResults(HTMLParser):
+    def __init__(self, provider):
+        super().__init__()
+        self.pattern = (r'https://socialbeta\.com/campaign/\d+' if provider == 'campaign'
+                        else r'https://www\.199it\.com/archives/\d+\.html')
+        self.results = []
+        self.url = ''
+        self.title = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a':
+            url = dict(attrs).get('href') or ''
+            if url.startswith('//'):
+                url = 'https:' + url
+            self.url = url if re.fullmatch(self.pattern, url) else ''
+            self.title = []
+
+    def handle_data(self, data):
+        if self.url:
+            self.title.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'a' and self.url:
+            title = ''.join(self.title).strip()
+            if title and not any(r['url'] == self.url for r in self.results):
+                self.results.append({'title': title, 'url': self.url})
+            self.url = ''
+
+
+provider = sys.argv[2] if len(sys.argv) > 2 else '360'
+parser = (PublisherResults(provider) if provider in ('campaign', 'reports') else
+          YahooResults() if provider == 'yahoo' else ReportSearchResults())
 parser.feed(Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace'))
 print(json.dumps(parser.results[:8]))
