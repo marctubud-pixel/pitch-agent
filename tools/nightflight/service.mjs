@@ -1,3 +1,4 @@
+import {validateResearchDigest} from './research-digest.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
 import {
@@ -88,6 +89,8 @@ function researchHandoff(report, project) {
     ready,
     ...(text(report?.methodVersion) ? { methodVersion: report.methodVersion } : {}),
     findings,
+    ...(ready && report.digestPending===true ? {digestPending:true} : {}),
+    ...(ready && report.digest !== undefined ? {digest:validateResearchDigest(report.digest,findings)} : {}),
     question:
       !ready &&
       findings.length &&
@@ -219,7 +222,7 @@ export function createNightflight({ root, runStage, runLayout }) {
           save(p);
           const dir = mkdtempSync(join(root, id, 'attempt-'));
           const input = publicView(p);
-          if (p.stage === 'research') {
+          if (p.stage === 'research' && !p.researchDigestOnly) {
             const previous = p.versions.findLast(
               (v) => v.research || v.artifacts.some((a) => a.stage === 'research'),
             );
@@ -272,7 +275,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             const source = type === 'attachments' && p.stage === 'layout'
               ? [...p.attachments, ...(p.visualAdoption?.materials ?? []), ...p.artifacts.filter(a =>
                 a.visual?.role === 'reference' && input.layoutCompetitorReferences.includes(a.name))] : p[type];
-            const records = source.filter(a=>!(type==='artifacts' && a.visual?.role==='reference') && !(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
+            const records = p.researchDigestOnly ? [] : source.filter(a=>!(type==='artifacts' && a.visual?.role==='reference') && !(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
@@ -295,6 +298,22 @@ export function createNightflight({ root, runStage, runLayout }) {
           });
           const live = get(id);
           check(live?.claim === claim, '该次运行已结束', 409);
+          if (p.researchDigestOnly) {
+            const digest = validateResearchDigest(result.researchDigest,live.research.findings);
+            archiveVersion(live);
+            live.research = {...live.research,digest};
+            delete live.researchDigestOnly;
+            delete live.research.digestPending;
+            if (p.researchOnly) live.status = 'waiting';
+            else live.stage = 'strategy';
+            live.error = null;
+            live.claim = null;
+            live.owner = null;
+            note(live,'已从本版核实发现编辑研究摘要');
+            save(live);
+            claim = null;
+            continue;
+          }
           check(Array.isArray(result.artifacts) && result.artifacts.length, '这一阶段没有交回文件', 422);
           if (p.stage === 'copy') {
             const names = result.directions;
@@ -361,7 +380,10 @@ export function createNightflight({ root, runStage, runLayout }) {
           if (p.stage === 'research') {
             live.research = researchHandoff(result.research, live);
             if (live.research.ready) {
-              if (live.researchOnly) {
+              if (live.research.digestPending) {
+                live.researchDigestOnly = true;
+                note(live,'已保存完整研究底稿，继续编辑客户摘要');
+              } else if (live.researchOnly) {
                 live.status = 'waiting';
                 note(live, '本轮研究已完成，可查看证据后进入策略');
               } else {
@@ -399,7 +421,9 @@ export function createNightflight({ root, runStage, runLayout }) {
       } catch (error) {
         const p = get(id);
         if (p && p.claim === claim) {
-          p.status = 'failed';
+          if (p.researchDigestOnly && !p.research?.digest) p.research.digestPending = true;
+          p.status = p.researchDigestOnly ? 'waiting' : 'failed';
+          delete p.researchDigestOnly;
           p.claim = null;
           p.owner = null;
           p.error = String(error.message).slice(0, 1800);
@@ -431,7 +455,9 @@ export function createNightflight({ root, runStage, runLayout }) {
       if (!alive) {
         p.claim = null;
         p.owner = null;
-        p.status = 'failed';
+        if (p.researchDigestOnly && !p.research?.digest) p.research.digestPending = true;
+        p.status = p.researchDigestOnly ? 'waiting' : 'failed';
+        delete p.researchDigestOnly;
         p.error = '本地服务已重启，请核对已保存的结果后重试当前阶段。';
         note(p, p.error);
         save(p);
@@ -531,7 +557,7 @@ export function createNightflight({ root, runStage, runLayout }) {
         return p;
       }
     }
-    if (kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue')
+    if (kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue')
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
     if (kind === 'choice') {
       check(
@@ -557,8 +583,13 @@ export function createNightflight({ root, runStage, runLayout }) {
       note(p, '用户采用本版视觉稿，继续本地排版');
       p.stage = 'layout';
       p.status = 'running';
+    } else if (kind === 'research_digest') {
+      check(!p.claim && p.stage === 'research' && p.status === 'waiting' && p.research?.ready,'没有等待交接的已核研究结果',409);
+      p.researchDigestOnly = true;
+      p.status = 'running';
+      note(p,'开始从当前已核研究发现重新编辑摘要');
     } else if (kind === 'research_continue') {
-      check(p.stage === 'research' && p.status === 'waiting' && p.research?.ready && p.researchOnly,
+      check(p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly,
         '没有等待交接的研究成果', 409);
       p.researchOnly = false;
       p.stage = 'strategy';

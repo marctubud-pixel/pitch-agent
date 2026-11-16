@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { STAGES, STAGE_BY_ID } from '../data/project';
 import { researchDisplay } from './researchDisplay';
 import { MediaStageOutput } from './MediaStageOutput';
-import { ResearchFindings, TextStageOutput } from './TextStageOutput';
+import { ResearchDigest, ResearchImageGallery, TextStageOutput } from './TextStageOutput';
 import { clock, phase, researchQuestion, safeURL, stageLabel, type Artifact, type Project } from '../live';
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
@@ -11,7 +11,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
   const [focus, setFocus] = useState('');
   const handoff = p.research;
   const { questions, clues } = researchDisplay(handoff?.gaps || []);
-  const clueCount = clues.length + (handoff && !handoff.ready ? handoff.findings.length : 0);
+  const clueCount = clues.length + (handoff && !handoff.ready ? handoff.digest?.length ?? 0 : 0);
   const isResearch = p.stage === 'research';
   const isChecking = isResearch && p.status === 'running';
   const question = researchQuestion(p);
@@ -19,15 +19,21 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
   const submitResearch = async (text: string) => {
     if (await act('research_again', text)) setFocus('');
   };
-  const canStart = p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
+  const canStart = !handoff?.digestPending && p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
   if (p.stage === 'brief') return null;
   return (
     <div className="research-review">
       <section className="block">
         {isChecking && (
-          <p role="status">{p.researchFollowup ? '正在按本轮缺口补查。' : '正在查找与简报相关的来源。'}</p>
+          <p role="status">{handoff?.ready ? '正在编辑研究摘要。' : p.researchFollowup ? '正在按本轮缺口补查。' : '正在查找与简报相关的来源。'}</p>
         )}
-        {handoff?.ready && (
+        {handoff?.ready && isResearch && p.status === 'waiting' && !handoff.digest?.length && (
+          <>
+            {handoff.digestPending && <p role="status">{p.error || '研究底稿已保存，摘要待编辑。'}</p>}
+            <button className="btn btn-dark" disabled={busy} onClick={() => act('research_digest', '')}>{handoff.digestPending ? '重新编辑摘要' : '从现有底稿编辑摘要'}</button>
+          </>
+        )}
+        {handoff?.ready && !handoff.digestPending && !isChecking && (
           isResearch && p.status === 'waiting'
             ? <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>进入策略</button>
             : <p className="research-state">可交给策略</p>
@@ -56,7 +62,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {!!clueCount && (
           <details className="research-original">
             <summary>已有线索（{clueCount}）</summary>
-            {handoff && !handoff.ready && !!handoff.findings.length && <ResearchFindings report={handoff} artifacts={p.artifacts} />}
+            {handoff && !handoff.ready && !!handoff.digest?.length && <ResearchDigest report={handoff} artifacts={p.artifacts} />}
             <ul className="plain-list">{clues.map((clue) => <li key={clue}>{clue}</li>)}</ul>
           </details>
         )}
@@ -166,6 +172,7 @@ export function DetailSheet({
       target.scrollIntoView({ block: 'start' });
     } else el?.scrollTo(0, 0);
   }, [id, name]);
+  const findings = id === 'research' ? p.research?.findings ?? [] : [];
   const a = p.artifacts.filter((x) => x.stage === id),
     e = p.events.filter((x) => x.stage === id);
   return (
@@ -206,9 +213,20 @@ export function DetailSheet({
           {id === p.stage && (p.status === 'failed' || id === 'visual') && id !== 'research' && (
             <Decisions p={p} act={act} busy={busy} />
           )}
-          {id !== 'copy' && a.length > 0 && (
+          {id !== 'copy' && (a.length > 0 || findings.length > 0) && (
             <details key={id + '-originals'} className="research-original">
-              <summary>原始文件与下载（{a.length}）</summary>
+              <summary>{id === 'research' ? '研究底稿与原图' : `原始文件与下载（${a.length}）`}</summary>
+              {findings.map((finding, i) => (
+                <section className="block" key={i}>
+                  <h3>{finding.conclusion}</h3>
+                  <p>{finding.evidence}</p>
+                  {finding.source && <p>{/^https?:\/\//i.test(finding.url)
+                    ? <a href={finding.url} target="_blank" rel="noopener noreferrer">{finding.source}</a>
+                    : finding.source}</p>}
+                  {finding.implication && <p>{finding.implication}</p>}
+                  {!!finding.images?.length && <ResearchImageGallery images={finding.images} artifacts={a} />}
+                </section>
+              ))}
               {a.map((x) =>
                 x.kind === 'text' && !x.name.endsWith('.deck.json') ? (
                   <FileView key={x.url} a={x} />

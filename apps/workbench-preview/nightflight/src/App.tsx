@@ -180,7 +180,7 @@ export function App() {
         text,
         attachments,
         expectedRevision:
-          kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' ? p.revision : undefined,
+          kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;
