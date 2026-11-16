@@ -10,7 +10,7 @@
 ## 竞品
 
 - **国内已有两款同规格原味盒装。** 湖北省市场监管局 2023 年抽检目录第 1100、1101 项记录了武汉盒马的每日盒子经典原味燕麦奶和欧扎克燕麦原味植物奶，均为 250 mL/盒。目录未给出售价，货架价格比较仍缺同期同渠道的标价。[原始抽检附表](https://scjg.hubei.gov.cn/zfxxgk/fdzdgknr/zdly/spjg/cjgg/202309/P020230913537920592045.pdf)
-- **两款海外包装用不同的字序区分品牌和品类。** Oatly 浅蓝色纸盒把品类字放在大号品牌字下方的箭头内。Oatside 白色纸盒以竖排品牌字占据正面，品类字放在上方。原图随项目底稿保存。[Oatly 产品页](https://www.oatly.com/products/oat-drink/oat-drink-250ml) · [Oatside 产品页](https://oatside.com/en-au/products/barista-blend/)
+- **两款海外包装用不同的字序区分品牌和品类。** Oatly 浅蓝色纸盒把品类字放在大号品牌字下方的箭头内。Oatside Original 200 mL 纸盒以竖排黑色品牌字占据正面，黄色菱形标出 Original。原图随项目底稿保存。[Oatly 产品页](https://www.oatly.com/products/oat-drink/oat-drink-250ml) · [Oatside 产品页](https://oatside.com/en-au/products/barista-blend/)
 
 ## 用户
 
