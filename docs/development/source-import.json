@@ -2263,8 +2263,8 @@
       "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "a6b4e50453661396e8180180c1a7c0ce55ad2ab93d20cb5b2bb15e2701bbc882",
-      "reason": "已核研究底稿和精选发现可打开对应上传资料，保留现有研究详情与历史入口。"
+      "sha256": "46b86d93f8fd7fff4940a2ace9cf8cdef9a0d0edbd2ac8731562259895768cde",
+      "reason": "研究底稿的竞品图关联当前项目上传的说明原件，可下载核对。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
@@ -2303,8 +2303,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "b136f4918bb55f520001dbf33c5927f1817375834db2ee5a9bba2d8c9cf8ae9c",
-      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
+      "sha256": "6806b90a096d2fdfd38d25920eeca6a639a9e4218bf6f86da942dfe498eeee15",
+      "reason": "研究图片证据按逐图观察、创作者说明和本案启发分层，策略建议可就地核对依据。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {
       "sha256": "5a52a2343c4c95ac3e08e4098a16e8ce005e5e537b3ad69a7c0868ff75299e42",

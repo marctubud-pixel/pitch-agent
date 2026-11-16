@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.50.0",
-  "registrySha256": "94cb5c03421131939763ff6a41e9d69aaa6ee980db8e7b851c8ab739770b2e7c",
+  "baselineVersion": "1.51.0",
+  "registrySha256": "0d53f4ca40f43e10eae3ffc6a841630124c7a649dadda46c1682354a1514d787",
   "entries": {
     "agent.proposal-director": {
       "version": "1.1.0",
@@ -18,10 +18,10 @@
       }
     },
     "agent.research-owner": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/research-owner.md": "01b283197b2eb8d521b41ed20824425ead33145901e34cfc8d85a1cc27bf79c4"
+        "docs/agents/research-owner.md": "059d5f6d16a473de9ec85d354c2a96945b8248deb89a4a60cfa00c8afed06cff"
       }
     },
     "agent.strategy-owner": {
@@ -102,10 +102,10 @@
       }
     },
     "page.research": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/research.md": "1c430af03cee0152369310a0413d96caa582cc5d187d59be3edbee16c99dcfb0"
+        "docs/pages/research.md": "60babbf28ceadfd07cefa03a9237b6bb3c823ceeb622bad535cc05ab10725247"
       }
     },
     "page.strategy": {
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "b5992921a5005f2a78394df3691cc02df186b9aaea1552459d15ad5225fef00e",
+        "skills/design-research-lead/SKILL.md": "a0c7417af5a89aab41b23fbffa878fc81dab0417d5cb43a0a8d271e6e96cddb5",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -266,10 +266,10 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.21.0",
+      "version": "1.22.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "63f7975ac1c0889eb8c1e6009ac31fcfedaf629c91a27cdcc728a2369d6d904f"
+        "docs/specs/nightflight-stage-output.md": "9f1af4bf06b956aae23e196dd9661a0fd56ef2428851dfe9e394db7a8e4039a6"
       }
     },
     "contract.workflow": {
@@ -504,7 +504,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "3a965b615709b60301fe28476d9005c2b43c78fe68c2f3b28dfc1c3f7a736422",
-    "docs/specs/README.md": "be563c7d64000a06082e90a29b527dd1ece4e485aadb5df06ca6791554295664",
+    "docs/specs/README.md": "7da18cb813c96e0828914bce93ec4f824ec8b809d4c08d3d71f9b73ed40910b4",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

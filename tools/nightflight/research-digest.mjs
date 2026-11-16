@@ -35,7 +35,7 @@ export function missingResearchCoverage(findings) {
 
 const string = {type:'string'};
 const fields = {chapter:{type:'string',enum:chapters}, title:string, detail:string, findingIndex:{type:'integer'}};
-const schema = {type:'object',additionalProperties:false,required:['digest'],properties:{digest:{
+const schema = {type:'object',additionalProperties:false,required:['digest','strategyAdvice'],properties:{strategyAdvice:{type:'array',items:{type:'object',additionalProperties:false,required:['recommendation','findingIndices'],properties:{recommendation:string,findingIndices:{type:'array',items:{type:'integer'}}}}},digest:{
   type:'array',items:{type:'object',additionalProperties:false,required:Object.keys(fields),properties:fields},
 }}};
 
@@ -48,13 +48,13 @@ function numbers(text) {
 
 export function validateResearchDigest(rows, findings) {
   if (!Array.isArray(rows)) throw Error('研究精选必须是一组条目');
-  if (!rows.length && findings.some(f=>chapters.includes(f.chapter))) throw Error('至少精选一条与本案有关的已核判断');
+  if (!rows.length && findings.some(f=>!f.visualOnly && chapters.includes(f.chapter))) throw Error('至少精选一条与本案有关的已核判断');
   const reviewed = findings.some(f=>f.editorialAngle);
   const seen = new Set();
   for (const row of rows) {
     const index = row?.findingIndex;
     const finding = findings[index];
-    if (!Number.isInteger(index) || !finding || seen.has(index) || !chapters.includes(row.chapter) || !chapters.includes(finding.chapter) ||
+    if (!Number.isInteger(index) || !finding || finding.visualOnly || seen.has(index) || !chapters.includes(row.chapter) || !chapters.includes(finding.chapter) ||
         (reviewed && row.chapter!==finding.chapter) || (finding.images?.length && row.chapter!=='竞争与同类传播'))
       throw Error('研究精选引用的发现不存在、重复或归组不符');
     seen.add(index);
@@ -86,11 +86,23 @@ export function validateResearchDigest(rows, findings) {
   })));
 }
 
+export function validateStrategyAdvice(items, digest) {
+  const published = new Set(digest.map(row=>row.findingIndex));
+  if (!Array.isArray(items) || items.length>3 || (published.size>0 && !items.length))
+    throw Error('请从已核实的首页结论收成一至三条策略建议');
+  return items.map(({recommendation,findingIndices})=>{
+    if (typeof recommendation!=='string' || !recommendation.trim() || !Array.isArray(findingIndices) ||
+        !findingIndices.length || new Set(findingIndices).size!==findingIndices.length ||
+        findingIndices.some(i=>!published.has(i))) throw Error('策略建议必须引用本次摘要中已展示的发现编号');
+    return {recommendation:recommendation.trim(),findingIndices};
+  });
+}
+
 export async function editResearchDigest(call, findings, project) {
   const reviewed = findings.some(f => f.editorialAngle);
-  const eligible = findings.map((f,findingIndex)=>({findingIndex,chapter:f.chapter,conclusion:f.conclusion,evidence:f.evidence,
-    source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).map(image=>image.observation)})).filter(f=>chapters.includes(f.chapter) && (!reviewed || f.angle));
-  if (!eligible.length) return [];
+  const eligible = findings.map((f,findingIndex)=>({findingIndex,visualOnly:f.visualOnly,chapter:f.chapter,conclusion:f.conclusion,evidence:f.evidence,
+    implication:f.implication,caseTakeaways:(f.images ?? []).filter(i=>i.creatorRationale).map(i=>i.takeaway).filter(Boolean),source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).filter(image=>!Object.hasOwn(image,'creatorRationale') || image.creatorRationale).map(image=>image.observation)})).filter(f=>!f.visualOnly && chapters.includes(f.chapter) && (!reviewed || f.angle));
+  if (!eligible.length) return {researchDigest:[],strategyAdvice:[]};
   const productFacts = findings.filter(f => f.chapter === '产品与品牌').map(f => f.conclusion);
   const task = {
     editorial: true,
@@ -115,12 +127,17 @@ export async function editResearchDigest(call, findings, project) {
     '删除“摘要未确认样本量”“不能据此推断销量”等逐条局限尾注。若局限确实改变判断，在陈述中缩小范围：渠道数据只说调查中的购买渠道，样本只代表受访者。范围仍说不清或结论不能成立时，舍弃整条。不要删去会改变结论的年份、人群或场景。',
     '相关且口径明确的数据应保留数字、单位、样本范围，原文不能支持的数据一律不写。',
     '不得把相邻品类或外国样本写成本案调查，不下购买效果断言。',
+    'strategyAdvice 写一至三条给策略负责人的具体设计建议，每条的 findingIndices 只引用本版所选 digest 的原 findingIndex，不写市场预测或未经证实的功能承诺。建议应明确在本案的哪个触点、优先讲什么、用什么方式测试。',
     '只输出客户读得懂的短句，不写流程、来源编号和执行说明。',
   ].join('');
   let correction = '';
   for (let attempt=0;attempt<2;attempt++) {
     const result = await call(instruction+correction,[],schema,task);
-    try { return validateResearchDigest(result.parsedOutput?.digest,findings); }
+    try {
+      const researchDigest = validateResearchDigest(result.parsedOutput?.digest,findings);
+      const strategyAdvice = validateStrategyAdvice(result.parsedOutput?.strategyAdvice,researchDigest);
+      return {researchDigest,strategyAdvice};
+    }
     catch(error) {
       if (attempt===1) throw error;
       correction='上一次输出未通过校验，请针对以下问题重编：'+error.message;

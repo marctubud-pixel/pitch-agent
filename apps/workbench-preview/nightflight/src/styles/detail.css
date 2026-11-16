@@ -164,6 +164,9 @@ details p { font-size: 14.5px; }
 .research-image-gallery img { display: block; width: 100%; height: clamp(190px, 26vw, 290px); object-fit: contain; }
 .research-image-gallery figcaption { margin-top: 8px; overflow-wrap: anywhere; }
 .research-image-gallery figcaption strong { font-size: 15px; }
+.research-case-note { margin-top: 14px; }
+.research-case-note h4 { margin: 0 0 4px; font-size: 14px; }
+.research-case-note blockquote { margin: 8px 0; padding-left: 12px; border-left: 2px solid var(--line); }
 .research-image-gallery figcaption p { margin: 4px 0; }
 .research-image-gallery figcaption a { color: var(--mute); font-size: 13px; text-underline-offset: 3px; }
 .research-next { margin-top: 14px; }

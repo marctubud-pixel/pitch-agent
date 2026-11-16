@@ -62,7 +62,7 @@ function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
   );
 }
 
-export function ResearchImageGallery({ images, artifacts }: { images: ResearchImage[]; artifacts: Artifact[] }) {
+export function ResearchImageGallery({ images, artifacts, attachments }: { images: ResearchImage[]; artifacts: Artifact[]; attachments?: Asset[] }) {
   return (
     <div className="research-image-gallery">
       {images.map((image) => {
@@ -81,6 +81,19 @@ export function ResearchImageGallery({ images, artifacts }: { images: ResearchIm
               {/^https?:\/\//i.test(image.pageUrl) && (
                 <a href={image.pageUrl} target="_blank" rel="noopener noreferrer" aria-label={`查看${image.title}的出处`}>查看出处 ↗</a>
               )}
+              {image.creatorRationale && image.rationaleQuote && /^https?:\/\//i.test(image.rationaleSourceUrl || '') && (
+                <div className="research-case-note">
+                  <h4>创作者说明</h4>
+                  <p>{image.creatorRationale}</p>
+                  <details>
+                    <summary>核对原话</summary>
+                    <blockquote>{image.rationaleQuote}</blockquote>
+                    {image.rationaleAttachment && <p>核对材料　<ResearchSource finding={{ source: image.rationaleAttachment, url: '' }} attachments={attachments} /></p>}
+                    <a href={image.rationaleSourceUrl} target="_blank" rel="noopener noreferrer">查看说明出处 ↗</a>
+                  </details>
+                </div>
+              )}
+              {image.takeaway && <div className="research-case-note"><h4>对本案的启发</h4><p>{image.takeaway}</p></div>}
             </figcaption>
           </figure>
         );
@@ -98,7 +111,7 @@ const digestChapters = [
 
 type Finding = ResearchReport['findings'][number];
 
-export function ResearchSource({ finding, attachments = [] }: { finding: Finding; attachments?: Asset[] }) {
+export function ResearchSource({ finding, attachments = [] }: { finding: Pick<Finding, 'source' | 'url'>; attachments?: Asset[] }) {
   const matches = attachments.filter(file => file.name === finding.source);
   if (/^https?:\/\//i.test(finding.url)) return (
     <a href={finding.url} target="_blank" rel="noopener noreferrer">{finding.source || finding.url} · 打开网页</a>
@@ -138,7 +151,7 @@ export function ResearchDigest({ report, artifacts, attachments }: { report: Res
                       <details>
                         <summary>{finding.images?.length ? `查看竞品原图与依据（${finding.images.length}）` : '依据与来源'}</summary>
                         {finding.images?.length ? (
-                          <ResearchImageGallery images={finding.images} artifacts={artifacts} />
+                          <ResearchImageGallery images={finding.images} artifacts={artifacts} attachments={attachments} />
                         ) : (
                           <>
                             <p>{finding.evidence}</p>
@@ -158,6 +171,34 @@ export function ResearchDigest({ report, artifacts, attachments }: { report: Res
         );
       })}
       <ResearchGaps gaps={gaps.filter(gap => !digestChapters.some(([chapter]) => gap.startsWith(chapter)))} />
+      {report.ready && !!report.strategyAdvice?.length && (
+        <section className="block research-advice">
+          <h2>给策略的建议</h2>
+          <ol className="findings">
+            {report.strategyAdvice.map(({ recommendation, findingIndices }, index) => {
+              const evidence = [...new Set(findingIndices)].map(i => report.findings[i]).filter(Boolean);
+              if (!evidence.length) return null;
+              return <li key={index}>
+                <span className="finding-no">{index + 1}</span>
+                <div>
+                  <h3>{recommendation}</h3>
+                  <details>
+                    <summary>查看研究依据（{evidence.length}）</summary>
+                    {evidence.map((finding, n) => (
+                      <div className="research-case-note" key={n}>
+                        <h4>{finding.conclusion}</h4>
+                        {finding.images?.length
+                          ? <ResearchImageGallery images={finding.images} artifacts={artifacts} attachments={attachments} />
+                          : <><p>{finding.evidence}</p><ResearchSource finding={finding} attachments={attachments} /></>}
+                      </div>
+                    ))}
+                  </details>
+                </div>
+              </li>;
+            })}
+          </ol>
+        </section>
+      )}
     </>
   );
 }

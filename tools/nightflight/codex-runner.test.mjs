@@ -5,7 +5,7 @@ import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promis
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
-import { validateResearchDigest, reviewedFindings, missingResearchCoverage } from './research-digest.mjs';
+import { validateStrategyAdvice, validateResearchDigest, reviewedFindings, missingResearchCoverage } from './research-digest.mjs';
 import { createStageRunner } from './codex-runner.mjs';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
@@ -139,8 +139,12 @@ process.stdin.on('end',()=>{
  if(action.startsWith('research-')){
    const schema=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1],'utf8')).properties;
    if(action==='research-followup' && !input.includes('用户暂不确定渠道'))process.exit(10);
-   if(schema.queries) body={queries:['公开茶类年报']};
+   if(schema.queries) {
+     if(!args.includes('web_search="disabled"')) process.exit(30);
+     body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
+   }
    else if(schema.findings) {
+     if (action==='research-combined' && !(input.includes('Step 2.5 包装') && input.includes('Step 3.5 KV'))) process.exit(31);
      console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'search',queries:['测试公开品类']}}}));
      body={findings:[{chapter:'行业与市场',conclusion:'茶礼场景更强调赠礼用途',source:'合成行业报告',url:'https://source.example.org/report',evidence:action==='research-fiction'?'这是虚构引文':'本次样本单列礼盒用途',implication:'策略需比较礼赠与日常使用情境'}],gaps:['渠道尚未选定'],next:'比较可核实的渠道样本'};
      if(action==='research-brief-only') Object.assign(body.findings[0],{
@@ -155,11 +159,11 @@ process.stdin.on('end',()=>{
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
-     body={samples:[{source:packet.sources[0].source,title:'样本茶盒',observation:'包装中央标有茶类'}],conclusion:'该样本正面标出品类',implication:'比较正面字序'};
+     body={samples:[{source:packet.sources[0].source,title:'样本茶盒',observation:'包装中央标有茶类',sameCategory:true,strategyGroup:'突出品类名称',creatorRationale:'以品类字突出茶类',rationaleSourceUrl:packet.sources[0].pageUrl,rationaleQuote:'设计方把茶类名放在中央',takeaway:'可借品类字读序，仅适用于正面展示。'}],conclusion:'该样本正面标出品类',implication:'比较正面字序'};
    } else if(schema.digest) {
      if (!args.includes('web_search="disabled"') || input.includes('用户暂不确定渠道') || !input.includes('独立研究编辑')) process.exit(19);
      const {findings}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
-     body={digest:findings.map(f=>({chapter:f.chapter,findingIndex:f.findingIndex,title:f.conclusion,detail:f.evidence}))};
+     body={strategyAdvice:[{recommendation:'优先测试品类信息',findingIndices:[findings[0].findingIndex]}],digest:findings.map(f=>({chapter:f.chapter,findingIndex:f.findingIndex,title:f.conclusion,detail:f.evidence}))};
    } else if(schema.accepted){
      if(!input.includes('独立会话') || !(input.includes('本次样本单列礼盒用途') || input.includes('配料为水和燕麦') || input.includes('礼盒上架')))process.exit(11);
      body={ready:['research-ok','research-brief-only','research-thin'].includes(action),accepted:[0],labels:[],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
@@ -248,7 +252,7 @@ async function fixture(t, action, options={}) {
     lookup:async()=>[{address:'93.184.216.34',family:4}],
     transport:async ({url})=>{
       requests.push(url.href);
-      if (url.href==='https://source.example.org/product') return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>测试茶包装</title><img src="/product.png">')};
+      if (url.href==='https://source.example.org/product') return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>测试茶包装</title><p>设计方把茶类名放在中央。</p><img src="/product.png">')};
       if (url.href==='https://source.example.org/product.png') return {status:200,headers:{'content-type':'image/png'},body:competitorPng};
       if(url.hostname==='lite.duckduckgo.com') throw Error('fixture discovery unavailable');
       if(url.hostname==='cn.bing.com') return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>合成报告</title><link>https://source.example.org/report</link></item></channel></rss>')};
@@ -699,6 +703,16 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
 });
 
 
+test('strategy advice cites only findings in the current customer digest',()=>{
+  const digest=[{findingIndex:3}];
+  const recommendation='在货架小样上测试品类辨认';
+  const advice=[{recommendation,findingIndices:[3]}];
+  assert.deepEqual(validateStrategyAdvice(advice,digest),advice);
+  for (const findingIndices of [[0],[3,3],[],['3']])
+    assert.throws(()=>validateStrategyAdvice([{recommendation,findingIndices}],digest),/必须引用/);
+  assert.throws(()=>validateStrategyAdvice([],digest),/一至三条/);
+});
+
 test('editorial selections keep their source, chapter, quantities and visual board',()=>{
   const findings=[
     {chapter:'人群与接触情境',evidence:'口味为50.1%，价格为50.9%'},
@@ -772,6 +786,7 @@ for (const decision of ['accept','reject']) {
       return;
     }
     assert.equal(board.editorialAngle,'画面与信息层级');
+    assert.match(research.gaps.join(' '),/1 种同品类创作策略/);
     const [ref]=board.images;
     assert.equal(ref.sha256,createHash('sha256').update(competitorPng).digest('hex'));
     assert.equal(ref.pageUrl,'https://source.example.org/product');
@@ -781,3 +796,14 @@ for (const decision of ['accept','reject']) {
     assert.deepEqual(await readFile(join(f.dir,ref.name)),competitorPng);
   });
 }
+
+
+test('a packaging and KV brief collects and reviews both carrier-specific gaps after the offline anchors',async t=>{
+  const f=await fixture(t,'research-combined');
+  f.project.brief='测试茶，需要同时制作包装与春节KV。';
+  const {research,artifacts}=await f.run('research');
+  assert.equal(research.anchorQuestions.length,4);
+  assert.match(artifacts[0].text,/研究载体：包装与KV/);
+  assert.match(research.gaps.join(' '),/包装仅核实 0 种同品类创作策略/);
+  assert.match(research.gaps.join(' '),/KV 缺少实际发布的主画面/);
+});

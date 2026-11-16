@@ -1,4 +1,4 @@
-import {validateResearchDigest} from './research-digest.mjs';
+import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
 import {
@@ -89,6 +89,7 @@ function researchHandoff(report, project) {
     ready,
     ...(text(report?.methodVersion) ? { methodVersion: report.methodVersion } : {}),
     findings,
+    ...(Array.isArray(report?.anchorQuestions) ? {anchorQuestions:report.anchorQuestions} : {}),
     ...(ready && report.digestPending===true ? {digestPending:true} : {}),
     ...(ready && report.digest !== undefined ? {digest:validateResearchDigest(report.digest,findings)} : {}),
     question:
@@ -235,13 +236,17 @@ export function createNightflight({ root, runStage, runLayout }) {
               };
             if (previous?.research) {
               const refs = previous.research.findings?.flatMap(f=>f.images ?? []) ?? [];
+              const copied = new Set();
               input.previousResearchImages = refs.map(ref=>{
                 const file = previous.artifacts.find(a=>a.stage==='research' && a.kind==='image' && a.name===ref.name);
                 check(file,'上一版竞品研究图片缺失',422);
                 const bytes = readFileSync(disk(p,file.storageKey));
                 check(hash(bytes)===ref.sha256,'上一版竞品研究图片发生变化',422);
                 const path = join(dir,'previous-'+filename(file.name));
-                writeFileSync(path,bytes,{flag:'wx',mode:0o600});
+                if (!copied.has(path)) {
+                  writeFileSync(path,bytes,{flag:'wx',mode:0o600});
+                  copied.add(path);
+                }
                 return {...ref,path,imageId:'ref_'+ref.sha256,byteLength:bytes.length,mediaType:mime[extname(file.name).toLowerCase()]};
               });
             }
@@ -300,8 +305,9 @@ export function createNightflight({ root, runStage, runLayout }) {
           check(live?.claim === claim, '该次运行已结束', 409);
           if (p.researchDigestOnly) {
             const digest = validateResearchDigest(result.researchDigest,live.research.findings);
+            const strategyAdvice = validateStrategyAdvice(result.strategyAdvice,digest);
             archiveVersion(live);
-            live.research = {...live.research,digest};
+            live.research = {...live.research,digest,strategyAdvice};
             delete live.researchDigestOnly;
             delete live.research.digestPending;
             if (p.researchOnly) live.status = 'waiting';

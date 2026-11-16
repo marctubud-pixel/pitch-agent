@@ -53,6 +53,11 @@ const objectSchema = (properties) => ({
   additionalProperties: false,
 });
 const querySchema = objectSchema({ queries: stringList });
+const researchPlanSchema = objectSchema({
+  carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
+  anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
+  queries:stringList,
+});
 const researchChapters = ['行业与市场', '人群与接触情境', '竞争与同类传播', '产品与品牌', '研究结论'];
 const findingSchema = objectSchema({
   chapter: { type: 'string', enum: researchChapters },
@@ -63,7 +68,7 @@ const findingSchema = objectSchema({
   implication: stringField,
 });
 const reportSchema = objectSchema({
-  competitorPages: {type:'array',items:objectSchema({title:stringField,url:stringField,imageUrl:stringField})},
+  competitorPages: {type:'array',items:objectSchema({title:stringField,url:stringField,imageUrl:stringField,carrier:{type:'string',enum:['packaging','kv']},rationaleSourceUrl:stringField,rationaleQuote:stringField})},
   findings: { type: 'array', items: findingSchema },
   gaps: stringList,
   next: stringField,
@@ -158,11 +163,26 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     ? '本轮为定向补查。沿用已核发现，先检查四线中哪些公开材料可以补足。旧版要求门店实拍、访谈或回忆测试的缺口只约束相应说法。用户暂时无法确认时，对备选情境分别取证。'
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
   const coverageInstruction = '为行业、竞品、人群各找二至三个独立观察角度。同一数字拆分、同一事实换品牌或同一份研究的重复结论不计。行业查整个品类的变化、供给、价格带或销售结构；竞品查真实作品与不同商品主张、规格或价格；人群查受访者购买渠道、选择偏好与使用情境。渠道归类看观察对象，消费者自报购买地点是人群，行业销售渠道份额才是行业。参考角度：'+JSON.stringify(researchAngles)+'。';
+  const scope = project.proposalKind || taskKind(project.brief || '',false);
   const plan = await call(
-    modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多四条宽口径查询，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：设计的核心渠道与场景、头部竞品要解决的问题及压力、用户决策过程中要回答的问题、KV传播节点符号（纯包装写不适用，KV未知则写待核节点）。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多八条宽口径查询，按上述实际载体分配，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
-    querySchema,
+    researchPlanSchema,
+    {editorial:true},
   );
+  const anchorQuestions = strings(plan.parsedOutput?.anchorQuestions);
+  if (anchorQuestions.length!==4) throw Error('调研需先写清四个检索前锚点，请重新运行研究。');
+  const carrier = plan.parsedOutput.carrier==='packaging+kv' ? 'packaging+kv' : scope || plan.parsedOutput.carrier;
+  const carriers = carrier==='packaging+kv' ? ['packaging','kv'] : ['packaging','kv'].includes(carrier) ? [carrier] : [];
+  const branches = [
+    'Step 1 查近期行业原始白皮书、规模、零售/餐饮渠道与具体市场时期；行业销售主战场和本项目渠道分开。',
+    'Step 2 查近两年头部份额、财报或渠道变化与价格承压。记录市场、年份、规格、渠道、实际报价或箱规折算；压力需原始证据，不能从包装猜销量。找不到就列明缺口。',
+    'Step 3 用公开消费者研究比较同口径购买因素排序，区分自报问卷、联合分析/MaxDiff及真实行为。自报购买偏好不写成眼动或转化。',
+    'Step 4 同项冲突保留两个数字及各自地区、期间、分母、原采集机构和口径。每个判断用一条真实可读原件。',
+  ];
+  if (carriers.includes('packaging')) branches.push('Step 2.5 包装：主动查设计奖、设计机构、品牌的近三年同品类案例，目标至少三种不同策略，每组1–3件。要商品原图、包装形式、具体策略在解决什么问题、品牌或创作者原文和适用前提。邻近品类另列；纯图只能展示。根据可核经营背景限定能借什么。');
+  if (carriers.includes('kv')) branches.push('Step 3.5 KV：依传播节点查近三年品牌实际发布画面、数英/营销机构案例，扩查同人群的邻近食品饮料节点案例，标清跨品类。每例查色彩、产品角色、符号、文案逻辑。节点未知时先做条件性研究，不擅定节日。');
+  const researchTask = '本次要回答的锚点：'+JSON.stringify(anchorQuestions)+'。本次载体 '+carrier+'。'+branches.join('');
   const queries = strings(plan.parsedOutput?.queries)
     .filter(
       (q) =>
@@ -170,7 +190,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
         !/[\r\n@:/]|\b1[3-9]\d{9}\b/u.test(q) &&
         !(project.brief?.length >= 12 && q.includes(project.brief.trim())),
     )
-    .slice(0, 4);
+    .slice(0, 8);
   const captures = new Map();
   const capture = (url) => {
     if (!captures.has(url))
@@ -219,7 +239,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const material = originals.map(({ url, source, text }) => ({ url, source, text: text.slice(0, 7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
-    modeInstruction + planning + coverageInstruction + '现在完成设计提案案头研究。先归纳行业、总体偏好、产品事实、竞品包装或KV四线，再解释这些材料共同提出什么策略取舍。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串）。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
+    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。先归纳行业、总体偏好、产品事实、竞品包装或KV四线，再解释这些材料共同提出什么策略取舍。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
       JSON.stringify(material),
     inputs.images,
     reportSchema,
@@ -265,23 +285,28 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     findings.push({ ...f, url: original.url || '' });
     passages.push(passage.slice(Math.max(0, offset - 240), offset + quote.length + 240));
   }
-  const carrier = project.proposalKind || taskKind(project.brief || '',false);
   const pages = [
     ...(draft.parsedOutput.competitorPages ?? []),
     ...originals.filter(item=>/产品|商品|包装|海报|案例|campaign|packaging|products?/iu.test(item.source+' '+item.url))
       .map(item=>({title:item.source,url:item.url})),
   ];
-  const board = carrier && await researchCompetitors({call, dir, project, carrier, signal, dependencies, onEvent,
-    pages, previous:project.previousResearchImages});
-  if (board) {
-    findings.push(board.finding);
-    passages.push(board.finding.evidence);
-  } else if (carrier) {
-    gaps.push('缺可核对的同类作品原图，当前无法形成包装或KV的画面比较结论。');
+  const boards = [];
+  const documents = inputs.texts.filter(t=>t.text && project.attachments?.some(a=>a.name===t.name));
+  for (const type of carriers) {
+    const board = await researchCompetitors({call,dir,project,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
+      pages:pages.filter(p=>!p.carrier || p.carrier===type),
+      previous:(project.previousResearchImages ?? []).filter(image=>!image.carrier || image.carrier===type)});
+    if (board) {
+      boards.push(board);
+      findings.push(board.finding);
+      passages.push(board.finding.evidence);
+    } else {
+      gaps.push('缺少可核对的同类'+(type==='packaging'?'包装':'KV')+'原图，不能形成画面比较结论。');
+    }
   }
   if (!originals.length && !findings.length)
     gaps.push('本轮尚未取得可用公开原文，请换用更具体的品类、发布渠道或案例机构继续补查。');
-  let acceptedBoard = false;
+  let acceptedBoards = [];
   let research = {
     ready: false,
     question: '',
@@ -297,12 +322,12 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       : 'question 填空字符串。根据已知条件及反馈复核；未确定的分支分别说明适用条件。';
     const indexedFindings = findings.map((finding, findingIndex) => ({ ...finding, findingIndex }));
     const review = await call(
-      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。本包每条正文引用都有执行器实际取回的原文片段，组图附本地实际原图。以这些已核原件为准。gaps 只列复核后仍存在、与具体策略取舍有关的缺口。next 只解释下一步取舍；已定位和已看图的来源无需再次索取。草稿的过程说明和旧状态留在执行记录。关键依据不足时，无论哪个模式都保留待补状态。' + coverageInstruction +
+      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。visualOnly 纯图只可保留为图例，不得用作创作者意图或结论依据，不给它分配角度。请将有可核创作者引文的每张图与案例名称和图文逐一对应，检查引文来自创作者且明确表述该作品的意图；归错作品、机构导航文案、相邻案例以及推测一律退回。纯观察不能证明消费者反应或销量。'+researchTask+'本包每条正文引用都有执行器实际取回的原文片段，组图附本地实际原图。以这些已核原件为准。gaps 只列复核后仍存在、与具体策略取舍有关的缺口。next 只解释下一步取舍；已定位和已看图的来源无需再次索取。草稿的过程说明和旧状态留在执行记录。关键依据不足时，无论哪个模式都保留待补状态。' + coverageInstruction +
       '按观察对象重新核对分类。labels 为适合展示的 accepted 发现逐条填写 findingIndex、纠正后的 chapter、该观察最相关的一个 angle。保留与本案相关且独立有据的观察，多个角度需来自不同发现，不能用多种角度名称掩盖同一观察。可保留其他已核材料作交接底稿并不列入 labels。项目条件、泛行业和相邻品类的无关调查不能凑入。已经定向补查且剩余缺口不妨碍具体策略取舍时，允许按真实已有角度交接，gaps保留缺口和影响。若某个缺口确实让关键策略选择无依据才判待补。' + questionInstruction,
-      board?.images ?? [],
+      [...new Map(boards.flatMap(b=>b.images).map(i=>[i.sha256,i])).values()],
       verdictSchema(indexedFindings.map(f => f.findingIndex)),
       {
-        rules: [role],
+        comparison:boards.length>1, rules: [role],
         assignment: '审核当前研究的交接充分性。',
         context: JSON.stringify({ brief: project.brief, mode, feedback: project.feedback || [], materials: inputs.texts, research: { ...research, findings: indexedFindings }, passages }),
       },
@@ -316,11 +341,20 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       !v.next?.trim()
     )
       throw Error('比稿交接检查未返回有效判断，请重试研究');
-    const accepted = reviewedFindings(findings,v.accepted,v.labels);
-    acceptedBoard = Boolean(board && v.accepted.includes(findings.indexOf(board.finding)));
+    const accepted = reviewedFindings(findings,v.accepted,v.labels.filter(label=>!findings[label.findingIndex]?.visualOnly));
+    acceptedBoards = boards.filter(board=>v.accepted.includes(findings.indexOf(board.finding)));
     const missing = missingResearchCoverage(accepted);
-    const hasExternalEvidence = accepted.some(f => f.url || f.images?.length ||
-      project.attachments?.some(a => a.name === f.source));
+    for (const type of carriers) {
+      const refs = accepted.flatMap(f=>f.images ?? []).filter(image=>image.carrier===type);
+      if (type==='packaging') {
+        const strategies = new Set(refs.filter(r=>r.sameCategory && r.creatorRationale && r.strategyGroup).map(r=>r.strategyGroup));
+        if (strategies.size<3) missing.push('包装仅核实 '+strategies.size+' 种同品类创作策略；补查具作者原文和原图、表达方法相异的项目。');
+      } else if (!refs.length) {
+        missing.push('KV 缺少实际发布的主画面；按传播节点查证品牌原作及色彩、产品、符号和文案。');
+      }
+    }
+    const hasExternalEvidence = accepted.some(f => !f.visualOnly && (f.url || f.images?.length ||
+      project.attachments?.some(a => a.name === f.source)));
     const hasRelevantObservation = accepted.some(f=>f.editorialAngle);
     const ready = v.ready && hasExternalEvidence && hasRelevantObservation && (!missing.length || project.researchFollowup===true);
     const question = canAsk && !ready && accepted.length && (!missing.length || project.researchFollowup)
@@ -354,7 +388,12 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
               f.source +
               (f.url ? ' ' + f.url : '（项目材料）') +
               '\n对策略的用途：' +
-              f.implication,
+              f.implication + (f.images?.length ? '\n'+f.images.map(ref=>[
+                ref.title+'：'+ref.observation,
+                '原图：'+ref.sourceUrl+'；出处：'+ref.pageUrl,
+                ref.creatorRationale?'创作者说明：'+ref.creatorRationale+'；原文：'+ref.rationaleQuote+'；说明出处：'+ref.rationaleSourceUrl:'纯视觉参考，未核实创作者说明。',
+                ref.takeaway && '对本案的适用范围：'+ref.takeaway,
+              ].filter(Boolean).join('\n')).join('\n') : ''),
           )
         : ['本轮未形成这一板块的可交接判断。']),
     ];
@@ -362,6 +401,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const body = [
     '# 研究交接稿',
     research.ready ? '本次研究可交给策略。' : '研究待补。',
+    '## 检索前锚点','研究载体：'+({packaging:'包装',kv:'KV','packaging+kv':'包装与KV',unspecified:'待明确'}[carrier] || '待明确'),...anchorQuestions,
     ...chapters,
     '## 待补问题',
     ...research.gaps,
@@ -373,7 +413,10 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   ]
     .filter(Boolean)
     .join('\n\n');
-  const imageArtifacts = acceptedBoard ? await board.publish() : [];
+  research.anchorQuestions = anchorQuestions;
+  const imageArtifacts = [];
+  const published = new Set();
+  for (const board of acceptedBoards) imageArtifacts.push(...await board.publish(published));
   return { research, body, imageArtifacts };
 }
 
@@ -625,7 +668,17 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       : project;
     const inputs = project.researchDigestOnly ? {texts:[],images:[]} : await readInputs(dir,inputProject,stage,signal);
     if (stage === 'final' && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
-    const context = JSON.stringify({title:project.title, brief:project.brief, ...(project.proposalKind ? {proposalKind:project.proposalKind} : {}), ...(project.outlineOptions ? {outlineOptions:project.outlineOptions} : {}), mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null, materials:inputs.texts,...(stage==='research'?{previousResearch:project.previousResearch || null,researchFollowup:!!project.researchFollowup}:{})});
+    const context = JSON.stringify({
+      title:project.title, brief:project.brief, proposalKind:project.proposalKind, outlineOptions:project.outlineOptions,
+      mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null,
+      materials:inputs.texts,
+      ...(stage==='strategy' && project.research?.strategyAdvice?.length ? {
+        researchStrategyAdvice:project.research.strategyAdvice.map(({recommendation,findingIndices})=>({
+          recommendation, evidence:findingIndices.map(index=>project.research.findings[index]),
+        })),
+      } : {}),
+      ...(stage==='research' ? {previousResearch:project.previousResearch || null,researchFollowup:!!project.researchFollowup} : {}),
+    });
     const programPath = binary || await executable('codex');
     const env = Object.fromEntries(['PATH','HOME','TMPDIR','LANG','LC_ALL','USER','LOGNAME','SSL_CERT_FILE'].filter(k=>process.env[k]).map(k=>[k,process.env[k]]));
     env.CODEX_HOME = home;
@@ -769,7 +822,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       return {artifacts};
     }
     if (stage === 'research') {
-      if (project.researchDigestOnly) return {researchDigest:await editResearchDigest(call,project.research.findings,project),artifacts:[]};
+      if (project.researchDigestOnly) return {...await editResearchDigest(call,project.research.findings,project),artifacts:[]};
       const {research,body,imageArtifacts} = await researchReport({call,dir,inputs,project,onEvent,dependencies:researchDependencies,signal});
       if (research.ready) research.digestPending = true;
       const skill = rules.find(rule => /^name: design-research-lead$/m.test(rule));
