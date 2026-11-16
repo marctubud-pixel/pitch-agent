@@ -37,7 +37,7 @@ const stages = {
   final: ['终审与交付', 'final-review-owner', '逐页核对实际PPTX提取的文案、次序、图片数量与上游。给出页码、问题、证据、责任和需复核项。只记录本次本地审读，未经检查的维度明示待审。'],
 };
 const extraRules = {
-  copy: ['docs/specs/copy-generation.md'],
+  copy: ['docs/specs/copy-generation.md', 'skills/slogan-engine/SKILL.md'],
   research: ['skills/design-research-lead/SKILL.md', 'skills/design-research-lead/references/contracts.md', 'skills/design-research-lead/references/task-methods.md', 'skills/design-research-lead/references/review.md'],
   visual: ['skills/visual-development-lead/SKILL.md', 'skills/visual-development-lead/references/packaging.md', 'skills/visual-development-lead/references/kv.md'],
   final: ['docs/specs/final-review.md'],

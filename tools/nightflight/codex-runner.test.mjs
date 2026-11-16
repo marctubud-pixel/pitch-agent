@@ -13,7 +13,7 @@ const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAA
 const competitorPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAKAAAADwCAAAAACiKjAGAAAAPElEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPBpbwAAHEOZGbAAAAAElFTkSuQmCC','base64');
 // Used only by the test CLI, which gets a new thread and private request for each call.
 function copyFixture(input, action) {
-  const step = input.match(/COPY_([A-Z_]+)/)?.[1];
+  const step = input.match(/(?:COPY|SLOGAN)_([A-Z_]+)/)?.[1];
   const packet = JSON.parse(input.split('实际项目输入（JSON）').at(-1));
   const source = '制作测试茶的包装概念稿';
   const directions = ['山风', '晨雾', '旧街'].map((name, i) => ({
@@ -21,6 +21,9 @@ function copyFixture(input, action) {
     name, basis: source, claim: name + '的主张', mechanism: name + '的创意方法', strategyLink: name + '承接策略',
     main: name + '原稿主文', risk: name + '的风险',
   }));
+  if (step==='EXPLORE') return {directions:directions.map(d=>({id:d.id,coordinates:'坐标',motive:'动机',connection:'连接',methods:'方法',candidates:[0,1,2].map(i=>({text:i?d.main+i:d.main,method:'短句'}))}))};
+  if (['READING','APPEAL'].includes(step)) return {items:packet.lines.map(text=>({text,observation:'独立阅读',usable:true}))};
+  if (step==='POLISH') return {directions:packet.plan.directions.map(d=>({id:d.id,original:d.candidates[0].text,killed:d.candidates.slice(1).map(c=>({text:c.text,reason:'不同的选择'})),versions:['','短','顺'].map(s=>({text:d.candidates[0].text+s,use:'包装',tradeoff:'取舍'})),sound:'节奏',backup:'备选',edits:'记录',extensions:'延展',risks:'风险'}))};
   if (!['CREATE','REVISE'].includes(step) && (input.includes('的创意方法') || input.includes('承接策略'))) throw Error('评审泄露作者创作说明');
   if (step === 'CREATE') {
     if (action === 'badcopy') directions[2].duty = directions[0].duty;

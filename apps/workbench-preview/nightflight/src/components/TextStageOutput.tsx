@@ -250,6 +250,9 @@ export function CopyOutput({
     || directions.find((d) => d.name === p.choice)
     || directions.find((d) => d.name === recommended)
     || directions[0];
+  const workbook = ticket?.sloganWorkbook;
+  const workingDraft = workbook?.polish.directions.find(d => d.id === current.signed?.id);
+  const candidates = workbook?.plan.directions.find(d => d.id === current.signed?.id)?.candidates;
   return (
     <>
       <section className="block copy-compare" data-artifact={name}>
@@ -281,6 +284,21 @@ export function CopyOutput({
           <details className="research-original">
             <summary>评审记录</summary>
             <p>{ticket ? '旧版按主副文合读评审。单标题暂无独立通过记录。' : '本版未登记单标题评审。'}</p>
+          </details>
+        )}
+        {workingDraft && candidates && (
+          <details className="research-original">
+            <summary>查看本案创作底稿</summary>
+            <h3>候选与取舍</h3>
+            {candidates.map(c => <p key={c.text}><strong>{c.text}</strong>　{workingDraft.killed.find(k => k.text === c.text)?.reason ?? '保留进入打磨'}</p>)}
+            <h3>打磨记录</h3>
+            {workingDraft.versions.map(v => <p key={v.text}><strong>{v.text}</strong>　{v.use} · {v.tradeoff}</p>)}
+            <p>{workingDraft.edits}</p>
+            {ticket?.sloganRevisions?.filter(r => r.after.some(d => d.id === current.signed?.id)).map(r => {
+              const before = r.before.find(d => d.id === current.signed?.id)?.main;
+              const after = r.after.find(d => d.id === current.signed?.id)?.main;
+              return <p key={before + '→' + after}>{before} → {after}　{r.changes.join('；')}</p>;
+            })}
           </details>
         )}
         {p.stage === 'copy' && p.status === 'waiting' && p.mode === 'collab' && onChoose && (

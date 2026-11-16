@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.57.0",
+  "baselineVersion": "1.58.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -77,7 +77,7 @@
       "kind": "agent",
       "title": "文案与主题负责人",
       "path": "docs/agents/copy-owner.md",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",
@@ -244,7 +244,7 @@
       "kind": "page",
       "title": "文案与主题",
       "path": "docs/pages/themes.md",
-      "version": "1.12.0",
+      "version": "1.13.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.copy-owner",
@@ -851,11 +851,22 @@
       "kind": "method",
       "title": "文案三方向创作与交付",
       "path": "docs/specs/copy-generation.md",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "dependsOn": [
-        "method.review"
+        "method.review",
+        "method.slogan-engine"
       ]
+    },
+    {
+      "id": "method.slogan-engine",
+      "kind": "method",
+      "title": "中文口号创作引擎完整版",
+      "path": "skills/slogan-engine/SKILL.md",
+      "version": "1.0.0",
+      "sourceVersion": "20261106-b7900017",
+      "lifecycle": "current",
+      "dependsOn": []
     }
   ],
   "entryDocuments": [

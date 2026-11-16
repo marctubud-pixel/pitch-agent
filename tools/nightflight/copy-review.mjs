@@ -1,3 +1,4 @@
+import {blindSlogans,buildSloganWorkbook,checkSloganChoices,fullSloganHash} from './slogan-workbook.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -175,6 +176,11 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       if (targets.has(d.id)) requireThat(d.main.trim()!==old.main.trim(),'作品问题尚未改稿：'+d.name);
       else requireThat(isDeepStrictEqual(d,old),'改稿改动了冻结方向：'+old.name);
     }
+    const edited=output.draft.directions.filter(d=>targets.has(d.id));
+    const reads=await blindSlogans(run,edited.map(d=>d.main));
+    (attempt.sloganRevisions??=[]).push({baseHash,changes:output.changes,
+      before:base.directions.filter(d=>targets.has(d.id)),after:edited,reads});
+    requireThat(reads.every(r=>r.output.items.every(i=>i.usable)),'改稿的主标题未通过复闸，原稿、修改和两份盲读已存入工作底稿');
     requireThat(output.changes.length,'改稿缺少修改对照');
     return output;
   }
@@ -270,9 +276,14 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
   try {
     const source={brief:project.brief,materials:inputs.texts,feedback:project.feedback || []};
     await onEvent?.('文案负责人正在创作三个方向');
-    const generated=await run('COPY_CREATE',craft+' 使用本次加载的 slogan-engine 创作步骤展开、淘汰和打磨主标题。',draftSchema,source,true);
+    const skill=rules.find(rule=>rule.includes('name: slogan-engine'));
+    requireThat(skill,'缺少完整版 slogan-engine');
+    const workbook=await buildSloganWorkbook(run,source);
+    attempt.sloganWorkbook={...workbook,skillHash:fullSloganHash(skill)};
+    const generated=await run('COPY_CREATE',craft+' 从本案版本族中选经两位独立读者均判断 usable 的一句作为各案 main，逐字保留，保持职责及连接。仅归档工作稿另附。',draftSchema,{...source,workbook},true);
     const first=generated.output;
     validateDraft(first,materials);
+    checkSloganChoices(first,workbook);
     attempt.initialDraft=first;
     await onEvent?.('四岗分别首读文案初稿');
     attempt.anonymousReads=await anonymousReads(first);

@@ -80,6 +80,11 @@ export function headlineReviewProtocol(review?: CopyReview) {
   if (review?.version === 2 && review.protocol === 'dual-panel-headline-v3') return 'v3';
 }
 export interface CopyReview {
+  sloganWorkbook?: {
+    plan: { directions: { id: string; candidates: { text: string; method: string }[] }[] };
+    polish: { directions: { id: string; original: string; killed: { text: string; reason: string }[]; versions: { text: string; use: string; tradeoff: string }[]; edits: string }[] };
+  };
+  sloganRevisions?: { changes: string[]; before: {id: string; main: string}[]; after: {id: string; main: string}[] }[];
   protocol?: 'dual-panel-v2' | 'dual-panel-headline-v3' | 'dual-panel-headline-v4';
   anonymousReads?: CopyFirstRead[];
   finalAnonymousReads?: CopyFirstRead[];

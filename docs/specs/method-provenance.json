@@ -106,5 +106,11 @@
     "path": "skills/strategy-one-pager/SKILL.md",
     "sourceVersion": "v1.5-20261116",
     "sha256": "56867ceb84569672f303128d4521941d3e02180399ab771f38a838c4bc7f791a"
+  },
+  {
+    "source": "用户提供的 slogan-engine-完整版.md",
+    "path": "skills/slogan-engine/SKILL.md",
+    "sourceVersion": "20261106-b7900017",
+    "sha256": "b79000179b4df961d67acb662e66730bf97df88b7f5d2ca6493fd0beb36bc239"
   }
 ]
