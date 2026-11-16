@@ -115,7 +115,7 @@ const anchors = {
   3:'部分成立，但仍有具体歧义或关键衔接待解决',4:'在本案给定条件下有明确证据支持成立',
   5:'除达到4外，还能指出相较本组可比写法的具体优势',
 };
-const scope = '当前简报、产品事实及三案范围。品牌联系区分字面提及、语义关联与真实感知；传播仅评估复述潜力，不推断实测效果。两案互换、换品牌、换节点均为诊断，不据此单独扣分。';
+const scope = '稳健延续按有据的品牌线索或品类惯例判断。以标题所承担的方向为准。当前简报、产品事实及三案范围。品牌联系区分字面提及、语义关联与真实感知；传播仅评估复述潜力，不推断实测效果。两案互换、换品牌、换节点均为诊断，不据此单独扣分。';
 const scoring = '先逐案后比较。criteriaByDirection 是每个方向可观察的范围，本岗只记录实际查到的项；一案可留零至四项，同项不重复。观察分1–5，关键未知填 null。不得为凑齐四项补分。evidence 仅逐字引用该案主标题里的短语。只评标题本身，不以附加文案或作者解释补足标题，reason说明本分与相邻锚点的区别；scope写明本维度就哪个对象、证据范围或哪组候选作比较。不得因缺促销CTA扣品牌主题分。分数、未知或岗位退修意见只作观察，由总监依单案四项证据裁定。推荐时再看记忆、复述与场景。四岗是独立模型会话，用户岗只模拟阅读。禁止计算平均分。';
 export function headlineMarkdown(draft) {
   return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main).join('\n\n');
@@ -126,8 +126,8 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
   const filename='copy-review-attempt-'+randomUUID()+'.json';
   const threads=new Set(), runs=new Set();
   const materials=[project.brief,...inputs.texts.map(t=>t.text)].filter(nonempty);
-  async function run(phase, instruction, schema, packet, author=false) {
-    const result=await call(phase+'\n'+instruction,author?inputs.images:[],schema,{
+  async function run(phase, instruction, schema, packet, author=false, outputSchema=schema) {
+    const result=await call(phase+'\n'+instruction,author?inputs.images:[],outputSchema,{
       rules:author?rules:[],assignment:'只完成当前职责。',context:JSON.stringify(packet),
     });
     const receipt={runId:result.runId,threadId:result.threadId,model:result.model,inputPacketHash:result.inputPacketHash};
@@ -191,9 +191,13 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     const panel={draftHash,draft,votes,anonymousReads:reads,criticReads:[],challenges:[]};
     attempt.panelHistory.push(panel);
     for (const role of roles) {
+      const quoteByDirection=draft.directions.map(d=>object({
+        ...criticSchema.properties.items.items.properties,
+        directionId:choice([d.id]),evidence:choice(['',d.main]),
+      }));
       const {output,receipt}=await run('COPY_CRITIC_BLIND',
         '独立找本岗可能遗漏的事实、表达或同组三案风险。先不看原票、不打分。逐案列出所有独立风险，一条对应一个风险；某案确无发现时仅写一条 risk 和 evidence 均为空的记录。提出风险必须引当前该案逐字证据。',
-        criticSchema,{role,...reviewPacket(draft)});
+        criticSchema,{role,...reviewPacket(draft)},false,object({items:list({anyOf:quoteByDirection})}));
       for (const id of ids) {
         const reads=output.items.filter(i=>i.directionId===id);
         requireThat(reads.length,'异议岗独立阅读未覆盖方向 '+id);
@@ -209,9 +213,14 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     }
     for (const vote of votes) {
       const blindRead=panel.criticReads.find(r=>r.role===vote.role);
+      const concerns=draft.directions.map(d=>object({
+        ...challengeSchema.properties.items.items.properties,
+        directionId:choice([d.id]),dimension:choice(criteria(d.duty)),evidence:choice([d.main]),
+      }));
       const {output,receipt}=await run('COPY_CHALLENGE',
         '保留本岗独立漏项阅读，核原票的具体肯定、证据是否已经覆盖。coverage逐条引用 blindRead.items 的 readId 与 directionId，每条恰好一次，包括无风险记录。指向该案四项内的相关维度并具体说明原票是否观察过这一项，以及漏项是否已处理、为何保留或质疑原判。items只列确有依据的异议，区分反证、缺证、偏好、已覆盖与阶段外；action说明影响和建议。个人偏好不阻断，未见新增漏项允许空列表。不得打分。',
-        challengeSchema,{role:vote.role,...reviewPacket(draft),blindRead,vote});
+        challengeSchema,{role:vote.role,...reviewPacket(draft),blindRead,vote},false,
+        object({...challengeSchema.properties,items:list({anyOf:concerns})}));
       const readsById=new Map(blindRead.items.map(i=>[i.readId,i]));
       requireThat(exactly(output.coverage.map(c=>c.readId),[...readsById.keys()]) &&
         output.coverage.every(c=>readsById.get(c.readId)?.directionId===c.directionId && criteria(draft.directions.find(d=>d.id===c.directionId).duty).includes(c.dimension)),
