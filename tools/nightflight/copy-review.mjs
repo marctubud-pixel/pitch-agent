@@ -257,7 +257,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     const references={initialDraft:headlines(draft),anonymousReads:reads,firstVotes:votes,
       criticReads:panel.criticReads,challenges:panel.challenges,issues};
     const plan=await run('COPY_PLAN',
-      '在创作者改稿前独立逐条裁定 issues；每个id必须决定采纳当前/后续、驳回或待核及理由。每条给 criterion，选该方向对应四项之一、“逐对差异”或“推荐观察”。problem 是这条具体问题的短描述；不同岗位或不同维度指出同一处实质缺陷时复用同一句 problem，彼此独立的问题用不同描述。保留各岗原句证据。只对单案四项中成立的作品缺陷要求改稿。逐对差异在整组裁定处理，推荐观察仅比较记忆、复述、适用场景，二者在此 action=none。低分、待核和岗位意见本身不阻断。作品确需修改时 action=revise，评分原判有误或证据需要复核时 action=recheck 且保持原稿，非阻断范围外事项可延后。不得代评分岗改分。没有问题可为空。',
+      '在创作者改稿前独立逐条裁定 issues；每个id必须决定采纳当前/后续、驳回或待核及理由。每条给 criterion，选该方向对应四项之一、“逐对差异”或“推荐观察”。problem 是这条具体问题的短描述；不同岗位或不同维度指出同一处实质缺陷时复用同一句 problem，彼此独立的问题用不同描述。保留各岗原句证据。只对单案四项中成立的作品缺陷要求改稿。逐对差异在整组裁定处理，推荐观察仅比较记忆、复述、适用场景，二者在此 action=none。低分、待核和岗位意见本身不阻断。作品确需修改时 action=revise，评分原判有误或证据需要复核时 action=recheck 且保持原稿，非阻断范围外事项可延后。逐项检查动作与状态成对：待核 pending 或延后 accepted_later 的 action 必须是 none；revise 必须 accepted_now。已采纳的单案四项问题必须明确 revise 或 recheck。不得代评分岗改分。没有问题可为空。',
       planSchema,{...reviewPacket(draft),...references});
     const decisionPlan={...plan.output,...plan.receipt,draftHash};
     panel.decisionPlan=decisionPlan;
