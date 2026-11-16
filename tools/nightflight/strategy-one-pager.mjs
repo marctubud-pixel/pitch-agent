@@ -67,7 +67,7 @@ async function selectOldFrame(call,task,eligible) {
   const instruction='先比较A面，不写一页纸。从不同的实物、传播语境、真实用法或用户观察中找2–3种实质不同、有研究支撑的旧认知。逐项选择 evidenceKind。给 A 面注明证据身份。竞品物料或设计师说明支持「品类表达」，写清包装或传播在强调什么。单个案例只代表该案例，多案反复出现才可称常见。用途资料支持「既有用途」。只有直接调查或访谈记录了用户如何理解，才可写「用户理解」，且限定研究人群。B 面要连起产品事实、现场可见线索和接下来的选择：这个人在赶时间或其他真实约束下，能据此决定什么、少做哪一步？把这个用途写进核心句。尚未实测的行为收益作为设计目标，避免许诺节省时间或提升购买。每项text用可放进核心句的简短表述，findingNumbers引用外部发现，evidenceReading说明原证据实际显示什么；reasonToChange写清沿用这个认知会令谁在何时错过什么、为什么值得改变，若是判断请用条件句；newMeaning写产品条件在该场景让人感受到什么。用途、品类名称、字号、销量本身都不构成改变理由。选择前比较各案针对的问题、证据强弱和能否兑现，selected为候选的一基序号，tradeoff解释为何选它及其余各案为何暂缓。若项目给定了核心句，所选text用该句中从和变成之间的短语。资料不足以支持两个不同候选时，researchReturn写窄缺口，不凑近义词。';
   let correction='';
   for (let attempt=0;attempt<2;attempt++) {
-    const response=await call(instruction+correction,[],selectionSchema,task);
+    const response=await call(instruction+' 每项 findingNumbers 只填直接证明 A 面的外部发现，可用编号：'+[...eligible].join('、')+'。支撑 B 面的产品和渠道事实可写在理由里，不填进此数组。'+correction,[],selectionSchema,task);
     const slate=response.parsedOutput?.selection;
     if (singleLine(slate?.researchReturn)) return slate;
     try {
