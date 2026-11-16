@@ -105,7 +105,7 @@ export function validateStrategyAdvice(items, digest) {
 export async function editResearchDigest(call, findings, project) {
   const reviewed = findings.some(f => f.editorialAngle);
   const eligible = findings.map((f,findingIndex)=>({findingIndex,visualOnly:f.visualOnly,chapter:f.chapter,conclusion:f.conclusion,evidence:f.evidence,
-    implication:f.implication,caseTakeaways:(f.images ?? []).filter(i=>i.creatorRationale).map(i=>i.takeaway).filter(Boolean),source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).filter(image=>!Object.hasOwn(image,'creatorRationale') || image.creatorRationale).map(image=>image.observation)})).filter(f=>!f.visualOnly && chapters.includes(f.chapter) && (!reviewed || f.angle));
+    implication:f.implication,caseTakeaways:(f.images ?? []).filter(i=>i.creatorRationale).map(i=>i.takeaway).filter(Boolean),source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).filter(image=>image.sameCategory || !Object.hasOwn(image,'creatorRationale') || image.creatorRationale).map(image=>image.observation)})).filter(f=>!f.visualOnly && chapters.includes(f.chapter) && (!reviewed || f.angle));
   if (!eligible.length) return {researchDigest:[],strategyAdvice:[]};
   const productFacts = findings.filter(f => f.chapter === '产品与品牌').map(f => f.conclusion);
   const task = {

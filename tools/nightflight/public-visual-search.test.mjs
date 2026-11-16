@@ -69,7 +69,7 @@ test('competitor board binds a read image to its declaring page, disregards inve
       throw Error('Unexpected URL');
     }};
   const call=async(_prompt,images)=>({parsedOutput:{samples:[
-    {source:images[0].imageId,title:'同类原味纸盒',observation:'包装正面品类名置顶。'},
+    {source:images[0].imageId,title:'同类原味纸盒',sameCategory:true,observation:'包装正面品类名置顶。'},
     {source:'invented',title:'无原图案例',observation:'无依据'}],
     conclusion:'所示单品把品类信息放在正面上部。',implication:'可比较正面品类名与品牌名的层级。'}});
   const board=await researchCompetitors({call,dir,project:{brief:'燕麦饮包装设计'},carrier:'packaging',dependencies,
@@ -77,6 +77,8 @@ test('competitor board binds a read image to its declaring page, disregards inve
   assert.deepEqual(requests,[page,product]);
   const [ref]=board.finding.images;
   assert.equal(board.finding.images.length,1);
+  assert.equal(board.finding.visualOnly,false);
+  assert.equal(ref.creatorRationale,'');
   assert.equal(ref.pageUrl,page);
   assert.equal(ref.sourceUrl,product);
   assert.equal(ref.sha256,createHash('sha256').update(sample).digest('hex'));

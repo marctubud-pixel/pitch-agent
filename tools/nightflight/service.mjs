@@ -742,6 +742,7 @@ export function createNightflight({ root, runStage, runLayout }) {
       check(false,'请先补充或重新描述提案需求',409);
     if (kind==='confirm_brief') {
       check(p.mode==='collab' && p.stage==='brief' && p.status==='waiting' && !p.finalReturn,'当前没有待确认任务卡',409);
+      p.researchOnly = input.researchOnly === true;
       p.stage='research'; p.status='running'; note(p,'用户已确认任务卡');
     } else if (kind === 'choice') {
       check(

@@ -170,29 +170,27 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
   const coverageInstruction = '为行业、竞品、人群各找二至三个独立观察角度。同一数字拆分、同一事实换品牌或同一份研究的重复结论不计。行业查整个品类的变化、供给、价格带或销售结构；竞品查真实作品与不同商品主张、规格或价格；人群查受访者购买渠道、选择偏好与使用情境。渠道归类看观察对象，消费者自报购买地点是人群，行业销售渠道份额才是行业。参考角度：'+JSON.stringify(researchAngles)+'。';
   const scope = project.proposalKind || taskKind(project.brief || '',false);
+  const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：具名品牌、同渠道商品、规格价格与实际作品；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：列出同类具名品牌的官网、在售单品平台、专业设计案例站，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：设计的核心渠道与场景、头部竞品要解决的问题及压力、用户决策过程中要回答的问题、KV传播节点符号（纯包装写不适用，KV未知则写待核节点）。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多八条宽口径查询，按上述实际载体分配，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：列出同类具名品牌的官网、在售单品平台、专业设计案例站，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多八条宽口径查询，按上述实际载体分配，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
   );
   let anchorQuestions = strings(plan.parsedOutput?.anchorQuestions).slice(0,4);
   if (anchorQuestions.length < 4) {
-    const repair = await call('仅补全检索前的四个锚点问题，覆盖渠道、竞品、用户决策和传播节点。', [],
+    const repair = await call('按这四个维度补全本案的问题：'+dimensions, [],
       objectSchema({anchorQuestions:stringList}), {editorial:true,context:JSON.stringify({brief:project.brief,anchorQuestions})}).catch(()=>{signal?.throwIfAborted();return null;});
     anchorQuestions = strings([...strings(repair?.parsedOutput?.anchorQuestions),...anchorQuestions]).slice(0,4);
   }
   const carrier = project.proposalKind || (plan.parsedOutput.carrier==='packaging+kv' ? 'packaging+kv' : scope || plan.parsedOutput.carrier);
   const carriers = carrier==='packaging+kv' ? ['packaging','kv'] : ['packaging','kv'].includes(carrier) ? [carrier] : [];
-  const branches = [
-    'Step 1 查近期行业原始白皮书、规模、零售/餐饮渠道与具体市场时期；行业销售主战场和本项目渠道分开。',
-    'Step 2 查近两年头部份额、财报或渠道变化与价格承压。记录市场、年份、规格、渠道、实际报价或箱规折算；压力需原始证据，不能从包装猜销量。找不到就列明缺口。',
-    'Step 3 用公开消费者研究比较同口径购买因素排序，区分自报问卷、联合分析/MaxDiff及真实行为。自报购买偏好不写成眼动或转化。',
-    'Step 4 同项冲突保留两个数字及各自地区、期间、分母、原采集机构和口径。每个判断用一条真实可读原件。',
-  ];
-  if (carriers.includes('packaging')) branches.push('Step 2.5 包装：主动查设计奖、设计机构、品牌的近三年同品类案例，目标至少三种不同策略，每组1–3件。要商品原图、包装形式、具体策略在解决什么问题、品牌或创作者原文和适用前提。邻近品类另列；纯图只能展示。根据可核经营背景限定能借什么。');
-  if (carriers.includes('kv')) branches.push('Step 3.5 KV：依传播节点查近三年品牌实际发布画面、数英/营销机构案例，扩查同人群的邻近食品饮料节点案例，标清跨品类。每例查色彩、产品角色、符号、文案逻辑。节点未知时先做条件性研究，不擅定节日。');
-  const researchTask = '本次要回答的锚点：'+JSON.stringify(anchorQuestions)+'。本次载体 '+carrier+'。'+branches.join('');
+  const visualEvidence = carriers.map(type => type === 'packaging'
+    ? '包装竞品：取在售单品原图，看清正面，逐张记录 SKU、来源页、原图网址和可见差异。'
+    : 'KV竞品：取实际发布的主画面，记录作品、媒介、原图与出处。');
+  const researchTask = [dimensions, '本案四个问题：'+JSON.stringify(anchorQuestions),
+    '研究载体：'+carrier, ...visualEvidence,
+    '用同一份底稿综合四维。单款或单店记录不能证明全品类走势。缺同口径前后数据就写明缺口。'].join(' ');
   const queries = strings(plan.parsedOutput?.queries)
     .filter(
       (q) =>
@@ -371,12 +369,9 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     acceptedBoards = boards.filter(board=>v.accepted.includes(findings.indexOf(board.finding)));
     const missing = missingResearchCoverage(accepted);
     for (const type of carriers) {
-      const refs = accepted.flatMap(f=>f.images ?? []).filter(image=>image.carrier===type);
-      if (type==='packaging') {
-        const strategies = new Set(refs.filter(r=>r.sameCategory && r.creatorRationale && r.strategyGroup).map(r=>r.strategyGroup));
-        if (strategies.size<3) missing.push('包装仅核实 '+strategies.size+' 种同品类创作策略；补查具作者原文和原图、表达方法相异的项目。');
-      } else if (!refs.length) {
-        missing.push('KV 缺少实际发布的主画面；按传播节点查证品牌原作及色彩、产品、符号和文案。');
+      if (!accepted.some(f => f.images?.some(image => image.carrier===type)) &&
+          !gaps.some(g => g.kind==='visual' && g.message.includes(type==='packaging'?'包装':'KV'))) {
+        gaps.push(researchGap('visual','本轮未保留可核对的'+(type==='packaging'?'包装':'KV')+'原图。','竞争与同类传播'));
       }
     }
     const hasExternalObservation = accepted.some(f => !f.visualOnly && researchAngles[f.chapter] &&
@@ -427,7 +422,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
               f.implication + (f.images?.length ? '\n'+f.images.map(ref=>[
                 ref.title+'：'+ref.observation,
                 '原图：'+ref.sourceUrl+'；出处：'+ref.pageUrl,
-                ref.creatorRationale?'创作者说明：'+ref.creatorRationale+'；原文：'+ref.rationaleQuote+'；说明出处：'+ref.rationaleSourceUrl:'纯视觉参考，未核实创作者说明。',
+                ref.creatorRationale?'创作者说明：'+ref.creatorRationale+'；原文：'+ref.rationaleQuote+'；说明出处：'+ref.rationaleSourceUrl:'外观观察；无可核的创作者说明。',
                 ref.takeaway && '对本案的适用范围：'+ref.takeaway,
               ].filter(Boolean).join('\n')).join('\n') : ''),
           )

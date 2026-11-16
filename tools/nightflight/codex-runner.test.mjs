@@ -168,7 +168,7 @@ process.stdin.on('end',()=>{
    }
    else if(schema.anchorQuestions) { body={anchorQuestions:['渠道？','竞品？','人群？','节点？']}; }
    else if(schema.findings) {
-     if (action==='research-combined' && !(input.includes('Step 2.5 包装') && input.includes('Step 3.5 KV'))) process.exit(31);
+     if (action==='research-combined' && !(input.includes('包装竞品：') && input.includes('KV竞品：'))) process.exit(31);
      console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'search',queries:['测试公开品类']}}}));
      body={findings:[{chapter:'行业与市场',conclusion:'茶礼场景更强调赠礼用途',source:'合成行业报告',url:'https://source.example.org/report',evidence:action==='research-fiction'?'这是虚构引文':'本次样本单列礼盒用途',implication:'策略需比较礼赠与日常使用情境'}],gaps:['渠道尚未选定'],next:'比较可核实的渠道样本'};
      if(action==='research-repair') Object.assign(body.findings[0],{url:'https://source.example.org/blocked',source:'未能打开的报告',evidence:'改写过的、不见于网页的引文'});
@@ -885,7 +885,7 @@ for (const decision of ['accept','reject']) {
       return;
     }
     assert.equal(board.editorialAngle,'画面与信息层级');
-    assert.match(research.gaps.map(g=>g.message).join(' '),/1 种同品类创作策略/);
+    assert.ok(!research.gaps.some(g=>g.kind==='visual'));
     const [ref]=board.images;
     assert.equal(ref.sha256,createHash('sha256').update(competitorPng).digest('hex'));
     assert.equal(ref.pageUrl,'https://source.example.org/product');
@@ -903,8 +903,8 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
   const {research,artifacts}=await f.run('research');
   assert.equal(research.anchorQuestions.length,4);
   assert.match(artifacts[0].text,/研究载体：包装与KV/);
-  assert.match(research.gaps.map(g=>g.message).join(' '),/包装仅核实 0 种同品类创作策略/);
-  assert.match(research.gaps.map(g=>g.message).join(' '),/KV 缺少实际发布的主画面/);
+  assert.match(research.gaps.map(g=>g.message).join(' '),/包装原图/);
+  assert.match(research.gaps.map(g=>g.message).join(' '),/KV原图/);
 });
 
 
