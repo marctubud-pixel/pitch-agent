@@ -218,7 +218,8 @@ function Research({ p }: { p: Project }) {
       const gaps=report.gaps.flatMap(g=>typeof g!=='string' && g.chapter===chapter ? [g.message] : []);
       return <section className="block" key={chapter}><h2>{label}</h2>
         <ol className="findings">{rows.map((row,index)=><li key={index}><span className="finding-no">{index+1}</span>
-          <div><h3>{row.conclusion}</h3><p>{row.explanation}</p><details><summary>查看依据与来源</summary>
+          <div><h3>{row.conclusion}</h3><p>{row.explanation}</p><details><summary>依据与来源</summary>
+            {row.sourceDetail && <p>{row.sourceDetail}</p>}
             {row.evidenceIndices.map(i=>{const f=report.findings[i];return f && <div key={i}><p>{f.evidence}</p>
               <ResearchSource finding={f} attachments={p.attachments}/>
               {!!f.images?.length && <ResearchImageGallery images={f.images} artifacts={files} attachments={p.attachments}/>}</div>;})}

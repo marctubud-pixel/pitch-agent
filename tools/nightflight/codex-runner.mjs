@@ -84,7 +84,7 @@ const reportSchema = objectSchema({
 });
 const pageSchema = (indices) => objectSchema({
   rows:{type:'array',items:objectSchema({
-    chapter:{type:'string',enum:researchChapters}, conclusion:stringField, explanation:stringField,
+    chapter:{type:'string',enum:researchChapters}, conclusion:stringField, explanation:stringField, sourceDetail:stringField,
     evidenceIndices:{type:'array',minItems:1,items:{type:'integer',enum:indices}},
   })},
   ready:{type:'boolean'}, question:stringField, next:stringField,
@@ -476,7 +476,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       source:f.source,url:f.url,evidence:f.evidence,passage:f.passage,images:f.images,
       visualOnly:f.visualOnly,observation:f.conclusion}));
     const page = await call(coverageInstruction +
-      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。每行先写一句明确结论，再用 explanation 给具体同比数据、时间、样本或比较理由，evidenceIndices 引用支撑该行的全部原件。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论匹配样本人群。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。每组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
+      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论匹配样本人群。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。每组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
       [],pageSchema(evidence.map(f=>f.index)),{editorial:true,context:JSON.stringify({
         brief:project.brief,feedback:project.feedback,anchorQuestions,evidence,gaps,mode,followup:!!project.researchFollowup,
       })});
@@ -499,7 +499,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       const citedImages = new Set(research.sections.filter(row=>row.chapter===researchChapters[1])
         .flatMap(row=>row.evidenceIndices.flatMap(j=>(findings[j].images ?? []).map(image=>image.sha256))));
       if (f.images.some(image=>!citedImages.has(image.sha256))) research.sections.push({
-        chapter:researchChapters[1],conclusion:f.conclusion,explanation:f.evidence,evidenceIndices:[i],
+        chapter:researchChapters[1],conclusion:f.conclusion,explanation:'本次观察覆盖'+f.images.map(image=>image.title).join('、')+'。',evidenceIndices:[i],
       });
     }
     research.gaps = output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter))
@@ -533,6 +533,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     const rows = research.sections.filter(row=>row.chapter===chapter);
     const missing = research.gaps.filter(g=>g.chapter===chapter);
     return ['## '+chapter,...rows.map(row=>[row.conclusion,'依据：'+row.explanation,
+      ...(row.sourceDetail ? ['口径与补充：'+row.sourceDetail] : []),
       ...row.evidenceIndices.map(i=>{
         const f=findings[i];
         return ['来源：'+f.source+' '+(f.url || '（项目材料）'),f.evidence,

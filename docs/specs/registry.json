@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.69.0",
+  "baselineVersion": "1.70.0",
   "date": "2026-11-17",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -216,7 +216,7 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.11.0",
+      "version": "1.12.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
@@ -390,7 +390,7 @@
       "kind": "method",
       "title": "调研负责人 Skill r18",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.12.0",
+      "version": "1.13.0",
       "sourceVersion": "r18-20261117",
       "lifecycle": "current",
       "dependsOn": []
