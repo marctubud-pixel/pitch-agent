@@ -33,9 +33,14 @@ def export(target, roots):
         out = sqlite3.connect(staging / "nightflight.sqlite")
         try:
             out.execute("CREATE TABLE projects(id TEXT PRIMARY KEY, revision INTEGER NOT NULL, state TEXT NOT NULL)")
+            out.execute("CREATE TABLE library_files(id TEXT PRIMARY KEY, name TEXT NOT NULL, bytes BLOB NOT NULL)")
             for root in roots:
                 src = sqlite3.connect((root / "nightflight.sqlite").resolve().as_uri() + "?mode=ro", uri=True)
                 try:
+                    src.execute("BEGIN")
+                    if src.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='library_files'").fetchone():
+                        for row in src.execute("SELECT id,name,bytes FROM library_files"):
+                            out.execute("INSERT INTO library_files VALUES(?,?,?)", row)
                     for key, revision, raw in src.execute("SELECT id,revision,state FROM projects"):
                         if key != str(uuid.UUID(key)):
                             raise ValueError("项目 ID 异常")

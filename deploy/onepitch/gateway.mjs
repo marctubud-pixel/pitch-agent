@@ -1,4 +1,5 @@
 import http from 'node:http';
+import {publicProfiles, saveProfile} from './models.mjs';
 import {randomBytes, scrypt, timingSafeEqual} from 'node:crypto';
 import {promisify} from 'node:util';
 import {readFileSync} from 'node:fs';
@@ -8,7 +9,30 @@ const derive = promisify(scrypt);
 const lifetime = 8 * 60 * 60 * 1000;
 const loginPage = readFileSync(new URL('login.html', import.meta.url), 'utf8');
 
-export function createPortal({origin, account, salt, verifier, upstreamPort = 4420}) {
+const settingsPage = readFileSync(new URL('model-settings.html', import.meta.url), 'utf8');
+const roleTitles = new Map([
+  ['text', '文字 · DeepSeek'], ['vision', '视觉理解 · OpenAI'], ['image', '生图 · OpenAI'],
+]);
+const escapeHtml = value => String(value).replace(/[&<>"']/g, ch =>
+  ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[ch]));
+
+function showSettings(res, profiles, feedback = '', status = 200) {
+  const forms = Array.from(roleTitles, ([role, title]) => {
+    const {model, configured} = profiles[role];
+    return `<section><div class="heading"><h2>${title}</h2><span class="state">${configured ? '已保存 Key' : '待填写 Key'}</span></div>
+      <form method="post" action="/settings/models"><input type="hidden" name="role" value="${role}">
+      <div><label for="${role}-model">模型名</label><input id="${role}-model" name="model" value="${escapeHtml(model)}" required maxlength="180" spellcheck="false"></div>
+      <div><label for="${role}-key">API Key</label><input id="${role}-key" type="password" name="key" maxlength="4096" autocomplete="new-password" ${configured ? 'placeholder="已保存，可替换"' : 'required'}></div>
+      <button type="submit" aria-label="保存${title}设置">保存</button></form></section>`;
+  }).join('');
+  res.writeHead(status, {
+    'Content-Type':'text/html; charset=utf-8',
+    'Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
+  }).end(settingsPage.replace('<!--feedback-->', () => feedback ? `<p class="feedback" role="status">${escapeHtml(feedback)}</p>` : '')
+    .replace('<!--profiles-->', () => forms));
+}
+
+export function createPortal({origin, account, salt, verifier, upstreamPort = 4420, modelDir = process.env.ONEPITCH_MODEL_DIR}) {
   const site = new URL(origin);
   const local = site.protocol === 'http:' && ['localhost','127.0.0.1'].includes(site.hostname);
   if ((!local && site.protocol !== 'https:') || site.origin !== origin || !account ||
@@ -64,6 +88,37 @@ export function createPortal({origin, account, salt, verifier, upstreamPort = 44
         return redirect(res,'/login');
       }
       if(path==='/')return redirect(res,'/nightflight/?personal=1');
+      if (read && (path === '/nightflight' || path === '/nightflight/' || path === '/nightflight/index.html')) {
+        const target = new URL(req.url, origin);
+        if (target.searchParams.get('personal') !== '1' || path === '/nightflight') {
+          target.searchParams.set('personal', '1');
+          return redirect(res, '/nightflight/' + target.search);
+        }
+      }
+      if (path === '/settings/models') {
+        if (!modelDir) return res.writeHead(503, {'Content-Type':'text/plain; charset=utf-8'}).end('请先配置服务器模型设置目录。');
+        if (read) {
+          const saved = new URL(req.url, origin).searchParams.get('saved');
+          return showSettings(res, publicProfiles(modelDir), roleTitles.has(saved) ? roleTitles.get(saved) + '设置已保存。' : '');
+        }
+        if (req.headers['content-type']?.split(';')[0] !== 'application/x-www-form-urlencoded') return res.writeHead(415).end();
+        const chunks = [];
+        let bytes = 0;
+        for await (const chunk of req) {
+          bytes += chunk.length;
+          if (bytes > 16384) return res.writeHead(413).end();
+          chunks.push(chunk);
+        }
+        const fields = new URLSearchParams(Buffer.concat(chunks).toString());
+        const role = fields.get('role');
+        if (!roleTitles.has(role)) return res.writeHead(400).end();
+        try {
+          saveProfile(modelDir, {role, model: fields.get('model') || '', key: fields.get('key') || ''});
+        } catch {
+          return showSettings(res, publicProfiles(modelDir), '保存失败，请检查模型名和 API Key 后再试。', 400);
+        }
+        return redirect(res, '/settings/models?saved=' + role);
+      }
       const host='127.0.0.1:'+upstreamPort;
       const headers={host,origin:'http://'+host};
       for(const name of ['content-type','content-length','accept','range'])if(req.headers[name])headers[name]=req.headers[name];

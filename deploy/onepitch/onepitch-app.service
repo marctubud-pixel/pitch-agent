@@ -3,7 +3,12 @@ Description=OnePitch workbench
 After=network.target
 [Service]
 User=onepitch
+Environment=ONEPITCH_MODEL_DIR=/var/lib/onepitch/models
 WorkingDirectory=/opt/onepitch
+Environment=ONEPITCH_TEXT_EXECUTABLE=/opt/onepitch/deploy/onepitch/model-runner.mjs
+Environment=PLAYWRIGHT_BROWSERS_PATH=/opt/onepitch/browsers
+Environment=NIGHTFLIGHT_PYTHON=/opt/onepitch/venv/bin/python
+Environment=PATH=/opt/onepitch/venv/bin:/usr/local/bin:/usr/bin:/bin
 Environment=NIGHTFLIGHT_DATA=/var/lib/onepitch/projects
 StateDirectory=onepitch
 StateDirectoryMode=0700

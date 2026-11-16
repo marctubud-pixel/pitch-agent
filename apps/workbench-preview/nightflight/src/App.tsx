@@ -242,11 +242,14 @@ export function App() {
         onToggleChat={() => setChat(!chat)}
         onReset={newProject}
         onLibrary={() => {
+          if (!workspace) { navigate('/library'); return; }
           setLibrary(true);
           open(undefined);
         }}
         unread={!!p && p.events.length > seen}
       />
+      {routePath === '/library' && <Library projects={projects} close={() => navigate('/')}
+        create={newProject} open={project => navigate('/p/' + project.id)} />}
       {(err || connection) && (
         <div className="live-error" role="alert">
           {err || connection}{' '}
@@ -261,7 +264,7 @@ export function App() {
           </button>
         </div>
       )}
-      {!id && !start && !mode && new URLSearchParams(location.search).has('personal') && (
+      {routePath !== '/library' && !id && !start && !mode && new URLSearchParams(location.search).has('personal') && (
         <main className="sheet-doc">
           <header className="sheet-head"><h1>我的提案项目</h1>
             <button className="btn btn-dark" onClick={newProject}>新建提案</button>
@@ -276,7 +279,7 @@ export function App() {
           ))}
         </main>
       )}
-      {!id && !start && !mode && !new URLSearchParams(location.search).has('personal') && (
+      {routePath !== '/library' && !id && !start && !mode && !new URLSearchParams(location.search).has('personal') && (
         <Home
           hasProject={projects.length > 0}
           onStart={() => (projects[0] ? navigate('/p/' + projects[0].id) : newProject())}

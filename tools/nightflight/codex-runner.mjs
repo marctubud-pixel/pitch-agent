@@ -1,3 +1,4 @@
+import {desktopTextProvider, desktopImageProvider} from './desktop-text.mjs';
 import {followupSources,matchesDomain} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
@@ -256,7 +257,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     inputs.images,
     reportSchema,
   );
-  const nativeQueries = recordedQueries(await readFile(draft.paths.stdout, 'utf8'));
+  const nativeQueries = draft.paths?.stdout ? recordedQueries(await readFile(draft.paths.stdout, 'utf8')) : [];
   const offered = draft.parsedOutput?.findings;
   if (!Array.isArray(offered) || !Array.isArray(draft.parsedOutput.gaps))
     throw Error('研究返回格式不完整，请重试研究');
@@ -561,7 +562,7 @@ async function readInputs(dir, project, stage, signal) {
 
 function textOutput(result) {
   const body = result.parsedOutput?.body;
-  if (typeof body !== 'string' || !body.trim() || body.length > 100000) throw Error('Codex 未返回可阅读的阶段正文');
+  if (typeof body !== 'string' || !body.trim() || body.length > 100000) throw Error('模型未返回可阅读的阶段正文');
   return body.trim();
 }
 
@@ -676,11 +677,8 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
     if (!Object.hasOwn(stages, stage)) throw Error('不支持的模型阶段');
     signal?.throwIfAborted();
     dir = await realpath(dir);
-    const home = await realpath(codexHome);
-    const config = await readFile(join(home,'config.toml'),'utf8').catch(()=> '');
-    const configuredModel = config.split(/^\s*\[/m,1)[0].match(/^\s*model\s*=\s*"([\w.-]+)"/m)?.[1];
-    const selectedModel = model || configuredModel;
-    if (!selectedModel) throw Error('请先在本机 Codex 设置中选择模型');
+    const desktop = process.env.ONEPITCH_TEXT_EXECUTABLE
+      ? await desktopTextProvider(process.env.ONEPITCH_TEXT_EXECUTABLE,signal,onEvent) : null;
     const [label, role, assignment] = stages[stage];
     const rules = await Promise.all(['docs/agents/'+role+'.md', ...(extraRules[stage] || [])].map(p=>readFile(join(repo,p),'utf8')));
     const inputProject = stage === 'copy'
@@ -699,35 +697,43 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       } : {}),
       ...(stage==='research' ? {previousResearch:project.previousResearch || null,researchFollowup:!!project.researchFollowup} : {}),
     });
-    const programPath = binary || await executable('codex');
-    const env = Object.fromEntries(['PATH','HOME','TMPDIR','LANG','LC_ALL','USER','LOGNAME','SSL_CERT_FILE'].filter(k=>process.env[k]).map(k=>[k,process.env[k]]));
-    env.CODEX_HOME = home;
-    const login = await executeFile(programPath, ['login','status'], {env,signal,timeout:10000,maxBuffer:16384})
-      .catch(()=>null);
-    if (!login || !/^Logged in using ChatGPT\s*$/im.test(login.stdout+'\n'+login.stderr)) {
-      throw Error('请先使用 ChatGPT 账户登录本机 Codex，再重试本阶段');
+    async function codexFactory() {
+      const home = await realpath(codexHome);
+      const config = await readFile(join(home,'config.toml'),'utf8').catch(()=> '');
+      const configuredModel = config.split(/^\s*\[/m,1)[0].match(/^\s*model\s*=\s*"([\w.-]+)"/m)?.[1];
+      const selectedModel = model || configuredModel;
+      if (!selectedModel) throw Error('请先在本机 Codex 设置中选择模型');
+      const programPath = binary || await executable('codex');
+      const env = Object.fromEntries(['PATH','HOME','TMPDIR','LANG','LC_ALL','USER','LOGNAME','SSL_CERT_FILE'].filter(k=>process.env[k]).map(k=>[k,process.env[k]]));
+      env.CODEX_HOME = home;
+      const login = await executeFile(programPath, ['login','status'], {env,signal,timeout:10000,maxBuffer:16384})
+        .catch(()=>null);
+      if (!login || !/^Logged in using ChatGPT\s*$/im.test(login.stdout+'\n'+login.stderr)) {
+        throw Error('请先使用 ChatGPT 账户登录本机 Codex，再重试本阶段');
+      }
+      return (generate, search = stage==='research') => createCodexProvider({
+        binary:programPath, model:selectedModel, rootDir:join(dir,'.codex-runs'), timeoutMs:900000,
+        spawn(program, args, options) {
+          const disabled = ['apps','workspace_dependencies','in_app_local_automation','hooks','plugins','shell_tool','unified_exec','multi_agent','skill_search','computer_use','browser_use','browser_use_external','in_app_browser','view_image','skill_mcp_dependency_install'];
+          const flags = ['--ignore-rules', ...disabled.flatMap(name=>['--disable',name]), '-c','model_provider="openai"','-c','forced_login_method="chatgpt"','-c','web_search='+JSON.stringify(search?'live':'disabled')];
+          flags.push(generate || search?'--enable':'--disable','code_mode_host');
+          flags.push(generate?'--enable':'--disable','image_generation');
+          const child = spawn(program,[...args.slice(0,-1), ...flags,'-'], {...options,env});
+          // npm's codex launcher starts a native executable. Cancel the whole owned group.
+          return {
+            stdin:child.stdin, stdout:child.stdout, stderr:child.stderr, on:child.on.bind(child),
+            kill(signal) {
+              if (options.detached && process.platform !== 'win32' && child.pid > 1) return process.kill(-child.pid,signal);
+              return child.kill(signal);
+            },
+          };
+        },
+      });
     }
-    const makeProvider = (generate, search = stage==='research') => createCodexProvider({
-      binary:programPath, model:selectedModel, rootDir:join(dir,'.codex-runs'), timeoutMs:900000,
-      spawn(program, args, options) {
-        const disabled = ['apps','workspace_dependencies','in_app_local_automation','hooks','plugins','shell_tool','unified_exec','multi_agent','skill_search','computer_use','browser_use','browser_use_external','in_app_browser','view_image','skill_mcp_dependency_install'];
-        const flags = ['--ignore-rules', ...disabled.flatMap(name=>['--disable',name]), '-c','model_provider="openai"','-c','forced_login_method="chatgpt"','-c','web_search='+JSON.stringify(search?'live':'disabled')];
-        flags.push(generate || search?'--enable':'--disable','code_mode_host');
-        flags.push(generate?'--enable':'--disable','image_generation');
-        const child = spawn(program,[...args.slice(0,-1), ...flags,'-'], {...options,env});
-        // npm's codex launcher starts a native executable. Cancel the whole owned group.
-        return {
-          stdin:child.stdin, stdout:child.stdout, stderr:child.stderr, on:child.on.bind(child),
-          kill(signal) {
-            if (options.detached && process.platform !== 'win32' && child.pid > 1) return process.kill(-child.pid,signal);
-            return child.kill(signal);
-          },
-        };
-      },
-    });
+    const makeProvider = desktop ? () => desktop : await codexFactory();
     const reviewer = makeProvider(false);
     const editor = makeProvider(false,false);
-    const creator = stage === 'visual' ? makeProvider(true) : reviewer;
+    const creator = stage === 'visual' && desktop ? desktopImageProvider(process.env.ONEPITCH_TEXT_EXECUTABLE,dir,signal,onEvent) : stage === 'visual' ? makeProvider(true) : reviewer;
     const call = async (instruction, images = inputs.images, schema = textSchema, task = {}) => {
       signal?.throwIfAborted();
       try {
@@ -739,6 +745,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
             ['Output file is empty','ENOENT'].some(reason=>String(error.message).includes(reason))) {
           return {...error.receipt, responseText:''};
         }
+        if (desktop) throw Error((stage === 'visual' && !schema ? '生图' : images.length ? '视觉理解' : '文字')+' API 调用失败：'+error.message, {cause:error});
         if (error.receipt?.rateLimit) throw Error('本机 Codex 已达使用限额，请稍后重试');
         throw Error('本机 Codex 调用失败（'+(error.code || error.message)+'）。请检查 Codex 登录、连接与本地阶段回执后重试', {cause:error});
       }
@@ -749,7 +756,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       await writeFile(join(dir,name),body+'\n',{flag:'wx',mode:0o600});
       artifacts.push({kind:'text',name,text:body});
     }
-    await onEvent?.('本机 Codex 正在处理「'+label+'」');
+    await onEvent?.((desktop ? desktop.profile.host+' / '+desktop.profile.model : '本机 Codex')+' 正在处理「'+label+'」');
     if (stage === 'visual') {
       const all = project.directions || [];
       if (all.length !== 3 || new Set(all).size !== 3) throw Error('视觉阶段需要本案三份文案方向');
@@ -778,18 +785,18 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
           direction:project.copyReview?.draft?.directions?.find(d=>d.name===direction) ?? direction, referenceHandoff:handoff});
         for (const [index, focus] of ['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'].entries()) {
           await onEvent?.('正在为「'+direction+'」生成主视觉 '+(index+1)+'/3');
-          const instruction = '只用内置 image_generation 工具生成一张完整主视觉，保留同方向的核心卖点及必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。本张从'+focus+'做实质不同的处理。'+
+          const instruction = (desktop ? '生成一张完整主视觉。' : '只用内置 image_generation 工具生成一张完整主视觉。')+'保留同方向的核心卖点及必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。本张从'+focus+'做实质不同的处理。'+
             (best ? '第一张输入图为上一批原稿。'+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
             '同批已有方案描述：'+JSON.stringify(batch.map(item=>item.description))+'。完成后简述设计。指定方向：'+JSON.stringify(direction);
           const result = await call(instruction,sourceImages,null,{context:generationContext});
-          const original = await ownGeneratedImage(result,home);
+          const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
           const digest = hash(original.bytes);
           if (seen.has(digest)) throw Error('主视觉候选返回了重复图片，请重试视觉阶段');
           seen.add(digest);
           const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
           const path = join(dir,name);
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const record = {direction,name,referenceHandoff:handoff,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          const record = {direction,name,referenceHandoff:handoff,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(result.paths.runDir,'generated-image.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
           batch.push(record);
           images.push({imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'});

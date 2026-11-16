@@ -1,3 +1,4 @@
+import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
@@ -546,7 +547,7 @@ export function createNightflight({ root, runStage, runLayout }) {
     };
     mkdirSync(join(root, id, 'files'), { recursive: true, mode: 0o700 });
     p.attachments = files.map((f) => storeFile(p, f.name, f.bytes, 'attachment'));
-    note(p, '已收到需求，开始本地 Codex 试跑');
+    note(p, '已收到需求，开始简报阶段');
     db.prepare('INSERT INTO projects VALUES(?,?,?)').run(id, p.revision, JSON.stringify(p));
     schedule(id);
     return p;
@@ -692,6 +693,10 @@ export function createNightflight({ root, runStage, runLayout }) {
       if (req.method === 'POST')
         check(req.headers.origin === 'http://' + host, '请求必须来自当前工作台', 403);
       const parts = new URL(req.url, 'http://' + host).pathname.split('/').filter(Boolean);
+      if (parts[0] === 'api' && parts[1] === 'library') {
+        await libraryRequest({db,req,res,parts,send,body,filename,check,randomUUID});
+        return;
+      }
       check(parts[0] === 'api' && parts[1] === 'projects', '接口不存在', 404);
       if (parts.length === 2 && req.method === 'GET') {
         send(200, { projects: list() });
