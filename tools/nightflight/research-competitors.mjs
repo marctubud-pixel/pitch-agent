@@ -92,10 +92,10 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     const reads=await Promise.all(images.map(async image=>{
       if (!isNamedProduct(image)) return null;
       const {parsedOutput:seen}=await call('只观察这一张图片，忽略瓶盒外的电商浮字、价签和背景装饰。brand 写能在包装上辨认的品牌；front 仅写瓶盒本体上看得清的一两个颜色、图案或相对位置。不要猜茶种、配料、产地和效果；不清楚就留空。',[image],
-        object({brand:string,front:string}),{rules:[],delegate:true,assignment:'单张包装读图',context:'{}'});
+        object({brand:string,front:string}),{rules:[],assignment:'单张包装读图',context:'{}'});
       if (!seen?.brand?.trim() || !seen.front?.trim()) return null;
       const {parsedOutput:review}=await call('把所附原图与候选观察逐项对照。只保留能在这一个瓶盒正面直接指出位置的图形、颜色和排布。电商画面外加的卖点或促销字不得说成瓶身标签。删除不可辨认的小字、推断与风格评价。若图中商品与所查商品或任务品类不符，或没有可核观察，返回空串。',[image],
-        object({verifiedFront:string}),{rules:[],delegate:true,assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,brandReadFromImage:seen.brand,observation:seen.front})});
+        object({verifiedFront:string}),{rules:[],assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,brandReadFromImage:seen.brand,observation:seen.front})});
       if (!review?.verifiedFront?.trim()) return null;
       return {source:image.imageId,title:image.title,observation:review.verifiedFront.trim(),sameCategory:true};
     }));

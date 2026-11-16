@@ -1,7 +1,7 @@
 """Extract publisher links from the archived 360 Search results page."""
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 import json
 import sys
 
@@ -18,7 +18,7 @@ class ReportSearchResults(HTMLParser):
         attributes = dict(attrs)
         if tag == 'h3':
             self.in_heading = 'res-title' in (attributes.get('class') or '').split()
-        elif self.in_heading and tag == 'a':
+        elif tag == 'a' and (self.in_heading or attributes.get('data-md') == '{"b":"title"}'):
             self.url = attributes.get('data-mdurl') or attributes.get('href') or ''
             self.title = []
 
@@ -30,7 +30,10 @@ class ReportSearchResults(HTMLParser):
         if tag == 'a' and self.url:
             try:
                 link = urlsplit(self.url)
-                if link.scheme == 'https' and link.hostname != 'www.so.com':
+                if link.hostname == 'm.so.com' and link.path == '/jump':
+                    self.url = parse_qs(link.query).get('u', [''])[0]
+                    link = urlsplit(self.url)
+                if link.scheme == 'https' and link.hostname not in {'www.so.com', 'm.so.com', 'ai.so.com'}:
                     self.results.append({'title': ''.join(self.title).strip(), 'url': self.url})
             except ValueError:
                 pass

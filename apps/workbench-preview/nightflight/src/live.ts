@@ -162,6 +162,7 @@ export interface Project extends Summary {
     question?: string;
     conditional?: boolean;
     digestPending?: boolean;
+    sections?: {chapter:string;conclusion:string;explanation:string;evidenceIndices:number[]}[];
     strategyAdvice?: { recommendation: string; findingIndices: number[] }[];
     digest?: {
       chapter: '行业与市场' | '竞争与同类传播' | '人群与接触情境';

@@ -107,6 +107,7 @@ function researchHandoff(report, project) {
     ...(report?.searchScope ? {searchScope:report.searchScope} : {}),
     ...(text(report?.methodVersion) ? { methodVersion: report.methodVersion } : {}),
     findings,
+    ...(Array.isArray(report?.sections) ? {sections:report.sections} : {}),
     ...(Array.isArray(report?.anchorQuestions) ? {anchorQuestions:report.anchorQuestions} : {}),
     ...(ready && report.digestPending===true ? {digestPending:true} : {}),
     ...(ready && report.digest !== undefined ? {digest:validateResearchDigest(report.digest,findings)} : {}),
@@ -139,7 +140,9 @@ function continueResearch(p, archived = false) {
 }
 
 function hasStrategyEvidence(r) {
-  return Array.isArray(r?.findings) && r.findings.some(f => f && !f.visualOnly && /^https?:\/\//i.test(f.url) &&
+  if (!Array.isArray(r?.findings)) return false;
+  const cited = r.sections ? r.sections.flatMap(row=>row.evidenceIndices.map(i=>r.findings[i])) : r.findings;
+  return cited.some(f => f && !f.visualOnly && /^https?:\/\//i.test(f.url) &&
     [f.passage, f.source, f.evidence, f.conclusion, f.implication].every(v => typeof v === 'string' && v.trim()));
 }
 
@@ -780,7 +783,7 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.stage = 'layout';
       p.status = 'running';
     } else if (kind === 'research_digest') {
-      check(!p.claim && p.stage === 'research' && p.status === 'waiting' && p.research?.ready,'没有等待交接的已核研究结果',409);
+      check(!p.claim && p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.sections,'没有等待交接的已核研究结果',409);
       p.researchDigestOnly = true;
       p.status = 'running';
       note(p,'开始从当前已核研究发现重新编辑摘要');
