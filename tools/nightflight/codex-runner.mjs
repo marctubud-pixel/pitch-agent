@@ -1,3 +1,4 @@
+import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
@@ -28,12 +29,7 @@ const executeFile = promisify(execFile);
 const repo = fileURLToPath(new URL('../../', import.meta.url));
 const hash = value => createHash('sha256').update(value).digest('hex');
 const stages = {
-  brief: ['简报与任务', [
-    '生成一份中文 Markdown 简报原稿。首段标题固定为「## 已掌握的项目信息」，每行「字段：值」。',
-    '只列本案已提供的品牌、产品与品类、品牌自述卖点、输出目标，以及其他确已掌握且有用的项目条件。合并重复事实，未知字段略去。',
-    '下段「## 影响下一步的未知项」只在确有内容时出现，每行「未知项：主理人当前暂定怎样处理」。只收会改变接下来取证或比较的事项，做法要具体。不得把暂定市场、人群、预算或产品功效写成已知事实。',
-    '其余追溯与交接信息放入「## 原稿记录」及后续独立章节，保存必要的版本、附件读取情况、确认状态和执行限制。',
-  ].join('')],
+  brief: ['简报与任务','提取客户给定的项目条件、卖点、意向及明确约束。'],
   research: ['研究', '根据实际取得的来源列出出处、观察、推论和缺口。网络检索只用无保密内容的品类词；不把模型常识当作已核来源。'],
   strategy: ['策略', '先交一句核心策略，再写人群洞察、品牌角色、核心主张与触点。研究依据保留在底稿。'],
   copy: ['文案与主题', '依据研究与策略创作三案，组织匿名首读和对应对抗。总监按证据裁定改稿或同稿复核，分别记录单案、整组差异和推荐。'],
@@ -905,9 +901,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       await addText(body);
       return {artifacts,directions,copyReview};
     }
-    const result = await call('输出当前阶段的可交接中文 Markdown 正文。',inputs.images,textSchema);
-    const body = textOutput(result);
-    await addText(body);
+    await addText(await makeBriefCard(call,project,inputs));
     return {artifacts};
     }
     if (!['visual','copy'].includes(stage)) return executeStage(directCall,dir);

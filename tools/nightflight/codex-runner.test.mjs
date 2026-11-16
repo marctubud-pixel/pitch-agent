@@ -146,6 +146,10 @@ process.stdin.on('end',()=>{
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
  let body = {body:'按材料制订测试茶任务卡'};
+ if(['pdf','attachment'].includes(action)) {
+   const quote=action==='pdf'?'NIGHTFLIGHT PDF TEST':'只有附件才有的词';
+   body={facts:[{label:'提案任务',quote,value:quote}],unknowns:[]};
+ }
  if(action==='final-return'){
    if(input.includes('逐张检查页面')){
      if(!args.includes('--image')) process.exit(14);
