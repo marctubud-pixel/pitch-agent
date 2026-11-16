@@ -1,6 +1,6 @@
 # 提案工作台 · 规范基线
 
-基线版本 **1.58.0**，整理日期 **2026-11-16**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、研究、视觉、UI 三个固定 Skill、包装／KV 一页策略 Skill 及两份本地提案编稿／排版试行方法、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
+基线版本 **1.59.0**，整理日期 **2026-11-16**。此处是后续开发和人工编排的规范入口：12份岗位文档、16份页面规格、研究、视觉、UI 三个固定 Skill、包装／KV 一页策略 Skill 及两份本地提案编稿／排版试行方法、双团协议和排版后终审协议。既有用户决定沿用；本次补齐组织、页面维护和交接治理，不冒称历史上已确认或自动调度已接通。
 
 先看[Agent组织与职责总览](../agents/README.md)，了解业务与开发两条统筹线、各岗位内部执行者和独立评审关系；再看[页面基线与责任索引](../pages/README.md)，按页面找责任、既有结构、实际路由和待定范围。
 
@@ -15,7 +15,7 @@
 | --- | --- | --- | --- |
 | 比稿统筹 | [比稿 Agent](../agents/proposal-director.md) | [项目概览](../pages/overview.md) | 逐阶段及排版前简核；包装、KV 使用[客户提案逐页编稿](../../skills/proposal-structure-pilot/SKILL.md)试行 |
 | 简报 | [简报负责人](../agents/brief-owner.md) | [新建](../pages/new.md)、[简报与任务](../pages/brief.md) | 任务卡、确认和版本合同 |
-| 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r12](../../skills/design-research-lead/SKILL.md) |
+| 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r13](../../skills/design-research-lead/SKILL.md) |
 | 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | [包装／KV 一页策略](../../skills/strategy-one-pager/SKILL.md)，其他载体沿用三板块 |
 | 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [三方向创作、四岗盲评与交付](copy-generation.md) |
 | 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.4.0](../../skills/visual-development-lead/SKILL.md) |

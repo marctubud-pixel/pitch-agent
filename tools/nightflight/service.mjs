@@ -87,6 +87,7 @@ function researchHandoff(report, project) {
   if (!ready && !gaps.length) gaps.push('当前材料尚未提供可供策略使用的研究判断。');
   return {
     ready,
+    ...(report?.searchScope ? {searchScope:report.searchScope} : {}),
     ...(text(report?.methodVersion) ? { methodVersion: report.methodVersion } : {}),
     findings,
     ...(Array.isArray(report?.anchorQuestions) ? {anchorQuestions:report.anchorQuestions} : {}),

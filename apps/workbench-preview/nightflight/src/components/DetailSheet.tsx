@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { STAGES, STAGE_BY_ID } from '../data/project';
 import { researchDisplay } from './researchDisplay';
 import { MediaStageOutput } from './MediaStageOutput';
-import { ResearchDigest, ResearchImageGallery, ResearchSource, TextStageOutput } from './TextStageOutput';
+import { ResearchImageGallery, ResearchSource, TextStageOutput } from './TextStageOutput';
 import { clock, phase, researchQuestion, safeURL, stageLabel, type Artifact, type Project } from '../live';
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
@@ -11,7 +11,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
   const [focus, setFocus] = useState('');
   const handoff = p.research;
   const { questions, clues } = researchDisplay(handoff?.gaps || []);
-  const clueCount = clues.length + (handoff && !handoff.ready ? handoff.digest?.length ?? 0 : 0);
+  const clueCount = clues.length;
   const isResearch = p.stage === 'research';
   const isChecking = isResearch && p.status === 'running';
   const question = researchQuestion(p);
@@ -40,7 +40,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         )}
         {!!handoff && !handoff.ready && (
           <>
-            <h2>影响策略的待查问题</h2>
+            <h2>策略交接 · 待补查</h2>
             {returned && <p>策略退回原因　{handoff.next}</p>}
             {questions.length ? (
               <ol className="findings">
@@ -62,7 +62,6 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {!!clueCount && (
           <details className="research-original">
             <summary>已有线索（{clueCount}）</summary>
-            {handoff && !handoff.ready && !!handoff.digest?.length && <ResearchDigest report={handoff} artifacts={p.artifacts} attachments={p.attachments} />}
             <ul className="plain-list">{clues.map((clue) => <li key={clue}>{clue}</li>)}</ul>
           </details>
         )}
