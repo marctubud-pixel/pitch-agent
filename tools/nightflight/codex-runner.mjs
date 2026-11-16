@@ -2,7 +2,7 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {followupSources,matchesDomain,locateQuote,researchGap} from './research-sources.mjs';
+import {followupSources,matchesDomain,locateQuote,researchGap,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {editResearchDigest, missingResearchCoverage, researchAngles, reviewedFindings} from './research-digest.mjs';
@@ -58,6 +58,8 @@ const researchPlanSchema = objectSchema({
   carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
   anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
   queries:stringList,
+  reportCategories:{type:'array',items:stringField,minItems:2,maxItems:4},
+  segmentTerms:{type:'array',items:stringField,minItems:1,maxItems:4},
   sourceTargets:{type:'array',items:objectSchema({domain:stringField,query:stringField})},
 });
 const researchChapters = ['行业与市场', '人群与接触情境', '竞争与同类传播', '产品与品牌', '研究结论'];
@@ -172,7 +174,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const scope = project.proposalKind || taskKind(project.brief || '',false);
   const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：具名品牌、同渠道商品、规格价格与实际作品；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：列出同类具名品牌的官网、在售单品平台、专业设计案例站，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多八条宽口径查询，按上述实际载体分配，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：列出同类具名品牌的官网、在售单品平台、专业设计案例站，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。queries 留给人群、产品、竞品研究。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
@@ -228,6 +230,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
               url: record.finalUrl,
               source: record.extraction.title || new URL(record.finalUrl).hostname,
               text: record.extraction.text,
+              pdfLinks: record.extraction.pdfLinks ?? [],
             };
           } catch {
             signal?.throwIfAborted();
@@ -243,26 +246,56 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const previousScope = project.previousResearch?.searchScope;
   const priorQueries = new Set(previousScope?.queries ?? []);
   const excluded = new Set(previousScope?.urls ?? []);
-  const searches = [...targeted.map(({query,domain}) => ({query:query+' site:'+domain,domain})),
-    ...queries.filter(query=>!priorQueries.has(query) || !project.researchFollowup).map(query=>({query}))].slice(0,8);
-  const discovered = await Promise.all(searches.map(async ({query,domain}) => {
+  const categories = strings(plan.parsedOutput?.reportCategories);
+  const terms = strings(plan.parsedOutput?.segmentTerms).filter(t=>t.length<=30).slice(0,4);
+  const industryQueries = reportSearchTerms(categories,[...priorQueries]);
+  const discover = async ({query,domain}) => {
     const found = await discoverPublicPages(query,storeRoot,dependencies,signal);
     return {...found,results:found.results.filter(r=>(!domain || matchesDomain(r.url,domain)) &&
       (!project.researchFollowup || !excluded.has(r.url)))};
-  }));
+  };
+  const discovered = [];
+  const reportReads = [];
+  const examined = new Set();
+  for (const query of industryQueries) {
+    const found = await discover({query});
+    discovered.push(found);
+    const candidates = found.results.filter(r=>/报告|白皮书|蓝皮书|皮书|研究|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url));
+    const pages = (await Promise.all(candidates.map(r=>capture(r.url)))).filter(Boolean);
+    const links = [...new Set(pages.flatMap(p=>p.pdfLinks))].slice(0,3);
+    pages.push(...(await Promise.all(links.map(capture))).filter(Boolean));
+    const fresh = pages.filter(p=>!examined.has(p.url) && examined.add(p.url));
+    if (!fresh.length) continue;
+    const documents = fresh.map(p=>({url:p.url,title:p.source,text:reportExcerpts(p.text,terms)}));
+    const schema = objectSchema({reads:{type:'array',items:objectSchema({url:stringField,title:stringField,
+      kind:{type:'string',enum:['original','mention','irrelevant']},segmentQuote:stringField})}});
+    const check = await call('只读所附网页原文。逐页判断是否为相关报告本身（original），报道、摘要、售卖入口或目录（mention），或无关。title 写实际报告名，无可定位的报告则留空。只有报告原文披露所查细分品类的具体统计结果时，segmentQuote 才逐字引用含细分名称与数据的连续原句或表行。按原文区分大类、相邻品类和目标细分的统计口径。',[],schema,
+      {editorial:true,rules:[],context:JSON.stringify({categories,segmentTerms:terms,documents})});
+    for (const row of check.parsedOutput?.reads ?? []) {
+      const page = fresh.find(p=>p.url===row.url);
+      if (!page || !row.title?.trim() || !['original','mention'].includes(row.kind)) continue;
+      const quote = row.segmentQuote?.trim();
+      const evidence = row.kind==='original' && quote && /\d/u.test(quote) && terms.some(t=>quote.includes(t)) && locateQuote(page.text,quote);
+      reportReads.push({query,url:page.url,title:row.title,kind:row.kind,segmentQuote:evidence?.evidence || ''});
+    }
+    if (reportReads.some(r=>r.segmentQuote)) break;
+  }
+  const searches = [...targeted.map(({query,domain}) => ({query:query+' site:'+domain,domain})),
+    ...queries.filter(query=>!priorQueries.has(query) || !project.researchFollowup).map(query=>({query}))].slice(0,8-discovered.length);
+  discovered.push(...await Promise.all(searches.map(discover)));
   signal?.throwIfAborted();
   const suppliedPages = (project.feedback ?? [])
     .filter(item => item.stage === 'research')
     .flatMap(item => item.text?.match(/https:\/\/[^\s<>"，。；）)]+/gu) ?? [])
     .slice(-8);
-  const urls = [...new Set([...suppliedPages, ...discovered.flatMap(r => r.results.map(s => s.url))])];
+  const urls = [...new Set([...suppliedPages, ...reportReads.map(r=>r.url), ...discovered.flatMap(r => r.results.map(s => s.url))])];
   const originals = (await Promise.all(urls.map(capture))).filter(Boolean);
   await onEvent?.('公开检索取得 ' + urls.length + ' 个候选链接，其中 ' + originals.length + ' 份可读取原文');
-  const material = originals.map(({ url, source, text }) => ({ url, source, text: text.slice(0, 7500) }));
+  const material = originals.map(({ url, source, text }) => ({ url, source, text: examined.has(url) ? reportExcerpts(text,terms) : text.slice(0,7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
     modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。先归纳行业、总体偏好、产品事实、竞品包装或KV四线，再解释这些材料共同提出什么策略取舍。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
-      JSON.stringify(material),
+      '行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
     inputs.images,
     reportSchema,
   );
@@ -393,7 +426,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   }
   const captured = new Map((await Promise.all(captures.values())).filter(Boolean).map(item=>[item.url,item]));
   research.searchScope = {
-    queries: searches.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
+    reportReads, queries: discovered.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
     unreadable: [...failedCaptures].map(([url,reason])=>({url,reason})),
     pages: [...captured.values()].map(({source,url})=>{
       const rejected = Array.isArray(draft.parsedOutput.rejectedSources) &&
@@ -440,6 +473,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     '## 下一步',
     research.next,
     '## 取证范围',
+    ...reportReads.map(r=>r.query+' → '+r.title+'（'+(r.kind==='original'?'已读报告原文':'提及报告的页面')+'）：'+r.url+'；'+(r.segmentQuote || '未核到所查细分数据。')),
     trace.length ? '本轮检索：' + trace.join('；') : '本轮未取得可核对的查询记录。',
   ]
     .filter(Boolean)

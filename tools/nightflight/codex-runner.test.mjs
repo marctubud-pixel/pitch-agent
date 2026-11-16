@@ -141,7 +141,7 @@ process.stdin.on('end',()=>{
    fs.unlinkSync(stop);process.exit(78);
  }
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('只读所附网页原文') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -165,6 +165,12 @@ process.stdin.on('end',()=>{
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
      body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
+     if(action==='research-report-lookup') Object.assign(body,{reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
+   }
+   else if(schema.reads) {
+     const {documents}=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     if(!documents[0].text.includes('无糖茶占20%'))process.exit(36);
+     body={reads:[{url:documents[0].url,title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]};
    }
    else if(schema.anchorQuestions) { body={anchorQuestions:['渠道？','竞品？','人群？','节点？']}; }
    else if(schema.findings) {
@@ -305,6 +311,10 @@ async function fixture(t, action, options={}) {
       if (url.href==='https://source.example.org/product') return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>测试茶包装</title><p>设计方把茶类名放在中央。</p><img src="/product.png">')};
       if (url.href==='https://source.example.org/product.png') return {status:200,headers:{'content-type':'image/png'},body:competitorPng};
       if(url.hostname==='lite.duckduckgo.com') throw Error('fixture discovery unavailable');
+      if(action==='research-report-lookup' && url.hostname==='cn.bing.com' && url.searchParams.get('q')==='即饮茶报告')
+        return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>茶字释义</title><link>https://source.example.org/dictionary</link></item></channel></rss>')};
+      if(action==='research-report-lookup' && url.pathname==='/report')
+        return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>合成行业报告</title><p>本次样本单列礼盒用途。</p><p>'+'附录'.repeat(4800)+'无糖茶占20%。</p>')};
       if(url.hostname==='cn.bing.com') return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>合成报告</title><link>https://source.example.org/report</link></item></channel></rss>')};
       return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<html><title>合成行业报告</title><p>本次样本单列礼盒用途。礼盒上架、供应商进入、礼盒容量、包装品类字、购买渠道、茶味偏好。</p></html>')};
     },
@@ -669,6 +679,14 @@ for (const [action, ready, count] of [
     },
   );
 }
+test('industry search switches short category terms and verifies segment data deep inside the report',async t=>{
+  const f=await fixture(t,'research-report-lookup');
+  const {research}=await f.run('research');
+  assert.deepEqual(research.searchScope.queries.slice(0,2),['即饮茶报告','茶饮报告']);
+  assert.ok(!research.searchScope.queries.includes('瓶装茶报告'));
+  assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
+});
+
 test('keeps a verified brief fact without releasing strategy on the brief alone',async t=>{
   const f=await fixture(t,'research-brief-only');
   await writeFile(join(f.dir,'brief-test.md'),'项目输入：配料为水和燕麦');

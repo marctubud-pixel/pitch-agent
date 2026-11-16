@@ -35,3 +35,37 @@ export function locateQuote(text, quote) {
 }
 
 export const researchGap = (kind, message, chapter = '', findingRef = '') => ({kind, chapter, message, findingRef});
+
+
+export function reportSearchTerms(categories, previous = []) {
+  const queries = [];
+  for (const value of categories ?? []) {
+    if (typeof value !== 'string') continue;
+    const category = value.trim().replace(/(?:行业)?(?:报告|白皮书)$/u,'');
+    if (!/^[\p{L}\p{N}·-]{1,14}$/u.test(category) || /(?:20\d\d|增长率|销售额|同比|市场规模|渠道结构)/u.test(category)) continue;
+    const query = ['报告','白皮书'].map(suffix=>category+suffix).find(q=>!previous.includes(q));
+    if (query && !queries.includes(query)) queries.push(query);
+  }
+  return queries.slice(0,4);
+}
+
+// Keep context around in-document matches even when the table is past the introductory pages.
+export function reportExcerpts(text, terms) {
+  const ranges = [[0,1800]];
+  for (const term of terms) {
+    let from = 0;
+    for (let n=0;n<5;n++) {
+      const index = text.indexOf(term,from);
+      if (index<0) break;
+      ranges.push([Math.max(0,index-200),Math.min(text.length,index+term.length+420)]);
+      from = index+term.length;
+    }
+  }
+  const merged = [];
+  for (const [start,end] of ranges.sort((a,b)=>a[0]-b[0])) {
+    const last = merged.at(-1);
+    if (last && start<=last[1]) last[1]=Math.max(last[1],end);
+    else merged.push([start,end]);
+  }
+  return merged.map(([start,end])=>text.slice(start,end)).join('\n[…]\n').slice(0,11500);
+}
