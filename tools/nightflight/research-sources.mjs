@@ -51,14 +51,28 @@ export function reportSearchTerms(categories, previous = []) {
 
 // Keep context around in-document matches even when the table is past the introductory pages.
 export function reportExcerpts(text, terms) {
+  if (text.length<=16000) return text;
   const ranges = [[0,1800]];
-  for (const term of terms) {
-    let from = 0;
-    for (let n=0;n<5;n++) {
-      const index = text.indexOf(term,from);
+  for (const term of terms.filter(Boolean)) {
+    const contexts = [];
+    let start = 0;
+    while (start<text.length) {
+      const index = text.indexOf(term,start);
       if (index<0) break;
-      ranges.push([Math.max(0,index-200),Math.min(text.length,index+term.length+420)]);
-      from = index+term.length;
+      const before = Math.max(0,index-200), after = Math.min(text.length,index+term.length+420);
+      const nearby = text.slice(Math.max(0,index-100),index+term.length+140);
+      const hasMeasure = /\d[\d,.]*\s*(?:[%％万亿吨升元]|瓶|件|million|billion)/iu.test(nearby);
+      contexts.push({before,after,hasMeasure});
+      start=index+term.length;
+    }
+    // Repeated category names in the introduction must not crowd out later tables.
+    contexts.sort((a,b)=>Number(b.hasMeasure)-Number(a.hasMeasure));
+    const selected = [];
+    for (const item of contexts) {
+      if (selected.some(other=>item.before<other.after && item.after>other.before)) continue;
+      selected.push(item);
+      ranges.push([item.before,item.after]);
+      if (selected.length===4) break;
     }
   }
   const merged = [];

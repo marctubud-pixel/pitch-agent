@@ -316,7 +316,7 @@ async function fixture(t, action, options={}) {
       if(action==='research-report-lookup' && url.hostname==='www.so.com' && url.searchParams.get('q')==='茶饮报告')
         return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<h3 class="res-title"><a href="https://www.so.com/link" data-mdurl="https://source.example.org/report"><em>茶饮</em>研究报告</a></h3>')};
       if(action==='research-report-lookup' && url.pathname==='/report')
-        return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>合成行业报告</title><p>本次样本单列礼盒用途。</p><p>'+'附录'.repeat(4800)+'无糖茶占20%。</p>')};
+        return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>合成行业报告</title><p>本次样本单列礼盒用途。</p><p>'+'无糖茶定义。'.repeat(3000)+'无糖茶占20%。</p>')};
       if(url.hostname==='cn.bing.com') return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>合成报告</title><link>https://source.example.org/report</link></item></channel></rss>')};
       return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<html><title>合成行业报告</title><p>本次样本单列礼盒用途。礼盒上架、供应商进入、礼盒容量、包装品类字、购买渠道、茶味偏好。</p></html>')};
     },
