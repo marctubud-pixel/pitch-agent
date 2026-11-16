@@ -162,11 +162,16 @@ async function discoverPackaging({brands, discover, storeRoot, dependencies, dir
         hits.push(...extra.filter(isSource));
         found.via+=' → www.so.com';
       }
+      // On the site-restricted retry, visit the brand's public site even if discovery is unavailable.
+      if (official && query.endsWith(' site:'+official)) {
+        const host=official.split('.').length===2 ? 'www.'+official : official;
+        hits.unshift({url:'https://'+host+'/',title:name});
+      }
       found.results=hits.filter(r=>!seen.has(r.url) && seen.add(r.url)).slice(0,5);
       searches.push(found);
       const eligible=found.results.filter(r=>official && matchesDomain(r.url,official) || !retailPage && r.title.includes(name));
       const checked=await Promise.all(eligible.map(async r=>{
-        const page={...r,brand:name,carrier:'packaging'};
+        const page={...r,brand:name,official:Boolean(official && matchesDomain(r.url,official)),carrier:'packaging'};
         const images=await searchVisualImages({dir,signal,query,pages:[page]},
           {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
         const qualified=images.filter(i=>Math.min(i.width,i.height)>=140);
