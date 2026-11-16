@@ -102,9 +102,9 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "2026-11-16 用户补充 One-Pager 核心策略的写作与复核方法，并给定谷间白定位示例。前版见 PR #48 提交 2199c7b0de74409c1c45324711ddd11c651101ae。",
+    "source": "2026-11-16 用户确认按已核研究比较多个旧认知，再独立选定方向。前版见 PR #48 提交 ea817c44bddf50c56066ac17e62a3353c6c6eef6。",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.2-20261116",
-    "sha256": "031be79ee48c39a34bb9b6f7d205555c7f59135b001db768c1a144752189a5c0"
+    "sourceVersion": "v1.3-20261116",
+    "sha256": "2a110fdc14276a3c21ae576b600c8754c9a6058c6d2760a6ea0d178bb86298c5"
   }
 ]

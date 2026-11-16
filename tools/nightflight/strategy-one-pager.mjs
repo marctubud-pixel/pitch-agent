@@ -7,6 +7,12 @@ const exactlyThree = {minItems:3,maxItems:3};
 const numbered = {type:'integer'};
 const basis = object({text:string,findingNumbers:list(numbered)});
 const touchpointSchema = object({kind:{type:'string',enum:['front','side','back','kv']},name:string,action:string});
+const oldFrame = object({text:string,findingNumbers:list(numbered),evidenceReading:string,reasonToChange:string,newMeaning:string});
+const selectionSchema = object({selection:{anyOf:[
+  object({researchReturn:string}),
+  object({candidates:list(oldFrame,{minItems:2,maxItems:3}),selected:numbered,tradeoff:string}),
+]}});
+
 const schema = object({outcome:{anyOf:[
   object({researchReturn:string}),
   object({
@@ -57,7 +63,32 @@ function measurementText(value) {
     .replace(/[（(](?:待测|待验证)[）)]\s*[。.]?$/u,'').trim());
 }
 
-function renderStrategy(out, findings, eligible, carrier) {
+async function selectOldFrame(call,task,eligible) {
+  const instruction='先比较A面，不写一页纸。从不同的实物、传播语境、真实用法或用户观察中找2–3种实质不同、有研究支撑的旧认知。每项text用可放进核心句的简短旧认知，findingNumbers引用外部发现，evidenceReading说明原证据实际显示什么；reasonToChange写清沿用这个认知会令谁在何时错过什么、为什么值得改变，若是判断请用条件句；newMeaning写产品条件在该场景让人感受到什么。用途、品类名称、字号、销量本身都不构成改变理由。选择前比较各案针对的问题、证据强弱和能否兑现，selected为候选的一基序号，tradeoff解释为何选它及其余各案为何暂缓。若项目给定了核心句，所选text用该句中从和变成之间的短语。资料不足以支持两个不同候选时，researchReturn写窄缺口，不凑近义词。';
+  let correction='';
+  for (let attempt=0;attempt<2;attempt++) {
+    const response=await call(instruction+correction,[],selectionSchema,task);
+    const slate=response.parsedOutput?.selection;
+    if (singleLine(slate?.researchReturn)) return slate;
+    try {
+      if (!Array.isArray(slate?.candidates) || slate.candidates.length<2 || slate.candidates.length>3 ||
+          !Number.isInteger(slate.selected) || !slate.candidates[slate.selected-1] || !singleLine(slate.tradeoff))
+        throw Error('需要2–3个候选、有效选择序号和取舍理由');
+      for (const frame of slate.candidates) {
+        referenceList(frame,eligible);
+        if (![frame.evidenceReading,frame.reasonToChange,frame.newMeaning].every(singleLine))
+          throw Error('每项须交代证据范围、改变理由和用户可感的新意义');
+      }
+      if (!distinct(slate.candidates.map(c=>c.text))) throw Error('候选旧认知重复');
+      return slate;
+    } catch(error) {
+      if (attempt===1) throw error;
+      correction='请修复：'+error.message;
+    }
+  }
+}
+
+function renderStrategy(out, findings, eligible, carrier, slate) {
   if (Object.hasOwn(out,'researchReturn')) {
     if (!singleLine(out.researchReturn)) throw Error('退回研究时需写明具体补查问题');
     return {body:'# 策略待补\n\n'+out.researchReturn,researchReturn:out.researchReturn};
@@ -67,6 +98,10 @@ function renderStrategy(out, findings, eligible, carrier) {
   const focus=customerText(out.coreStrategy);
   if (!/^把[^。！？]+?从[^。！？]+?[，,]?变成[^。！？]+[。！]?$/u.test(focus))
     throw Error('核心策略要用一句话把品类从具体旧认知变成特定场景里的新意义');
+  const chosen=slate.candidates[slate.selected-1];
+  const normalizeFrame=v=>v.replace(/[「」“”‘’『』，,\s]/gu,'');
+  const frame=focus.slice(focus.indexOf('从')+1,focus.indexOf('变成'));
+  if (normalizeFrame(frame)!==normalizeFrame(chosen.text)) throw Error('核心句 A 面须对应已选候选的原短语');
   if (!Array.isArray(out.actions) || out.actions.length!==3 || !out.actions.every(singleLine) || !distinct(out.actions))
     throw Error('核心主张需要三项不同的可执行动作');
   const touchpoints = out.touchpoints;
@@ -82,7 +117,7 @@ function renderStrategy(out, findings, eligible, carrier) {
       !distinct(metrics.map(m=>m.name)) || metrics.some(m=>/实测(?:显示|结果)|验证表明|测得|已(?:经)?(?:达到|提升|证实)/u.test(m.name+m.method)))
     throw Error('需给三项不同的待测指标与测量方法，不能填写实测结果');
   const groups=[out.opportunity,out.decision,out.priority];
-  const findingNumbers=[...new Set(groups.flatMap(g=>referenceList(g,eligible)))];
+  const findingNumbers=[...new Set([...chosen.findingNumbers,...groups.flatMap(g=>referenceList(g,eligible))])];
   const sections=[
     '# 策略一页纸','## 核心策略',focus,'## 人群洞察',customerText(out.insight),'## 品牌角色',customerText(out.brandRole),
     '## 核心主张',customerText(out.proposition),out.actions.map(a=>'- '+customerText(a)).join('\n'),
@@ -93,6 +128,9 @@ function renderStrategy(out, findings, eligible, carrier) {
       const f=findings[n-1];
       return '- 研究 '+n+'：'+f.conclusion.replace(/\s+/gu,' ').trim()+'（'+f.source.replace(/\s+/gu,' ').trim()+'）';
     }).join('\n'),
+    '## A 面候选与取舍',...slate.candidates.map((c,i)=>
+      (i+1)+'. '+c.text+'（研究 '+c.findingNumbers.join('、')+'）\n依据：'+c.evidenceReading+'\n为什么值得改变：'+c.reasonToChange+'\n用户能感受到什么：'+c.newMeaning),
+    '选中第 '+slate.selected+' 项。'+slate.tradeoff,
     '## 方向交叉点',out.intersection,'## 推导依据','- 产品与任务约束：'+out.constraints+'\n'+
       groups.map((g,i)=>'- '+['竞品资源与空隙','人群与决策链','触点优先级与取舍'][i]+'：'+g.text+'（研究 '+g.findingNumbers.join('、')+'）').join('\n'),
   ];
@@ -114,12 +152,16 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
     const findingNumbers=a.findingIndices.map(i=>i+1);
     return findingNumbers.every(n=>eligible.has(n)) ? [{recommendation:a.recommendation,findingNumbers}] : [];
   });
-  const context=JSON.stringify({carrier,brief:project.brief,materials:inputs.texts,findings:rows,
-    researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
+  const packet={carrier,brief:project.brief,materials:inputs.texts,findings:rows,
+    researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []};
+  const external=new Set(rows.filter(r=>r.chapter!=='产品与品牌').map(r=>r.findingNumber));
+  const slate=await selectOldFrame(call,{rules,assignment:'策略负责人：先比较旧认知',context:JSON.stringify(packet)},external);
+  if (slate.researchReturn) return {body:'# 策略待补\n\n'+slate.researchReturn,researchReturn:slate.researchReturn};
+  const context=JSON.stringify({...packet,oldFrameSelection:slate});
   let correction='';
   for (let attempt=0;attempt<2;attempt++) {
-    const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据同版已核研究制定本案包装或 KV 的一页策略。'});
-    try { return renderStrategy(response.parsedOutput?.outcome ?? {},findings,eligible,carrier); }
+    const response=await call(instruction+'核心句从和变成之间沿用oldFrameSelection选中项的text原短语，B面用日常语言表达一个可感的改变。'+correction,inputs.images,schema,{rules,context,assignment:'依据同版已核研究制定本案包装或 KV 的一页策略。'});
+    try { return renderStrategy(response.parsedOutput?.outcome ?? {},findings,eligible,carrier,slate); }
     catch(error) {
       if (attempt===1) throw error;
       correction='上次输出需修正：'+error.message;

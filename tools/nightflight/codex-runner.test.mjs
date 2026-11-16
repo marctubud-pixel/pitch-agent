@@ -200,7 +200,10 @@ process.stdin.on('end',()=>{
    if(action==='onepager-wrong-touch') outcome.touchpoints.pop();
    if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
    if(action==='onepager-internal') outcome.insight='模拟设定的测试茶。';
-   body={outcome:action==='onepager-return'?{researchReturn:'请补查本地渠道的实际接触场景'}:outcome};
+   if(!packet.oldFrameSelection) {
+     const candidate={text:'礼盒里的客套',evidenceReading:'参照包装面向送礼',reasonToChange:'在办公室自行饮用时，送礼场景难以借鉴',newMeaning:'午休时顺手泡茶',findingNumbers:[2]};
+     body={selection:action==='onepager-gap'?{researchReturn:'请补查第二种有证据的旧认知'}:{candidates:[candidate,{...candidate,text:'茶席上的仪式'}],selected:action==='onepager-invalid-selection'?3:1,tradeoff:'首个案例与当前场景更接近'}};
+   } else body={outcome:action==='onepager-return'?{researchReturn:'请补查本地渠道的实际接触场景'}:outcome};
  }
  if(action==='strategy-return')body={body:'当前研究缺少适用依据。',researchReturn:'请补查本地渠道的实际接触场景'};
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
@@ -828,17 +831,17 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
 });
 
 
-for (const action of ['ok','kv','linked','return','no-shift','wrong-ref','wrong-touch','scored','internal']) {
+for (const action of ['ok','kv','linked','return','gap','invalid-selection','no-shift','wrong-ref','wrong-touch','scored','internal']) {
   test('one-page packaging strategy from verified findings: '+action,async t=>{
     const f=await fixture(t,'onepager-'+action);
     if (action==='kv') f.project.brief='制作测试茶的春节KV';
     if (action==='linked') f.project.brief='设计测试茶包装与KV';
     const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
     f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
-    if (!['ok','kv','linked','return'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    if (!['ok','kv','linked','return','gap'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
     const result=await f.run('strategy');
-    if (action==='return') {
-      assert.match(result.researchReturn,/实际接触场景/);
+    if (action==='return' || action==='gap') {
+      assert.match(result.researchReturn,/实际接触场景|第二种/);
       assert.equal(result.strategy,undefined);
       return;
     }
