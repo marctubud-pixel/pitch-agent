@@ -136,3 +136,15 @@ test('an uploaded case only binds its image and author quote through their own s
     call:()=>assert.fail('unmatched upload must not reach a reviewer')});
   assert.equal(unrelated,null);
 });
+
+test('two named product cards on the same brand homepage keep their own photos and source names',async()=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const url='https://brand.example.org/products';
+  const pages=['茶甲','茶乙'].map(brand=>({url,brand}));
+  const acquiredByPage=new Map(pages.map((page,i)=>[page,[{pageUrl:url,sourceUrl:url+'/'+i+'.png',title:page.brand,
+    name:'case-'+i+'.png',imageId:'ref_'+i,sha256:String(i).repeat(64),width:300,height:480}]]));
+  const board=await researchCompetitors({dir:'.',carrier:'packaging',pages,acquiredByPage,project:{brief:'瓶装茶包装'},
+    call:async (_instruction,[image],schema)=>({parsedOutput:schema.properties.brand
+      ? {brand:image.title,front:'白色标签居中'} : {verifiedFront:'白色标签居中'}})});
+  assert.deepEqual(board.finding.images.map(i=>[i.title,i.sourceUrl]),[['茶甲',url+'/0.png'],['茶乙',url+'/1.png']]);
+});
