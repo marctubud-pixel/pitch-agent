@@ -2251,8 +2251,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "14487a1c0ecff8355400e5015cf5067b7dac191e539bea7bcb44b822e73f7f0e",
-      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
+      "sha256": "163c3948e4243d8b49dc928143b233e801df437eeae86d8dc5ce65953210088f",
+      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。 个人登录后展示历史项目，资料入口定位到当前项目。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
@@ -2271,8 +2271,8 @@
       "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/Library.tsx": {
-      "sha256": "3489826272cdc7ad3208c9c92bfdc0e78b106d598cd025abbd4111748c6ca177",
-      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+      "sha256": "352fc6eb93e28ebc11e49c8658610edce422909f4a69a1a192f23822e48474b2",
+      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作 支持从项目清单直接定位项目资料。"
     },
     "apps/workbench-preview/nightflight/src/components/LogBar.tsx": {
       "sha256": "03275b5753a4013a0d907530633f8331d5781cdfc6576d38b5147be6cd2c9bfb",
@@ -2283,8 +2283,8 @@
       "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     },
     "apps/workbench-preview/nightflight/src/components/TopBar.tsx": {
-      "sha256": "249fd9c4d3237a88ebccb19bec259a4f8a3b8e17f2c354d5d4bd9a7bf7d563d8",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "72f15b995f93a3da3d305a1a6a0a5cbfbb9918fc47cc613c42762df3ee3c55e0",
+      "reason": "接入夜航本机项目服务、页面状态或本机素材 个人入口增加退出会话操作。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
       "sha256": "f540951ea3d81d05d01a72a5cfc0782cbe58cf1d493af1aafe793410e64e6a9a",

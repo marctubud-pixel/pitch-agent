@@ -59,9 +59,10 @@ const server = http.createServer(async (req, res) => {
     res.end();
   }
 });
-server.listen(4420, '127.0.0.1', () => {
+const port = Number(process.env.NIGHTFLIGHT_PORT || 4420);
+server.listen(port, '127.0.0.1', () => {
   service = createNightflight({ root, runStage, runLayout });
-  console.log('夜航提案台 http://127.0.0.1:4420/ （等待用户开始）');
+  console.log('夜航提案台 http://127.0.0.1:'+port+'/ （等待用户开始）');
 });
 for (const sig of ['SIGINT', 'SIGTERM'])
   process.once(sig, () => {

@@ -1,0 +1,15 @@
+[Unit]
+Description=OnePitch workbench
+After=network.target
+[Service]
+User=onepitch
+WorkingDirectory=/opt/onepitch
+Environment=NIGHTFLIGHT_DATA=/var/lib/onepitch/projects
+StateDirectory=onepitch
+StateDirectoryMode=0700
+UMask=0077
+ExecStart=/usr/bin/node /opt/onepitch/tools/nightflight/start.mjs
+Restart=on-failure
+NoNewPrivileges=true
+[Install]
+WantedBy=multi-user.target
