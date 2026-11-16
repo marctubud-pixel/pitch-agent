@@ -143,9 +143,10 @@ export interface Project extends Summary {
   brief: string;
   events: { stage: StageId; text: string; at: string }[];
   artifacts: Artifact[];
-  versions?: { at: string; stage: StageId; artifacts: Artifact[] }[];
+  versions?: { at: string; stage: StageId; artifacts: Artifact[]; research?: Project['research'] }[];
   researchFollowup?: boolean;
   research?: {
+    searchScope?: {queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};
     ready: boolean;
     question?: string;
     digestPending?: boolean;
@@ -156,7 +157,7 @@ export interface Project extends Summary {
       detail: string;
       findingIndex: number;
     }[];
-    findings: { conclusion: string; evidence: string; source: string; url: string; implication: string; images?: ResearchImage[] }[];
+    findings: { chapter?:string; conclusion: string; evidence: string; source: string; url: string; implication: string; images?: ResearchImage[] }[];
     gaps: string[];
     next: string;
   };

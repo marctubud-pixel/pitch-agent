@@ -195,10 +195,37 @@ export function ResearchDigest({ report, artifacts, attachments }: { report: Res
 }
 
 function Research({ p }: { p: Project }) {
-  const report = p.research;
-  if (report && !report.ready) return null;
+  const archived = p.stage==='research' && p.status==='running' && p.researchFollowup
+    ? [...(p.versions ?? [])].reverse().find(v=>v.research?.findings.length) : undefined;
+  const report = p.research ?? archived?.research;
+  const files = !p.research?.findings.length && archived ? archived.artifacts : p.artifacts;
+  if (report && !report.digest?.length && report.findings.length) {
+    const chapterNames: Record<string,string> = Object.fromEntries(digestChapters);
+    const groups = [...new Set(report.findings.map(f=>f.chapter || '已核实的发现'))];
+    return <>{groups.map(group=><section className="block" key={group}>
+      <h2>{chapterNames[group] || group}</h2>
+      <ol className="findings">{report.findings.filter(f=>(f.chapter || '已核实的发现')===group).map((f,i)=>
+        <li key={i}><span className="finding-no">{i+1}</span><div><h3>{f.conclusion}</h3><p>{f.implication}</p>
+          <details><summary>依据与来源</summary><p>{f.evidence}</p><ResearchSource finding={f} attachments={p.attachments}/>
+            {!!f.images?.length && <ResearchImageGallery images={f.images} artifacts={files} attachments={p.attachments}/>}
+          </details></div></li>)}</ol>
+    </section>)}</>;
+  }
+  if (report && !report.ready && !report.findings.length) {
+    const scope = report.searchScope;
+    const lastLog = [...p.events].reverse().find(e=>e.stage==='research' && e.text.startsWith('公开检索取得 '));
+    const excluded = scope?.pages.find(page=>page.reason);
+    const reason = excluded ? excluded.title + '：' + excluded.reason : report.gaps.find(g=>g.trim());
+    return <section className="block"><h2>这轮查到了什么</h2>
+      <p>{scope ? `检索取得 ${scope.urls.length} 个候选链接，读到 ${scope.readable} 份原文。` : lastLog?.text}</p>
+      <p>本轮没有核实出可用于本案的结论。</p>
+      {reason && <p>{reason}</p>}
+      {scope && <details><summary>查看检索词与已读来源</summary><p>{scope.queries.join(' · ')}</p>
+        <ul>{scope.pages.map(page=><li key={page.url}>{page.title} · {page.url}{page.reason && ' · '+page.reason}</li>)}</ul></details>}
+    </section>;
+  }
   if (!report && p.stage === 'research' && p.status === 'running') return null;
-  if (report?.digest?.length) return <ResearchDigest report={report} artifacts={p.artifacts} attachments={p.attachments} />;
+  if (report?.digest?.length) return <ResearchDigest report={report} artifacts={files} attachments={p.attachments} />;
   if (p.artifacts.some(a => a.stage === 'research')) {
     return <p className="research-archive-note">这版研究可在下方的研究底稿中查看。</p>;
   }

@@ -862,3 +862,13 @@ test('strategy carrier handles excluded and linked outputs while preserving othe
   assert.equal(detect('做包装，另需设计海报'),'packaging+kv');
   assert.equal(detect('只需要制作TVC，参考包装与KV'),null);
 });
+
+test('packaging follow-up changes source families and rejects off-site results',async()=>{
+  const {followupSources,matchesDomain}=await import('./research-sources.mjs');
+  const targets=followupSources({brief:'精酿啤酒包装',carrier:'packaging',queries:['啤酒价格']});
+  assert.ok(targets.some(t=>t.query.includes('Punk IPA')));
+  assert.ok(targets.some(t=>t.domain==='jd.com'));
+  assert.ok(targets.some(t=>t.domain==='thedieline.com'));
+  assert.equal(matchesDomain('https://item.jd.com/123','jd.com'),true);
+  assert.equal(matchesDomain('https://jd.com.example.org/123','jd.com'),false);
+});

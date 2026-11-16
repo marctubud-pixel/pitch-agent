@@ -1,3 +1,4 @@
+import {followupSources,matchesDomain} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {editResearchDigest, missingResearchCoverage, researchAngles, reviewedFindings} from './research-digest.mjs';
@@ -58,6 +59,7 @@ const researchPlanSchema = objectSchema({
   carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
   anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
   queries:stringList,
+  sourceTargets:{type:'array',items:objectSchema({domain:stringField,query:stringField})},
 });
 const researchChapters = ['行业与市场', '人群与接触情境', '竞争与同类传播', '产品与品牌', '研究结论'];
 const findingSchema = objectSchema({
@@ -69,6 +71,7 @@ const findingSchema = objectSchema({
   implication: stringField,
 });
 const reportSchema = objectSchema({
+  rejectedSources: {type:'array',items:objectSchema({url:stringField,reason:stringField})},
   competitorPages: {type:'array',items:objectSchema({title:stringField,url:stringField,imageUrl:stringField,carrier:{type:'string',enum:['packaging','kv']},rationaleSourceUrl:stringField,rationaleQuote:stringField})},
   findings: { type: 'array', items: findingSchema },
   gaps: stringList,
@@ -161,12 +164,12 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     ? '协作调研先完成取证、列出初步发现。用户已给的选择和补充意见属于项目条件。'
     : '自动调研自行分析不同条件下的适用范围，自行定向补查，保留需要客户确认的假设。';
   const planning = project.researchFollowup
-    ? '本轮为定向补查。沿用已核发现，先检查四线中哪些公开材料可以补足。旧版要求门店实拍、访谈或回忆测试的缺口只约束相应说法。用户暂时无法确认时，对备选情境分别取证。'
+    ? '本轮为定向补查。先换来源：针对实际缺口，查询具体公开竞品品牌和型号、在售单品、设计机构或设计奖的具名案例。不要重复上轮已排除的词典、门户和泛关键词。沿用已核发现，先检查四线中哪些公开材料可以补足。旧版要求门店实拍、访谈或回忆测试的缺口只约束相应说法。用户暂时无法确认时，对备选情境分别取证。'
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
   const coverageInstruction = '为行业、竞品、人群各找二至三个独立观察角度。同一数字拆分、同一事实换品牌或同一份研究的重复结论不计。行业查整个品类的变化、供给、价格带或销售结构；竞品查真实作品与不同商品主张、规格或价格；人群查受访者购买渠道、选择偏好与使用情境。渠道归类看观察对象，消费者自报购买地点是人群，行业销售渠道份额才是行业。参考角度：'+JSON.stringify(researchAngles)+'。';
   const scope = project.proposalKind || taskKind(project.brief || '',false);
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：设计的核心渠道与场景、头部竞品要解决的问题及压力、用户决策过程中要回答的问题、KV传播节点符号（纯包装写不适用，KV未知则写待核节点）。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多八条宽口径查询，按上述实际载体分配，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：列出同类具名品牌的官网、在售单品平台、专业设计案例站，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：设计的核心渠道与场景、头部竞品要解决的问题及压力、用户决策过程中要回答的问题、KV传播节点符号（纯包装写不适用，KV未知则写待核节点）。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。给出最多八条宽口径查询，按上述实际载体分配，覆盖行业品类概况、已有品类人群偏好、产品可比卖点及同载体竞品原作。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
@@ -226,9 +229,17 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     return captures.get(url);
   };
   await onEvent?.('正在查找公开案例、品类和使用情境资料');
-  const discovered = await Promise.all(
-    queries.map((query) => discoverPublicPages(query, storeRoot, dependencies, signal)),
-  );
+  const targeted = project.researchFollowup ? followupSources({brief:project.brief || '',carrier,queries,targets:plan.parsedOutput.sourceTargets}) : [];
+  const previousScope = project.previousResearch?.searchScope;
+  const priorQueries = new Set(previousScope?.queries ?? []);
+  const excluded = new Set(previousScope?.urls ?? []);
+  const searches = [...targeted.map(({query,domain}) => ({query:query+' site:'+domain,domain})),
+    ...queries.filter(query=>!priorQueries.has(query) || !project.researchFollowup).map(query=>({query}))].slice(0,8);
+  const discovered = await Promise.all(searches.map(async ({query,domain}) => {
+    const found = await discoverPublicPages(query,storeRoot,dependencies,signal);
+    return {...found,results:found.results.filter(r=>(!domain || matchesDomain(r.url,domain)) &&
+      (!project.researchFollowup || !excluded.has(r.url)))};
+  }));
   signal?.throwIfAborted();
   const suppliedPages = (project.feedback ?? [])
     .filter(item => item.stage === 'research')
@@ -240,7 +251,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const material = originals.map(({ url, source, text }) => ({ url, source, text: text.slice(0, 7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
-    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。先归纳行业、总体偏好、产品事实、竞品包装或KV四线，再解释这些材料共同提出什么策略取舍。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
+    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。先归纳行业、总体偏好、产品事实、竞品包装或KV四线，再解释这些材料共同提出什么策略取舍。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时主动用内置实时网络检索查找、打开并阅读公开原始来源；无论 Brief 是否完整，先查可研究的问题。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。依照既有四维及研究结论组织发现，将 finding.chapter 对应到五个研究板块，没有结果的板块列明缺口。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
       JSON.stringify(material),
     inputs.images,
     reportSchema,
@@ -371,6 +382,14 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   } else {
     research.gaps.push('当前没有可以同时核对原文、结论和策略用途的发现。');
   }
+  research.searchScope = {
+    queries: searches.map(s=>s.query), urls, readable: originals.length,
+    pages: originals.map(({source,url})=>{
+      const rejected = Array.isArray(draft.parsedOutput.rejectedSources) &&
+        draft.parsedOutput.rejectedSources.find(r=>r?.url===url && typeof r.reason==='string');
+      return {title:source,url,...(rejected && !research.findings.some(f=>f.url===url) ? {reason:rejected.reason.slice(0,300)} : {})};
+    }),
+  };
   const trace = strings([
     ...discovered.map((r) => r.via + '：' + r.query + '（' + r.results.length + ' 条候选链接）'),
     ...nativeQueries,

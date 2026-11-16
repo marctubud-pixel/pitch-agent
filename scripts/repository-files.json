@@ -1493,6 +1493,7 @@
     "tools/nightflight/public-visual-search.test.mjs",
     "tools/nightflight/research-competitors.mjs",
     "tools/nightflight/research-digest.mjs",
+    "tools/nightflight/research-sources.mjs",
     "tools/nightflight/service.mjs",
     "tools/nightflight/service.test.mjs",
     "tools/nightflight/start.mjs",
