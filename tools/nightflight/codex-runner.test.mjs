@@ -317,8 +317,8 @@ async function fixture(t, action, options={}) {
         body:Buffer.from('<title>茶盒商品页</title><p>设计方把茶类名放在中央。</p><img src="/blank.gif" alt="测试茶" data-lazy-img="/product.png">')};
       if(action==='research-report-lookup' && url.hostname==='cn.bing.com' && ['即饮茶报告','茶饮报告'].includes(url.searchParams.get('q')))
         return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>茶字释义</title><link>https://source.example.org/dictionary</link></item></channel></rss>')};
-      if(action==='research-report-lookup' && url.hostname==='www.so.com' && url.searchParams.get('q')==='茶饮报告')
-        return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<h3 class="res-title"><a href="https://www.so.com/link" data-mdurl="https://source.example.org/report"><em>茶饮</em>研究报告</a></h3>')};
+      if(action==='research-report-lookup' && url.hostname==='m.so.com' && url.searchParams.get('q')==='茶饮报告')
+        return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<a data-md="{&quot;b&quot;:&quot;title&quot;}" href="https://m.so.com/jump?u=https%3A%2F%2Fsource.example.org%2Freport"><h3 class="res-title"><em>茶饮</em>研究报告</h3></a>')};
       if(action==='research-report-lookup' && url.pathname==='/report')
         return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>合成行业报告</title><p>本次样本单列礼盒用途。</p><p>'+'无糖茶定义。'.repeat(3000)+'无糖茶占20%。</p>')};
       if(url.hostname==='cn.bing.com') return {status:200,headers:{'content-type':'text/xml'},body:Buffer.from('<rss><channel><item><title>合成报告</title><link>https://source.example.org/report</link></item></channel></rss>')};
