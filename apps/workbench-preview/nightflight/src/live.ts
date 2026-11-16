@@ -145,6 +145,7 @@ export interface ResearchImage {
 }
 export interface ResearchGap {kind:string;chapter:string;message:string;findingRef:string}
 export interface Project extends Summary {
+  briefScope?: {status: 'accepted' | 'unclear' | 'unsupported'; types: string[]; reason: string};
   finalReturn?:{returnStage:StageId;reason:string};
   revision: number;
   mode: Mode;
@@ -181,7 +182,7 @@ export interface Project extends Summary {
 }
 export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
-type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup' | 'canRequestStrategy'>>;
+type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy'>>;
 export const researchQuestion = (p: ResearchStatus) =>
   p.stage === 'research' &&
   p.status === 'waiting' &&
@@ -191,7 +192,12 @@ export const researchQuestion = (p: ResearchStatus) =>
   p.research.findings.length
     ? p.research.question?.trim() || ''
     : '';
+export function briefNeedsClarification(p: ResearchStatus) {
+  return p.stage === 'brief' && p.status === 'waiting' &&
+    (p.briefScope?.status === 'unclear' || p.briefScope?.status === 'unsupported');
+}
 export const projectStatus = (p: ResearchStatus) => {
+  if (briefNeedsClarification(p)) return p.briefScope?.status === 'unsupported' ? '委托超出范围' : '委托内容待明确';
   if (researchQuestion(p)) return '等待你的判断';
   if (p.stage === 'research' && p.status === 'running' && p.researchFollowup) return '定向补查中';
   if (p.stage === 'research' && p.status === 'waiting') {

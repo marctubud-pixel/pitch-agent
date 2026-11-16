@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+  briefNeedsClarification,
   clock,
   fileIssue,
   projectStatus,
@@ -44,6 +45,7 @@ export function RevisionStage({value,change}:{value:StageId;change:(stage:StageI
   </select></label>;
 }
 export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
+  if (briefNeedsClarification(p)) return null;
   if (p.status === 'failed' || (p.status==='waiting' && p.finalReturn))
     return (
       <div className="msg-body">
@@ -90,11 +92,13 @@ export function ChatPanel({
   close,
   act,
   busy,
+  composerRef,
 }: {
   p: Project;
   projects: Summary[];
   openResearch: () => void;
   close: () => void;
+  composerRef: React.RefObject<HTMLInputElement | null>;
   act: Act;
   busy: boolean;
 }) {
@@ -189,9 +193,10 @@ export function ChatPanel({
             onAdd={(fs) => setFiles((prev) => [...prev, ...fs])}
           />
           <input
+            ref={composerRef}
             aria-label="给主理人的消息"
             value={draft}
-            placeholder={canAttach ? "写下意见或补充说明…" : "当前阶段运行中，完成后可提交意见"}
+            placeholder={briefNeedsClarification(p) ? "补充你希望获得的提案…" : canAttach ? "写下意见或补充说明…" : "当前阶段运行中，完成后可提交意见"}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.nativeEvent.isComposing) send();

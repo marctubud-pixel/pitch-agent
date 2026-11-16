@@ -901,8 +901,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       await addText(body);
       return {artifacts,directions,copyReview};
     }
-    await addText(await makeBriefCard(call,project,inputs));
-    return {artifacts};
+    const {briefScope,body}=await makeBriefCard(call,project,inputs);
+    if (body) await addText(body);
+    return {artifacts,briefScope};
     }
     if (!['visual','copy'].includes(stage)) return executeStage(directCall,dir);
     checkpointDir ??= join(dir,'.call-checkpoints');

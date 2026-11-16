@@ -24,7 +24,7 @@ if (action === 'profile') {
   if (vision !== Array.isArray(content) || body.model !== model) process.exit(2);
   if (vision && !content[1].image_url.url.startsWith('data:image/png;base64,')) process.exit(3);
   console.log(JSON.stringify({id:'request-'+model,model:'actual-'+model,
-    choices:[{message:{content:JSON.stringify(vision ? {body:'测试任务卡'} : {facts:[{label:'提案任务',value:'测试',quote:'测试'}],unknowns:[]})}}]}));
+    choices:[{message:{content:JSON.stringify(vision ? {body:'测试任务卡'} : {briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'},facts:[{label:'提案任务',value:'测试',quote:'测试'}],unknowns:[]})}}]}));
 }`);
   await chmod(executable, 0o700);
   const events = [];
@@ -49,17 +49,30 @@ if (action === 'profile') {
 
 test('brief displays the client view separately and keeps its longer source in the manuscript',async()=>{
   const {makeBriefCard}=await import('./brief-intake.mjs');
-  const brief='产品无糖，用泉水。我认为主要卖点是无糖。正面必须标注容量。';
+  const brief='请设计包装。产品无糖，用泉水。我认为主要卖点是无糖。正面必须标注容量。';
   const facts=[
     {label:'产品卖点与亮点',value:'无糖',quote:'产品无糖'},
     {label:'产品卖点与亮点',value:'泉水',quote:'用泉水'},
     {label:'客户当前判断',value:'主要卖点是无糖',quote:'我认为主要卖点是无糖。'},
     {label:'硬性设计要求',value:'标注容量',quote:'正面必须标注容量'},
   ];
-  const make=(rows)=>makeBriefCard(async()=>({parsedOutput:{facts:rows,unknowns:[]}}),{brief},{texts:[],images:[]});
-  const factsOnly=await make(facts.slice(0,2));
+  const make=(rows)=>makeBriefCard(async()=>({parsedOutput:{briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'},facts:[{label:'提案任务',value:'包装设计',quote:'请设计包装'},...rows],unknowns:[]}}),{brief},{texts:[],images:[]});
+  const {body:factsOnly}=await make(facts.slice(0,2));
   assert.match(factsOnly,/产品卖点与亮点：无糖；泉水/);
   assert.doesNotMatch(factsOnly,/客户当前判断|硬性设计要求/);
-  assert.match(await make(facts),/客户当前判断：主要卖点是无糖\n硬性设计要求：正面必须标注容量/);
+  assert.match((await make(facts)).body,/客户当前判断：主要卖点是无糖\n硬性设计要求：正面必须标注容量/);
   await assert.rejects(make([{...facts[0],quote:'不存在的客户原话'}]),/原文中找不到/);
+});
+
+test('scope rejection returns no card, and invalid classifications cannot release one',async()=>{
+  const {makeBriefCard}=await import('./brief-intake.mjs');
+  const project={brief:'我需要开发一个库存系统'};
+  const inputs={texts:[],images:[]};
+  const scope={status:'unsupported',types:[],reason:'目前承接包装、海报、广告片或活动提案，请说明想委托的成果。'};
+  const make=briefScope=>makeBriefCard(async()=>({parsedOutput:{briefScope,facts:[],unknowns:[]}}),project,inputs);
+  assert.deepEqual(await make({...scope,unknowns:['品类？']}),{briefScope:scope});
+  await assert.rejects(make({...scope,status:'accepted',types:['kv']}),/简报字段缺失/);
+  for (const invalid of [undefined,{...scope,status:'accepted'},{...scope,status:'accepted',types:['website']}]) {
+    await assert.rejects(make(invalid),/简报范围判断无效/);
+  }
 });

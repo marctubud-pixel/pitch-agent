@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { headlineReviewProtocol, safeURL, type Artifact, type Asset, type CopyDuty, type Project, type ResearchImage } from '../live';
+import { briefNeedsClarification, headlineReviewProtocol, safeURL, type Artifact, type Asset, type CopyDuty, type Project, type ResearchImage } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
 import { ResearchSource } from './ResearchSource';
 export { ResearchSource } from './ResearchSource';
@@ -27,11 +27,17 @@ function Pending({ children }: { children: ReactNode }) {
   return <p className="pending">{children}</p>;
 }
 
-function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
+function Brief({ p, text, name, correct }: { p: Project; text: string; name?: string; correct?: () => void }) {
   const { rows, assumptions } = briefCard(text);
   return (
     <>
-      {text ? (
+      {briefNeedsClarification(p) ? (
+        <section className="block">
+          <h2>委托范围</h2>
+          <p>{p.briefScope?.reason}</p>
+          {correct && <button className="btn btn-dark" onClick={correct}>补充委托需求</button>}
+        </section>
+      ) : text ? (
         <section className="block" data-artifact={name}>
           <h2>项目任务卡</h2>
           {rows.length ? <Rows rows={rows} /> : <p>尚无可单列的已知项目信息，可展开原始需求或原稿核对。</p>}
@@ -347,6 +353,7 @@ export function CopyOutput({
 }
 
 export function TextStageOutput({
+  correct,
   p,
   id,
   onChoose,
@@ -354,6 +361,7 @@ export function TextStageOutput({
 }: {
   p: Project;
   id: TextStage;
+  correct?: () => void;
   onChoose?: (name: string) => void;
   busy?: boolean;
 }) {
@@ -365,7 +373,7 @@ export function TextStageOutput({
     .join('\n\n');
   switch (id) {
     case 'brief':
-      return <Brief p={p} text={text} name={name} />;
+      return <Brief p={p} text={text} name={name} correct={correct} />;
     case 'research':
       return <Research p={p} />;
     case 'strategy':

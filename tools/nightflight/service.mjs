@@ -1,3 +1,4 @@
+import {validBriefScope} from './brief-intake.mjs';
 import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
 import { DatabaseSync } from 'node:sqlite';
@@ -50,6 +51,7 @@ function archiveVersion(p) {
     at: now(),
     stage: p.stage,
     artifacts: [...p.artifacts],
+    ...(p.briefScope ? {briefScope:p.briefScope} : {}),
     research: p.research ?? null,
     directions: p.directions,
     copyReview: p.copyReview ?? null,
@@ -442,7 +444,13 @@ export function createNightflight({ root, runStage, runLayout }) {
             claim = null;
             continue;
           }
-          check(Array.isArray(result.artifacts) && result.artifacts.length, '这一阶段没有交回文件', 422);
+          if (p.stage==='brief') {
+            check(validBriefScope(result.briefScope),'简报缺少有效的提案范围判断',422);
+            const {status,types,reason}=result.briefScope;
+            live.briefScope={status,types,reason:reason.trim()};
+          }
+          const needsBriefInput=p.stage==='brief' && live.briefScope.status!=='accepted';
+          check(Array.isArray(result.artifacts) && (needsBriefInput ? result.artifacts.length===0 : result.artifacts.length>0), '这一阶段没有交回文件', 422);
           if (p.stage === 'copy') {
             const names = result.directions;
             const review = result.copyReview;
@@ -514,7 +522,7 @@ export function createNightflight({ root, runStage, runLayout }) {
           if (p.stage==='layout' && Array.isArray(result.layoutChanges)) live.layoutChanges=result.layoutChanges;
           live.claim = null;
           live.owner = null;
-          note(live, '已保存' + outputs.length + '份' + labels[stages.indexOf(p.stage)] + '产物');
+          if (outputs.length) note(live, '已保存' + outputs.length + '份' + labels[stages.indexOf(p.stage)] + '产物');
           if (p.stage === 'research') {
             live.research = researchHandoff(result.research, live);
             if (live.research.ready) {
@@ -535,6 +543,9 @@ export function createNightflight({ root, runStage, runLayout }) {
             } else {
               continueResearch(live);
             }
+          } else if (needsBriefInput) {
+            live.status='waiting';
+            note(live,live.briefScope.reason);
           } else if (p.stage === 'brief' && p.mode==='collab') {
             live.status='waiting';
             note(live,'请确认任务卡后开始研究');
@@ -701,6 +712,7 @@ export function createNightflight({ root, runStage, runLayout }) {
     const start=stages.indexOf(target);
     for (const stage of stages.slice(start)) bumpVersion(p,stage);
     p.artifacts=p.artifacts.filter(a=>stages.indexOf(a.stage)<start);
+    if (target==='brief') delete p.briefScope;
     if (start<=1) { p.research=null; p.researchOnly=false; p.researchFollowup=false; p.researchQuestionAnswered=false; delete p.researchDigestOnly; }
     if (start<=3) { delete p.copyHandoff; p.copyReview=null; p.directions=[]; p.choice=null; }
     if (start<=4) {p.visualAdoption=null; p.layoutChanges=[];}
@@ -726,6 +738,8 @@ export function createNightflight({ root, runStage, runLayout }) {
     }
     if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue')
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
+    if (p.stage==='brief' && p.briefScope && p.briefScope.status!=='accepted' && ['confirm_brief','retry'].includes(kind))
+      check(false,'请先补充或重新描述提案需求',409);
     if (kind==='confirm_brief') {
       check(p.mode==='collab' && p.stage==='brief' && p.status==='waiting' && !p.finalReturn,'当前没有待确认任务卡',409);
       p.stage='research'; p.status='running'; note(p,'用户已确认任务卡');
