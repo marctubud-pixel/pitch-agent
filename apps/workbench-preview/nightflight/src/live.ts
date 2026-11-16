@@ -143,6 +143,13 @@ export interface Project extends Summary {
   research?: {
     ready: boolean;
     question?: string;
+    digestPending?: boolean;
+    digest?: {
+      chapter: '行业与市场' | '竞争与同类传播' | '人群与接触情境';
+      title: string;
+      detail: string;
+      findingIndex: number;
+    }[];
     findings: { conclusion: string; evidence: string; source: string; url: string; implication: string; images?: ResearchImage[] }[];
     gaps: string[];
     next: string;
@@ -154,7 +161,7 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue';
+export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup'>>;
 export const researchQuestion = (p: ResearchStatus) =>
@@ -171,6 +178,7 @@ export const projectStatus = (p: ResearchStatus) => {
   if (p.stage === 'research' && p.status === 'running' && p.researchFollowup) return '定向补查中';
   if (p.stage === 'research' && p.status === 'waiting') {
     if (!p.research) return '查看研究';
+    if (p.research.digestPending) return '摘要待编辑';
     return p.research.ready ? '可进入策略' : '待补查';
   }
   return statusName[p.status];

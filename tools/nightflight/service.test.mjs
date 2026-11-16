@@ -33,6 +33,7 @@ test('a personal run waits for direction and current image adoption, saves user 
     base = '/api/projects';
   const calls = [];
   const finding = {
+    chapter: '人群与接触情境',
     conclusion: '可区分两种观看场景',
     evidence: '夹具中两处展示位置不同',
     source: '案例夹具',
@@ -40,6 +41,11 @@ test('a personal run waits for direction and current image adoption, saves user 
     implication: '策略要明确主要观看场景',
   };
   async function run({ stage, dir, project }) {
+    if (project.researchDigestOnly) {
+      assert.deepEqual(project.attachments,[]);
+      assert.deepEqual(project.artifacts,[]);
+      return {researchDigest:[{chapter:finding.chapter,title:'场景不同',detail:'展示位置不同',findingIndex:0}],artifacts:[]};
+    }
     calls.push(stage);
     const round = calls.filter((s) => s === 'research').length;
     if (stage === 'research' && round === 2) {
@@ -194,13 +200,22 @@ test('a personal run waits for direction and current image adoption, saves user 
   assert.equal(deskReport.stage, 'research');
   assert.equal(deskReport.research.ready, true);
   assert.equal((await action({kind:'research_continue', expectedRevision:finished.revision})).status,409);
-  await action({kind:'research_continue', expectedRevision:deskReport.revision});
+  const edit = {kind:'research_digest', expectedRevision:deskReport.revision,opId:'edit-once'};
+  await action(edit);
+  const edited = await wait('waiting');
+  assert.equal(edited.research.digest[0].detail,'展示位置不同');
+  assert.deepEqual(edited.research.findings,deskReport.research.findings);
+  assert.deepEqual(edited.artifacts,deskReport.artifacts);
+  assert.deepEqual(edited.versions.at(-1).research,deskReport.research);
+  await action(edit);
+  assert.equal((await project()).revision,edited.revision);
+  await action({kind:'research_continue', expectedRevision:edited.revision});
   const resumed = await wait('waiting');
   assert.equal(resumed.stage, 'copy');
   assert.equal(resumed.choice, null);
   assert.equal(resumed.visualAdoption, null);
-  assert.deepEqual(resumed.versions.at(-1).artifacts, finished.artifacts);
-  assert.deepEqual(resumed.versions.at(-1).copyReview, finished.copyReview);
+  assert.deepEqual(resumed.versions.at(-2).artifacts, finished.artifacts);
+  assert.deepEqual(resumed.versions.at(-2).copyReview, finished.copyReview);
   assert.equal(calls.filter((s) => s === 'brief').length, 1);
 });
 
@@ -252,3 +267,46 @@ for (const mode of ['auto', 'collab']) {
     assert.equal(project.artifacts.filter((a) => a.stage === 'research').length, 1);
   });
 }
+
+test('editor failure retains accepted research and retry resumes strategy from the same findings',async t=>{
+  const root = await mkdtemp(join(tmpdir(),'editorial-retry-'));
+  const finding={chapter:'行业与市场',conclusion:'样本分为礼盒和单盒',evidence:'礼盒，单盒',source:'产品目录',implication:'比较两类陈列'};
+  let searches=0, edits=0;
+  const service=createNightflight({root, async runStage({stage,project,dir}) {
+    if (project.researchDigestOnly) {
+      assert.deepEqual(project.research.findings,[finding]);
+      if (++edits===1) throw Error('编辑服务暂时不可用');
+      return {researchDigest:[{chapter:finding.chapter,title:'礼盒与单盒分列',detail:'产品目录按销售形式区分。',findingIndex:0}]};
+    }
+    if (stage==='strategy') throw Error('测试止于策略收到完整底稿');
+    const name=stage+'.md';
+    await writeFile(join(dir,name),stage);
+    const artifacts=[{kind:'text',name}];
+    if (stage==='brief') return {artifacts};
+    searches++;
+    return {artifacts,research:{ready:true,digestPending:true,findings:[finding],gaps:[]}};
+  }});
+  t.after(async()=>{service.close(); await rm(root,{recursive:true,force:true});});
+  const path='/api/projects/edit-retry';
+  async function settled() {
+    for (let i=0;i<200;i++) {
+      const project=(await localRequest(service,path)).data.project;
+      if (project.status!=='running') return project;
+      await new Promise(r=>setTimeout(r,10));
+    }
+    throw Error('未到检查点');
+  }
+  await localRequest(service,'/api/projects',{id:'edit-retry',brief:'测试包装',mode:'auto'});
+  const waiting=await settled();
+  assert.equal(waiting.status,'waiting');
+  assert.equal(waiting.research.digestPending,true);
+  assert.match(waiting.error,/编辑服务/);
+  assert.equal((await localRequest(service,path+'/action',{kind:'research_digest',expectedRevision:waiting.revision})).status,200);
+  const handedOff=await settled();
+  assert.equal(handedOff.stage,'strategy');
+  assert.equal(handedOff.research.digestPending,undefined);
+  assert.deepEqual(handedOff.research.findings,waiting.research.findings);
+  assert.deepEqual(handedOff.artifacts,waiting.artifacts);
+  assert.equal(searches,1);
+  assert.equal(edits,2);
+});

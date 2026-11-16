@@ -5,6 +5,7 @@ import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promis
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
+import { validateResearchDigest } from './research-digest.mjs';
 import { createStageRunner } from './codex-runner.mjs';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
@@ -129,7 +130,7 @@ process.stdin.on('data',x=>input+=x);
 process.stdin.on('end',()=>{
  console.log(JSON.stringify({type:'thread.started',thread_id:id}));
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('独立研究编辑') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -145,6 +146,9 @@ process.stdin.on('end',()=>{
        chapter:'产品与品牌',conclusion:'演练产品条件',source:'brief-test.md',url:'',evidence:'配料为水和燕麦',implication:'以配方为条件比较表达'
      });
      if(action==='research-followup')body.findings=[];
+   } else if(schema.digest) {
+     if (!args.includes('web_search="disabled"') || input.includes('用户暂不确定渠道') || !input.includes('独立研究编辑')) process.exit(19);
+     body={digest:[{chapter:'行业与市场',findingIndex:0,title:'茶礼强调赠礼用途',detail:'样本单独列出礼盒用途。'}]};
    } else if(schema.accepted){
      if(!input.includes('独立会话') || !(input.includes('本次样本单列礼盒用途') || input.includes('配料为水和燕麦')))process.exit(11);
      body={ready:['research-ok','research-brief-only'].includes(action),accepted:[0],question:'优先门店还是线上？还有多少预算？',gaps:[],next:'结合渠道验证礼赠方向'};
@@ -524,6 +528,15 @@ for (const [action, ready, count] of [
       f.project.previousResearch = { legacyText: '上次的待补问题' };
       const { research, artifacts } = await f.run('research');
       assert.equal(research.ready, ready);
+      assert.equal(research.digestPending,ready ? true : undefined);
+      if (ready) {
+        const before = [...f.requests];
+        Object.assign(f.project,{research,researchDigestOnly:true});
+        const edited = await f.run('research');
+        assert.equal(edited.researchDigest[0].findingIndex,0);
+        assert.deepEqual(edited.artifacts,[]);
+        assert.deepEqual(f.requests,before);
+      }
       assert.equal(research.question, action === 'research-blocked' ? '优先门店还是线上？' : '');
       assert.ok(artifacts[0].text.includes('调研方法版本：' + research.methodVersion));
       assert.equal(research.findings.length, count);
@@ -653,4 +666,28 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
   assert.equal(searched.board,'公开同类正面对照 board');
   assert.match(missing.candidates[0].research,/补充同类/);
   await assert.rejects(rank([4,0,5], []), /分数无效/);
+});
+
+
+test('editorial selections keep their source, chapter, quantities and visual board',()=>{
+  const findings=[
+    {chapter:'人群与接触情境',evidence:'口味为50.1%，价格为50.9%'},
+    {chapter:'竞争与同类传播',evidence:'可见250mL纸盒',images:[{observation:'正面可见字体'}]},
+    {chapter:'竞争与同类传播',evidence:'容量为200毫升'},
+  ];
+  const row=(findingIndex,detail)=>({chapter:findings[findingIndex].chapter,findingIndex,title:'判断',detail});
+  const rows=[row(0,'口味占50.1%，价格占50.9%。'),row(1,'可见250毫升纸盒')];
+  assert.deepEqual(validateResearchDigest(rows,findings).map(r=>r.findingIndex),[1,0]);
+  assert.throws(()=>validateResearchDigest([row(0,'口味占51%。'),rows[1]],findings),/数值或单位/);
+  assert.throws(()=>validateResearchDigest([row(0,'销量为50.1万'),rows[1]],findings),/数值或单位/);
+  assert.throws(()=>validateResearchDigest([{...rows[0],chapter:rows[1].chapter},rows[1]],findings),/归组/);
+  assert.throws(()=>validateResearchDigest([rows[0],{...rows[1],findingIndex:9}],findings),/不存在/);
+  assert.equal(validateResearchDigest([rows[1]],findings).length,1);
+  for (const detail of ['可供比较名称与品类的呈现方式','摘要未确认样本量','不能据此推断早餐时段销量']) {
+    assert.throws(()=>validateResearchDigest([row(1,detail)],findings),/删除用途和局限尾注/);
+  }
+  assert.throws(()=>validateResearchDigest([{...rows[0],title:'建议先关注购买渠道'}],findings),/直陈/);
+  assert.doesNotThrow(()=>validateResearchDigest([row(0,'在受访者中，50.9%选择价格。')],findings));
+
+  assert.throws(()=>validateResearchDigest([],findings),/至少精选/);
 });

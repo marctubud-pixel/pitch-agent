@@ -1,0 +1,81 @@
+const chapters = ['行业与市场','竞争与同类传播','人群与接触情境'];
+const string = {type:'string'};
+const fields = {chapter:{type:'string',enum:chapters}, title:string, detail:string, findingIndex:{type:'integer'}};
+const schema = {type:'object',additionalProperties:false,required:['digest'],properties:{digest:{
+  type:'array',items:{type:'object',additionalProperties:false,required:Object.keys(fields),properties:fields},
+}}};
+
+function numbers(text) {
+  const normalized = text.normalize('NFKC').toLowerCase();
+  return [...normalized.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?\s*(?:%|‰|亿|万|毫升|ml|升|公斤|千克|克|元|年|人|家|倍)?/g)]
+    .map(([value])=>value.replace(/[,\s]/g,'').replace('毫升','ml').replace(/^[\d.]+/,n=>String(Number(n))));
+}
+
+export function validateResearchDigest(rows, findings) {
+  if (!Array.isArray(rows)) throw Error('研究精选必须是一组条目');
+  if (!rows.length && findings.some(f=>chapters.includes(f.chapter))) throw Error('至少精选一条与本案有关的已核判断');
+  const seen = new Set();
+  for (const row of rows) {
+    const index = row?.findingIndex;
+    const finding = findings[index];
+    if (!Number.isInteger(index) || !finding || seen.has(index) || !chapters.includes(row.chapter) || row.chapter!==finding.chapter)
+      throw Error('研究精选引用的发现不存在、重复或归组不符');
+    seen.add(index);
+    if (![row.title,row.detail].every(s=>typeof s==='string' && s.trim() && !/[\r\n]/.test(s)))
+      throw Error('每条研究精选需有一句标题与一段简短解释');
+    if (/^(?:建议(?:先|将|把|在|用|以|为|把握)|应(?:该|当|先|将|把|以|优先|关注)|可(?:先|优先|考虑)|优先(?:选择|关注|展示|比较))/.test(row.title))
+      throw Error('标题应直陈已经观察到的事实，设计及策略建议留在底稿');
+    if (/(?:可供(?:本案|设计|策略)?(?:参考|比较|借鉴)|(?:本次)?摘要(?:未|没有)(?:确认|说明|披露)|(?:不能|无法|不可)据此(?:推断|推导|证明|判断))/.test(row.detail))
+      throw Error('解释只保留支持标题的观察或数据，将必要的范围写在事实旁，删除用途和局限尾注');
+    const source = [finding.conclusion,finding.evidence,...(finding.images ?? []).map(img=>img.observation)].join(' ');
+    const sourceYears = String(finding.source ?? '').match(/(?:19|20)\d{2}年/g) ?? [];
+    const allowed = new Set(numbers([source,...sourceYears].join(' ')));
+    if (numbers(row.title+' '+row.detail).some(n=>!allowed.has(n))) throw Error('研究精选引入原发现没有的数值或单位');
+  }
+  for (const chapter of chapters) {
+    const entries=rows.filter(r=>r.chapter===chapter);
+    if (entries.length>3) throw Error('单个章节最多精选三条');
+  }
+  return chapters.flatMap(chapter=>rows.filter(row=>row.chapter===chapter).map(({title,detail,findingIndex})=>({
+    chapter,title:title.trim(),detail:detail.trim(),findingIndex,
+  })));
+}
+
+export async function editResearchDigest(call, findings, project) {
+  const eligible = findings.map((f,findingIndex)=>({findingIndex,chapter:f.chapter,conclusion:f.conclusion,evidence:f.evidence,
+    source:f.source,observations:(f.images ?? []).map(image=>image.observation)})).filter(f=>chapters.includes(f.chapter));
+  if (!eligible.length) return [];
+  const productFacts = findings.filter(f => f.chapter === '产品与品牌').map(f => f.conclusion);
+  const task = {
+    editorial: true,
+    rules: [],
+    assignment: '独立研究编辑',
+    context: JSON.stringify({
+      project: {title: project.title, brief: project.brief, proposalKind: project.proposalKind, productFacts},
+      findings: eligible,
+    }),
+  };
+  const instruction = [
+    '只从下列已核发现中精选给客户看的研究判断，按行业、竞品、人群三组，各选一至三条最能帮助本案作出选择的发现；没有与本案直接相关判断的组跳过，不为分组凑条数。',
+    '先比较项目产品、人群、使用场景、载体和决策，舍弃无关邻近品类或不适用人群的细节，例如与本案无关的泛早餐调查、儿童吸管。',
+    '不得每条重复说明与本案相关。',
+    '每条只绑定一条原发现的 findingIndex 与 chapter，不能拼接两条来源。',
+    '有实际包装或KV对照且与本案相关的竞品图组，优先选入。',
+    '标题只直陈观察：写谁、有什么特征、出现什么差别或变化。不要用动作指令、建议、问句或设计方案作标题。读者应能从标题看出实际发现。标题宜短，用日常中文概括规律；具体百分比、年份与调查名放在解释中，避免标题和解释重复同一句。例如“便利店是燕麦奶的购买渠道之一”，解释再给占比。',
+    '解释只写支撑这个观察的具体事实。年份、人群、地区、样本与统计口径贴在对应事实或数字旁；产品图写图上实际可见的差别。不要再写对本案的用途或建议。',
+    '例如把“建议优先关注价格与口味”改成“受访者最常提到价格与口味”（仅当原调查确实显示它们居前）。把“这两款包装可供比较名称呈现方式”改为实际看见的字序或字号差别。',
+    '删除“摘要未确认样本量”“不能据此推断销量”等逐条局限尾注。若局限确实改变判断，在陈述中缩小范围：渠道数据只说调查中的购买渠道，样本只代表受访者。范围仍说不清或结论不能成立时，舍弃整条。不要删去会改变结论的年份、人群或场景。',
+    '相关且口径明确的数据应保留数字、单位、样本范围，原文不能支持的数据一律不写。',
+    '不得把相邻品类或外国样本写成本案调查，不下购买效果断言。',
+    '只输出客户读得懂的短句，不写流程、来源编号和执行说明。',
+  ].join('');
+  let correction = '';
+  for (let attempt=0;attempt<2;attempt++) {
+    const result = await call(instruction+correction,[],schema,task);
+    try { return validateResearchDigest(result.parsedOutput?.digest,findings); }
+    catch(error) {
+      if (attempt===1) throw error;
+      correction='上一次输出未通过校验，请针对以下问题重编：'+error.message;
+    }
+  }
+}

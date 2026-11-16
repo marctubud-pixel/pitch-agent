@@ -1,4 +1,5 @@
 import {taskKind} from './proposal-outline.mjs';
+import {editResearchDigest} from './research-digest.mjs';
 import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -614,7 +615,7 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
     const inputProject = stage === 'copy'
       ? {...project, artifacts: (project.artifacts || []).filter(a=>['brief','research','strategy'].includes(a.stage))}
       : project;
-    const inputs = await readInputs(dir,inputProject,stage,signal);
+    const inputs = project.researchDigestOnly ? {texts:[],images:[]} : await readInputs(dir,inputProject,stage,signal);
     if (stage === 'final' && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
     const context = JSON.stringify({title:project.title, brief:project.brief, ...(project.proposalKind ? {proposalKind:project.proposalKind} : {}), ...(project.outlineOptions ? {outlineOptions:project.outlineOptions} : {}), mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null, materials:inputs.texts,...(stage==='research'?{previousResearch:project.previousResearch || null,researchFollowup:!!project.researchFollowup}:{})});
     const programPath = binary || await executable('codex');
@@ -625,12 +626,12 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
     if (!login || !/^Logged in using ChatGPT\s*$/im.test(login.stdout+'\n'+login.stderr)) {
       throw Error('请先使用 ChatGPT 账户登录本机 Codex，再重试本阶段');
     }
-    const makeProvider = (generate) => createCodexProvider({
+    const makeProvider = (generate, search = stage==='research') => createCodexProvider({
       binary:programPath, model:selectedModel, rootDir:join(dir,'.codex-runs'), timeoutMs:900000,
       spawn(program, args, options) {
         const disabled = ['apps','workspace_dependencies','in_app_local_automation','hooks','plugins','shell_tool','unified_exec','multi_agent','skill_search','computer_use','browser_use','browser_use_external','in_app_browser','view_image','skill_mcp_dependency_install'];
-        const flags = ['--ignore-rules', ...disabled.flatMap(name=>['--disable',name]), '-c','model_provider="openai"','-c','forced_login_method="chatgpt"','-c','web_search='+JSON.stringify(stage==='research'?'live':'disabled')];
-        flags.push(generate || stage==='research'?'--enable':'--disable','code_mode_host');
+        const flags = ['--ignore-rules', ...disabled.flatMap(name=>['--disable',name]), '-c','model_provider="openai"','-c','forced_login_method="chatgpt"','-c','web_search='+JSON.stringify(search?'live':'disabled')];
+        flags.push(generate || search?'--enable':'--disable','code_mode_host');
         flags.push(generate?'--enable':'--disable','image_generation');
         const child = spawn(program,[...args.slice(0,-1), ...flags,'-'], {...options,env});
         // npm's codex launcher starts a native executable. Cancel the whole owned group.
@@ -644,11 +645,12 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       },
     });
     const reviewer = makeProvider(false);
+    const editor = makeProvider(false,false);
     const creator = stage === 'visual' ? makeProvider(true) : reviewer;
     const call = async (instruction, images = inputs.images, schema = textSchema, task = {}) => {
       signal?.throwIfAborted();
       try {
-        return await (stage === 'visual' && !schema ? creator : reviewer).execute({runId:randomUUID(),prompt:[common,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n'),images,signal,...(task.comparison ? {imageEnvelope:{operation:'final-visual-v1',limits:{maxImages:8,maxBytes:64*1024*1024,maxPixels:160_000_000}}}:{}),...(schema ? {outputSchema:schema}:{})});
+        return await (task.editorial ? editor : stage === 'visual' && !schema ? creator : reviewer).execute({runId:randomUUID(),prompt:[common,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n'),images,signal,...(task.comparison ? {imageEnvelope:{operation:'final-visual-v1',limits:{maxImages:8,maxBytes:64*1024*1024,maxPixels:160_000_000}}}:{}),...(schema ? {outputSchema:schema}:{})});
       } catch (error) {
         if (signal?.aborted) throw Error('本次阶段已中止');
         // Native image generation can finish without a final text message.
@@ -759,7 +761,9 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       return {artifacts};
     }
     if (stage === 'research') {
+      if (project.researchDigestOnly) return {researchDigest:await editResearchDigest(call,project.research.findings,project),artifacts:[]};
       const {research,body,imageArtifacts} = await researchReport({call,dir,inputs,project,onEvent,dependencies:researchDependencies,signal});
+      if (research.ready) research.digestPending = true;
       const skill = rules.find(rule => /^name: design-research-lead$/m.test(rule));
       const methodVersion = skill?.match(/^  version: (\S+)$/m)?.[1];
       if (!methodVersion) throw Error('未取得当前调研 Skill 的方法版本');

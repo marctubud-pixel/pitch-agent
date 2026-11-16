@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.48.0",
+  "baselineVersion": "1.49.0",
   "date": "2026-11-16",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -43,7 +43,7 @@
       "kind": "agent",
       "title": "调研负责人",
       "path": "docs/agents/research-owner.md",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.research",
@@ -206,7 +206,7 @@
       "kind": "page",
       "title": "研究",
       "path": "docs/pages/research.md",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.research-owner",
@@ -378,10 +378,10 @@
     {
       "id": "method.research",
       "kind": "method",
-      "title": "调研负责人 Skill r9",
+      "title": "调研负责人 Skill r10",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.2.0",
-      "sourceVersion": "r9-20261116",
+      "version": "1.3.0",
+      "sourceVersion": "r10-20261116",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -463,7 +463,7 @@
       "kind": "contract",
       "title": "夜航七阶段产出展示规范",
       "path": "docs/specs/nightflight-stage-output.md",
-      "version": "1.19.0",
+      "version": "1.20.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",

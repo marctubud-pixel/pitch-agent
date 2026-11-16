@@ -258,3 +258,7 @@ ordinary-model-project的两个原件verifier通过model-http-authority私有sco
 store的可选opened-file核验由native模块维护私有描述符身份，仅用于满足条件的本地接管。默认打开/旧reader不自动升级；身份核验不能替代任务、政策、CAS或人工决定。具体见`docs/development/native-store-identity.md`。
 
 - B后端受限接缝：`visual-b-service`/`visual-b-http`/`visual-b-admission`复用原final-visual-runtime，根A/COPY/FD保持；默认关闭、精确来源与未知停止。当前B前端、实际图片和通用Deck整链分别待验，见[视觉合同](../development/visual-workflow.md)。
+
+### 夜航研究摘要与证据底稿
+
+研究复核通过后生成 `research.digest`，每条通过 `findingIndex` 定位同版本完整发现。详情视图展示行业、竞品和用户精选；研究交接、策略和版式使用原有正文、发现和竞品原图。对已核结果单独编辑摘要时保留既有证据、文件和原版本。参见[研究页面](../pages/research.md)。

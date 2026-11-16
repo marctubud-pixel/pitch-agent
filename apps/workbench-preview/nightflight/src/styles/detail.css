@@ -151,6 +151,7 @@ details p { font-size: 14.5px; }
   .kv > div { grid-template-columns: 84px 1fr; }
 }
 
+.research-archive-note { color: var(--mute); margin-bottom: 20px; }
 .research-review .block { margin-bottom: 26px; }
 .research-state { font-weight: 600; margin-bottom: 14px; }
 .research-finding { margin: 22px 0 28px; overflow-wrap: anywhere; }

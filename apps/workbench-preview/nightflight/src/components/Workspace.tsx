@@ -58,7 +58,7 @@ export function Workspace({
         ? p.stage === 'research'
           ? researchQuestion(p)
             ? '查看研究发现，回答影响方向的问题。'
-            : p.research?.ready ? '查看研究结果，准备好后进入策略。' : '查看研究缺口，补查后再交给策略。'
+            : p.research?.digestPending ? '打开研究，重新编辑摘要。' : p.research?.ready ? '查看研究结果，准备好后进入策略。' : '查看研究缺口，补查后再交给策略。'
           : p.stage === 'visual'
             ? '打开视觉稿，确认是否采用这一版做本地排版。'
             : '在对话里查看备选方向，选定后继续。'

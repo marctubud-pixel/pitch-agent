@@ -2251,20 +2251,20 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "4f994a2b154d560d1b8d2c6539c85c6a8a0bf0f17950374992d297d1c68b3933",
-      "reason": "研究结论展开显示竞品包装或 KV 原图、来源和观察，专项研究交接按实际状态显示。"
+      "sha256": "14487a1c0ecff8355400e5015cf5067b7dac191e539bea7bcb44b822e73f7f0e",
+      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "198e3aa4cfaa91de9f85d33db2b10b4697db9bd1825a098c8eaffefc102f17b3",
-      "reason": "研究结论展开显示竞品包装或 KV 原图、来源和观察，专项研究交接按实际状态显示。"
+      "sha256": "726d54f303679635ccc22ab4bf5560883505c4082e80b920571726656d17c559",
+      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "f5724b968be6426a69118683f4562a2d54ac75a8aff87b4c411ba3f4b324ac7b",
-      "reason": "研究结论展开显示竞品包装或 KV 原图、来源和观察，专项研究交接按实际状态显示。"
+      "sha256": "609a4eca2d8d530191d728cb1232d06009d41e702f96a8f35865dd3d7ada28e5",
+      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
@@ -2287,8 +2287,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "0ac661ca65b26aeb799ef9fc525593279b827a84a80d1e40ba47a1feb7a3fc88",
-      "reason": "研究结论展开显示竞品包装或 KV 原图、来源和观察，专项研究交接按实际状态显示。"
+      "sha256": "f540951ea3d81d05d01a72a5cfc0782cbe58cf1d493af1aafe793410e64e6a9a",
+      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",
@@ -2303,8 +2303,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "787d7efdf2c57cc31fe78029153ac89308fb4922b1a758583ed1c852a6e497bf",
-      "reason": "研究结论展开显示竞品包装或 KV 原图、来源和观察，专项研究交接按实际状态显示。"
+      "sha256": "b136f4918bb55f520001dbf33c5927f1817375834db2ee5a9bba2d8c9cf8ae9c",
+      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {
       "sha256": "5a52a2343c4c95ac3e08e4098a16e8ce005e5e537b3ad69a7c0868ff75299e42",

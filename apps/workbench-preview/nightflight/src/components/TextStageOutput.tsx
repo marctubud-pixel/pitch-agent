@@ -62,7 +62,7 @@ function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
   );
 }
 
-function ResearchImageGallery({ images, artifacts }: { images: ResearchImage[]; artifacts: Artifact[] }) {
+export function ResearchImageGallery({ images, artifacts }: { images: ResearchImage[]; artifacts: Artifact[] }) {
   return (
     <div className="research-image-gallery">
       {images.map((image) => {
@@ -89,61 +89,67 @@ function ResearchImageGallery({ images, artifacts }: { images: ResearchImage[]; 
   );
 }
 
-export function ResearchFindings({ report, artifacts }: { report: NonNullable<Project['research']>; artifacts: Artifact[] }) {
+type ResearchReport = NonNullable<Project['research']>;
+const digestChapters = [
+  ['行业与市场', '行业'],
+  ['竞争与同类传播', '竞品'],
+  ['人群与接触情境', '用户'],
+] as const;
+
+export function ResearchDigest({ report, artifacts }: { report: ResearchReport; artifacts: Artifact[] }) {
   return (
-    <ol className="findings">
-      {report.findings.map((finding, i) => (
-        <li key={i}>
-          <span className="finding-no">{i + 1}</span>
-          <div>
-            <h3>{finding.conclusion}</h3>
-            <p>{finding.implication}</p>
-            <details>
-              <summary>{finding.images?.length ? `查看竞品原图与依据（${finding.images.length}）` : '依据与来源'}</summary>
-              {finding.images?.length ? (
-                <ResearchImageGallery images={finding.images} artifacts={artifacts} />
-              ) : (
-                <>
-                  <p>{finding.evidence}</p>
-                  <ul className="sources">
-                    <li>
-                      {/^https?:\/\//i.test(finding.url) ? (
-                        <a href={finding.url} target="_blank" rel="noopener noreferrer">
-                          {finding.source || finding.url}
-                        </a>
-                      ) : (
-                        finding.source
-                      )}
-                    </li>
-                  </ul>
-                </>
-              )}
-            </details>
-          </div>
-        </li>
-      ))}
-    </ol>
+    <>
+      {digestChapters.map(([chapter, label]) => {
+        const rows = report.digest?.filter(item => item.chapter === chapter && report.findings[item.findingIndex]);
+        if (!rows?.length) return null;
+        return (
+          <section className="block research-digest" key={chapter}>
+            <h2>{label}</h2>
+            <ol className="findings">
+              {rows.map(({ title, detail, findingIndex }, index) => {
+                const finding = report.findings[findingIndex];
+                return (
+                  <li key={findingIndex + '-' + index}>
+                    <span className="finding-no">{index + 1}</span>
+                    <div>
+                      <h3>{title}</h3>
+                      <p>{detail}</p>
+                      <details>
+                        <summary>{finding.images?.length ? `查看竞品原图与依据（${finding.images.length}）` : '依据与来源'}</summary>
+                        {finding.images?.length ? (
+                          <ResearchImageGallery images={finding.images} artifacts={artifacts} />
+                        ) : (
+                          <>
+                            <p>{finding.evidence}</p>
+                            <ul className="sources"><li>
+                              {/^https?:\/\//i.test(finding.url)
+                                ? <a href={finding.url} target="_blank" rel="noopener noreferrer">{finding.source || finding.url}</a>
+                                : finding.source}
+                            </li></ul>
+                          </>
+                        )}
+                      </details>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        );
+      })}
+    </>
   );
 }
 
-function Research({ p, name }: { p: Project; name?: string }) {
+function Research({ p }: { p: Project }) {
   const report = p.research;
   if (report && !report.ready) return null;
   if (!report && p.stage === 'research' && p.status === 'running') return null;
-  return (
-    <section className="block" data-artifact={name}>
-      <h2>关键发现</h2>
-      {report?.findings.length ? (
-        <ResearchFindings report={report} artifacts={p.artifacts} />
-      ) : (
-        <Pending>
-          {p.artifacts.some((a) => a.stage === 'research')
-            ? '旧版原稿尚无逐条核对的发现，可在下方查看原稿。'
-            : '尚无研究发现。'}
-        </Pending>
-      )}
-    </section>
-  );
+  if (report?.digest?.length) return <ResearchDigest report={report} artifacts={p.artifacts} />;
+  if (p.artifacts.some(a => a.stage === 'research')) {
+    return <p className="research-archive-note">这版研究可在下方的研究底稿中查看。</p>;
+  }
+  return <Pending>尚无研究发现。</Pending>;
 }
 
 const copyDuties: Record<CopyDuty, string> = {
@@ -254,7 +260,7 @@ export function TextStageOutput({
     case 'brief':
       return <Brief p={p} text={text} name={name} />;
     case 'research':
-      return <Research p={p} name={name} />;
+      return <Research p={p} />;
     case 'strategy':
       return <StrategyOutput p={p} text={text} name={name} />;
     case 'copy':
