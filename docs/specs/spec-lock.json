@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.64.0",
-  "registrySha256": "522b33fca1e2020857a78e7d4bd1de45034f79e27c9dd5b25c1589c8f037a9ff",
+  "baselineVersion": "1.64.1",
+  "registrySha256": "95f990194ba0a3214f36e898e984779734325048a04c976f3f353cddd730a42c",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -11,10 +11,10 @@
       }
     },
     "agent.brief-owner": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/brief-owner.md": "73c428a80f23e10c5a10c43a3fcbbc419750e7b46419ed81dffb40f7af021fb4"
+        "docs/agents/brief-owner.md": "50c27eea3535569c1ff0ea53fb5c41f579541483a835ef4bab788180b9910bf8"
       }
     },
     "agent.research-owner": {
@@ -95,10 +95,10 @@
       }
     },
     "page.brief": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/brief.md": "9956e8e5e3949a7acad5877694668b6af1dd6ce466a94f37e715c8a3d99ae4dc"
+        "docs/pages/brief.md": "5fe84e8f09ad1404f307f04045fbc5cbd68b6d74708778a9b9be489beaf0e382"
       }
     },
     "page.research": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "36f54367f394efb424d45bbd031353bbdc88d1e356d367edf6e375b75552db90"
+        "docs/specs/nightflight-runtime.md": "7cb739afab7050b3c422d1244942ccc4c75de780bdeb999e33ed661182904b6a"
       }
     },
     "contract.nightflight-final-reader": {
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "8b3c6cc358f7e5c09468ef924b1e83571cb78060ad155e40da2703186f830cba",
+    "docs/specs/README.md": "a079101b3d226d44fb229e93e32bb497bb22fc147631633b963a78483e059a00",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
