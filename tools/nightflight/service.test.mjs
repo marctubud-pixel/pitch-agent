@@ -209,13 +209,17 @@ test('a personal run waits for direction and current image adoption, saves user 
   assert.deepEqual(edited.versions.at(-1).research,deskReport.research);
   await action(edit);
   assert.equal((await project()).revision,edited.revision);
-  await action({kind:'research_continue', expectedRevision:edited.revision});
+  await action({kind:'research_again',expectedRevision:edited.revision,researchOnly:true});
+  const reopened=await wait('waiting');
+  assert.equal(reopened.researchFollowup,false);
+  assert.deepEqual(reopened.versions.at(-1).research,edited.research);
+  await action({kind:'research_continue', expectedRevision:reopened.revision});
   const resumed = await wait('waiting');
   assert.equal(resumed.stage, 'copy');
   assert.equal(resumed.choice, null);
   assert.equal(resumed.visualAdoption, null);
-  assert.deepEqual(resumed.versions.at(-2).artifacts, finished.artifacts);
-  assert.deepEqual(resumed.versions.at(-2).copyReview, finished.copyReview);
+  assert.deepEqual(resumed.versions.at(-3).artifacts, finished.artifacts);
+  assert.deepEqual(resumed.versions.at(-3).copyReview, finished.copyReview);
   assert.equal(calls.filter((s) => s === 'brief').length, 1);
 });
 

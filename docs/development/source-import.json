@@ -2263,8 +2263,8 @@
       "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "609a4eca2d8d530191d728cb1232d06009d41e702f96a8f35865dd3d7ada28e5",
-      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
+      "sha256": "a6b4e50453661396e8180180c1a7c0ce55ad2ab93d20cb5b2bb15e2701bbc882",
+      "reason": "已核研究底稿和精选发现可打开对应上传资料，保留现有研究详情与历史入口。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",

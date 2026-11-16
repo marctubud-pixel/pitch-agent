@@ -604,7 +604,7 @@ export function createNightflight({ root, runStage, runLayout }) {
         '当前无法从研究重新开始，请在本次运行结束后查看',
         409,
       );
-      const continuing = p.stage === 'research' && (p.status === 'waiting' || p.researchFollowup === true);
+      const continuing = p.stage === 'research' && !p.research?.ready && (p.status === 'waiting' || p.researchFollowup === true);
       const question = p.research?.question;
       if (continuing && question) check(text, '请回答研究问题，或选择按现有条件继续', 400);
       archiveVersion(p);

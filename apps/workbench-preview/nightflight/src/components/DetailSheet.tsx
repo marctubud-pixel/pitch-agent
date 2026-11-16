@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { STAGES, STAGE_BY_ID } from '../data/project';
 import { researchDisplay } from './researchDisplay';
 import { MediaStageOutput } from './MediaStageOutput';
-import { ResearchDigest, ResearchImageGallery, TextStageOutput } from './TextStageOutput';
+import { ResearchDigest, ResearchImageGallery, ResearchSource, TextStageOutput } from './TextStageOutput';
 import { clock, phase, researchQuestion, safeURL, stageLabel, type Artifact, type Project } from '../live';
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
@@ -62,7 +62,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {!!clueCount && (
           <details className="research-original">
             <summary>已有线索（{clueCount}）</summary>
-            {handoff && !handoff.ready && !!handoff.digest?.length && <ResearchDigest report={handoff} artifacts={p.artifacts} />}
+            {handoff && !handoff.ready && !!handoff.digest?.length && <ResearchDigest report={handoff} artifacts={p.artifacts} attachments={p.attachments} />}
             <ul className="plain-list">{clues.map((clue) => <li key={clue}>{clue}</li>)}</ul>
           </details>
         )}
@@ -220,9 +220,7 @@ export function DetailSheet({
                 <section className="block" key={i}>
                   <h3>{finding.conclusion}</h3>
                   <p>{finding.evidence}</p>
-                  {finding.source && <p>{/^https?:\/\//i.test(finding.url)
-                    ? <a href={finding.url} target="_blank" rel="noopener noreferrer">{finding.source}</a>
-                    : finding.source}</p>}
+                  {finding.source && <p><ResearchSource finding={finding} attachments={p.attachments} /></p>}
                   {finding.implication && <p>{finding.implication}</p>}
                   {!!finding.images?.length && <ResearchImageGallery images={finding.images} artifacts={a} />}
                 </section>
