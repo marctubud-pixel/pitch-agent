@@ -3,18 +3,20 @@ import { api, endpoint, safeURL, projectStatus, type Asset, type Project, type S
 import { Icon } from './Icon';
 
 export function Library({
+  initialId,
   projects,
   close,
   open,
   pick,
 }: {
+  initialId?: string;
   projects: Summary[];
   close: () => void;
   open?: (p: Project) => void;
   pick?: (f: File) => void;
 }) {
   const [q, setQ] = useState(''),
-    [id, select] = useState(projects[0]?.id || ''),
+    [id, select] = useState(initialId || projects[0]?.id || ''),
     [p, setP] = useState<Project>(),
     [err, setErr] = useState(''),
     [mobile, setMobile] = useState(false),

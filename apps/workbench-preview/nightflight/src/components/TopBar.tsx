@@ -58,6 +58,9 @@ export function TopBar(p: Props) {
         <Logo onClick={p.onHome} />
         {p.projectTitle && <span className="topbar-project">{p.projectTitle}</span>}
       </div>
+      {new URLSearchParams(window.location.search).has("personal") && (
+        <form method="post" action="/logout"><button className="btn" type="submit">退出登录</button></form>
+      )}
       {p.inWorkspace && (
         <div className="topbar-right">
           <span className="tag-demo">本地工作台</span>

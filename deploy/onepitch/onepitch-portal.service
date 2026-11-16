@@ -1,0 +1,13 @@
+[Unit]
+Description=OnePitch private login
+After=onepitch-app.service
+Requires=onepitch-app.service
+[Service]
+User=onepitch
+WorkingDirectory=/opt/onepitch
+EnvironmentFile=/etc/onepitch/portal.env
+ExecStart=/usr/bin/node /opt/onepitch/deploy/onepitch/gateway.mjs
+Restart=on-failure
+NoNewPrivileges=true
+[Install]
+WantedBy=multi-user.target

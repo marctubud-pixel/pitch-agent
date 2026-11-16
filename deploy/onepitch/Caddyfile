@@ -1,0 +1,5 @@
+onepitch.cn {
+    reverse_proxy 127.0.0.1:4432 {
+        header_up X-OnePitch-Client {remote_host}
+    }
+}
