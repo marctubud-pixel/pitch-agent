@@ -115,6 +115,22 @@ function recordedQueries(stdout) {
   return strings(queries);
 }
 
+async function discoverChineseReports(query, storeRoot, dependencies, signal) {
+  const endpoint = new URL('https://www.so.com/s');
+  endpoint.searchParams.set('q',query);
+  try {
+    const {record} = await capturePublicSource({url:endpoint.href,storeRoot,
+      limits:{timeoutMs:8000,maxBytes:1048576,maxRedirects:1}},dependencies);
+    if (record.httpStatus!==200 || record.mimeType!=='text/html') return [];
+    const {stdout} = await executeFile(await pythonBinary(),['-I','-B',join(repo,'tools/nightflight/report-search-results.py'),
+      join(storeRoot,record.raw.file)],{signal,timeout:5000,maxBuffer:65536});
+    return JSON.parse(stdout);
+  } catch {
+    signal?.throwIfAborted();
+    return [];
+  }
+}
+
 export async function discoverPublicPages(query, storeRoot, dependencies = {}, signal) {
   const endpoint = dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL;
   if (!endpoint) {
@@ -260,7 +276,14 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   for (const query of industryQueries) {
     const found = await discover({query});
     discovered.push(found);
-    const candidates = found.results.filter(r=>/报告|白皮书|蓝皮书|皮书|研究|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url));
+    const isReport = r=>/报告|皮书|研究|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url);
+    let candidates = found.results.filter(isReport);
+    if (!candidates.length && /\p{Script=Han}/u.test(query) && !(dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL)) {
+      const alternatives = await discoverChineseReports(query,storeRoot,dependencies,signal);
+      candidates = alternatives.filter(r=>isReport(r) && !excluded.has(r.url));
+      found.via += ' → www.so.com';
+    }
+    found.results = candidates;
     const pages = (await Promise.all(candidates.map(r=>capture(r.url)))).filter(Boolean);
     const links = [...new Set(pages.flatMap(p=>p.pdfLinks))].slice(0,3);
     pages.push(...(await Promise.all(links.map(capture))).filter(Boolean));
