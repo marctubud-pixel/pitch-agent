@@ -6,7 +6,7 @@ const list = (items, limits={}) => ({type:'array',items,...limits});
 const exactlyThree = {minItems:3,maxItems:3};
 const numbered = {type:'integer'};
 const basis = object({text:string,findingNumbers:list(numbered)});
-const touchpointSchema = object({kind:{type:'string',enum:['front','side','back','kv']},name:string,action:string});
+const touchpointSchema = object({kind:{type:'string',enum:['front','side','back','kv','contact']},name:string,action:string});
 const schema = object({outcome:object({
     coreStrategy:string,insight:string,brandRole:string,proposition:string,
     actions:list(string,exactlyThree),touchpoints:list(touchpointSchema),
@@ -63,9 +63,9 @@ function renderStrategy(out, findings, eligible, carrier) {
   if (!Array.isArray(touchpoints) || !touchpoints.length || !touchpoints.every(t=>singleLine(t.name) && singleLine(t.action)))
     throw Error('缺少载体触点与任务');
   const kinds = touchpoints.map(t=>t.kind);
-  const packaging = carrier!=='kv', kv = carrier!=='packaging';
+  const packaging = ['packaging','packaging+kv'].includes(carrier), kv = ['kv','packaging+kv'].includes(carrier);
   if (['front','side','back'].some(k=>kinds.filter(i=>i===k).length!==(packaging?1:0)) ||
-      kinds.includes('kv')!==kv || !kinds.every(k=>['front','side','back','kv'].includes(k)) ||
+      kinds.includes('kv')!==kv || !kinds.every(k=>carrier==='general' ? k==='contact' : ['front','side','back','kv'].includes(k)) ||
       !distinct(touchpoints.map(t=>t.name))) throw Error('触点未覆盖本案的包装面或实际 KV 媒介');
   const metrics=out.metrics;
   if (!Array.isArray(metrics) || metrics.length!==3 || !metrics.every(m=>singleLine(m.name) && singleLine(m.method)) ||
@@ -76,7 +76,7 @@ function renderStrategy(out, findings, eligible, carrier) {
   const sections=[
     '# 策略一页纸','## 核心策略',customerText(out.coreStrategy),'## 人群洞察',customerText(out.insight),'## 品牌角色',customerText(out.brandRole),
     '## 核心主张',customerText(out.proposition),out.actions.map(a=>'- '+customerText(a)).join('\n'),
-    '## '+({packaging:'视觉与包装触点',kv:'视觉与 KV 触点','packaging+kv':'视觉与包装／KV 触点'}[carrier]),
+    '## '+({general:'视觉与传播触点',packaging:'视觉与包装触点',kv:'视觉与 KV 触点','packaging+kv':'视觉与包装／KV 触点'}[carrier]),
     touchpoints.map(t=>'- '+customerText(t.name)+'：'+customerText(t.action)).join('\n'),'## 衡量方式',
     metrics.map(m=>'- '+measurementText(m.name)+'：'+measurementText(m.method)+'（待测）').join('\n'),'## 研究结论',
     findingNumbers.map(n=>{
@@ -95,7 +95,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
     ? [{...f,findingNumber:i+1}] : []);
   const eligible=new Set(rows.map(f=>f.findingNumber));
   if (!rows.length) throw Error('当前策略输入缺少可引用的研究记录');
-  const instruction='按本次载体完成一页策略及后台依据。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。先检验本轮研究提出的条件性方向；渠道、执行细节和待测数据缺失，写入约束。直接提出本轮研究可以支撑的策略发力点。对客做减法：每个模块一到两句，核心策略优先一句；每个动作、触点和指标尽量一句一行，一项只讲一次。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
+  const instruction='按本次载体完成夜航一页策略。general 表示载体未指定或其他提案，触点 kind 填 contact，按简报写传播任务。渠道未定时写条件性应用，不默认承诺包装或KV。核心策略只留一个简短、能读出选购场景和优先任务的句子；其余四节用客户听得懂的短句。行业上新数量支持设计取舍，不能推出消费者注意或记忆时长。不要将浏览量推成审美偏好或购买原因。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。先检验本轮研究提出的条件性方向；渠道、执行细节和待测数据缺失，写入约束。直接提出本轮研究可以支撑的策略发力点。对客做减法：每个模块一到两句，核心策略优先一句；每个动作、触点和指标尽量一句一行，一项只讲一次。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
   const advice=(project.research.strategyAdvice ?? []).flatMap(a=>{
     if (!Array.isArray(a.findingIndices) || !a.findingIndices.length) return [];
     const findingNumbers=a.findingIndices.map(i=>i+1);
@@ -105,7 +105,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
     handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
   for (let attempt=0;attempt<2;attempt++) {
-    const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据同版已核研究制定本案包装或 KV 的一页策略。'});
+    const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
     try { return renderStrategy(response.parsedOutput?.outcome ?? {},findings,eligible,carrier); }
     catch(error) {
       if (attempt===1) throw error;
