@@ -1,21 +1,21 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "groups": {
     "opening": [
       {
-        "id": "cover", "title": "封面",
+        "id": "cover", "template": {"type": "cover", "variant": "type"}, "title": "封面",
         "fill": "写品牌、产品或项目名、本次提案类型。客户翻开就知道今天看哪件事。",
         "material": "正式品牌字标或经确认的项目名称；可选同版作品局部，留整件作品到方向章揭晓。",
         "check": "即使看不到背景图，也能读出谁的什么提案。"
       },
       {
-        "id": "toc", "title": "目录",
+        "id": "toc", "template": {"type": "contents", "variant": "list"}, "title": "目录",
         "fill": "列研究、策略、方向及收尾的真实章节名和起页；每个方向可单独定位。",
         "material": "本版最终章节与页序，拆、增、减页后重算。",
         "check": "从目录能直接翻到要比较的任一案；逐项核首页。"
       },
       {
-        "id": "assignment", "title": "这次要解决什么问题",
+        "id": "assignment", "template": {"type": "section", "variant": "left"}, "title": "这次要解决什么问题",
         "fill": "用客户的话写现状、要改变的一个问题、交付载体，以及今天希望客户决定什么。",
         "material": "当前有效简报和任务卡；涉及包装尺寸、媒介或渠道时附已知边界。",
         "check": "最后一章能回答这里的问题。目标写成目标，尚未观测的效果保留为假设。"
@@ -23,31 +23,31 @@
     ],
     "research": [
       {
-        "id": "category", "title": "行业里正在发生什么",
+        "id": "category", "template": {"type": "market", "variant": "bars"}, "title": "行业里正在发生什么",
         "fill": "挑一项能改变本次设计选择的趋势。先给事实，再解释现象，标题落到一句判断。",
         "material": "有来源、范围、日期、单位的数字图表，或带出处的行业样本及观察范围。",
         "check": "读者看得见数据或实物。小样本只支撑观察，销量与趋势要有相应数据。"
       },
       {
-        "id": "brand", "title": "品牌已有的识别资产",
+        "id": "brand", "template": {"type": "design", "variant": "half"}, "title": "品牌已有的识别资产",
         "fill": "展示顾客目前能看到的品牌，点名哪一处值得延续、哪一处妨碍这次任务。",
         "material": "本品牌标识、旧包装或历次 KV 的可核原件；新品牌注明已知字标、产品约束和资产缺口。",
         "check": "历史资产与本轮新做法区分清楚；没有消费者材料时只说画面上可观察的特征。"
       },
       {
-        "id": "competitors", "title": "同类作品放在一起，哪里还有机会",
+        "id": "competitors", "template": {"type": "competitor", "variant": "table"}, "title": "同类作品放在一起，哪里还有机会",
         "fill": "为同一购买或传播任务挑可比样本，点名大家都在用的表达和本案可测试的空位。",
         "material": "包装用同类包装正面同尺度并排；KV 用同任务的完整 KV 并排。每张标品牌、产品或活动、出处和观察时间。",
         "check": "一句结论能指到图上某处。只放品牌标识、参考情绪拼贴或 AI 仿竞品不能支持这个判断。"
       },
       {
-        "id": "audience", "title": "谁会在什么时刻做决定",
+        "id": "audience", "template": {"type": "persona", "variant": "single"}, "title": "谁会在什么时刻做决定",
         "fill": "用行为描述一类人，在具体时刻遇到什么选择、要看懂什么；收成一句设计要求。",
         "material": "访谈、观察或有口径的人群资料，配实际决策场景图。AI 作图标“AI 场景示意”，并另注该行为的来源或假设。",
         "check": "可以分清真实观察与目标人群假设。仅有示意图时，不能写成消费者已经这样想。"
       },
       {
-        "id": "product", "title": "产品能兑现哪一个说法",
+        "id": "product", "template": {"type": "selling", "variant": "spec"}, "title": "产品能兑现哪一个说法",
         "fill": "把候选卖点对应到产品到底做了什么，指出设计可以讲到哪一步。",
         "material": "产品规格、配方或工艺、水源等可核材料、实物信息面；关键表述标简报自述或已核事实。",
         "check": "产地故事、工艺示意与产品实际用料分别有据；证据缺口写到相应主张旁。"
@@ -55,19 +55,19 @@
     ],
     "strategy": [
       {
-        "id": "findings", "title": "研究合起来给了我们什么判断",
+        "id": "findings", "template": {"type": "summary", "variant": "pillars"}, "title": "研究合起来给了我们什么判断",
         "fill": "用一句判断接上任务，再用两三条彼此有关的发现说明。四维研究在这里汇合，此页同时是研究小结。",
         "material": "引用前文具体页和证据，标出影响下一步的未知条件。",
         "check": "能指明哪条研究改变了哪项设计选择；不能只把四页文字再念一遍。"
       },
       {
-        "id": "choice", "title": "为什么优先放大这一点",
+        "id": "choice", "template": {"type": "summary", "variant": "list"}, "title": "为什么优先放大这一点",
         "fill": "把研究机会、产品能兑现的特点、人的选择情境交在一起；与另一个可行主张比较，说明取舍。",
         "material": "对应行业／竞品图、人群事实或假设、产品支持材料，必要时配交集图。",
         "check": "交集每一边都能回到来源。证据只到“值得试”时，写明测试办法及何种结果会改变选择。"
       },
       {
-        "id": "focus", "title": "这次设计优先让人看到什么",
+        "id": "focus", "template": {"type": "summary", "variant": "statement"}, "title": "这次设计优先让人看到什么",
         "fill": "一句策略主张，接一个可观察的设计任务，例如货架第一眼应先认出什么。讲明什么可以弱化。",
         "material": "同版策略结论和任务要求，可配简洁信息层级示意。",
         "check": "后面每个方向都能用自己的作品回答同一个任务；概念性判断不会升级为已验证效果。"
@@ -75,7 +75,7 @@
     ],
     "routes": [
       {
-        "id": "directions", "title": "解这道题，有哪几种设计思路",
+        "id": "directions", "template": {"type": "summary", "variant": "pillars"}, "title": "解这道题，有哪几种设计思路",
         "fill": "每案只列方向名、一句创意解释和一个区分点。说清稳健延续／品类惯例、放大品牌或产品、放大人群氛围等路径各怎么落到视觉。",
         "material": "列入本次展示的同版主题与方向，可用各案小图识别；历史案沿用原分类。",
         "check": "只读解释便能区分各案。方向、同案内的候选稿、不同口味或 SKU 分开计数。"
@@ -83,49 +83,49 @@
     ],
     "kv": [
       {
-        "id": "kv-idea", "title": "方向主题与创意解释",
+        "id": "kv-idea", "template": {"type": "section", "variant": "left"}, "title": "方向主题与创意解释",
         "fill": "放本案获准展示的主题主文，一两句解释怎么把策略变成视觉动作或符号。",
         "material": "同版主题与视觉方向；可用局部线索引出下一页。",
         "check": "听完能带着具体问题看主画面。创意解释是讲稿，进画面的主文按原稿。"
       },
       {
-        "id": "kv-hero", "title": "完整主视觉",
+        "id": "kv-hero", "template": {"type": "design", "variant": "stage"}, "title": "完整主视觉",
         "fill": "揭晓本案主画幅，保留完整信息层级，让客户先自己看懂。",
         "material": "同方向同版的完整 KV 原图；注明实际尺寸或比例。",
         "check": "品牌、主体和主题都在原构图里。效果图、灵感图与主稿各有身份。"
       },
       {
-        "id": "kv-detail", "title": "画面如何表达这个主题",
+        "id": "kv-detail", "template": {"type": "design", "variant": "half"}, "title": "画面如何表达这个主题",
         "fill": "在真实细节上指两到三处，例如视线从哪里开始、主体怎样与节庆符号发生关系。",
         "material": "来自前页同一文件的局部或带标注大图。",
         "check": "客户能按说明在完整画面中找到相应位置；避免只写“高级”“有氛围”。"
       },
       {
-        "id": "kv-process", "when": "process", "title": "这项视觉选择如何形成",
+        "id": "kv-process", "template": {"type": "combo", "variant": "grid"}, "when": "process", "title": "这项视觉选择如何形成",
         "fill": "并列真实前后状态，只解释会帮助客户作决定的一处取舍。",
         "material": "有版本和出处的试验、制作记录或已存草图，说明实际变化。",
         "check": "两步是真实发生的，可据此理解成稿。单为补页而倒画的过程不能采用。"
       },
       {
-        "id": "kv-motion", "when": "motion", "title": "动起来以后，信息怎样被看见",
+        "id": "kv-motion", "template": {"type": "combo", "variant": "grid"}, "when": "motion", "title": "动起来以后，信息怎样被看见",
         "fill": "标出首帧、转折、落版与时长，解释动态解决哪个传播问题。",
         "material": "本案可播放成片或真实分镜／关键帧；静态 PPT 用帧序和可访问的视频入口（若有）。",
         "check": "明确这是成片、动态试验还是分镜设想。参考片只可标参考，不能代替本案动效。"
       },
       {
-        "id": "kv-adaptation", "when": "adaptation", "title": "第二画幅的完整作品",
+        "id": "kv-adaptation", "template": {"type": "series", "variant": "row"}, "when": "adaptation", "title": "第二画幅的完整作品",
         "fill": "按任务展示第二幅完整比例的 KV，写清元素如何重排和哪些识别点保留。",
         "material": "同版横／竖或异规格原稿，标两版的真实尺寸。样机另放在应用页。",
         "check": "完整看得到第二种画幅，上下文中的投放样机不能替代交付尺寸的设计稿。"
       },
       {
-        "id": "kv-primary-use", "title": "第一触点 · 主媒介中的实际大小",
+        "id": "kv-primary-use", "template": {"type": "mood", "variant": "split"}, "title": "第一触点 · 主媒介中的实际大小",
         "fill": "把本案放进简报最重要的真实尺度或版位，标观看距离、屏幕或媒介条件。",
         "material": "采用本案主稿的第一触点样机，例如街头灯箱或手机信息流，标注模拟投放。",
         "check": "从该距离和裁切看，品牌、主张和阅读次序成立。"
       },
       {
-        "id": "kv-second-use", "title": "第二触点 · 换个媒介仍能认出来",
+        "id": "kv-second-use", "template": {"type": "design", "variant": "half"}, "title": "第二触点 · 换个媒介仍能认出来",
         "fill": "给另一个有意义的版面或画幅，说明什么识别点保留、什么为新场景重排。",
         "material": "同版移动端、横竖版、现场或其他约定触点样机；只有一个触点时按简报裁剪并记录。",
         "check": "两个应用验证不同条件。同一画面换背景而没有差异，不算新发现。"
@@ -133,43 +133,43 @@
     ],
     "packaging": [
       {
-        "id": "pack-idea", "title": "方向主题与包装创意",
+        "id": "pack-idea", "template": {"type": "section", "variant": "left"}, "title": "方向主题与包装创意",
         "fill": "写方向名和一句解释，说明买家会通过瓶身、盒型、图形或信息层级看见什么。",
         "material": "同版的方向解释与被展示的包装稿。",
         "check": "方向主题只在提案中命名；瓶身文字以已确认的包装信息为准。"
       },
       {
-        "id": "pack-front", "title": "完整包装正面",
+        "id": "pack-front", "template": {"type": "design", "variant": "stage"}, "title": "完整包装正面",
         "fill": "单独揭晓这一案的完整正面，让人先看品牌、品类及本案要传达的价值。",
         "material": "同版完整包装正视渲染或实拍，注明版本、视角与图像身份。",
         "check": "能读到正面实际信息，主体轮廓完整；不能把平面海报当成立体包装。"
       },
       {
-        "id": "pack-views", "title": "转过来，看侧背与整体结构",
+        "id": "pack-views", "template": {"type": "combo", "variant": "grid"}, "title": "转过来，看侧背与整体结构",
         "fill": "用同一件包装的斜视、侧面或背面说明结构、环绕关系和必要的信息面。",
         "material": "同稿具名角度的渲染／实拍或展开稿。平面展开和实际立体视图分别标明。",
         "check": "所有视角属于同版。仅有正面就标缺对应视图，不借另案或旧稿补齐。"
       },
       {
-        "id": "pack-detail", "title": "细看一个决定性的包装细节",
+        "id": "pack-detail", "template": {"type": "design", "variant": "half"}, "title": "细看一个决定性的包装细节",
         "fill": "用正面信息、图形、色彩、字形或材质的局部解释本案创意；有系列任务时说明 SKU 如何区分。",
         "material": "同版局部、系列件或工艺说明。只在有打样或供应依据时写工艺已验证。",
         "check": "客户能从图上复核设计意图。渲染的金属光泽、纸感或磨砂效果须与真实工艺结果区分。"
       },
       {
-        "id": "pack-series", "when": "series", "title": "一眼认出同一品牌，也分得出每个品项",
+        "id": "pack-series", "template": {"type": "series", "variant": "row"}, "when": "series", "title": "一眼认出同一品牌，也分得出每个品项",
         "fill": "将本方向的 SKU 按同一角度和尺度摆成一组，标出家族共用资产和区分口味或产品线的变量。",
         "material": "同版各品项正面与真实品名。需要分别交代信息面的品项，顺着本页按实物增加细节页。",
         "check": "系列数取自简报；没有设计稿的品项标待补。一个方向的四个 SKU 不计为四个创意方向。"
       },
       {
-        "id": "pack-shelf", "title": "放回售卖现场，还认得出吗",
+        "id": "pack-shelf", "template": {"type": "mood", "variant": "split"}, "title": "放回售卖现场，还认得出吗",
         "fill": "将包装放到实际购买环境，与同类按相近尺度、视角和光照比较，点出一个看得见的区别。",
         "material": "同版货架、冷柜或合同约定的售卖场景图；标实拍或模拟、竞品身份和图源。",
         "check": "能看见产品在同类中的实际占比。独立白底渲染不能回答货架辨识，模拟也不能推出真实销量。"
       },
       {
-        "id": "pack-second-use", "title": "另一个购买或使用触点",
+        "id": "pack-second-use", "template": {"type": "design", "variant": "half"}, "title": "另一个购买或使用触点",
         "fill": "用电商小图、手持比例或第二陈列位置验证一个不同的问题，如缩小后能否认出品牌。",
         "material": "同版样机，注明载体、观看尺度和验证的问题；售卖渠道唯一时可记录裁剪理由。",
         "check": "它与前页检验的条件确有区别；摆拍与真实上市分开标注。"
@@ -177,25 +177,25 @@
     ],
     "closing": [
       {
-        "id": "compare", "title": "把各案放到同一条件下选",
+        "id": "compare", "template": {"type": "compare", "variant": "lineup"}, "title": "把各案放到同一条件下选",
         "fill": "各案用同一任务、尺寸、视角或触点并排。给出推荐、关键取舍和适合改选另一案的条件。",
         "material": "本案被展示版本的同尺度对比图；推荐理由引用对应作品、研究和有效评审。",
         "check": "不能跨轮混票或另算平均。推荐是建议，客户采用需要自己的记录。"
       },
       {
-        "id": "activation", "when": "activation", "title": "从选定的视觉逻辑再走一步",
+        "id": "activation", "template": {"type": "summary", "variant": "statement"}, "when": "activation", "title": "从选定的视觉逻辑再走一步",
         "fill": "交代承接的方向及识别元素、目标人群、一次参与动作、触点、预期如何验证；多案未选时写明这是基于哪案的设想。",
         "material": "KV 可用节庆活动路径或媒介示意，包装可用陈列、随包互动或品牌传播示意；标已委托产物或本次建议。",
         "check": "拿掉本案的视觉资产后，活动是否仍完全一样？若是就缺了承接。销售效果或执行资源需另有依据。"
       },
       {
-        "id": "decision", "title": "请客户确认什么，下一步如何落地",
+        "id": "decision", "template": {"type": "summary", "variant": "list"}, "title": "请客户确认什么，下一步如何落地",
         "fill": "回到开场问题，写本次待决定事项、进入制作前会改变决定的条件，以及由谁补哪份材料。",
         "material": "简报、方案推荐、实际缺口和有据的实施前提。",
         "check": "未定案、未打样和未核的产品表述按原状态写。公司介绍、内部打分过程按需另附。"
       },
       {
-        "id": "back-cover", "title": "封底",
+        "id": "back-cover", "template": {"type": "closing", "variant": "type"}, "title": "封底",
         "fill": "用项目名称与必要的联系或答疑信息收尾。",
         "material": "经确认的项目名或品牌资产。",
         "check": "不增加前文从未讨论的主张或采用结论。"

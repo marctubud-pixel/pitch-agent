@@ -1,3 +1,4 @@
+import {projectTheme} from './layout-theme.mjs';
 import {chromiumPath} from './runtime-dependencies.mjs';
 import { constants } from 'node:fs';
 import { open, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
@@ -94,12 +95,21 @@ async function readSources(project, dir) {
   return sections;
 }
 
-async function render({ title, sections, outline, images, edits }) {
+async function render({ title, sections, outline, images, edits, theme }) {
   const renderer = globalThis.NightflightDeck;
-  const theme = { primary: '#143F9B', accent: '#08746D', style: 'business', mode: 'light' };
+  for (const key of ['brandLogo','agencyLogo']) {
+    if (!theme[key]) continue;
+    const image=new Image();
+    image.src=theme[key].data;
+    await image.decode();
+    theme[key].width=image.naturalWidth;
+    theme[key].height=image.naturalHeight;
+  }
   const result = outline ? await renderer.compileOutline(outline, images, renderer, theme)
     : await renderer.legacyPages(sections, renderer, theme);
-  const deck = { title, pages: result.pages, status: result.status };
+  const {brandLogo,agencyLogo,...settings}=theme;
+  const deck = {title, pages:result.pages,status:result.status,style:theme.style,
+    theme:{...settings,...(brandLogo && {brandLogoFile:brandLogo.alt}),...(agencyLogo && {agencyLogoFile:agencyLogo.alt})}};
   renderer.applyPageEdits(deck.pages,edits);
   const blob = await renderer.exportDeckStudio(deck, new AbortController().signal);
   const data = await new Promise((resolve, reject) => {
@@ -131,6 +141,7 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
   const root = await realpath(dir);
   const edits=layoutEdits(project);
   const outline = await buildProposalOutline(project, root);
+  const theme = await projectTheme(project,root,outline?.kind || project.proposalKind,signal);
   const sections = outline ? [] : await readSources(project, root);
   const images = outline ? await readOutlineImages(outline, project, root) : [];
   onEvent(outline ? '正在按客户逐页稿排版并核对目录与材料' : '正在将现有材料按原阶段顺序排版');
@@ -152,7 +163,7 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
     signal.throwIfAborted();
     const page = await browser.newPage({ offline: true, viewport:{width:1280,height:720} });
     await page.addScriptTag({ content: code });
-    const { data, deck, outline: fitted } = await page.evaluate(render, { title: project.title, sections, outline, images, edits });
+    const { data, deck, outline: fitted } = await page.evaluate(render, { title: project.title, sections, outline, images, edits, theme });
     signal.throwIfAborted();
     await writeFile(tmp, Buffer.from(data, 'base64'), { flag: 'wx', signal });
     signal.throwIfAborted();

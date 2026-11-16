@@ -1,7 +1,7 @@
 import {execFile} from 'node:child_process';
 import {constants, existsSync, promises as fs} from 'node:fs';
 import {createRequire} from 'node:module';
-import {dirname, isAbsolute, join, resolve} from 'node:path';
+import {delimiter, dirname, isAbsolute, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {promisify} from 'node:util';
 
@@ -27,7 +27,11 @@ export async function pythonBinary() {
     const path = join(root, '.scratch/pdf-test-runtime/bin/python');
     if (await fs.access(path, constants.X_OK).then(() => true, () => false)) return path;
   }
-  return 'python3';
+  for (const folder of (process.env.PATH ?? '').split(delimiter).filter(Boolean)) {
+    const path = resolve(folder, 'python3');
+    if (await fs.access(path, constants.X_OK).then(() => true, () => false)) return path;
+  }
+  throw Error('找不到 Python 3；请运行 npm run setup:python 或设置 NIGHTFLIGHT_PYTHON');
 }
 
 export function chromiumPath() {

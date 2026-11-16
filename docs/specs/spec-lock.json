@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.60.0",
-  "registrySha256": "55a0342802a4b4b8f70ee2f77b5f36c777c1a139b098770d5f47af5c6a383634",
+  "baselineVersion": "1.61.0",
+  "registrySha256": "3d92add979f802a8a64ae3f366888abab94d14a54ec9088dcc142721df028240",
   "entries": {
     "agent.proposal-director": {
       "version": "1.1.0",
@@ -46,10 +46,10 @@
       }
     },
     "agent.layout-owner": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/layout-owner.md": "1f7d64066cc6ac947f9253a6230a8003653f10c43b95361ceff3351194ea90f9"
+        "docs/agents/layout-owner.md": "eae19dafbe70a8eedd0808d849a9db7f090ae8821dfee894a577c4a758cd036d"
       }
     },
     "agent.final-review-owner": {
@@ -130,10 +130,10 @@
       }
     },
     "page.layout": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/layout.md": "11c9a525ddb3d45288ac5d1066e6cd8b4e1bbb61d5b904c108d1f1b5010fc643"
+        "docs/pages/layout.md": "8ddb1bc2aae14f01423650d3c74969d7c80a2025865ca16078e94224acd48c2b"
       }
     },
     "page.delivery": {
@@ -242,20 +242,20 @@
       }
     },
     "method.proposal-structure": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "skills/proposal-structure-pilot/SKILL.md": "6cf1320373abeea5d2df930f837bea165b0a0c04856e2105d4545963f5a80e14",
+        "skills/proposal-structure-pilot/SKILL.md": "447d57895d854bf62e7f18b79abeaa7374150c8c33970e074ff3e1901fbb5b25",
         "skills/proposal-structure-pilot/references/cases.md": "f03492b433044754047cee51b839faad9a093cf81ed0c71721ce1451fd755943",
-        "skills/proposal-structure-pilot/references/page-library.json": "68089796cd6e7ceb58aea4fb2a7aafd43438df67153f1cf7412fcb9097a62d73",
-        "skills/proposal-structure-pilot/scripts/build_outline.py": "a0bb0b8b6373dc699d97af3cde5a4a3605840f6a235e7163808bb3b0db981baf"
+        "skills/proposal-structure-pilot/references/page-library.json": "3d8a85f43205a27990cdb974438e1fff597b8fcf37167a515648f66a66b37ef3",
+        "skills/proposal-structure-pilot/scripts/build_outline.py": "b3575f9a93fe24494de3421e3e266c7761bc267cfeec481f7c7e4bf0817df7a1"
       }
     },
     "method.proposal-layout": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "skills/proposal-layout-pilot/SKILL.md": "94ce420ccd80b2ec08054aac2c1e5010854f6765ffff4212c5a7179dce0bbaa0"
+        "skills/proposal-layout-pilot/SKILL.md": "ae609a03e0dc5aacfaf42379d67537e3eb4bf1617dca1c0c09a1ca4678983595"
       }
     },
     "contract.handoff": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "afcb200018c1cab0ab4a65c044ee863cd40d2d3090ca1eb2ad9af9e5747dceec"
+        "docs/specs/nightflight-runtime.md": "0a05829804d6e41bfa2f6a107657bb713df4a8829b2c593fcca60f95bad4142b"
       }
     },
     "contract.nightflight-final-reader": {
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "73f7af190ca1c79788a1c1095e112ec0f0cbe9958bac294f2b6ed97e69ad134a",
+    "docs/specs/README.md": "fac833c4b7464f472b186139884b14863477c5d31f2e5d49510d198a5c73dea1",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

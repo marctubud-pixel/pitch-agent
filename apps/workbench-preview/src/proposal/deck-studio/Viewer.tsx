@@ -1,27 +1,43 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Maximize2, X } from 'lucide-react';
-import type { Deck, Node, Page, TextNode } from './model';
+import {highlightedParts, type Deck, type Node, type Page, type TextNode} from './model';
 
 function TextShape({ n }: { n: TextNode; }) {
   const size = n.runs.length ? Math.max(...n.runs.map(r => r.size)) : n.size;
   const height = (n.runs.length ? 1 : n.lines.length) * size * n.lh;
   const y = n.y + (n.valign === 'bottom' ? n.h - height : n.valign === 'middle' ? (n.h - height) / 2 : 0) + (size * n.lh - size) / 2 + size * .86;
   const x = n.x + (n.align === 'right' ? n.w : n.align === 'center' ? n.w / 2 : 0);
-  return <text x={x} y={y} textAnchor={n.align === 'right' ? 'end' : n.align === 'center' ? 'middle' : 'start'} style={{
-    fontFamily: n.face,
+  const fontFamily=(face:string,fallback?:string)=>fallback ? '"'+face+'",'+fallback : face;
+  const line=(text:string)=>highlightedParts(text,n.highlight).map((part,i)=><tspan key={i} fill={part.color}>{part.text}</tspan>);
+  const verticalTop=n.y+(n.align==='center'?n.h/2:n.align==='right'?n.h:0);
+  return <text writingMode={n.vertical?'vertical-rl':undefined} x={n.vertical?n.x+n.w-size/2:x} y={n.vertical?verticalTop:y} textAnchor={n.align === 'right' ? 'end' : n.align === 'center' ? 'middle' : 'start'} style={{
+    fontFamily: fontFamily(n.face,n.fallback),
     fontSize: n.size,
     fontWeight: n.weight,
     letterSpacing: n.ls,
     fill: n.color,
     opacity: n.opacity,
     whiteSpace: 'pre'
-  }}>{n.runs.length ? n.runs.map((r, i) => <tspan key={i} style={{ fontFamily: r.face, fontSize: r.size, fontWeight: r.weight, fill: r.color }}>{r.text}</tspan>) : n.lines.map((s, i) => <tspan key={i} x={x} y={y + i * n.size * n.lh}>{s}</tspan>)}</text>;
+  }}>{n.runs.length ? n.runs.map((r, i) => <tspan key={i} style={{ fontFamily: fontFamily(r.face,r.fallback), fontSize: r.size, fontWeight: r.weight, fill: r.color }}>{r.text}</tspan>) : n.lines.map((s, i) => <tspan key={i} x={n.vertical?n.x+n.w-size/2-i*n.size*n.lh:x} y={n.vertical?verticalTop:y+i*n.size*n.lh}>{line(s)}</tspan>)}</text>;
 }
-function Shape({ n }: { n: Node; }) {
+function Shape({n}: {n:Node}) {
+  if(!n.rotate) return <Primitive n={n}/>;
+  const cx=n.kind==='line'?(n.x1+n.x2)/2:n.x+n.w/2;
+  const cy=n.kind==='line'?(n.y1+n.y2)/2:n.y+n.h/2;
+  return <g transform={'rotate('+n.rotate+' '+cx+' '+cy+')'}><Primitive n={n}/></g>;
+}
+function Primitive({ n }: { n: Node; }) {
+  const id=useId();
   switch (n.kind) {
     case 'text': return <TextShape n={n} />;
-    case 'rect': return <rect x={n.x} y={n.y} width={n.w} height={n.h} rx={n.radius} fill={n.fill ?? 'none'} stroke={n.stroke ?? 'none'} strokeWidth={n.lw} opacity={n.opacity} />;
-    case 'ellipse': return <ellipse cx={n.x + n.w / 2} cy={n.y + n.h / 2} rx={n.w / 2} ry={n.h / 2} fill={n.fill ?? 'none'} stroke={n.stroke ?? 'none'} strokeWidth={n.lw} opacity={n.opacity} />;
+    case 'rect': case 'ellipse': {
+      const fill=n.gradient?'url(#'+id+')':n.fill ?? 'none';
+      const paint={fill,stroke:n.stroke ?? 'none',strokeWidth:n.lw,opacity:n.opacity};
+      const angle=(n.gradient?.angle ?? 0)*Math.PI/180;
+      const dx=Math.cos(angle)/2,dy=Math.sin(angle)/2;
+      return <>{n.gradient && <defs><linearGradient id={id} x1={.5-dx} y1={.5-dy} x2={.5+dx} y2={.5+dy}><stop offset="0" stopColor={n.gradient.from}/><stop offset="1" stopColor={n.gradient.to}/></linearGradient></defs>}
+        {n.kind==='rect'?<rect x={n.x} y={n.y} width={n.w} height={n.h} rx={n.radius} {...paint}/>:<ellipse cx={n.x+n.w/2} cy={n.y+n.h/2} rx={n.w/2} ry={n.h/2} {...paint}/>}</>;
+    }
     case 'line': return <line x1={n.x1} y1={n.y1} x2={n.x2} y2={n.y2} stroke={n.color} strokeWidth={n.width} opacity={n.opacity} />;
     case 'image': return <image x={n.x} y={n.y} width={n.w} height={n.h} href={n.image.data} data-media-id={n.image.id}><title>{n.image.alt}</title></image>;
     case 'chart': {

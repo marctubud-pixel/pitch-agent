@@ -1513,6 +1513,7 @@
     "tools/nightflight/desktop-text.test.mjs",
     "tools/nightflight/layout-final.integration.test.mjs",
     "tools/nightflight/layout-pages.mjs",
+    "tools/nightflight/layout-theme.mjs",
     "tools/nightflight/layout.mjs",
     "tools/nightflight/layout.test.mjs",
     "tools/nightflight/library.mjs",

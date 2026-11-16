@@ -363,7 +363,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
-              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, visualOnly:record.visualOnly, renderPage:record.renderPage, ...(record.strategyHash ? {strategyHash:record.strategyHash} : {}), path };
+              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, ...(p.stage==='layout' && p.visualAdoption?.artifacts.includes(record.storageKey) ? {adoptedForLayout:true} : {}), visualOnly:record.visualOnly, renderPage:record.renderPage, ...(record.strategyHash ? {strategyHash:record.strategyHash} : {}), path };
             });
           }
           if (p.stage==='copy') {
