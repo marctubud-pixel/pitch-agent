@@ -239,7 +239,7 @@ print(json.dumps([{'title':item.findtext('title'),'url':item.findtext('link')} f
   }
 }
 
-export async function researchConsumerReports({topics,discover,directory,capture,call,discovered,signal}) {
+export async function researchConsumerReports({brief,topics,discover,directory,capture,call,discovered,signal}) {
   const reads=[], findings=[], visited=new Set(), quotes=new Set(), angles=new Set();
   const observation=objectSchema({url:stringField,title:stringField,scope:stringField,angle:{type:"string",enum:["人群","情境","动因","偏好","决策"]},quote:stringField,conclusion:stringField});
   async function examine(results,term) {
@@ -251,7 +251,7 @@ export async function researchConsumerReports({topics,discover,directory,capture
     pages.push(...(await Promise.all(linked.map(capture))).filter(Boolean));
     if (!pages.length) return;
     const documents=pages.map(p=>({url:p.url,title:p.source,text:reportExcerpts(p.text,['消费者','受访者','人群','场景','购买','时段','偏好','原因',term])}));
-    const response=await call('阅读这些实际打开的报告或发布方披露结果的正文。只摘与本案有关的消费者研究发现，寻找谁在用、什么情境或时间使用、为什么购买，也可摘偏好和决策因素。一条独立发现对应一段准确连续的原文 quote。url 必须是所读原件，title 为具名报告，scope 写明调查年份、地域、对象和可见的样本口径，未披露就标明。按实际范围写 conclusion，不把全品类、外国或往年样本直接套给本案目标人群。有较新且相关的调查优先。目录、付费提示、图表题名、宣传口号、研究者建议不是调查数据；只有这些时 observations 留空。没有回答某个问题就留缺口。',[],objectSchema({observations:{type:'array',items:observation,maxItems:9}}),{editorial:true,rules:[],context:JSON.stringify({term,documents})});
+    const response=await call('阅读这些实际打开的报告或发布方披露结果的正文。只摘调查对象或调查行为与下列 Brief 的产品、活动或消费场景直接有关的研究发现。相邻品类的样本只在报告单独披露本案相关群体或行为时取用；只研究另一种产品、纯品牌热度或广告搜索量的资料不能替代消费者行为调查。请核对百分比对应的问题与分母，购买意愿和实际购买分开。对相关的消费者研究发现，寻找谁在用、什么情境或时间使用、为什么购买，也可摘偏好和决策因素。一条独立发现对应一段准确连续的原文 quote。url 必须是所读原件，title 为具名报告，scope 写明调查年份、地域、对象和可见的样本口径，未披露就标明。按实际范围写 conclusion，不把全品类、外国或往年样本直接套给本案目标人群。有较新且相关的调查优先。目录、付费提示、图表题名、宣传口号、研究者建议不是调查数据；只有这些时 observations 留空。没有回答某个问题就留缺口。',[],objectSchema({observations:{type:'array',items:observation,maxItems:9}}),{editorial:true,rules:[],context:JSON.stringify({brief,term,documents})});
     for (const page of pages) {
       const indices=[];
       for (const o of response.parsedOutput?.observations ?? []) {
@@ -267,24 +267,27 @@ export async function researchConsumerReports({topics,discover,directory,capture
       reads.push({term,url:page.url,title:page.source,observations:indices.map(i=>({quote:findings[i].evidence,scope:findings[i].sampleScope}))});
     }
   }
-  for (const {term,queries} of topics) {
-    signal?.throwIfAborted();
+  const surface=await Promise.all(topics.map(async ({term,queries})=>{
     const relevant=r=>r.title?.includes(term) && /报告|白皮书|调查|洞察|消费者|消费行为|人群|消费趋势/u.test(r.title) &&
       !/百度百科|词典|字典|汉典|字义/u.test(r.title);
     const searches=await Promise.all(queries.map(query=>discover({query})));
-    for (const s of searches) {
-      s.results=s.results.filter(relevant);
-      discovered.push(s);
-    }
+    for (const s of searches) s.results=s.results.filter(relevant);
+    return {term,searches,relevant};
+  }));
+  discovered.push(...surface.flatMap(t=>t.searches));
+  const enough=()=>angles.has('人群') && angles.has('情境') && (angles.has('动因') || angles.has('决策'));
+  for (const [index,{term,searches,relevant}] of surface.entries()) {
+    signal?.throwIfAborted();
+    const canStop=index>0 || surface.length===1;
     await examine(searches.flatMap(s=>s.results),term);
-    if (angles.has('人群') && angles.has('情境') && (angles.has('动因') || angles.has('决策'))) break;
+    if (canStop && searches.some(s=>s.results.length) && enough()) break;
     const sources=await Promise.all([['ipsos','益普索站内搜索',term],['iimedia','艾媒报告站',term],['reports','199IT 站内搜索',term+'消费']].map(async ([provider,via,query])=>{
       const results=(await directory(query,provider)).filter(relevant).slice(0,3);
       return {query,via,results};
     }));
     discovered.push(...sources);
     await examine(sources.flatMap(s=>s.results),term);
-    if (angles.has('人群') && angles.has('情境') && (angles.has('动因') || angles.has('决策'))) break;
+    if (canStop && enough()) break;
   }
   return {reads,findings};
 }
@@ -304,7 +307,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const scope = project.proposalKind || taskKind(project.brief || '',false);
   const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：具名品牌、同渠道商品、规格价格与实际作品；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。包装项目在 packagingBrands 填二至三个公开同品类具体品牌或产品线的短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 依次给二至四个可公开的上位消费领域、不同的大类和相关行业，由宽到窄。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。包装项目在 packagingBrands 填二至三个公开同品类具体品牌或产品线的短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项填能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
@@ -432,7 +435,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     if (reportReads.some(r=>r.segmentQuote)) break;
   }
   const consumerReports=await researchConsumerReports({
-    topics:consumerSearchTopics(plan.parsedOutput.consumerCategories,project.researchFollowup),
+    brief:project.brief,topics:consumerSearchTopics(plan.parsedOutput.consumerCategories,project.researchFollowup),
     discover,capture,call,discovered,signal,
     directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider),
   });

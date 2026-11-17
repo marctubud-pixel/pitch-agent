@@ -1095,6 +1095,6 @@ test('consumer research broadens across categories and opens publisher reports a
   });
   assert.deepEqual(opened,[url,pdf]);
   assert.ok(lookups.some(([term,provider])=>term==='户外' && provider==='ipsos'));
-  assert.ok(discovered.some(s=>s.query==='出行消费白皮书'));
+  assert.ok(discovered.some(s=>s.query==='出行消费报告'));
   assert.deepEqual(result.findings.map(f=>[f.url,f.evidence,f.sampleScope]),[[pdf,fact.quote,fact.scope]]);
 });
