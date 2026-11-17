@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.80.0",
-  "registrySha256": "842e4002dd96be5930aee7ba993364a356b9975c07ca47bdf8494365aa96d3c2",
+  "baselineVersion": "1.81.0",
+  "registrySha256": "1a29a53295aa2bec997d4a0505848e9abb022e9c91d09479752e7596dbf27510",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -25,10 +25,10 @@
       }
     },
     "agent.strategy-owner": {
-      "version": "1.6.3",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/strategy-owner.md": "1cd54bec24fe18b36f3b7367d58a9ba52bf0812efcad8b1a4a780bbcc6d1a0ae"
+        "docs/agents/strategy-owner.md": "c203298d21f58ea2c3f79e62f995e3de633ca336bb9caafc1959b520c7948940"
       }
     },
     "agent.copy-owner": {
@@ -203,10 +203,10 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "7cae48f8df990d06093d8120f5d280257a806e6a011ebbfe28ccacf60e60c726"
+        "skills/strategy-one-pager/SKILL.md": "b279a5c8547f7b4a89fd77c8b794b905164a4087caa400919ec95db0b42b565c"
       }
     },
     "method.visual": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "854f55402a8695c4aed6fc48841766dc257a9e3400963c7f3fe96a1d05ca81d0"
+        "docs/specs/nightflight-runtime.md": "d56f7d420619dd4235b801497c40687e7158fb9df22368b37d239735446b7f88"
       }
     },
     "contract.nightflight-final-reader": {

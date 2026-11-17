@@ -125,12 +125,13 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
   const context=JSON.stringify({carrier,brief:project.brief,materials:inputs.texts,findings:rows,
     handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
-  let out, result;
+  const render = draft => renderStrategy(draft,findings,eligible,carrier);
+  let out;
   for (let attempt=0;attempt<2;attempt++) {
     const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
     try {
       out=response.parsedOutput?.outcome ?? {};
-      result=renderStrategy(out,findings,eligible,carrier);
+      render(out);
       break;
     }
     catch(error) {
@@ -138,8 +139,13 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
       correction='上次输出需修正：'+error.message;
     }
   }
+  out=await compactStrategy(out,{call,project,carrier,render,onEvent,signal});
+  return readStrategyPage(out,{call,render,onEvent,signal});
+}
+
+async function compactStrategy(out,{call,project,carrier,render,onEvent,signal}) {
   const issue=compactnessIssue(out);
-  if (!issue) return result;
+  if (!issue) return out;
   await onEvent?.('比稿负责人正在精简策略页标题、动作和触点');
   const draft=Object.fromEntries(Object.keys(publicFields).map(key=>[key,out[key]]));
   try {
@@ -151,8 +157,8 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
     const copy=edit.parsedOutput?.copy;
     if (copy && Object.keys(publicFields).every(key=>Object.hasOwn(copy,key))) {
       const edited={...out,...Object.fromEntries(Object.keys(publicFields).map(key=>[key,copy[key]]))};
-      const short=renderStrategy(edited,findings,eligible,carrier);
-      if (!compactnessIssue(edited)) return short;
+      render(edited);
+      if (!compactnessIssue(edited)) return edited;
     }
   } catch (error) {
     if (signal?.aborted) throw error;
@@ -160,5 +166,62 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
   }
   await onEvent?.('保留精简前已核对的策略稿');
   // A failed editorial edit cannot replace the validated original or its research handoff.
+  return out;
+}
+
+// Only these strings are visible on the strategy sheet. Keep references, metrics and decisions
+// outside the reader packet and outside the set of fields the owner can edit here.
+async function readStrategyPage(out,{call,render,onEvent,signal}) {
+  const draft={...out,actions:[...out.actions],touchpoints:out.touchpoints.map(t=>({...t}))};
+  const fields=[
+    ['核心策略',draft,'coreStrategy'],['人群洞察',draft,'insight'],
+    ['品牌角色',draft,'brandRole'],['核心主张',draft,'proposition'],
+    ...draft.actions.map((_,i)=>['执行动作',draft.actions,i]),
+    ...draft.touchpoints.flatMap(t=>[['触点名称',t,'name'],['触点说明',t,'action']]),
+  ];
+  const page=fields.map(([section,holder,key],i)=>({line:i+1,section,text:customerText(holder[key])}));
+  const kinds=['拗口','歧义','不直观'];
+  const issue=object({line:numbered,quote:string,kind:{type:'string',enum:kinds},difficulty:string});
+  await onEvent?.('独立读者只看策略首页，检查哪些话拗口、容易误读或难以想象');
+  const read=await call('第一次读这张策略页，按正常阅读顺序读。只标出真实的表达障碍：哪里念不顺，哪个词指代不清，或哪句话读完仍想象不出它描述的事。'+
+    '每处填行号、该行连续原话、问题类型和你读到这里具体卡在哪；通顺就留空。不要评判策略、证据或优先级，不索要补充研究，不写新方案，也不打分。',
+    [],object({issues:list(issue)}),{delegate:true,editorial:true,rules:[],assignment:'你是独立读者，只负责策略首页的表达盲读。',context:JSON.stringify({page})});
+  const reported=read.parsedOutput?.issues;
+  if (!Array.isArray(reported)) throw Error('表达盲读没有返回意见列表，请重试策略');
+  const issues=reported.filter(i=>i && Number.isInteger(i.line) && singleLine(i.quote) &&
+    page[i.line-1]?.text.includes(i.quote) && kinds.includes(i.kind) && singleLine(i.difficulty));
+  if (issues.length<reported.length) await onEvent?.('已略过无法对应首页原句或阅读问题类型的意见');
+  if (!issues.length) {
+    if (!reported.length) await onEvent?.('独立读者未发现需要改措辞的地方');
+    return render(out);
+  }
+  for (const i of issues) await onEvent?.('表达盲读 · '+page[i.line-1].section+' · “'+i.quote+'”｜'+i.difficulty);
+  const owner=await call('只处理独立读者指出的表达问题。按原意把别扭、歧义或抽象的句子说直白。只返回决定采用的整行新文字和行号。'+
+    '保留策略取舍、人物、产品事实、数字、必要限定和执行动作。不要采纳任何要求改变策略或重新研究的意见。没有合适改法时保留原句。',
+    [],object({edits:list(object({line:numbered,text:string}))}),{editorial:true,rules:[],
+      assignment:'你是原比稿负责人，决定哪些措辞值得修改。',context:JSON.stringify({page,issues,constraints:out.constraints})});
+  const edits=owner.parsedOutput?.edits;
+  if (!Array.isArray(edits)) throw Error('负责人未返回表达修改结果，请重试策略');
+  const flagged=new Set(issues.map(i=>i.line));
+  const numbers=text=>(text.normalize('NFKC').match(/\d+(?:\.\d+)?/gu) ?? []).sort().join('|');
+  const changes=[];
+  for (const e of edits) {
+    if (!e || !flagged.delete(e.line) || !singleLine(e.text)) continue;
+    const before=page[e.line-1].text;
+    if (before===e.text || numbers(before)!==numbers(e.text)) continue;
+    const [,holder,key]=fields[e.line-1];
+    holder[key]=e.text;
+    changes.push([before,e.text]);
+  }
+  signal?.throwIfAborted();
+  let result;
+  try {
+    result=render(draft);
+  } catch (error) {
+    await onEvent?.('措辞修改与原稿要求不符，保留原稿：'+error.message);
+    return render(out);
+  }
+  for (const [before,after] of changes) await onEvent?.('负责人修改措辞 · “'+before+'” → “'+after+'”');
+  if (!changes.length) await onEvent?.('负责人核对盲读意见后保留原措辞');
   return result;
 }

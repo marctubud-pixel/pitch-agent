@@ -141,7 +141,7 @@ process.stdin.on('end',()=>{
    fs.unlinkSync(stop);process.exit(78);
  }
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('发布前精简自己的文案') && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('单张包装') && !input.includes('竞品原图观察') && !input.includes('只读所附网页原文') && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('发布前精简自己的文案') && !input.includes('从所附原文重新摘录') && !input.includes('比稿负责人整理研究摘要') && !input.includes('单张包装') && !input.includes('竞品原图观察') && !input.includes('只读所附网页原文') && !input.includes('只负责策略首页的表达盲读') && !input.includes('只处理独立读者指出的表达问题') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
@@ -224,7 +224,16 @@ process.stdin.on('end',()=>{
      if(action==='research-scope') body.rows.unshift({...rows[0],chapter:'行业与市场'});
    } else process.exit(12);
  }
- if(action.startsWith('onepager-') && input.includes('请作为同一负责人精简这份策略首页')) {
+ if(action.startsWith('onepager-') && input.includes('你是独立读者，只负责策略首页的表达盲读。')) {
+   const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   if(Object.keys(packet).join()!=='page' || input.includes('测试茶') || args.includes('--image') || !args.includes('web_search="disabled"') || !input.includes('此次委托的临时执行者') || input.includes('访谈样本提及原味') ||
+       input.includes('价格与配料属于任务卡') || input.includes('（发现2）') || input.includes('包装与 KV 一页策略')) process.exit(59);
+   body={issues:action==='onepager-reader'?[{line:1,quote:'一眼认出',kind:'不直观',difficulty:'先看到包装的哪个信息？'}]:[]};
+ } else if(action.startsWith('onepager-') && input.includes('只处理独立读者指出的表达问题')) {
+   const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   if(packet.issues.length!==1 || input.includes('此次委托的临时执行者')) process.exit(60);
+   body={edits:[{line:1,text:'在货架上先让顾客看清这盒茶是原味。'},{line:4,text:'改变产品主张。'}]};
+ } else if(action.startsWith('onepager-') && input.includes('请作为同一负责人精简这份策略首页')) {
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    body={copy:{...packet.draft,coreStrategy:'让找原味的人一眼认出茶。'}};
    if(action==='onepager-bad-edit') body.copy.touchpoints=[];
@@ -956,7 +965,7 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
 });
 
 
-for (const action of ['ok','kv','linked','general','compact','bad-edit','return','wrong-ref','wrong-touch','scored','internal']) {
+for (const action of ['ok','kv','linked','general','reader','compact','bad-edit','return','wrong-ref','wrong-touch','scored','internal']) {
   test('one-page packaging strategy from verified findings: '+action,async t=>{
     const f=await fixture(t,'onepager-'+action);
     if (action==='general') f.project.brief='为测试茶制作新品上市创意提案';
@@ -964,10 +973,15 @@ for (const action of ['ok','kv','linked','general','compact','bad-edit','return'
     if (action==='linked') f.project.brief='设计测试茶包装与KV';
     const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
     f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
-    if (!['ok','kv','linked','general','compact','bad-edit'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    if (!['ok','kv','linked','general','reader','compact','bad-edit'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
     const result=await f.run('strategy');
     const md=result.artifacts[0].text,front=md.split('## 研究结论')[0];
     assert.deepEqual(result.strategy.findingNumbers,[2]);
+    if (action==='reader') {
+      assert.equal(result.strategy.focus,'在货架上先让顾客看清这盒茶是原味。');
+      assert.match(md,/优先表达原味/);
+      assert.doesNotMatch(md,/改变产品主张/);
+    }
     if (action==='compact') assert.equal(result.strategy.focus,'让找原味的人一眼认出茶。');
     if (action==='bad-edit') assert.match(result.strategy.focus,/再仔细看清/);
     assert.match(md,/## 核心策略[\s\S]*## 衡量方式[\s\S]*## 研究结论[\s\S]*研究 2/);
