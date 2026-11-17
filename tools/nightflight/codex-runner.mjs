@@ -7,6 +7,7 @@ import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
 import {searchVisualImages} from './public-visual-search.mjs';
+import {locatedPackagingMarks,prioritizePackagingRows} from './research-packaging.mjs';
 import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -88,7 +89,11 @@ const reportSchema = objectSchema({
   gaps: stringList,
   next: stringField,
 });
-const pageSchema = (indices,activity) => objectSchema({
+const pageSchema = (indices,activity,marks) => objectSchema({
+  ...(marks.length ? {packagingHighlights:{type:'array',items:objectSchema({
+    briefQuote:stringField,markId:{type:'integer',enum:marks.map(m=>m.id)},visibleQuote:stringField,
+    conclusion:stringField,untestedEffect:stringField,
+  })}} : {}),
   rows:{type:'array',items:objectSchema({
     chapter:{type:'string',enum:researchChapters}, conclusion:stringField, explanation:stringField, sourceDetail:stringField,
     audienceTopic:{type:'string',enum:[...audienceTopics,'']}, surveyQuestion:stringField,
@@ -715,10 +720,12 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
     const images=findings.filter(f=>!f.visualOnly).flatMap(f=>f.images ?? []);
     const verifiedCarriers=carriers.filter(type=>hasCategoryImage(images,type));
     const eventInstructions=activity ? '本案研究活动。竞品行只选能说清谁组织参与者实际做了本案同类活动的材料。participantActionQuote 逐字摘录参与者进行相应活动的原句；不是竞品行就留空。仅参展、产品亮相、发布装备、陈列社群墙不能当作组织跑团或门店活动。与本案不同的地点和规模可以比较。参加或再来的意愿只用于用户栏；未取得时省略，若记录该缺口则单列 scope=participationMotive。竞品资料的取舍不需要动机调查。' : '';
-    const page = await call(coverageInstruction + eventInstructions +
+    const marks=locatedPackagingMarks(findings);
+    const packagingInstructions=marks.length ? '先对照客户 Brief 的具体要求与 packagingMarks 中的已核局部。凡有直接回答该要求的可见标注或图形，必须选进 packagingHighlights，按对委托的重要性排序。同一要求选最直接、最可比的一件为代表；同一事项合并。briefQuote 逐字引用客户关心这件事的短句。markId 指向该件原图对应的单项核图记录；visibleQuote 从 marking 逐字摘出标注原字或图形，优先选简短、明确的原字。conclusion 用一句简短中文点明竞品和它怎样回应客户关心的事，只说包装标示了什么。若真实使用效果仍无直接证据，untestedEffect 只填具体效果的名词短语，其余留空。图上实见就已核实，不需要商品页文字再证明。没有匹配的已核事实才返回空数组；不要把客户预设的要求当作竞品事实。rows 只补有独立证据的其他竞品发现；品牌、配色、阶段等通用观察不得挤掉已核实的客户关切。各栏与 gaps 也要区分原图标注和实际体验。' : '';
+    const page = await call(coverageInstruction + eventInstructions + packagingInstructions +
       '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别。包装优先回答客户关心的问题，只采用局部核图后有位置与可辨标注的细节；有标注可写大小、位置和文字，不能推出使用效果。未核实项写“未核实”；绝不把没有读到或没有提到改写成包装没有、看不到位置、未见提示或差异优势。用户结论按原报告的样本出页。先写大类报告实际支持的人群、场景、原因；能说明普通消费者就明确写普通消费者。不要把广义样本改写成项目通勤人群的实测，也不要因没有早班细分就抹掉有关的大类结果。具体人群未实证的部分列在缺口。单靠平台热度只能写该平台的关注点（audienceTopic 其他），将平台、日期、话题和数值口径留在依据与来源。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。用户栏按被调查的问题选结论，依次优先回答“谁在用、何时或什么场景用、选择时看重什么”。人群须有身份或特征，用频率、场景定义人群不算。选择因素优先选与委托产品和客户主张直接相关的研究对象与指标。忽略同一原文里只适用于别种产品的配料、选项或数字。区分关注、意愿和实际购买。每项有依据就写，缺项列入 gaps；同一题只计一次。跨摘录、不同发布网址、不同答案选项仍属同一调查问题时合为一条：把最常见选项和与本案使用情境最相关的另一选项放在同一句副文，读者不展开来源就能看到两者及其数字；没有第二项依据时只写一项。其余细节放进来源。工作、休闲、出行等同题选项只能写一行。优先保留上述三个问题；仅在对本案有独立价值时补其他问题，频率不能冒充“谁”。surveyQuestion 用去掉具体答案的简短问题，同题各处一致。audienceTopic 选择人群、使用场景、选择因素、使用频率或其他；非用户行两字段均填空串。标题或副文交代影响理解的年份或样本范围，旧调查不冒充现状，不把观察到的关注写成购买原因。产品与品牌每项同时引用本品事实与外部对照。其他组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。verifiedCarriers 是已看过同品类原图的载体；如有则承认基础比较已完成。每条缺口只写一件事。scope 用 packaging 或 kv 表示整体缺这种同类原图，optionalSegment 表示仅缺进一步细分的对照，other 表示其他独立问题；某个渠道或规格未匹配只约束相应细分结论。每项缺口用 blocksStrategy 指明是否会改变核心策略取舍。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
-      [],pageSchema(evidence.map(f=>f.index),activity),{editorial:true,context:JSON.stringify({
-        brief:project.brief,feedback:project.feedback,anchorQuestions,evidence,verifiedCarriers,gaps,mode,followup:!!project.researchFollowup,
+      [],pageSchema(evidence.map(f=>f.index),activity,marks),{editorial:true,context:JSON.stringify({
+        brief:project.brief,feedback:project.feedback,anchorQuestions,evidence,verifiedCarriers,...(marks.length ? {packagingMarks:marks} : {}),gaps,mode,followup:!!project.researchFollowup,
       })});
     const output = page.parsedOutput;
     if (!Array.isArray(output?.rows) || !Array.isArray(output.gaps)) throw Error('四维研究页返回格式不完整');
@@ -753,6 +760,7 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
     const audience=selectAudienceRows(research.sections.filter(r=>r.chapter===researchChapters[2]));
     research.sections=researchChapters.flatMap(chapter=>chapter===researchChapters[2] ? audience : research.sections.filter(r=>r.chapter===chapter));
     research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal);
+    research.sections=prioritizePackagingRows(research.sections,output.packagingHighlights,marks,project.brief);
     const remainingGaps=output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter) &&
       !verifiedCarriers.includes(g.scope) && !(activity && g.scope==='participationMotive'));
     const blocking=remainingGaps.filter(g=>g.blocksStrategy && g.scope!=='optionalSegment');

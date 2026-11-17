@@ -1,9 +1,9 @@
 [
   {
-    "source": "包装按客户问题查原图与局部，保留第一次读图原话",
+    "source": "包装竞品首页优先呈现直接回答客户关切的已核标注",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r28-20261117",
-    "sha256": "b7191350a6386e9fbfee0e37e378a926b5f6ca37a984714cc85b3fc0ba7978d7"
+    "sourceVersion": "r29-20261117",
+    "sha256": "c5a91635f33c657b431dcabf5af76f6f9f0e631843ef18c1b35f86c8052d4435"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",

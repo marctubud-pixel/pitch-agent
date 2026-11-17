@@ -47,3 +47,45 @@ export async function readPackaging({call,dir,image,brief,previous,signal}) {
   await writeFile(join(folder,'detail.json'),JSON.stringify({sha256:image.sha256,regions,checks,observation}),{mode:0o600});
   return {firstRead,regions,observation};
 }
+
+// r28 stores the located crop checks as one line per question, also in archived projects.
+export function locatedPackagingMarks(findings) {
+  const marks=[];
+  for (const [findingIndex,finding] of findings.entries()) {
+    for (const image of finding.images ?? []) {
+      if (image.carrier!=='packaging' || !image.sameCategory || !image.detailRegions?.length ||
+          !image.sha256 || !image.pageUrl || !image.sourceUrl || typeof image.observation!=='string') continue;
+      for (const line of image.observation.split('\n')) {
+        const match=line.match(/^(.+?)：([^，]+)，(.+)$/u);
+        if (!match) continue;
+        const [,question,location,marking]=match;
+        marks.push({id:marks.length,findingIndex,title:image.title,question,location,marking});
+      }
+    }
+  }
+  return marks;
+}
+
+export function prioritizePackagingRows(rows,highlights,marks,brief) {
+  const chapter='竞争与同类传播';
+  const priority=[],concerns=new Set(),used=new Set();
+  for (const h of highlights ?? []) {
+    const mark=marks[h.markId], concern=h.briefQuote?.trim(), quote=h.visibleQuote?.trim();
+    if (!mark || !concern || !brief?.includes(concern) || !quote || !mark.marking.includes(quote) ||
+        !h.conclusion?.trim() || concerns.has(concern) || used.has(mark.id)) continue;
+    const limit=h.untestedEffect?.trim();
+    priority.push({chapter,conclusion:h.conclusion.trim(),
+      explanation:`原图已核实，${mark.location}可见“${quote}”。`+(limit ? limit+'未核实。' : ''),
+      sourceDetail:'',evidenceIndices:[mark.findingIndex]});
+    used.add(mark.id);
+    concerns.add(concern);
+  }
+  if (!priority.length) return rows;
+  const covered=new Set(priority.flatMap(row=>row.evidenceIndices));
+  // A board can cite multiple pictures. Its generic summary must not take a second slot
+  // for the same evidence; the full board is still visible under the priority conclusion.
+  const rest=rows.filter(row=>row.chapter!==chapter || !row.evidenceIndices.every(i=>covered.has(i)));
+  const first=rest.findIndex(row=>row.chapter!=='行业与市场');
+  rest.splice(first<0 ? rest.length : first,0,...priority);
+  return rest;
+}

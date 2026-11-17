@@ -1203,3 +1203,29 @@ test('an activity case needs an organizer action in the cited source; return int
   assert.ok(!report.gaps.some(item=>item.message===gap.message));
   assert.equal(report.ready,false);
 });
+
+test('a brief-linked visible marking leads the competitor homepage and keeps use performance separate',async()=>{
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapter='竞争与同类传播';
+  const brief='客户希望拆袋后容易收好。';
+  const image={sha256:'b'.repeat(64),pageUrl:'https://example.org/rice',sourceUrl:'https://example.org/rice.jpg',
+    sameCategory:true,carrier:'packaging',detailRegions:['右上'],title:'大米袋',
+    observation:'开合标识：右上，PRESS TO CLOSE\n材料阻隔性：未核实。'};
+  const findings=[{chapter,subject:'competitor',evidence:image.observation,images:[image],source:'商品页',url:image.pageUrl},
+    {chapter,subject:'competitor',evidence:'另一个品牌在社区开设门店。',passage:'另一个品牌在社区开设门店。',source:'活动记录',url:'https://example.org/retail'}];
+  const highlight={briefQuote:'拆袋后容易收好',markId:0,visibleQuote:'PRESS TO CLOSE',conclusion:'样本在袋角标出了按压封口方式。',untestedEffect:'实际密封效果'};
+  const rows=['品牌标志最大。','品牌和系列都在中央。','另一品牌采用门店活动。'].map((conclusion,i)=>({
+    chapter,conclusion,explanation:'有记录。',sourceDetail:'',evidenceIndices:[i===2?1:0],
+  }));
+  const project={brief,mode:'collab'};
+  const r=await writeResearchPage({call:async(instruction,images,schema,task)=>{
+    const marks=JSON.parse(task.context).packagingMarks;
+    assert.deepEqual(marks.map(m=>m.marking),['PRESS TO CLOSE']);
+    return {parsedOutput:{packagingHighlights:[
+      {...highlight,visibleQuote:'not on image'}, {...highlight,briefQuote:'并非客户要求'},
+      highlight,highlight],rows,gaps:[],ready:false}};
+  },project,findings,carriers:['packaging'],anchorQuestions:[],gaps:[]});
+  assert.deepEqual(r.sections.map(row=>row.conclusion),[highlight.conclusion,rows[2].conclusion]);
+  assert.deepEqual(r.sections[0].evidenceIndices,[0]);
+  assert.equal(r.sections[0].explanation,'原图已核实，右上可见“PRESS TO CLOSE”。实际密封效果未核实。');
+});
