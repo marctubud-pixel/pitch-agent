@@ -7,9 +7,12 @@ const exactlyThree = {minItems:3,maxItems:3};
 const numbered = {type:'integer'};
 const basis = object({text:string,findingNumbers:list(numbered)});
 const touchpointSchema = object({kind:{type:'string',enum:['front','side','back','kv','contact']},name:string,action:string});
+const publicFields = {
+  coreStrategy:string,insight:string,brandRole:string,proposition:string,
+  actions:list(string,exactlyThree),touchpoints:list(touchpointSchema),
+};
 const schema = object({outcome:object({
-    coreStrategy:string,insight:string,brandRole:string,proposition:string,
-    actions:list(string,exactlyThree),touchpoints:list(touchpointSchema),
+    ...publicFields,
     metrics:list(object({name:string,method:string}),exactlyThree),
     constraints:string,opportunity:basis,decision:basis,priority:basis,intersection:string,
   })});
@@ -54,6 +57,22 @@ function measurementText(value) {
     .replace(/[（(](?:待测|待验证)[）)]\s*[。.]?$/u,'').trim());
 }
 
+// Editorial targets trigger a rewrite of the public fields, never a cut in the middle of a claim.
+function compactnessIssue(out) {
+  const lead = customerText(out.coreStrategy);
+  const touchCopy = out.touchpoints.map(t => t.action);
+  const body = [out.insight, out.brandRole, out.proposition, ...out.actions, ...touchCopy].map(customerText);
+  const units = text => (text.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]|[\p{Script=Latin}\p{N}]+|\p{L}/gu) || []).length;
+  const normalized = text => text.replace(/[\p{P}\s]/gu,'').toLowerCase();
+  if (units(lead)>36 || /[。！？!?].+\S/u.test(lead))
+    return '大字句仍在铺陈，请只留下一个取舍及其用处，移走执行细节。';
+  if (body.some(line=>units(line)>40))
+    return '首页有过长的说明，请把每栏改成能一口气读完的短句。';
+  if (!distinct([lead,...body].map(normalized)))
+    return '首页重复了相同表述，请把动作与触点各自解决的问题分开。';
+  return '';
+}
+
 function renderStrategy(out, findings, eligible, carrier) {
   if (![out.coreStrategy,out.insight,out.brandRole,out.proposition,out.constraints,out.intersection].every(singleLine))
     throw Error('策略正文或事实边界不完整');
@@ -89,13 +108,13 @@ function renderStrategy(out, findings, eligible, carrier) {
   return {body:sections.join('\n\n'),strategy:{findingNumbers,intersection:out.intersection,focus:customerText(out.coreStrategy)}};
 }
 
-export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) {
+export async function makeStrategyOnePager({call,project,inputs,carrier,rules,onEvent,signal}) {
   const findings=project.research?.findings ?? [];
   const rows=findings.flatMap((f,i)=>f && !f.visualOnly && [f.conclusion,f.source,f.evidence,f.implication].every(v=>typeof v==='string' && v.trim())
     ? [{...f,findingNumber:i+1}] : []);
   const eligible=new Set(rows.map(f=>f.findingNumber));
   if (!rows.length) throw Error('当前策略输入缺少可引用的研究记录');
-  const instruction='按本次载体完成夜航一页策略。general 表示载体未指定或其他提案，触点 kind 填 contact，按简报写传播任务。渠道未定时写条件性应用，不默认承诺包装或KV。核心策略只留一个简短、能读出选购场景和优先任务的句子；其余四节用客户听得懂的短句。行业上新数量支持设计取舍，不能推出消费者注意或记忆时长。不要将浏览量推成审美偏好或购买原因。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。先检验本轮研究提出的条件性方向；渠道、执行细节和待测数据缺失，写入约束。直接提出本轮研究可以支撑的策略发力点。对客做减法：每个模块一到两句，核心策略优先一句；每个动作、触点和指标尽量一句一行，一项只讲一次。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
+  const instruction='按本次载体完成夜航一页策略。general 表示载体未指定或其他提案，触点 kind 填 contact，按简报写传播任务。渠道未定时写条件性应用，不默认承诺包装或KV。核心策略只留一个简短、能读出选购场景和优先任务的句子；其余四节用客户听得懂的短句。行业上新数量支持设计取舍，不能推出消费者注意或记忆时长。不要将浏览量推成审美偏好或购买原因。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。先检验本轮研究提出的条件性方向；渠道、执行细节和待测数据缺失，写入约束。直接提出本轮研究可以支撑的策略发力点。对客交稿前先提炼：核心策略一句只写本案最重要的取舍及对人的用处，以约30字为写作目标。移走与这项选择无关的条件清单。洞察只讲顾客的一个难题；角色只讲品牌能兑现什么；主张只讲一个产品理由。三个动作各用短句写一个可指认的变化。触点按实际媒介或包装面列，只补该处的阅读条件或任务。一个屏幕或一支短片只算一个媒介，开头、中段、结尾属于动作，勿在触点重写一遍。其他栏目每项一到两句，优先一句；每个事实只在它最有用的一处展开，保留必要限定。属性要紧跟它修饰的具体产品或原料，避免省词后变成另一种产品。未验证的用户顾虑用问题表达。详细指标、依据与推导写入原稿。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
   const productJudgments = project.research.sections?.filter(row=>row.chapter==='产品与品牌')
     .map(row=>({recommendation:row.conclusion+' '+row.explanation,findingIndices:row.evidenceIndices}));
   const advice=(productJudgments ?? project.research.strategyAdvice ?? []).flatMap(a=>{
@@ -106,12 +125,40 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
   const context=JSON.stringify({carrier,brief:project.brief,materials:inputs.texts,findings:rows,
     handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
+  let out, result;
   for (let attempt=0;attempt<2;attempt++) {
     const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
-    try { return renderStrategy(response.parsedOutput?.outcome ?? {},findings,eligible,carrier); }
+    try {
+      out=response.parsedOutput?.outcome ?? {};
+      result=renderStrategy(out,findings,eligible,carrier);
+      break;
+    }
     catch(error) {
       if (attempt===1) throw error;
       correction='上次输出需修正：'+error.message;
     }
   }
+  const issue=compactnessIssue(out);
+  if (!issue) return result;
+  await onEvent?.('比稿负责人正在精简策略页标题、动作和触点');
+  const draft=Object.fromEntries(Object.keys(publicFields).map(key=>[key,out[key]]));
+  try {
+    const edit=await call('请作为同一负责人精简这份策略首页。'+issue+
+      '保留原有策略取舍和事实限定，精简每个首页字段：核心策略约20–30字；洞察、角色、主张各一句；三个动作每条约15–25字，只保留画面中最重要的一处改变。'+
+      '触点的 name 写原媒介或包装面，kind 须沿用原枚举；action 只补现场的一个阅读条件，一句约15–25字。把任何重复的镜头顺序从触点里删去。'+
+      '保留已经选定给观众看的商业信息及其出现位置，例如标价或规格。每个属性须保留它修饰的对象，不把原来分属不同原料的属性拼成一个新词。尚未实测的购买动机要写成问题。来源、机位、字号等可留给底稿。输出 copy，字段结构见 schema。',
+      [],object({copy:object(publicFields)}),{editorial:true,rules:[],assignment:'修改既有策略文稿的客户可见文字。',context:JSON.stringify({carrier,brief:project.brief,draft,constraints:out.constraints})});
+    const copy=edit.parsedOutput?.copy;
+    if (copy && Object.keys(publicFields).every(key=>Object.hasOwn(copy,key))) {
+      const edited={...out,...Object.fromEntries(Object.keys(publicFields).map(key=>[key,copy[key]]))};
+      const short=renderStrategy(edited,findings,eligible,carrier);
+      if (!compactnessIssue(edited)) return short;
+    }
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    await onEvent?.('策略精简未完成：'+error.message);
+  }
+  await onEvent?.('保留精简前已核对的策略稿');
+  // A failed editorial edit cannot replace the validated original or its research handoff.
+  return result;
 }

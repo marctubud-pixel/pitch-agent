@@ -224,7 +224,11 @@ process.stdin.on('end',()=>{
      if(action==='research-scope') body.rows.unshift({...rows[0],chapter:'行业与市场'});
    } else process.exit(12);
  }
- if(action.startsWith('onepager-')) {
+ if(action.startsWith('onepager-') && input.includes('请作为同一负责人精简这份策略首页')) {
+   const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+   body={copy:{...packet.draft,coreStrategy:'让找原味的人一眼认出茶。'}};
+   if(action==='onepager-bad-edit') body.copy.touchpoints=[];
+ } else if(action.startsWith('onepager-')) {
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    if (!input.includes('包装与 KV 一页策略') || packet.researchAdvice[0]?.findingNumbers?.join()!=='2' ||
        packet.findings.map(f=>f.findingNumber).join()!=='2' || !packet.brief.includes('测试茶')) process.exit(55);
@@ -236,6 +240,7 @@ process.stdin.on('end',()=>{
    if (packet.carrier==='general') outcome.touchpoints=[{kind:'contact',name:'若在门店首次接触',action:'查看品名'}];
    if (packet.carrier==='kv') outcome.touchpoints=[];
    if (['kv','packaging+kv'].includes(packet.carrier)) outcome.touchpoints.push({kind:'kv',name:'门店海报',action:'用瓶身衔接货架。'});
+   if(['onepager-compact','onepager-bad-edit'].includes(action)) outcome.coreStrategy='让顾客在经过货架时注意到这一盒茶。再仔细看清品名、口味和配方。';
    if(action==='onepager-wrong-touch') outcome.touchpoints.pop();
    if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
    if(action==='onepager-internal') outcome.insight='模拟设定的测试茶。';
@@ -951,7 +956,7 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
 });
 
 
-for (const action of ['ok','kv','linked','general','return','wrong-ref','wrong-touch','scored','internal']) {
+for (const action of ['ok','kv','linked','general','compact','bad-edit','return','wrong-ref','wrong-touch','scored','internal']) {
   test('one-page packaging strategy from verified findings: '+action,async t=>{
     const f=await fixture(t,'onepager-'+action);
     if (action==='general') f.project.brief='为测试茶制作新品上市创意提案';
@@ -959,10 +964,12 @@ for (const action of ['ok','kv','linked','general','return','wrong-ref','wrong-t
     if (action==='linked') f.project.brief='设计测试茶包装与KV';
     const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
     f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
-    if (!['ok','kv','linked','general'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    if (!['ok','kv','linked','general','compact','bad-edit'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
     const result=await f.run('strategy');
     const md=result.artifacts[0].text,front=md.split('## 研究结论')[0];
     assert.deepEqual(result.strategy.findingNumbers,[2]);
+    if (action==='compact') assert.equal(result.strategy.focus,'让找原味的人一眼认出茶。');
+    if (action==='bad-edit') assert.match(result.strategy.focus,/再仔细看清/);
     assert.match(md,/## 核心策略[\s\S]*## 衡量方式[\s\S]*## 研究结论[\s\S]*研究 2/);
     assert.ok(md.includes(action==='general'?'## 视觉与传播触点':action==='kv'?'## 视觉与 KV 触点':action==='linked'?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
     assert.equal(md.includes('- 正面：'),!['kv','general'].includes(action));

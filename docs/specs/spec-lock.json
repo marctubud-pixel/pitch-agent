@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.79.0",
-  "registrySha256": "71e0788a271b835483a66366a40fed0432560994637d384661378aeaeb84cffd",
+  "baselineVersion": "1.80.0",
+  "registrySha256": "842e4002dd96be5930aee7ba993364a356b9975c07ca47bdf8494365aa96d3c2",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -109,10 +109,10 @@
       }
     },
     "page.strategy": {
-      "version": "1.7.1",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "cf99341207eeee4520351cda41b2e8bee16b92c5136fe25a226ea0225862eec8"
+        "docs/pages/strategy.md": "b265d2b5be233aca157758a1639b8d403292e37ad61c9a0e23b73c0c03ec183d"
       }
     },
     "page.themes": {
@@ -203,10 +203,10 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "9b7b551955e1426524e27d536dee3328dfb6d890605ddf26c0a1256327d8bfad"
+        "skills/strategy-one-pager/SKILL.md": "7cae48f8df990d06093d8120f5d280257a806e6a011ebbfe28ccacf60e60c726"
       }
     },
     "method.visual": {

@@ -1227,7 +1227,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
     if (stage === 'strategy') {
       const carrier = strategyCarrier(project,inputs) ?? 'general';
       const skill=await readFile(join(repo,'skills/strategy-one-pager/SKILL.md'),'utf8');
-      const {body,...handoff}=await makeStrategyOnePager({call,project,inputs,carrier,rules:[...rules,skill]});
+      const {body,...handoff}=await makeStrategyOnePager({call,project,inputs,carrier,onEvent,signal,rules:[...rules,skill]});
       await addText(body);
       return {artifacts,...handoff};
     }
