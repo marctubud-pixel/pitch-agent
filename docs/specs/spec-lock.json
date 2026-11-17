@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.79.0",
-  "registrySha256": "71e0788a271b835483a66366a40fed0432560994637d384661378aeaeb84cffd",
+  "baselineVersion": "1.82.0",
+  "registrySha256": "70de876302ec8037217ac7feaf2d0ec51e0f270af21b3424e9a069f146788104",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -25,10 +25,10 @@
       }
     },
     "agent.strategy-owner": {
-      "version": "1.6.3",
+      "version": "1.7.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/strategy-owner.md": "1cd54bec24fe18b36f3b7367d58a9ba52bf0812efcad8b1a4a780bbcc6d1a0ae"
+        "docs/agents/strategy-owner.md": "0e794f477722a2c8f9bca16065b12ab763719e0532055fd0d0162a795a6124e9"
       }
     },
     "agent.copy-owner": {
@@ -109,10 +109,10 @@
       }
     },
     "page.strategy": {
-      "version": "1.7.1",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "cf99341207eeee4520351cda41b2e8bee16b92c5136fe25a226ea0225862eec8"
+        "docs/pages/strategy.md": "b265d2b5be233aca157758a1639b8d403292e37ad61c9a0e23b73c0c03ec183d"
       }
     },
     "page.themes": {
@@ -203,10 +203,10 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.7.0",
+      "version": "1.9.1",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "9b7b551955e1426524e27d536dee3328dfb6d890605ddf26c0a1256327d8bfad"
+        "skills/strategy-one-pager/SKILL.md": "3e9e14ad9bd80f6085c49fdf20bec0603453f0a7c1752cd35752a22507554964"
       }
     },
     "method.visual": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "854f55402a8695c4aed6fc48841766dc257a9e3400963c7f3fe96a1d05ca81d0"
+        "docs/specs/nightflight-runtime.md": "d56f7d420619dd4235b801497c40687e7158fb9df22368b37d239735446b7f88"
       }
     },
     "contract.nightflight-final-reader": {
