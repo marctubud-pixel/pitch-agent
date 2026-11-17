@@ -541,6 +541,9 @@ test('automatic handoff counts independent consumer evidence and published poste
   }));
   const sections=findings.map((f,i)=>({chapter:chapters[[0,1,2,2,2,3][i]],conclusion:f.conclusion,explanation:'解释',
     evidenceIndices:i===5?[5,1]:[i]}));
+  Object.assign(sections[2],{audienceTopic:'人群',surveyQuestion:'谁使用'});
+  Object.assign(sections[3],{audienceTopic:'使用场景',surveyQuestion:'在哪里使用'});
+  Object.assign(sections[4],{audienceTopic:'选择因素',surveyQuestion:'如何选择'});
   const image={carrier:'kv',sameCategory:true,sha256:'a'.repeat(64),sourceUrl:'https://example.org/image',pageUrl:'https://example.org/poster'};
   findings[1].images=[image];
   const report={ready:true,findings,sections,gaps:['非关键的细分渠道未知']};
@@ -582,4 +585,20 @@ test('a product image and an untraceable poster quote cannot become a published 
   assert.equal(await observe(true,'另一个项目的说明'),null);
   assert.equal(await observe(true,quote,false),null);
   assert.equal((await observe(true,quote)).finding.images[0].publicationQuote,quote);
+});
+
+test('two options of the same audience question form one row and cannot unlock strategy',async()=>{
+  const {selectAudienceRows,missingAudienceTopics,automaticResearchGaps}=await import('./research-sources.mjs');
+  const chapter='人群与接触情境';
+  const findings=['工作','出行','年轻群体'].map((evidence,i)=>({subject:'audience',evidence,passage:evidence,source:'样本',url:'https://example.org/'+i}));
+  const sections=findings.map((f,i)=>({chapter,conclusion:f.evidence,explanation:'调查原文为'+f.evidence,
+    audienceTopic:i===2?'人群':'使用场景',surveyQuestion:['在哪喝','哪个场景饮用','谁在喝'][i],evidenceIndices:[i]}));
+  const selected=selectAudienceRows(sections);
+  assert.deepEqual(selected.map(r=>r.audienceTopic),['人群','使用场景']);
+  assert.deepEqual(selected[1].evidenceIndices,[0,1]);
+  assert.match(selected[1].explanation,/工作.*出行/);
+  assert.deepEqual(missingAudienceTopics(selected).map(g=>g.message),['缺少关于选择时看重的因素的可核依据。']);
+  assert.ok(automaticResearchGaps({sections,findings},{}).some(g=>g.message.includes('2/3')));
+  const mislabeled={...sections[1],audienceTopic:'选择因素',surveyQuestion:sections[0].surveyQuestion};
+  assert.equal(selectAudienceRows([sections[0],mislabeled]).length,1);
 });

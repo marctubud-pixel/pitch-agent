@@ -2,7 +2,7 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {automaticResearchGaps,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
+import {audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
@@ -65,6 +65,7 @@ const researchPlanSchema = objectSchema({
   segmentTerms:{type:'array',items:stringField,minItems:1,maxItems:4},
   sourceTargets:{type:'array',items:objectSchema({domain:stringField,query:stringField})},
 });
+const coverageInstruction = '行业先查品类所处时期及同口径销量或销售额，再查企业进退和集中度，再查产生实际影响的监管或行业事件。品牌自述只说明该品牌。竞品明确代表样本，按委托载体比较做法并总结共性与差别。用户查对应样本的购买偏好、关注点、审美、敏感因素及使用情境。产品与品牌逐个比较客户主张、价格、知名度与背书，按所得证据给出卖点主次。';
 const researchChapters = ['行业与市场', '竞争与同类传播', '人群与接触情境', '产品与品牌'];
 const findingSchema = objectSchema({
   chapter: { type: 'string', enum: researchChapters },
@@ -86,6 +87,7 @@ const reportSchema = objectSchema({
 const pageSchema = (indices) => objectSchema({
   rows:{type:'array',items:objectSchema({
     chapter:{type:'string',enum:researchChapters}, conclusion:stringField, explanation:stringField, sourceDetail:stringField,
+    audienceTopic:{type:'string',enum:[...audienceTopics,'']}, surveyQuestion:stringField,
     evidenceIndices:{type:'array',minItems:1,items:{type:'integer',enum:indices}},
   })},
   ready:{type:'boolean'}, question:stringField, next:stringField,
@@ -296,14 +298,14 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const storeRoot = join(dir, '.research-evidence');
   const mode = project.mode;
   const collaborative = mode === 'collab';
-  const canAsk = collaborative && !project.researchQuestionAnswered;
+
   const modeInstruction = collaborative
     ? '协作调研先完成取证、列出初步发现。用户已给的选择和补充意见属于项目条件。'
     : '自动调研自行分析不同条件下的适用范围，自行定向补查，保留需要客户确认的假设。';
   const planning = project.researchFollowup
     ? '本轮为定向补查。先换来源：针对实际缺口，查询具体公开竞品品牌和型号、在售单品、设计机构或设计奖的具名案例。避开已排除的词典与门户；保留有用的大类词换站内来源。沿用已核发现，先检查四线中哪些公开材料可以补足。旧版要求门店实拍、访谈或回忆测试的缺口只约束相应说法。用户暂时无法确认时，对备选情境分别取证。'
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
-  const coverageInstruction = '行业先查品类所处时期及同口径销量或销售额，再查企业进退和集中度，再查产生实际影响的监管或行业事件。品牌自述只说明该品牌。竞品明确代表样本，按委托载体比较做法并总结共性与差别。用户查对应样本的购买偏好、关注点、审美、敏感因素及使用情境。产品与品牌逐个比较客户主张、价格、知名度与背书，按所得证据给出卖点主次。';
+
   const scope = project.proposalKind || taskKind(project.brief || '',false);
   const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：具名品牌、同渠道商品、规格价格与实际作品；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
@@ -564,6 +566,66 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   }
   if (!originals.length && !findings.length)
     gaps.push(researchGap('source','本轮尚未取得可用公开原文，请换用更具体的品类、发布渠道或案例机构继续补查。'));
+  const research=await writeResearchPage({call,project,findings,gaps,carriers,anchorQuestions,onEvent,signal});
+  const captured = new Map((await Promise.all(captures.values())).filter(Boolean).map(item=>[item.url,item]));
+  research.searchScope = {
+    consumerReads:consumerReports.reads, reportReads, queries: discovered.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
+    unreadable: [...failedCaptures].map(([url,reason])=>({url,reason})),
+    pages: [...captured.values()].map(({source,url})=>{
+      const rejected = Array.isArray(draft.parsedOutput.rejectedSources) &&
+        draft.parsedOutput.rejectedSources.find(r=>r?.url===url && typeof r.reason==='string');
+      return {title:source,url,...(rejected && !research.findings.some(f=>f.url===url) ? {reason:rejected.reason.slice(0,300)} : {})};
+    }),
+  };
+  const trace = strings([
+    ...discovered.map((r) => r.via + '：' + r.query + '（' + r.results.length + ' 条候选链接）'),
+    ...nativeQueries,
+  ]);
+  research.anchorQuestions = anchorQuestions;
+  const body=formatResearchHandoff(research,trace);
+  const imageArtifacts = [];
+  const published = new Set();
+  for (const board of boards) imageArtifacts.push(...await board.publish(published));
+  return { research, body, imageArtifacts };
+}
+
+export function formatResearchHandoff(research, trace) {
+  const {findings,anchorQuestions}=research;
+  const carrier=research.carriers?.length ? research.carriers.join('+') : 'unspecified';
+  const reportReads=research.searchScope?.reportReads ?? [];
+  const chapters = researchChapters.flatMap((chapter) => {
+    const rows = research.sections.filter(row=>row.chapter===chapter);
+    const missing = research.gaps.filter(g=>g.chapter===chapter);
+    return ['## '+chapter,...rows.map(row=>[row.conclusion,'依据：'+row.explanation,
+      ...(row.sourceDetail ? ['口径与补充：'+row.sourceDetail] : []),
+      ...row.evidenceIndices.map(i=>{
+        const f=findings[i];
+        return ['来源：'+f.source+' '+(f.url || '（项目材料）'),f.evidence,
+          ...(f.images ?? []).map(image=>image.title+'：'+image.observation+'；出处：'+image.pageUrl+'；原图：'+image.sourceUrl)].join('\n');
+      })].join('\n')),...(!rows.length ? [missing.map(g=>g.message).join('；') || '本轮没有取得能回答此项的依据。'] : [])];
+
+  });
+  return [
+    '# 研究交接稿',
+    research.ready ? '本次研究可交给策略。' : '研究待补。',
+    '## 检索前锚点','研究载体：'+({packaging:'包装',kv:'KV','packaging+kv':'包装与KV',unspecified:'待明确'}[carrier] || '待明确'),...anchorQuestions,
+    ...chapters,
+    '## 待补问题',
+    ...research.gaps.map(g=>g.message),
+    ...(research.question ? ['## 需要你决定', research.question] : []),
+    '## 下一步',
+    research.next,
+    '## 取证范围',
+    ...reportReads.map(r=>r.query+' → '+r.title+'（'+(r.kind==='original'?'已读报告原文':'提及报告的页面')+'）：'+r.url+'；'+(r.segmentQuote || '未核到所查细分数据。')),
+    trace.length ? '本轮检索：' + trace.join('；') : '本轮未取得可核对的查询记录。',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+}
+
+export async function writeResearchPage({call,project,findings,gaps,carriers,anchorQuestions,onEvent,signal}) {
+  const mode=project.mode;
+  const canAsk=mode==='collab' && !project.researchQuestionAnswered;
   // The director writes once from located quotations and observed images, including earlier rounds.
   const research = {carriers,ready:false, question:'', findings, sections:[], gaps:[], next:''};
   if (findings.length) {
@@ -572,7 +634,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       source:f.source,url:f.url,evidence:f.evidence,passage:f.passage,sampleScope:f.sampleScope,images:f.images,
       visualOnly:f.visualOnly,observation:f.conclusion}));
     const page = await call(coverageInstruction +
-      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论按原报告的样本出页。先写大类报告实际支持的人群、场景、原因；能说明普通消费者就明确写普通消费者。不要把广义样本改写成项目通勤人群的实测，也不要因没有早班细分就抹掉有关的大类结果。具体人群未实证的部分列在缺口。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。用户栏至少争取三条不同消费事实，每条单独写并引用对应观察的原句；产品与品牌每项同时引用本品事实与外部对照。其他组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。每项缺口用 blocksStrategy 指明是否会改变核心策略取舍。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
+      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论按原报告的样本出页。先写大类报告实际支持的人群、场景、原因；能说明普通消费者就明确写普通消费者。不要把广义样本改写成项目通勤人群的实测，也不要因没有早班细分就抹掉有关的大类结果。具体人群未实证的部分列在缺口。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。用户栏按被调查的问题选结论，依次优先回答“谁在用、何时或什么场景用、选择时看重什么”。人群须有身份或特征，用频率、场景定义人群不算。选择因素优先选与委托产品和客户主张直接相关的研究对象与指标。忽略同一原文里只适用于别种产品的配料、选项或数字。区分关注、意愿和实际购买。每项有依据就写，缺项列入 gaps；不得拆一题凑三条。跨摘录、不同发布网址、不同答案选项仍属同一调查问题时合为一条：把最常见选项和与本案使用情境最相关的另一选项放在同一句副文，读者不展开来源就能看到两者及其数字；没有第二项依据时只写一项。其余细节放进来源。工作、休闲、出行等同题选项只能写一行。优先保留上述三个问题；仅在对本案有独立价值时补其他问题，频率不能冒充“谁”。surveyQuestion 用去掉具体答案的简短问题，同题各处一致。audienceTopic 选择人群、使用场景、选择因素、使用频率或其他；非用户行两字段均填空串。标题或副文交代影响理解的年份或样本范围，旧调查不冒充现状，不把观察到的关注写成购买原因。产品与品牌每项同时引用本品事实与外部对照。其他组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。每项缺口用 blocksStrategy 指明是否会改变核心策略取舍。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
       [],pageSchema(evidence.map(f=>f.index)),{editorial:true,context:JSON.stringify({
         brief:project.brief,feedback:project.feedback,anchorQuestions,evidence,gaps,mode,followup:!!project.researchFollowup,
       })});
@@ -598,6 +660,8 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
         chapter:researchChapters[1],conclusion:f.conclusion,explanation:'本次观察覆盖'+f.images.map(image=>image.title).join('、')+'。',evidenceIndices:[i],
       });
     }
+    const audience=selectAudienceRows(research.sections.filter(r=>r.chapter===researchChapters[2]));
+    research.sections=researchChapters.flatMap(chapter=>chapter===researchChapters[2] ? audience : research.sections.filter(r=>r.chapter===chapter));
     research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal);
     research.gaps = output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter))
       .map(g=>researchGap('decision',g.message,g.chapter));
@@ -610,6 +674,9 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   } else {
     research.gaps = gaps;
   }
+  for (const gap of missingAudienceTopics(research.sections.filter(r=>r.chapter===researchChapters[2]))) {
+    research.gaps.push(gap);
+  }
   if (!research.sections.length && !research.gaps.length) research.gaps.push(researchGap('decision','尚缺能支持本案判断的公开原文或可辨作品。'));
   if (mode==='auto') {
     const missing=automaticResearchGaps(research,project);
@@ -620,53 +687,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     }
   }
   research.next ||= research.ready ? '可按四维研究给出的取舍进入策略。' : '补查仍缺的依据。';
-  const captured = new Map((await Promise.all(captures.values())).filter(Boolean).map(item=>[item.url,item]));
-  research.searchScope = {
-    consumerReads:consumerReports.reads, reportReads, queries: discovered.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
-    unreadable: [...failedCaptures].map(([url,reason])=>({url,reason})),
-    pages: [...captured.values()].map(({source,url})=>{
-      const rejected = Array.isArray(draft.parsedOutput.rejectedSources) &&
-        draft.parsedOutput.rejectedSources.find(r=>r?.url===url && typeof r.reason==='string');
-      return {title:source,url,...(rejected && !research.findings.some(f=>f.url===url) ? {reason:rejected.reason.slice(0,300)} : {})};
-    }),
-  };
-  const trace = strings([
-    ...discovered.map((r) => r.via + '：' + r.query + '（' + r.results.length + ' 条候选链接）'),
-    ...nativeQueries,
-  ]);
-  const chapters = researchChapters.flatMap((chapter) => {
-    const rows = research.sections.filter(row=>row.chapter===chapter);
-    const missing = research.gaps.filter(g=>g.chapter===chapter);
-    return ['## '+chapter,...rows.map(row=>[row.conclusion,'依据：'+row.explanation,
-      ...(row.sourceDetail ? ['口径与补充：'+row.sourceDetail] : []),
-      ...row.evidenceIndices.map(i=>{
-        const f=findings[i];
-        return ['来源：'+f.source+' '+(f.url || '（项目材料）'),f.evidence,
-          ...(f.images ?? []).map(image=>image.title+'：'+image.observation+'；出处：'+image.pageUrl+'；原图：'+image.sourceUrl)].join('\n');
-      })].join('\n')),...(!rows.length ? [missing.map(g=>g.message).join('；') || '本轮没有取得能回答此项的依据。'] : [])];
-
-  });
-  const body = [
-    '# 研究交接稿',
-    research.ready ? '本次研究可交给策略。' : '研究待补。',
-    '## 检索前锚点','研究载体：'+({packaging:'包装',kv:'KV','packaging+kv':'包装与KV',unspecified:'待明确'}[carrier] || '待明确'),...anchorQuestions,
-    ...chapters,
-    '## 待补问题',
-    ...research.gaps.map(g=>g.message),
-    ...(research.question ? ['## 需要你决定', research.question] : []),
-    '## 下一步',
-    research.next,
-    '## 取证范围',
-    ...reportReads.map(r=>r.query+' → '+r.title+'（'+(r.kind==='original'?'已读报告原文':'提及报告的页面')+'）：'+r.url+'；'+(r.segmentQuote || '未核到所查细分数据。')),
-    trace.length ? '本轮检索：' + trace.join('；') : '本轮未取得可核对的查询记录。',
-  ]
-    .filter(Boolean)
-    .join('\n\n');
-  research.anchorQuestions = anchorQuestions;
-  const imageArtifacts = [];
-  const published = new Set();
-  for (const board of boards) imageArtifacts.push(...await board.publish(published));
-  return { research, body, imageArtifacts };
+  return research;
 }
 
 async function executable(command) {

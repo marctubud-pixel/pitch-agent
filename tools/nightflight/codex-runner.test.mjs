@@ -215,7 +215,7 @@ process.stdin.on('end',()=>{
    } else if(schema.rows) {
      if (input.includes('你是比稿负责人此次委托的临时执行者') || !input.includes('直接撰写客户读到的四块研究页')) process.exit(26);
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
-     const rows=packet.evidence.map(f=>({chapter:f.chapter,conclusion:f.observation,explanation:f.evidence,evidenceIndices:[f.index]}));
+     const rows=packet.evidence.map(f=>({chapter:f.chapter,conclusion:f.observation,explanation:f.evidence,evidenceIndices:[f.index],audienceTopic:f.chapter==='人群与接触情境'?'使用场景':'',surveyQuestion:f.chapter==='人群与接触情境'?'本次样本的使用场景是什么？':''}));
      body={rows,ready:['research-ok','research-brief-only','research-thin'].includes(action),
        question:action==='research-blocked' && packet.followup?'优先门店还是线上？还有多少预算？':'',
        gaps:packet.gaps.map(g=>({chapter:g.chapter || '产品与品牌',message:g.message})),next:'结合渠道验证礼赠方向'};
@@ -1097,4 +1097,16 @@ test('consumer research broadens across categories and opens publisher reports a
   assert.ok(lookups.some(([term,provider])=>term==='户外' && provider==='ipsos'));
   assert.ok(discovered.some(s=>s.query==='出行消费报告'));
   assert.deepEqual(result.findings.map(f=>[f.url,f.evidence,f.sampleScope]),[[pdf,fact.quote,fact.scope]]);
+});
+
+test('compacting an audience comparison keeps both survey options in the visible text',async()=>{
+  const {compactResearchPage}=await import('./research-digest.mjs');
+  const row={conclusion:'样本通常在工作时使用',explanation:'工作占48%，出行占36%。这两个选项来自同一题。',sourceDetail:'',
+    audienceTopic:'使用场景',evidenceIndices:[0]};
+  let attempts=0;
+  const call=async()=>({parsedOutput:{edits:[{index:0,conclusion:'使用场景以工作为主',
+    explanation:++attempts===1?'工作占48%。':'工作占48%，出行占36%。',sourceDetail:''}]}});
+  const [written]=await compactResearchPage(call,[row],[{source:'调查报告',evidence:'工作48%，出行36%'}]);
+  assert.equal(attempts,2);
+  assert.equal(written.explanation,'工作占48%，出行占36%。');
 });

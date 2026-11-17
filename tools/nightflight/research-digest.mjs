@@ -156,6 +156,14 @@ function crowdedResearchCopy({conclusion, explanation}) {
     [conclusion,explanation].some(text=>/[。！？；;\n]\s*[^“”‘’。！？\s]/u.test(text.trim()));
 }
 
+function keepsSceneComparison(original, edit) {
+  if (original.audienceTopic!=='使用场景') return true;
+  const percentages=row=>(row.conclusion+' '+row.explanation).normalize('NFKC').match(/\d+(?:\.\d+)?%/gu) ?? [];
+  const before=new Set(percentages(original));
+  const after=new Set(percentages(edit));
+  return before.size<2 || [...before].every(value=>after.has(value));
+}
+
 export async function compactResearchPage(call, sections, findings, onEvent, signal) {
   const pending = sections.map((row,index)=>({row,index})).filter(({row})=>crowdedResearchCopy(row));
   if (!pending.length) return sections;
@@ -169,7 +177,7 @@ export async function compactResearchPage(call, sections, findings, onEvent, sig
   const written = [...sections];
   await onEvent?.('比稿负责人正在精简研究页标题与副文');
   let remaining = packet;
-  const instruction = '发布前精简自己的文案。每条标题只说一个判断，副文只说一个例子、数字或比较理由。标题用对象和动词限定范围，比如“受访者更愿意……”已交代这是受访者的意愿。“样本仅限……，不能外推……”等说明移到 sourceDetail。避免在标题和副文加上同一个限制尾句。每个 index 只写一次，保留时期、关键条件和原意。仅返回 edits。';
+  const instruction = '发布前精简自己的文案。每条标题只说一个判断，副文只说一个例子、数字或比较理由。同题场景合并时，副文用一句话并列保留原有的场景和各自的比例，两项合起来就是一个比较。标题用对象和动词限定范围，比如“受访者更愿意……”已交代这是受访者的意愿。“样本仅限……，不能外推……”等说明移到 sourceDetail。避免在标题和副文加上同一个限制尾句。每个 index 只写一次，保留时期、关键条件和原意。仅返回 edits。';
   try {
     for (let attempt=0;remaining.length && attempt<2;attempt++) {
       const retry = attempt ? '上一版仍有长句、多个判断或缺项。只处理这次给出的条目，删掉重复解释。' : '';
@@ -181,7 +189,7 @@ export async function compactResearchPage(call, sections, findings, onEvent, sig
       for (const item of remaining) {
         const matches = edits.filter(edit=>edit?.index===item.index);
         const edit = matches[0];
-        if (matches.length===1 && typeof edit.sourceDetail==='string' &&
+        if (matches.length===1 && keepsSceneComparison(item,edit) && typeof edit.sourceDetail==='string' &&
             [edit.conclusion,edit.explanation].every(v=>typeof v==='string' && v.trim()) && !crowdedResearchCopy(edit)) {
           written[item.index]={...sections[item.index],conclusion:edit.conclusion.trim(),explanation:edit.explanation.trim(),
             sourceDetail:edit.sourceDetail.trim() || item.sourceDetail || ''};
