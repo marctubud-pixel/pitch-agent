@@ -194,10 +194,10 @@ process.stdin.on('end',()=>{
    } else if(schema.evidence) {
      body=action==='research-repair' ? {url:'https://source.example.org/report',evidence:'本次样本单列礼盒用途'} : {url:'',evidence:''};
    } else if(schema.front) {
-     if(!args.includes('--image') || input.includes('source.example.org') || input.includes('测试茶'))process.exit(56);
-     body={brand:'测试茶',front:'包装中央标有茶类'};
+     if(!args.includes('--image') || input.includes('source.example.org') || !JSON.parse(input.split('实际项目输入（JSON）').at(-1)).brief)process.exit(56);
+     body={brand:'测试茶',front:'包装中央标有茶类',regions:['中央']};
    } else if(schema.verifiedFront) {
-     body={verifiedFront:'包装中央标有茶类'};
+     body={verifiedFront:'包装中央标有茶类',checks:[]};
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);

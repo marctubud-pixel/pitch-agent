@@ -86,6 +86,7 @@ export function ResearchImageGallery({ images, artifacts, attachments }: { image
             <figcaption>
               <strong>{image.title}</strong>
               <p>{image.observation}</p>
+              {image.firstRead && <details><summary>第一次读图原话</summary><p>{image.firstRead.front}</p></details>}
               {/^https?:\/\//i.test(image.pageUrl) && (
                 <a href={image.pageUrl} target="_blank" rel="noopener noreferrer" aria-label={`查看${image.title}的出处`}>查看出处 ↗</a>
               )}

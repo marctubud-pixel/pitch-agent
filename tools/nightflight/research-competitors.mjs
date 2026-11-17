@@ -1,3 +1,4 @@
+import {readPackaging} from './research-packaging.mjs';
 import {link} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import {searchVisualImages} from './public-visual-search.mjs';
@@ -86,19 +87,21 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     imageNumber:index+1,source:image.imageId,title:image.title,pageUrl:image.pageUrl,
     rationaleSourceUrl:caseSources[index].sourceUrl,sourcePassages:caseSources[index].passages.map(p=>p.text),
   }))};
+  // Read the original before source commentary, and retain the earliest answer across follow-ups.
+  const packagingReads=new Map();
+  if (carrier==='packaging') {
+    await Promise.all(images.map(async image=>{
+      const read=await readPackaging({call,dir,image,brief:project.brief,signal,
+        previous:previous.find(ref=>ref.sha256===image.sha256)});
+      if (read) packagingReads.set(image.imageId,read);
+    }));
+  }
   let result;
   if (blindPackaging) {
-    // Read one SKU at a time; the caller, not the model, binds the source name and URL.
-    const reads=await Promise.all(images.map(async image=>{
-      if (!isNamedProduct(image)) return null;
-      const {parsedOutput:seen}=await call('只观察这一张图片，忽略瓶盒外的电商浮字、价签和背景装饰。brand 写能在包装上辨认的品牌；front 仅写瓶盒本体上看得清的一两个颜色、图案或相对位置。不要猜茶种、配料、产地和效果；不清楚就留空。',[image],
-        object({brand:string,front:string}),{rules:[],assignment:'单张包装读图',context:'{}'});
-      if (!seen?.brand?.trim() || !seen.front?.trim()) return null;
-      const {parsedOutput:review}=await call('把所附原图与候选观察逐项对照。只保留能在这一个瓶盒正面直接指出位置的图形、颜色和排布。电商画面外加的卖点或促销字不得说成瓶身标签。删除不可辨认的小字、推断与风格评价。若图中商品与所查商品或任务品类不符，或没有可核观察，返回空串。',[image],
-        object({verifiedFront:string}),{rules:[],assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,brandReadFromImage:seen.brand,observation:seen.front})});
-      if (!review?.verifiedFront?.trim()) return null;
-      return {source:image.imageId,title:image.title,observation:review.verifiedFront.trim(),sameCategory:true};
-    }));
+    const reads=images.filter(isNamedProduct).map(image=>{
+      const read=packagingReads.get(image.imageId);
+      return read && {source:image.imageId,title:image.title,observation:read.observation,sameCategory:true};
+    });
     const samples=reads.filter(Boolean);
     result={samples,conclusion:samples.map(s=>s.title+'：'+s.observation).join('；'),implication:'将上述已核包装当作同货架参照，比较本案商品名、品类和识别图案的位置。'};
   }
@@ -116,6 +119,8 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   for (const row of result.samples) {
     const image = images.find(i=>i.imageId===row.source);
     if (!image || seen.has(row.source) || !row.title?.trim() || !row.observation?.trim()) continue;
+    const read=packagingReads.get(row.source);
+    if (carrier==='packaging' && !read) continue;
     seen.add(row.source);
     const source = caseSources[images.indexOf(image)];
     const publicationQuote = row.publicationQuote?.trim();
@@ -127,7 +132,7 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     const rationale = matched ? {strategyGroup:row.strategyGroup?.trim() || '',creatorRationale:row.creatorRationale.trim(),rationaleSourceUrl:source.sourceUrl,rationaleQuote:quote,
       ...(matched.attachment ? {rationaleAttachment:matched.attachment} : {})} : {strategyGroup:'',creatorRationale:'',rationaleSourceUrl:'',rationaleQuote:''};
     selected.push({image,description:{name:'research-peer-'+image.sha256+extname(basename(image.name)),
-      sha256:image.sha256,sourceUrl:image.sourceUrl,pageUrl:image.pageUrl,carrier,...(carrier==='kv' ? {publicationQuote} : {}),sameCategory:row.sameCategory===true,...(image.imageAttachment ? {imageAttachment:image.imageAttachment,imageProvenanceAttachment:image.imageProvenanceAttachment} : {}),title:row.title.trim(),observation:row.observation.trim(),takeaway:matched ? row.takeaway?.trim() || '' : '',...rationale}});
+      sha256:image.sha256,sourceUrl:image.sourceUrl,pageUrl:image.pageUrl,carrier,...(carrier==='kv' ? {publicationQuote} : {}),sameCategory:row.sameCategory===true,...(image.imageAttachment ? {imageAttachment:image.imageAttachment,imageProvenanceAttachment:image.imageProvenanceAttachment} : {}),title:row.title.trim(),observation:read?.observation ?? row.observation.trim(),...(read ? {firstRead:read.firstRead,detailRegions:read.regions} : {}),takeaway:matched ? row.takeaway?.trim() || '' : '',...rationale}});
   }
   if (!selected.length) return null;
   const refs = selected.map(row=>row.description);
@@ -135,7 +140,7 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   const visualOnly = grounded.length===0;
   const finding = {
     chapter:'竞争与同类传播', visualOnly,
-    conclusion:visualOnly ? '已核实同类作品图像，创作者意图待核。' : carrier==='kv' ? grounded.map(r=>r.title+'：'+r.observation).join('；') : result.conclusion.trim(),
+    conclusion:visualOnly ? '已核实同类作品图像，创作者意图待核。' : grounded.map(r=>r.title+'：'+r.observation).join('；'),
     implication:visualOnly ? '仅供查看公开作品的画面。' : result.implication.trim(),
     evidence:(visualOnly?refs:grounded).map(r=>r.title+'：'+r.observation+(r.publicationQuote?'；发布记录：'+r.publicationQuote:'')+
       (r.creatorRationale?'；创作者说明：'+r.creatorRationale+'（原文：'+r.rationaleQuote+'）':'')).join('\n'),

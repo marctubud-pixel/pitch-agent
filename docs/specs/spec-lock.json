@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.77.0",
-  "registrySha256": "44e473f1ba194d95a3bcb9eccfbcee9dcb345f567fa894f7235e75f03a5c383a",
+  "baselineVersion": "1.78.0",
+  "registrySha256": "21ef4989d4185b775a082a063eb69fafef09bde3a282ddf352d522e186961c43",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.20.0",
+      "version": "1.21.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "5cfedb553237242fc91c1216863985e1e806e8aeed876ad4ded51e477d9b5646",
+        "skills/design-research-lead/SKILL.md": "b7191350a6386e9fbfee0e37e378a926b5f6ca37a984714cc85b3fc0ba7978d7",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "3bab288ae7ef478b670c0b3e74d1e68c242ba9833aff2756b76eaa9faa271b63",
+    "docs/specs/README.md": "c4907fadd4a92fc4e249a771dad657cabe847015f451281596c133152b38f7a0",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

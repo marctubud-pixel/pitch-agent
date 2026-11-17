@@ -137,6 +137,7 @@ export interface ResearchImage {
   pageUrl: string;
   sourceUrl: string;
   observation: string;
+  firstRead?: {front: string; raw: string};
   creatorRationale?: string;
   rationaleSourceUrl?: string;
   rationaleQuote?: string;

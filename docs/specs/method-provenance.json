@@ -1,9 +1,9 @@
 [
   {
-    "source": "自动交接的用户门槛为两条独立、有原文依据的结论",
+    "source": "包装按客户问题查原图与局部，保留第一次读图原话",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r27-20261117",
-    "sha256": "5cfedb553237242fc91c1216863985e1e806e8aeed876ad4ded51e477d9b5646"
+    "sourceVersion": "r28-20261117",
+    "sha256": "b7191350a6386e9fbfee0e37e378a926b5f6ca37a984714cc85b3fc0ba7978d7"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
