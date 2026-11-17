@@ -1,7 +1,7 @@
 """Extract publisher links from the archived 360 Search results page."""
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit, unquote
+from urllib.parse import parse_qs, urlsplit, unquote, urljoin
 import re
 import json
 import sys
@@ -78,15 +78,23 @@ class YahooResults(HTMLParser):
 class PublisherResults(HTMLParser):
     def __init__(self, provider):
         super().__init__()
-        self.pattern = (r'https://socialbeta\.com/campaign/\d+' if provider == 'campaign'
+        self.provider = provider
+        self.pattern = (r'https://www\.ipsos\.com/zh-cn/[^/?#]+' if provider == 'ipsos' else
+                        r'https://report\.iimedia\.cn/report\.jsp\?reportId=\d+' if provider == 'iimedia' else
+                        r'https://socialbeta\.com/campaign/\d+' if provider == 'campaign'
                         else r'https://www\.199it\.com/archives/\d+\.html')
         self.results = []
         self.url = ''
         self.title = []
+        self.result_heading = False
 
     def handle_starttag(self, tag, attrs):
+        if tag == 'h2':
+            self.result_heading = 'h4' in (dict(attrs).get('class') or '').split()
         if tag == 'a':
             url = dict(attrs).get('href') or ''
+            if self.provider == 'ipsos':
+                url = urljoin('https://www.ipsos.com/', url) if self.result_heading else ''
             if url.startswith('//'):
                 url = 'https:' + url
             self.url = url if re.fullmatch(self.pattern, url) else ''
@@ -97,6 +105,8 @@ class PublisherResults(HTMLParser):
             self.title.append(data)
 
     def handle_endtag(self, tag):
+        if tag == 'h2':
+            self.result_heading = False
         if tag == 'a' and self.url:
             title = ''.join(self.title).strip()
             if title and not any(r['url'] == self.url for r in self.results):
@@ -105,7 +115,7 @@ class PublisherResults(HTMLParser):
 
 
 provider = sys.argv[2] if len(sys.argv) > 2 else '360'
-parser = (PublisherResults(provider) if provider in ('campaign', 'reports') else
+parser = (PublisherResults(provider) if provider in ('campaign', 'reports', 'ipsos', 'iimedia') else
           YahooResults() if provider == 'yahoo' else ReportSearchResults())
 parser.feed(Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace'))
 print(json.dumps(parser.results[:8]))

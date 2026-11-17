@@ -133,3 +133,15 @@ export function automaticResearchGaps(report, project) {
   }
   return gaps;
 }
+
+export function consumerSearchTopics(categories, followup=false) {
+  const topics=[];
+  for (const raw of categories ?? []) {
+    if (typeof raw!=='string') continue;
+    const term=raw.trim().replace(/(?:消费者调查|消费报告|行业报告|白皮书|报告)$/u,'').replace(/(?:行业|消费)$/u,'');
+    if (!/^[\p{L}\p{N}·-]{1,12}$/u.test(term) || topics.some(t=>t.term===term)) continue;
+    const suffixes=followup || topics.length>0 ? ['消费白皮书','行业报告'] : ['消费报告','消费者调查'];
+    topics.push({term,queries:suffixes.map(s=>term+s)});
+  }
+  return topics.slice(0,4);
+}

@@ -1070,3 +1070,31 @@ test('director keeps approved A and B while repairing only C after blind reading
   checkSloganChoices({directions:['山风原稿主文','晨雾原稿主文','仅修订C'].map((main,i)=>({id:'ABC'[i],main}))},book);
   assert.equal(book.discarded.length,1);
 });
+
+test('consumer research broadens across categories and opens publisher reports after irrelevant results',async()=>{
+  const {consumerSearchTopics}=await import('./research-sources.mjs');
+  const {researchConsumerReports}=await import('./codex-runner.mjs');
+  const topics=consumerSearchTopics(['户外消费','出行消费','自行车']);
+  assert.deepEqual(topics.map(t=>t.term),['户外','出行','自行车']);
+  assert.deepEqual(consumerSearchTopics(['咖啡'])[0].queries,['咖啡消费报告','咖啡消费者调查']);
+  const discovered=[],lookups=[],opened=[];
+  const url='https://research.example.org/document',pdf=url+'.pdf';
+  const fact={url:pdf,title:'出行调查',scope:'本次受访者',angle:'情境',quote:'受访者通常在早晨出行',conclusion:'受访者多在早晨出行'};
+  const result=await researchConsumerReports({topics,discovered,
+    discover:async({query})=>({query,via:'检索',results:[{title:'出行词典',url:'https://dictionary.example.org/'}]}),
+    directory:async(query,provider)=>{
+      lookups.push([query,provider]);
+      return query==='出行' && provider==='ipsos' ? [{title:'出行调查报告',url}] : [];
+    },
+    capture:async link=>{
+      opened.push(link);
+      return link===url ? {url,source:'出行报告下载',text:'报告目录',pdfLinks:[pdf]} :
+        {url:pdf,source:'出行调查',text:'这次调查发现受访者通常在早晨出行。'};
+    },
+    call:async()=>({parsedOutput:{observations:[fact,{...fact,quote:'没有在报告出现的数字'}]}}),
+  });
+  assert.deepEqual(opened,[url,pdf]);
+  assert.ok(lookups.some(([term,provider])=>term==='户外' && provider==='ipsos'));
+  assert.ok(discovered.some(s=>s.query==='出行消费白皮书'));
+  assert.deepEqual(result.findings.map(f=>[f.url,f.evidence,f.sampleScope]),[[pdf,fact.quote,fact.scope]]);
+});
