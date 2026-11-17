@@ -1,3 +1,4 @@
+import {readPackaging} from './research-packaging.mjs';
 import {link} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import {searchVisualImages} from './public-visual-search.mjs';
@@ -6,7 +7,7 @@ import {capturePublicSource} from '../workbench/source-acquisition.mjs';
 const string = {type:'string'};
 const object = properties => ({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
 const observations = (sources) => object({
-  samples:{type:'array',items:object({source:{type:'string',enum:sources}, title:string, observation:string, sameCategory:{type:'boolean'}, strategyGroup:string, creatorRationale:string, rationaleSourceUrl:string, rationaleQuote:string, takeaway:string})},
+  samples:{type:'array',items:object({source:{type:'string',enum:sources}, title:string, observation:string, sameCategory:{type:'boolean'}, publishedPoster:{type:'boolean'}, publicationQuote:string, strategyGroup:string, creatorRationale:string, rationaleSourceUrl:string, rationaleQuote:string, takeaway:string})},
   conclusion:string, implication:string,
 });
 const publicPage = url => {
@@ -70,7 +71,7 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   const caseSources = await Promise.all(images.map(async image => {
     if (isNamedProduct(image)) return {sourceUrl:'',passages:[]};
     const candidate = image.casePage ?? [...uniquePages.values()].find(page=>page.url===image.pageUrl);
-    const sourceUrl = candidate?.rationaleSourceUrl || image.rationaleSourceUrl || image.pageUrl;
+    const sourceUrl = carrier==='kv' ? image.pageUrl : candidate?.rationaleSourceUrl || image.rationaleSourceUrl || image.pageUrl;
     if (!publicPage(sourceUrl)) return {sourceUrl:'',passages:[]};
     const original = await readSource?.(sourceUrl);
     const passages = documentPassages(documents,sourceUrl,[image.pageUrl,image.sourceUrl]);
@@ -86,25 +87,27 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     imageNumber:index+1,source:image.imageId,title:image.title,pageUrl:image.pageUrl,
     rationaleSourceUrl:caseSources[index].sourceUrl,sourcePassages:caseSources[index].passages.map(p=>p.text),
   }))};
+  // Read the original before source commentary, and retain the earliest answer across follow-ups.
+  const packagingReads=new Map();
+  if (carrier==='packaging') {
+    await Promise.all(images.map(async image=>{
+      const read=await readPackaging({call,dir,image,brief:project.brief,signal,
+        previous:previous.find(ref=>ref.sha256===image.sha256)});
+      if (read) packagingReads.set(image.imageId,read);
+    }));
+  }
   let result;
   if (blindPackaging) {
-    // Read one SKU at a time; the caller, not the model, binds the source name and URL.
-    const reads=await Promise.all(images.map(async image=>{
-      if (!isNamedProduct(image)) return null;
-      const {parsedOutput:seen}=await call('只观察这一张图片，忽略瓶盒外的电商浮字、价签和背景装饰。brand 写能在包装上辨认的品牌；front 仅写瓶盒本体上看得清的一两个颜色、图案或相对位置。不要猜茶种、配料、产地和效果；不清楚就留空。',[image],
-        object({brand:string,front:string}),{rules:[],assignment:'单张包装读图',context:'{}'});
-      if (!seen?.brand?.trim() || !seen.front?.trim()) return null;
-      const {parsedOutput:review}=await call('把所附原图与候选观察逐项对照。只保留能在这一个瓶盒正面直接指出位置的图形、颜色和排布。电商画面外加的卖点或促销字不得说成瓶身标签。删除不可辨认的小字、推断与风格评价。若图中商品与所查商品或任务品类不符，或没有可核观察，返回空串。',[image],
-        object({verifiedFront:string}),{rules:[],assignment:'单张包装核图',context:JSON.stringify({brief:project.brief,product:image.title,brandReadFromImage:seen.brand,observation:seen.front})});
-      if (!review?.verifiedFront?.trim()) return null;
-      return {source:image.imageId,title:image.title,observation:review.verifiedFront.trim(),sameCategory:true};
-    }));
+    const reads=images.filter(isNamedProduct).map(image=>{
+      const read=packagingReads.get(image.imageId);
+      return read && {source:image.imageId,title:image.title,observation:read.observation,sameCategory:true};
+    });
     const samples=reads.filter(Boolean);
     result={samples,conclusion:samples.map(s=>s.title+'：'+s.observation).join('；'),implication:'将上述已核包装当作同货架参照，比较本案商品名、品类和识别图案的位置。'};
   }
   const remaining=images.filter(image=>!isNamedProduct(image));
   if (remaining.length) {
-    const response=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。同类商品的原图可以支持可见外观比较；创作者用意必须另有出处。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。优先同品类、同渠道的可比项目；同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。',remaining,observations(remaining.map(i=>i.imageId)),{
+    const response=await call('逐张观察所附原图。包装委托只选同类产品上清楚可见的实际包装正面，KV委托只选同类可辨认的主视觉或海报。剔除徽标、导航、场景空镜、不相干载体、同一包装的重复角度和无法识别的图。海报必须同时满足两项：图本身可辨认是完成的宣传海报或投放主视觉；该图来源页明确记载对应作品由谁发布、投放或展出。满足时 publishedPoster=true，publicationQuote 逐字摘取该作品发布页对应的连续原句。商品照片、电商主图、页面标志、仅描述概念的参考图和无对应发布记录的作品均不符合。其他载体这两个字段填 false 和空串。根据传入图片的顺序和 imageNumber 看图。每项只从枚举中选一个所见原图的 source，辨认不了的跳过。samples 每项给对应 source、中文图名（保留品牌名）、一条画面观察；留空表示没有适用原图。同类商品的原图可以支持可见外观比较；创作者用意必须另有出处。对同品类案例共同写一条有边界的比较结论和对策略的具体用途。先按品类选可比作品；不同品牌、地区、价格、规格和销售或投放渠道的同品类作品可以比较，匹配本案条件时再细化。按商品或活动类别和作品载体判断，同品类标 sameCategory=true，邻近或不确定标 false，只作补充。strategyGroup 概括创作策略，同一策略用同一组名，没有可核创作说明留空。对每张图先写可见事实，再读该图绑定的 sourcePassages。只有明确是本项目品牌、设计方或奖项所载创作者说明时，creatorRationale 才概括其意图，rationaleQuote 逐字复制一段支持该意图的原语原文，rationaleSourceUrl 逐字用该图给定地址。仅有商品页、图片或第三方猜测，三个字段全部留空。takeaway 写本案能借的一项动作及不适用边界。意图、实看与效果分开。仅一张时限于这一个案例，无市场占比、因果或消费者反应推测。',remaining,observations(remaining.map(i=>i.imageId)),{
     rules:[],assignment:'竞品原图观察',context:JSON.stringify({...packet,sources:remaining.map((image,index)=>({...packet.sources[images.indexOf(image)],imageNumber:index+1}))}),
   });
     const other=response.parsedOutput;
@@ -116,15 +119,20 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   for (const row of result.samples) {
     const image = images.find(i=>i.imageId===row.source);
     if (!image || seen.has(row.source) || !row.title?.trim() || !row.observation?.trim()) continue;
+    const read=packagingReads.get(row.source);
+    if (carrier==='packaging' && !read) continue;
     seen.add(row.source);
     const source = caseSources[images.indexOf(image)];
+    const publicationQuote = row.publicationQuote?.trim();
+    if (carrier==='kv' && (!row.sameCategory || !row.publishedPoster || !publicationQuote ||
+      source.sourceUrl!==image.pageUrl || !source.passages.some(p=>quoteText(p.text).includes(quoteText(publicationQuote))))) continue;
     const quote = row.rationaleQuote?.trim();
     const matched = quote && !/https?:\/\//iu.test(quote) && row.creatorRationale?.trim() && source.sourceUrl===row.rationaleSourceUrl &&
       source.passages.find(p=>quoteText(p.text).includes(quoteText(quote)));
     const rationale = matched ? {strategyGroup:row.strategyGroup?.trim() || '',creatorRationale:row.creatorRationale.trim(),rationaleSourceUrl:source.sourceUrl,rationaleQuote:quote,
       ...(matched.attachment ? {rationaleAttachment:matched.attachment} : {})} : {strategyGroup:'',creatorRationale:'',rationaleSourceUrl:'',rationaleQuote:''};
     selected.push({image,description:{name:'research-peer-'+image.sha256+extname(basename(image.name)),
-      sha256:image.sha256,sourceUrl:image.sourceUrl,pageUrl:image.pageUrl,carrier,sameCategory:row.sameCategory===true,...(image.imageAttachment ? {imageAttachment:image.imageAttachment,imageProvenanceAttachment:image.imageProvenanceAttachment} : {}),title:row.title.trim(),observation:row.observation.trim(),takeaway:matched ? row.takeaway?.trim() || '' : '',...rationale}});
+      sha256:image.sha256,sourceUrl:image.sourceUrl,pageUrl:image.pageUrl,carrier,...(carrier==='kv' ? {publicationQuote} : {}),sameCategory:row.sameCategory===true,...(image.imageAttachment ? {imageAttachment:image.imageAttachment,imageProvenanceAttachment:image.imageProvenanceAttachment} : {}),title:row.title.trim(),observation:read?.observation ?? row.observation.trim(),...(read ? {firstRead:read.firstRead,detailRegions:read.regions} : {}),takeaway:matched ? row.takeaway?.trim() || '' : '',...rationale}});
   }
   if (!selected.length) return null;
   const refs = selected.map(row=>row.description);
@@ -132,9 +140,9 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   const visualOnly = grounded.length===0;
   const finding = {
     chapter:'竞争与同类传播', visualOnly,
-    conclusion:visualOnly ? '已核实同类作品图像，创作者意图待核。' : result.conclusion.trim(),
+    conclusion:visualOnly ? '已核实同类作品图像，创作者意图待核。' : grounded.map(r=>r.title+'：'+r.observation).join('；'),
     implication:visualOnly ? '仅供查看公开作品的画面。' : result.implication.trim(),
-    evidence:(visualOnly?refs:grounded).map(r=>r.title+'：'+r.observation+
+    evidence:(visualOnly?refs:grounded).map(r=>r.title+'：'+r.observation+(r.publicationQuote?'；发布记录：'+r.publicationQuote:'')+
       (r.creatorRationale?'；创作者说明：'+r.creatorRationale+'（原文：'+r.rationaleQuote+'）':'')).join('\n'),
     url:(grounded[0] ?? refs[0]).pageUrl, source:(visualOnly?refs:grounded).map(r=>r.title).join('、'), images:refs,
   };

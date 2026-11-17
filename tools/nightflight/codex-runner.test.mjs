@@ -165,7 +165,7 @@ process.stdin.on('end',()=>{
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
      body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
-     if(action==='research-pack-lookup') body.packagingBrands=[{name:'测试茶',officialDomain:'source.example.org'}];
+     if(action==='research-pack-lookup') Object.assign(body,{comparisonCategory:'茶饮',packagingBrands:[{name:'测试茶',officialDomain:'source.example.org'}]});
      if(action==='research-report-lookup') Object.assign(body,{queries:['即饮茶 市场 销量 销售额 价格带 报告','茶叶包装'],reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
    }
    else if(schema.reads) {
@@ -194,10 +194,10 @@ process.stdin.on('end',()=>{
    } else if(schema.evidence) {
      body=action==='research-repair' ? {url:'https://source.example.org/report',evidence:'本次样本单列礼盒用途'} : {url:'',evidence:''};
    } else if(schema.front) {
-     if(!args.includes('--image') || input.includes('source.example.org') || input.includes('测试茶'))process.exit(56);
-     body={brand:'测试茶',front:'包装中央标有茶类'};
+     if(!args.includes('--image') || input.includes('source.example.org') || !JSON.parse(input.split('实际项目输入（JSON）').at(-1)).brief)process.exit(56);
+     body={brand:'测试茶',front:'包装中央标有茶类',regions:['中央']};
    } else if(schema.verifiedFront) {
-     body={verifiedFront:'包装中央标有茶类'};
+     body={verifiedFront:'包装中央标有茶类',checks:[{question:'正面文字',location:'正面中央',marking:'茶类',status:'看清'}]};
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
@@ -215,7 +215,7 @@ process.stdin.on('end',()=>{
    } else if(schema.rows) {
      if (input.includes('你是比稿负责人此次委托的临时执行者') || !input.includes('直接撰写客户读到的四块研究页')) process.exit(26);
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
-     const rows=packet.evidence.map(f=>({chapter:f.chapter,conclusion:f.observation,explanation:f.evidence,evidenceIndices:[f.index]}));
+     const rows=packet.evidence.map(f=>({chapter:f.chapter,conclusion:f.observation,explanation:f.evidence,evidenceIndices:[f.index],audienceTopic:f.chapter==='人群与接触情境'?'使用场景':'',surveyQuestion:f.chapter==='人群与接触情境'?'本次样本的使用场景是什么？':''}));
      body={rows,ready:['research-ok','research-brief-only','research-thin'].includes(action),
        question:action==='research-blocked' && packet.followup?'优先门店还是线上？还有多少预算？':'',
        gaps:packet.gaps.map(g=>({chapter:g.chapter || '产品与品牌',message:g.message})),next:'结合渠道验证礼赠方向'};
@@ -687,7 +687,9 @@ for (const [action, ready, count] of [
 test('packaging retries a short brand query, publishes its reviewed original and keeps text-only appearance in sourced gaps',async t=>{
   const f=await fixture(t,'research-pack-lookup');
   const {research}=await f.run('research');
-  assert.deepEqual(research.searchScope.queries.slice(0,2),['测试茶','测试茶 包装']);
+  const queries=research.searchScope.queries;
+  assert.deepEqual(queries.slice(0,3),['茶饮 品牌包装','茶饮 热门话题','茶饮 社交平台关键词报告']);
+  assert.deepEqual(queries.filter(q=>q.startsWith('测试茶')),['测试茶 茶饮','测试茶','测试茶 包装']);
   const photo=research.findings.flatMap(f=>f.images ?? [])[0];
   assert.equal(photo.pageUrl,'https://source.example.org/sku');
   assert.equal(photo.sourceUrl,'https://source.example.org/product.png');
@@ -698,8 +700,8 @@ test('packaging retries a short brand query, publishes its reviewed original and
 test('industry search switches short category terms and verifies segment data deep inside the report',async t=>{
   const f=await fixture(t,'research-report-lookup');
   const {research}=await f.run('research');
-  assert.deepEqual(research.searchScope.queries.slice(0,2),['即饮茶报告','茶饮报告']);
-  assert.deepEqual(research.searchScope.queries,['即饮茶报告','茶饮报告','茶叶包装']);
+  assert.deepEqual(research.searchScope.queries,['即饮茶报告','即饮茶','茶饮报告','茶饮','茶叶包装']);
+  assert.equal(research.searchScope.attempts[1].source,'199IT 报告目录');
   assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
 });
 
@@ -1069,4 +1071,161 @@ test('director keeps approved A and B while repairing only C after blind reading
   assert.deepEqual(polished,[['A','B','C'],['C']]);
   checkSloganChoices({directions:['山风原稿主文','晨雾原稿主文','仅修订C'].map((main,i)=>({id:'ABC'[i],main}))},book);
   assert.equal(book.discarded.length,1);
+});
+
+test('consumer research broadens across categories and opens publisher reports after irrelevant results',async()=>{
+  const {consumerSearchTopics}=await import('./research-sources.mjs');
+  const {researchConsumerReports}=await import('./codex-runner.mjs');
+  const topics=consumerSearchTopics(['户外消费','出行消费','自行车']);
+  assert.deepEqual(topics.map(t=>t.term),['户外','出行','自行车']);
+  assert.deepEqual(consumerSearchTopics(['咖啡'])[0].queries,['咖啡消费报告','咖啡消费者调查']);
+  const discovered=[],lookups=[],opened=[];
+  const url='https://research.example.org/document',pdf=url+'.pdf';
+  const fact={url:pdf,title:'出行调查',scope:'本次受访者',angle:'情境',quote:'受访者通常在早晨出行',conclusion:'受访者多在早晨出行'};
+  const result=await researchConsumerReports({topics,discovered,
+    discover:async({query})=>({query,via:'检索',results:[{title:'出行词典',url:'https://dictionary.example.org/'}]}),
+    directory:async(query,provider)=>{
+      lookups.push([query,provider]);
+      return query==='出行' && provider==='ipsos' ? [{title:'出行调查报告',url}] : [];
+    },
+    capture:async link=>{
+      opened.push(link);
+      return link===url ? {url,source:'出行报告下载',text:'报告目录',pdfLinks:[pdf]} :
+        {url:pdf,source:'出行调查',text:'这次调查发现受访者通常在早晨出行。'};
+    },
+    call:async()=>({parsedOutput:{observations:[fact,{...fact,quote:'没有在报告出现的数字'}]}}),
+  });
+  assert.deepEqual(opened,[url,pdf]);
+  assert.ok(lookups.some(([term,provider])=>term==='户外' && provider==='ipsos'));
+  assert.ok(discovered.some(s=>s.query==='出行消费报告'));
+  assert.deepEqual(result.findings.map(f=>[f.url,f.evidence,f.sampleScope]),[[pdf,fact.quote,fact.scope]]);
+});
+
+test('compacting an audience comparison keeps both survey options in the visible text',async()=>{
+  const {compactResearchPage}=await import('./research-digest.mjs');
+  const row={conclusion:'样本通常在工作时使用',explanation:'工作占48%，出行占36%。这两个选项来自同一题。',sourceDetail:'',
+    audienceTopic:'使用场景',evidenceIndices:[0]};
+  let attempts=0;
+  const call=async()=>({parsedOutput:{edits:[{index:0,conclusion:'使用场景以工作为主',
+    explanation:++attempts===1?'工作占48%。':'工作占48%，出行占36%。',sourceDetail:''}]}});
+  const [written]=await compactResearchPage(call,[row],[{source:'调查报告',evidence:'工作48%，出行36%'}]);
+  assert.equal(attempts,2);
+  assert.equal(written.explanation,'工作占48%，出行占36%。');
+});
+
+test('category lookups keep project filters out of the first comparison and search public attention', async () => {
+  const {categoryLookups}=await import('./research-sources.mjs');
+  assert.deepEqual(categoryLookups('猫粮',['packaging'],[],[],false),
+    ['猫粮 品牌包装','猫粮 热门话题','猫粮 社交平台关键词报告']);
+  assert.ok(categoryLookups('扫地机器人',['kv'],[],[{name:'甲'}],false).includes('甲 扫地机器人 海报'));
+  assert.ok(categoryLookups('夜跑',[],['activity'],[],true).includes('夜跑 活动回顾'));
+});
+
+test('platform attention requires a traceable platform, period and topic-specific measure', async () => {
+  const {supportedSocialMetric}=await import('./research-sources.mjs');
+  const quote='猫粮保存入选热门关键词，相关笔记120篇。';
+  const text='2025年5月，小红书。'+quote+'另一话题500篇。';
+  const metric={platform:'小红书',period:'2025年5月',topic:'猫粮保存',measure:'120篇'};
+  assert.ok(supportedSocialMetric(metric,text,quote));
+  assert.ok(supportedSocialMetric({...metric,measure:'热门关键词'},text,quote));
+  assert.equal(supportedSocialMetric({...metric,measure:'500篇'},text,quote),false);
+  assert.equal(supportedSocialMetric({...metric,period:''},text,quote),false);
+});
+
+test('a verified platform topic can appear as attention but cannot establish who buys', async () => {
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const metric={platform:'平台甲',period:'本月',topic:'猫粮保存',measure:'120篇'};
+  const finding={chapter:'人群与接触情境',subject:'audience',conclusion:'猫粮保存受到关注。',source:'月报',
+    url:'https://source.example.org/trends',evidence:'猫粮保存相关帖子120篇。',socialMetric:metric};
+  const row={chapter:finding.chapter,conclusion:finding.conclusion,explanation:finding.evidence,
+    sourceDetail:'平台甲本月记录。',surveyQuestion:'讨论了什么？',audienceTopic:'其他',evidenceIndices:[0]};
+  const report=await writeResearchPage({call:async()=>({parsedOutput:{rows:[{...row,audienceTopic:'人群'},row],gaps:[],ready:false}}),
+    project:{mode:'collab'},findings:[finding],gaps:[],carriers:[],anchorQuestions:[]});
+  assert.deepEqual(report.sections.map(s=>s.audienceTopic),['其他']);
+  assert.ok(report.gaps.some(g=>g.message.includes('受众身份')));
+});
+
+test('a report discovered in industry search can also supply a category-level user observation', async () => {
+  const {researchConsumerReports}=await import('./codex-runner.mjs');
+  const url='https://source.example.org/running', quote='受访跑者通常和朋友一起跑步。';
+  const result=await researchConsumerReports({brief:'成都周三夜跑活动',topics:[{term:'跑步',queries:[]}],
+    openedReports:[{url,title:'跑步行业观察'}],directory:async()=>[],discovered:[],
+    capture:async()=>({url,source:'跑步行业观察',text:quote}),call:async()=>({parsedOutput:{
+      observations:[{url,quote,title:'跑步行业观察',scope:'全国跑者',angle:'情境',conclusion:'样本中的跑者常结伴跑步。'}],
+    }})});
+  assert.equal(result.findings[0].sampleScope,'全国跑者');
+  assert.equal(result.findings[0].evidence,quote);
+});
+
+test('a verified same-category poster resolves only the general image gap', async () => {
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapter='竞争与同类传播';
+  const image={title:'海报',carrier:'kv',sameCategory:true,sha256:'hash',pageUrl:'https://source.example.org/p',
+    sourceUrl:'https://source.example.org/i',publicationQuote:'品牌发布了海报。'};
+  const finding={chapter,images:[image],source:'同类发布页',url:image.pageUrl,evidence:'画面突出机身。',conclusion:'海报突出机身。'};
+  const gaps=[{chapter,message:'缺同类海报。',scope:'kv',blocksStrategy:true},
+    {chapter,message:'未查到商场灯箱投放。',scope:'optionalSegment',blocksStrategy:false}];
+  const r=await writeResearchPage({call:async()=>({parsedOutput:{rows:[],gaps,ready:false,next:'补同类海报。'}}),
+    project:{mode:'auto'},findings:[finding],carriers:['kv'],anchorQuestions:[],gaps:[]});
+  assert.ok(r.gaps.some(g=>g.message===gaps[1].message));
+  assert.ok(!r.gaps.some(g=>g.message===gaps[0].message));
+  assert.ok(!r.next.includes('补同类海报'));
+  assert.equal(r.ready,false);
+});
+
+test('dictionary-only activity search changes queries and searches organizer records and four social sources',async()=>{
+  const {activityCaseSearches}=await import('./codex-runner.mjs');
+  const first={query:'夜跑 活动案例',results:[{title:'夜跑的意思 汉典',url:'https://dict.example.org/night'}]};
+  const attempts=await activityCaseSearches({first,category:'夜跑',categories:['跑步'],followup:false,
+    directory:async(query,provider)=>provider==='sogou' ? [
+      {title:'跑团夜跑活动回顾',url:'https://mp.weixin.qq.com/s/test'},
+      {title:'夜跑百科',url:'https://example.org/wiki'}] : []});
+  assert.deepEqual(first.results,[]);
+  assert.ok(attempts.some(s=>s.query.startsWith('门店 夜跑') && s.results.length===1));
+  for (const via of ['微博','小红书','抖音','微信公众号']) assert.ok(attempts.some(s=>s.via===via));
+  assert.equal(attempts.find(s=>s.via==='微信公众号公开网页索引').results.length,1);
+  assert.equal(attempts.find(s=>s.via==='微博公开网页索引').results.length,0);
+});
+
+test('an activity case needs an organizer action in the cited source; return intent is optional', async () => {
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapter='竞争与同类传播';
+  const action='跑团带队沿江夜跑。';
+  const findings=[action,'品牌在展会上陈列跑鞋。'].map((passage,index)=>({
+    chapter,subject:'competitor',source:'活动记录',url:'https://example.org/event/'+index,passage,evidence:passage,
+  }));
+  const rows=findings.map((f,index)=>({chapter,conclusion:'跑团组织夜跑。',explanation:f.passage,
+    evidenceIndices:[index],participantActionQuote:action}));
+  const gap={chapter:'人群与接触情境',message:'缺复参意愿。',scope:'participationMotive',blocksStrategy:true};
+  const report=await writeResearchPage({call:async()=>({parsedOutput:{rows,gaps:[gap],ready:false}}),
+    project:{mode:'auto',briefScope:{types:['activity']}},findings,gaps:[],carriers:[],anchorQuestions:[]});
+  assert.deepEqual(report.sections.map(row=>row.evidenceIndices),[[0]]);
+  assert.ok(!report.gaps.some(item=>item.message===gap.message));
+  assert.equal(report.ready,false);
+});
+
+test('a brief-linked visible marking leads the competitor homepage and keeps use performance separate',async()=>{
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapter='竞争与同类传播';
+  const brief='客户希望拆袋后容易收好。';
+  const image={sha256:'b'.repeat(64),pageUrl:'https://example.org/rice',sourceUrl:'https://example.org/rice.jpg',
+    sameCategory:true,carrier:'packaging',detailRegions:['右上'],title:'大米袋',
+    observation:'开合标识：右上，PRESS TO CLOSE\n材料阻隔性：未核实。'};
+  const findings=[{chapter,subject:'competitor',evidence:image.observation,images:[image],source:'商品页',url:image.pageUrl},
+    {chapter,subject:'competitor',evidence:'另一个品牌在社区开设门店。',passage:'另一个品牌在社区开设门店。',source:'活动记录',url:'https://example.org/retail'}];
+  const highlight={briefQuote:'拆袋后容易收好',markId:0,visibleQuote:'PRESS TO CLOSE',conclusion:'样本在袋角标出了按压封口方式。',untestedEffect:'实际密封效果'};
+  const rows=['品牌标志最大。','品牌和系列都在中央。','另一品牌采用门店活动。'].map((conclusion,i)=>({
+    chapter,conclusion,explanation:'有记录。',sourceDetail:'',evidenceIndices:[i===2?1:0],
+  }));
+  const project={brief,mode:'collab'};
+  const r=await writeResearchPage({call:async(instruction,images,schema,task)=>{
+    const marks=JSON.parse(task.context).packagingMarks;
+    assert.deepEqual(marks.map(m=>m.marking),['PRESS TO CLOSE']);
+    return {parsedOutput:{packagingHighlights:[
+      {...highlight,visibleQuote:'not on image'}, {...highlight,briefQuote:'并非客户要求'},
+      highlight,highlight],rows,gaps:[],ready:false}};
+  },project,findings,carriers:['packaging'],anchorQuestions:[],gaps:[]});
+  assert.deepEqual(r.sections.map(row=>row.conclusion),[highlight.conclusion,rows[2].conclusion]);
+  assert.deepEqual(r.sections[0].evidenceIndices,[0]);
+  assert.equal(r.sections[0].explanation,'原图已核实，右上可见“PRESS TO CLOSE”。实际密封效果未核实。');
 });

@@ -137,6 +137,7 @@ export interface ResearchImage {
   pageUrl: string;
   sourceUrl: string;
   observation: string;
+  firstRead?: {front: string; raw: string};
   creatorRationale?: string;
   rationaleSourceUrl?: string;
   rationaleQuote?: string;
@@ -154,7 +155,6 @@ export interface Project extends Summary {
   artifacts: Artifact[];
   versions?: { at: string; stage: StageId; artifacts: Artifact[]; research?: Project['research'] }[];
   canRequestStrategy?: boolean;
-  autoStrategyResume?: boolean;
   researchFollowup?: boolean;
   research?: {
     searchScope?: {replacements?:{from:string;to:string}[];attempts?:{query:string;source:string;count:number}[];unreadable?:{url:string;reason:string}[];queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};

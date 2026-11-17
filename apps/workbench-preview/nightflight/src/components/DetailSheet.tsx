@@ -40,8 +40,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {!!handoff && !handoff.ready && (
           <>
             <h2>{p.canRequestStrategy ? '策略交接 · 可进入策略' : handoff.conditional ? '策略交接 · 已附研究限制' : '策略交接 · 待补查'}</h2>
-            {p.autoStrategyResume && <p role="status">比稿负责人正在依据现有研究撰写策略。</p>}
-            {p.canRequestStrategy && !p.autoStrategyResume && <><p>已核发现可用于策略，仍缺的依据随稿保留。</p>
+            {p.canRequestStrategy && <><p>已核发现可用于策略，仍缺的依据随稿保留。</p>
               <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>用现有研究进入策略</button></>}
             {returned && <p>历史退回记录　{handoff.next}</p>}
             {gaps.length ? <ul className="findings research-gaps">{gaps.map((gap,i)=><li key={i}>

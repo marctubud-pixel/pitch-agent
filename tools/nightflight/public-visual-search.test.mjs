@@ -78,7 +78,8 @@ test('competitor board binds a read image to its declaring page, disregards inve
       if(url.href===product)return {status:200,headers:{'content-type':'image/png'},body:sample};
       throw Error('Unexpected URL');
     }};
-  const call=async(_prompt,images)=>({parsedOutput:{samples:[
+  const call=async(_prompt,images,schema)=> schema.properties.front ? {parsedOutput:{front:'乳白色盒身',regions:['左上']}} :
+    schema.properties.verifiedFront ? {parsedOutput:{verifiedFront:'包装正面品类名置顶。',checks:[{question:'品类',location:'顶部',marking:'原味',status:'看清'}]}} : ({parsedOutput:{samples:[
     {source:images[0].imageId,title:'同类原味纸盒',sameCategory:true,observation:'包装正面品类名置顶。'},
     {source:'invented',title:'无原图案例',observation:'无依据'}],
     conclusion:'所示单品把品类信息放在正面上部。',implication:'可比较正面品类名与品牌名的层级。'}});
@@ -110,6 +111,8 @@ test('an uploaded case only binds its image and author quote through their own s
     dependencies:{lookup:async()=>{throw Error('fixture: source not reachable');}},readSource:async()=>null,
     documents:[{name:'品牌摘录.md',text:supplied}],uploadedImages:[{name,path,sha256}]};
   const caseCall=(rationaleQuote,rationaleSourceUrl)=>async(_prompt,images,_schema,task)=>{
+    if (_schema.properties.front) return {parsedOutput:{front:'正面上方有字',regions:['中央']}};
+    if (_schema.properties.verifiedFront) return {parsedOutput:{verifiedFront:'正面上方有品类名称',checks:[{question:'品类',location:'顶部',marking:'原味',status:'看清'}]}};
     const entry=JSON.parse(task.context).sources[0];
     assert.ok(entry.sourcePassages.some(s=>s.includes(quote)));
     return {parsedOutput:{samples:[{source:images[0].imageId,title:'原味纸盒',observation:'正面上方有品类名称',
@@ -137,14 +140,64 @@ test('an uploaded case only binds its image and author quote through their own s
   assert.equal(unrelated,null);
 });
 
-test('two named product cards on the same brand homepage keep their own photos and source names',async()=>{
+test('named packages retain the first read by image across follow-ups and inspect real crops for the brief',async t=>{
   const {researchCompetitors}=await import('./research-competitors.mjs');
+  const dir=await mkdtemp(join(tmpdir(),'research-detail-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
   const url='https://brand.example.org/products';
   const pages=['茶甲','茶乙'].map(brand=>({url,brand}));
-  const acquiredByPage=new Map(pages.map((page,i)=>[page,[{pageUrl:url,sourceUrl:url+'/'+i+'.png',title:page.brand,
-    name:'case-'+i+'.png',imageId:'ref_'+i,sha256:String(i).repeat(64),width:300,height:480}]]));
-  const board=await researchCompetitors({dir:'.',carrier:'packaging',pages,acquiredByPage,project:{brief:'瓶装茶包装'},
-    call:async (_instruction,[image],schema)=>({parsedOutput:schema.properties.brand
-      ? {brand:image.title,front:'白色标签居中'} : {verifiedFront:'白色标签居中'}})});
-  assert.deepEqual(board.finding.images.map(i=>[i.title,i.sourceUrl]),[['茶甲',url+'/0.png'],['茶乙',url+'/1.png']]);
+  const acquiredByPage=new Map();
+  for (const [i,page] of pages.entries()) {
+    const path=join(dir,'case-'+i+'.png');
+    // Separate source bytes even though both fixtures have identical visible pixels.
+    const bytes=Buffer.concat([png,Buffer.from([i])]);
+    await writeFile(path,bytes);
+    acquiredByPage.set(page,[{path,pageUrl:url,sourceUrl:url+'/'+i+'.png',title:page.brand,
+      name:'case-'+i+'.png',imageId:'ref_'+i,sha256:createHash('sha256').update(bytes).digest('hex'),width:300,height:480}]);
+  }
+  const brief='瓶装茶包装，希望开盖方便。';
+  let firstCount=0;
+  const args={dir,carrier:'packaging',pages,acquiredByPage,project:{brief},
+    call:async (_instruction,[image,...details],schema,task)=>{
+      assert.equal(JSON.parse(task.context).brief,brief);
+      if (schema.properties.front) {
+        firstCount++;
+        return {parsedOutput:{brand:image.title,front:image.title+'第一次观察',regions:['左上']},responseText:'原始回复 '+image.title};
+      }
+      assert.equal(details.length,1);
+      const crop=await readFile(details[0].path);
+      assert.equal(crop.readUInt32BE(16),1280);
+      return {parsedOutput:{verifiedFront:'白色标签居中。未见开盖提示。',checks:[{question:'标签',location:'正面中间',marking:'白色标签',status:'看清'},{question:'是否方便开盖',status:'未核实',location:'',marking:'编造的字'}]}};
+    }};
+  const board=await researchCompetitors(args);
+  const refs=board.finding.images;
+  assert.deepEqual(refs.map(i=>[i.title,i.sourceUrl]),[['茶甲',url+'/0.png'],['茶乙',url+'/1.png']]);
+  assert.deepEqual(refs.map(r=>r.firstRead.raw),['原始回复 茶甲','原始回复 茶乙']);
+  assert.match(refs[0].observation,/未核实/);
+  assert.doesNotMatch(refs[0].observation,/编造|未见开盖提示/);
+  const next=await researchCompetitors({...args,previous:refs});
+  assert.equal(firstCount,2);
+  assert.deepEqual(next.finding.images.map(r=>r.firstRead),refs.map(r=>r.firstRead));
+});
+
+test('a regional brand homepage leads through its category to the original in the product gallery',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'brand-catalogue-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const site='https://brand.example.cn';
+  const pages=new Map([
+    ['/', '<a href="/cats/products">猫系列</a><img src="/logo.png" alt="品牌">'],
+    ['/cats/products','<article>成年猫粮<a href="/cats/products/12">浏览产品</a></article>'],
+    ['/cats/products/12','<title>成猫粮</title><div class="products-image-url">/original.png</div><img src="/ico-weibo.png">'],
+  ]);
+  const visited=[];
+  const capture=(o,defaults)=>capturePublicSource(o,{...defaults,lookup:async()=>[{address:'93.184.216.34',family:4}],
+    transport:async({url})=>{
+      visited.push(url.pathname);
+      if (url.pathname==='/original.png') return {status:200,headers:{'content-type':'image/png'},body:png};
+      return {status:pages.has(url.pathname)?200:404,headers:{'content-type':'text/html'},body:Buffer.from(pages.get(url.pathname)||'')};
+    }});
+  const result=await searchVisualImages({dir,query:'成猫粮',pages:[{url:site+'/',brand:'品牌',category:'猫粮',catalogTerms:['cat','猫'],official:true}]},{capture});
+  assert.deepEqual(visited,['/','/cats/products','/cats/products/12','/original.png']);
+  assert.equal(result[0].sourceUrl,site+'/original.png');
+  assert.equal(result[0].pageUrl,site+'/cats/products/12');
 });

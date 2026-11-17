@@ -1,3 +1,4 @@
+import {automaticResearchGaps} from './research-sources.mjs';
 import {validBriefScope} from './brief-intake.mjs';
 import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
@@ -100,10 +101,13 @@ function researchHandoff(report, project) {
     ? report.findings.filter((f) => f && [f.conclusion, f.evidence, f.source, f.implication].every(text))
     : [];
   const gaps = Array.isArray(report?.gaps) ? report.gaps.filter(g=>text(g) || (g && text(g.message) && text(g.kind))) : [];
-  const ready = report?.ready === true && findings.length > 0 && findings.length === report.findings.length;
+  const missing = project.mode==='auto' ? automaticResearchGaps(report,project) : [];
+  for (const gap of missing) if (!gaps.some(g=>g.message===gap.message)) gaps.push(gap);
+  const ready = !missing.length && report?.ready === true && findings.length > 0 && findings.length === report.findings.length;
   if (!ready && !gaps.length) gaps.push('当前材料尚未提供可供策略使用的研究判断。');
   return {
     ready,
+    ...(report?.carriers ? {carriers:report.carriers} : {}),
     ...(report?.searchScope ? {searchScope:report.searchScope} : {}),
     ...(text(report?.methodVersion) ? { methodVersion: report.methodVersion } : {}),
     findings,
@@ -148,7 +152,7 @@ function hasStrategyEvidence(r) {
 
 function canRequestStrategy(p) {
   const r = p.research;
-  return p.stage === 'research' && p.status === 'waiting' && !p.claim && r && !r.ready &&
+  return p.mode==='collab' && p.stage === 'research' && p.status === 'waiting' && !p.claim && r && !r.ready &&
     !r.digestPending &&
     hasStrategyEvidence(r);
 }
@@ -159,8 +163,6 @@ function publicView(p) {
   return {
     ...visible,
     canRequestStrategy: Boolean(canRequestStrategy(p)),
-    autoStrategyResume: Boolean(p.mode === 'auto' && !p.researchOnly && p.stage === 'research' && p.status === 'waiting' &&
-      !p.claim && canRequestStrategy(p)),
     artifacts: p.artifacts.map(unstore),
     attachments: p.attachments.map(unstore),
     versions: p.versions.map((v) => ({ ...v, artifacts: v.artifacts.map(unstore) })),
@@ -435,7 +437,10 @@ export function createNightflight({ root, runStage, runLayout }) {
             live.research = {...live.research,digest,strategyAdvice};
             delete live.researchDigestOnly;
             delete live.research.digestPending;
-            if (p.researchOnly) live.status = 'waiting';
+            if (live.mode==='auto' && automaticResearchGaps(live.research,live).length) {
+              live.research=researchHandoff(live.research,live);
+              continueResearch(live,true);
+            } else if (p.researchOnly) live.status = 'waiting';
             else live.stage = 'strategy';
             live.error = null;
             live.claim = null;
@@ -539,10 +544,6 @@ export function createNightflight({ root, runStage, runLayout }) {
                 note(live, '研究已形成有依据的判断，交给策略');
                 live.stage = 'strategy';
               }
-            } else if (live.mode === 'auto' && !live.researchOnly && hasStrategyEvidence(live.research)) {
-              live.research.conditional = true;
-              live.stage = 'strategy';
-              note(live,'自动交给策略撰写，已传入已核结论、用途及未决问题');
             } else {
               continueResearch(live);
             }
@@ -664,6 +665,7 @@ export function createNightflight({ root, runStage, runLayout }) {
     check(kind === undefined || ['packaging', 'kv'].includes(kind), '提案类型无效');
     const options = normalizeOutlineOptions(kind, input.outlineOptions);
     const config = {
+      ...(input.researchOnly===true ? {researchOnly:true} : {}),
       ...(kind ? { proposalKind: kind } : {}),
       ...(options.include.length || options.singleTouchpoint ? { outlineOptions: options } : {}),
     };
@@ -788,6 +790,7 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
       note(p,'开始从当前已核研究发现重新编辑摘要');
     } else if (kind === 'research_continue') {
+      check(p.mode!=='auto' || !automaticResearchGaps(p.research,p).length,'研究依据未齐，须先补查',409);
       const conditional = canRequestStrategy(p);
       check(!p.claim && (conditional || (p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly)),
         '没有等待交接的研究成果', 409);
