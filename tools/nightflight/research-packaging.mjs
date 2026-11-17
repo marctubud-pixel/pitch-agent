@@ -36,13 +36,14 @@ export async function readPackaging({call,dir,image,brief,previous,signal}) {
     return {name:zone+'.png',imageId:'detail_'+i,mediaType:'image/png',path,byteLength:bytes.length,
       sha256:createHash('sha256').update(bytes).digest('hex')};
   }));
-  const review=await call('第一张是原图，接着是同一原图的真实局部放大，顺序见 regions。核对品类、品牌和客户问题。verifiedFront 只写实际可见的正面外观，与品类不相干或辨认不出包装时留空。checks 逐项回答客户关心的细节。看清时报告具体位置、逐字抄下可辨的标注或准确描述可辨图形；不能辨认或这张图无法验证，就选未核实。图上有标注只支持标注本身，不能证明实际体验。不得从客户自己的规格、商品名或第一眼的遗漏推断竞品没有某项。',[image,...details],detailSchema,
+  const review=await call('第一张是原图，接着是同一原图的真实局部放大，顺序见 regions。核对品类、品牌和客户问题。verifiedFront 只写实际可见的正面外观，与品类不相干或辨认不出包装时留空。checks 第一项记录正面识别和布局，再逐项回答客户关心的细节。看清时报告具体位置、逐字抄下可辨的标注或准确描述可辨图形；不能辨认或这张图无法验证，就选未核实。图上有标注只支持标注本身，不能证明实际体验。不得从客户自己的规格、商品名或第一眼的遗漏推断竞品没有某项。',[image,...details],detailSchema,
     {rules:[],assignment:'单张包装核图',context:JSON.stringify({brief,product:image.title,firstObservation:firstRead.front,regions})});
   const {verifiedFront,checks=[]}=review.parsedOutput;
-  if (!verifiedFront?.trim()) return null;
+  if (!verifiedFront?.trim() || !checks.some(c=>c.status==='看清' && c.location?.trim() && c.marking?.trim())) return null;
   const lines=checks.filter(c=>c.question?.trim()).map(c=>c.status==='看清' && c.location?.trim() && c.marking?.trim()
     ? c.question+'：'+c.location+'，'+c.marking : c.question+'：未核实。');
-  const observation=[verifiedFront,...lines].join('\n');
+  // Only located observations and explicit unknowns are evidence for the research writer.
+  const observation=lines.join('\n');
   await writeFile(join(folder,'detail.json'),JSON.stringify({sha256:image.sha256,regions,checks,observation}),{mode:0o600});
   return {firstRead,regions,observation};
 }
