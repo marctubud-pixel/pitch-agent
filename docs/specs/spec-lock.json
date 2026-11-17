@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.81.0",
-  "registrySha256": "1a29a53295aa2bec997d4a0505848e9abb022e9c91d09479752e7596dbf27510",
+  "baselineVersion": "1.82.0",
+  "registrySha256": "70de876302ec8037217ac7feaf2d0ec51e0f270af21b3424e9a069f146788104",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -25,10 +25,10 @@
       }
     },
     "agent.strategy-owner": {
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "current",
       "files": {
-        "docs/agents/strategy-owner.md": "c203298d21f58ea2c3f79e62f995e3de633ca336bb9caafc1959b520c7948940"
+        "docs/agents/strategy-owner.md": "0e794f477722a2c8f9bca16065b12ab763719e0532055fd0d0162a795a6124e9"
       }
     },
     "agent.copy-owner": {
@@ -203,10 +203,10 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.9.0",
+      "version": "1.9.1",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "b279a5c8547f7b4a89fd77c8b794b905164a4087caa400919ec95db0b42b565c"
+        "skills/strategy-one-pager/SKILL.md": "3e9e14ad9bd80f6085c49fdf20bec0603453f0a7c1752cd35752a22507554964"
       }
     },
     "method.visual": {

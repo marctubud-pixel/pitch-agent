@@ -104,8 +104,8 @@
   {
     "source": "夜航所有策略统一使用一页纸，未定载体按条件说明。",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.9-20261117",
-    "sha256": "b279a5c8547f7b4a89fd77c8b794b905164a4087caa400919ec95db0b42b565c"
+    "sourceVersion": "v1.9.1-20261117",
+    "sha256": "3e9e14ad9bd80f6085c49fdf20bec0603453f0a7c1752cd35752a22507554964"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",

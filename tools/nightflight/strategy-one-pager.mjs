@@ -140,7 +140,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
     }
   }
   out=await compactStrategy(out,{call,project,carrier,render,onEvent,signal});
-  return readStrategyPage(out,{call,render,onEvent,signal});
+  return readStrategyPage(out,{call,render,onEvent,signal,brief:project.brief});
 }
 
 async function compactStrategy(out,{call,project,carrier,render,onEvent,signal}) {
@@ -171,7 +171,7 @@ async function compactStrategy(out,{call,project,carrier,render,onEvent,signal})
 
 // Only these strings are visible on the strategy sheet. Keep references, metrics and decisions
 // outside the reader packet and outside the set of fields the owner can edit here.
-async function readStrategyPage(out,{call,render,onEvent,signal}) {
+async function readStrategyPage(out,{call,render,onEvent,signal,brief}) {
   const draft={...out,actions:[...out.actions],touchpoints:out.touchpoints.map(t=>({...t}))};
   const fields=[
     ['核心策略',draft,'coreStrategy'],['人群洞察',draft,'insight'],
@@ -196,22 +196,10 @@ async function readStrategyPage(out,{call,render,onEvent,signal}) {
     return render(out);
   }
   for (const i of issues) await onEvent?.('表达盲读 · '+page[i.line-1].section+' · “'+i.quote+'”｜'+i.difficulty);
-  const owner=await call('只处理独立读者指出的表达问题。按原意把别扭、歧义或抽象的句子说直白。只返回决定采用的整行新文字和行号。'+
-    '保留策略取舍、人物、产品事实、数字、必要限定和执行动作。不要采纳任何要求改变策略或重新研究的意见。没有合适改法时保留原句。',
-    [],object({edits:list(object({line:numbered,text:string}))}),{editorial:true,rules:[],
-      assignment:'你是原比稿负责人，决定哪些措辞值得修改。',context:JSON.stringify({page,issues,constraints:out.constraints})});
-  const edits=owner.parsedOutput?.edits;
-  if (!Array.isArray(edits)) throw Error('负责人未返回表达修改结果，请重试策略');
-  const flagged=new Set(issues.map(i=>i.line));
-  const numbers=text=>(text.normalize('NFKC').match(/\d+(?:\.\d+)?/gu) ?? []).sort().join('|');
-  const changes=[];
-  for (const e of edits) {
-    if (!e || !flagged.delete(e.line) || !singleLine(e.text)) continue;
-    const before=page[e.line-1].text;
-    if (before===e.text || numbers(before)!==numbers(e.text)) continue;
-    const [,holder,key]=fields[e.line-1];
-    holder[key]=e.text;
-    changes.push([before,e.text]);
+  const changes=await reviseFlaggedLines(page,issues,{brief,constraints:out.constraints},call);
+  for (const {line,after} of changes) {
+    const [,holder,key]=fields[line-1];
+    holder[key]=after;
   }
   signal?.throwIfAborted();
   let result;
@@ -221,7 +209,40 @@ async function readStrategyPage(out,{call,render,onEvent,signal}) {
     await onEvent?.('措辞修改与原稿要求不符，保留原稿：'+error.message);
     return render(out);
   }
-  for (const [before,after] of changes) await onEvent?.('负责人修改措辞 · “'+before+'” → “'+after+'”');
+  for (const {before,after} of changes) await onEvent?.('负责人修改措辞 · “'+before+'” → “'+after+'”');
   if (!changes.length) await onEvent?.('负责人核对盲读意见后保留原措辞');
   return result;
+}
+
+export async function reviseFlaggedLines(page,issues,boundaries,call) {
+  const edit=object({line:numbered,operation:{type:'string',enum:['改说法','删片段']},original:string,replacement:string});
+  const owner=await call('只处理独立读者指出的表达问题。原意明确就用日常语言说直白；讲清楚必须猜时，直接删去含糊的半句，留下原句中明确的判断。'+
+    '读者的疑问只用来定位卡点。不要选取疑问里的某种解释当答案，也不要替顾客补动机、产品工艺、执行细节或新卖点。'+
+    '先看客户原话和全页已经明确的取舍。仅是术语拗口或动作说得太省的，写成具体的日常动作；已明确的客户要求和信息先后顺序都要保住。只有无法确定原意的部分才删。'+
+    '把客户明确要解决的问题与尚未确定的实现方式分开：只要问题本身已写在简报里，就把它照客户原话说清楚。无需选定具体机制，也不能把整个问题当作猜测删除。'+
+    '同一个疑问若也出现在其他被指出的行，读整句时一并处理。只要被指出的同一行还有这类无据延伸，就可改整行，保留已有信息。'+
+    '逐行返回最小可读修改。改说法：original 为原文中唯一可定位的连续片段，replacement 只改措辞，含义必须能从原句本身读出。'+
+    '删片段：original 为应删的连续原文（连同多余的连接词或标点），replacement 必须为空。保留已给条件、数字、否定和待核限定。'+
+    '读一遍修改后的整句，确认剩下的话完整自然。每行最多一项；没有合适改法就略过。',
+    [],object({edits:list(edit)}),{editorial:true,rules:[],assignment:'你是原比稿负责人，决定哪些措辞值得修改。',
+      context:JSON.stringify({page,issues,boundaries})});
+  const edits=owner.parsedOutput?.edits;
+  if (!Array.isArray(edits)) throw Error('负责人未返回表达修改结果，请重试策略');
+  const flagged=new Set(issues.map(i=>i.line));
+  const numbers=text=>(text.normalize('NFKC').match(/\d+(?:\.\d+)?/gu) ?? []).sort().join('|');
+  const changes=[];
+  for (const e of edits) {
+    if (!e || !flagged.has(e.line) || !singleLine(e.original)) continue;
+    const before=page[e.line-1].text;
+    const start=before.indexOf(e.original);
+    if (start<0 || before.indexOf(e.original,start+1)>=0) continue;
+    const deleting=e.operation==='删片段' && e.replacement==='';
+    const rewriting=e.operation==='改说法' && singleLine(e.replacement);
+    if (!deleting && !rewriting) continue;
+    const after=(before.slice(0,start)+e.replacement+before.slice(start+e.original.length)).trim();
+    if (!/[\p{L}\p{N}]/u.test(after) || before===after || numbers(before)!==numbers(after)) continue;
+    changes.push({line:e.line,before,after});
+    flagged.delete(e.line);
+  }
+  return changes;
 }

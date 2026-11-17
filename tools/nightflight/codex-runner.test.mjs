@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { validateStrategyAdvice, validateResearchDigest, reviewedFindings, missingResearchCoverage } from './research-digest.mjs';
-import { strategyCarrier } from './strategy-one-pager.mjs';
+import { strategyCarrier, reviseFlaggedLines } from './strategy-one-pager.mjs';
 import { createStageRunner } from './codex-runner.mjs';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
@@ -232,7 +232,7 @@ process.stdin.on('end',()=>{
  } else if(action.startsWith('onepager-') && input.includes('只处理独立读者指出的表达问题')) {
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    if(packet.issues.length!==1 || input.includes('此次委托的临时执行者')) process.exit(60);
-   body={edits:[{line:1,text:'在货架上先让顾客看清这盒茶是原味。'},{line:4,text:'改变产品主张。'}]};
+   body={edits:[{line:1,operation:'改说法',original:packet.page[0].text,replacement:'在货架上先让顾客看清这盒茶是原味。'},{line:4,operation:'改说法',original:packet.page[3].text,replacement:'改变产品主张。'}]};
  } else if(action.startsWith('onepager-') && input.includes('请作为同一负责人精简这份策略首页')) {
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    body={copy:{...packet.draft,coreStrategy:'让找原味的人一眼认出茶。'}};
@@ -994,6 +994,18 @@ for (const action of ['ok','kv','linked','general','reader','compact','bad-edit'
     assert.match(md.split('## 推导依据')[1],/模拟设定/);
   });
 }
+
+test('strategy owner may remove an unclear clause without substituting a reader’s guess',async()=>{
+  const text='学生先看清这瓶是什么茶、是不是真茶。';
+  const edits=[
+    {line:1,operation:'删片段',original:'、是不是真茶',replacement:'、是否为原叶冲泡'},
+    {line:1,operation:'删片段',original:'、是不是真茶',replacement:''},
+    {line:2,operation:'改说法',original:'12元',replacement:'10元'},
+  ];
+  const page=[{line:1,text},{line:2,text:'一杯12元。'}];
+  const changes=await reviseFlaggedLines(page,[{line:1},{line:2}],{brief:'',constraints:''},async()=>({parsedOutput:{edits}}));
+  assert.deepEqual(changes,[{line:1,before:text,after:'学生先看清这瓶是什么茶。'}]);
+});
 
 test('strategy carrier handles excluded and linked outputs while preserving other briefs',()=>{
   const detect=brief=>strategyCarrier({brief,artifacts:[]},{texts:[]});
