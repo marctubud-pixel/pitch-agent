@@ -148,3 +148,25 @@ test('two named product cards on the same brand homepage keep their own photos a
       ? {brand:image.title,front:'白色标签居中'} : {verifiedFront:'白色标签居中'}})});
   assert.deepEqual(board.finding.images.map(i=>[i.title,i.sourceUrl]),[['茶甲',url+'/0.png'],['茶乙',url+'/1.png']]);
 });
+
+test('a regional brand homepage leads through its category to the original in the product gallery',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'brand-catalogue-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const site='https://brand.example.cn';
+  const pages=new Map([
+    ['/', '<a href="/cats/products">猫系列</a><img src="/logo.png" alt="品牌">'],
+    ['/cats/products','<article>成年猫粮<a href="/cats/products/12">浏览产品</a></article>'],
+    ['/cats/products/12','<title>成猫粮</title><div class="products-image-url">/original.png</div><img src="/ico-weibo.png">'],
+  ]);
+  const visited=[];
+  const capture=(o,defaults)=>capturePublicSource(o,{...defaults,lookup:async()=>[{address:'93.184.216.34',family:4}],
+    transport:async({url})=>{
+      visited.push(url.pathname);
+      if (url.pathname==='/original.png') return {status:200,headers:{'content-type':'image/png'},body:png};
+      return {status:pages.has(url.pathname)?200:404,headers:{'content-type':'text/html'},body:Buffer.from(pages.get(url.pathname)||'')};
+    }});
+  const result=await searchVisualImages({dir,query:'成猫粮',pages:[{url:site+'/',brand:'品牌',category:'猫粮',catalogTerms:['cat','猫'],official:true}]},{capture});
+  assert.deepEqual(visited,['/','/cats/products','/cats/products/12','/original.png']);
+  assert.equal(result[0].sourceUrl,site+'/original.png');
+  assert.equal(result[0].pageUrl,site+'/cats/products/12');
+});

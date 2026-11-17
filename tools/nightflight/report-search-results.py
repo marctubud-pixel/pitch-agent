@@ -114,8 +114,51 @@ class PublisherResults(HTMLParser):
             self.url = ''
 
 
+class ActivityResults(HTMLParser):
+    def __init__(self, provider):
+        super().__init__()
+        self.provider = provider
+        self.results = []
+        self.href = ''
+        self.label = []
+        self.paths = {
+            'weibo': ('weibo.com', r'/[0-9]+/[A-Za-z0-9]+'),
+            'redbook': ('xiaohongshu.com', r'/explore/[a-zA-Z0-9]+'),
+            'douyin': ('douyin.com', r'/video/[0-9]+'),
+            'wechat': ('mp.weixin.qq.com', r'/s(?:/|$)'),
+        }
+
+    def add(self, href, title):
+        if href.startswith('https://') and title and not any(r['url'] == href for r in self.results):
+            self.results.append({'url': href, 'title': title})
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if self.provider == 'sogou':
+            self.add(a.get('data-url', ''), unquote(a.get('data-title', '')))
+        elif tag == 'a':
+            host, pattern = self.paths[self.provider]
+            self.href = urljoin('https://' + host, a.get('href', ''))
+            u = urlsplit(self.href)
+            if self.provider == 'wechat' and a.get('id', '').startswith('sogou_vr_11002601_title_') and a.get('href','').startswith('/link?'):
+                self.href = urljoin('https://weixin.sogou.com', a['href'])
+            elif not ((u.hostname == host or (u.hostname or '').endswith('.' + host)) and re.match(pattern, u.path)):
+                self.href = ''
+            self.label = [a.get('title', '')]
+
+    def handle_data(self, data):
+        if self.href:
+            self.label.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'a' and self.href:
+            self.add(self.href, ''.join(self.label).strip())
+            self.href = ''
+
+
 provider = sys.argv[2] if len(sys.argv) > 2 else '360'
-parser = (PublisherResults(provider) if provider in ('campaign', 'reports', 'ipsos', 'iimedia') else
+parser = (ActivityResults(provider) if provider in ('sogou','weibo','redbook','douyin','wechat') else
+          PublisherResults(provider) if provider in ('campaign', 'reports', 'ipsos', 'iimedia') else
           YahooResults() if provider == 'yahoo' else ReportSearchResults())
 parser.feed(Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace'))
 print(json.dumps(parser.results[:8]))

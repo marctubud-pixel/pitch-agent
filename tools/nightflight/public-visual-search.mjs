@@ -102,6 +102,64 @@ export function productCardImages(bytes, base, brand, relatedPages = []) {
   return [...result.values()];
 }
 
+// Some product galleries put the original in a data field or a text URL and
+// let JavaScript create the image element later. Only read declared media URLs.
+function galleryImages(bytes,base) {
+  const {parse}=createRequire(new URL('../workbench/package.json',import.meta.url))('parse5');
+  const declared=new Set();
+  function add(value) {
+    if (!value || !/^[^<>\s]+\.(?:png|jpe?g)(?:[?#][^<>\s]*)?$/iu.test(value.trim())) return;
+    try {
+      const u=new URL(value.trim(),base);
+      if (u.protocol==='https:') declared.add(u.href);
+    } catch { /* malformed asset reference */ }
+  }
+  function visit(node) {
+    if (['script','style'].includes(node.tagName)) return;
+    for (const attr of node.attrs ?? []) {
+      if (/^data-(?:zoom-image|original|large|full|image|src)$/iu.test(attr.name)) add(attr.value);
+    }
+    if (node.nodeName==='#text' && node.parentNode?.attrs?.some(a=>
+      ['class','id'].includes(a.name) && /(?:product|gallery|slide|image|photo)/iu.test(a.value))) add(node.value);
+    for (const child of node.childNodes ?? []) visit(child);
+  }
+  visit(parse(bytes.toString('utf8')));
+  return [...declared].map(url=>({url}));
+}
+
+// Follow links declared by the brand site. Product links in a category listing often
+// say only “View product”; the surrounding card carries the actual item name.
+export function catalogueLinks(bytes, base, terms) {
+  const {parse}=createRequire(new URL('../workbench/package.json',import.meta.url))('parse5');
+  const root=parse(bytes.toString('utf8')), links=new Map();
+  const text=node=>node.nodeName==='#text' ? node.value : (node.childNodes ?? []).map(text).join(' ');
+  const tokens=terms.filter(t=>typeof t==='string' && t.trim()).map(t=>t.toLowerCase());
+  const score=value=>tokens.filter(t=>value.toLowerCase().includes(t)).length;
+  function visit(node) {
+    if (node.tagName==='a') {
+      const href=node.attrs.find(a=>a.name==='href')?.value;
+      if (!href || href.startsWith('#')) return;
+      let target;
+      try { target=new URL(href,base); } catch { return; }
+      if (target.protocol!=='https:' || target.host!==new URL(base).host) return;
+      target.hash='';
+      if (target.href===base) return;
+      const label=text(node).trim();
+      const product=/products?|catalog|shop|商品|产品|系列|选购|查看详情/iu.test(label+' '+target.pathname);
+      let card=node.parentNode;
+      while(card && !['article','li'].includes(card.tagName)) card=card.parentNode;
+      const cardText=card ? text(card).trim().slice(0,180) : '';
+      const relevance=score(label+' '+target.pathname+' '+cardText);
+      if (!product && !relevance) return;
+      const rank=relevance*3+(product?2:0)+(product && cardText?1:0);
+      if (rank>(links.get(target.href) ?? 0)) links.set(target.href,rank);
+    }
+    for (const child of node.childNodes ?? []) visit(child);
+  }
+  visit(root);
+  return [...links].sort((a,b)=>b[1]-a[1]).map(([url])=>url);
+}
+
 export async function searchVisualImages({query,dir,signal,pages}, {
   capture=capturePublicSource, search=searchPublicReferences,
 }={}) {
@@ -144,22 +202,39 @@ export async function searchVisualImages({query,dir,signal,pages}, {
         const bytes=await readFile(join(root,record.raw.file));
         if (item.brand) {
           const related=[];
-          for (const product of productCardImages(bytes,record.finalUrl,item.brand,related).slice(0,6)) {
-            await collect(product.url,record.finalUrl,product.title);
+          const directImages=productCardImages(bytes,record.finalUrl,item.brand,related);
+          const catalogue=catalogueLinks(bytes,record.finalUrl,[item.category,...(item.catalogTerms ?? [])]);
+          if (item.official && (catalogue.length || related.length)) {
+            const terms=[item.category,...(item.catalogTerms ?? [])];
+            const seenPages=new Set([record.finalUrl,item.url]);
+            const readChildren=async (links,depth)=>{
+              for (const url of [...new Set(links)].slice(0,4)) {
+                if (found.size>=3 || seenPages.has(url) || seenPages.size>=11) continue;
+                seenPages.add(url);
+                try {
+                  const {record:child}=await acquire(url,2*1024*1024);
+                  if (child.mimeType!=='text/html' || new URL(child.finalUrl).host!==new URL(record.finalUrl).host) continue;
+                  const html=await readFile(join(root,child.raw.file));
+                  const children=catalogueLinks(html,child.finalUrl,terms);
+                  if (depth===1 && children.some(u=>!seenPages.has(u))) await readChildren(children,2);
+                  if (found.size>=3) return;
+                  const images=productCardImages(html,child.finalUrl,item.brand);
+                  if (depth===2 || /product[s]?\/.+|商品详情/iu.test(new URL(child.finalUrl).pathname)) {
+                    const title=child.extraction.title || item.brand;
+                    const galleryItems=galleryImages(html,child.finalUrl);
+                    const declared=[...galleryItems,...images,...socialPreview(html,child.finalUrl),...(child.extraction.images ?? [])];
+                    const merchandise=img=>/product|packshot|主图|封面|包装|商品|产品|全价|粮/iu.test(img.url+' '+(img.alt || ''));
+                    const gallery=new Set(galleryItems.map(i=>i.url));
+                    const candidates=declared.filter(i=>!/logo|(?:^|[/_-])ico(?:n|[-_.])|qrcode|二维码|banner|emblematic|1x1\./iu.test(i.url+' '+(i.alt || '')))
+                      .sort((a,b)=>(Number(gallery.has(b.url))-Number(gallery.has(a.url)))*2 + Number(merchandise(b))-Number(merchandise(a)));
+                    for (const i of candidates.slice(0,5)) await collect(i.url,child.finalUrl,title);
+                  } else for (const i of images.slice(0,3)) await collect(i.url,child.finalUrl,i.title);
+                } catch { signal?.throwIfAborted(); }
+              }
+            };
+            await readChildren([...catalogue,...related],1);
           }
-          if (!found.size && item.official) {
-            for (const href of [...new Set(related)].slice(0,3)) {
-              try {
-                const {record:child}=await acquire(href,1024*1024);
-                if (child.mimeType!=='text/html') continue;
-                const html=await readFile(join(root,child.raw.file));
-                for (const product of productCardImages(html,child.finalUrl,item.brand).slice(0,6)) {
-                  await collect(product.url,child.finalUrl,product.title);
-                }
-                if (found.size) break;
-              } catch { signal?.throwIfAborted(); }
-            }
-          }
+          if (!found.size) for (const product of directImages.slice(0,6)) await collect(product.url,record.finalUrl,product.title);
           continue;
         }
         const previews=socialPreview(bytes,record.finalUrl);

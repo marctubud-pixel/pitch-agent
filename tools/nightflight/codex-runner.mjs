@@ -60,13 +60,14 @@ const researchPlanSchema = objectSchema({
   anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
   queries:stringList,
   comparisonCategory:stringField,
+  catalogTerms:{type:'array',items:stringField,maxItems:8},
   consumerCategories:{type:'array',items:stringField,minItems:2,maxItems:4},
   packagingBrands:{type:'array',items:objectSchema({name:stringField,officialDomain:stringField}),maxItems:3},
   reportCategories:{type:'array',items:stringField,minItems:2,maxItems:4},
   segmentTerms:{type:'array',items:stringField,minItems:1,maxItems:4},
   sourceTargets:{type:'array',items:objectSchema({domain:stringField,query:stringField})},
 });
-const coverageInstruction = '先选和课题直接相关的通用品类，再看具体条件。竞品先取该品类有代表性的品牌或真实活动，用户先看该品类使用者。地点、渠道、时段、价格、型号和规格用于第二层细分；有匹配材料再做对照，没有就按同品类已核样本出结论，写清适用范围。仅当具体结论依赖该条件时才列为缺口。上位品类仍需回答同一问题：跑步参与调查可以说明参与情况，赛事品牌知名度不能说明参与趋势。用户还可查平台公开趋势或披露平台数据的报告。核对平台、观察期或榜单日期、具体话题或关键词，以及指标原值和单位（热搜名次、搜索指数、发帖量各自保留口径）。只说明在该平台什么受到关注，不从热度推断人数、购买动机、销量或参加意愿。行业先查品类所处时期及同口径销量或销售额，再查企业进退和集中度，再查产生实际影响的监管或行业事件。品牌自述只说明该品牌。竞品明确代表样本，按委托载体比较做法并总结共性与差别。用户查对应样本的购买偏好、关注点、审美、敏感因素及使用情境。产品与品牌逐个比较客户主张、价格、知名度与背书，按所得证据给出卖点主次。';
+const coverageInstruction = '活动竞品先查门店、社群或跑团实际举办的活动，核对组织者、时间地点和做法。有执行事实即可作案例。报名或复参动因仅在用户栏按参与者证据说明，未取得即省略，不能因此否定活动案例或单独阻断交接。先选和课题直接相关的通用品类，再看具体条件。竞品先取该品类有代表性的品牌或真实活动，用户先看该品类使用者。地点、渠道、时段、价格、型号和规格用于第二层细分；有匹配材料再做对照，没有就按同品类已核样本出结论，写清适用范围。仅当具体结论依赖该条件时才列为缺口。上位品类仍需回答同一问题：跑步参与调查可以说明参与情况，赛事品牌知名度不能说明参与趋势。用户还可查平台公开趋势或披露平台数据的报告。核对平台、观察期或榜单日期、具体话题或关键词，以及指标原值和单位（热搜名次、搜索指数、发帖量各自保留口径）。只说明在该平台什么受到关注，不从热度推断人数、购买动机、销量或参加意愿。行业先查品类所处时期及同口径销量或销售额，再查企业进退和集中度，再查产生实际影响的监管或行业事件。品牌自述只说明该品牌。竞品明确代表样本，按委托载体比较做法并总结共性与差别。用户查对应样本的购买偏好、关注点、审美、敏感因素及使用情境。产品与品牌逐个比较客户主张、价格、知名度与背书，按所得证据给出卖点主次。';
 const researchChapters = ['行业与市场', '竞争与同类传播', '人群与接触情境', '产品与品牌'];
 const findingSchema = objectSchema({
   chapter: { type: 'string', enum: researchChapters },
@@ -128,6 +129,9 @@ function recordedQueries(stdout) {
 async function discoverChinesePages(query, storeRoot, dependencies, signal, provider='360') {
   const endpoints={
     yahoo:['https://tw.search.yahoo.com/search','p'], '360':['https://m.so.com/s','q'],
+    sogou:['https://www.sogou.com/web','query'],weibo:['https://s.weibo.com/weibo','q'],
+    redbook:['https://www.xiaohongshu.com/search_result','keyword'],douyin:['https://www.douyin.com/search/'+encodeURIComponent(query),''],
+    wechat:['https://weixin.sogou.com/weixin?type=2','query'],
     ipsos:['https://www.ipsos.com/zh-cn/search','search'], iimedia:['https://report.iimedia.cn/research/search','kw'],
     reports:['https://www.199it.com/','s'], campaign:['https://socialbeta.com/search/'+encodeURIComponent(query)+'/campaign',''],
   };
@@ -140,23 +144,73 @@ async function discoverChinesePages(query, storeRoot, dependencies, signal, prov
     if (record.httpStatus!==200 || record.mimeType!=='text/html') return [];
     const {stdout} = await executeFile(await pythonBinary(),['-I','-B',join(repo,'tools/nightflight/report-search-results.py'),
       join(storeRoot,record.raw.file),provider],{signal,timeout:5000,maxBuffer:65536});
-    return JSON.parse(stdout);
+    const hits=JSON.parse(stdout);
+    if (provider!=='wechat') return hits;
+    const articles=await Promise.all(hits.slice(0,4).map(async hit=>{
+      if (matchesDomain(hit.url,'mp.weixin.qq.com')) return hit;
+      if (!matchesDomain(hit.url,'weixin.sogou.com')) return;
+      try {
+        const {record:article}=await capturePublicSource({url:hit.url,storeRoot,
+          limits:{timeoutMs:8000,maxBytes:1048576,maxRedirects:2}},dependencies);
+        if (article.httpStatus!==200) return;
+        if (matchesDomain(article.finalUrl,'mp.weixin.qq.com')) return {...hit,url:article.finalUrl};
+        // Some public permalinks are split across literal JS strings in the redirect page.
+        const html=await readFile(join(storeRoot,article.raw.file),'utf8');
+        const target=[...html.matchAll(/\burl\s*\+=\s*'([^'\\]*)'/gu)].map(m=>m[1]).join('');
+        if (target.startsWith('https://') && matchesDomain(target,'mp.weixin.qq.com')) return {...hit,url:target};
+      } catch { signal?.throwIfAborted(); }
+    }));
+    return articles.filter(Boolean);
   } catch {
     signal?.throwIfAborted();
     return [];
   }
 }
 
+export async function activityCaseSearches({category,categories,first,followup,directory}) {
+  const terms=[category,...categories.filter(c=>c!==category)].slice(0,3);
+  const meaningful=r=>!(/百科|字典|汉典|词典|字义|的意思/u.test(r.title)) &&
+    terms.some(t=>r.title.includes(t));
+  if (first) first.results=first.results.filter(r=>meaningful(r) && /门店|跑团|俱乐部|社群|举办|活动|開跑|开跑|回顾|集合|招募/u.test(r.title));
+  if (!first?.results.length || followup) {
+    const running=/跑/u.test(category);
+    const organizer=running?'跑团':'社群';
+    const specific=followup?'活动回顾':'活动';
+    const platforms=[['微博','weibo','weibo.com'],['小红书','redbook','xiaohongshu.com'],
+      ['抖音','douyin','douyin.com'],['微信公众号','wechat','mp.weixin.qq.com']];
+    const lookups=[{query:organizer+' '+category+' '+specific,via:'搜狗网页',provider:'sogou'},
+      {query:'门店 '+category+' '+specific,via:'搜狗网页',provider:'sogou'},
+      ...terms.map(query=>({query,via:'品牌实际发布案例目录',provider:'campaign'}))];
+    for (const [via,provider,domain] of platforms) {
+      const query=category+' '+organizer;
+      lookups.push({query,via,provider},{query:query+' site:'+domain,via:via+'公开网页索引',provider:'sogou',domain});
+    }
+    return Promise.all(lookups.map(async l=>{
+      const hits=await directory(l.query,l.provider);
+      return {query:l.query,via:l.via,results:hits.filter(r=>(!l.domain || matchesDomain(r.url,l.domain)) &&
+        (l.provider==='campaign' || meaningful(r))).slice(0,4)};
+    }));
+  }
+  return [];
+}
+
 const retailDomains=['jd.com','tmall.com','amazon.com','walmart.com','target.com','samsclub.cn'];
+function brandSite(url,official) {
+  if (!official) return false;
+  if (matchesDomain(url,official)) return true;
+  const name=official.match(/^([a-z0-9-]+)\.(?:com|com\.cn|cn)$/iu)?.[1];
+  return Boolean(name && [name+'.cn',name+'.com.cn'].some(domain=>matchesDomain(url,domain)));
+}
+
 function isPackagingSource(url, official) {
-  return Boolean(official && matchesDomain(url,official)) || retailDomains.some(domain=>matchesDomain(url,domain));
+  return brandSite(url,official) || retailDomains.some(domain=>matchesDomain(url,domain));
 }
 
 function packagingTextGap(f) {
   return researchGap('visual','文字来源「'+f.source+'」记载：“'+f.evidence+'”。该文字所述外观缺对应原图，待核。'+(f.url?' '+f.url:''),'竞争与同类传播');
 }
 
-async function discoverPackaging({brands, category, discover, storeRoot, dependencies, dir, signal}) {
+async function discoverPackaging({brands, category, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
   const searches=[], pages=[];
   for (const target of (brands ?? []).slice(0,3)) {
     const name=target?.name?.trim();
@@ -171,7 +225,7 @@ async function discoverPackaging({brands, category, discover, storeRoot, depende
       const found=await discover({query});
       const isSource=r=>isPackagingSource(r.url,official);
       let hits=found.results.filter(isSource);
-      if (!hits.some(r=>official && matchesDomain(r.url,official)) && /\p{Script=Han}/u.test(name) && !(dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL)) {
+      if (!hits.some(r=>brandSite(r.url,official)) && /\p{Script=Han}/u.test(name) && !(dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL)) {
         const extra=await discoverChinesePages(query,storeRoot,dependencies,signal);
         hits.push(...extra.filter(isSource));
         found.via+=' → m.so.com';
@@ -183,15 +237,15 @@ async function discoverPackaging({brands, category, discover, storeRoot, depende
       }
       found.results=hits.filter(r=>!seen.has(r.url) && seen.add(r.url)).slice(0,5);
       searches.push(found);
-      const eligible=found.results.filter(r=>official && matchesDomain(r.url,official) || !retailPage && r.title.includes(name));
+      const eligible=found.results.filter(r=>brandSite(r.url,official) || !retailPage && r.title.includes(name));
       const checked=await Promise.all(eligible.map(async r=>{
-        const page={...r,brand:name,official:Boolean(official && matchesDomain(r.url,official)),carrier:'packaging'};
+        const page={...r,brand:name,category,catalogTerms,official:brandSite(r.url,official),carrier:'packaging'};
         const images=await searchVisualImages({dir,signal,query,pages:[page]},
           {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
         const qualified=images.filter(i=>Math.min(i.width,i.height)>=140);
         if (qualified.length) return {...page,acquired:qualified};
       }));
-      const officialPage=checked.find(page=>page && official && matchesDomain(page.url,official));
+      const officialPage=checked.find(page=>page?.official && /\.cn$/iu.test(new URL(page.url).hostname)) ?? checked.find(page=>page && brandSite(page.url,official));
       retailPage ??= checked.find(Boolean);
       if (officialPage) { pages.push(officialPage); retailPage=null; break; }
       if (retailPage && !official) break;
@@ -316,7 +370,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const scope = project.proposalKind || taskKind(project.brief || '',false);
   const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：同品类代表品牌或实际活动及其作品；有条件再对照渠道规格；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。catalogTerms 给品牌站内导航用的品类中英文词、短称和适用产品子类，不含渠道、规格价格。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
@@ -401,7 +455,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       found.via+=' + Yahoo';
     }
     return {...found,results:found.results.filter(r=>(!domain || matchesDomain(r.url,domain)) &&
-      !excluded.has(r.url) && !/在线翻译|英汉词典|素材模板|素材免费下载|海报模板/u.test(r.title)).slice(0,4)};
+      !excluded.has(r.url) && !/在线翻译|英汉词典|素材模板|素材免费下载|海报模板/u.test(r.title)).slice(0,8)};
   };
   const discovered = [];
   const category=plan.parsedOutput.comparisonCategory?.trim();
@@ -409,6 +463,13 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const baseQueries=categoryLookups(category,carriers,project.briefScope?.types ?? [],comparisonBrands,project.researchFollowup);
   const baseResults=await Promise.all(baseQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
   discovered.push(...baseResults);
+  if (project.briefScope?.types?.includes('activity') && category &&
+      !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
+    const cases=await activityCaseSearches({category,categories,followup:project.researchFollowup,
+      first:baseResults.find(s=>/活动案例|活动回顾/u.test(s.query)),
+      directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider)});
+    discovered.push(...cases);
+  }
   const reportReads = [];
   const examined = new Set();
   for (const query of industryQueries) {
@@ -454,7 +515,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider),
   });
   const brands=carriers.includes('packaging') && Array.isArray(plan.parsedOutput.packagingBrands) ? plan.parsedOutput.packagingBrands : [];
-  const packaging=await discoverPackaging({brands,category,discover,storeRoot,dependencies,dir,signal});
+  const packaging=await discoverPackaging({brands,category,catalogTerms:plan.parsedOutput.catalogTerms,discover,storeRoot,dependencies,dir,signal});
   const revised = targeted.filter(t=>!brands.some(b=>b.name && t.query.includes(b.name)))
     .map(({query,domain})=>({query:query+' site:'+domain,domain})).filter(s=>!priorQueries.has(s.query));
   const audienceSearches = queries.filter(query=>!brands.some(b=>b.name && query.includes(b.name)) && !priorQueries.has(query)).slice(0,4);

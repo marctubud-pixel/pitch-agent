@@ -1172,3 +1172,17 @@ test('a verified same-category poster resolves only the general image gap', asyn
   assert.ok(!r.next.includes('补同类海报'));
   assert.equal(r.ready,false);
 });
+
+test('dictionary-only activity search changes queries and searches organizer records and four social sources',async()=>{
+  const {activityCaseSearches}=await import('./codex-runner.mjs');
+  const first={query:'夜跑 活动案例',results:[{title:'夜跑的意思 汉典',url:'https://dict.example.org/night'}]};
+  const attempts=await activityCaseSearches({first,category:'夜跑',categories:['跑步'],followup:false,
+    directory:async(query,provider)=>provider==='sogou' ? [
+      {title:'跑团夜跑活动回顾',url:'https://mp.weixin.qq.com/s/test'},
+      {title:'夜跑百科',url:'https://example.org/wiki'}] : []});
+  assert.deepEqual(first.results,[]);
+  assert.ok(attempts.some(s=>s.query.startsWith('门店 夜跑') && s.results.length===1));
+  for (const via of ['微博','小红书','抖音','微信公众号']) assert.ok(attempts.some(s=>s.via===via));
+  assert.equal(attempts.find(s=>s.via==='微信公众号公开网页索引').results.length,1);
+  assert.equal(attempts.find(s=>s.via==='微博公开网页索引').results.length,0);
+});
