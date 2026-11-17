@@ -84,6 +84,7 @@ export function reportExcerpts(text, terms) {
   return merged.map(([start,end])=>text.slice(start,end)).join('\n[…]\n').slice(0,11500);
 }
 
+export const minimumAudienceFacts=2;
 export const audiencePriorities=['人群','使用场景','选择因素'];
 export const audienceTopics=[...audiencePriorities,'使用频率','其他'];
 const questionKey=value=>(typeof value==='string' ? value : '').normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
@@ -163,7 +164,8 @@ export function automaticResearchGaps(report, project) {
     return false;
   }
   for (const row of audiences.keys()) assign(row,new Set());
-  if (assigned.size<3) gaps.push(researchGap('decision','消费者画像已核 '+assigned.size+'/3 条，还需不同的消费事实及其原文。',chapters[2]));
+  if (assigned.size<minimumAudienceFacts) gaps.push(researchGap('decision',
+    `消费者画像已核 ${assigned.size}/${minimumAudienceFacts} 条，还需不同的消费事实及其原文。`,chapters[2]));
   const carriers = new Set([...(project.briefScope?.types ?? []),...(report?.carriers ?? []),project.proposalKind]);
   for (const type of ['kv','packaging'].filter(t=>carriers.has(t))) {
     if (!hasCategoryImage(comparisonImages,type)) gaps.push(researchGap('visual',type==='kv' ? '还缺同类品牌实际发布的海报原图和发布出处。' : '还缺已看过的同类包装原图和出处。',chapters[1]));

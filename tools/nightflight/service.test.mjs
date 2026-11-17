@@ -552,11 +552,15 @@ test('automatic handoff counts independent consumer evidence and published poste
   image.publicationQuote='品牌发布本次宣传海报';
   assert.equal(missing(),'');
   findings[4].evidence=findings[3].evidence;
-  assert.match(missing(),/2\/3/);
-  findings[4].evidence='第三个调查问题的答案';
+  assert.equal(missing(),'');
+  findings[3].evidence=findings[2].evidence;
+  findings[4].evidence=findings[2].evidence;
+  assert.match(missing(),/1\/2/);
+  findings[3].evidence='另一道调查题的答案';
   sections[5].evidenceIndices=[5];
   assert.match(missing(),/外部资料/);
   sections[5].evidenceIndices=[5,1];
+  sections.splice(4,1); // Hand off with exactly two independent audience conclusions.
   // Use a nonvisual activity here; service-level image receipt validation is tested separately.
   delete findings[1].images;
   const p=await legacyService(t,{stage:'research',status:'failed',mode:'auto',briefScope:{types:['activity']}},async({stage,dir})=>{
@@ -598,7 +602,8 @@ test('two options of the same audience question form one row and cannot unlock s
   assert.deepEqual(selected[1].evidenceIndices,[0,1]);
   assert.match(selected[1].explanation,/工作.*出行/);
   assert.deepEqual(missingAudienceTopics(selected).map(g=>g.message),['缺少关于选择时看重的因素的可核依据。']);
-  assert.ok(automaticResearchGaps({sections,findings},{}).some(g=>g.message.includes('2/3')));
+  assert.ok(!automaticResearchGaps({sections,findings},{}).some(g=>g.chapter===chapter));
+  assert.ok(automaticResearchGaps({sections:sections.slice(0,2),findings},{}).some(g=>g.message.includes('1/2')));
   const mislabeled={...sections[1],audienceTopic:'选择因素',surveyQuestion:sections[0].surveyQuestion};
   assert.equal(selectAudienceRows([sections[0],mislabeled]).length,1);
 });
