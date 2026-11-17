@@ -118,6 +118,11 @@ export function missingAudienceTopics(rows) {
 }
 
 // Count only conclusions visible on this research page and the originals they actually cite.
+export function hasCategoryImage(images, type) {
+  return images.some(i=>i.carrier===type && i.sameCategory && i.sha256 && i.pageUrl && i.sourceUrl &&
+    (type!=='kv' || i.publicationQuote));
+}
+
 export function automaticResearchGaps(report, project) {
   const chapters = ['行业与市场','竞争与同类传播','人群与接触情境','产品与品牌'];
   const subjects = ['market','competitor','audience','product'];
@@ -161,9 +166,7 @@ export function automaticResearchGaps(report, project) {
   if (assigned.size<3) gaps.push(researchGap('decision','消费者画像已核 '+assigned.size+'/3 条，还需不同的消费事实及其原文。',chapters[2]));
   const carriers = new Set([...(project.briefScope?.types ?? []),...(report?.carriers ?? []),project.proposalKind]);
   for (const type of ['kv','packaging'].filter(t=>carriers.has(t))) {
-    const seen = comparisonImages.some(i=>i.carrier===type && i.sameCategory && i.sha256 && i.pageUrl && i.sourceUrl &&
-      (type!=='kv' || i.publicationQuote));
-    if (!seen) gaps.push(researchGap('visual',type==='kv' ? '还缺同类品牌实际发布的海报原图和发布出处。' : '还缺已看过的同类包装原图和出处。',chapters[1]));
+    if (!hasCategoryImage(comparisonImages,type)) gaps.push(researchGap('visual',type==='kv' ? '还缺同类品牌实际发布的海报原图和发布出处。' : '还缺已看过的同类包装原图和出处。',chapters[1]));
   }
   return gaps;
 }

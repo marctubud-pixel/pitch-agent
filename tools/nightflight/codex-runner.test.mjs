@@ -1144,3 +1144,31 @@ test('a verified platform topic can appear as attention but cannot establish who
   assert.deepEqual(report.sections.map(s=>s.audienceTopic),['其他']);
   assert.ok(report.gaps.some(g=>g.message.includes('受众身份')));
 });
+
+test('a report discovered in industry search can also supply a category-level user observation', async () => {
+  const {researchConsumerReports}=await import('./codex-runner.mjs');
+  const url='https://source.example.org/running', quote='受访跑者通常和朋友一起跑步。';
+  const result=await researchConsumerReports({brief:'成都周三夜跑活动',topics:[{term:'跑步',queries:[]}],
+    openedReports:[{url,title:'跑步行业观察'}],directory:async()=>[],discovered:[],
+    capture:async()=>({url,source:'跑步行业观察',text:quote}),call:async()=>({parsedOutput:{
+      observations:[{url,quote,title:'跑步行业观察',scope:'全国跑者',angle:'情境',conclusion:'样本中的跑者常结伴跑步。'}],
+    }})});
+  assert.equal(result.findings[0].sampleScope,'全国跑者');
+  assert.equal(result.findings[0].evidence,quote);
+});
+
+test('a verified same-category poster resolves only the general image gap', async () => {
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapter='竞争与同类传播';
+  const image={title:'海报',carrier:'kv',sameCategory:true,sha256:'hash',pageUrl:'https://source.example.org/p',
+    sourceUrl:'https://source.example.org/i',publicationQuote:'品牌发布了海报。'};
+  const finding={chapter,images:[image],source:'同类发布页',url:image.pageUrl,evidence:'画面突出机身。',conclusion:'海报突出机身。'};
+  const gaps=[{chapter,message:'缺同类海报。',scope:'kv',blocksStrategy:true},
+    {chapter,message:'未查到商场灯箱投放。',scope:'optionalSegment',blocksStrategy:false}];
+  const r=await writeResearchPage({call:async()=>({parsedOutput:{rows:[],gaps,ready:false,next:'补同类海报。'}}),
+    project:{mode:'auto'},findings:[finding],carriers:['kv'],anchorQuestions:[],gaps:[]});
+  assert.ok(r.gaps.some(g=>g.message===gaps[1].message));
+  assert.ok(!r.gaps.some(g=>g.message===gaps[0].message));
+  assert.ok(!r.next.includes('补同类海报'));
+  assert.equal(r.ready,false);
+});

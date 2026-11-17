@@ -2,7 +2,7 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
+import {audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
@@ -94,7 +94,7 @@ const pageSchema = (indices) => objectSchema({
     evidenceIndices:{type:'array',minItems:1,items:{type:'integer',enum:indices}},
   })},
   ready:{type:'boolean'}, question:stringField, next:stringField,
-  gaps:{type:'array',items:objectSchema({chapter:{type:'string',enum:researchChapters},message:stringField,blocksStrategy:{type:'boolean'}})},
+  gaps:{type:'array',items:objectSchema({chapter:{type:'string',enum:researchChapters},message:stringField,scope:{type:'string',enum:['packaging','kv','optionalSegment','other']},blocksStrategy:{type:'boolean'}})},
 });
 const strings = (values) =>
   Array.isArray(values)
@@ -245,7 +245,7 @@ print(json.dumps([{'title':item.findtext('title'),'url':item.findtext('link')} f
   }
 }
 
-export async function researchConsumerReports({brief,topics,discover,directory,capture,call,discovered,signal}) {
+export async function researchConsumerReports({brief,topics,openedReports=[],discover,directory,capture,call,discovered,signal}) {
   const reads=[], findings=[], visited=new Set(), quotes=new Set(), angles=new Set();
   const observation=objectSchema({url:stringField,title:stringField,scope:stringField,angle:{type:"string",enum:["人群","情境","动因","偏好","决策"]},quote:stringField,conclusion:stringField});
   async function examine(results,term) {
@@ -257,7 +257,7 @@ export async function researchConsumerReports({brief,topics,discover,directory,c
     pages.push(...(await Promise.all(linked.map(capture))).filter(Boolean));
     if (!pages.length) return;
     const documents=pages.map(p=>({url:p.url,title:p.source,text:reportExcerpts(p.text,['消费者','受访者','人群','场景','购买','时段','偏好','原因',term])}));
-    const response=await call('阅读这些实际打开的报告或发布方披露结果的正文。只摘调查对象或调查行为与下列 Brief 的产品、活动或消费场景直接有关的研究发现。相邻品类的样本只在报告单独披露本案相关群体或行为时取用；同品类调查即使未切分本案价格、地区、使用时段或受众也可用，按实际样本陈述。只研究另一种产品、纯品牌热度或广告搜索量的资料不能替代消费者行为调查。请核对百分比对应的问题与分母，购买意愿和实际购买分开。对相关的消费者研究发现，寻找谁在用、什么情境或时间使用、为什么购买，也可摘偏好和决策因素。一条独立发现对应一段准确连续的原文 quote。url 必须是所读原件，title 为具名报告，scope 写明调查年份、地域、对象和可见的样本口径，未披露就标明。按实际范围写 conclusion，不把全品类、外国或往年样本直接套给本案目标人群。有较新且相关的调查优先。目录、付费提示、图表题名、宣传口号、研究者建议不是调查数据；只有这些时 observations 留空。没有回答某个问题就留缺口。',[],objectSchema({observations:{type:'array',items:observation,maxItems:9}}),{editorial:true,rules:[],context:JSON.stringify({brief,term,documents})});
+    const response=await call('阅读这些实际打开的报告或发布方披露结果的正文。先看 categoryTerms 对应的消费或参与行为。只要正文明确讲到使用这个品类或参与这种活动的人，就摘出资料实际支持的判断，即使没有按 Brief 的地点、时段、规格或目标人群细分。活动先看参加这类运动或文化活动的人怎样参与，细分活动另看。同一份材料里其他品类或与本案行为无关的内容跳过。结论写明原样本和年份。只研究另一种产品、纯品牌热度或广告搜索量的资料不能替代消费者行为调查。请核对百分比对应的问题与分母，购买意愿和实际购买分开。对相关的消费者研究发现，寻找谁在用、什么情境或时间使用、为什么购买，也可摘偏好和决策因素。一条独立发现对应一段准确连续的原文 quote。url 必须是所读原件，title 为具名报告，scope 写明调查年份、地域、对象和可见的样本口径，未披露就标明。按实际范围写 conclusion，不把全品类、外国或往年样本直接套给本案目标人群。有较新且相关的调查优先。转述具名调查的正文如有明确对象、行为与原句，注明转述、原报告名和实际披露范围；缺样本量时如实标注。目录、付费提示、图表题名、宣传口号、研究者建议不是调查数据；只有这些时 observations 留空。没有回答某个问题就留缺口。',[],objectSchema({observations:{type:'array',items:observation,maxItems:9}}),{editorial:true,rules:[],context:JSON.stringify({brief,term,categoryTerms:topics.map(t=>t.term),documents})});
     for (const page of pages) {
       const indices=[];
       for (const o of response.parsedOutput?.observations ?? []) {
@@ -294,6 +294,9 @@ export async function researchConsumerReports({brief,topics,discover,directory,c
     discovered.push(...sources);
     await examine(sources.flatMap(s=>s.results),term);
     if (canStop && enough()) break;
+  }
+  if (topics.length && !enough() && openedReports.length) {
+    await examine(openedReports,topics[0].term);
   }
   return {reads,findings};
 }
@@ -446,7 +449,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     if (reportReads.some(r=>r.segmentQuote)) break;
   }
   const consumerReports=await researchConsumerReports({
-    brief:project.brief,topics:consumerSearchTopics([category,...(plan.parsedOutput.consumerCategories ?? [])],project.researchFollowup),
+    openedReports:reportReads,brief:project.brief,topics:consumerSearchTopics([category,...(plan.parsedOutput.consumerCategories ?? [])],project.researchFollowup),
     discover,capture,call,discovered,signal,
     directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider),
   });
@@ -645,10 +648,12 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
     const evidence = findings.map((f,index)=>({index,subject:f.subject,chapter:f.chapter,
       source:f.source,url:f.url,evidence:f.evidence,passage:f.passage,sampleScope:f.sampleScope,socialMetric:f.socialMetric,images:f.images,
       visualOnly:f.visualOnly,observation:f.conclusion}));
+    const images=findings.filter(f=>!f.visualOnly).flatMap(f=>f.images ?? []);
+    const verifiedCarriers=carriers.filter(type=>hasCategoryImage(images,type));
     const page = await call(coverageInstruction +
-      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论按原报告的样本出页。先写大类报告实际支持的人群、场景、原因；能说明普通消费者就明确写普通消费者。不要把广义样本改写成项目通勤人群的实测，也不要因没有早班细分就抹掉有关的大类结果。具体人群未实证的部分列在缺口。单靠平台热度只能写该平台的关注点（audienceTopic 其他），将平台、日期、话题和数值口径留在依据与来源。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。用户栏按被调查的问题选结论，依次优先回答“谁在用、何时或什么场景用、选择时看重什么”。人群须有身份或特征，用频率、场景定义人群不算。选择因素优先选与委托产品和客户主张直接相关的研究对象与指标。忽略同一原文里只适用于别种产品的配料、选项或数字。区分关注、意愿和实际购买。每项有依据就写，缺项列入 gaps；不得拆一题凑三条。跨摘录、不同发布网址、不同答案选项仍属同一调查问题时合为一条：把最常见选项和与本案使用情境最相关的另一选项放在同一句副文，读者不展开来源就能看到两者及其数字；没有第二项依据时只写一项。其余细节放进来源。工作、休闲、出行等同题选项只能写一行。优先保留上述三个问题；仅在对本案有独立价值时补其他问题，频率不能冒充“谁”。surveyQuestion 用去掉具体答案的简短问题，同题各处一致。audienceTopic 选择人群、使用场景、选择因素、使用频率或其他；非用户行两字段均填空串。标题或副文交代影响理解的年份或样本范围，旧调查不冒充现状，不把观察到的关注写成购买原因。产品与品牌每项同时引用本品事实与外部对照。其他组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。每项缺口用 blocksStrategy 指明是否会改变核心策略取舍。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
+      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论按原报告的样本出页。先写大类报告实际支持的人群、场景、原因；能说明普通消费者就明确写普通消费者。不要把广义样本改写成项目通勤人群的实测，也不要因没有早班细分就抹掉有关的大类结果。具体人群未实证的部分列在缺口。单靠平台热度只能写该平台的关注点（audienceTopic 其他），将平台、日期、话题和数值口径留在依据与来源。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。用户栏按被调查的问题选结论，依次优先回答“谁在用、何时或什么场景用、选择时看重什么”。人群须有身份或特征，用频率、场景定义人群不算。选择因素优先选与委托产品和客户主张直接相关的研究对象与指标。忽略同一原文里只适用于别种产品的配料、选项或数字。区分关注、意愿和实际购买。每项有依据就写，缺项列入 gaps；不得拆一题凑三条。跨摘录、不同发布网址、不同答案选项仍属同一调查问题时合为一条：把最常见选项和与本案使用情境最相关的另一选项放在同一句副文，读者不展开来源就能看到两者及其数字；没有第二项依据时只写一项。其余细节放进来源。工作、休闲、出行等同题选项只能写一行。优先保留上述三个问题；仅在对本案有独立价值时补其他问题，频率不能冒充“谁”。surveyQuestion 用去掉具体答案的简短问题，同题各处一致。audienceTopic 选择人群、使用场景、选择因素、使用频率或其他；非用户行两字段均填空串。标题或副文交代影响理解的年份或样本范围，旧调查不冒充现状，不把观察到的关注写成购买原因。产品与品牌每项同时引用本品事实与外部对照。其他组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。verifiedCarriers 是已看过同品类原图的载体；如有则承认基础比较已完成。每条缺口只写一件事。scope 用 packaging 或 kv 表示整体缺这种同类原图，optionalSegment 表示仅缺进一步细分的对照，other 表示其他独立问题；某个渠道或规格未匹配只约束相应细分结论。每项缺口用 blocksStrategy 指明是否会改变核心策略取舍。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
       [],pageSchema(evidence.map(f=>f.index)),{editorial:true,context:JSON.stringify({
-        brief:project.brief,feedback:project.feedback,anchorQuestions,evidence,gaps,mode,followup:!!project.researchFollowup,
+        brief:project.brief,feedback:project.feedback,anchorQuestions,evidence,verifiedCarriers,gaps,mode,followup:!!project.researchFollowup,
       })});
     const output = page.parsedOutput;
     if (!Array.isArray(output?.rows) || !Array.isArray(output.gaps)) throw Error('四维研究页返回格式不完整');
@@ -677,14 +682,17 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
     const audience=selectAudienceRows(research.sections.filter(r=>r.chapter===researchChapters[2]));
     research.sections=researchChapters.flatMap(chapter=>chapter===researchChapters[2] ? audience : research.sections.filter(r=>r.chapter===chapter));
     research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal);
-    research.gaps = output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter))
-      .map(g=>researchGap('decision',g.message,g.chapter));
-    research.ready = output.ready===true && !(mode==='auto' && output.gaps.some(g=>g.blocksStrategy)) && research.sections.some(row=>row.evidenceIndices.some(i=>{
+    const remainingGaps=output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter) &&
+      !verifiedCarriers.includes(g.scope));
+    const blocking=remainingGaps.filter(g=>g.blocksStrategy && g.scope!=='optionalSegment');
+    const resolvedBlocker=output.gaps.some(g=>g.blocksStrategy && (verifiedCarriers.includes(g.scope) || g.scope==='optionalSegment'));
+    research.gaps = remainingGaps.map(g=>researchGap('decision',g.message,g.chapter));
+    research.ready = output.ready===true && !(mode==='auto' && blocking.length) && research.sections.some(row=>row.evidenceIndices.some(i=>{
       const f=findings[i];
       return !f.visualOnly && (f.url || project.attachments?.some(a=>a.name===f.source));
     }));
     research.question = canAsk && !research.ready ? output.question?.trim().split(/(?<=[？?])/u,1)[0] || '' : '';
-    research.next = output.next?.trim() || '';
+    research.next = resolvedBlocker ? blocking.map(g=>g.message).join(' ') : output.next?.trim() || '';
   } else {
     research.gaps = gaps;
   }
