@@ -168,6 +168,29 @@ export function automaticResearchGaps(report, project) {
   return gaps;
 }
 
+// Start from the category itself. The planner's project-specific searches follow these lookups.
+export function categoryLookups(category, carriers, types, brands, followup) {
+  if (typeof category!=='string' || !/^[\p{L}\p{N} ·-]{1,32}$/u.test(category)) return [];
+  const queries = [];
+  if (carriers.includes('packaging')) queries.push(category+' 品牌包装');
+  if (carriers.includes('kv')) {
+    queries.push(category+' 品牌海报');
+    for (const brand of brands.slice(0,3)) {
+      if (typeof brand?.name==='string' && /^[\p{L}\p{N} ·&-]{1,32}$/u.test(brand.name)) queries.push(brand.name+' '+category+' 海报');
+    }
+  }
+  if (types.includes('activity')) queries.push(category+(followup?' 活动回顾':' 活动案例'));
+  if (types.includes('tvc')) queries.push(category+' 品牌广告片');
+  queries.push(...(followup ? [' 热搜',' 社交媒体趋势报告'] : [' 热门话题',' 社交平台关键词报告']).map(s=>category+s));
+  return [...new Set(queries)];
+}
+
+export function supportedSocialMetric(metric, text, passage) {
+  return ['platform','period','topic','measure'].every(key=>typeof metric?.[key]==='string' &&
+    metric[key].trim() && locateQuote(['topic','measure'].includes(key) ? passage : text,metric[key])) &&
+    /\d|热搜榜|热词榜|热门关键词|趋势关键词|trending/iu.test(metric.measure);
+}
+
 export function consumerSearchTopics(categories, followup=false) {
   const topics=[];
   for (const raw of categories ?? []) {

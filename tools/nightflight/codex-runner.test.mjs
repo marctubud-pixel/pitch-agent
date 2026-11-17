@@ -165,7 +165,7 @@ process.stdin.on('end',()=>{
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
      body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
-     if(action==='research-pack-lookup') body.packagingBrands=[{name:'测试茶',officialDomain:'source.example.org'}];
+     if(action==='research-pack-lookup') Object.assign(body,{comparisonCategory:'茶饮',packagingBrands:[{name:'测试茶',officialDomain:'source.example.org'}]});
      if(action==='research-report-lookup') Object.assign(body,{queries:['即饮茶 市场 销量 销售额 价格带 报告','茶叶包装'],reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
    }
    else if(schema.reads) {
@@ -687,7 +687,9 @@ for (const [action, ready, count] of [
 test('packaging retries a short brand query, publishes its reviewed original and keeps text-only appearance in sourced gaps',async t=>{
   const f=await fixture(t,'research-pack-lookup');
   const {research}=await f.run('research');
-  assert.deepEqual(research.searchScope.queries.slice(0,2),['测试茶','测试茶 包装']);
+  const queries=research.searchScope.queries;
+  assert.deepEqual(queries.slice(0,3),['茶饮 品牌包装','茶饮 热门话题','茶饮 社交平台关键词报告']);
+  assert.deepEqual(queries.filter(q=>q.startsWith('测试茶')),['测试茶 茶饮','测试茶','测试茶 包装']);
   const photo=research.findings.flatMap(f=>f.images ?? [])[0];
   assert.equal(photo.pageUrl,'https://source.example.org/sku');
   assert.equal(photo.sourceUrl,'https://source.example.org/product.png');
@@ -1109,4 +1111,36 @@ test('compacting an audience comparison keeps both survey options in the visible
   const [written]=await compactResearchPage(call,[row],[{source:'调查报告',evidence:'工作48%，出行36%'}]);
   assert.equal(attempts,2);
   assert.equal(written.explanation,'工作占48%，出行占36%。');
+});
+
+test('category lookups keep project filters out of the first comparison and search public attention', async () => {
+  const {categoryLookups}=await import('./research-sources.mjs');
+  assert.deepEqual(categoryLookups('猫粮',['packaging'],[],[],false),
+    ['猫粮 品牌包装','猫粮 热门话题','猫粮 社交平台关键词报告']);
+  assert.ok(categoryLookups('扫地机器人',['kv'],[],[{name:'甲'}],false).includes('甲 扫地机器人 海报'));
+  assert.ok(categoryLookups('夜跑',[],['activity'],[],true).includes('夜跑 活动回顾'));
+});
+
+test('platform attention requires a traceable platform, period and topic-specific measure', async () => {
+  const {supportedSocialMetric}=await import('./research-sources.mjs');
+  const quote='猫粮保存入选热门关键词，相关笔记120篇。';
+  const text='2025年5月，小红书。'+quote+'另一话题500篇。';
+  const metric={platform:'小红书',period:'2025年5月',topic:'猫粮保存',measure:'120篇'};
+  assert.ok(supportedSocialMetric(metric,text,quote));
+  assert.ok(supportedSocialMetric({...metric,measure:'热门关键词'},text,quote));
+  assert.equal(supportedSocialMetric({...metric,measure:'500篇'},text,quote),false);
+  assert.equal(supportedSocialMetric({...metric,period:''},text,quote),false);
+});
+
+test('a verified platform topic can appear as attention but cannot establish who buys', async () => {
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const metric={platform:'平台甲',period:'本月',topic:'猫粮保存',measure:'120篇'};
+  const finding={chapter:'人群与接触情境',subject:'audience',conclusion:'猫粮保存受到关注。',source:'月报',
+    url:'https://source.example.org/trends',evidence:'猫粮保存相关帖子120篇。',socialMetric:metric};
+  const row={chapter:finding.chapter,conclusion:finding.conclusion,explanation:finding.evidence,
+    sourceDetail:'平台甲本月记录。',surveyQuestion:'讨论了什么？',audienceTopic:'其他',evidenceIndices:[0]};
+  const report=await writeResearchPage({call:async()=>({parsedOutput:{rows:[{...row,audienceTopic:'人群'},row],gaps:[],ready:false}}),
+    project:{mode:'collab'},findings:[finding],gaps:[],carriers:[],anchorQuestions:[]});
+  assert.deepEqual(report.sections.map(s=>s.audienceTopic),['其他']);
+  assert.ok(report.gaps.some(g=>g.message.includes('受众身份')));
 });

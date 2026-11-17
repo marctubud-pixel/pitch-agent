@@ -2,7 +2,7 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
+import {audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
@@ -59,17 +59,20 @@ const researchPlanSchema = objectSchema({
   carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
   anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
   queries:stringList,
+  comparisonCategory:stringField,
   consumerCategories:{type:'array',items:stringField,minItems:2,maxItems:4},
   packagingBrands:{type:'array',items:objectSchema({name:stringField,officialDomain:stringField}),maxItems:3},
   reportCategories:{type:'array',items:stringField,minItems:2,maxItems:4},
   segmentTerms:{type:'array',items:stringField,minItems:1,maxItems:4},
   sourceTargets:{type:'array',items:objectSchema({domain:stringField,query:stringField})},
 });
-const coverageInstruction = '行业先查品类所处时期及同口径销量或销售额，再查企业进退和集中度，再查产生实际影响的监管或行业事件。品牌自述只说明该品牌。竞品明确代表样本，按委托载体比较做法并总结共性与差别。用户查对应样本的购买偏好、关注点、审美、敏感因素及使用情境。产品与品牌逐个比较客户主张、价格、知名度与背书，按所得证据给出卖点主次。';
+const coverageInstruction = '先选和课题直接相关的通用品类，再看具体条件。竞品先取该品类有代表性的品牌或真实活动，用户先看该品类使用者。地点、渠道、时段、价格、型号和规格用于第二层细分；有匹配材料再做对照，没有就按同品类已核样本出结论，写清适用范围。仅当具体结论依赖该条件时才列为缺口。上位品类仍需回答同一问题：跑步参与调查可以说明参与情况，赛事品牌知名度不能说明参与趋势。用户还可查平台公开趋势或披露平台数据的报告。核对平台、观察期或榜单日期、具体话题或关键词，以及指标原值和单位（热搜名次、搜索指数、发帖量各自保留口径）。只说明在该平台什么受到关注，不从热度推断人数、购买动机、销量或参加意愿。行业先查品类所处时期及同口径销量或销售额，再查企业进退和集中度，再查产生实际影响的监管或行业事件。品牌自述只说明该品牌。竞品明确代表样本，按委托载体比较做法并总结共性与差别。用户查对应样本的购买偏好、关注点、审美、敏感因素及使用情境。产品与品牌逐个比较客户主张、价格、知名度与背书，按所得证据给出卖点主次。';
 const researchChapters = ['行业与市场', '竞争与同类传播', '人群与接触情境', '产品与品牌'];
 const findingSchema = objectSchema({
   chapter: { type: 'string', enum: researchChapters },
   subject:{type:'string',enum:['market','competitor','audience','product']},
+  relevance:{type:'string',enum:['direct','category','background']},
+  socialMetric:objectSchema({platform:stringField,period:stringField,topic:stringField,measure:stringField}),
   describesPackagingAppearance:{type:'boolean'}, describesPosterAppearance:{type:'boolean'},
   conclusion: stringField,
   evidence: stringField,
@@ -153,7 +156,7 @@ function packagingTextGap(f) {
   return researchGap('visual','文字来源「'+f.source+'」记载：“'+f.evidence+'”。该文字所述外观缺对应原图，待核。'+(f.url?' '+f.url:''),'竞争与同类传播');
 }
 
-async function discoverPackaging({brands, discover, storeRoot, dependencies, dir, signal}) {
+async function discoverPackaging({brands, category, discover, storeRoot, dependencies, dir, signal}) {
   const searches=[], pages=[];
   for (const target of (brands ?? []).slice(0,3)) {
     const name=target?.name?.trim();
@@ -161,7 +164,8 @@ async function discoverPackaging({brands, discover, storeRoot, dependencies, dir
     const domain=String(target.officialDomain ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
     const official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
     const seen=new Set();
-    const queries=[name,name+' 包装',...(official?[name+' site:'+official]:[])];
+    const categoryName=category && !name.includes(category) ? name+' '+category : name;
+    const queries=[...new Set([categoryName,name,name+' 包装',...(official?[name+' site:'+official]:[])])];
     let retailPage;
     for (const query of queries) {
       const found=await discover({query});
@@ -253,7 +257,7 @@ export async function researchConsumerReports({brief,topics,discover,directory,c
     pages.push(...(await Promise.all(linked.map(capture))).filter(Boolean));
     if (!pages.length) return;
     const documents=pages.map(p=>({url:p.url,title:p.source,text:reportExcerpts(p.text,['消费者','受访者','人群','场景','购买','时段','偏好','原因',term])}));
-    const response=await call('阅读这些实际打开的报告或发布方披露结果的正文。只摘调查对象或调查行为与下列 Brief 的产品、活动或消费场景直接有关的研究发现。相邻品类的样本只在报告单独披露本案相关群体或行为时取用；只研究另一种产品、纯品牌热度或广告搜索量的资料不能替代消费者行为调查。请核对百分比对应的问题与分母，购买意愿和实际购买分开。对相关的消费者研究发现，寻找谁在用、什么情境或时间使用、为什么购买，也可摘偏好和决策因素。一条独立发现对应一段准确连续的原文 quote。url 必须是所读原件，title 为具名报告，scope 写明调查年份、地域、对象和可见的样本口径，未披露就标明。按实际范围写 conclusion，不把全品类、外国或往年样本直接套给本案目标人群。有较新且相关的调查优先。目录、付费提示、图表题名、宣传口号、研究者建议不是调查数据；只有这些时 observations 留空。没有回答某个问题就留缺口。',[],objectSchema({observations:{type:'array',items:observation,maxItems:9}}),{editorial:true,rules:[],context:JSON.stringify({brief,term,documents})});
+    const response=await call('阅读这些实际打开的报告或发布方披露结果的正文。只摘调查对象或调查行为与下列 Brief 的产品、活动或消费场景直接有关的研究发现。相邻品类的样本只在报告单独披露本案相关群体或行为时取用；同品类调查即使未切分本案价格、地区、使用时段或受众也可用，按实际样本陈述。只研究另一种产品、纯品牌热度或广告搜索量的资料不能替代消费者行为调查。请核对百分比对应的问题与分母，购买意愿和实际购买分开。对相关的消费者研究发现，寻找谁在用、什么情境或时间使用、为什么购买，也可摘偏好和决策因素。一条独立发现对应一段准确连续的原文 quote。url 必须是所读原件，title 为具名报告，scope 写明调查年份、地域、对象和可见的样本口径，未披露就标明。按实际范围写 conclusion，不把全品类、外国或往年样本直接套给本案目标人群。有较新且相关的调查优先。目录、付费提示、图表题名、宣传口号、研究者建议不是调查数据；只有这些时 observations 留空。没有回答某个问题就留缺口。',[],objectSchema({observations:{type:'array',items:observation,maxItems:9}}),{editorial:true,rules:[],context:JSON.stringify({brief,term,documents})});
     for (const page of pages) {
       const indices=[];
       for (const o of response.parsedOutput?.observations ?? []) {
@@ -303,13 +307,13 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     ? '协作调研先完成取证、列出初步发现。用户已给的选择和补充意见属于项目条件。'
     : '自动调研自行分析不同条件下的适用范围，自行定向补查，保留需要客户确认的假设。';
   const planning = project.researchFollowup
-    ? '本轮为定向补查。先换来源：针对实际缺口，查询具体公开竞品品牌和型号、在售单品、设计机构或设计奖的具名案例。避开已排除的词典与门户；保留有用的大类词换站内来源。沿用已核发现，先检查四线中哪些公开材料可以补足。旧版要求门店实拍、访谈或回忆测试的缺口只约束相应说法。用户暂时无法确认时，对备选情境分别取证。'
+    ? '本轮为定向补查。先换来源：针对实际缺口，先按同品类换代表品牌、活动组织者或作品发布方；保留已核同品类样本，再按有用的细分条件找补充案例。避开已排除的词典与门户；保留有用的大类词换站内来源。沿用已核发现，先检查四线中哪些公开材料可以补足。旧版要求门店实拍、访谈或回忆测试的缺口只约束相应说法。用户暂时无法确认时，对备选情境分别取证。'
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
 
   const scope = project.proposalKind || taskKind(project.brief || '',false);
-  const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：具名品牌、同渠道商品、规格价格与实际作品；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
+  const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：同品类代表品牌或实际活动及其作品；有条件再对照渠道规格；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。包装项目在 packagingBrands 填二至三个公开同品类具体品牌或产品线的短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项填能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
@@ -397,6 +401,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       !excluded.has(r.url) && !/在线翻译|英汉词典|素材模板|素材免费下载|海报模板/u.test(r.title)).slice(0,4)};
   };
   const discovered = [];
+  const category=plan.parsedOutput.comparisonCategory?.trim();
+  const comparisonBrands=plan.parsedOutput.packagingBrands ?? [];
+  const baseQueries=categoryLookups(category,carriers,project.briefScope?.types ?? [],comparisonBrands,project.researchFollowup);
+  const baseResults=await Promise.all(baseQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
+  discovered.push(...baseResults);
   const reportReads = [];
   const examined = new Set();
   for (const query of industryQueries) {
@@ -437,16 +446,16 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     if (reportReads.some(r=>r.segmentQuote)) break;
   }
   const consumerReports=await researchConsumerReports({
-    brief:project.brief,topics:consumerSearchTopics(plan.parsedOutput.consumerCategories,project.researchFollowup),
+    brief:project.brief,topics:consumerSearchTopics([category,...(plan.parsedOutput.consumerCategories ?? [])],project.researchFollowup),
     discover,capture,call,discovered,signal,
     directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider),
   });
   const brands=carriers.includes('packaging') && Array.isArray(plan.parsedOutput.packagingBrands) ? plan.parsedOutput.packagingBrands : [];
-  const packaging=await discoverPackaging({brands,discover,storeRoot,dependencies,dir,signal});
+  const packaging=await discoverPackaging({brands,category,discover,storeRoot,dependencies,dir,signal});
   const revised = targeted.filter(t=>!brands.some(b=>b.name && t.query.includes(b.name)))
     .map(({query,domain})=>({query:query+' site:'+domain,domain})).filter(s=>!priorQueries.has(s.query));
   const audienceSearches = queries.filter(query=>!brands.some(b=>b.name && query.includes(b.name)) && !priorQueries.has(query)).slice(0,4);
-  const searches = [...audienceSearches.map(query=>({query})),...revised.slice(0,4)];
+  const searches = [...audienceSearches.map(query=>({query})),...revised.slice(0,4)].filter(s=>!baseQueries.includes(s.query));
   discovered.push(...packaging.searches,...await Promise.all(searches.map(async search=>{
     const found=await discover(search);
     if (!search.domain && /\p{Script=Han}/u.test(search.query) && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
@@ -458,7 +467,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   })));
   const campaignResults=[];
   if (carriers.includes('kv') && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
-    for (const term of [...new Set([...terms,...categories])].slice(0,3)) {
+    for (const term of [...new Set([category,...categories,...terms].filter(Boolean))].slice(0,3)) {
       const results=(await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign')).filter(r=>!excluded.has(r.url)).slice(0,4);
       discovered.push({query:term,via:'SocialBeta 品牌发布案例',results});
       campaignResults.push(...results);
@@ -476,7 +485,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const material = originals.map(({ url, source, text }) => ({ url, source, text: examined.has(url) ? reportExcerpts(text,terms) : text.slice(0,7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
-    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
+    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。relevance 按该条证据是否回答该板块的研究问题选择 direct（本案细分）、category（同类或上位品类，实际指标能回答）、background（只沾边或指标答非所问）。平台热度证据的 socialMetric 填 platform、period、topic、measure，四项分别摘自同一原文，measure 包含原值与口径；公开关键词榜未提供数值时保留原榜名；其他证据这四项留空。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
       '行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
     inputs.images,
     reportSchema,
@@ -496,6 +505,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   for (const f of offered.slice(0,24)) {
     signal?.throwIfAborted();
     if (!f || !['conclusion','evidence','source','implication'].every(k=>typeof f[k]==='string' && f[k].trim()) || typeof f.url!=='string') continue;
+    if (f.relevance==='background') continue;
     const key=JSON.stringify([f.url || f.source,f.conclusion]);
     if (seen.has(key)) continue;
     let original;
@@ -524,6 +534,8 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       gaps.push(researchGap('source','尚未从「'+f.source+'」原文核对这条依据：'+f.evidence.slice(0,120),f.chapter,f.url || f.source));
       continue;
     }
+    if (Object.values(f.socialMetric ?? {}).some(Boolean) &&
+      (f.subject!=='audience' || !original.url || !supportedSocialMetric(f.socialMetric,original.text,match.passage))) continue;
     if (f.subject==='audience' && findings.some(old=>old.subject==='audience' && old.evidence===match.evidence)) continue;
     seen.add(key);
     if (carriers.includes('kv') && f.describesPosterAppearance) continue;
@@ -549,7 +561,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     const board = await researchCompetitors({call,dir,project,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
       acquiredByPage:new Map(packaging.pages.map(p=>[p,p.acquired])),
       pages:pages.filter(p=>(!p.carrier || p.carrier===type) && (type!=='packaging' || !brands.length ||
-        packaging.pages.includes(p) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
+        packaging.pages.includes(p) || ((draft.parsedOutput.competitorPages ?? []).includes(p) && originals.some(source=>source.url===p.url)) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
       previous:(project.previousResearchImages ?? []).filter(image=>!image.carrier || image.carrier===type)});
     if (board) {
       boards.push(board);
@@ -631,10 +643,10 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
   if (findings.length) {
     await onEvent?.('比稿负责人根据已核原文和原图撰写四维研究页');
     const evidence = findings.map((f,index)=>({index,subject:f.subject,chapter:f.chapter,
-      source:f.source,url:f.url,evidence:f.evidence,passage:f.passage,sampleScope:f.sampleScope,images:f.images,
+      source:f.source,url:f.url,evidence:f.evidence,passage:f.passage,sampleScope:f.sampleScope,socialMetric:f.socialMetric,images:f.images,
       visualOnly:f.visualOnly,observation:f.conclusion}));
     const page = await call(coverageInstruction +
-      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论按原报告的样本出页。先写大类报告实际支持的人群、场景、原因；能说明普通消费者就明确写普通消费者。不要把广义样本改写成项目通勤人群的实测，也不要因没有早班细分就抹掉有关的大类结果。具体人群未实证的部分列在缺口。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。用户栏按被调查的问题选结论，依次优先回答“谁在用、何时或什么场景用、选择时看重什么”。人群须有身份或特征，用频率、场景定义人群不算。选择因素优先选与委托产品和客户主张直接相关的研究对象与指标。忽略同一原文里只适用于别种产品的配料、选项或数字。区分关注、意愿和实际购买。每项有依据就写，缺项列入 gaps；不得拆一题凑三条。跨摘录、不同发布网址、不同答案选项仍属同一调查问题时合为一条：把最常见选项和与本案使用情境最相关的另一选项放在同一句副文，读者不展开来源就能看到两者及其数字；没有第二项依据时只写一项。其余细节放进来源。工作、休闲、出行等同题选项只能写一行。优先保留上述三个问题；仅在对本案有独立价值时补其他问题，频率不能冒充“谁”。surveyQuestion 用去掉具体答案的简短问题，同题各处一致。audienceTopic 选择人群、使用场景、选择因素、使用频率或其他；非用户行两字段均填空串。标题或副文交代影响理解的年份或样本范围，旧调查不冒充现状，不把观察到的关注写成购买原因。产品与品牌每项同时引用本品事实与外部对照。其他组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。每项缺口用 blocksStrategy 指明是否会改变核心策略取舍。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
+      '你是一直负责本案的比稿负责人。现在用已取回的证据直接撰写客户读到的四块研究页。标题 conclusion 只写一个明确判断，保留界定事实所必需的对象、年份或条件。副文 explanation 用一句日常中文讲清一个数字、一个例子或一个比较理由。读者扫一眼就能理解。额外数字、调查口径、样本限制和出处背景放进可展开的 sourceDetail；原句已经讲清的细节不用再写，没有补充时填空串。evidenceIndices 指向原件。避免把资料缺口、策略用途和出处一齐塞进标题；过半不能写成排名第一，全国数据只说明全国。行业阶段须有同口径时间序列，格局要有跨企业材料。竞品明确共性和差别，视觉描述只用实际看过的图片。用户结论按原报告的样本出页。先写大类报告实际支持的人群、场景、原因；能说明普通消费者就明确写普通消费者。不要把广义样本改写成项目通勤人群的实测，也不要因没有早班细分就抹掉有关的大类结果。具体人群未实证的部分列在缺口。单靠平台热度只能写该平台的关注点（audienceTopic 其他），将平台、日期、话题和数值口径留在依据与来源。产品与品牌综合本品和外部证据比较卖点和背书，给策略有条件的主次建议。不可预设赢家或市场独有。用户栏按被调查的问题选结论，依次优先回答“谁在用、何时或什么场景用、选择时看重什么”。人群须有身份或特征，用频率、场景定义人群不算。选择因素优先选与委托产品和客户主张直接相关的研究对象与指标。忽略同一原文里只适用于别种产品的配料、选项或数字。区分关注、意愿和实际购买。每项有依据就写，缺项列入 gaps；不得拆一题凑三条。跨摘录、不同发布网址、不同答案选项仍属同一调查问题时合为一条：把最常见选项和与本案使用情境最相关的另一选项放在同一句副文，读者不展开来源就能看到两者及其数字；没有第二项依据时只写一项。其余细节放进来源。工作、休闲、出行等同题选项只能写一行。优先保留上述三个问题；仅在对本案有独立价值时补其他问题，频率不能冒充“谁”。surveyQuestion 用去掉具体答案的简短问题，同题各处一致。audienceTopic 选择人群、使用场景、选择因素、使用频率或其他；非用户行两字段均填空串。标题或副文交代影响理解的年份或样本范围，旧调查不冒充现状，不把观察到的关注写成购买原因。产品与品牌每项同时引用本品事实与外部对照。其他组优先呈现一至三条不同判断，跨轮同义发现合并。不要在产品栏把“尚不能判断价格”或“客户未提供证明”单列为成果，只在 gaps 写缺项。有具名已读原图就不用客户再提供同一件，不要求补齐整个产品系列。薄弱维度留下具体缺口，缺口不当结论。对照本轮已有图片及来源，删去已解决的缺口，只在 gaps 写仍影响决策的事项，按项归组。每项缺口用 blocksStrategy 指明是否会改变核心策略取舍。ready 表示已有外部依据足以做具体策略取舍；next 只写下一步。question 只可询问改变委托目标且必须由客户决定的业务选择。缺报告、缺价签、缺用户样本，负责人自行研究，不能问客户先查哪项。纯观察仅说明可见内容。',
       [],pageSchema(evidence.map(f=>f.index)),{editorial:true,context:JSON.stringify({
         brief:project.brief,feedback:project.feedback,anchorQuestions,evidence,gaps,mode,followup:!!project.researchFollowup,
       })});
@@ -650,6 +662,8 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
         const f = findings[i];
         return f.images?.length ? chapterIndex===1 : f.subject ? f.subject===subjects[chapterIndex] : f.chapter===row.chapter;
       })) continue;
+      if (chapterIndex===2 && row.audienceTopic!=='其他' && !indices.some(i=>
+        findings[i].subject==='audience' && !findings[i].socialMetric?.platform)) continue;
       research.sections.push({...row,evidenceIndices:indices});
     }
     for (const [i,f] of findings.entries()) {
