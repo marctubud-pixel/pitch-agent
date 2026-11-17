@@ -1186,3 +1186,20 @@ test('dictionary-only activity search changes queries and searches organizer rec
   assert.equal(attempts.find(s=>s.via==='微信公众号公开网页索引').results.length,1);
   assert.equal(attempts.find(s=>s.via==='微博公开网页索引').results.length,0);
 });
+
+test('an activity case needs an organizer action in the cited source; return intent is optional', async () => {
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapter='竞争与同类传播';
+  const action='跑团带队沿江夜跑。';
+  const findings=[action,'品牌在展会上陈列跑鞋。'].map((passage,index)=>({
+    chapter,subject:'competitor',source:'活动记录',url:'https://example.org/event/'+index,passage,evidence:passage,
+  }));
+  const rows=findings.map((f,index)=>({chapter,conclusion:'跑团组织夜跑。',explanation:f.passage,
+    evidenceIndices:[index],participantActionQuote:action}));
+  const gap={chapter:'人群与接触情境',message:'缺复参意愿。',scope:'participationMotive',blocksStrategy:true};
+  const report=await writeResearchPage({call:async()=>({parsedOutput:{rows,gaps:[gap],ready:false}}),
+    project:{mode:'auto',briefScope:{types:['activity']}},findings,gaps:[],carriers:[],anchorQuestions:[]});
+  assert.deepEqual(report.sections.map(row=>row.evidenceIndices),[[0]]);
+  assert.ok(!report.gaps.some(item=>item.message===gap.message));
+  assert.equal(report.ready,false);
+});
