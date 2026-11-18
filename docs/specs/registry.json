@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.82.0",
-  "date": "2026-11-17",
+  "baselineVersion": "1.84.0",
+  "date": "2026-11-18",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
     "brief",
@@ -78,7 +78,7 @@
       "kind": "agent",
       "title": "文案与主题负责人",
       "path": "docs/agents/copy-owner.md",
-      "version": "1.8.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",
@@ -245,14 +245,14 @@
       "kind": "page",
       "title": "文案与主题",
       "path": "docs/pages/themes.md",
-      "version": "1.13.0",
+      "version": "1.15.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.copy-owner",
         "contract.ui",
         "contract.nightflight-stage-output"
       ],
-      "confirmedScope": "方向创意、触点文案、推荐取舍与同版四岗原分",
+      "confirmedScope": "自由三案、作者自选、当案备选文案与负责人推荐",
       "routeKey": "themes"
     },
     {
@@ -483,7 +483,7 @@
       "kind": "contract",
       "title": "夜航七阶段产出展示规范",
       "path": "docs/specs/nightflight-stage-output.md",
-      "version": "1.26.0",
+      "version": "1.28.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.ui",
@@ -496,7 +496,7 @@
       "kind": "contract",
       "title": "七阶段现行工作流",
       "path": "docs/workflows/提案工作流_现行规则.md",
-      "version": "1.2.1",
+      "version": "1.2.3",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -852,7 +852,7 @@
       "kind": "method",
       "title": "文案三方向创作与交付",
       "path": "docs/specs/copy-generation.md",
-      "version": "1.6.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.review",
@@ -874,7 +874,7 @@
       "title": "夜航运行合同",
       "kind": "contract",
       "path": "docs/specs/nightflight-runtime.md",
-      "version": "1.7.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"

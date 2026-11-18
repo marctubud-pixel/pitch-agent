@@ -19,7 +19,7 @@
 | 简报 | [简报负责人](../agents/brief-owner.md) | [新建](../pages/new.md)、[简报与任务](../pages/brief.md) | 任务卡、确认和版本合同 |
 | 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r29](../../skills/design-research-lead/SKILL.md) |
 | 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | [夜航一页策略](../../skills/strategy-one-pager/SKILL.md)，触点按委托载体选择 |
-| 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [三方向创作、四岗盲评与交付](copy-generation.md) |
+| 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [自由三案创作、作者自选与负责人推荐](copy-generation.md) |
 | 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.4.0](../../skills/visual-development-lead/SKILL.md) |
 | 排版 | [排版负责人](../agents/layout-owner.md) | [整案排版](../pages/layout.md) | 据[客户逐页稿](../plans/客户提案结构与排版交接_试行.md)按[排版方法](../../skills/proposal-layout-pilot/SKILL.md)匹配 Deck Studio 模板。夜航包装、KV 排版已接同一页库 |
 | 终审交付 | [终审负责人](../agents/final-review-owner.md) | [终审](../pages/delivery.md)、[交付中心](../pages/delivery_center.md) | 真实页面／产物核验与人类决定 |

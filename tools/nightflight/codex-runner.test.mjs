@@ -1069,15 +1069,69 @@ test('operator-provided RSS search preserves query and bypasses default provider
   assert.equal(result.results[0].url,'https://brand.example.org/original');
 });
 
-test('single director creates three directions with blind readers and owns selection',async t=>{
+test('DeepSeek writer chooses each headline and the director only recommends among the three author picks',async t=>{
   const f=await fixture(t,'copy-clean',{historicalPanels:false});
-  const {copyReview}=await f.run('copy');
-  assert.equal(copyReview.protocol,'director-headline-v1');
+  const executable=join(f.home,'fake-deepseek');
+  const requestLog=join(f.home,'deepseek-requests.jsonl');
+  const brief=f.project.brief;
+  const workbook={directions:['A','B','C'].map((id,i)=>({
+    id,name:['清晨茶时','好茶有形','三口之间'][i],basis:brief,
+    claim:'主张'+id,mechanism:'机制'+id,strategyLink:'连接'+id,secondary:'副标'+id,
+    candidates:[1,2,3].map(n=>({text:id+'候选'+n,use:'海报'})),
+  }))};
+  const writing={workbook,picks:{A:'A2',B:'B3',C:'C1'}};
+  const recommendation={directionId:'B',reason:'具体呈现茶与包装的联系'};
+  await writeFile(executable,`#!/usr/bin/env node
+const fs=require('node:fs');
+if(process.argv[3]==='profile') {
+  console.log(JSON.stringify({host:'api.deepseek.com',base:'https://api.deepseek.com',model:'deepseek-fixture'}));
+} else {
+  const packet=JSON.parse(fs.readFileSync(0,'utf8'));
+  const prompt=packet.body.messages[1].content;
+  const stage=prompt.includes('COPY_ENGINE_WRITE')?'writer':'director';
+  fs.appendFileSync(${JSON.stringify(requestLog)}, JSON.stringify({stage,prompt})+'\\n');
+  const output=stage==='writer'?${JSON.stringify(writing)}:${JSON.stringify(recommendation)};
+  console.log(JSON.stringify({id:stage,model:'deepseek-fixture',choices:[{message:{content:JSON.stringify(output)},finish_reason:'stop'}]}));
+}
+`,{mode:0o700});
+  const previous=process.env.ONEPITCH_TEXT_EXECUTABLE;
+  process.env.ONEPITCH_TEXT_EXECUTABLE=executable;
+  t.after(()=>{
+    if(previous===undefined) delete process.env.ONEPITCH_TEXT_EXECUTABLE;
+    else process.env.ONEPITCH_TEXT_EXECUTABLE=previous;
+  });
+
+  const {engineCopyHandoffReady,engineCopyProtocol}=await import('./copy-review.mjs');
+  const {copyReview,artifacts,directions}=await f.run('copy');
+  const published=artifacts[0].text;
+  assert.equal(copyReview.protocol,engineCopyProtocol);
   assert.equal(copyReview.recommendation.directionId,'B');
-  assert.equal(copyReview.sloganWorkbook.second.length,2);
-  assert.deepEqual(copyReview.calls.map(c=>c.phase).sort(),[
-    'COPY_CREATE','COPY_EXPLORE','COPY_POLISH','DIRECTOR_SELECT','SLOGAN_APPEAL','SLOGAN_APPEAL','SLOGAN_READING','SLOGAN_READING',
-  ]);
+  assert.deepEqual(copyReview.draft.directions.map(d=>d.main),['A候选2','B候选3','C候选1']);
+  assert.doesNotMatch(published,/A候选1/);
+  assert.match(published,/主标题：B候选3\n副标：副标B/);
+  assert.deepEqual(copyReview.calls.map(c=>c.phase),['COPY_ENGINE_WRITE','COPY_ENGINE_RECOMMEND']);
+  assert.equal(engineCopyHandoffReady(copyReview,directions,published),true);
+  const tampered=structuredClone(copyReview);
+  tampered.picks.B='B4';
+  assert.equal(engineCopyHandoffReady(tampered,directions,published),false);
+  tampered.picks.B='A2';
+  assert.equal(engineCopyHandoffReady(tampered,directions,published),false);
+  assert.equal(engineCopyHandoffReady(copyReview,directions,published+'改字'),false);
+
+  const calls=(await readFile(requestLog,'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+  assert.deepEqual(calls.map(call=>call.stage),['writer','director']);
+  assert.match(calls[0].prompt,/name: slogan-engine/);
+  assert.doesNotMatch(calls[1].prompt,/name: slogan-engine|B候选1|A候选3/);
+  const packet=JSON.parse(calls[1].prompt.split('实际项目输入（JSON）').at(-1).trim());
+  assert.deepEqual(packet.directions,copyReview.draft.directions.map(({id,name,main})=>({id,name,main})));
+});
+
+test('single director copy requires a configured DeepSeek text model',async t=>{
+  if(process.env.ONEPITCH_TEXT_EXECUTABLE) t.skip('requires missing desktop text configuration');
+  else {
+    const f=await fixture(t,'copy-clean',{historicalPanels:false});
+    await assert.rejects(f.run('copy'),/文字 API 设置中选择 DeepSeek/);
+  }
 });
 
 test('director keeps approved A and B while repairing only C after blind reading',async()=>{

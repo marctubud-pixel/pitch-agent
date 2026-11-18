@@ -6,6 +6,8 @@ import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
 export const headlineProtocol = 'dual-panel-headline-v4';
+export const engineCopyProtocol = 'director-engine-selection-v2';
+export const isEngineCopyProtocol = protocol=>protocol===engineCopyProtocol || protocol==='director-engine-selection-v1';
 const roles = ['copy','brand','user','comms'];
 const ids = ['A','B','C'];
 const duties = {continuity:'稳健延续',feature:'品牌或产品特征放大',emotion:'用户氛围或情绪放大'};
@@ -122,7 +124,118 @@ export function headlineMarkdown(draft) {
   return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main).join('\n\n');
 }
 
+const enginePhases = ['COPY_ENGINE_WRITE', 'COPY_ENGINE_RECOMMEND'];
+const engineDraftSchema = object({directions:list(object({
+  id:choice(ids), name:str, basis:str, claim:str, mechanism:str, strategyLink:str, secondary:str,
+  candidates:list(object({text:str, use:str})),
+}))});
+const enginePicks = object(Object.fromEntries(ids.map(id=>[id,choice([1,2,3,4].map(n=>id+n))])));
+const engineWriterSchema = object({workbook:engineDraftSchema,picks:enginePicks});
+const engineRecommendation = object({directionId:choice(ids),reason:str});
+
+function validateEngineDraft(draft, materials) {
+  validate(draft,engineDraftSchema,'创作底稿');
+  const directions = draft.directions;
+  requireThat(exactly(directions.map(d=>d.id),ids),'需要 A、B、C 三个方向');
+  const normalize = text=>text.normalize('NFKC').replace(/[\p{P}\s]/gu,'').toLowerCase();
+  for (const field of ['name','claim','mechanism']) {
+    const values = directions.map(d=>normalize(d[field]));
+    requireThat(values.every(Boolean) && new Set(values).size===3,'三案的名称、主张和创意机制必须各自不同');
+  }
+  for (const d of directions) {
+    requireThat(d.name===d.name.trim() && d.name.length<=100 &&
+      [d.name,d.claim,d.mechanism,d.strategyLink,d.secondary,...d.candidates.map(c=>c.text)].every(text=>!/[\r\n]/.test(text)),
+      '方向名、文案和文案说明须分别为单行');
+    requireThat(d.candidates.length>=3 && d.candidates.length<=4 &&
+      new Set(d.candidates.map(c=>normalize(c.text))).size===d.candidates.length &&
+      d.candidates.every(c=>normalize(c.text)), '每个方向需要三到四条不同的原候选');
+    requireThat(!materials || materials.some(text=>text.includes(d.basis)),'方向 '+d.id+' 的依据无法定位到当前上游原文');
+  }
+}
+
+function resolveEnginePicks(workbook, picks) {
+  validate(picks,enginePicks,'案内选句');
+  const directions = workbook.directions.map(({candidates,...direction})=>{
+    const code = picks[direction.id];
+    const picked = candidates[Number(code.slice(1))-1];
+    requireThat(picked,'只能从该方向已写出的候选中选句：'+code);
+    return {...direction,main:picked.text};
+  });
+  const titles = directions.map(d=>d.main.normalize('NFKC').replace(/[\p{P}\s]/gu,'').toLowerCase());
+  requireThat(new Set(titles).size===3,'三案主标题必须不同');
+  return {directions};
+}
+
+function engineCopyMarkdown(draft) {
+  return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main+'\n副标：'+d.secondary).join('\n\n');
+}
+
+function engineReceipt(receipt, phase) {
+  return receipt?.phase===phase && nonempty(receipt.runId) && nonempty(receipt.threadId) &&
+    /^deepseek(?:[-_/]|$)/i.test(receipt.model ?? '') && /^[a-f0-9]{64}$/.test(receipt.inputPacketHash ?? '');
+}
+
+export function engineCopyHandoffReady(review, names, text) {
+  try {
+    if (!isEngineCopyProtocol(review?.protocol) || review.version!==1 || review.status!=='ready' ||
+        !/^[a-f0-9]{64}$/.test(review.skillHash ?? '') || !nonempty(text) || review.bodyHash!==hash(text) ||
+        review.calls?.length!==2 || !engineReceipt(review.calls[0],enginePhases[0]) ||
+        !engineReceipt(review.calls[1],review.protocol===engineCopyProtocol ? enginePhases[1] : 'COPY_ENGINE_SELECT') ||
+        review.calls[0].runId===review.calls[1].runId || review.calls[0].threadId===review.calls[1].threadId) return false;
+    validateEngineDraft(review.workbook);
+    validate(review.recommendation,engineRecommendation,'负责人推荐');
+    const draft=resolveEnginePicks(review.workbook,review.picks);
+    return isDeepStrictEqual(review.draft,draft) && isDeepStrictEqual(names,draft.directions.map(d=>d.name)) &&
+      text===engineCopyMarkdown(draft);
+  } catch(error) {
+    if (error.code==='INVALID_STAGE_OUTPUT') return false;
+    throw error;
+  }
+}
+
+async function runEngineCopy({call, project, inputs, rules, onEvent}) {
+  const skill=rules.find(rule=>/^name: slogan-engine$/m.test(rule));
+  requireThat(skill,'缺少原版 slogan-engine');
+  const materials=inputs.texts.filter(item=>nonempty(item.text));
+  const source={
+    brief:project.brief, proposalKind:project.proposalKind, materials,
+    strategy:project.strategyHandoff, feedback:(project.feedback ?? []).filter(entry=>entry.stage==='copy'),
+  };
+  async function run(phase, instruction, schema, packet, promptRules=[]) {
+    const result=await call(phase+'\n'+instruction,[],schema,{
+      rules:promptRules, assignment:'只完成本次文案任务。', context:JSON.stringify(packet),
+    });
+    const {runId,threadId,model,inputPacketHash}=result;
+    const receipt={phase,runId,threadId,model,inputPacketHash};
+    requireThat(engineReceipt(receipt,phase),'文案缺少本次 DeepSeek 调用回执');
+    return {receipt,output:result.parsedOutput};
+  }
+
+  await onEvent?.('DeepSeek 写作 Agent 正在起稿并从每案自选一句');
+  const {output:writing,receipt:written}=await run(enginePhases[0],
+    '你是本次写作 Agent。沿用当前 Brief、研究与策略，使用原版 slogan-engine 从受众落差找到三个不同的创意连接，自拟名称和角度。每案让人记住一件不同的事；同一个意思换文风、长短或修辞属于同一案的版本。依据 basis 必须逐字摘自当前材料，claim 写一句主张，mechanism 写创意怎么成立，strategyLink 写怎么接策略。每案保留三到四条可选主标题及各自用法，并给一条本案通用的简洁支撑副标 secondary。各句只用明确有依据的事实，遵守客户限定和原件的品类边界。使用原件对场合、长短、声律的判断。按 A、B、C 在 workbook 交三案，候选顺序对应 A1、A2 等编号。你作为创作者从每案原候选各选一句，把三个编号填入 picks。案内按自然、好记、符合本案事实和方向优先。三个案内自选并列，整组推荐交给负责人。文案字段逐项、单行填写，略过盲读和回写。',
+    engineWriterSchema,source,[skill]);
+  validate(writing,engineWriterSchema,'写作 Agent 交稿');
+  const {workbook,picks}=writing;
+  validateEngineDraft(workbook,[project.brief,...materials.map(item=>item.text)].filter(nonempty));
+  const draft=resolveEnginePicks(workbook,picks);
+
+  await onEvent?.('比稿负责人正在从作者自选的三句中推荐一案');
+  const directions=draft.directions.map(({id,name,main})=>({id,name,main}));
+  const {output:recommendation,receipt:recommended}=await run(enginePhases[1],
+    '你是比稿负责人。三个方向的主标题已经由作者选定，请仅从这三句推荐一案，返回对应 directionId 和一句具体推荐理由。对照 Brief 与策略判断哪句最值得记住。保持三句原文，选择理由聚焦这句的作用，避免批评和修改意见。',
+    engineRecommendation,{...source,directions});
+  validate(recommendation,engineRecommendation,'负责人推荐');
+  requireThat(written.runId!==recommended.runId && written.threadId!==recommended.threadId,'写作与推荐需要分别记录实际调用');
+  const body=engineCopyMarkdown(draft);
+  const copyReview={protocol:engineCopyProtocol,version:1,status:'ready',bodyHash:hash(body),
+    draft,workbook,skillHash:fullSloganHash(skill),picks,recommendation,calls:[written,recommended]};
+  await onEvent?.('已保存作者自选的三句及负责人推荐');
+  return {body,directions:draft.directions.map(d=>d.name),copyReview};
+}
+
 export async function runCopyReview({call, project, inputs, rules, dir, onEvent, singleOwner=false}) {
+  if (singleOwner) return runEngineCopy({call,project,inputs,rules,onEvent});
   const attempt = {version:3,protocol:headlineProtocol,status:'working',calls:[],anonymousReads:[],firstVotes:[],criticReads:[],challenges:[],finalVotes:[]};
   const filename='copy-review-attempt-'+randomUUID()+'.json';
   const threads=new Set(), runs=new Set();
@@ -288,21 +401,13 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent,
     await onEvent?.('比稿负责人正在创作三个方向');
     const skill=rules.find(rule=>rule.includes('name: slogan-engine'));
     requireThat(skill,'缺少完整版 slogan-engine');
-    const workbook=await buildSloganWorkbook(run,source,{freezeAccepted:singleOwner});
+    const workbook=await buildSloganWorkbook(run,source);
     attempt.sloganWorkbook={...workbook,skillHash:fullSloganHash(skill)};
     const generated=await run('COPY_CREATE',craft+' 从本案版本族中选经两位独立读者均判断 usable 的一句作为各案 main，逐字保留，保持职责及连接。仅归档工作稿另附。',draftSchema,{...source,workbook},true);
     const first=generated.output;
     validateDraft(first,materials);
     checkSloganChoices(first,workbook);
     attempt.initialDraft=first;
-    if (singleOwner) {
-      const {output:recommendation}=await run('DIRECTOR_SELECT','比较三种创意各自的发力点，给出推荐、取舍、适用场景和复述潜力，仅依据策略与本次真实盲读。',recommendationSchema,{...source,draft:first,reads:workbook.second.map(r=>r.output)},true);
-      const body=headlineMarkdown(first);
-      const copyReview={protocol:'director-headline-v1',version:1,status:'ready',bodyHash:hash(body),
-        draft:first,recommendation,sloganWorkbook:attempt.sloganWorkbook,calls:attempt.calls};
-      await onEvent?.('比稿负责人已完成三案取舍，保留两次独立盲读原话');
-      return {body,directions:first.directions.map(d=>d.name),copyReview};
-    }
     await onEvent?.('四岗分别首读文案初稿');
     attempt.anonymousReads=await anonymousReads(first);
     for (const role of roles) attempt.firstVotes.push(await score('COPY_FIRST',role,first,attempt.anonymousReads));

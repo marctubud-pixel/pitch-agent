@@ -22,7 +22,7 @@ import {
 import { resolve, join, basename, extname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { normalizeOutlineOptions } from './proposal-outline.mjs';
-import { headlineMarkdown, headlineProtocol, validSingleReview } from './copy-review.mjs';
+import { engineCopyHandoffReady, isEngineCopyProtocol, headlineMarkdown, headlineProtocol, validSingleReview } from './copy-review.mjs';
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
 const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
@@ -65,6 +65,7 @@ function archiveVersion(p) {
 
 // This gate is used only when accepting a new run. Historical tickets keep their original shape.
 function copyHandoffReady(review, names, text) {
+  if (isEngineCopyProtocol(review?.protocol)) return engineCopyHandoffReady(review,names,text);
   if(review?.protocol==='director-headline-v1') {
     const draft=review.draft?.directions;
     const reads=review.sloganWorkbook?.second;
@@ -465,7 +466,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             const text = result.artifacts.find((a) => a.kind === 'text' && typeof a.text === 'string')?.text;
             check(Array.isArray(names) && names.length === 3 && names.every((d) => typeof d === 'string' && d.trim())
               && new Set(names).size === 3, '文案未交回三个不同方向', 422);
-            check(copyHandoffReady(review, names, text), '本版文案尚无对应协议要求的评审记录，不能交接', 422);
+            check(copyHandoffReady(review, names, text), '本版文案或对应的选句记录不完整，不能交接', 422);
             live.directions = names;
             live.copyReview = review;
             live.copyHandoff={projectId:live.id,strategy:input.strategyHandoff};
