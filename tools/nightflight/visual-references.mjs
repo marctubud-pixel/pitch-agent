@@ -6,7 +6,25 @@ const use = object({source:string, borrow:string, apply:string});
 const publicUse = object({...use.properties,why:string,avoid:string});
 const planSchema = item => object({sharedBrand:list(item),directions:list(object({direction:string, main:list(item), auxiliary:list(item), gap:string}))});
 const observationSchema = object({observations:list(object({source:string, visible:string}))});
+const imagePromptSchema = object({prompt:string});
 const nonempty = s => typeof s === 'string' && s.trim().length > 0;
+
+export async function generateVisualWithDesktopModels({call, images, context, drawingBrief}) {
+  const instruction = [
+    '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
+    '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。原样保留明确允许上图的文案，事实只取本案资料。',
+    '返回一个 prompt 字段，内容是完整的生图提示词。',
+  ].join('\n');
+  const written = await call(instruction,[],imagePromptSchema,{
+    assignment:'夜航生图提示词写作',rules:[],context:JSON.stringify({...context,drawingBrief}),
+  });
+  const prompt = written.parsedOutput?.prompt;
+  if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
+    throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
+  }
+  const result = await call(prompt,images,null,{exactImagePrompt:true});
+  return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
+}
 
 export async function selectVisualReferences({call, project, images, active}) {
   const names = project.directions;

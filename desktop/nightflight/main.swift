@@ -110,7 +110,10 @@ final class Desktop: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUI
 }
 if ["--text-model","--image-model","--vision-model"].contains(CommandLine.arguments.dropFirst().first ?? "") {
     let capability: Capability = CommandLine.arguments[1] == "--image-model" ? .image : CommandLine.arguments[1] == "--vision-model" ? .vision : .text
-    let saved = profile(capability)
+    var saved = profile(capability)
+    if capability == .image, let model = ProcessInfo.processInfo.environment["NIGHTFLIGHT_IMAGE_MODEL"]?.trimmingCharacters(in: .whitespacesAndNewlines), !model.isEmpty {
+        saved.model = model
+    }
     let output = FileHandle.standardOutput
     func reply(_ json: [String: Any]) {
         if let data = try? JSONSerialization.data(withJSONObject: json) { output.write(data) }
