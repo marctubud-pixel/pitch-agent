@@ -47,6 +47,70 @@ if (action === 'profile') {
   assert.ok(events.some(x=>x.includes('视觉理解 API 回执') && x.includes('actual-vision-model') && x.includes('request-vision-model')));
 });
 
+test('desktop visual generation sends the configured writer’s exact prompt and the selected original to the image API', async t=>{
+  const dir = await mkdtemp(join(tmpdir(),'onepitch-visual-models-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const executable = join(dir,'fixture.mjs');
+  const trace = join(dir,'trace.jsonl');
+  const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
+  await writeFile(join(dir,'参考.png'),Buffer.from(png,'base64'));
+  await writeFile(executable,`#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import {appendFileSync} from 'node:fs';
+const [capability,action] = process.argv.slice(2);
+const model = capability.slice(2);
+const trace = ${JSON.stringify(trace)};
+if (action === 'profile') {
+  console.log(JSON.stringify({host:'fixture.test',base:'https://fixture.test',model}));
+} else {
+  const chunks=[];
+  for await(const chunk of process.stdin) chunks.push(chunk);
+  const {body,images} = JSON.parse(Buffer.concat(chunks));
+  assert.equal(body.model,model);
+  if (capability === '--image-model') {
+    appendFileSync(trace,JSON.stringify({sent:body.prompt,images})+'\\n');
+    console.log(JSON.stringify({failure:'fixture image request received'}));
+  } else {
+    const content=body.messages[1].content;
+    const instruction=typeof content==='string' ? content : content[0].text;
+    const input=JSON.parse(instruction.split('实际项目输入（JSON）\\n\\n').at(-1));
+    let answer;
+    if (capability==='--vision-model') {
+      assert.equal(content.length,2);
+      answer={sharedBrand:[],directions:input.directions.map(d=>({
+        direction:d.name,
+        main:d.name==='产品'?[{source:input.sources[0].source,borrow:'剪纸笔法',apply:'重画本案街景'}]:[],
+        auxiliary:[],gap:'',
+      }))};
+    } else {
+      assert.equal(typeof content,'string');
+      assert.match(content,/夜航生图提示词写作/);
+      assert.equal(input.direction,'产品');
+      answer={prompt:'  服务原文\\n借 '+input.transfer.borrow.join('、')+'  '};
+      appendFileSync(trace,JSON.stringify({written:answer.prompt})+'\\n');
+    }
+    console.log(JSON.stringify({id:'request-'+model,model:'actual-'+model,choices:[{message:{content:JSON.stringify(answer)}}]}));
+  }
+}`);
+  await chmod(executable,0o700);
+  const original = process.env.ONEPITCH_TEXT_EXECUTABLE;
+  process.env.ONEPITCH_TEXT_EXECUTABLE = executable;
+  t.after(()=>{
+    if (original === undefined) delete process.env.ONEPITCH_TEXT_EXECUTABLE;
+    else process.env.ONEPITCH_TEXT_EXECUTABLE = original;
+  });
+  const run = createStageRunner({binary:join(dir,'no-codex'),codexHome:join(dir,'no-home')});
+  const project={title:'老照片分享会',brief:'做一张社区活动海报。',mode:'collab',choice:'产品',
+    directions:['稳健','产品','用户'],attachments:[{name:'参考.png'}]};
+  await assert.rejects(run({stage:'visual',project,dir}),/生图 API 调用失败：fixture image request received/);
+  const entries=(await readFile(trace,'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+  const written=entries.filter(e=>e.written).map(e=>e.written).sort();
+  const sent=entries.filter(e=>e.sent);
+  assert.equal(new Set(written).size,3);
+  assert.deepEqual(sent.map(e=>e.sent).sort(),written);
+  for (const call of sent) assert.deepEqual(call.images,[{mime:'image/png',data:png}]);
+});
+
 test('brief displays the client view separately and keeps its longer source in the manuscript',async()=>{
   const {makeBriefCard}=await import('./brief-intake.mjs');
   const brief='请设计包装。产品无糖，用泉水。我认为主要卖点是无糖。正面必须标注容量。';

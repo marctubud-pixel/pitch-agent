@@ -6,7 +6,25 @@ const use = object({source:string, borrow:string, apply:string});
 const publicUse = object({...use.properties,why:string,avoid:string});
 const planSchema = item => object({sharedBrand:list(item),directions:list(object({direction:string, main:list(item), auxiliary:list(item), gap:string}))});
 const observationSchema = object({observations:list(object({source:string, visible:string}))});
+const imagePromptSchema = object({prompt:string});
 const nonempty = s => typeof s === 'string' && s.trim().length > 0;
+
+export async function generateVisualWithDesktopModels({call, images, context, drawingBrief}) {
+  const instruction = [
+    '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
+    '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。原样保留明确允许上图的文案，事实只取本案资料。',
+    '返回一个 prompt 字段，内容是完整的生图提示词。',
+  ].join('\n');
+  const written = await call(instruction,[],imagePromptSchema,{
+    assignment:'夜航生图提示词写作',rules:[],context:JSON.stringify({...context,drawingBrief}),
+  });
+  const prompt = written.parsedOutput?.prompt;
+  if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
+    throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
+  }
+  const result = await call(prompt,images,null,{exactImagePrompt:true});
+  return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
+}
 
 export async function selectVisualReferences({call, project, images, active}) {
   const names = project.directions;
@@ -31,7 +49,7 @@ export async function selectVisualReferences({call, project, images, active}) {
     packet.observations = [];
     for (let i=0;i<sources.length;i+=4) {
       const group = sources.slice(i,i+4);
-      const result = await call('逐张记录可见内容、构图、材质、使用情境及可借鉴的局部。用所附图片的 source 身份返回。',group,observationSchema,{
+      const result = await call('逐张记录可见内容、载体、配色、布局、景别、笔法、字体和使用情境。用所附图片的 source 身份返回。',group,observationSchema,{
         assignment:'视觉参考原图登记',context:JSON.stringify(group.map(s=>({source:s.imageId,name:s.name}))),
       });
       const rows=result.parsedOutput?.observations;
@@ -39,7 +57,13 @@ export async function selectVisualReferences({call, project, images, active}) {
       packet.observations.push(...rows);
     }
   }
-  const result = await call('逐案按文案方向的职责选一张主参考、至多两张用途不同的辅助图。先对照策略和该案创意，横向比较同用途候选。先看实际图上的载体、层级和视觉机制，再判断如何让观众读出本案主张。转载、同系列换角度或借法重复的图只留最清楚的一张。主参考须能转译方向创意，纯材质或局部动作只按具体用途选作辅助。陈述借哪一处、如何转译到本案；在 why 中说明相近候选的取舍。无适用主参考则 main 留空并写 gap。专用参考只给一个方向，已有归属必须保留。searchDirection 标注的公开图只供该方向选用；按方向任务核对主图，稳健方向观察品类惯例，特征方向观察产品特点，情绪方向观察具体使用情境。稳健方向依据画面只能识别品类惯例，没有销售来源不得断言热销。公开图写明 why（与任务的可见关系）和 avoid（禁止照搬的具体部分）。sharedBrand 只列确属本案的品牌标志、官方 VI 等全案约束；不要把普通同类图放入共享。每案生图最多附四张，改稿还需给原稿留一个位置。辅助按重要性排序。',sources.length<=4 ? sources : [],planSchema(sources.some(s=>s.sourceUrl)?publicUse:use),{
+  const selection = [
+    '逐案按文案方向选一张主参考和至多两张作用不同的辅助图。先对照策略与该案创意，横向比较同用途原件。同一画面、同系列换角度或用途重复时选最清楚的一张。',
+    '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
+    'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
+    '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。无适用主参考时 main 留空并写 gap。sharedBrand 只列本案官方标志、VI 等实际约束。辅助按重要性排序。',
+  ].join('\n');
+  const result = await call(selection,sources.length<=4 ? sources : [],planSchema(sources.some(s=>s.sourceUrl)?publicUse:use),{
     assignment:'比稿负责人分配参考图',context:JSON.stringify(packet),
   });
   const rows=result.parsedOutput?.directions;
@@ -66,7 +90,7 @@ export async function selectVisualReferences({call, project, images, active}) {
     if (remaining<0 && active.includes(row.direction)) throw invalidOutput('「'+row.direction+'」的共享品牌图和主参考超出生图附件上限，请注明本轮必须保留的品牌图后重试。');
     const selected = [...primary,...common,...auxiliary.slice(0,Math.max(0,remaining))];
     const handoff = {direction:row.direction,selectionThread:result.threadId,references:selected.map(s=>s.reference),
-      deferred:auxiliary.slice(Math.max(0,remaining)).map(s=>({...s.reference,reason:'本次生图最多附四张，已优先保留主参考、品牌约束及修改原稿。'}))};
+      deferred:auxiliary.slice(Math.max(0,remaining)).map(s=>({...s.reference,reason:'本轮参考包优先保留主参考、品牌约束和最相关的文字借鉴线索。'}))};
     plans.set(row.direction,{images:selected.map(s=>s.image),handoff,missing:!primary.length,gap:row.gap});
   }
   const missing=active.filter(n=>plans.get(n).missing);

@@ -21,7 +21,7 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison } from './visual-comparison.mjs';
-import { selectVisualReferences, reviewReferencePlan } from './visual-references.mjs';
+import { generateVisualWithDesktopModels, selectVisualReferences, reviewReferencePlan } from './visual-references.mjs';
 import { reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -30,6 +30,12 @@ import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs
 const executeFile = promisify(execFile);
 const repo = fileURLToPath(new URL('../../', import.meta.url));
 const hash = value => createHash('sha256').update(value).digest('hex');
+const visualElements = ['配色', '布局', '景别', '笔法', '字体'];
+const visualBorrowings = [
+  ['布局', '景别', '笔法'],
+  ['配色', '笔法', '字体'],
+  ['配色', '布局', '景别'],
+];
 const stages = {
   brief: ['简报与任务','提取客户给定的项目条件、卖点、意向及明确约束。'],
   research: ['研究', '根据实际取得的来源列出出处、观察、推论和缺口。网络检索只用无保密内容的品类词；不把模型常识当作已核来源。'],
@@ -1072,11 +1078,11 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
     const editor = makeProvider(false,false);
     const creator = stage === 'visual' && desktop ? desktopImageProvider(process.env.ONEPITCH_TEXT_EXECUTABLE,dir,signal,onEvent) : stage === 'visual' ? makeProvider(true) : reviewer;
     const owner = await readFile(join(repo,'docs/agents/proposal-director.md'),'utf8');
-    const promptFor=(instruction,task)=>[common,task.delegate ? '你是比稿负责人此次委托的临时执行者，仅完成所给任务。' : owner,...(task.rules ?? rules),task.assignment ?? assignment,instruction,'实际项目输入（JSON）',task.context ?? context].join('\n\n');
+    const promptFor=(instruction,task,correction='')=>task.exactImagePrompt ? instruction : [common,task.delegate ? '你是比稿负责人此次委托的临时执行者，仅完成所给任务。' : owner,...(task.rules ?? rules),task.assignment ?? assignment,instruction+(correction?'\n这次只修正本次响应的校验问题：'+correction:''),'实际项目输入（JSON）',task.context ?? context].join('\n\n');
     const directCall = async (instruction, images = inputs.images, schema = textSchema, task = {}, correction='') => {
       signal?.throwIfAborted();
       try {
-        return await (task.editorial ? editor : stage === 'visual' && !schema ? creator : reviewer).execute({runId:randomUUID(),prompt:promptFor(instruction+(correction?'\n这次只修正本次响应的校验问题：'+correction:''),task),images,signal,...(task.comparison ? {imageEnvelope:{operation:'final-visual-v1',limits:{maxImages:8,maxBytes:64*1024*1024,maxPixels:160_000_000}}}:{}),...(schema ? {outputSchema:schema}:{})});
+        return await (task.editorial ? editor : stage === 'visual' && !schema ? creator : reviewer).execute({runId:randomUUID(),prompt:promptFor(instruction,task,correction),images,signal,...(task.comparison ? {imageEnvelope:{operation:'final-visual-v1',limits:{maxImages:8,maxBytes:64*1024*1024,maxPixels:160_000_000}}}:{}),...(schema ? {outputSchema:schema}:{})});
       } catch (error) {
         if (signal?.aborted) throw Error('本次阶段已中止');
         // Native image generation can finish without a final text message.
@@ -1131,15 +1137,29 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           artifacts.push({kind:'image',name:ref.name,visual:{role:'reference',direction,title:ref.title ?? ref.name,sha256:ref.sha256,pageUrl:ref.pageUrl,sourceUrl:ref.sourceUrl,query:ref.query}});
         }
         for (const ref of publicImages) await publishReference(ref);
-        const sourceImages = best ? [best.image, ...references] : references;
-        const generationContext = JSON.stringify({...JSON.parse(context),materials:inputs.texts.filter(item=>!item.imageNumber),
-          direction:project.copyReview?.draft?.directions?.find(d=>d.name===direction) ?? direction, referenceHandoff:handoff});
-        const generated = await independentCalls(['主体与构图关系', '视角与空间关系', '色彩、材质或图形语言'], async (focus,index) => {
-          await onEvent?.('正在为「'+direction+'」生成主视觉 '+(index+1)+'/3');
-          const instruction = (desktop ? '生成一张完整主视觉。' : '只用内置 image_generation 工具生成一张完整主视觉。')+'保留同方向的核心卖点及必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。本张从'+focus+'做实质不同的处理。'+
-            (best ? '第一张输入图为上一批原稿。'+'保留成立处，结合用户意见和前版问题改稿：'+best.visual.reason : '')+
-            '同批三张各按指定侧重点独立展开。完成后简述设计。指定方向：'+JSON.stringify(direction);
-          const result = await call(instruction,sourceImages,null,{delegate:true,context:generationContext});
+        const generationReferences = handoff.references.filter(ref=>ref.role==='main'||ref.role==='sharedBrand');
+        const generationImages = references.filter(image=>generationReferences.some(ref=>ref.sha256===image.sha256));
+        const sourceImages = best ? [best.image, ...generationImages] : generationImages;
+        const generationContext = {...JSON.parse(context),materials:inputs.texts.filter(item=>!item.imageNumber),
+          direction:project.copyReview?.draft?.directions?.find(d=>d.name===direction) ?? direction,
+          referenceHandoff:{direction,references:generationReferences.map((ref,index)=>({...ref,imageNumber:index+1+Number(Boolean(best))}))},
+          auxiliaryNotes:handoff.references.filter(ref=>ref.role==='auxiliary').map(({borrow,apply})=>({borrow,apply}))};
+        const generated = await independentCalls(visualBorrowings, async (borrow,index) => {
+          const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
+          await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/3');
+          const instruction = [
+            desktop ? '生成一张完整主视觉。' : '只用内置 image_generation 工具生成一张完整主视觉。',
+            '围绕文案方向的核心主张，承接主参考的整体美术风格。五项中只借主参考的'+borrow.join('、')+'。'+transfer.change.join('、')+'为本案重新设计，两处变化应清楚可见。',
+            '从主参考看清布局、景别、背景和局部动作的关系。主参考有背景时，用本案场景重画完整背景，人物、物件、地景和特色图形按本案创作。字体看字形和字重，文字位置由布局决定。',
+            '当前输入的图号和用途见 referenceHandoff。主参考提供本张的创作借鉴，共用品牌图提供已有品牌约束。auxiliaryNotes 是文字线索。',
+            '保留简报的必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。',
+            best ? '第一张输入图为上一批原稿。保留成立处，结合用户意见和前版问题改稿。'+best.visual.reason : '',
+            '完成后简述设计。指定方向：'+JSON.stringify(direction),
+          ].filter(Boolean).join('\n');
+          const input = {...generationContext,transfer};
+          const {result,promptWriting} = desktop
+            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction})
+            : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
           const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
           const digest = hash(original.bytes);
           if (seen.has(digest)) throw invalidOutput('主视觉候选返回了重复图片，请重试视觉阶段');
@@ -1147,7 +1167,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
           const path = join(dir,name);
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const record = {direction,name,referenceHandoff:handoff,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(promptWriting ? {promptWriting} : {}),...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
           return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
         });
