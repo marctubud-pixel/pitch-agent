@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.84.0",
-  "registrySha256": "5e2fa328becc226606788272889b3c87877af102a530b85e82c316f9183821c8",
+  "baselineVersion": "1.85.0",
+  "registrySha256": "b26ccb1a4a897952c4820d06eca93abd66aa3e56147d782ec50c145452dc625b",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -39,10 +39,10 @@
       }
     },
     "agent.visual-owner": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/visual-owner.md": "800a7404c01712c9afafbdcd46f2db4d92528a0bc3c37f2eff3d604e19bd0baf"
+        "docs/agents/visual-owner.md": "d5eb4d64f1ec9d3277d7af8758283639e965b30668e4f3942f359f9c109a7542"
       }
     },
     "agent.layout-owner": {
@@ -210,10 +210,10 @@
       }
     },
     "method.visual": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "1ac395f60e70963163b02670e14663fc571b0635c6be46e37856d1558d4abeaa",
+        "skills/visual-development-lead/SKILL.md": "32d680e388be70c4680f1124e13fa861312f717b0107197417f24c0444309d60",
         "skills/visual-development-lead/references/kv.md": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
         "skills/visual-development-lead/references/packaging.md": "3a7f3663123243968c9257ce22fe73771a42e31a2435cea6722d35135480eb64",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "3d85112eb1b268a0ec512f08b11be43db47ab403da4f30472ced352f1caf432c"
+        "docs/specs/nightflight-runtime.md": "fcf8095eb548423d97704eb43c7cf80170c412c5dbd5dc575cd21fe64fc3468f"
       }
     },
     "contract.nightflight-final-reader": {
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "bc9b0b600767c7da25e91b861530eda8172bb597884a932871a29b346c9e8ba1",
+    "docs/specs/README.md": "69843a0a477966185f9eee188f90602d82a2fe9d697a18d16fdacbd54cdf4ba3",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

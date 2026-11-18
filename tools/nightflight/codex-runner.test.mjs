@@ -613,7 +613,7 @@ test('reference handoff rejects missing primary, duplicated originals and a reas
   await assert.rejects(selectVisualReferences({project,images:[],active:['B']}),/对话区.*重试/);
 });
 
-test('all nine generator packets contain exactly the reference bytes assigned to that direction',async t=>{
+test('all nine visual calls use each direction’s main original and three different borrow and change plans',async t=>{
   const f=await fixture(t,'image');
   const originals=[png,'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC','iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMIqDUBAAIiAQIUhcD8AAAAAElFTkSuQmCC','iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGOYVmsCAAL0AUjegoXyAAAAAElFTkSuQmCC'];
   const names=['山风主参考.png','晨雾主参考.png','旧街主参考.png','晨雾辅助.png','测试茶标志.png'];
@@ -630,14 +630,29 @@ test('all nine generator packets contain exactly the reference bytes assigned to
   const runs=join(f.dir,'.codex-runs');
   const packets=await Promise.all((await readdir(runs)).map(async id=>JSON.parse(await readFile(join(runs,id,'input.json'),'utf8'))));
   const actual=(await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+  const transfers = [
+    {borrow:['布局','景别','笔法'],change:['配色','字体']},
+    {borrow:['配色','笔法','字体'],change:['布局','景别']},
+    {borrow:['配色','布局','景别'],change:['笔法','字体']},
+  ];
   for(const [i,direction] of f.project.directions.entries()){
-    const expected=i===1?[hashes[1],hashes[4],hashes[3]]:[hashes[i],hashes[4]];
+    const expected=[hashes[i],hashes[4]];
     const requests=packets.filter(p=>!p.outputSchema && p.prompt.includes('指定方向：'+JSON.stringify(direction)));
     assert.equal(requests.length,3);
     assert.deepEqual(actual.filter(r=>r.direction===direction).map(r=>r.received),[expected,expected,expected]);
-    for(const request of requests) assert.deepEqual(request.images.map(s=>s.sha256),expected);
-    for(const a of main.filter(a=>a.visual.direction===direction)){
-      assert.deepEqual(a.visual.referenceHandoff.references.map(r=>r.sha256),expected);
+    const payloads=requests.map(request=>{
+      assert.deepEqual(request.images.map(s=>s.sha256),expected);
+      const payload=JSON.parse(request.prompt.split('实际项目输入（JSON）').at(-1));
+      assert.deepEqual(payload.referenceHandoff.references.map(ref=>ref.sha256),expected);
+      assert.equal(payload.auxiliaryNotes.length,i===1?1:0);
+      return payload.transfer;
+    });
+    for(const transfer of transfers) assert.ok(payloads.some(p=>JSON.stringify(p)===JSON.stringify(transfer)));
+    for(const a of main.filter(a=>a.visual.direction===direction)) {
+      const receipt=JSON.parse(await readFile(join(f.dir,a.name+'.receipt.json'),'utf8'));
+      assert.deepEqual(receipt.inputImages,expected);
+      assert.deepEqual(receipt.transfer,transfers[a.visual.candidate-1]);
+      assert.deepEqual(a.visual.referenceHandoff.references.map(r=>r.sha256),i===1?[...expected,hashes[3]]:expected);
       assert.ok(a.visual.referenceHandoff.references.every(r=>r.borrow && r.apply));
     }
   }
