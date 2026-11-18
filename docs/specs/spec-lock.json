@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.82.0",
-  "registrySha256": "70de876302ec8037217ac7feaf2d0ec51e0f270af21b3424e9a069f146788104",
+  "baselineVersion": "1.83.0",
+  "registrySha256": "6115d84263be79a288a53f7fa7624b76f666cbf0c61eca8c28939307585f3e75",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -32,10 +32,10 @@
       }
     },
     "agent.copy-owner": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/copy-owner.md": "3cd1d359a344cb508b363b47e8c572689254998323af234f683e2b5a282b8444"
+        "docs/agents/copy-owner.md": "a6f64ef18e186d24ac2946c958618a89f3b48ad66c210dd0c4d588e971c2617d"
       }
     },
     "agent.visual-owner": {
@@ -116,10 +116,10 @@
       }
     },
     "page.themes": {
-      "version": "1.13.0",
+      "version": "1.14.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "ad74b355f5b61b0c6486b7c54db21d659fe3018b1ddbfab6cbbddc9203600c49"
+        "docs/pages/themes.md": "4415a98858fcfad283eef739e859e5386674af400056c3807b351e82ca303d35"
       }
     },
     "page.visual": {
@@ -273,17 +273,17 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.26.0",
+      "version": "1.27.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "090c416163348dbe562d41d1509fc5e03f67ec4636fe80cd91dd2af8c3ae9072"
+        "docs/specs/nightflight-stage-output.md": "79618acd3759b07760cdff0d88ef5416513140af2f669feefa3dfa4b272e18d9"
       }
     },
     "contract.workflow": {
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "files": {
-        "docs/workflows/提案工作流_现行规则.md": "e8024a1b59ff92d0818754c5771247363a1a2b04398782c89db6b30cb03b1d5f"
+        "docs/workflows/提案工作流_现行规则.md": "631f1ac4fb1de8d5bfcab723fbaee00a1ba2f580543e22187a22c9025de14458"
       }
     },
     "contract.change": {
@@ -497,10 +497,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "5b86933e94c7865b429c61fce84e734edbb8b4f8226ef82974af9fd60b6b2a86"
+        "docs/specs/copy-generation.md": "b79bafe5126f0ec52dfe8f901cd18cae11de8d9fb996742574f2d94a9b27a6f1"
       }
     },
     "method.slogan-engine": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "d56f7d420619dd4235b801497c40687e7158fb9df22368b37d239735446b7f88"
+        "docs/specs/nightflight-runtime.md": "8b13f7226170b0f23eacd752452cf5d5ea2184401dea73d20738c70b89624e05"
       }
     },
     "contract.nightflight-final-reader": {
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "0692b4dea54474974b6d62901f2fd653345188b053b79ee6c8e62660c1fffd6c",
+    "docs/specs/README.md": "6a5afa6dffcd53853627e7711c9891b4fcd367c6aff7381f8e7e927df436b08a",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

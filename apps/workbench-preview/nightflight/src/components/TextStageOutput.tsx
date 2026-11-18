@@ -291,14 +291,17 @@ export function CopyOutput({
     return <Pending>{text ? '已有文案原稿，尚未登记候选方向。' : '尚无创意方向。'}</Pending>;
   const sections = sectionsOf(text);
   const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
-  const ticket = p.copyReview?.status === 'ready' ? p.copyReview : undefined;
+  const publication = p.copyReview?.status === 'ready' ? p.copyReview : undefined;
+  const engine = publication?.protocol === 'director-engine-selection-v1' ? publication : undefined;
+  const ticket = publication?.protocol === 'director-engine-selection-v1' ? undefined : publication;
   const headlineReview = headlineReviewProtocol(ticket);
-  const recommended = ticket
-    ? ticket.draft.directions.find((d) => d.id === ticket.recommendation.directionId)?.name
+  const recommended = publication
+    ? publication.draft.directions.find((d) => d.id === publication.recommendation.directionId)?.name
     : rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
   const directions = p.directions.map((name, i) => {
     const signed = ticket?.draft.directions.find((entry) => entry.name === name);
-    const copy = signed ?? publishedDirections?.find((entry) => entry.name === name);
+    const copy = publication?.draft.directions.find((entry) => entry.name === name)
+      ?? publishedDirections?.find((entry) => entry.name === name);
     const main = copy?.main ?? headlineFromSections(sections, name, i);
     return { name, main, signed };
   });
@@ -306,6 +309,8 @@ export function CopyOutput({
     || directions.find((d) => d.name === p.choice)
     || directions.find((d) => d.name === recommended)
     || directions[0];
+  const engineDirection = engine?.draft.directions.find(d => d.name === current.name);
+  const engineCandidates = engine?.workbook.directions.find(d => d.id === engineDirection?.id)?.candidates;
   const workbook = ticket?.sloganWorkbook;
   const workingDraft = workbook?.polish.directions.find(d => d.id === current.signed?.id);
   const candidates = workbook?.plan.directions.find(d => d.id === current.signed?.id)?.candidates;
@@ -318,8 +323,9 @@ export function CopyOutput({
             <article key={d.name} className={'dir' + (d === current ? ' is-picked' : '')}>
               <p className="mono-label">
                 {'方向 ' + String.fromCharCode(65 + index)}
+                {engine && ' · ' + d.name}
                 {d.signed?.duty && ' · ' + copyDuties[d.signed.duty]}
-                {d.name === recommended && ' · ' + (recommendationLabel ?? (headlineReview || ticket?.protocol === 'director-headline-v1' ? '本版推荐' : '旧版推荐'))}
+                {d.name === recommended && ' · ' + (recommendationLabel ?? (engine || headlineReview || ticket?.protocol === 'director-headline-v1' ? '本版推荐' : '旧版推荐'))}
                 {d.name === p.choice && ' · 已选定'}
               </p>
               <h3>
@@ -331,7 +337,19 @@ export function CopyOutput({
         </div>
       </section>
       <section className="block copy-theme" key={current.name}>
-        {renderReview ? renderReview(current.name) : ticket?.protocol === 'director-headline-v1' ? (
+        {renderReview ? renderReview(current.name) : engine && engineDirection ? (
+          <>
+            <p>{engineDirection.secondary}</p>
+            {current.name === recommended && <p><strong>推荐理由</strong>　{engine.recommendation.reason}</p>}
+            {engineCandidates && <details className="research-original">
+              <summary>查看本案创作底稿</summary>
+              <p>{engineDirection.claim}　{engineDirection.mechanism}</p>
+              {engineCandidates.map(candidate => <p key={candidate.text}>
+                <strong>{candidate.text}</strong>　{candidate.text === current.main ? '已选 · ' : ''}{candidate.use}
+              </p>)}
+            </details>}
+          </>
+        ) : ticket?.protocol === 'director-headline-v1' ? (
           <details className="research-original">
             <summary>盲读与取舍</summary>
             {ticket.sloganWorkbook?.second?.map((read,i)=><p key={i}><strong>{i===0?'是否读得懂':'是否愿意转述'}</strong>　{read.output.items.find(item=>item.text===current.main)?.observation}</p>)}

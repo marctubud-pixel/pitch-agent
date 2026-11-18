@@ -130,6 +130,28 @@ export interface CopyReview {
     rulings: { challengeId: string; verdict: 'resolved' | 'rejected' | 'pending'; reason: string }[];
   };
 }
+interface EngineCopyDirection {
+  id: DirectionId;
+  name: string;
+  main: string;
+  secondary: string;
+  claim: string;
+  mechanism: string;
+}
+
+export interface EngineCopyReview {
+  protocol: 'director-engine-selection-v1';
+  version: 1;
+  status: 'ready';
+  bodyHash: string;
+  draft: { directions: EngineCopyDirection[] };
+  workbook: { directions: {
+    id: DirectionId;
+    candidates: { text: string; use: string }[];
+  }[] };
+  recommendation: { directionId: DirectionId; reason: string };
+}
+
 export interface ResearchImage {
   name: string;
   sha256: string;
@@ -174,7 +196,7 @@ export interface Project extends Summary {
     gaps: (string | ResearchGap)[];
     next: string;
   };
-  copyReview?: CopyReview | null;
+  copyReview?: CopyReview | EngineCopyReview | null;
   directions: string[];
   choice?: string;
   error?: string;

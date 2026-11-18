@@ -1010,6 +1010,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
     dir = await realpath(dir);
     const desktop = process.env.ONEPITCH_TEXT_EXECUTABLE
       ? await desktopTextProvider(process.env.ONEPITCH_TEXT_EXECUTABLE,signal,onEvent) : null;
+    if (stage==='copy' && !historicalPanels && !/^deepseek(?:[-_/]|$)/i.test(desktop?.profile.model ?? '')) {
+      throw Error('请先在夜航的文字 API 设置中选择 DeepSeek，再重试文案与主题');
+    }
     const [label, assignment] = stages[stage];
     const rules = await Promise.all((extraRules[stage] || []).map(p=>readFile(join(repo,p),'utf8')));
     const inputProject = stage === 'copy'
