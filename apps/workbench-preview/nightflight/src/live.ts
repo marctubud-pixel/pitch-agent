@@ -140,7 +140,7 @@ interface EngineCopyDirection {
 }
 
 export interface EngineCopyReview {
-  protocol: 'director-engine-selection-v1';
+  protocol: 'director-engine-selection-v1' | 'director-engine-selection-v2';
   version: 1;
   status: 'ready';
   bodyHash: string;

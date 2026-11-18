@@ -292,8 +292,9 @@ export function CopyOutput({
   const sections = sectionsOf(text);
   const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
   const publication = p.copyReview?.status === 'ready' ? p.copyReview : undefined;
-  const engine = publication?.protocol === 'director-engine-selection-v1' ? publication : undefined;
-  const ticket = publication?.protocol === 'director-engine-selection-v1' ? undefined : publication;
+  const isEngine = publication && 'workbook' in publication;
+  const engine = isEngine ? publication : undefined;
+  const ticket = isEngine ? undefined : publication;
   const headlineReview = headlineReviewProtocol(ticket);
   const recommended = publication
     ? publication.draft.directions.find((d) => d.id === publication.recommendation.directionId)?.name
@@ -341,7 +342,15 @@ export function CopyOutput({
           <>
             <p>{engineDirection.secondary}</p>
             {current.name === recommended && <p><strong>推荐理由</strong>　{engine.recommendation.reason}</p>}
-            {engineCandidates && <details className="research-original">
+            {engine?.protocol === 'director-engine-selection-v2' ? (
+              <>
+                <h3>本方向备选文案</h3>
+                <ul>
+                  {engineCandidates?.filter(candidate => candidate.text !== current.main).map(candidate =>
+                    <li key={candidate.text}>{candidate.text}</li>)}
+                </ul>
+              </>
+            ) : engineCandidates && <details className="research-original">
               <summary>查看本案创作底稿</summary>
               <p>{engineDirection.claim}　{engineDirection.mechanism}</p>
               {engineCandidates.map(candidate => <p key={candidate.text}>

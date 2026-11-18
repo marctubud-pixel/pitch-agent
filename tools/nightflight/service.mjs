@@ -22,7 +22,7 @@ import {
 import { resolve, join, basename, extname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { normalizeOutlineOptions } from './proposal-outline.mjs';
-import { engineCopyHandoffReady, engineCopyProtocol, headlineMarkdown, headlineProtocol, validSingleReview } from './copy-review.mjs';
+import { engineCopyHandoffReady, isEngineCopyProtocol, headlineMarkdown, headlineProtocol, validSingleReview } from './copy-review.mjs';
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
 const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
@@ -65,7 +65,7 @@ function archiveVersion(p) {
 
 // This gate is used only when accepting a new run. Historical tickets keep their original shape.
 function copyHandoffReady(review, names, text) {
-  if (review?.protocol===engineCopyProtocol) return engineCopyHandoffReady(review,names,text);
+  if (isEngineCopyProtocol(review?.protocol)) return engineCopyHandoffReady(review,names,text);
   if(review?.protocol==='director-headline-v1') {
     const draft=review.draft?.directions;
     const reads=review.sloganWorkbook?.second;

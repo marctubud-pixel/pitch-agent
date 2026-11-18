@@ -1069,7 +1069,7 @@ test('operator-provided RSS search preserves query and bypasses default provider
   assert.equal(result.results[0].url,'https://brand.example.org/original');
 });
 
-test('single director uses DeepSeek to write three free directions and only chooses from frozen candidates',async t=>{
+test('DeepSeek writer chooses each headline and the director only recommends among the three author picks',async t=>{
   const f=await fixture(t,'copy-clean',{historicalPanels:false});
   const executable=join(f.home,'fake-deepseek');
   const requestLog=join(f.home,'deepseek-requests.jsonl');
@@ -1079,7 +1079,8 @@ test('single director uses DeepSeek to write three free directions and only choo
     claim:'主张'+id,mechanism:'机制'+id,strategyLink:'连接'+id,secondary:'副标'+id,
     candidates:[1,2,3].map(n=>({text:id+'候选'+n,use:'海报'})),
   }))};
-  const selection={picks:{A:'A2',B:'B3',C:'C1'},recommendation:{directionId:'B',reason:'具体呈现茶与包装的联系'}};
+  const writing={workbook,picks:{A:'A2',B:'B3',C:'C1'}};
+  const recommendation={directionId:'B',reason:'具体呈现茶与包装的联系'};
   await writeFile(executable,`#!/usr/bin/env node
 const fs=require('node:fs');
 if(process.argv[3]==='profile') {
@@ -1087,9 +1088,9 @@ if(process.argv[3]==='profile') {
 } else {
   const packet=JSON.parse(fs.readFileSync(0,'utf8'));
   const prompt=packet.body.messages[1].content;
-  const stage=prompt.includes('COPY_ENGINE_WRITE')?'writer':'selector';
+  const stage=prompt.includes('COPY_ENGINE_WRITE')?'writer':'director';
   fs.appendFileSync(${JSON.stringify(requestLog)}, JSON.stringify({stage,prompt})+'\\n');
-  const output=stage==='writer'?${JSON.stringify(workbook)}:${JSON.stringify(selection)};
+  const output=stage==='writer'?${JSON.stringify(writing)}:${JSON.stringify(recommendation)};
   console.log(JSON.stringify({id:stage,model:'deepseek-fixture',choices:[{message:{content:JSON.stringify(output)},finish_reason:'stop'}]}));
 }
 `,{mode:0o700});
@@ -1108,7 +1109,7 @@ if(process.argv[3]==='profile') {
   assert.deepEqual(copyReview.draft.directions.map(d=>d.main),['A候选2','B候选3','C候选1']);
   assert.doesNotMatch(published,/A候选1/);
   assert.match(published,/主标题：B候选3\n副标：副标B/);
-  assert.deepEqual(copyReview.calls.map(c=>c.phase),['COPY_ENGINE_WRITE','COPY_ENGINE_SELECT']);
+  assert.deepEqual(copyReview.calls.map(c=>c.phase),['COPY_ENGINE_WRITE','COPY_ENGINE_RECOMMEND']);
   assert.equal(engineCopyHandoffReady(copyReview,directions,published),true);
   const tampered=structuredClone(copyReview);
   tampered.picks.B='B4';
@@ -1118,10 +1119,11 @@ if(process.argv[3]==='profile') {
   assert.equal(engineCopyHandoffReady(copyReview,directions,published+'改字'),false);
 
   const calls=(await readFile(requestLog,'utf8')).trim().split('\n').map(line=>JSON.parse(line));
-  assert.deepEqual(calls.map(call=>call.stage),['writer','selector']);
+  assert.deepEqual(calls.map(call=>call.stage),['writer','director']);
   assert.match(calls[0].prompt,/name: slogan-engine/);
-  assert.doesNotMatch(calls[1].prompt,/name: slogan-engine/);
-  assert.match(calls[1].prompt,/B候选3/);
+  assert.doesNotMatch(calls[1].prompt,/name: slogan-engine|B候选1|A候选3/);
+  const packet=JSON.parse(calls[1].prompt.split('实际项目输入（JSON）').at(-1).trim());
+  assert.deepEqual(packet.directions,copyReview.draft.directions.map(({id,name,main})=>({id,name,main})));
 });
 
 test('single director copy requires a configured DeepSeek text model',async t=>{

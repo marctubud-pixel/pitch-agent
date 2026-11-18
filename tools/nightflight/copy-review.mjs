@@ -6,7 +6,8 @@ import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
 export const headlineProtocol = 'dual-panel-headline-v4';
-export const engineCopyProtocol = 'director-engine-selection-v1';
+export const engineCopyProtocol = 'director-engine-selection-v2';
+export const isEngineCopyProtocol = protocol=>protocol===engineCopyProtocol || protocol==='director-engine-selection-v1';
 const roles = ['copy','brand','user','comms'];
 const ids = ['A','B','C'];
 const duties = {continuity:'稳健延续',feature:'品牌或产品特征放大',emotion:'用户氛围或情绪放大'};
@@ -123,15 +124,14 @@ export function headlineMarkdown(draft) {
   return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main).join('\n\n');
 }
 
-const enginePhases = ['COPY_ENGINE_WRITE', 'COPY_ENGINE_SELECT'];
+const enginePhases = ['COPY_ENGINE_WRITE', 'COPY_ENGINE_RECOMMEND'];
 const engineDraftSchema = object({directions:list(object({
   id:choice(ids), name:str, basis:str, claim:str, mechanism:str, strategyLink:str, secondary:str,
   candidates:list(object({text:str, use:str})),
 }))});
-const engineSelectionSchema = object({
-  picks:object(Object.fromEntries(ids.map(id=>[id,choice([1,2,3,4].map(n=>id+n))]))),
-  recommendation:object({directionId:choice(ids),reason:str}),
-});
+const enginePicks = object(Object.fromEntries(ids.map(id=>[id,choice([1,2,3,4].map(n=>id+n))])));
+const engineWriterSchema = object({workbook:engineDraftSchema,picks:enginePicks});
+const engineRecommendation = object({directionId:choice(ids),reason:str});
 
 function validateEngineDraft(draft, materials) {
   validate(draft,engineDraftSchema,'创作底稿');
@@ -153,16 +153,16 @@ function validateEngineDraft(draft, materials) {
   }
 }
 
-function resolveEngineSelection(workbook, selection) {
-  validate(selection,engineSelectionSchema,'负责人选句');
+function resolveEnginePicks(workbook, picks) {
+  validate(picks,enginePicks,'案内选句');
   const directions = workbook.directions.map(({candidates,...direction})=>{
-    const code = selection.picks[direction.id];
+    const code = picks[direction.id];
     const picked = candidates[Number(code.slice(1))-1];
     requireThat(picked,'只能从该方向已写出的候选中选句：'+code);
     return {...direction,main:picked.text};
   });
   const titles = directions.map(d=>d.main.normalize('NFKC').replace(/[\p{P}\s]/gu,'').toLowerCase());
-  requireThat(new Set(titles).size===3,'负责人选出的三案主标题必须不同');
+  requireThat(new Set(titles).size===3,'三案主标题必须不同');
   return {directions};
 }
 
@@ -177,12 +177,14 @@ function engineReceipt(receipt, phase) {
 
 export function engineCopyHandoffReady(review, names, text) {
   try {
-    if (review?.protocol!==engineCopyProtocol || review.version!==1 || review.status!=='ready' ||
+    if (!isEngineCopyProtocol(review?.protocol) || review.version!==1 || review.status!=='ready' ||
         !/^[a-f0-9]{64}$/.test(review.skillHash ?? '') || !nonempty(text) || review.bodyHash!==hash(text) ||
-        review.calls?.length!==2 || !enginePhases.every((phase,i)=>engineReceipt(review.calls[i],phase)) ||
+        review.calls?.length!==2 || !engineReceipt(review.calls[0],enginePhases[0]) ||
+        !engineReceipt(review.calls[1],review.protocol===engineCopyProtocol ? enginePhases[1] : 'COPY_ENGINE_SELECT') ||
         review.calls[0].runId===review.calls[1].runId || review.calls[0].threadId===review.calls[1].threadId) return false;
     validateEngineDraft(review.workbook);
-    const draft=resolveEngineSelection(review.workbook,{picks:review.picks,recommendation:review.recommendation});
+    validate(review.recommendation,engineRecommendation,'负责人推荐');
+    const draft=resolveEnginePicks(review.workbook,review.picks);
     return isDeepStrictEqual(review.draft,draft) && isDeepStrictEqual(names,draft.directions.map(d=>d.name)) &&
       text===engineCopyMarkdown(draft);
   } catch(error) {
@@ -209,25 +211,26 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
     return {receipt,output:result.parsedOutput};
   }
 
-  await onEvent?.('DeepSeek 正在用原版 slogan-engine 构思三个方向');
-  const {output:workbook,receipt:written}=await run(enginePhases[0],
-    '你是本次写作 Agent。沿用当前 Brief、研究与策略，使用原版 slogan-engine 从受众落差找到三个不同的创意连接，自拟名称和角度。每案让人记住一件不同的事；同一个意思换文风、长短或修辞属于同一案的版本。依据 basis 必须逐字摘自当前材料，claim 写一句主张，mechanism 写创意怎么成立，strategyLink 写怎么接策略。每案保留三到四条可选主标题及各自用法，并给一条本案通用的简洁支撑副标 secondary。各句只用明确有依据的事实，遵守客户限定和原件的品类边界。使用原件对场合、长短、声律的判断。当前流程仅执行原版 Skill 的创作，盲读、独立评审、回写和作者推荐均跳过。按 A、B、C 交稿，所有文案字段逐项、单行填写。',
-    engineDraftSchema,source,[skill]);
+  await onEvent?.('DeepSeek 写作 Agent 正在起稿并从每案自选一句');
+  const {output:writing,receipt:written}=await run(enginePhases[0],
+    '你是本次写作 Agent。沿用当前 Brief、研究与策略，使用原版 slogan-engine 从受众落差找到三个不同的创意连接，自拟名称和角度。每案让人记住一件不同的事；同一个意思换文风、长短或修辞属于同一案的版本。依据 basis 必须逐字摘自当前材料，claim 写一句主张，mechanism 写创意怎么成立，strategyLink 写怎么接策略。每案保留三到四条可选主标题及各自用法，并给一条本案通用的简洁支撑副标 secondary。各句只用明确有依据的事实，遵守客户限定和原件的品类边界。使用原件对场合、长短、声律的判断。按 A、B、C 在 workbook 交三案，候选顺序对应 A1、A2 等编号。你作为创作者从每案原候选各选一句，把三个编号填入 picks。案内按自然、好记、符合本案事实和方向优先。三个案内自选并列，整组推荐交给负责人。文案字段逐项、单行填写，略过盲读和回写。',
+    engineWriterSchema,source,[skill]);
+  validate(writing,engineWriterSchema,'写作 Agent 交稿');
+  const {workbook,picks}=writing;
   validateEngineDraft(workbook,[project.brief,...materials.map(item=>item.text)].filter(nonempty));
+  const draft=resolveEnginePicks(workbook,picks);
 
-  await onEvent?.('比稿负责人正在从三组原稿选句并推荐一案');
-  const directions=workbook.directions.map(({id,name,basis,claim,mechanism,candidates})=>({
-    id,name,basis,claim,mechanism,candidates:candidates.map(({text},i)=>({id:id+(i+1),text})),
-  }));
-  const {output:selection,receipt:selected}=await run(enginePhases[1],
-    '你是比稿负责人，只从原稿选句和推荐。A、B、C 各选一句，把候选编号填入 picks；从三案的选中句里推荐一案，给一句具体推荐理由。对照 Brief 和策略，优先自然、好记、符合本方向且准确的表达。信息量不加分。不重写候选，不增加文字、批评或修改意见。',
-    engineSelectionSchema,{...source,directions});
-  requireThat(written.runId!==selected.runId && written.threadId!==selected.threadId,'起稿与选句需要分别记录实际调用');
-  const draft=resolveEngineSelection(workbook,selection);
+  await onEvent?.('比稿负责人正在从作者自选的三句中推荐一案');
+  const directions=draft.directions.map(({id,name,main})=>({id,name,main}));
+  const {output:recommendation,receipt:recommended}=await run(enginePhases[1],
+    '你是比稿负责人。三个方向的主标题已经由作者选定，请仅从这三句推荐一案，返回对应 directionId 和一句具体推荐理由。对照 Brief 与策略判断哪句最值得记住。保持三句原文，选择理由聚焦这句的作用，避免批评和修改意见。',
+    engineRecommendation,{...source,directions});
+  validate(recommendation,engineRecommendation,'负责人推荐');
+  requireThat(written.runId!==recommended.runId && written.threadId!==recommended.threadId,'写作与推荐需要分别记录实际调用');
   const body=engineCopyMarkdown(draft);
   const copyReview={protocol:engineCopyProtocol,version:1,status:'ready',bodyHash:hash(body),
-    draft,workbook,skillHash:fullSloganHash(skill),...selection,calls:[written,selected]};
-  await onEvent?.('已从原稿选出三案主标题，并标记负责人推荐');
+    draft,workbook,skillHash:fullSloganHash(skill),picks,recommendation,calls:[written,recommended]};
+  await onEvent?.('已保存作者自选的三句及负责人推荐');
   return {body,directions:draft.directions.map(d=>d.name),copyReview};
 }
 
