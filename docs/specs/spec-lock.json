@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.86.0",
-  "registrySha256": "681a5ab33f117c59aaee9f0659609918718ab8cdba1a2e7df0abcbec8184ff06",
+  "baselineVersion": "1.88.0",
+  "registrySha256": "fd27ba884ab9d16b0a5155a641e567ba40f9d60e0fa20326bb6af73582fd7fe7",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -116,17 +116,17 @@
       }
     },
     "page.themes": {
-      "version": "1.15.0",
+      "version": "1.16.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "db465d9a80eac7a95bf6f17b84c01cc457ae43033e26e13c0341135d37369f46"
+        "docs/pages/themes.md": "208830e5c31e7af2760d0e4bb8d6ebe84d9465eda9a5bd3cb5067244c49387d4"
       }
     },
     "page.visual": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "081139adf04083e576105930a22485bc805df16448b83034ecf1cd575f7a02b1"
+        "docs/pages/visual.md": "fbc8ebafc844aa0a48d9d13f430eaf48045f7c75d6ce656ab23e2d735d9552d1"
       }
     },
     "page.layout": {
@@ -210,12 +210,12 @@
       }
     },
     "method.visual": {
-      "version": "1.6.0",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "02f38da015142574d21306d25a7637a5d95b809783660c87eb817235490cc260",
-        "skills/visual-development-lead/references/kv.md": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
-        "skills/visual-development-lead/references/packaging.md": "3a7f3663123243968c9257ce22fe73771a42e31a2435cea6722d35135480eb64",
+        "skills/visual-development-lead/SKILL.md": "d4a59c5459081269efe732e9954156a954033bdab5f1c46ff392c62a63f47f4c",
+        "skills/visual-development-lead/references/kv.md": "503da61f87877f8c69e2bb23cf7e997ed0ba2d2ee731c3c5c9ce2b85950a881f",
+        "skills/visual-development-lead/references/packaging.md": "a7a60d80a2359bc665883a3303a7e423e8b444dfc6a287b5e9a2cf2e6964b6b9",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
         "skills/visual-development-lead/references/stage-review.md": "a1059333fc2da94e49b15b7be19ba24dacf19e036dc7f9ac2fcc7c48cae68295",
         "skills/visual-development-lead/scripts/check-stage.mjs": "73396ea1949f443b4437837a541a4f0f594bf6bae785b5a76ca1fa7c3c3eff75",
@@ -273,10 +273,10 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.28.0",
+      "version": "1.29.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "578af785e8fb02633a3b0786fdf9c5fc667aa6f7dd9f741c5ab8fc0b90f56e7d"
+        "docs/specs/nightflight-stage-output.md": "38d58d8be6cd2705b4e468465cee832ad22013101ba807ca21e3ee4f2ec25162"
       }
     },
     "contract.workflow": {
@@ -497,10 +497,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "cde42c2b9985bbb8b57e33871ac147d37a5f8ddb68c046fa4682dfeca0274395"
+        "docs/specs/copy-generation.md": "91f34671ce36c6892ccc471ab2b266199178edf3eddc23d7a53332b346e328c1"
       }
     },
     "method.slogan-engine": {
@@ -511,10 +511,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.11.0",
+      "version": "1.13.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "08dba9cfc823d4a0a43d77fdbed50c093c13158d0966f6bb2e9509abf05648bb"
+        "docs/specs/nightflight-runtime.md": "21a371e3242f74cfda94a113a4bde39d27269cb7ead1a1038e443deda2f0b1c0"
       }
     },
     "contract.nightflight-final-reader": {
@@ -532,7 +532,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "e248c0ed82fdcc55757bbac2eae638ea7a6de8f2245461a5a276a0bd2e625a68",
+    "docs/specs/README.md": "629c8e93c682f4ad66c817f00b2ea9c91080c5a50eeb4bd851b5351b94322d21",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

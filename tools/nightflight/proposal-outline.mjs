@@ -1,10 +1,10 @@
 import {pythonBinary} from './runtime-dependencies.mjs';
 import { execFile } from 'node:child_process';
-import { createHash } from 'node:crypto';
 import { realpath } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
-import { headlineFromSections, rowOf, sectionsOf } from '../../shared/stage-text.mts';
+import { rowOf, sectionsOf } from '../../shared/stage-text.mts';
+import { readPublishedCopy } from './copy-review.mjs';
 import library from '../../skills/proposal-structure-pilot/references/page-library.json' with { type: 'json' };
 import { materialSheetName, readAttemptText, readPageMaterials } from './outline-materials.mjs';
 
@@ -263,17 +263,8 @@ export async function buildProposalOutline(project, dir) {
   const skeleton = JSON.parse(stdout);
   const slots = skeleton.pages.filter(p => !p.direction || visible.includes(p.direction));
   const [strategy, copy] = await Promise.all(['strategy', 'copy'].map(stage => stageText(root, artifacts, stage)));
-  const copySections = sectionsOf(copy.body);
-  const encoded = text => createHash('sha256').update(text).digest('hex');
-  // addText appends exactly one newline to the signed body on disk.
-  const linkedDraft = project.copyReview?.status === 'ready' &&
-    [copy.body, copy.body.replace(/\r?\n$/u, '')].some(body => encoded(body) === project.copyReview.bodyHash);
-  const drafts = new Map();
-  for (const name of visible) {
-    const verified = linkedDraft && project.copyReview.draft?.directions?.find(d => d.name === name);
-    const main = !project.copyReview && headlineFromSections(copySections, name, names.indexOf(name));
-    if (verified || main) drafts.set(name, verified || { name, main });
-  }
+  const publication = readPublishedCopy(project, copy.body);
+  const drafts = new Map([...publication.drafts].filter(([name])=>visible.includes(name)));
   const mains = new Map();
   for (const a of artifacts.filter(a => a.stage === 'visual' && a.kind === 'image' && a.visual?.role === 'main')) {
     if (!visible.includes(a.visual.direction) || (a.visual.candidate && !a.visual.recommended && !a.adoptedForLayout)) continue;
@@ -295,7 +286,7 @@ export async function buildProposalOutline(project, dir) {
     fields.find(f => /^品牌(?:名称)?$/u.test(f.label))?.value || project.title;
   const briefRef = brief.name || '原始简报';
   const input = { project, assigned: paragraphs(fields.map(r => r.label + '：' + r.value)) || project.brief, fields, title, briefRef, kind,
-    recommendation: linkedDraft ? project.copyReview.recommendation : null,
+    recommendation: publication.recommendation,
     strategy: { ...strategy, sections: sectionsOf(strategy.body) }, drafts, mains, visible, byChapter, competitorRefs,
     copyRef: copy.name || '当前文案方向', researchRef: artifacts.findLast(a => a.stage === 'research' && a.kind === 'text')?.name ||
       '本次研究交接', sourceMaterials };

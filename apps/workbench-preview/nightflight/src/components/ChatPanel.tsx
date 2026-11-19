@@ -9,7 +9,7 @@ import {
   type Project,
   type Summary,
 } from '../live';
-import { headlineFromSections, sectionsOf } from './stageText';
+import { headlineFromSections, publishedSlogan, sectionsOf } from './stageText';
 import {STAGES} from '../data/project';
 import type {StageId} from '../types';
 import { BotFigure } from './Bot';
@@ -26,12 +26,17 @@ function AdoptVisual({p,act,busy}:{p:Project;act:Act;busy:boolean}) {
   });
   const override=selected.some(a=>a && !a.visual?.recommended);
   return <div className="adoption-fields">
-    {candidates.length>0 && groups.map((direction,i)=><label key={direction}>{direction}
-      <select aria-label={direction+'的采用稿'} value={selected[i]?.url ?? ''} onChange={e=>setPicks({...picks,[direction]:e.target.value})}>
-        <option disabled value="">选择采用稿</option>
-        {candidates.filter(a=>a.visual?.direction===direction).map(a=><option key={a.url} value={a.url}>第 {a.visual?.candidate} 稿{a.visual?.recommended ? ' · 评审推荐' : ''}</option>)}
-      </select>
-    </label>)}
+    {candidates.length>0 && groups.map((direction,i)=>{
+      const slogan = publishedSlogan(p, direction);
+      const letter = String.fromCharCode(65 + p.directions.indexOf(direction));
+      const label = slogan ? '方向 '+letter+' · '+slogan : direction;
+      return <label key={direction}>{label}
+        <select aria-label={label+'的采用稿'} value={selected[i]?.url ?? ''} onChange={e=>setPicks({...picks,[direction]:e.target.value})}>
+          <option disabled value="">选择采用稿</option>
+          {candidates.filter(a=>a.visual?.direction===direction).map(a=><option key={a.url} value={a.url}>第 {a.visual?.candidate} 稿{a.visual?.recommended ? ' · 评审推荐' : ''}</option>)}
+        </select>
+      </label>;
+    })}
     {override && <label>采用理由<input value={reason} onChange={e=>setReason(e.target.value)} placeholder="说明选这张稿的原因"/></label>}
     <button className="btn btn-dark" disabled={busy || (candidates.length>0 && selected.some(a=>!a)) || (override && !reason.trim())}
       onClick={()=>act('adopt','采用当前视觉稿做本地排版',undefined,candidates.length ? {
@@ -59,7 +64,6 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
   if (p.stage==='brief') return <div className="msg-body"><button className="btn btn-dark" disabled={busy} onClick={()=>act('confirm_brief','')}>确认任务卡，开始研究</button></div>;
   const copyText = p.stage === 'copy' ? sectionsOf(p.artifacts.filter((a) => a.stage === 'copy' && a.kind === 'text')
     .map((a) => a.text).filter(Boolean).join('\n\n')) : [];
-  const reviewed = p.copyReview?.status === 'ready' ? p.copyReview.draft.directions : [];
 
   return (
     <div className="msg-body">
@@ -72,7 +76,7 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
             <div className={p.stage === 'copy' ? 'option copy-choice' : 'option'} key={i}>
               <div className="option-text">
                 <strong>{p.stage === 'copy'
-                  ? reviewed.find((entry) => entry.name === d)?.main || headlineFromSections(copyText, d, i) || '主标题待补'
+                  ? publishedSlogan(p, d) || headlineFromSections(copyText, d, i) || '主标题待补'
                   : d}</strong>
               </div>
               <button className="btn btn-sm" disabled={busy} onClick={() => act('choice', d)}>

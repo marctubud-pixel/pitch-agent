@@ -21,7 +21,7 @@ func profile(_ role: Capability) -> Profile {
           let value = try? JSONDecoder().decode(Profile.self, from: data) else {
         if role == .text { return Profile(base:"https://api.deepseek.com",model:"deepseek-flash") }
         if role == .image { return Profile(base:"https://api.openai.com/v1",model:"gpt-image-2") }
-        return Profile(base:"https://api.openai.com/v1",model:"gpt-4.1-mini")
+        return Profile(base:"https://api.openai.com/v1",model:"gpt-6.2-sol")
     }
     return value
 }

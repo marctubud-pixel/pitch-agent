@@ -23,7 +23,7 @@ import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison } from './visual-comparison.mjs';
 import { generateVisualWithDesktopModels, selectVisualReferences, reviewReferencePlan } from './visual-references.mjs';
 import { reviewVisualBatch } from './visual-batch.mjs';
-import { runCopyReview } from './copy-review.mjs';
+import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
 
@@ -1122,6 +1122,21 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       };
       const strategyFile = project.artifacts?.filter(a=>a.stage==='strategy' && a.kind==='text').at(-1);
       const strategyText = inputs.texts.find(t=>t.name===strategyFile?.name)?.text ?? '';
+      const scope = project.briefScope?.status === 'accepted' ? project.briefScope.types ?? [] : [];
+      const kind = project.proposalKind ?? taskKind(project.brief ?? '', false);
+      const carriers = scope.length ? scope : kind ? [kind] : [];
+      const packaging = carriers.includes('packaging');
+      const poster = carriers.includes('kv');
+      const copyFiles = new Set(project.artifacts?.filter(file=>file.stage==='copy' && file.kind==='text').map(file=>file.name));
+      const copyFile = [...copyFiles].at(-1);
+      const copyBody = inputs.texts.find(item=>item.name===copyFile)?.text ?? '';
+      const {drafts:selected} = readPublishedCopy(project, copyBody);
+      if (poster) {
+        for (const direction of directions) {
+          const slogan = selected.get(direction)?.main;
+          if (typeof slogan!=='string' || !slogan.trim()) throw Error('海报／KV 缺少「'+direction+'」本版已选 slogan，请核对文案交接。');
+        }
+      }
       const plans = await prepareVisualPlans({call,project:{...project,strategyText},images:inputs.images,active:directions,dir,signal,search,onEvent});
       const seen = new Set(), summaries = [];
       for (const direction of directions) {
@@ -1140,8 +1155,14 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const generationReferences = handoff.references.filter(ref=>ref.role==='main'||ref.role==='sharedBrand');
         const generationImages = references.filter(image=>generationReferences.some(ref=>ref.sha256===image.sha256));
         const sourceImages = best ? [best.image, ...generationImages] : generationImages;
-        const generationContext = {...JSON.parse(context),materials:inputs.texts.filter(item=>!item.imageNumber),
-          direction:project.copyReview?.draft?.directions?.find(d=>d.name===direction) ?? direction,
+        const creative = poster || packaging ? selected.get(direction) : project.copyReview?.draft?.directions?.find(d=>d.name===direction);
+        const posterSlogan = poster ? creative.main : undefined;
+        const materials = inputs.texts.filter(item=>!item.imageNumber && (!(poster || packaging) || !copyFiles.has(item.name)));
+        const generationContext = {...JSON.parse(context),materials,
+          direction:packaging && creative
+            ? {name:creative.name, theme:creative.main, claim:creative.claim, mechanism:creative.mechanism, strategyLink:creative.strategyLink}
+            : creative ?? direction,
+          ...(posterSlogan ? {posterSlogan} : {}),
           referenceHandoff:{direction,references:generationReferences.map((ref,index)=>({...ref,imageNumber:index+1+Number(Boolean(best))}))},
           auxiliaryNotes:handoff.references.filter(ref=>ref.role==='auxiliary').map(({borrow,apply})=>({borrow,apply}))};
         const generated = await independentCalls(visualBorrowings, async (borrow,index) => {
@@ -1152,13 +1173,15 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             '围绕文案方向的核心主张，承接主参考的整体美术风格。五项中只借主参考的'+borrow.join('、')+'。'+transfer.change.join('、')+'为本案重新设计，两处变化应清楚可见。',
             '从主参考看清布局、景别、背景和局部动作的关系。主参考有背景时，用本案场景重画完整背景，人物、物件、地景和特色图形按本案创作。字体看字形和字重，文字位置由布局决定。',
             '当前输入的图号和用途见 referenceHandoff。主参考提供本张的创作借鉴，共用品牌图提供已有品牌约束。auxiliaryNotes 是文字线索。',
-            '保留简报的必要约束。包装任务须按简报区分方向名与允许上包装的文案，只呈现已交接的包装文字。',
+            '保留简报的必要约束和本载体已确认的文字。',
+            posterSlogan && '把本方向的完整 slogan「'+posterSlogan+'」作为清楚可读的主标题排入成图。按空间需要换行，保留原字、数字和标点。',
+            packaging && '包装本体只使用确认过的品牌、品名、规格和商品信息。提案方向名和 slogan 只用来指导包装画面。区分盒身字样、价签和画面其他文字。',
             best ? '第一张输入图为上一批原稿。保留成立处，结合用户意见和前版问题改稿。'+best.visual.reason : '',
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
           const input = {...generationContext,transfer};
           const {result,promptWriting} = desktop
-            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction})
+            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging})
             : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
           const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
           const digest = hash(original.bytes);
@@ -1174,7 +1197,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         for(const item of generated){batch.push(item.record);images.push(item.image);}
         await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
         const comparatorPool=[];
-        const review = await reviewVisualBatch({call,direction,images,context,sources:[...inputs.images,...publicImages],
+        const brandReferences = generationImages.filter(image=>handoff.references.some(ref=>ref.role==='sharedBrand' && ref.sha256===image.sha256));
+        const review = await reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
+          theme:creative?.main,posterSlogan,brandReferences,sources:[...inputs.images,...publicImages],
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
             const [query]=publicVisualQueries(result,project);

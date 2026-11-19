@@ -4,6 +4,7 @@ import { isDeckPreview, safeURL, type Artifact, type Project } from '../live';
 import { RevisionStage, type Act } from './ChatPanel';
 import { VisualImageGallery, type GalleryDirection } from '../../../src/proposal/qingyu-visual/VisualImageGallery';
 import { DeckPreview } from './DeckPreview';
+import { publishedSlogan } from './stageText';
 
 type MediaStage = 'visual' | 'layout' | 'final';
 const reviewLabels: Record<string,string> = {
@@ -12,9 +13,14 @@ const reviewLabels: Record<string,string> = {
   understanding:'可理解性', feasibility:'场景可行性', memory:'记忆机制', difference:'差异',
 };
 
-export function visualCaption(p: Project, file: Artifact) {
+function visualDirection(p: Project, file: Artifact) {
   const ordinal = /^visual-(\d+)-[\da-f]+\.png$/i.exec(file.name);
   return file.visual?.direction || visualRecord(p, file)?.title || (ordinal && p.directions[Number(ordinal[1]) - 1]) || file.name;
+}
+
+export function visualCaption(p: Project, file: Artifact) {
+  const direction = visualDirection(p, file);
+  return publishedSlogan(p, direction) || direction;
 }
 
 function visualRecord(p: Project, image: Artifact) {
@@ -42,12 +48,14 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
     });
     return [direction, bound] as const;
   }));
-  const reports = images.map(file => ({ file, record: visualRecord(p, file), title: visualCaption(p, file) }));
+  const reports = images.map(file => ({ file, record: visualRecord(p, file), title: visualDirection(p, file) }));
   const initial = reports.find(item => item.file.name === name)?.title ?? sourced.find(file => file.name === name)?.visual?.direction;
   const [selected, setSelected] = useState(initial || p.choice || p.directions[0]);
   const directions: GalleryDirection[] = [...new Set(p.directions)].map(title => {
     const group = reports.filter(item => item.title === title).sort((a,b)=>Number(!!b.file.visual?.recommended)-Number(!!a.file.visual?.recommended));
     const winner = group.find(item=>item.file.visual?.recommended)?.file.visual;
+    const hasBatch = group.some(item=>item.file.visual?.candidate);
+    const assignedReferences = (referencesByDirection.get(title) ?? []).filter(ref => ref.role !== 'sharedBrand');
     const current = group.find(item => !item.file.visual || item.file.visual.role === 'main');
     const metadata = current?.file.visual ?? group.find(item => item.file.visual)?.file.visual;
     function pictures(role: 'sketch' | 'main' | 'extension' | 'mockup') {
@@ -59,10 +67,10 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
           return src ? [{ src, title: file.visual?.candidate ? '第 '+file.visual.candidate+' 稿 · '+file.visual.mean+'/5' : file.name, alt: title + ' · ' + file.name }] : [];
         });
     }
-    return { id: title, name: title,
-      batchSummary: group.some(item=>item.file.visual?.candidate) ?
-        (winner ? '推荐第 '+winner.candidate+' 稿 · '+winner.mean+'/5　'+winner.reason : '本批暂无达标稿，查看评审后修改。') : undefined,
-      description: current?.record?.description?.split(/[。\n]/)[0], references: (referencesByDirection.get(title) ?? []).filter(ref => ref.role !== 'sharedBrand').map(ref => ({src: ref.src, title: ref.title, alt: title + ' · ' + ref.borrow})),
+    return { id: title, name: publishedSlogan(p, title) || title,
+      batchSummary: hasBatch ? (winner ? '推荐第 '+winner.candidate+' 稿' : '本批暂无达标稿') : undefined,
+      auxiliaryMissing: hasBatch && assignedReferences.length > 0 && !assignedReferences.some(ref => ref.role === 'auxiliary'),
+      description: current?.record?.description?.split(/[。\n]/)[0], references: assignedReferences.map(ref => ({src: ref.src, title: ref.title, alt: ref.borrow})),
       format: metadata?.format, extensionLabel: metadata?.output === 'packaging' ? '包装延展' : metadata?.output === 'kv' ? 'KV 延展' : '延展图',
       sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: pictures('mockup')[0] };
   });
