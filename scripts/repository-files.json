@@ -1537,6 +1537,7 @@
     "tools/nightflight/start.mjs",
     "tools/nightflight/strategy-one-pager.mjs",
     "tools/nightflight/visual-batch.mjs",
+    "tools/nightflight/visual-batch.test.mjs",
     "tools/nightflight/visual-comparison.mjs",
     "tools/nightflight/visual-comparison.py",
     "tools/nightflight/visual-references.mjs",

@@ -21,8 +21,8 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison } from './visual-comparison.mjs';
-import { generateVisualWithDesktopModels, selectVisualReferences, reviewReferencePlan } from './visual-references.mjs';
-import { reviewVisualBatch } from './visual-batch.mjs';
+import { generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -30,7 +30,6 @@ import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs
 const executeFile = promisify(execFile);
 const repo = fileURLToPath(new URL('../../', import.meta.url));
 const hash = value => createHash('sha256').update(value).digest('hex');
-const visualElements = ['配色', '布局', '景别', '笔法', '字体'];
 const visualBorrowings = [
   ['布局', '景别', '笔法'],
   ['配色', '笔法', '字体'],
@@ -939,7 +938,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, onEvent}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, onEvent, fixedDirections}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -955,7 +954,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const history = [];
   for (let pass=0; ; pass++) {
     try {
-      const plans=await selectVisualReferences({call,project,images:pool,active});
+      const plans=await selectVisualReferences({call,project,images:pool,active,fixedDirections});
       const missing=[];
       for (const direction of active) {
         const plan=plans.get(direction);
@@ -1127,6 +1126,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       const carriers = scope.length ? scope : kind ? [kind] : [];
       const packaging = carriers.includes('packaging');
       const poster = carriers.includes('kv');
+      const checkPosterTransfer = desktop && poster && !packaging;
+      const strategyPurpose = checkPosterTransfer ? posterStrategyPurpose(strategyText) : strategyText;
       const copyFiles = new Set(project.artifacts?.filter(file=>file.stage==='copy' && file.kind==='text').map(file=>file.name));
       const copyFile = [...copyFiles].at(-1);
       const copyBody = inputs.texts.find(item=>item.name===copyFile)?.text ?? '';
@@ -1137,8 +1138,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           if (typeof slogan!=='string' || !slogan.trim()) throw Error('海报／KV 缺少「'+direction+'」本版已选 slogan，请核对文案交接。');
         }
       }
-      const plans = await prepareVisualPlans({call,project:{...project,strategyText},images:inputs.images,active:directions,dir,signal,search,onEvent});
-      const seen = new Set(), summaries = [];
+      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,onEvent,fixedDirections:checkPosterTransfer});
+      const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];
         const previous = project.previousVisual?.filter(item => item.visual?.direction === direction) ?? [];
@@ -1155,16 +1156,30 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const generationReferences = handoff.references.filter(ref=>ref.role==='main'||ref.role==='sharedBrand');
         const generationImages = references.filter(image=>generationReferences.some(ref=>ref.sha256===image.sha256));
         const sourceImages = best ? [best.image, ...generationImages] : generationImages;
+        let posterReference;
+        if (checkPosterTransfer) {
+          const main = generationReferences.find(ref=>ref.role==='main');
+          const image = generationImages.find(input=>input.sha256===main?.sha256);
+          if (!image) throw Error('本方向缺少可核读的海报主参考原图。');
+          await onEvent?.('正在核对「'+direction+'」主参考原图的五项特征');
+          posterReference = await readPosterReference({call,image});
+        }
         const creative = poster || packaging ? selected.get(direction) : project.copyReview?.draft?.directions?.find(d=>d.name===direction);
         const posterSlogan = poster ? creative.main : undefined;
         const materials = inputs.texts.filter(item=>!item.imageNumber && (!(poster || packaging) || !copyFiles.has(item.name)));
-        const generationContext = {...JSON.parse(context),materials,
+        const auxiliaryNotes = handoff.references.filter(ref=>ref.role==='auxiliary').map(({borrow,apply})=>({borrow,apply}));
+        const generationContext = checkPosterTransfer ? {
+          brief:project.brief, strategyPurpose,
+          taskCard:materials.find(item=>project.artifacts?.some(file=>file.name===item.name && file.stage==='brief'))?.text,
+          direction:creative, auxiliaryNotes,
+          feedback:(project.feedback ?? []).filter(item=>item.stage==='visual').map(item=>item.text),
+        } : {...JSON.parse(context),materials,
           direction:packaging && creative
             ? {name:creative.name, theme:creative.main, claim:creative.claim, mechanism:creative.mechanism, strategyLink:creative.strategyLink}
             : creative ?? direction,
           ...(posterSlogan ? {posterSlogan} : {}),
           referenceHandoff:{direction,references:generationReferences.map((ref,index)=>({...ref,imageNumber:index+1+Number(Boolean(best))}))},
-          auxiliaryNotes:handoff.references.filter(ref=>ref.role==='auxiliary').map(({borrow,apply})=>({borrow,apply}))};
+          auxiliaryNotes};
         const generated = await independentCalls(visualBorrowings, async (borrow,index) => {
           const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
           await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/3');
@@ -1181,7 +1196,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           ].filter(Boolean).join('\n');
           const input = {...generationContext,transfer};
           const {result,promptWriting} = desktop
-            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging})
+            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
             : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
           const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
           const digest = hash(original.bytes);
@@ -1190,7 +1205,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
           const path = join(dir,name);
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(promptWriting ? {promptWriting} : {}),...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId};
+          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
           return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
         });
@@ -1200,6 +1216,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const brandReferences = generationImages.filter(image=>handoff.references.some(ref=>ref.role==='sharedBrand' && ref.sha256===image.sha256));
         const review = await reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:[...inputs.images,...publicImages],
+          posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer)},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
             const [query]=publicVisualQueries(result,project);
@@ -1221,16 +1238,32 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
         for (const ref of comparatorPool) if (review.references.some(r=>r.name===ref.name)) await publishReference(ref);
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
-        for (const [i,record] of batch.entries()) {
+        const drafts = batch.map((record,i)=>{
           const verdict = review.candidates.find(row=>row.candidate===i+1);
-          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
-            blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
-        }
+          return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
+            ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
+            blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}};
+        });
+        artifacts.push(...drafts);
+        directionBatches.push({direction,images,drafts});
         if (review.board) artifacts.push({name:review.board,kind:'image',visual:{direction,role:'comparison',references:review.references.map(r=>r.name)}});
-        const winner = review.candidates.find(row=>row.candidate===review.winner);
-        summaries.push('## '+direction+'\n'+(winner ? '推荐第 '+winner.candidate+' 稿，四岗均分 '+winner.mean+'/5。'+winner.reason : '本批尚无达标主视觉。'+review.candidates.map(c=>c.reason).join('；')));
       }
-      await addText('# 主视觉推荐\n\n'+summaries.join('\n\n'));
+      if (checkPosterTransfer && directionBatches.length===3) {
+        await onEvent?.('正在并排核对三个海报方向的实际成图');
+        const representatives = directionBatches.map(({direction,images,drafts})=>{
+          const draft = drafts.find(item=>item.visual.recommended) ??
+            drafts.reduce((best,item)=>item.visual.mean>best.visual.mean ? item : best);
+          return {direction,image:images[draft.visual.candidate-1],draft,drafts};
+        });
+        const comparison = await reviewPosterDirections({call,entries:representatives.map(({direction,image})=>({direction,image}))});
+        await writeFile(join(dir,'visual-review-set.json'),JSON.stringify(comparison,null,2),{flag:'wx',mode:0o600});
+        holdSimilarPosterDirections(comparison,representatives);
+      }
+      await addText('# 主视觉推荐\n\n'+directionBatches.map(({direction,drafts})=>{
+        const winner = drafts.find(item=>item.visual.recommended)?.visual;
+        return '## '+direction+'\n'+(winner ? '推荐第 '+winner.candidate+' 稿，四岗均分 '+winner.mean+'/5。'+winner.reason :
+          '本批尚无达标主视觉。'+drafts.map(item=>item.visual.reason).join('；'));
+      }).join('\n\n'));
       return {artifacts};
     }
     if (stage === 'final') {

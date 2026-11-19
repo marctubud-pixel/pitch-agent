@@ -1149,9 +1149,13 @@ test('DeepSeek writer chooses each headline and the director only recommends amo
   const workbook={directions:['A','B','C'].map((id,i)=>({
     id,name:['清晨茶时','好茶有形','三口之间'][i],basis:brief,
     claim:'主张'+id,mechanism:'机制'+id,strategyLink:'连接'+id,secondary:'副标'+id,
-    candidates:[1,2,3].map(n=>({text:id+'候选'+n,use:'海报'})),
+    candidates:[1,2,3].map(n=>({text:id+'候选'+n,use:'提案页'})),
   }))};
-  const writing={workbook,picks:{A:'A2',B:'B3',C:'C1'}};
+  const authorCheck={
+    selections:['A候选2','B候选3','C候选1'].map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'创意证据'+phrase,sloganReady:true})),
+    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'每对读出了不同的本案连接'})),
+  };
+  const writing={workbook,picks:{A:'A2',B:'B3',C:'C1'},authorCheck};
   const recommendation={directionId:'B',reason:'具体呈现茶与包装的联系'};
   await writeFile(executable,`#!/usr/bin/env node
 const fs=require('node:fs');
@@ -1178,11 +1182,19 @@ if(process.argv[3]==='profile') {
   const published=artifacts[0].text;
   assert.equal(copyReview.protocol,engineCopyProtocol);
   assert.equal(copyReview.recommendation.directionId,'B');
+  assert.equal(copyReview.skillHash,'b79000179b4df961d67acb662e66730bf97df88b7f5d2ca6493fd0beb36bc239');
   assert.deepEqual(copyReview.draft.directions.map(d=>d.main),['A候选2','B候选3','C候选1']);
   assert.doesNotMatch(published,/A候选1/);
   assert.match(published,/主标题：B候选3\n副标：副标B/);
   assert.deepEqual(copyReview.calls.map(c=>c.phase),['COPY_ENGINE_WRITE','COPY_ENGINE_RECOMMEND']);
+  assert.deepEqual(copyReview.authorCheck,authorCheck);
   assert.equal(engineCopyHandoffReady(copyReview,directions,published),true);
+  const historical=structuredClone(copyReview);
+  delete historical.authorCheck;
+  assert.equal(engineCopyHandoffReady(historical,directions,published),true);
+  const misquoted=structuredClone(copyReview);
+  misquoted.authorCheck.selections[0].phrase='稿外文案';
+  assert.equal(engineCopyHandoffReady(misquoted,directions,published),false);
   const tampered=structuredClone(copyReview);
   tampered.picks.B='B4';
   assert.equal(engineCopyHandoffReady(tampered,directions,published),false);
@@ -1192,10 +1204,50 @@ if(process.argv[3]==='profile') {
 
   const calls=(await readFile(requestLog,'utf8')).trim().split('\n').map(line=>JSON.parse(line));
   assert.deepEqual(calls.map(call=>call.stage),['writer','director']);
-  assert.match(calls[0].prompt,/name: slogan-engine/);
-  assert.doesNotMatch(calls[1].prompt,/name: slogan-engine|B候选1|A候选3/);
+  const skill=await readFile(new URL('../../skills/slogan-engine/SKILL.md',import.meta.url),'utf8');
+  assert.ok(calls[0].prompt.includes(skill));
+  assert.doesNotMatch(calls[1].prompt,/name: slogan-engine|B候选1|A候选3|创意证据/);
   const packet=JSON.parse(calls[1].prompt.split('实际项目输入（JSON）').at(-1).trim());
   assert.deepEqual(packet.directions,copyReview.draft.directions.map(({id,name,main})=>({id,name,main})));
+});
+
+test('copy does not send notice-only choices, overlapping ideas or invented title evidence to the director',async t=>{
+  const {runCopyReview}=await import('./copy-review.mjs');
+  const skill=await readFile(new URL('../../skills/slogan-engine/SKILL.md',import.meta.url),'utf8');
+  const brief='馆内亲子导览。讲解员带看昆虫标本。每场45分钟，须预约。';
+  const titles=['带孩子进馆，夜访昆虫','夜访昆虫，45分钟一场','夜访昆虫，须预约'];
+  const workbook={directions:titles.map((text,i)=>({
+    id:'ABC'[i],name:['馆内夜访','45分钟一场','先约再访'][i],basis:brief,
+    claim:['把展柜前的夜晚变成亲子行程','说明每场时长','提醒提前预约'][i],
+    mechanism:['用进馆动作接上亲子夜访','把时长放在活动名后','把预约条件放在活动名后'][i],
+    strategyLink:'记住馆内活动',secondary:'每场45分钟，须预约。',
+    candidates:[text,'今晚'+text,'周末'+text].map(candidate=>({text:candidate,use:'微信封面'})),
+  }))};
+  const writing={workbook,picks:{A:'A1',B:'B1',C:'C1'}};
+  const checked={
+    selections:titles.map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'带孩子认识馆内的昆虫',sloganReady:true})),
+    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'读者记住的场景不同'})),
+  };
+  for (const scenario of [
+    {name:'notice',change:check=>{check.selections[1].sloganReady=false;},error:/B.*公告信息/},
+    {name:'overlap',change:check=>{check.pairs[2].distinct=false;},error:/BC.*创意差异/},
+    {name:'invented evidence',change:check=>{check.selections[0].phrase='展柜里的秘密';},error:/A.*主标题原文/},
+  ]) await t.test(scenario.name,async()=>{
+    const authorCheck=structuredClone(checked);
+    scenario.change(authorCheck);
+    const phases=[];
+    await assert.rejects(runCopyReview({project:{brief,proposalKind:'kv'},inputs:{texts:[]},rules:[skill],singleOwner:true,
+      call:async (instruction,_images,schema)=>{
+        const phase=instruction.split('\n')[0];
+        phases.push(phase);
+        const parsedOutput=phase==='COPY_ENGINE_WRITE'
+          ? (schema.properties.authorCheck ? {...writing,authorCheck} : writing)
+          : {directionId:'C',reason:'让家长知道须预约'};
+        return {parsedOutput,runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'a'.repeat(64)};
+      },
+    }),scenario.error);
+    assert.deepEqual(phases,['COPY_ENGINE_WRITE']);
+  });
 });
 
 test('single director copy requires a configured DeepSeek text model',async t=>{
