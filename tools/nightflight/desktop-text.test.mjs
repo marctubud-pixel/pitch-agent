@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {chmod, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -85,8 +86,20 @@ if (action === 'profile') {
     } else {
       assert.equal(typeof content,'string');
       assert.match(content,/夜航生图提示词写作/);
-      assert.equal(input.direction,'产品');
-      answer={prompt:'  服务原文\\n借 '+input.transfer.borrow.join('、')+'  '};
+      if(input.direction.theme) {
+        assert.equal(input.direction.theme,input.posterSlogan || '四种配料，正面读完');
+        assert.ok(input.materials.every(item=>item.name!=='旧文案.md'));
+        assert.match(input.drawingBrief,/提案方向名和 slogan 只用来指导包装画面/);
+      }
+      if(input.posterSlogan) {
+        assert.equal(input.posterSlogan,'这周六，把还喜欢的那件带来');
+        assert.match(input.drawingBrief,/作为清楚可读的主标题排入成图/);
+        assert.ok(input.materials.every(item=>item.name!=='海报文案.md'));
+      }
+      if(input.brief==='制作社区活动宣传片') {
+        assert.doesNotMatch(content,/盒身字样|只列确认可印|作为清楚可读的主标题排入成图/);
+      }
+      answer={prompt:'  服务原文\\n借 '+input.transfer.borrow.join('、')+'  '+(input.posterSlogan || '')};
       appendFileSync(trace,JSON.stringify({written:answer.prompt})+'\\n');
     }
     console.log(JSON.stringify({id:'request-'+model,model:'actual-'+model,choices:[{message:{content:JSON.stringify(answer)}}]}));
@@ -100,15 +113,58 @@ if (action === 'profile') {
     else process.env.ONEPITCH_TEXT_EXECUTABLE = original;
   });
   const run = createStageRunner({binary:join(dir,'no-codex'),codexHome:join(dir,'no-home')});
-  const project={title:'老照片分享会',brief:'做一张社区活动海报。',mode:'collab',choice:'产品',
-    directions:['稳健','产品','用户'],attachments:[{name:'参考.png'}]};
+  const posterSlogan = '这周六，把还喜欢的那件带来';
+  const copyBody = '## 产品\n\n主标题：'+posterSlogan+'\n\n备选：带上这件来。';
+  await writeFile(join(dir,'海报文案.md'),copyBody+'\n');
+  const project={title:'社区旧衣修补',brief:'做一张社区活动海报。',proposalKind:'packaging',mode:'collab',choice:'产品',
+    briefScope:{status:'accepted',types:['kv'],reason:'明确委托活动海报'},
+    directions:['稳健','产品','用户'],attachments:[{name:'参考.png'}],
+    artifacts:[{stage:'copy',kind:'text',name:'海报文案.md'}],
+    copyReview:{status:'ready',bodyHash:createHash('sha256').update(copyBody).digest('hex'),draft:{directions:[{name:'产品',main:posterSlogan}]}},
+  };
   await assert.rejects(run({stage:'visual',project,dir}),/生图 API 调用失败：fixture image request received/);
   const entries=(await readFile(trace,'utf8')).trim().split('\n').map(line=>JSON.parse(line));
   const written=entries.filter(e=>e.written).map(e=>e.written).sort();
   const sent=entries.filter(e=>e.sent);
   assert.equal(new Set(written).size,3);
   assert.deepEqual(sent.map(e=>e.sent).sort(),written);
-  for (const call of sent) assert.deepEqual(call.images,[{mime:'image/png',data:png}]);
+  for (const call of sent) {
+    assert.deepEqual(call.images,[{mime:'image/png',data:png}]);
+    assert.ok(call.sent.includes(posterSlogan));
+  }
+  const stale={...project,copyReview:{...project.copyReview,bodyHash:'stale'}};
+  await assert.rejects(run({stage:'visual',project:stale,dir}),/海报／KV 缺少.*本版已选 slogan/);
+  assert.equal((await readFile(trace,'utf8')).trim().split('\n').length,entries.length);
+  const legacy={...project,copyReview:undefined};
+  await assert.rejects(run({stage:'visual',project:legacy,dir}),/生图 API 调用失败：fixture image request received/);
+  const afterLegacy=(await readFile(trace,'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+  assert.deepEqual(afterLegacy.slice(entries.length).filter(e=>e.sent).map(e=>e.sent).sort(),written);
+  const oldBody = '## 产品\n\n主标题：四种配料，正面读完\n\n旧用途：把四种配料，正面读完印在盒身。';
+  await writeFile(join(dir,'旧文案.md'),oldBody);
+  const packaging={...project, proposalKind:undefined, brief:'燕麦饮纸盒包装与活动方案',
+    briefScope:{status:'accepted',types:['packaging','activity'],reason:'明确委托包装与活动'},
+    artifacts:[{stage:'copy',kind:'text',name:'旧文案.md'}],
+    copyReview:{status:'ready',bodyHash:createHash('sha256').update(oldBody).digest('hex'),draft:{directions:[{name:'产品',main:'四种配料，正面读完'}]}}};
+  await assert.rejects(run({stage:'visual',project:packaging,dir}),/生图 API 调用失败：fixture image request received/);
+  const packagingEntries=(await readFile(trace,'utf8')).trim().split('\n').slice(afterLegacy.length).map(line=>JSON.parse(line));
+  assert.deepEqual(packagingEntries.filter(e=>e.sent).map(e=>e.sent).sort(),packagingEntries.filter(e=>e.written).map(e=>e.written).sort());
+  assert.equal(packagingEntries.filter(e=>e.sent).length,3);
+  const linked = {...project, briefScope:{status:'accepted',types:['packaging','kv'],reason:'明确委托包装与 KV'}};
+  await assert.rejects(run({stage:'visual',project:linked,dir}),/生图 API 调用失败：fixture image request received/);
+  const video = {...project, brief:'制作社区活动宣传片', briefScope:{status:'accepted',types:['tvc'],reason:'明确委托宣传片'}};
+  await assert.rejects(run({stage:'visual',project:video,dir}),/生图 API 调用失败：fixture image request received/);
+});
+
+test('the desktop waits for the complete poster slogan before calling the image API', async () => {
+  const {generateVisualWithDesktopModels}=await import('./visual-references.mjs');
+  const posterSlogan='这周六，把还喜欢的那件带来';
+  let imageCalls=0;
+  await assert.rejects(generateVisualWithDesktopModels({images:[],context:{},drawingBrief:'海报',posterSlogan,
+    call:async (_prompt,_images,schema)=>{
+      if (!schema) imageCalls++;
+      return {model:'deepseek-flash',threadId:'writer',parsedOutput:{prompt:'画上海报标题“把喜欢的那件带来”。'}};
+    }}),/缺少该方向已选 slogan 的原句/);
+  assert.equal(imageCalls,0);
 });
 
 test('brief displays the client view separately and keeps its longer source in the manuscript',async()=>{

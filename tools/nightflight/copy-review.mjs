@@ -4,6 +4,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
+import { headlineFromSections, sectionsOf } from '../../shared/stage-text.mts';
 
 export const headlineProtocol = 'dual-panel-headline-v4';
 export const engineCopyProtocol = 'director-engine-selection-v2';
@@ -59,6 +60,24 @@ const adjudicateSchema = object({
 });
 const hash = text => createHash('sha256').update(text).digest('hex');
 const digest = object => hash(JSON.stringify(object));
+
+export function readPublishedCopy(project, body) {
+  const review = project.copyReview;
+  if (review) {
+    // On disk the published markdown can end in a newline added by addText.
+    const linked = review.status === 'ready' && body &&
+      [body, body.replace(/\r?\n$/u, '')].some(text => hash(text) === review.bodyHash);
+    const directions = linked ? review.draft?.directions ?? [] : [];
+    return {drafts:new Map(directions.map(direction=>[direction.name, direction])), recommendation:linked ? review.recommendation : null};
+  }
+  const sections = sectionsOf(body);
+  const drafts = new Map();
+  for (const [index, name] of (project.directions ?? []).entries()) {
+    const main = headlineFromSections(sections, name, index);
+    if (main) drafts.set(name, {name, main});
+  }
+  return {drafts, recommendation:null};
+}
 function requireThat(ok, message) { if (!ok) throw invalidOutput(message); }
 function nonempty(text) { return typeof text === 'string' && !!text.trim(); }
 function exactly(values, expected) {
@@ -214,7 +233,7 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
   await onEvent?.('DeepSeek 写作 Agent 正在起稿并从每案自选一句');
   const {output:writing,receipt:written}=await run(enginePhases[0],
     '你是本次写作 Agent。沿用当前 Brief、研究与策略，使用原版 slogan-engine 从受众落差找到三个不同的创意连接，自拟名称和角度。每案让人记住一件不同的事；同一个意思换文风、长短或修辞属于同一案的版本。依据 basis 必须逐字摘自当前材料，claim 写一句主张，mechanism 写创意怎么成立，strategyLink 写怎么接策略。每案保留三到四条可选主标题及各自用法，并给一条本案通用的简洁支撑副标 secondary。各句只用明确有依据的事实，遵守客户限定和原件的品类边界。使用原件对场合、长短、声律的判断。按 A、B、C 在 workbook 交三案，候选顺序对应 A1、A2 等编号。你作为创作者从每案原候选各选一句，把三个编号填入 picks。案内按自然、好记、符合本案事实和方向优先。三个案内自选并列，整组推荐交给负责人。文案字段逐项、单行填写，略过盲读和回写。',
-    engineWriterSchema,source,[skill]);
+    engineWriterSchema,source,[skill,'包装方向的 slogan 用于命名和呈现提案主题。候选用途写提案页或明确委托的其他传播触点。包装本体的印字以简报确认的产品信息为准。']);
   validate(writing,engineWriterSchema,'写作 Agent 交稿');
   const {workbook,picks}=writing;
   validateEngineDraft(workbook,[project.brief,...materials.map(item=>item.text)].filter(nonempty));

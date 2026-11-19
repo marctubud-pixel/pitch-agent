@@ -5,6 +5,7 @@ export interface GalleryImage { src: string; title: string; alt: string }
 export interface GalleryDirection {
   id: string; name: string; description?: string;
   references: readonly GalleryImage[]; sketch?: GalleryImage;
+  auxiliaryMissing?: boolean;
   mains: readonly GalleryImage[]; extensions?: readonly GalleryImage[];
   batchSummary?: string;
   format?: 'portrait' | 'landscape'; extensionLabel?: string;
@@ -107,7 +108,9 @@ export function VisualImageGallery({ directions, currentId, onDirectionChange, d
         </button>
         <div className="vg-references">{direction.references.length ? direction.references.map((image) =>
           <button key={image.src} type="button" className="vg-zoom" aria-label={'放大' + image.title}
-            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} /></button>) : <p className="vg-missing">参考图待补</p>}</div>
+            aria-haspopup="dialog" onClick={() => zoom(image)}><Picture image={image} /></button>) : <p className="vg-missing">参考图待补</p>}
+          {direction.auxiliaryMissing && <p className="vg-missing">辅助参考待补</p>}
+        </div>
       </div>)}
     </section>
     <CurrentArtwork key={current.id} direction={current} letter={String.fromCharCode(65 + directions.indexOf(current))} zoom={zoom} />

@@ -5,7 +5,7 @@ import { ResearchSource } from './ResearchSource';
 export { ResearchSource } from './ResearchSource';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
-import { headlineFromSections, rowOf, sectionsOf, type Row } from './stageText';
+import { headlineFromSections, publishedSlogan, rowOf, sectionsOf, type Row } from './stageText';
 
 type TextStage = 'brief' | 'research' | 'strategy' | 'copy';
 
@@ -301,9 +301,8 @@ export function CopyOutput({
     : rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
   const directions = p.directions.map((name, i) => {
     const signed = ticket?.draft.directions.find((entry) => entry.name === name);
-    const copy = publication?.draft.directions.find((entry) => entry.name === name)
-      ?? publishedDirections?.find((entry) => entry.name === name);
-    const main = copy?.main ?? headlineFromSections(sections, name, i);
+    const main = publishedSlogan(p, name) ?? publishedDirections?.find((entry) => entry.name === name)?.main
+      ?? headlineFromSections(sections, name, i);
     return { name, main, signed };
   });
   const current = directions.find((d) => d.name === browsing)
@@ -324,7 +323,6 @@ export function CopyOutput({
             <article key={d.name} className={'dir' + (d === current ? ' is-picked' : '')}>
               <p className="mono-label">
                 {'方向 ' + String.fromCharCode(65 + index)}
-                {engine && ' · ' + d.name}
                 {d.signed?.duty && ' · ' + copyDuties[d.signed.duty]}
                 {d.name === recommended && ' · ' + (recommendationLabel ?? (engine || headlineReview || ticket?.protocol === 'director-headline-v1' ? '本版推荐' : '旧版推荐'))}
                 {d.name === p.choice && ' · 已选定'}

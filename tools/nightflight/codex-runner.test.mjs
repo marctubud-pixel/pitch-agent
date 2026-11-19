@@ -292,7 +292,7 @@ process.stdin.on('end',()=>{
    } else {
      if(count!==5 && count!==6)process.exit(9);
      const fields=props.items.items.properties;
-     body={items:[1,2,3].map(n=>({candidate:n,reason:'可见依据',...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}))};
+     body={items:[1,2,3].map(n=>({candidate:n,reason:'可见依据',...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.onPackStatus?{onPackStatus:'verified'}:{}),...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}))};
    }
  } else if(action==='image' || action==='other-thread'){
    if(args[args.indexOf('code_mode_host')-1]!=='--enable'||args[args.indexOf('image_generation')-1]!=='--enable')process.exit(9);
@@ -837,17 +837,24 @@ test('extracts a real uploaded PDF with the pinned local runtime and passes its 
 
 test('visual batch ranks only eligible images, resolves ties and leaves an unsuccessful batch open', async () => {
   const { reviewVisualBatch } = await import('./visual-batch.mjs');
-  async function rank(scores, blocked, packaging = false, findComparators) {
+  async function rank(scores, blocked, packaging = false, findComparators, onPack = ['verified', 'verified', 'verified']) {
+    const brandReferences = packaging ? [1,2,3].map(n=>({name:'客户原件 '+n,sha256:'customer-product-'+n})) : [];
     return reviewVisualBatch({
       findComparators, makeBoard:async (_images,refs)=>({name:refs[0].name+' board'}),
-      direction: '产品', context: '测试', images: [1,2,3].map(n => ({sha256: String(n)})),
-      call: async (_prompt, _images, schema) => {
+      direction: '产品', context: '测试', theme: '四种配料，正面读完', images: [1,2,3].map(n => ({sha256: String(n)})),
+      brandReferences,
+      call: async (_prompt, _images, schema, task) => {
         if (schema.properties.first) return {parsedOutput:{first:'一瓶茶',action:'水入杯',words:'无糖',alternative:'不确定'}};
         if (schema.properties.indices) return {parsedOutput:{packaging,indices:_images.length?[1]:[]}};
         const fields = schema.properties.items.items.properties;
+        if (fields.onPackStatus) {
+          assert.deepEqual(_images.slice(-brandReferences.length),brandReferences);
+          assert.equal(task.comparison,true);
+        }
         const items = scores.map((score, i) => ({
           candidate: i+1, reason: '测试依据',
           ...(fields.score && {score}),
+          ...(fields.onPackStatus && {onPackStatus: onPack[i]}),
           ...(fields.priority && {priority: 3-i, blocked: blocked.includes(i+1), edit:'无', research:'无'}),
         }));
         return {threadId: 'test', parsedOutput: {items}};
@@ -861,8 +868,58 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
   const searched=await rank([5,5,5],[],true,async()=>[{name:'公开同类正面对照',sha256:'comparator'}]);
   assert.equal(searched.winner,3);
   assert.equal(searched.board,'公开同类正面对照 board');
+  const printedTheme=await rank([5,5,4],[],true,async()=>[{name:'商品包装',sha256:'comparator'}],['theme_printed','unverified','verified']);
+  assert.equal(printedTheme.winner,3);
+  assert.deepEqual(printedTheme.ruling.items.map(item=>item.blocked),[false,false,false]);
+  assert.match(printedTheme.candidates[0].reason,/主题印在包装本体/);
+  assert.match(printedTheme.candidates[1].reason,/包装印字位置或内容待核实/);
   assert.match(missing.candidates[0].research,/补充同类/);
   await assert.rejects(rank([4,0,5], []), /分数无效/);
+});
+
+test('poster recommendation requires the selected slogan to be read from the actual artwork', async () => {
+  const {reviewVisualBatch} = await import('./visual-batch.mjs');
+  const posterSlogan = '这周六，把还喜欢的那件带来';
+  const shortened = {status:'readable',text:'这周六，把还喜欢的那件',location:'海报上方'};
+  const unreadable = {status:'unreadable',text:'这周六',location:'海报上方后半句模糊'};
+  const absent = {status:'missing',text:'',location:''};
+  const correct = {status:'readable',text:'这周六，\n把还喜欢的那件带来',location:'海报上方两行'};
+
+  async function review(readings, selected=posterSlogan) {
+    const images = [1,2,3].map(n=>({imageId:String(n),sha256:String(n)}));
+    return reviewVisualBatch({direction:'本案方向',posterSlogan:selected,images,context:selected,
+      call:async (prompt, pictures, schema, task)=>{
+        if (schema.properties.first) {
+          assert.ok(![prompt, task.context, JSON.stringify(task.rules)].join('\n').includes(selected));
+          assert.equal(pictures.length,1);
+          assert.equal(pictures[0].imageId,'anonymous');
+          return {threadId:'read-'+pictures[0].sha256,model:'gpt-6.2-sol',parsedOutput:{first:'活动海报',action:'修衣服',words:'周六',alternative:'服务广告',
+            slogan:readings[Number(pictures[0].sha256)-1]}};
+        }
+        if(schema.properties.indices) return {parsedOutput:{packaging:false,indices:[]}};
+        const fields = schema.properties.items.items.properties;
+        return {parsedOutput:{items:[1,2,3].map(candidate=>({candidate,reason:'各岗均支持推荐',
+          ...(fields.score && {score:[5,4,5][candidate-1]}),
+          ...(fields.priority && {priority:candidate,blocked:false,edit:'无',research:'无'}),
+        }))}};
+      },
+    });
+  }
+  const some = await review([shortened,correct,unreadable]);
+  assert.equal(some.winner,2);
+  assert.deepEqual(some.candidates.map(c=>c.blocked),[true,false,true]);
+  assert.match(some.candidates[0].reason,/文字与本案已选 slogan 不符/);
+  assert.match(some.candidates[2].reason,/尚无法读清/);
+  assert.equal(some.blind[1].model,'gpt-6.2-sol');
+  const none = await review([shortened,absent,unreadable]);
+  assert.equal(none.winner,null);
+  assert.match(none.candidates[1].reason,/缺少已选 slogan/);
+  const english = await review([{...correct,text:'JUSTDOIT'},{...correct,text:'JUST\nDO IT'},absent],'JUST DO IT');
+  assert.equal(english.winner,2);
+  const wrap = await review([absent,{...correct,text:'COOL,\nFRESH 20\n26!'},absent],'COOL,FRESH 2026!');
+  assert.equal(wrap.winner,2);
+  const glyph = await review([{...correct,text:'豈'},absent,absent],'豈');
+  assert.equal(glyph.winner,null);
 });
 
 

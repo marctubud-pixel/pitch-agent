@@ -9,18 +9,23 @@ const observationSchema = object({observations:list(object({source:string, visib
 const imagePromptSchema = object({prompt:string});
 const nonempty = s => typeof s === 'string' && s.trim().length > 0;
 
-export async function generateVisualWithDesktopModels({call, images, context, drawingBrief}) {
+export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging}) {
   const instruction = [
     '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
-    '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。原样保留明确允许上图的文案，事实只取本案资料。',
+    '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。按制图要求写清载体上的文字。',
+    posterSlogan && '海报或 KV 要把本方向已选 slogan 的完整原句排成画面主标题。提示词中逐字列出原句，明确文字放在画面上。',
+    packaging && '包装画面的设计主题转化成画面关系，包装本体只列确认可印的实际文字。',
     '返回一个 prompt 字段，内容是完整的生图提示词。',
-  ].join('\n');
+  ].filter(Boolean).join('\n');
   const written = await call(instruction,[],imagePromptSchema,{
     assignment:'夜航生图提示词写作',rules:[],context:JSON.stringify({...context,drawingBrief}),
   });
   const prompt = written.parsedOutput?.prompt;
   if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
     throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
+  }
+  if (posterSlogan && !prompt.includes(posterSlogan)) {
+    throw invalidOutput('海报生图提示词缺少该方向已选 slogan 的原句，请按制图要求完整写入。');
   }
   const result = await call(prompt,images,null,{exactImagePrompt:true});
   return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
