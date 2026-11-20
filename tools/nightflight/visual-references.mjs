@@ -89,7 +89,16 @@ function includesPosterSlogan(prompt, slogan) {
   const literal = words.map(part => part.trim()
     ? Array.from(part, RegExp.escape).join('(?:'+wrap+')?')
     : '(?:'+RegExp.escape(part)+'|'+wrap+')').join('');
-  return new RegExp(literal,'u').test(prompt);
+  if (new RegExp(literal,'u').test(prompt)) return true;
+  const labeledLine = '[ \\t]*第([一二三四五六七八九十]|[1-9]\\d*)行[ \\t]*[:：][ \\t]*([^\\r\\n]+)';
+  const blocks = prompt.match(new RegExp('^(?:'+labeledLine+'(?:\\r?\\n|$)){2,}','gmu')) ?? [];
+  const linePattern = new RegExp('^'+labeledLine+'$','u');
+  const complete = new RegExp('^'+literal+'$','u');
+  return blocks.some(block=>{
+    const rows=block.trimEnd().split(/\r?\n/u).map(line=>line.match(linePattern));
+    return rows.every((row,i)=>row && (row[1]===String(i+1) || row[1]==='一二三四五六七八九十'[i])) &&
+      complete.test(rows.map(row=>row[2].trimEnd()).join('\n'));
+  });
 }
 
 async function submitVisualPrompt({call,images,written,posterSlogan}) {

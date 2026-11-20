@@ -206,12 +206,17 @@ test('the desktop waits for the complete poster slogan before calling the image 
 test('a complete wrapped headline reaches the image API without changing the writer’s prompt', async () => {
   const {generateVisualWithDesktopModels}=await import('./visual-references.mjs');
   const lines='主标题排入画面左上，分两行。\n下午的停顿，\n撕开一袋';
+  const numbered='海报主标题按下列顺序排版。\n第一行：倒出来，\n第二行：四种都认得\n副标另排。';
   const samples=[
     {line:'下午的停顿，撕开一袋',prompt:lines,allowed:true},
     {line:'下午的停顿，撕开一袋',prompt:lines.replace('停顿，','停顿！'),allowed:false},
     {line:'下午的停顿，撕开一袋',prompt:lines.replace('停顿，\n','停顿，\n\n'),allowed:false},
     {line:'Try it，下午见',prompt:'画面写\nTry\n  it，\n下午见',allowed:true},
     {line:'Try it，下午见',prompt:'画面写\nTryit，\n下午见',allowed:false},
+    {line:'倒出来，四种都认得',prompt:numbered,allowed:true},
+    {line:'倒出来，四种都认得',prompt:numbered.replace('第二行','第一行'),allowed:false},
+    {line:'倒出来，四种都认得',prompt:numbered.replace('倒出来，','倒出来'),allowed:false},
+    {line:'倒出来，四种都认得',prompt:numbered.replace('四种都认得','四种都认得。'),allowed:false},
   ];
   for (const {line,prompt,allowed} of samples) {
     const sent=[];
