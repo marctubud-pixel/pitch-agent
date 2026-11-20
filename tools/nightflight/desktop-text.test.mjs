@@ -94,7 +94,7 @@ if (action === 'profile') {
       const input=JSON.parse(instruction.split('实际项目输入（JSON）\\n\\n').at(-1));
       assert.equal(content.length,2);
       const directions=input.directions.map(d=>({
-        main:d.name==='产品'?[{source:input.sources[0].source,borrow:'剪纸笔法',apply:'重画本案街景'}]:[],
+        main:d.name==='产品'?{source:input.sources[0].source,borrow:'剪纸笔法',apply:'重画本案街景'}:null,
         auxiliary:[],gap:'',
       }));
       answer={sharedBrand:[],directions:input.directions[0].id ?

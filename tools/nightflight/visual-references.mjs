@@ -4,7 +4,6 @@ const list = items => ({type:'array',items});
 const object = properties => ({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
 const use = object({source:string, borrow:string, apply:string});
 const publicUse = object({...use.properties,why:string,avoid:string});
-const planSchema = item => object({sharedBrand:list(item),directions:list(object({direction:string, main:list(item), auxiliary:list(item), gap:string}))});
 const observationSchema = object({observations:list(object({source:string, visible:string}))});
 const imagePromptSchema = object({prompt:string});
 const nonempty = s => typeof s === 'string' && s.trim().length > 0;
@@ -115,7 +114,7 @@ export async function selectVisualReferences({call, project, images, active, fix
   const directionIds = ['A','B','C'];
   const catalog = new Map();
   for (const image of images) if (!catalog.has(image.sha256)) catalog.set(image.sha256,image);
-  const sources = [...catalog.values()];
+  const sources = [...catalog.values()].map((image,index)=>image.sourceUrl ? {...image,imageId:'R'+(index+1)} : image);
   const authors = project.copyReview?.draft?.directions ?? [];
   const directions = names.map((name,index) => {
     const draft = authors.find(d=>d.name===name) ?? {name};
@@ -128,7 +127,7 @@ export async function selectVisualReferences({call, project, images, active, fix
     }
   }
   const packet = {brief:project.brief,strategy:project.strategyText,directions,previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],feedback:project.feedback ?? [],sources:sources.map(s=>({
-    source:s.imageId,name:s.name,pageUrl:s.pageUrl,title:s.title,carrier:s.carrier,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
+    source:s.imageId,...(s.sourceUrl ? {} : {name:s.name}),pageUrl:s.pageUrl,title:s.title,carrier:s.carrier,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
   }))};
   if (!sources.length) throw Object.assign(Error('视觉主参考缺失：'+active.join('、')+'。可在对话区补充原图后重试。'),{missing:active});
 
@@ -138,7 +137,7 @@ export async function selectVisualReferences({call, project, images, active, fix
     for (let i=0;i<sources.length;i+=4) {
       const group = sources.slice(i,i+4);
       const result = await call('逐张记录可见内容、载体、配色、布局、景别、笔法、字体和使用情境。用所附图片的 source 身份返回。',group,observationSchema,{
-        assignment:'视觉参考原图登记',context:JSON.stringify(group.map(s=>({source:s.imageId,name:s.name}))),
+        assignment:'视觉参考原图登记',context:JSON.stringify(group.map(s=>({source:s.imageId,title:s.title ?? s.name}))),
       });
       const rows=result.parsedOutput?.observations;
       if (!Array.isArray(rows) || rows.length!==group.length || !group.every(s=>rows.some(r=>r.source===s.imageId && nonempty(r.visible)))) throw invalidOutput('视觉参考原图观察与输入不对应，请重试。');
@@ -146,17 +145,19 @@ export async function selectVisualReferences({call, project, images, active, fix
     }
   }
   const selection = [
-    '逐案按文案方向选一张主参考和至多两张作用不同的辅助图。先对照策略与该案创意，横向比较同用途原件。同一画面、同系列换角度或用途重复时选最清楚的一张。',
+    '先为各方向分配互不重复的主参考，再按需选至多两张作用不同的辅助图。source 只填图册给出的图号，例如 R1。每张原图只分给一个用途。main 必须是一个对象，找不到时为 null 并写 gap。',
     '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
     'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
-    '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。无适用主参考时 main 留空并写 gap。sharedBrand 只列本案官方标志、VI 等实际约束。辅助按重要性排序。',
+    '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。sharedBrand 只列本案上传的官方标志、VI 等实际约束。辅助按重要性排序。',
     fixedDirections && 'directions 按 A、B、C 三个键返回对象。每键填写该案的 main、auxiliary 和 gap。source 照录图册里的 source 编号。',
   ].filter(Boolean).join('\n');
-  const itemSchema = sources.some(s=>s.sourceUrl) ? publicUse : use;
-  const directionSchema = object({main:list(itemSchema),auxiliary:list(itemSchema),gap:string});
+  const fields = sources.some(s=>s.sourceUrl) ? publicUse.properties : use.properties;
+  const itemSchema = object({...fields,source:{...string,enum:sources.map(s=>s.imageId)}});
+  const directionFields = {main:{anyOf:[itemSchema,{type:'null'}]},auxiliary:{...list(itemSchema),maxItems:2},gap:string};
+  const directionSchema = object(directionFields);
   const outputSchema = fixedDirections ?
     object({sharedBrand:list(itemSchema),directions:object(Object.fromEntries(directionIds.map(id=>[id,directionSchema])))}) :
-    planSchema(itemSchema);
+    object({sharedBrand:list(itemSchema),directions:list(object({direction:string,...directionFields}))});
   const result = await call(selection,sources.length<=4 ? sources : [],outputSchema,{
     assignment:'比稿负责人分配参考图',context:JSON.stringify(packet),
   });
@@ -184,10 +185,19 @@ export async function selectVisualReferences({call, project, images, active, fix
     return {image,reference:{role,name:image.name,sha256:image.sha256,...(image.sourceUrl ? {pageUrl:image.pageUrl,sourceUrl:image.sourceUrl,query:image.query,why:entry.why.trim(),avoid:entry.avoid.trim()} : {}),borrow:entry.borrow.trim(),apply:entry.apply.trim()}};
   }
   const common = shared.map(e=>bind(e,'sharedBrand','sharedBrand'));
+  const primaries = new Map();
   for (const row of rows) {
-    if (!Array.isArray(row.main) || row.main.length>1 || !Array.isArray(row.auxiliary) || row.auxiliary.length>2) throw invalidOutput('每方向最多一张主参考、两张辅助参考。');
-    const primary = row.main.map(e=>bind(e,'main',row.direction));
-    const auxiliary = row.auxiliary.map(e=>bind(e,'auxiliary',row.direction));
+    if (row.main!==null && (typeof row.main!=='object' || Array.isArray(row.main)) ||
+        !Array.isArray(row.auxiliary) || row.auxiliary.length>2) throw invalidOutput('每方向最多一张主参考、两张辅助参考。');
+    primaries.set(row.direction,row.main ? [bind(row.main,'main',row.direction)] : []);
+  }
+  for (const row of rows) {
+    const primary = primaries.get(row.direction);
+    const auxiliary = row.auxiliary.flatMap(entry=>{
+      const image=sources.find(source=>source.imageId===entry?.source);
+      if (image && assigned.has(image.sha256)) return [];
+      return [bind(entry,'auxiliary',row.direction)];
+    });
     const remaining = 4 - Number(packet.previousDrafts.includes(row.direction)) - common.length - primary.length;
     if (remaining<0 && active.includes(row.direction)) throw invalidOutput('「'+row.direction+'」的共享品牌图和主参考超出生图附件上限，请注明本轮必须保留的品牌图后重试。');
     const selected = [...primary,...common,...auxiliary.slice(0,Math.max(0,remaining))];
