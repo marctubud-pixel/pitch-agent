@@ -2251,8 +2251,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "6c65a1ca7790fe6835e55de3eb0a1637aa888293843000e93ff54c1e37eedd78",
-      "reason": "在现有版本操作中绑定提案人验收的当前项目版本。"
+      "sha256": "6475362192852fa157834d12f511f2d2c01f51a17c94ddf39ffc1a8eafda5e00",
+      "reason": "绑定同版人工验收，并避免窄窗口对话遮挡终审操作。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",

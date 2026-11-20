@@ -119,7 +119,8 @@ export function App() {
   }, [id, reload, requestedStage, requestedLibrary]);
   useEffect(() => {
     if (!workspace || !p) return;
-    if (p.status === 'waiting' && p.stage !== 'research' && lastStatus.current !== 'waiting') setChat(true);
+    const finalDecision = p.stage==='final' && ['ready','blocked'].some(outcome=>p.finalReview?.outcome===outcome);
+    if (p.status === 'waiting' && p.stage !== 'research' && !finalDecision && lastStatus.current !== 'waiting') setChat(true);
     if (p.status === 'done' && lastStatus.current && lastStatus.current !== 'done') {
       setParty(true);
       setNotice(true);
@@ -127,6 +128,13 @@ export function App() {
     lastStatus.current = p.status;
     if (chat) mark(p.events.length);
   }, [workspace, p, chat]);
+  useEffect(() => {
+    if (detail?.id!=='final') return;
+    const viewport=window.matchMedia('(max-width: 1000px)');
+    const closeOverlay=()=>{if (viewport.matches) setChat(false);};
+    viewport.addEventListener('change',closeOverlay);
+    return () => viewport.removeEventListener('change',closeOverlay);
+  }, [detail?.id]);
   useEffect(() => {
     const esc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
