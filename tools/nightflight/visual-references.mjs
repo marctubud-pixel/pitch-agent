@@ -82,6 +82,16 @@ async function writePosterPrompt({call, images, context, posterReference, poster
   return {model:result.model,threadId:result.threadId,prompt,plan};
 }
 
+function includesPosterSlogan(prompt, slogan) {
+  if (prompt.includes(slogan)) return true;
+  const wrap = '[ \\t]*\\r?\\n[ \\t]*';
+  const words = slogan.split(/([ \t]+)/u).filter(Boolean);
+  const literal = words.map(part => part.trim()
+    ? Array.from(part, RegExp.escape).join('(?:'+wrap+')?')
+    : '(?:'+RegExp.escape(part)+'|'+wrap+')').join('');
+  return new RegExp(literal,'u').test(prompt);
+}
+
 export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging, posterReference}) {
   if (posterReference) {
     const promptWriting = await writePosterPrompt({call,images,context,posterReference,posterSlogan});
@@ -91,7 +101,7 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   const instruction = [
     '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
     '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。按制图要求写清载体上的文字。',
-    posterSlogan && '海报或 KV 要把本方向已选 slogan 的完整原句排成画面主标题。提示词中逐字列出原句，明确文字放在画面上。',
+    posterSlogan && '海报或 KV 要把本方向已选 slogan 的完整原句排成画面主标题。提示词中逐字列出原句，明确文字放在画面上。标题分行时用连续的行写全原字和标点。',
     packaging && '包装画面的设计主题转化成画面关系，包装本体只列确认可印的实际文字。',
     '返回一个 prompt 字段，内容是完整的生图提示词。',
   ].filter(Boolean).join('\n');
@@ -102,7 +112,7 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
     throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
   }
-  if (posterSlogan && !prompt.includes(posterSlogan)) {
+  if (posterSlogan && !includesPosterSlogan(prompt,posterSlogan)) {
     throw invalidOutput('海报生图提示词缺少该方向已选 slogan 的原句，请按制图要求完整写入。');
   }
   const result = await call(prompt,images,null,{exactImagePrompt:true});

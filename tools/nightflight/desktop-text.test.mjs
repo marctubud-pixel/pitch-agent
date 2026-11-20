@@ -190,6 +190,29 @@ test('the desktop waits for the complete poster slogan before calling the image 
   assert.equal(imageCalls,0);
 });
 
+test('a complete wrapped headline reaches the image API without changing the writer’s prompt', async () => {
+  const {generateVisualWithDesktopModels}=await import('./visual-references.mjs');
+  const lines='主标题排入画面左上，分两行。\n下午的停顿，\n撕开一袋';
+  const samples=[
+    {line:'下午的停顿，撕开一袋',prompt:lines,allowed:true},
+    {line:'下午的停顿，撕开一袋',prompt:lines.replace('停顿，','停顿！'),allowed:false},
+    {line:'下午的停顿，撕开一袋',prompt:lines.replace('停顿，\n','停顿，\n\n'),allowed:false},
+    {line:'Try it，下午见',prompt:'画面写\nTry\n  it，\n下午见',allowed:true},
+    {line:'Try it，下午见',prompt:'画面写\nTryit，\n下午见',allowed:false},
+  ];
+  for (const {line,prompt,allowed} of samples) {
+    const sent=[];
+    const run=generateVisualWithDesktopModels({images:[],context:{},drawingBrief:'包装与电商KV',posterSlogan:line,packaging:true,
+      call:async (instruction,_images,schema)=>{
+        if (!schema) sent.push(instruction);
+        return {model:'deepseek-flash',threadId:'writer',parsedOutput:{prompt}};
+      }});
+    if (allowed) await run;
+    else await assert.rejects(run,/缺少该方向已选 slogan 的原句/);
+    assert.deepEqual(sent,allowed?[prompt]:[]);
+  }
+});
+
 test('KV原参考居中时，借布局的自由提示词不能替换成左文右图', async () => {
   const {generateVisualWithDesktopModels}=await import('./visual-references.mjs');
   const posterSlogan='夜访昆虫，45分钟一场';
