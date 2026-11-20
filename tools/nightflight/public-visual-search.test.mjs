@@ -155,11 +155,14 @@ test('named packages retain the first read by image across follow-ups and inspec
     acquiredByPage.set(page,[{path,pageUrl:url,sourceUrl:url+'/'+i+'.png',title:page.brand,
       name:'case-'+i+'.png',imageId:'ref_'+i,sha256:createHash('sha256').update(bytes).digest('hex'),width:300,height:480}]);
   }
-  const brief='瓶装茶包装，希望开盖方便。';
+  const brief='为自家500毫升瓶装茶做包装，想要开盖方便。';
   let firstCount=0;
   const args={dir,carrier:'packaging',pages,acquiredByPage,project:{brief},
     call:async (_instruction,[image,...details],schema,task)=>{
-      assert.equal(JSON.parse(task.context).brief,brief);
+      const {questions}=JSON.parse(task.context);
+      assert.ok(questions.some(q=>q.includes('开合')));
+      assert.ok(questions.some(q=>q.includes('净含量')));
+      assert.doesNotMatch(task.context,/500|自家/);
       if (schema.properties.front) {
         firstCount++;
         return {parsedOutput:{brand:image.title,front:image.title+'第一次观察',regions:['左上']},responseText:'原始回复 '+image.title};

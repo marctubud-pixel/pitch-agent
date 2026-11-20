@@ -142,10 +142,9 @@ function recordedQueries(stdout) {
   return strings(queries);
 }
 
-export async function discoverChinesePages(query, storeRoot, dependencies, signal, provider='360') {
+async function discoverChinesePages(query, storeRoot, dependencies, signal, provider='360') {
   const endpoints={
     yahoo:['https://tw.search.yahoo.com/search','p'], '360':['https://m.so.com/s','q'],
-    baidu:['https://m.baidu.com/s','word'],
     sogou:['https://www.sogou.com/web','query'],weibo:['https://s.weibo.com/weibo','q'],
     redbook:['https://www.xiaohongshu.com/search_result','keyword'],douyin:['https://www.douyin.com/search/'+encodeURIComponent(query),''],
     wechat:['https://weixin.sogou.com/weixin?type=2','query'],
@@ -157,7 +156,7 @@ export async function discoverChinesePages(query, storeRoot, dependencies, signa
   if (param) endpoint.searchParams.set(param,query);
   try {
     const {record} = await capturePublicSource({url:endpoint.href,storeRoot,
-      limits:{timeoutMs:8000,maxBytes:provider==='baidu' ? 4*1024*1024 : 1048576,maxRedirects:1}},dependencies);
+      limits:{timeoutMs:8000,maxBytes:1048576,maxRedirects:1}},dependencies);
     if (record.httpStatus!==200 || record.mimeType!=='text/html') return [];
     const {stdout} = await executeFile(await pythonBinary(),['-I','-B',join(repo,'tools/nightflight/report-search-results.py'),
       join(storeRoot,record.raw.file),provider],{signal,timeout:5000,maxBuffer:65536});
@@ -493,10 +492,6 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const discover = async ({query,domain}) => {
     const plausible=r=>(!domain || matchesDomain(r.url,domain)) && !excluded.has(r.url) &&
       !/百度百科|在线翻译|英汉词典|汉语词典|字词解释|素材模板|素材免费下载|海报模板/u.test(r.title);
-    if (!dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL && /\p{Script=Han}/u.test(query)) {
-      const chinese=(await discoverChinesePages(query,storeRoot,dependencies,signal,'baidu')).filter(plausible);
-      if (chinese.length) return {query,results:chinese.slice(0,8),via:'百度移动公开检索'};
-    }
     const found = await discoverPublicPages(query,storeRoot,dependencies,signal);
     return {...found,results:found.results.filter(plausible).slice(0,8)};
   };
@@ -514,7 +509,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const packaging=await discoverPackaging({brands,...packagingOptions});
   discovered.push(...packaging.searches);
   const campaignResults=[];
-  if ((carriers.includes('kv') || carriers.includes('packaging') && !packaging.pages.length) && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
+  if ((carriers.includes('kv') || carriers.includes('packaging') && brands.length && !packaging.pages.length) && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
     const directoryTerms=[broadCategory,category,...(project.researchFollowup ? comparisonBrands.map(b=>b.name) : []),...terms];
     for (const term of [...new Set(directoryTerms.filter(Boolean))].slice(0,4)) {
       const hits=await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign');
@@ -848,10 +843,12 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
   if (!research.sections.length && !research.gaps.length) research.gaps.push(researchGap('decision','尚缺能支持本案判断的公开原文或可辨作品。'));
   if (mode==='auto') {
     const missing=automaticResearchGaps(research,project);
+    research.ready=missing.length===0;
     if (missing.length) {
-      research.ready=false;
       research.gaps.push(...missing);
       research.next=missing.map(g=>g.message).join(' ');
+    } else {
+      research.next='可按四维研究给出的取舍进入策略。';
     }
   }
   research.next ||= research.ready ? '可按四维研究给出的取舍进入策略。' : '补查仍缺的依据。';

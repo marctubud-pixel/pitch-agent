@@ -15,14 +15,23 @@ const detailSchema=object({actualPackaging:{type:'boolean'},visibleProduct:strin
   question:string,location:string,marking:string,status:{type:'string',enum:['看清','未核实']},
 })}});
 
+const inspectionTopics=[
+  [/规格|净含量|容量|盒内|每袋|每盒|克|毫升|\d\s*(?:kg|ml|g)\b/iu,'画面上可见的容器形状，规格或净含量原字'],
+  [/配料|原料|成分|口味|混合|冻干/u,'包装上可辨的配料或口味原字'],
+  [/开袋|袋口|开盖|瓶盖|封口|密封|回封|复封|收好|拉链|开合|易撕/u,'开口及开合、回封标识的位置与原字'],
+  [/开窗|透明|材料|环保|工艺/u,'图上能分辨的开窗、材质或工艺标识'],
+];
+
 export async function readPackaging({call,dir,image,brief,category,broadCategory,previous,signal}) {
   const root=join(dir,'.research-evidence','packaging-reads');
   await mkdir(root,{recursive:true});
   const folder=await mkdtemp(join(root,image.sha256+'-'));
+  const questions=['商品是什么，包装主面的信息怎么摆放',
+    ...inspectionTopics.filter(([pattern])=>pattern.test(brief ?? '')).map(([,question])=>question)];
   let firstRead=previous?.firstRead;
   if (!firstRead) {
-    const response=await call('只看这件包装原图。按客户 Brief 实际关心的问题观察，Brief 描述的是客户自己的产品。front 写你第一次实际看见的内容，包括与问题有关的文字、标识及其位置；看不清的写“未核实”。看不到文字不能断言包装没有该功能。brand 写可辨品牌。regions 按重要性选一至三个需要放大检查的区域，可包含横跨左右的区域，不猜答案。',[image],firstSchema,
-      {rules:[],assignment:'单张包装读图',context:JSON.stringify({brief})});
+    const response=await call('只看这件包装原图，按 questions 观察。front 写你第一次实际看见的内容，包括可辨的文字、标识及其位置。看不清写“未核实”。brand 写可辨品牌。regions 选一至三个需放大的区域。透窗只见部分时，描述所见容器，不推算整盒数量。',[image],firstSchema,
+      {rules:[],assignment:'单张包装读图',context:JSON.stringify({questions})});
     const answer=response.parsedOutput;
     firstRead={...answer,raw:response.responseText || JSON.stringify(answer),model:response.model,requestId:response.threadId};
   }
@@ -36,8 +45,8 @@ export async function readPackaging({call,dir,image,brief,category,broadCategory
     return {name:zone+'.png',imageId:'detail_'+i,mediaType:'image/png',path,byteLength:bytes.length,
       sha256:createHash('sha256').update(bytes).digest('hex')};
   }));
-  const review=await call('第一张是原图，接着是同一原图的真实局部放大，顺序见 regions。先用图上可辨的简短商品名或品类写 visibleProduct，只需足以区别商品，省略细小口号、成分和重量，先与 targetCategory 所列通用品类（空时按 Brief）比较，再看是否属于 comparisonCategory 的细分。细分规格或包装形态只在图上看清时写。actualPackaging 只在原图显示这件商品真实使用的有品牌或商品标识的包装时为 true；散装食材、图标、空盒批发样板和其他商品的包装不能证明该商品有包装。商品确属同一类时 categoryMatch=同类；不同品类或无法确认分别写其他品类或未核实。品牌、网页标题、同一官网与拍摄角度均不能证明品类相同。图上手提盒、侧面或袋装可以提供所见范围内的包装参考；需要描述正面时才要求看清正面。核对品牌和客户问题。verifiedFront 仅记录可辨的正面，只有侧面或背面时可以留空。checks 第一项写实际可见面的商品识别或布局，随后按所见位置核对，再逐项回答客户关心的细节。看清时报告具体位置、逐字抄下可辨的标注或准确描述可辨图形；不能辨认或这张图无法验证，就选未核实。图上有标注只支持标注本身，不能证明实际体验。不得从客户自己的规格、商品名或第一眼的遗漏推断竞品没有某项。',[image,...details],detailSchema,
-    {rules:[],assignment:'单张包装核图',context:JSON.stringify({brief,targetCategory:broadCategory || category,comparisonCategory:category,product:image.title,firstObservation:firstRead.front,regions})});
+  const review=await call('第一张是原图，接着是同一原图的真实局部放大，顺序见 regions。visibleProduct 写图上可辨的商品名或品类，省略口号、规格和成分。独立核对图上商品与 targetCategory 的通用品类。actualPackaging 只在原图有实际销售商品的包装和可辨标识时为 true。散装食材、图标和空盒模板须排除。同类、异类和品类不清分别写“同类”“其他品类”“未核实”。比较 comparisonCategory 的细分时，以图上实见为准。verifiedFront 只记录可辨的正面，侧背面可留空。checks 先写能识别商品的图文或布局，再按 questions 记录具体位置及可辨原字或图形。数字、净含量、配料和盒内总数只抄图上有明确标签、且能准确辨认的字样。若透窗只露出部分，描述可见罐、袋或其他容器，盒内总数写未核实。无法辨认或不能从本图核对的都写未核实。图上标识只说明印了什么，实际使用效果另需实测。',[image,...details],detailSchema,
+    {rules:[],assignment:'单张包装核图',context:JSON.stringify({questions,targetCategory:broadCategory || category,comparisonCategory:category,regions})});
   const {actualPackaging,visibleProduct,categoryMatch,checks=[]}=review.parsedOutput;
   await writeFile(join(folder,'category.json'),JSON.stringify({sha256:image.sha256,targetCategory:broadCategory || category,comparisonCategory:category,actualPackaging,visibleProduct,categoryMatch}),{mode:0o600});
   if (actualPackaging!==true || categoryMatch!=='同类' || !visibleProduct?.trim()) return null;

@@ -194,9 +194,12 @@ process.stdin.on('end',()=>{
    } else if(schema.evidence) {
      body=action==='research-repair' ? {url:'https://source.example.org/report',evidence:'本次样本单列礼盒用途'} : {url:'',evidence:''};
    } else if(schema.front) {
-     if(!args.includes('--image') || input.includes('source.example.org') || !JSON.parse(input.split('实际项目输入（JSON）').at(-1)).brief)process.exit(56);
+     const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     if(!args.includes('--image') || input.includes('source.example.org') || !packet.questions?.length || packet.brief)process.exit(56);
      body={brand:'测试茶',front:'包装中央标有茶类',regions:['中央']};
    } else if(schema.verifiedFront) {
+     const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     if(!packet.questions?.length || packet.brief || packet.firstObservation || packet.product)process.exit(56);
      body={visibleProduct:'测试茶',actualPackaging:true,categoryMatch:'同类',verifiedFront:'包装中央标有茶类',checks:[{question:'正面文字',location:'正面中央',marking:'茶类',status:'看清'}]};
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
@@ -1440,4 +1443,28 @@ test('a brief-linked visible marking leads the competitor homepage and keeps use
   assert.deepEqual(r.sections.map(row=>row.conclusion),[highlight.conclusion,rows[2].conclusion]);
   assert.deepEqual(r.sections[0].evidenceIndices,[0]);
   assert.equal(r.sections[0].explanation,'原图已核实，右上可见“PRESS TO CLOSE”。实际密封效果未核实。');
+});
+
+test('automatic research uses its evidence gate even if the writer reports that optional detail is missing',async()=>{
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapters=['行业与市场','竞争与同类传播','人群与接触情境','产品与品牌'];
+  const findings=['market','competitor','audience','audience','product'].map((subject,index)=>({
+    subject,source:'来源'+index,url:subject==='product'?'':'https://source.example.org/'+index,
+    evidence:'原文'+index,passage:'原文'+index,conclusion:'发现'+index,implication:'用于本案比较',
+  }));
+  const rows=[0,1,2,2,3].map((chapter,index)=>({
+    chapter:chapters[chapter],conclusion:'发现'+index,explanation:'依据'+index,evidenceIndices:index===4?[4,1]:[index],
+    audienceTopic:['','','使用场景','选择因素',''][index],surveyQuestion:['','','在哪里用','为什么买',''][index],
+  }));
+  const gap={chapter:chapters[0],scope:'optionalSegment',blocksStrategy:true,message:'尚无同规格、同渠道的价格对照。'};
+  async function outcome(suppliedRows,mode='auto') {
+    return writeResearchPage({project:{mode},carriers:[],anchorQuestions:[],findings,gaps:[],
+      call:async()=>({parsedOutput:{rows:suppliedRows,gaps:[gap],ready:false,next:gap.message}})});
+  }
+  const report=await outcome(rows);
+  assert.equal(report.ready,true);
+  assert.ok(report.gaps.some(g=>g.message===gap.message));
+  assert.match(report.next,/进入策略/u);
+  assert.equal((await outcome(rows.filter((_,i)=>i!==3))).ready,false);
+  assert.equal((await outcome(rows,'collab')).ready,false);
 });

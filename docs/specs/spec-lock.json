@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.96.0",
-  "registrySha256": "022fc964e8446a8b1dd8bb0650c1c056db5b49ff0b3537fe1030241f8e68faae",
+  "baselineVersion": "1.97.0",
+  "registrySha256": "dbac8e09a30741b20f313a83ef1e442c0f9e3996c353864b760172b4507673c6",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.23.0",
+      "version": "1.24.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "d620a6dd47e517ffe5942bd110db7e8ff81640726000243bb9ca1e659bcda717",
+        "skills/design-research-lead/SKILL.md": "9d4d6adfabd0ec5d1c2c2831b97df0b1dadf3add72127824f2ed925b8a4c17b2",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.21.0",
+      "version": "1.22.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "f7adfd0446dd74892cd0b7f244f77868aaf052e3638bda031fdea786d3854d47"
+        "docs/specs/nightflight-runtime.md": "03f9f6a9fec640d45ca3a02b615b30c9fc2422b8c9656c122dcf410c7aac15fb"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "4f309352325c745e68f38f852316a04de76388d21383ecde5621c05ae7ebf9fb",
+    "docs/specs/README.md": "62019da3bdba8b99a1ec4c5b32254cc982109be5e67a50ce0c7a0f36635ecad3",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
