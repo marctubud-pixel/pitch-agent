@@ -22,7 +22,7 @@ import { promisify } from 'node:util';
 import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
-import { makeComparison } from './visual-comparison.mjs';
+import { makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
 import { generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
 import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
@@ -1045,10 +1045,12 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const [category]=publicVisualQueries({parsedOutput:{queries:[candidateCategory]}},project);
   const diagnostics = [];
   const attempted = new Set();
+  const directionSearches = new Map();
   const history = [];
   const observations = new Map();
   let searchedCases=false;
-  for (let pass=0; ; pass++) {
+  let revisedBorrow=false;
+  for (;;) {
     try {
       const priorAdmissions=active.flatMap(direction=>{
         const rejected=history.findLast(record=>record.direction===direction && !record.passed);
@@ -1066,7 +1068,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         await writeFile(join(dir,'reference-admission-'+randomUUID()+'.json'),JSON.stringify(admission,null,2),{flag:'wx',mode:0o600});
         if (!admission.passed) {
           missing.push(direction);
-          if (pass>0) {
+          if (revisedBorrow) {
             const rejected=new Set(plan.images.filter(i=>i.sourceUrl).map(i=>i.sha256));
             for (let i=pool.length-1;i>=0;i--) if(rejected.has(pool[i].sha256)) pool.splice(i,1);
           }
@@ -1077,7 +1079,8 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         }
       }
       if (missing.length) {
-        if (pass===0) {
+        if (!revisedBorrow) {
+          revisedBorrow=true;
           await onEvent?.('根据各方向的准入意见，先调整现有原图的借法');
           continue;
         }
@@ -1087,7 +1090,6 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
     }
     catch (error) {
       if (!error.missing) throw error;
-      if (pass===2) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
       if (!searchedCases && category && searchCases) {
         searchedCases=true;
         const known=pool.length;
@@ -1097,11 +1099,15 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         diagnostics.push(category+' / 品牌发布案例，新增 '+(pool.length-known)+' 张');
         if (pool.length-known>=error.missing.length) continue;
       }
-      for (const direction of error.missing) {
+      const pending=error.missing.filter(direction=>(directionSearches.get(direction) ?? 0)<2);
+      if (!pending.length) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
+      for (const direction of pending) {
+        directionSearches.set(direction,(directionSearches.get(direction) ?? 0)+1);
         signal?.throwIfAborted();
         const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
-        const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],gaps:diagnostics};
-        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系。给两条短公开检索词，每条最多三个常用词组。第一条只结合通用品类和载体，例如「坚果 包装」「茶饮 海报」。第二条选方向最重要的手法、动作或场所，可用英文。sceneCategory 只写一个常用场景名，例如「办公室」「露营」「书店」，无关则留空。搜索不带具体规格、价格、配方或本案文案。优先品牌、设计机构或奖项的亚洲作品原页。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],visualQuerySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
+        const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],
+          missingReason:error.missingReasons?.[direction],gaps:diagnostics};
+        const plan = await call('从策略发力点、方向创意和缺图原因提炼要参考的具体画面关系。给两条短公开检索词，每条最多三个常用词组。第一条结合通用品类和载体，例如「坚果 包装」「茶饮 海报」。第二条查这个方向需要借的画法、动作或场所，可用英文。如果上一批同类案例没找到，改查能借到该画面关系的相邻品类或视觉主题。sceneCategory 写常用的品类、视觉主题或场景名，例如「水果」「办公室」「露营」，无关则留空。优先品牌、设计机构或奖项的亚洲作品原页。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。只用通用品类和公开视觉词，不要客户或品牌名、原话、项目名、联系人、规格、价格、未公开配方或附件内容。避开前次已查词。',[],visualQuerySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
         const queries=publicVisualQueries(plan,project).slice(0,2);
         const [scene]=publicVisualQueries({parsedOutput:{queries:[plan.parsedOutput?.sceneCategory]}},project);
         const caseKey=direction+' / 场景案例 '+scene;
@@ -1358,6 +1364,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
         const review = await reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
+          ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal)} : {}),
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer)},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});

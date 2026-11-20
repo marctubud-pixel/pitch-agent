@@ -2,6 +2,17 @@
 import sys
 from PIL import Image, ImageDraw, ImageOps
 
+if sys.argv[1] == "--review-previews":
+    paths = sys.argv[2:]
+    for source, destination in zip(paths[::2], paths[1::2]):
+        with Image.open(source) as original:
+            image = ImageOps.exif_transpose(original).convert("RGBA")
+            image.thumbnail((1536, 1536), Image.Resampling.LANCZOS)
+            background = Image.new("RGB", image.size, "white")
+            background.paste(image, (0, 0), image.getchannel("A"))
+            background.save(destination, format="JPEG", quality=91, optimize=True)
+    raise SystemExit(0)
+
 target, *paths = sys.argv[1:]
 tiles = []
 for path in paths:

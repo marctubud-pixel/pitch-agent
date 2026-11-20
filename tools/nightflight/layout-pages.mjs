@@ -353,6 +353,8 @@ export function applyManuscriptEdits(plan, edits) {
 
 export async function compileManuscript(plan, sources, {compile}, theme, edits=[]) {
   const slides=applyManuscriptEdits(plan,edits).pages;
+  const coverTitle=slides[0].title.trim();
+  const deckLabel=theme.brandName || (coverTitle.length<=22 && coverTitle) || '设计提案';
   const media=new Map(await Promise.all(sources.map(async source=>{
     const img=new Image();
     img.src=source.data;
@@ -396,10 +398,10 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
   });
   const visible=text=>text.replace(/\s/gu,'');
   let pages;
-  try { pages=compile(drafts,theme.brandName || plan.project.title,theme); }
+  try { pages=compile(drafts,deckLabel,theme); }
   catch(error) {
     const at=drafts.findIndex(draft=>{
-      try {compile([draft],theme.brandName || plan.project.title,theme);return false;} catch {return true;}
+      try {compile([draft],deckLabel,theme);return false;} catch {return true;}
     });
     throw Error((at>=0?'逐页稿 P'+String(at+1).padStart(2,'0')+'：':'')+error.message,{cause:error});
   }

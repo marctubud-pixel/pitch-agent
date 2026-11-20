@@ -166,7 +166,28 @@ export function holdSimilarPosterDirections(comparison, representatives) {
   }
 }
 
-export async function reviewVisualBatch({call, direction, images, context, packagingExpected, theme, posterSlogan, posterTransfer, sources = [], verifiedComparators = [], brandReferences = [], findComparators, makeBoard}) {
+async function readOriginalPackaging(call,image,productBrief,theme,direction) {
+  const status = {...text,enum:['verified','text_mismatch','unverified']};
+  const mark={type:'object',additionalProperties:false,properties:{text,location:text},required:['text','location']};
+  const outputSchema={type:'object',additionalProperties:false,properties:{status,printed:{type:'array',items:mark},reason:text},required:['status','printed','reason']};
+  const result=await call(
+    '独立核对这一张原图的包装印字。只读实际盒身、袋身、瓶身等包装本体，逐字记下文字及具体位置。海报标题、价签、道具和背景字样排除。看不清的字留作未核。'+
+    '能核清并符合 Brief 已确认的产品信息时填 verified。实际印了抵触的文字时填 text_mismatch。包装本体或字样看不清时填 unverified。逐字记录读到的印字，reason 写核对依据。',
+    [image],outputSchema,{delegate:true,rules:[],assignment:'独立核对包装本体原图',context:JSON.stringify({brief:productBrief})});
+  const observation=result.parsedOutput;
+  if (!status.enum.includes(observation?.status) || !nonempty(observation.reason) || !Array.isArray(observation.printed) ||
+      !observation.printed.every(mark=>nonempty(mark?.text) && nonempty(mark.location)) ||
+      (observation.status!=='unverified' && !observation.printed.length) || !nonempty(result.threadId) || !nonempty(result.model)) {
+    throw invalidOutput('包装本体原图核对需返回原字、位置及回执。');
+  }
+  const expected=[theme, productBrief.includes(direction) ? '' : direction].filter(nonempty);
+  const printedTheme=observation.printed.find(mark=>expected.some(value=>sameSlogan(value,mark.text)));
+  return {...observation,sha256:image.sha256,threadId:result.threadId,model:result.model,
+    ...(result.inputPacketHash ? {inputPacketHash:result.inputPacketHash} : {}),
+    ...(printedTheme ? {status:'theme_printed',reason:'本体'+printedTheme.location+'读到「'+printedTheme.text+'」。'} : {})};
+}
+
+export async function reviewVisualBatch({call, direction, images, context, packagingExpected, theme, posterSlogan, posterTransfer, sources = [], verifiedComparators = [], brandReferences = [], findComparators, makeBoard, makePreviews, productBrief}) {
   if (images.length !== 3 || new Set(images.map(img => img.sha256)).size !== 3) throw invalidOutput('同方向需要三张不同的主视觉原图');
   const blindFields = ['first','action','words','alternative'];
   const properties = Object.fromEntries(blindFields.map(k=>[k,text]));
@@ -226,16 +247,21 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const board = references.length ? await makeBoard(images,references) : null;
   const supplied = packaging ? productOriginals : [];
   const packet = [...images,...references,...(board?[board]:[]),...supplied];
-  const rules = ['候选为第1至3张，仅给候选评分。'];
+  const reviewFrames=makePreviews ? await makePreviews(packet) : packet;
+  const previewEvidence=packet.flatMap((frame,index)=>frame.sha256===reviewFrames[index].sha256 ? [] : [{
+    originalSha256:frame.sha256,reviewSha256:reviewFrames[index].sha256,originalBytes:frame.byteLength,reviewBytes:reviewFrames[index].byteLength,
+  }]);
+  const rules = ['items 只交 candidate 1、2、3 各一条意见。第4张起为参照，只写进候选意见，不能另列候选编号。'];
   if (posterSlogan) rules.push('按海报或 KV 的传播场景查看画面与文字。');
-  if (board) rules.push('候选之后为同类原图和一张同序等框缩图。逐对定位相似与不同，区分单图和并排可见性。比较按原件真实载体和规格成立，不要求两者相同。参考顺序为'+references.map(r=>r.name).join('、')+'。');
+  if (board) rules.push('候选之后为同类包装参考和一张同序等框缩图。逐对定位相似与不同，区分单图和并排可见性。比较按原件真实载体和规格成立，不要求两者相同。参考顺序为'+references.map(r=>r.name).join('、')+'。');
   else if (packaging) rules.push('本批没有可用同类包装，不得推断已完成同类对照。');
+  if (previewEvidence.length) rules.push('并排附件包含原图的轻量阅览版。字样或位置看不清时按未核实处理。');
   if (supplied.length) rules.push('末尾 '+supplied.length+' 张是客户的品牌或产品原件，用来核对已确认的实物和字样。顺序为'+supplied.map(r=>r.name).join('、')+'。');
   async function read(assignment, instruction, fields, extra = '') {
-    const result = await call(instruction, packet, schema(fields), {delegate:true,rules, assignment, comparison:packet.length>4 || !!board, context: context + '\n本批方向：' + direction + extra});
+    const result = await call(instruction, reviewFrames, schema(fields), {delegate:true,rules, assignment, comparison:packet.length>4 || !!board, context: context + '\n本批方向：' + direction + extra});
     const rows = result.parsedOutput?.items;
-    if (rows?.length !== 3 || ![1,2,3].every(n => rows.some(row => row.candidate === n && row.reason?.trim()))) {
-      throw invalidOutput('主视觉评审未逐张交回三份可核对意见');
+    if (!Array.isArray(rows) || rows.length !== 3 || ![1,2,3].every(n => rows.some(row => row?.candidate === n && nonempty(row.reason)))) {
+      throw invalidOutput('主视觉评审只收 candidate 1、2、3 各一条有依据的意见。第4张起的参照不能另列为候选。');
     }
     return {thread: result.threadId, items: rows,...(result.model ? {model:result.model} : {})};
   }
@@ -250,17 +276,31 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     if (checksPackagingText && !report.items.every(row=>onPackStatuses.includes(row.onPackStatus))) throw invalidOutput('品牌原票缺少包装文字核验。');
     return {role,...report};
   });
+  const onPackAudits=new Map();
+  if (packaging && productBrief) {
+    const originals=votes.find(vote=>vote.role==='品牌').items.filter(row=>row.onPackStatus!=='verified');
+    const checked=await independentCalls(originals,async row=>[row.candidate,
+      await readOriginalPackaging(call,images[row.candidate-1],productBrief,theme,direction)]);
+    for (const [candidate,observation] of checked) onPackAudits.set(candidate,observation);
+  }
+  const effectiveVotes=votes.map(vote=>vote.role!=='品牌' || !onPackAudits.size ? vote : {...vote,items:vote.items.map(row=>{
+    const observed=onPackAudits.get(row.candidate);
+    return observed ? {...row,onPackStatus:observed.status,reason:observed.reason} : row;
+  })});
+  const packagingEvidenceRule=onPackAudits.size ? '包装本体印字核对采用逐张原图的抄录和位置。区分本体、海报标题与价签。保留据原图成立的印字问题。' : '';
   const challenges = await independentCalls(roles,async role=>{
     const independent = await read(role+'独立对抗岗', '从本岗职责逐图独立找漏项：'+duties[role]+'。不评分。', {});
-    const checked = await read(role+'对抗核查岗', '结合独立发现逐项核查对应原票，列证据及仍成立的问题，不评分。', {},
-      JSON.stringify({独立发现:independent.items,原票:votes.find(v=>v.role===role).items}));
+    const checked = await read(role+'对抗核查岗', '结合独立发现逐项核查对应原票，列证据及仍成立的问题，不评分。'+(role==='品牌' ? packagingEvidenceRule : ''), {},
+      JSON.stringify({独立发现:independent.items,原票:votes.find(v=>v.role===role).items,
+        ...(role==='品牌' && onPackAudits.size ? {包装本体原图复核:Object.fromEntries(onPackAudits)} : {})}));
     return {role,independent,...checked};
   });
-  const ruling = await read('独立视觉总监', '逐图裁定原票及对抗意见。仍有成立硬伤或关键未知时 blocked 为 true；reason 写取舍理由、保留处和具体修改建议。为三张图给互不重复的优先次序 priority（1 最优），只用于合格同分时决胜。不得改分。edit 写具体部位与改法；research 写需补的实景、来源或产品资料。没有待办填无。素材不足须说明。',
-    {blocked:{type:'boolean'},priority:numeric,edit:text,research:text}, JSON.stringify({votes,challenges,blind}));
+  const ruling = await read('独立视觉总监', '逐图裁定原票及对抗意见。仍有成立硬伤或关键未知时 blocked 为 true；reason 写取舍理由、保留处和具体修改建议。为三张图给互不重复的优先次序 priority（1 最优），只用于合格同分时决胜。不得改分。edit 写具体部位与改法；research 写需补的实景、来源或产品资料。没有待办填无。素材不足须说明。'+packagingEvidenceRule,
+    {blocked:{type:'boolean'},priority:numeric,edit:text,research:text}, JSON.stringify({votes:effectiveVotes,challenges,blind,
+      ...(onPackAudits.size ? {包装本体印字以逐张原图核对为准:Object.fromEntries(onPackAudits)} : {})}));
   if (!ruling.items.every(row=>typeof row.blocked==='boolean' && row.edit?.trim() && row.research?.trim()) || ![1,2,3].every(n=>ruling.items.some(row=>row.priority===n))) throw invalidOutput('主视觉总监裁定不完整');
   const candidates = ruling.items.map(row => {
-    const scores = votes.map(v=>({role:v.role,...v.items.find(i=>i.candidate===row.candidate)}));
+    const scores = effectiveVotes.map(v=>({role:v.role,...v.items.find(i=>i.candidate===row.candidate)}));
     const brand = scores.find(v=>v.role==='品牌');
     const printIssue = packaging ? onPackIssues[brand.onPackStatus] : undefined;
     const reading = blind[row.candidate-1];
@@ -285,5 +325,6 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const winner = candidates.filter(c=>!c.blocked && c.mean>=4).sort((a,b)=>b.mean-a.mean || a.priority-b.priority)[0];
   return {direction,packaging,...(posterSlogan ? {posterSlogan} : {}),...(transferAudit ? {transferAudit} : {}),
     board:board?.name,references:references.map(ref=>({name:ref.name,sha256:ref.sha256})),...(reusedResearch.length ? {reusedResearch} : {}),
+    ...(previewEvidence.length ? {previewEvidence} : {}),...(onPackAudits.size ? {onPackAudits:Object.fromEntries(onPackAudits)} : {}),
     selectionThread:selectionThreads[0],selectionThreads,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,winner:winner?.candidate ?? null};
 }

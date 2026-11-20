@@ -203,7 +203,10 @@ export async function selectVisualReferences({call, project, images, active, obs
     plans.set(row.direction,{images:selected.map(s=>s.image),handoff,missing:!primary.length,gap:row.gap});
   }
   const missing=active.filter(n=>plans.get(n).missing);
-  if (missing.length) throw Object.assign(Error('视觉主参考待补：'+missing.map(n=>n+'（'+(plans.get(n).gap || '缺少能表达该方向的原图')+'）').join('、')+'。可在对话区补图后重试。'),{missing});
+  if (missing.length) {
+    const missingReasons=Object.fromEntries(missing.map(n=>[n,plans.get(n).gap || '缺少能表达该方向的原图']));
+    throw Object.assign(Error('视觉主参考待补：'+missing.map(n=>n+'（'+missingReasons[n]+'）').join('、')+'。可在对话区补图后重试。'),{missing,missingReasons});
+  }
   return plans;
 }
 

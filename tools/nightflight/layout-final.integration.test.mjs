@@ -89,7 +89,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   await Promise.all(Object.entries({'任务卡.md':brief,'策略.md':strategy,'文案.md':copy,'原图.png':image})
     .map(([name,bytes])=>writeFile(join(storage,name),bytes)));
   const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-  const project={id,title:'馆内活动',brief,inputHash:'v3-test',mode:'collab',revision:1,stage:'visual',status:'waiting',
+  const project={id,title:brief.repeat(4),brief,inputHash:'v3-test',mode:'collab',revision:1,stage:'visual',status:'waiting',
     commands:{},claim:null,owner:null,attachments:[],versions:[],feedback:[],events:[],
     briefScope:{status:'accepted',types:['kv']},directions:['馆内夜游'],choice:'馆内夜游',
     copyReview:{status:'ready',bodyHash:sha(copy),draft:{directions:[{name:'馆内夜游',main:'天黑进馆',secondary:'馆内讲解 · 须预约'}]}},

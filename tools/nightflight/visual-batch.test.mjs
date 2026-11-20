@@ -23,9 +23,9 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[]}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews}={}) {
   const calls = [];
-  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,
+  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,
     sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
     call:async(_instruction,actual,schema,task)=>{
       calls.push({actual,schema,task});
@@ -33,6 +33,7 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
         slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'}}};
       if (task.assignment==='海报借改逐项核对') return {...identity,parsedOutput:{items:rows}};
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
+      if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
       const fields = schema.properties.items.items.properties;
       return {parsedOutput:{items:images.map((_,index)=>({candidate:index+1,reason:'原票认为主体清楚。',
         ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
@@ -105,6 +106,27 @@ test('workbench-verified packaging goes into the comparison with its original si
   assert.ok(scores.actual.some(image=>image.sha256===original.sha256));
   assert.equal(batch.winner,null);
   assert.match(batch.candidates[0].reason,/主题印在包装本体/);
+});
+
+test('a reduced side-by-side packet never certifies where the theme is printed',async()=>{
+  const productBrief='混合坚果，25 克。做包装正面和电商 KV。';
+  const printed=[
+    {status:'verified',printed:[{text:'混合坚果',location:'盒身中央'},{text:'25 克',location:'右下角'}],reason:'盒面为品名和规格。'},
+    {status:'verified',printed:[{text:slogan,location:'袋身左上'}],reason:'袋身左上可读。'},
+    {status:'unverified',printed:[],reason:'盒面反光，字样看不清。'},
+  ];
+  const makePreviews=async packet=>packet.map((image,index)=>index<3 ? {...image,sha256:String(index+6).repeat(64),byteLength:40} : image);
+  const {batch,calls}=await review({packaging:true,productBrief,printed,makePreviews});
+  assert.equal(batch.winner,1);
+  assert.deepEqual(batch.candidates.map(candidate=>candidate.blocked),[false,true,true]);
+  assert.deepEqual(batch.votes.find(vote=>vote.role==='品牌').items.map(row=>row.onPackStatus),Array(3).fill('theme_printed'));
+  assert.deepEqual(Object.values(batch.onPackAudits).map(audit=>audit.status),['verified','theme_printed','unverified']);
+  assert.equal(batch.onPackAudits[2].sha256,images[1].sha256);
+  assert.match(batch.candidates[1].reason,/袋身左上/);
+  assert.deepEqual(calls.filter(call=>call.task.assignment==='独立核对包装本体原图').map(call=>call.actual),images.map(image=>[image]));
+  assert.ok(calls.filter(call=>call.task.assignment==='独立核对包装本体原图').every(call=>!call.task.context.includes(slogan)));
+  assert.equal(calls.find(call=>call.task.assignment==='品牌独立评分岗').actual[0].sha256,'6'.repeat(64));
+  assert.deepEqual(batch.previewEvidence.map(evidence=>evidence.originalSha256),images.map(image=>image.sha256));
 });
 
 test('every candidate must have exactly five judgments with evidence for each attached image',async()=>{
