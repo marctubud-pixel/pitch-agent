@@ -129,8 +129,8 @@ else {
    if(!Array.isArray(last) || !last.some(item=>item.image_url)) throw Error('缺少必改项实页');
    const ctx=JSON.parse(prompt.split('实际项目输入（JSON）\\n\\n')[1]);
    reply={items:Object.fromEntries(Object.entries(ctx['待核所见']).map(([id,issue])=>[id,{
-     kind:issue.page===2?'readable_suggestion':'fact_conflict',actual:'对应实页',required:'Brief 原文',
-     location:'正文',reason:'逐字比对给定的实际证据',
+     kind:issue.page===2?'readable_suggestion':'fact_conflict',actual:'对应实页',required:issue.page===2?'':'须预约',
+     location:'正文',reason:'逐字比对给定的实际证据',source:issue.page===2?'':'B1',
    }]))};
  } else if(prompt.includes('本批PPT')) {
    if(!Array.isArray(last) || !last.some(p=>p.image_url?.url.startsWith('data:image/jpeg;base64,')) || !prompt.includes('馆内讲解 · 须预约'))
