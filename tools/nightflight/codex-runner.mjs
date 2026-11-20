@@ -142,9 +142,10 @@ function recordedQueries(stdout) {
   return strings(queries);
 }
 
-async function discoverChinesePages(query, storeRoot, dependencies, signal, provider='360') {
+export async function discoverChinesePages(query, storeRoot, dependencies, signal, provider='360') {
   const endpoints={
     yahoo:['https://tw.search.yahoo.com/search','p'], '360':['https://m.so.com/s','q'],
+    baidu:['https://m.baidu.com/s','word'],
     sogou:['https://www.sogou.com/web','query'],weibo:['https://s.weibo.com/weibo','q'],
     redbook:['https://www.xiaohongshu.com/search_result','keyword'],douyin:['https://www.douyin.com/search/'+encodeURIComponent(query),''],
     wechat:['https://weixin.sogou.com/weixin?type=2','query'],
@@ -156,7 +157,7 @@ async function discoverChinesePages(query, storeRoot, dependencies, signal, prov
   if (param) endpoint.searchParams.set(param,query);
   try {
     const {record} = await capturePublicSource({url:endpoint.href,storeRoot,
-      limits:{timeoutMs:8000,maxBytes:1048576,maxRedirects:1}},dependencies);
+      limits:{timeoutMs:8000,maxBytes:provider==='baidu' ? 4*1024*1024 : 1048576,maxRedirects:1}},dependencies);
     if (record.httpStatus!==200 || record.mimeType!=='text/html') return [];
     const {stdout} = await executeFile(await pythonBinary(),['-I','-B',join(repo,'tools/nightflight/report-search-results.py'),
       join(storeRoot,record.raw.file),provider],{signal,timeout:5000,maxBuffer:65536});
@@ -228,13 +229,23 @@ function packagingTextGap(f) {
 }
 
 async function discoverPackaging({brands, category, broadCategory, packagingTerm, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
-  const searches=[], pages=[];
-  for (const target of (brands ?? []).slice(0,3)) {
+  const fetched=await Promise.all((brands ?? []).slice(0,3).map(async target=>{
+    const searches=[], pages=[];
     const name=target?.name?.trim();
-    if (!name || !/^[\p{L}\p{N} ·&-]{1,32}$/u.test(name)) continue;
+    if (!name || !/^[\p{L}\p{N} ·&-]{1,32}$/u.test(name)) return {searches,pages};
     const domain=String(target.officialDomain ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
-    const official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
+    let official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
     const seen=new Set();
+    if (!official) {
+      const names=await discover({query:name});
+      const website=names.results.find(r=>r.title.includes(name) && /官网|官方网站|official site/iu.test(r.title) &&
+        !retailDomains.some(host=>matchesDomain(r.url,host)));
+      if (website) {
+        official=new URL(website.url).hostname.replace(/^www\./iu,'');
+        seen.add(website.url);
+      }
+      searches.push(names);
+    }
     if (official) {
       const host=official.split('.').length===2 ? 'www.'+official : official;
       const page={url:'https://'+host+'/',title:name,brand:name,category,catalogTerms,packagingTerm,official:true,carrier:'packaging'};
@@ -243,7 +254,7 @@ async function discoverPackaging({brands, category, broadCategory, packagingTerm
         {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
       const usable=acquired.filter(i=>Math.min(i.width,i.height)>=140);
       searches.push({query,via:name+'官网品类目录',results:[page]});
-      if (usable.length) { pages.push({...page,acquired:usable}); continue; }
+      if (usable.length) return {searches,pages:[{...page,acquired:usable}]};
     }
     const categoryName=category && !name.includes(category) ? name+' '+category : name;
     const queries=[...new Set([categoryName,name,name+' 包装',...(official?[name+' site:'+official]:[])])];
@@ -278,8 +289,9 @@ async function discoverPackaging({brands, category, broadCategory, packagingTerm
       if (retailPage && !official) break;
     }
     if (retailPage) pages.push(retailPage);
-  }
-  return {searches,pages};
+    return {searches,pages};
+  }));
+  return {searches:fetched.flatMap(r=>r.searches),pages:fetched.flatMap(r=>r.pages)};
 }
 
 export async function discoverPublicPages(query, storeRoot, dependencies = {}, signal) {
@@ -369,7 +381,11 @@ export async function researchConsumerReports({brief,topics,openedReports=[],dis
     await examine(searches.flatMap(s=>s.results),term);
     if (canStop && searches.some(s=>s.results.length) && enough()) break;
     const sources=await Promise.all([['ipsos','益普索站内搜索',term],['iimedia','艾媒报告站',term],['reports','199IT 站内搜索',term+'消费']].map(async ([provider,via,query])=>{
-      const results=(await directory(query,provider)).filter(relevant).slice(0,3);
+      const hits=await directory(query,provider);
+      const exact=hits.filter(relevant);
+      const likelySurvey=provider!=='reports' ? hits.filter(r=>!exact.includes(r) &&
+        /消费|调研|研究|趋势|洞察|创新机遇/u.test(r.title)) : [];
+      const results=[...exact,...likelySurvey].slice(0,3);
       return {query,via,results};
     }));
     discovered.push(...sources);
@@ -475,14 +491,14 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const terms = strings(plan.parsedOutput?.segmentTerms).filter(t=>t.length<=30).slice(0,4);
   const industryQueries = reportSearchTerms(categories,[...priorQueries]);
   const discover = async ({query,domain}) => {
-    const found = await discoverPublicPages(query,storeRoot,dependencies,signal);
+    const plausible=r=>(!domain || matchesDomain(r.url,domain)) && !excluded.has(r.url) &&
+      !/百度百科|在线翻译|英汉词典|汉语词典|字词解释|素材模板|素材免费下载|海报模板/u.test(r.title);
     if (!dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL && /\p{Script=Han}/u.test(query)) {
-      const alternatives=await discoverChinesePages(query,storeRoot,dependencies,signal,'yahoo');
-      found.results=[...new Map([...alternatives,...found.results].map(r=>[r.url,r])).values()];
-      found.via+=' + Yahoo';
+      const chinese=(await discoverChinesePages(query,storeRoot,dependencies,signal,'baidu')).filter(plausible);
+      if (chinese.length) return {query,results:chinese.slice(0,8),via:'百度移动公开检索'};
     }
-    return {...found,results:found.results.filter(r=>(!domain || matchesDomain(r.url,domain)) &&
-      !excluded.has(r.url) && !/在线翻译|英汉词典|素材模板|素材免费下载|海报模板/u.test(r.title)).slice(0,8)};
+    const found = await discoverPublicPages(query,storeRoot,dependencies,signal);
+    return {...found,results:found.results.filter(plausible).slice(0,8)};
   };
   const discovered = [];
   const category=plan.parsedOutput.comparisonCategory?.trim();
@@ -494,10 +510,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const firstPass=await Promise.all(broadQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
   discovered.push(...firstPass);
   const brands=carriers.includes('packaging') && Array.isArray(plan.parsedOutput.packagingBrands) ? plan.parsedOutput.packagingBrands : [];
-  const packaging=await discoverPackaging({brands,category,broadCategory,packagingTerm:plan.parsedOutput.packagingTerm,catalogTerms:[...new Set([broadCategory,...(plan.parsedOutput.catalogTerms ?? [])].filter(Boolean))],discover,storeRoot,dependencies,dir,signal});
+  const packagingOptions={category,broadCategory,packagingTerm:plan.parsedOutput.packagingTerm,catalogTerms:[...new Set([broadCategory,...(plan.parsedOutput.catalogTerms ?? [])].filter(Boolean))],discover,storeRoot,dependencies,dir,signal};
+  const packaging=await discoverPackaging({brands,...packagingOptions});
   discovered.push(...packaging.searches);
   const campaignResults=[];
-  if (carriers.includes('kv') && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
+  if ((carriers.includes('kv') || carriers.includes('packaging') && !packaging.pages.length) && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
     const directoryTerms=[broadCategory,category,...(project.researchFollowup ? comparisonBrands.map(b=>b.name) : []),...terms];
     for (const term of [...new Set(directoryTerms.filter(Boolean))].slice(0,4)) {
       const hits=await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign');
@@ -526,7 +543,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   for (const query of industryQueries) {
     const found = await discover({query});
     discovered.push(found);
-    const isReport = r=>/报告|皮书|研究|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url);
+    const isReport = r=>/报告|皮书|研究|统计公报|行业发展|行业市场|市场规模|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url);
     let candidates = found.results.filter(isReport);
     if (!candidates.length && /\p{Script=Han}/u.test(query) && !(dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL)) {
       const alternatives = await discoverChinesePages(query,storeRoot,dependencies,signal);
@@ -661,11 +678,29 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const boards = [];
   const documents = inputs.texts.filter(t=>t.text && project.attachments?.some(a=>a.name===t.name));
   for (const type of carriers) {
-    const board = await researchCompetitors({call,dir,project,category,broadCategory,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
+    const boardOptions={call,dir,project,category,broadCategory,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images};
+    let board = await researchCompetitors({...boardOptions,
       acquiredByPage:new Map(packaging.pages.map(p=>[p,p.acquired])),
       pages:pages.filter(p=>(!p.carrier || p.carrier===type) && (type!=='packaging' || !brands.length ||
         packaging.pages.includes(p) || ((draft.parsedOutput.competitorPages ?? []).includes(p) && originals.some(source=>source.url===p.url)) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
       previous:(project.previousResearchImages ?? []).filter(image=>!image.carrier || image.carrier===type)});
+    if (type==='packaging' && !hasCategoryImage(board?.finding.images ?? [],type)) {
+      const cases=originals.filter(item=>campaignResults.some(r=>r.url===item.url));
+      if (cases.length) {
+        await onEvent?.('首批没有查到合格包装，沿已打开的同类案例寻找其他品牌');
+        const tried=new Set(brands.map(b=>b.name));
+        const sources=cases.slice(0,6).map(s=>({title:s.source,url:s.url,text:s.text.slice(0,3000)}));
+        const result=await call('首轮品牌未取得同类包装原图。只根据实际打开的案例，找至多两个还没试过、有该品类商品的品牌短名。每个短名必须在对应网页标题或原文出现。只选商品品牌，跳过平台、机构、同名其他行业和经销商。找不到返回空数组。只返回公开短名和原文网页的 url。',
+          [],objectSchema({brands:{type:'array',items:objectSchema({name:stringField,url:stringField})}}),
+          {editorial:true,rules:[],context:JSON.stringify({category,broadCategory,tried:[...tried],sources})});
+        const alternatives=(result.parsedOutput?.brands ?? []).filter(b=>b.name?.trim() && !tried.has(b.name) &&
+          sources.some(s=>s.url===b.url && (s.title.includes(b.name) || s.text.includes(b.name)))).slice(0,2);
+        const extra=await discoverPackaging({brands:alternatives,...packagingOptions});
+        discovered.push(...extra.searches);
+        if (extra.pages.length) board=await researchCompetitors({...boardOptions,pages:extra.pages,
+          acquiredByPage:new Map(extra.pages.map(p=>[p,p.acquired]))}) ?? board;
+      }
+    }
     if (board) {
       boards.push(board);
       const hashes=new Set(board.finding.images.map(image=>image.sha256));

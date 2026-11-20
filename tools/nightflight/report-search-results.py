@@ -75,6 +75,42 @@ class YahooResults(HTMLParser):
             self.link = ''
 
 
+class BaiduMobileResults(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.url = ''
+        self.heading = False
+        self.title = []
+        self.results = []
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        classes = (a.get('class') or '').split()
+        if tag == 'div' and 'c-result' in classes:
+            self.url = ''
+            try:
+                url = json.loads(a.get('data-log') or '{}').get('mu')
+                if isinstance(url, str) and urlsplit(url).scheme == 'https':
+                    self.url = url
+            except (AttributeError, ValueError):
+                pass
+        if tag == 'h3' and self.url and 'cosc-title' in classes:
+            self.heading = True
+            self.title = []
+
+    def handle_data(self, data):
+        if self.heading:
+            self.title.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'h3' and self.heading:
+            title = ''.join(self.title).strip()
+            if title and not any(r['url'] == self.url for r in self.results):
+                self.results.append({'url': self.url, 'title': title})
+            self.heading = False
+            self.url = ''
+
+
 class PublisherResults(HTMLParser):
     def __init__(self, provider):
         super().__init__()
@@ -159,6 +195,7 @@ class ActivityResults(HTMLParser):
 provider = sys.argv[2] if len(sys.argv) > 2 else '360'
 parser = (ActivityResults(provider) if provider in ('sogou','weibo','redbook','douyin','wechat') else
           PublisherResults(provider) if provider in ('campaign', 'reports', 'ipsos', 'iimedia') else
+          BaiduMobileResults() if provider == 'baidu' else
           YahooResults() if provider == 'yahoo' else ReportSearchResults())
 parser.feed(Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace'))
 print(json.dumps(parser.results[:8]))
