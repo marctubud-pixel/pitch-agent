@@ -105,6 +105,8 @@ test('采用并写逐页稿时加载 v3，按章出稿并绑定本版来源、�
   project.research.findings[0].chapter='竞争与同类传播';
   project.research.findings.push({chapter:'人群与接触情境',conclusion:'家长关注活动时间',
     evidence:'受访家长提到活动时间',source:'家长问卷',url:'https://example.com/survey'});
+  project.research.findings.push({chapter:'行业与市场',conclusion:'夜场增设馆内讲解',
+    evidence:'馆方公布两场夜间导览',source:'夜场公告',url:'https://example.com/night'});
   project.research.sections=project.research.findings.map(({chapter},i)=>({chapter,evidenceIndices:[i]}));
   const page=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',sourceIndices:[],internalNote:'',...fields});
   const executable=await nativeFixture(root,{
@@ -112,6 +114,7 @@ test('采用并写逐页稿时加载 v3，按章出稿并绑定本版来源、�
     chapters:[
       {title:'课题与洞察',pages:[page('brief','让家长认出馆内夜场'),
         page('trend','家长会先看时间',{points:['受访家长提到活动时间。'],sourceIndices:[1]}),
+        page('trend','夜场增加导览',{points:['馆方公布两场夜间导览。'],sourceIndices:[2]}),
         page('peers','同类把活动名放在画面中央',{points:['海报中央写活动名。'],sourceIndices:[0]})]},
       {title:'策略与版式',pages:[page('strategy','先识别活动，再读预约。'),page('execution','把预约放在活动名旁')]},
       {title:'作品与决定',pages:[page('direction','天黑进馆',{figureId:'A2',points:['让围着展柜的孩子进入画面。']}),
@@ -126,8 +129,8 @@ test('采用并写逐页稿时加载 v3，按章出稿并绑定本版来源、�
   assert(result.artifacts.every(a=>a.kind==='text'));
   const draft=result.artifacts.find(a=>a.name.startsWith('逐页稿-')).text;
   assert.match(draft,/### P02 \| \[目录\][\s\S]*?- 课题与洞察\n  - 策略与版式\n  - 作品与决定\n/u);
-  assert.match(draft,/### P04 \| \[趋势洞察\][\s\S]*?https:\/\/example\.com\/survey[\s\S]*?### P05 \| \[同类参考\][\s\S]*?https:\/\/example\.com\/kv/u);
-  assert.match(draft,/### P06 \| \[核心策略\]\n- \*\*标题\/重点\*\*：先识别活动，再读预约。\n- \*\*解释内容\*\*：无/u);
+  assert.match(draft,/### P04 \| \[趋势洞察\][\s\S]*?https:\/\/example\.com\/survey[\s\S]*?### P05 \| \[趋势洞察\][\s\S]*?https:\/\/example\.com\/night[\s\S]*?### P06 \| \[同类参考\][\s\S]*?https:\/\/example\.com\/kv/u);
+  assert.match(draft,/### P07 \| \[核心策略\]\n- \*\*标题\/重点\*\*：先识别活动，再读预约。\n- \*\*解释内容\*\*：无/u);
   assert.match(draft,/主标 · 进馆看虫\n  - 副标 · 须预约/u);
   assert.match(draft,/原图与文案左右分屏 ｜ `A2` · `adopted\.png`/u);
   assert.match(draft,/横幅全页展示 ｜ `A2` · `adopted\.png`\n- \*\*内部备注\*\*：检查展柜边角的裁切。/u);

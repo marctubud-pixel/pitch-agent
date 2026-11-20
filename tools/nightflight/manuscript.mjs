@@ -124,7 +124,8 @@ export async function formatManuscriptInput(materials) {
     '# 夜航逐页编稿 · ppt-slide-script v3',
     ...skill.map((body,i)=>'## '+skillFiles[i]+'\n\n'+body.trim()),
     '## 夜航交付字段',
-    '完整执行上面的选模板、编稿、精简和朗读检查。按 JSON Schema 交回正文，夜航排 Markdown。cover 写封面，chapters 写目录所用的 3–5 个短章名及各章正文，closing 写封底一句话。章名不要编号、页码、页数或方案答案。每页 title 是客户看到的大字，points 是简短正文要点，无正文填 []。',
+    '本次只执行 Stage 1。完整执行上面的选模板、编稿、精简和朗读检查。按 JSON Schema 交回正文，夜航负责页面编号。cover 写封面，chapters 写目录所用的 3–5 个短章名及各章正文，closing 写封底一句话。附录中的页码是示例。章名不要编号、页码、页数或方案答案。每页 title 是客户看到的大字，points 是简短要点，无正文填 []。',
+    '所有章连起来的 role 顺序固定为：brief 一页 → trend、peers、insight 按需要分别写证据页 → strategy 一页且 points=[] → execution（有执行要点时） → 每个 figure 依次写一页 direction 和至少一页 work → 多图时 compare 一页 → decision 一页。每章标题只作目录。比较、推荐与决定归正文最后，策略摘要和作品细节写进各自的角色。返回前逐项核对这一顺序。',
     '从 brief 开始。趋势或人群洞察用 trend，同类做法用 peers，两组有已用研究材料时各写一页。只有能改变策略判断的新证据才加 insight，别另起一页复述需求、同类案例或缺口。每页保留能推出策略的两三条依据，大而宽泛又不影响设计的总量数据留在材料包。只有这三类证据页填 sourceIndices，使用 research.findings 从 0 开始的原下标，可对照 sections.evidenceIndices。趋势选行业／人群出处，同类只选竞品出处。用「在某调查中」写清范围，样本边界写在事实中。标题也要受原样本与数据约束。部分机构的尝试不能写成行业普遍做法，场景占比不能写成高频或首位，除非原统计确实支持。',
     'strategy 的 title 沿用本案的策略判断，只写一句有取舍的话，points 填 []。有视觉、触点或拍摄执行内容时用下一页 execution 展开。按 figures 的次序逐案连写。每案 direction 写创意理由与画面重点两条以内，主副标由夜航按原文插入，imageNote 留空，由夜航将本案原图绑定到分屏。后接 work 整版呈现同一张原图，纯图页 points 填 []。这两种页的 figureId 填本案实际采用图号，其他角色留空。图上只见品类字样或占位时，按已见原字写；要求要做的事用「拟」「预留」，不得写成图上已经实现。',
     'work 和 compare 的 imageNote 只写横竖幅、怎么摆和必要的看点。图号与文件名由夜航附上，不在这两类页的 imageNote 重写文件名。需要哪张素材就标 [待补充: …]，纯文字页 imageNote 留空。网页案例有可核对的出处但未交原图时，可以写文字观察或留缺图位。没有登记原图比例时只写横幅或竖幅，别照搬模板里的比例。',
@@ -157,12 +158,16 @@ function checkDraft(draft, materials) {
     p.points.every(line) && p.points.length<=(p.role==='direction'?2:4) && typeof p.imageNote==='string' &&
     typeof p.internalNote==='string' && typeof p.figureId==='string' && Array.isArray(p.sourceIndices)),
   '每页交回一句标题和最多四条短要点，direction 只写两条以内的阐述，保留所有字段');
-  require(pages.every((p,i)=>i===0 || rank(p.role)>=rank(pages[i-1].role)) && count('brief')===1 &&
-    count('strategy')===1 && pages.find(p=>p.role==='strategy').points.length===0 && count('decision')===1,
-  '正文依需求、洞察、单句策略、执行、作品、比较、客户决定排序');
+  for (const role of ['brief','strategy','decision']) require(count(role)===1,
+    '正文的 '+role+' 须恰好一页，本次返回 '+count(role)+' 页');
+  require(pages.find(p=>p.role==='strategy').points.length===0, 'strategy 只有 title 一句核心策略，points 填 []，执行内容放 execution');
+  for (const [i,p] of pages.entries()) if (i>0) {
+    const previous=pages[i-1];
+    require(rank(p.role)>=rank(previous.role),'第 '+(i+3)+' 页 '+p.role+' 排在 '+previous.role+' 后，请依需求、研究、策略、执行、各案、比较、决定的顺序调页');
+  }
   for (const [role,chapters] of Object.entries(sourceChapters)) {
     const provided=research.sections?.some(section=>chapters.includes(section.chapter));
-    require(provided ? count(role)===1 : count(role)<=1,slideRoles[role]+'有可用依据时各写一页');
+    if (provided) require(count(role)>0,slideRoles[role]+'已有可用依据，须有独立 '+role+' 页');
   }
   for (const p of pages.filter(page=>evidenceRoles.has(page.role))) {
     const chapters=sourceChapters[p.role];
