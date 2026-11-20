@@ -118,13 +118,15 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
       const issues=response.parsedOutput?.issues;
       if (!Array.isArray(issues) || issues.length>12 || issues.some(issue=>!numbers.includes(issue?.page) ||
         !['P0','P1'].includes(issue.level) || !['proposal','production'].includes(issue.impact) || !choices.includes(issue.operation) ||
-        !(issue.operation==='hold'?upstream.includes(issue.target):issue.target==='layout') ||
+        (issue.operation==='hold' && !upstream.includes(issue.target)) ||
         [issue.problem,issue.evidence,issue.change].some(value=>typeof value!=='string'||!value.trim()) ||
-        [issue.from,issue.to,issue.quote].some(value=>typeof value!=='string'))) {
+        (issue.operation==='text' && [issue.from,issue.to,issue.quote].some(value=>typeof value!=='string')))) {
         throw invalidOutput('终审意见须有本批页码、P0/P1、证据、改法和有效权限');
       }
       receipts.push({round,role,pages:numbers,verify,model:response.model,completionId:response.threadId,inputSha256:response.inputPacketHash});
-      return issues.map(issue=>({...issue,role,level:issue.impact==='production'?'P1':issue.level}));
+      return issues.map(issue=>({...issue,role,level:issue.impact==='production'?'P1':issue.level,
+        target:issue.operation==='hold'?issue.target:'layout',
+        ...(issue.operation==='text' ? {} : {from:'',to:'',quote:''})}));
     });
     findings.push(...batches.flat());
   }

@@ -137,7 +137,7 @@ else {
    const issues=[];
    if (role==='逻辑岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。')))) issues.push({...issue,page:3});
    if (role==='措辞岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。'))))
-     issues.push({...issue,page:3,from:'报名方式待定',to:'须预约'});
+     issues.push({...issue,page:3,target:'copy',from:'报名方式待定',to:'须预约'});
    if (role==='逻辑岗' && pages.some(p=>p['页码']===8))
      issues.push({...issue,page:8,impact:'production',operation:'hold',target:'brief',from:'',to:'',quote:'',
        problem:'上线发布前须拿到正式报名链接',evidence:'本轮只交公众号封面提案',change:'记录为后续发布待确认'});
