@@ -1519,6 +1519,8 @@
     "tools/nightflight/copy-review.mjs",
     "tools/nightflight/desktop-text.mjs",
     "tools/nightflight/desktop-text.test.mjs",
+    "tools/nightflight/final-edition.py",
+    "tools/nightflight/final-review.mjs",
     "tools/nightflight/layout-final.integration.test.mjs",
     "tools/nightflight/layout-pages.mjs",
     "tools/nightflight/layout-theme.mjs",

@@ -329,7 +329,7 @@ export async function legacyPages(sections, { compile, paginateText }, theme) {
   return { pages: compile(drafts, footerBrand, theme), status: '本地试运行' };
 }
 
-export async function compileManuscript(plan, sources, {compile}, theme, edits=[]) {
+export function applyManuscriptEdits(plan, edits) {
   const slides=plan.pages.map(p=>({...p,points:[...p.points]}));
   for (const edit of edits) {
     const p=slides[edit.page-1];
@@ -347,6 +347,11 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
     fields[i]=fields[i].replace(edit.from,()=>edit.to);
     [p.title,...p.points]=fields;
   }
+  return {...plan,pages:slides};
+}
+
+export async function compileManuscript(plan, sources, {compile}, theme, edits=[]) {
+  const slides=applyManuscriptEdits(plan,edits).pages;
   const media=new Map(await Promise.all(sources.map(async source=>{
     const img=new Image();
     img.src=source.data;
@@ -400,6 +405,9 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
   if (pages.length!==plan.pages.length) throw Error('逐页稿和排版页数不一致');
   for (const [i,page] of pages.entries()) {
     const expected=slides[i];
+    if (expected.refinements?.length) {
+      refinePage(page,expected,theme,figures);
+    }
     const words=visible(page.nodes.filter(n=>n.kind==='text').map(n=>n.runs.length?n.runs.map(r=>r.text).join(''):n.lines.join('')).join(''));
     const images=page.nodes.filter(n=>n.kind==='image').map(n=>n.image.id);
     if (page.id!==drafts[i].id || [expected.title,...expected.points].some(text=>!words.includes(visible(text))) ||
@@ -415,6 +423,54 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
       .filter(Boolean).join(' ｜ '),status:placeholders(p).length?'含待补材料':'已排版',
   }))};
   return {pages,outline,status:gaps.length?'逐页排版 · 含待补材料':'逐页排版'};
+}
+
+function refinePage(page, source, theme, figures) {
+  const steps=source.refinements;
+  const images=page.nodes.filter(node=>node.kind==='image' && source.figures.some(id=>figures.get(id).name===node.image.id));
+  if (steps.includes('gallery') && source.role==='work' && images.length===1) {
+    const image=images[0];
+    const scale=Math.min(572/image.image.width,532/image.image.height);
+    const w=image.image.width*scale, h=image.image.height*scale;
+    Object.assign(image,{w,h,x:(1280-w)/2,y:126+(532-h)/2});
+    const frames=[7,15].map((gap,i)=>({kind:'rect',x:image.x-gap,y:image.y-gap,
+      w:w+gap*2,h:h+gap*2,lw:1,fill:null,stroke:i===0?'#FFFFFF':theme.accent,
+      opacity:i===0?.64:.85,radius:0}));
+    page.nodes.splice(page.nodes.indexOf(image),0,...frames);
+    page.nodes.push({kind:'text',x:64,y:378,w:160,h:24,size:16,face:'Noto Sans SC',weight:600,
+      color:'#FFFFFF',lines:[source.figures[0]+' · 采用原图'],runs:[],align:'left',valign:'top',lh:1.2,ls:0,opacity:1});
+  }
+  if (steps.includes('comparison') && source.role==='compare') {
+    for (const image of images) {
+      const mid=image.x+image.w/2, bottom=image.y+image.h;
+      const scale=Math.min(292/image.image.width,212/image.image.height);
+      image.w=image.image.width*scale;
+      image.h=image.image.height*scale;
+      image.x=mid-image.w/2;
+      image.y=bottom-image.h;
+    }
+  }
+  const measure=steps.includes('reflow') ? document.createElement('canvas').getContext('2d') : null;
+  const words=measure && new Intl.Segmenter('zh-CN',{granularity:'word'});
+  const tint=steps.includes('rhythm');
+  const colors=page.bg.match(/[0-9a-f]{2}/gi)?.map(c=>parseInt(c,16)) ?? [255,255,255];
+  const dark=(colors[0]*299+colors[1]*587+colors[2]*114)/1000<146;
+  for (const node of page.nodes) {
+    if (node.kind!=='text') continue;
+    if (tint && node.y>=666) node.color=dark?'#FFFFFF':'#263543';
+    if (!measure || node.runs.length || node.lines.length<2 || node.vertical || node.rotate) continue;
+    const last=node.lines.at(-1);
+    if ([...last].length>5 && !/^\d/u.test(last)) continue;
+    measure.font=node.weight+' '+node.size+'px "'+node.face+'"';
+    const width=text=>measure.measureText(text).width+Math.max(0,[...text].length-1)*node.ls;
+    const joined=node.lines.at(-2)+last;
+    const breaks=[...words.segment(joined)].map(part=>part.index).filter(i=>i>0 &&
+      !/^[、。，：；！？）》」\s]/u.test(joined.slice(i)));
+    const split=breaks.map(i=>[joined.slice(0,i),joined.slice(i)])
+      .filter(pair=>pair.every(text=>width(text)<=node.w))
+      .sort((a,b)=>Math.abs(width(a[0])-width(a[1]))-Math.abs(width(b[0])-width(b[1])))[0];
+    if (split) node.lines.splice(-2,2,...split);
+  }
 }
 
 // Apply a user's precise correction to the same native text objects that feed both

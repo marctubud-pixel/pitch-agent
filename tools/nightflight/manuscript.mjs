@@ -9,9 +9,9 @@ const upstream = ['brief', 'research', 'strategy', 'copy', 'visual'];
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const nonempty = value => typeof value === 'string' && Boolean(value.trim());
 const imageTypes = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp' };
-const manuscriptFile = /^逐页稿-[a-f0-9-]{36}\.plan\.json$/u;
+const manuscriptFile = /^(?:逐页稿|终审逐页稿)-[a-f0-9-]{36}\.plan\.json$/u;
 export const manuscriptArtifact = artifacts => artifacts?.findLast(a=>a.stage==='layout' && a.kind==='text' && manuscriptFile.test(a.name));
-export const isManuscriptSupport = name=>/^(?:逐页稿-|逐页材料包-|DeepSeek实际请求-|采用原图读图-)/u.test(name);
+export const isManuscriptSupport = name=>/^(?:逐页稿-|终审逐页稿-|逐页材料包-|DeepSeek实际请求-|采用原图读图-)/u.test(name);
 
 async function attemptFile(root, artifact) {
   const name = artifact?.name;

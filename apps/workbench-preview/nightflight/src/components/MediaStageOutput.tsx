@@ -120,7 +120,9 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
 
 function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
   const [text, setText] = useState('');
-  const [targetStage,setTargetStage]=useState<import('../types').StageId>('layout');
+  const [targetStage,setTargetStage]=useState<import('../types').StageId>(
+    p.finalReview?.outcome==='blocked' ? p.finalReview.returnStage : 'layout',
+  );
   const revisions = (p.feedback || []).filter((item) => 'stage' in item && item.stage === 'final');
   return (
     <section className="block">
@@ -129,10 +131,10 @@ function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
         className="feedback"
         onSubmit={async (e) => {
           e.preventDefault();
-          if (text.trim() && (await act('message', text.trim(),undefined,p.status==='done' ? {targetStage} : undefined))) setText('');
+          if (text.trim() && await act('message',text.trim(),undefined,{targetStage})) setText('');
         }}
       >
-        {p.status==='done' && <RevisionStage value={targetStage} change={setTargetStage}/>}
+        <RevisionStage value={targetStage} change={setTargetStage}/>
         <label className="sr-only" htmlFor="final-feedback">
           修改意见
         </label>
@@ -223,6 +225,10 @@ export function MediaStageOutput({
     );
   }
   const reviews = saved.filter((file) => file.stage === 'final' && file.kind === 'text');
+  const refinement=p.finalReview;
+  const proof=refinement && (refinement.outcome==='ready' || refinement.outcome==='blocked') ? refinement : null;
+  const overview=proof && saved.find(file=>file.name===proof.contact);
+  const original=proof && p.versions?.flatMap(version=>version.artifacts).find(file=>file.name===proof.originalPptx);
   if (!deck && !pptx.length && !reviews.length) {
     return <p className="pending">等待排版稿，随后进入终审。</p>;
   }
@@ -230,7 +236,7 @@ export function MediaStageOutput({
     <>
       {(deck || !!pptx.length) && (
         <section className="block" data-artifact={deck?.name}>
-          <h2>{priorFinal ? '退回的提案' : '本版提案'}</h2>
+          <h2>{priorFinal ? '退回的提案' : proof ? '精修版提案' : '本版提案'}</h2>
           {deck && <DeckPreview key={deck.url} file={deck} foldIndex outline={outline} />}
         </section>
       )}
@@ -238,15 +244,33 @@ export function MediaStageOutput({
         <h2>终审记录</h2>
         {reviews.length ? (
           <>
-            <p className="demo-banner">{priorFinal ? '上一版退回意见' : '本地审读记录'} · 正式签收待人类比稿负责人确认</p>
+            <p className="demo-banner">{proof?.outcome==='blocked' ? '必改项待处理' :
+              proof?.outcome==='ready' ? (proof.acceptedAt ? '提案人已验收' : '待提案人验收') :
+                priorFinal ? '上一版退回意见' : '本地审读记录'}</p>
             {reviews.map((review) => <ReviewRecord key={review.url} file={review} />)}
           </>
         ) : (
-          <p className="pending">{p.stage === 'final' && p.status === 'running' ? '正在审读本版排版稿。' : '本版尚无终审记录。'}</p>
+          <p className="pending">{p.stage === 'final' && p.status === 'running' ? '正在审读、精修和复验本版提案。' : p.error || '本版尚无终审记录。'}</p>
+        )}
+        {overview && (
+          <details className="media-review">
+            <summary>查看整套全览</summary>
+            <a href={safeURL(overview.url)} target="_blank" rel="noreferrer">
+              <img width="100%" src={safeURL(overview.url)} alt="精修版 PPT 全册逐页预览"/>
+            </a>
+          </details>
         )}
         <DeckDownloads files={pptx} returned={Boolean(priorFinal)} />
+        {proof && <div className="deliver">
+          {proof.outcome==='ready' && !proof.acceptedAt && p.stage==='final' && p.status==='waiting' &&
+            <button type="button" className="btn btn-dark" disabled={busy}
+              onClick={()=>act('accept_final','验收本版精修 PPTX')}>验收这版</button>}
+          {original && <a className="btn" href={safeURL(original.url)} download={original.name}>下载初版 PPTX</a>}
+          {overview && <a className="btn" href={safeURL(overview.url)} download={overview.name}>下载全览图</a>}
+        </div>}
       </section>
-      {p.status === 'done' && <Feedback p={p} act={act} busy={busy} />}
+      {(p.status==='done' || proof && p.stage==='final' && p.status==='waiting') &&
+        <Feedback key={proof?.pptx} p={p} act={act} busy={busy} />}
     </>
   );
 }

@@ -2251,16 +2251,16 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "3ee9894aa3d07aa8f9df483eac4c11750e4e0fcf990f1c232c5b2fb96942df9b",
-      "reason": "接入按逐页稿排版的有版本操作。"
+      "sha256": "6c65a1ca7790fe6835e55de3eb0a1637aa888293843000e93ff54c1e37eedd78",
+      "reason": "在现有版本操作中绑定提案人验收的当前项目版本。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "23b1fcb78617f82490f0bdb77482a6144ad3387389fcc7535f2ae5556456ed39",
-      "reason": "接入采用图后编逐页稿、整理材料包和直接排版的操作。"
+      "sha256": "b97bc7a4622bb29d44d6b77058325c932405687d025d355c884ef34179485068",
+      "reason": "三岗终审等待人工处理时显示终审提示。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "9e9bb555bbae30a3fcf326912c0726c98b5d61986f91ebf61e6245021e0664fd",
@@ -2367,8 +2367,8 @@
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/src/proposal/deck-studio/export.ts": {
-      "sha256": "9e257154a01312c8f61dfcd1d050d94f1a08276ed98a4179a4010bab087ce322",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "918e0486d5b45e59b6090cecff31ab275334f52028cbbea9a22c6ba90d6a0b0d",
+      "reason": "精修版导出时清理幻灯片原生形状的默认投影。"
     }
   },
   "nightflightArchive": {

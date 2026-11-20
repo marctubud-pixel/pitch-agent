@@ -76,10 +76,10 @@ else {
   t.diagnostic(pages.length+' 页与 '+calls.length+' 次隔离模型调用');
 });
 
-test('v3: confirms a manuscript, preserves its pages in PPTX, returns a sourced issue, and rechecks the corrected deck',async t=>{
+test('Case B refines native slides, rechecks the actual edition and waits for explicit acceptance',async t=>{
   const root=await mkdtemp(join(tmpdir(),'nightflight-manuscript-final-'));
   t.after(()=>rm(root,{recursive:true,force:true}));
-  const id='layout-v3', storage=join(root,id,'files');
+  const id='layout-case-b', storage=join(root,id,'files');
   await mkdir(storage,{recursive:true});
   const brief='为馆内亲子活动做一张公众号封面，须预约。';
   const strategy='先看出馆内活动，再读预约。';
@@ -111,8 +111,11 @@ test('v3: confirms a manuscript, preserves its pages in PPTX, returns a sourced 
       page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),page('decision','请确认素材')]},
   ],closing:'感谢观看，期待与您确认下一步方向。'};
   const executable=join(root,'review-fixture.mjs');
+  const log=join(root,'case-b-calls.jsonl');
+  const protectedCase=join(root,'protected-case');
   await writeFile(executable,`#!/usr/bin/env node
 import {randomUUID} from 'node:crypto';
+import {appendFileSync,existsSync} from 'node:fs';
 const [mode,action]=process.argv.slice(2);
 const model=mode==='--vision-model'?'test-vision':'deepseek-fixture';
 if(action==='profile') console.log(JSON.stringify({model,base:'https://fixture.invalid',host:'fixture.invalid'}));
@@ -122,11 +125,27 @@ else {
  const last=body.messages.at(-1).content;
  const prompt=Array.isArray(last)?last[0].text:last;
  let reply;
- if(prompt.includes('本批PPT正文')) {
+ if(prompt.includes('本批PPT')) {
    if(!Array.isArray(last) || !last.some(p=>p.image_url?.url.startsWith('data:image/jpeg;base64,')) || !prompt.includes('馆内讲解 · 须预约'))
      throw Error('审稿缺少本版图或原文案');
-   const first=prompt.includes('报名方式待定。') && !prompt.includes('客户已确认须预约。');
-   reply={issues:first && prompt.includes('第 1、2、3、4 页')?[{page:3,kind:'manuscript',returnStage:'layout',problem:'把预约写成待定',evidence:'原 Brief 写须预约',change:'把「报名方式待定。」改为「客户已确认须预约。」'}]:[]};
+   if(!prompt.includes('Case B 执行版')) throw Error('未加载 1.2.0');
+   const ctx=JSON.parse(prompt.split('实际项目输入（JSON）\\n\\n')[1]);
+   const pages=ctx['本批PPT'];
+   const role=['逻辑岗','措辞岗','美术岗'].find(key=>prompt.includes(key+'：'));
+   const issue={level:'P0',problem:'把预约写成待定',evidence:'原 Brief 写须预约',change:'明确预约。',
+     operation:'text',target:'layout',quote:'须预约',from:'报名方式待定。',to:'客户已确认须预约。'};
+   const issues=[];
+   if (role==='逻辑岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。')))) issues.push({...issue,page:3});
+   if (role==='美术岗' && pages.some(p=>p['页码']===7 && p.notes.join('').includes('排版前请核对展签') && !p.text.includes('A1 · 采用原图')))
+     issues.push({...issue,page:7,level:'P1',problem:'单图无展签',evidence:'全开图页的左右留空',change:'用双线画框和展签。',
+       operation:'gallery',from:'',to:'',quote:''});
+   if (role==='逻辑岗' && existsSync(${JSON.stringify(protectedCase)}) && pages.some(p=>p['页码']===5))
+     issues.push({...issue,page:5,from:${JSON.stringify(strategy)},to:'删掉预约要求。'});
+   appendFileSync(${JSON.stringify(log)},JSON.stringify({role,pages:pages.map(p=>p['页码']),actual:pages.map(p=>p.text.join(''))})+'\\n');
+   reply={issues};
+ } else if(prompt.includes('全览拼图')) {
+   appendFileSync(${JSON.stringify(log)},JSON.stringify({role:'全览',pages:[]})+'\\n');
+   reply={observation:'已检查全览'};
  } else if(Array.isArray(last)) {
    reply={composition:'左边标题，右边展柜',legibleText:['天黑进馆'],visibleDetails:['展柜'],uncertain:[]};
  } else reply=${JSON.stringify(draft)};
@@ -137,14 +156,14 @@ else {
   t.after(()=>{if(previous===undefined)delete process.env.ONEPITCH_TEXT_EXECUTABLE;else process.env.ONEPITCH_TEXT_EXECUTABLE=previous;});
   const service=createNightflight({root,runLayout,runStage,runManuscript:createManuscriptRunner(executable)});
   t.after(()=>service.close());
-  async function request(data) {
+  async function request(data,expected=200) {
     const req=Readable.from(data?[Buffer.from(JSON.stringify(data))]:[]);
     const host='localhost:4420';
     Object.assign(req,{method:data?'POST':'GET',headers:{host,origin:'http://'+host,'content-type':'application/json'},
       url:'/api/projects/'+id+(data?'/action':''),socket:{remoteAddress:'127.0.0.1'}});
     let status, result;
     await service.handle(req,{writeHead:value=>{status=value;},end:body=>{result=JSON.parse(body);}});
-    assert.equal(status,200,JSON.stringify(result));
+    assert.equal(status,expected,JSON.stringify(result));
     return result.project;
   }
   async function wait(state) {
@@ -158,27 +177,64 @@ else {
   assert.equal(state.canRenderManuscript,true);
   state=await wait(await request({kind:'render_manuscript',expectedRevision:state.revision,opId:randomUUID()}));
   assert.equal(state.status,'waiting');
-  assert.equal(state.finalReturn.issues[0].page,3);
-  assert.equal(state.finalReturn.issues[0].kind,'manuscript');
+  assert.equal(state.finalReview.outcome,'ready',JSON.stringify(state.finalReview));
+  assert.equal(state.finalReview.rounds,2);
+  assert.equal(state.finalReview.changed,2);
+  assert.equal(state.finalReview.acceptedAt,undefined);
   assert.equal(state.versions.at(-1).artifacts.filter(a=>a.renderPage).length,9);
-  state=await wait(await request({kind:'message',expectedRevision:state.revision,
-    text:'第 3 页，把『报名方式待定。』改为『客户已确认须预约。』\n第 6 页，主图放右'}));
-  assert.equal(state.status,'done',JSON.stringify(state.finalReturn));
   assert.equal(state.finalReview.pages.length,9);
   const pptx=state.artifacts.find(a=>a.kind==='pptx');
   const {unzipSync,strFromU8}=createRequire(new URL('../../apps/workbench-preview/package.json',import.meta.url))('fflate');
   const zip=unzipSync(await readFile(join(storage,pptx.url.split('/').at(-1))));
+  const original=state.versions.at(-1).artifacts.find(a=>a.kind==='pptx');
+  const before=unzipSync(await readFile(join(storage,original.url.split('/').at(-1))));
   const xml=name=>strFromU8(zip[name]);
   assert.equal(Object.keys(zip).filter(name=>/^ppt\/slides\/slide\d+\.xml$/u.test(name)).length,9);
   assert.match(xml('ppt/slides/slide3.xml'),/客户已确认须预约。/u);
+  assert.match(strFromU8(before['ppt/slides/slide3.xml']),/报名方式待定。/u);
   assert.match(xml('ppt/slides/slide6.xml'),/天黑进馆/u);
   assert.match(xml('ppt/slides/slide6.xml'),/<p:pic>/u);
   assert.match(xml('ppt/slides/slide7.xml'),/<p:pic>/u);
+  assert.match(xml('ppt/slides/slide7.xml'),/A1 · 采用原图/u);
+  assert.match(xml('ppt/slides/slide7.xml'),/<a:effectLst\/>/u);
   assert.doesNotMatch(xml('ppt/slides/slide7.xml'),/排版前请核对展签/u);
   assert.match(xml('ppt/notesSlides/notesSlide7.xml'),/排版前请核对展签/u);
   assert.match(xml('ppt/slides/slide9.xml'),/期待与您确认下一步方向。/u);
   const deckFile=state.artifacts.find(a=>a.name.endsWith('.deck.json'));
   const deck=JSON.parse(await readFile(join(storage,deckFile.url.split('/').at(-1)),'utf8'));
-  assert.equal(deck.pages[5].template,'design.halfR');
+  assert.equal(deck.pages[5].template,'design.half');
   assert.equal(deck.pages[6].template,'upload.framed');
+  const reads=(await readFile(log,'utf8')).trim().split('\n').map(JSON.parse);
+  for (const role of ['逻辑岗','措辞岗','美术岗']) {
+    assert.deepEqual(reads.filter(item=>item.role===role).slice(0,3).flatMap(item=>item.pages),[1,2,3,4,5,6,7,8,9]);
+  }
+  assert(reads.some(item=>item.role==='全览'));
+  assert(reads.some(item=>item.pages.includes(3) && item.actual.some(text=>text.includes('客户已确认须预约。'))));
+  assert(state.artifacts.some(item=>item.kind==='image' && item.name===state.finalReview.contact));
+  await request({kind:'accept_final',expectedRevision:state.revision-1},409);
+  state=await request({kind:'accept_final',expectedRevision:state.revision});
+  assert.equal(state.status,'done');
+  assert(state.finalReview.acceptedAt);
+
+  // Attempting a protected edit on the adopted edition keeps the native policy and blocks acceptance.
+  await writeFile(protectedCase,'1');
+  state=await wait(await request({kind:'message',expectedRevision:state.revision,targetStage:'final',text:'复看这一版'}));
+  assert.equal(state.status,'waiting');
+  assert.equal(state.finalReview.outcome,'blocked');
+  assert.equal(state.finalReview.returnStage,'strategy');
+  assert.equal(state.finalReview.rounds,2);
+  const protectedPptx=state.artifacts.find(a=>a.kind==='pptx');
+  const kept=unzipSync(await readFile(join(storage,protectedPptx.url.split('/').at(-1))));
+  assert.match(strFromU8(kept['ppt/slides/slide5.xml']),/先看出馆内活动，再读预约。/u);
+  await request({kind:'accept_final',expectedRevision:state.revision},409);
+
+  // A mixed-in render cannot even reach the reviewer.
+  const stale=state.artifacts.find(item=>item.renderPage===4);
+  const callsBefore=await readFile(log,'utf8');
+  await writeFile(join(storage,stale.url.split('/').at(-1)),image);
+  state=await wait(await request({kind:'message',expectedRevision:state.revision,targetStage:'final',text:'复核附件版次'}));
+  assert.equal(state.stage,'layout');
+  assert.equal(state.status,'waiting');
+  assert.match(state.finalReturn.reason,/第 4 页渲染与本版不符/u);
+  assert.equal(await readFile(log,'utf8'),callsBefore);
 });

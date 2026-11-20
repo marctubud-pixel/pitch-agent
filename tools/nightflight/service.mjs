@@ -3,6 +3,7 @@ import {validBriefScope} from './brief-intake.mjs';
 import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
 import {isManuscriptSupport, manuscriptArtifact} from './manuscript.mjs';
+import {finalProtocol} from './final-review.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
 import {
@@ -513,6 +514,25 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
               return eligible.length ? winners.length===1 && eligible.includes(winners[0]) && winners[0].mean===Math.max(...eligible.map(a=>a.mean)) : !winners.length;
             }), '视觉阶段需要每方向三张同版主视觉及完整复核推荐', 422);
           }
+          const final=p.stage==='final' ? result.finalReview : null;
+          const refined=final?.protocol===finalProtocol && ['ready','blocked'].includes(final.outcome);
+          if (refined) {
+            const original=live.artifacts.findLast(a=>a.stage==='layout' && a.kind==='pptx');
+            const files=result.artifacts.filter(a=>a.finalLayout);
+            const newPptx=files.filter(a=>a.kind==='pptx');
+            const batch=final.pptx?.match(/^提案-([a-f0-9-]{36})\.pptx$/u)?.[1];
+            check(batch && original?.name===final.originalPptx && original.name!==final.pptx &&
+              newPptx.length===1 && newPptx[0].name===final.pptx &&
+              hash(readFileSync(join(dir,filename(final.pptx))))===final.sha256 &&
+              files.filter(a=>a.name==='提案预览-'+batch+'.deck.json').length===1 &&
+              files.filter(a=>a.name==='终审逐页稿-'+batch+'.plan.json').length===1 &&
+              result.artifacts.some(a=>a.name===final.contact && a.kind==='image' && !a.finalLayout) &&
+              result.artifacts.some(a=>a.name===final.report && a.kind==='text' && !a.finalLayout) &&
+              [2,3].includes(final.rounds),'精修版与原版、全览或终审回执无法核对',422);
+            archiveVersion(live);
+            live.artifacts=live.artifacts.filter(a=>a.stage!=='layout' || isManuscriptSupport(a.name));
+            live.layoutChanges=[];
+          }
           const occupied = new Set(
             [...live.attachments, ...live.artifacts].map((a) => a.name.normalize('NFC').toLowerCase()),
           );
@@ -522,13 +542,14 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             check(!occupied.has(key), '产物文件名重复：' + name, 422);
             occupied.add(key);
             check(['image', 'pptx', 'text'].includes(a.kind), '产物类型无效', 422);
+            const stage=refined && a.finalLayout ? 'layout' : p.stage;
             const stored=storeFile(live,name,join(dir,name),a.kind);
             unpublished.add(disk(live,stored.storageKey));
             const strategyHash=p.stage==='strategy' && a.kind==='text' ? hash(readFileSync(disk(live,stored.storageKey))) : null;
             return {
               ...stored, ...(strategyHash ? {strategyHash} : {}),
-              stage: p.stage,
-              ...(p.stage==='layout' && Number.isInteger(a.renderPage) ? {renderPage:a.renderPage} : {}),
+              stage,
+              ...(stage==='layout' && Number.isInteger(a.renderPage) ? {renderPage:a.renderPage} : {}),
               ...(p.stage === 'visual' && a.visual ? {visual:a.visual} : {}),
               ...(typeof a.text === 'string' ? { text: a.text } : {}),
             };
@@ -587,17 +608,20 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
               '本版逐页稿、编稿材料和读图回执已保存，可以在版式查看');
           } else if (p.stage === 'final') {
             const review=result.finalReview;
-            check(review && ['pass','return'].includes(review.outcome) && typeof review.reason==='string' && review.reason.trim() && Array.isArray(review.pages),'终审未交回有效裁定',422);
+            check(review && (refined || ['pass','return'].includes(review.outcome)) && typeof review.reason==='string' && review.reason.trim() && Array.isArray(review.pages),'终审未交回有效裁定',422);
             live.finalReview=review;
             const pages=live.artifacts.filter(a=>a.stage==='layout' && Number.isInteger(a.renderPage)).map(a=>a.renderPage).sort((a,b)=>a-b);
             check(new Set(review.pages).size===review.pages.length && review.pages.every(n=>pages.includes(n)),'终审页码与排版实图不符',422);
-            if (review.outcome==='pass') check(pages.length && pages.every((n,i)=>n===i+1 && review.pages.includes(n)),'终审通过前须覆盖每一页排版实图',422);
+            if (review.outcome==='pass' || refined) check(pages.length && pages.every((n,i)=>n===i+1 && review.pages.includes(n)),'终审通过前须覆盖每一页排版实图',422);
             if (review.outcome==='return') {
               check(stages.includes(review.returnStage) && review.returnStage!=='final','终审退回阶段无效',422);
-              revise(live,review.returnStage,review.reason,'final');
+              revise(live,review.returnStage,review.reason,review.protocol===finalProtocol?'final_gate':'final');
               live.finalReturn=review;
               live.status='waiting';
               note(live,'终审退回'+labels[stages.indexOf(review.returnStage)]+'：'+review.reason);
+            } else if (refined) {
+              live.status='waiting';
+              note(live,review.reason);
             } else {
               live.status = 'done';
               note(live, '终审演练完成，可查看核对记录与 PPTX');
@@ -768,7 +792,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
         return p;
       }
     }
-    if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue')
+    if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind==='accept_final')
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
     if (p.stage==='brief' && p.briefScope && p.briefScope.status!=='accepted' && ['confirm_brief','retry'].includes(kind))
       check(false,'请先补充或重新描述提案需求',409);
@@ -888,6 +912,15 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
           ...(continuing && question ? { question } : {}),
         });
       note(p, '已保存前版，沿用原简报重新研究' + (text ? '：' + text.slice(0, 180) : ''));
+    } else if (kind === 'accept_final') {
+      const review=p.finalReview;
+      const current=p.artifacts.findLast(a=>a.stage==='layout' && a.kind==='pptx');
+      check(p.stage==='final' && p.status==='waiting' && !p.claim && review?.protocol===finalProtocol &&
+        review.outcome==='ready' && current?.name===review.pptx &&
+        hash(readFileSync(disk(p,current.storageKey)))===review.sha256,'当前精修版未满足验收条件',409);
+      review.acceptedAt=now();
+      p.status='done';
+      note(p,'提案人已验收本版精修 PPTX');
     } else if (kind === 'retry') {
       check(p.status === 'failed' || (p.status==='waiting' && p.finalReturn), '当前阶段无需重试', 409);
       if (p.finalReturn && p.stage==='visual') {
@@ -901,7 +934,8 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
     } else if (kind === 'message') {
       check(p.status!=='running','当前阶段运行中，请在完成后发送修改意见',409);
       const reviseStrategy=input.targetStage==='strategy' && stages.indexOf(p.stage)>stages.indexOf('strategy') && p.artifacts.some(a=>a.stage==='strategy');
-      const target=p.status==='done' || reviseStrategy ? input.targetStage ?? 'layout' : p.stage;
+      const caseB=p.stage==='final' && p.status==='waiting' && p.finalReview?.protocol===finalProtocol;
+      const target=p.status==='done' || reviseStrategy || caseB ? input.targetStage ?? 'layout' : p.stage;
       check(stages.includes(target) && (!input.targetStage || input.targetStage===target),'返工阶段无效');
       const visual=target==='visual';
       check(!visual || (p.visualRevisions || 0)<3,'视觉修改已达三次，请先确认现有稿件',409);

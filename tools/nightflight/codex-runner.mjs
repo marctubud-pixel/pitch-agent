@@ -6,6 +6,7 @@ import {minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTo
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {readManuscriptPlan} from './manuscript.mjs';
+import {reviewFinalDeck} from './final-review.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
 import {searchVisualImages} from './public-visual-search.mjs';
 import {locatedPackagingMarks,prioritizePackagingRows} from './research-packaging.mjs';
@@ -62,39 +63,6 @@ const objectSchema = (properties) => ({
   additionalProperties: false,
 });
 const finalTargets=['brief','research','strategy','copy','visual','layout'];
-const issueKinds={manuscript:'逐页稿',layout:'版式',upstream:'上游材料'};
-
-async function reviewManuscriptPages({call,manuscript,renders,nativeSlideText,changes}) {
-  const issues=[];
-  const pptxPages=nativeSlideText.split(/(?=^ppt\/slides\/slide\d+\.xml ，图片对象)/mu).filter(s=>s.trim());
-  for (let i=0;i<renders.length;i+=4) {
-    const slides=manuscript.pages.slice(i,i+4);
-    const pages=slides.map(p=>p.number);
-    const figureIds=new Set(slides.flatMap(p=>p.figures));
-    const schema=objectSchema({issues:{type:'array',maxItems:12,items:objectSchema({
-      page:{type:'integer',enum:pages},kind:{type:'string',enum:Object.keys(issueKinds)},
-      returnStage:{type:'string',enum:finalTargets},problem:stringField,evidence:stringField,change:stringField,
-    })}});
-    const context={
-      Brief:manuscript.brief,策略:manuscript.strategy,已选文案:manuscript.copy,采用说明:manuscript.adoption,
-      采用图读图:manuscript.figures.filter(f=>figureIds.has(f.id)),本批逐页稿:slides,
-      本批PPT正文:pptxPages.slice(i,i+slides.length),客户已确认的逐页调整:changes.filter(edit=>pages.includes(edit.page)),
-    };
-    const result=await call('按附件顺序审第 '+pages.join('、')+' 页。核对逐页稿与原 Brief、各自研究依据、已定策略、文案和采用图，并核对实际 PPT 文字、图像、裁切、字号、重叠及阅读顺序。把已给事实、设计打算和图上实际可见分清。上游已明确的策略不能当作编稿新增；主观偏好保留为建议，不列为退回问题。仅填能在本批定位并给出证据和可执行改法的问题。稿件扩写或抄错填 manuscript、排版问题填 layout，两者 returnStage 填 layout。确须修改原材料才填 upstream 和实际责任阶段。无改稿项返回空 issues。',
-    renders.slice(i,i+slides.length).map(item=>item.image),schema,{delegate:true,context:JSON.stringify(context)});
-    const rows=result.parsedOutput?.issues;
-    if (!Array.isArray(rows) || rows.length>12 || rows.some(row=>!pages.includes(row?.page) ||
-      !Object.hasOwn(issueKinds,row.kind) || !finalTargets.includes(row.returnStage) ||
-      (row.kind==='upstream' ? row.returnStage==='layout' : row.returnStage!=='layout') ||
-      [row.problem,row.evidence,row.change].some(value=>typeof value!=='string' || !value.trim()))) {
-      throw invalidOutput('终审改稿项须包含本批页码、问题、证据和有效责任阶段');
-    }
-    issues.push(...rows);
-  }
-  const returnStage=finalTargets.find(stage=>issues.some(issue=>issue.returnStage===stage));
-  return {outcome:returnStage?'return':'pass',...(returnStage?{returnStage}:{}),pages:manuscript.pages.map(p=>p.number),issues,
-    reason:issues.length?'第 '+[...new Set(issues.map(i=>i.page))].join('、')+' 页需修改，详见终审记录。':'已对照本版材料、PPT 正文与逐页实图，未发现需退回的问题。'};
-}
 const querySchema = objectSchema({ queries: stringList });
 const researchPlanSchema = objectSchema({
   carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
@@ -1054,16 +1022,15 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       throw Error('请先在夜航的文字 API 设置中选择 DeepSeek，再重试文案与主题');
     }
     const [label, assignment] = stages[stage];
-    const rules = await Promise.all((extraRules[stage] || []).map(p=>readFile(join(repo,p),'utf8')));
     const manuscript=stage==='final'?await readManuscriptPlan(project,dir):null;
     if (stage==='final' && project.layoutFromManuscript && !manuscript) throw Error('终审缺少本版逐页稿及材料依据');
-    const inputProject = manuscript
-      ? {...project,attachments:[],artifacts:project.artifacts.filter(a=>a.stage==='layout' && (a.kind==='pptx' || a.renderPage))}
-      : stage === 'copy'
+    const rulePaths=stage==='final' && !manuscript ? [] : extraRules[stage] ?? [];
+    const rules=await Promise.all(rulePaths.map(path=>readFile(join(repo,path),'utf8')));
+    const inputProject = stage === 'copy'
       ? {...project, artifacts: (project.artifacts || []).filter(a=>['brief','research','strategy'].includes(a.stage))}
       : project;
-    const inputs = project.researchDigestOnly ? {texts:[],images:[]} : await readInputs(dir,inputProject,stage,signal);
-    if (stage === 'final' && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
+    const inputs = manuscript || project.researchDigestOnly ? {texts:[],images:[]} : await readInputs(dir,inputProject,stage,signal);
+    if (stage === 'final' && !manuscript && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
     const context = JSON.stringify({
       title:project.title, brief:project.brief, proposalKind:project.proposalKind, outlineOptions:project.outlineOptions,
       mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null,
@@ -1141,6 +1108,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       await writeFile(join(dir,name),body+'\n',{flag:'wx',mode:0o600});
       artifacts.push({kind:'text',name,text:body});
     }
+    if (stage==='final' && manuscript) return reviewFinalDeck({project,manuscript,dir,call,onEvent,signal});
     await onEvent?.((desktop ? desktop.profile.host+' / '+desktop.profile.model : '本机 Codex')+' 正在处理「'+label+'」');
     if (stage === 'visual') {
       const all = project.directions || [];
@@ -1316,15 +1284,6 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       const complete=expected.length>0 && expected.length===renders.length &&
         expected.every((n,i)=>n===i+1 && n===Number(renders[i].match[1]));
       let finalReview={outcome:'return',returnStage:'layout',reason:'页级视觉审查待完成，请排版生成与当前 PPTX 对应的每页预览图。',pages:[]};
-      if (manuscript) {
-        if (complete && expected.length===manuscript.pages.length) {
-          finalReview=await reviewManuscriptPages({call,manuscript,renders,nativeSlideText:text,changes:project.layoutChanges ?? []});
-        }
-        const reviewText=(finalReview.issues ?? []).map(i=>'## 第 '+i.page+' 页 · '+issueKinds[i.kind]+'\n\n'+
-          '- 问题 · '+i.problem+'\n- 证据 · '+i.evidence+'\n- 修改 · '+i.change+'\n- 回到 · '+(i.kind==='manuscript'?'逐页稿':i.returnStage==='layout'?'版式':stages[i.returnStage][0]));
-        await addText(['# 本版 PPT 终审',finalReview.reason,...reviewText].join('\n\n'));
-        return {artifacts,finalReview};
-      }
       if(complete) {
         for(let i=0;i<renders.length;i+=4) {
           const chunk=renders.slice(i,i+4);
@@ -1368,7 +1327,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
     if (body) await addText(body);
     return {artifacts,briefScope};
     }
-    if (!['visual','copy'].includes(stage)) return executeStage(directCall,dir);
+    if (!['visual','copy'].includes(stage) && !manuscript) return executeStage(directCall,dir);
     checkpointDir ??= join(dir,'.call-checkpoints');
     return runCheckpointed(checkpointDir,async cached=>{
       const call=async(instruction,images=inputs.images,schema=textSchema,task={})=>{
@@ -1382,7 +1341,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return result;
         });
       };
-      if(stage==='copy') return executeStage(call,dir,cached);
+      if(stage==='copy' || stage==='final') return executeStage(call,dir,cached);
       const work=await mkdtemp(join(dir,'.visual-pass-'));
       try {
         const result=await executeStage(call,work,cached);

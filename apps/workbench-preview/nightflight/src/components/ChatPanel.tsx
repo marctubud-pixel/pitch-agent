@@ -77,6 +77,7 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
       </div>
     );
   if (p.status !== 'waiting' || p.stage === 'research') return null;
+  if (p.stage==='final') return <div className="msg-body">{p.finalReview?.reason || '在终审与交付查看本版。'}</div>;
   if (p.stage==='layout' && p.layoutDraftOnly) return <div className="msg-body">{p.layoutMaterialsOnly ?
     '编稿材料包已保存，打开版式下载。' : '逐页稿已保存，打开版式查看。'}</div>;
   if (p.stage==='brief') return <div className="msg-body"><button className="btn btn-dark" disabled={busy} onClick={()=>act('confirm_brief','')}>确认任务卡，开始研究</button></div>;

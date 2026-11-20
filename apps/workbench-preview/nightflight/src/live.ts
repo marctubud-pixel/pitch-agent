@@ -167,9 +167,21 @@ export interface ResearchImage {
   takeaway?: string;
 }
 export interface ResearchGap {kind:string;chapter:string;message:string;findingRef:string}
+type RefinedReview = {
+  protocol: 'case-b-1.2.0';
+  reason: string;
+  rounds: 2 | 3;
+  changed: number;
+  pptx: string;
+  originalPptx: string;
+  contact: string;
+  report: string;
+} & ({outcome: 'ready'; acceptedAt?: string} | {outcome: 'blocked'; returnStage: StageId});
+
 export interface Project extends Summary {
   briefScope?: {status: 'accepted' | 'unclear' | 'unsupported'; types: string[]; reason: string};
   finalReturn?:{returnStage:StageId;reason:string};
+  finalReview?: RefinedReview | {outcome: 'pass' | 'return'; reason: string};
   revision: number;
   mode: Mode;
   brief: string;
@@ -207,7 +219,7 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest';
+export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy' | 'layoutDraftOnly' | 'layoutMaterialsOnly'>>;
 export const researchQuestion = (p: ResearchStatus) =>
