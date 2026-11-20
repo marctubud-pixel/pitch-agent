@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.93.0",
+  "baselineVersion": "1.94.0",
   "date": "2026-11-20",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -275,7 +275,7 @@
       "kind": "page",
       "title": "版式与整案排版",
       "path": "docs/pages/layout.md",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.layout-owner",
@@ -440,10 +440,10 @@
     {
       "id": "method.ppt-slide-script",
       "kind": "method",
-      "title": "客户提案逐页稿与可编辑 PPTX v3",
+      "title": "客户提案逐页稿与可编辑 PPTX v4",
       "path": "skills/ppt-slide-script/SKILL.md",
-      "version": "1.1.0",
-      "sourceVersion": "用户提供的 ppt-slide-script v3 全链路完整技能包",
+      "version": "1.2.0",
+      "sourceVersion": "用户提供的 ppt-slide-script v4 自包含完整技能包",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -452,7 +452,7 @@
       "kind": "method",
       "title": "包装与 KV 客户逐页编稿（本地试行）",
       "path": "skills/proposal-structure-pilot/SKILL.md",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "lifecycle": "current",
       "dependsOn": [
         "contract.proposal-outline"
@@ -885,7 +885,7 @@
       "title": "夜航运行合同",
       "kind": "contract",
       "path": "docs/specs/nightflight-runtime.md",
-      "version": "1.18.0",
+      "version": "1.19.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",

@@ -1364,6 +1364,8 @@
     "skills/ppt-slide-script/references/deck-studio-bridge.md",
     "skills/ppt-slide-script/references/proposal-blueprints.md",
     "skills/ppt-slide-script/references/route-b-ppt-design.md",
+    "skills/ppt-slide-script/scripts/render_preview.py",
+    "skills/ppt-slide-script/scripts/route_b_kit.py",
     "skills/proposal-layout-pilot/SKILL.md",
     "skills/proposal-structure-pilot/SKILL.md",
     "skills/proposal-structure-pilot/references/cases.md",

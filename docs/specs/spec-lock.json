@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.93.0",
-  "registrySha256": "820206764ef8210c2be2d55e03595627039e0d03624854b67058af9686fccbdb",
+  "baselineVersion": "1.94.0",
+  "registrySha256": "f1205fc7630defa5b288e146fad566a553d9bcb7ad93e1a3b54b066e70d1efbc",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -130,10 +130,10 @@
       }
     },
     "page.layout": {
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/layout.md": "28b671b0cb477256caec70e009636500365944af8beadfcfd0d98125bf0f14db"
+        "docs/pages/layout.md": "3a98017b798aa70238f7434f350ce069ef43c4ce88a010d6c2b6bb75da1b9ff7"
       }
     },
     "page.delivery": {
@@ -242,21 +242,23 @@
       }
     },
     "method.ppt-slide-script": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
         "skills/ppt-slide-script/SKILL.md": "72cfa3dc7b7358becd8575520f9ea6c99fe3241968a3553810a124450323846d",
         "skills/ppt-slide-script/references/copy-polish-rules.md": "05d2c05dc5d45adc5a5896bf66a65dce9981667b784038ec9877384f53ae7109",
         "skills/ppt-slide-script/references/deck-studio-bridge.md": "ffd0358458c700529f1a2d7ddca144ad9710e637ebf24547bed6b3e83aa0f2a5",
         "skills/ppt-slide-script/references/proposal-blueprints.md": "b680d2ba5fbb91b5ab55c29cd56654706bcbe02f217c6d9745d89625bf8c5488",
-        "skills/ppt-slide-script/references/route-b-ppt-design.md": "4c714db0aed10c6570ed7de1a3044bd1855f6c9bf8fbed771130cdb8cd40eb11"
+        "skills/ppt-slide-script/references/route-b-ppt-design.md": "7c5c9f55f5bf398b94c7491e32b23118747b6f59c9681c9f85ccdd8b41db037f",
+        "skills/ppt-slide-script/scripts/render_preview.py": "888ecbd2b504d381c48966aca84dfd043462424811fa768b7bafd1f5acfb16d8",
+        "skills/ppt-slide-script/scripts/route_b_kit.py": "bd34afef709498f6d047bc50d310dc656d8606668cc1bf6fd6ce6cecaea22de9"
       }
     },
     "method.proposal-structure": {
-      "version": "1.4.0",
+      "version": "1.4.1",
       "lifecycle": "current",
       "files": {
-        "skills/proposal-structure-pilot/SKILL.md": "68104d14b0f40952cc0dc5515dea2702f1ce85fc946c2e792447e1eb7fbc8605",
+        "skills/proposal-structure-pilot/SKILL.md": "196be13c9b9e03e2be9ce456de5ff5a97c31b35842cdcbf735c0f924ffc4a5a3",
         "skills/proposal-structure-pilot/references/cases.md": "f03492b433044754047cee51b839faad9a093cf81ed0c71721ce1451fd755943",
         "skills/proposal-structure-pilot/references/page-library.json": "3d8a85f43205a27990cdb974438e1fff597b8fcf37167a515648f66a66b37ef3",
         "skills/proposal-structure-pilot/scripts/build_outline.py": "b3575f9a93fe24494de3421e3e266c7761bc267cfeec481f7c7e4bf0817df7a1"
@@ -522,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.18.0",
+      "version": "1.19.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "051e6acb553b9e6b515eb82749527d80418c316eb23eddd23ef445451c7dfc23"
+        "docs/specs/nightflight-runtime.md": "511c17f4311c3908f5d8cfc46fbca1f843ba693e1e0c0d441436bedaeb131696"
       }
     },
     "contract.nightflight-final-reader": {
@@ -543,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "60e470949cab7bf806f70db463d7809d7808b1cfe49f79566be12497d5a4e6a7",
+    "docs/specs/README.md": "5f1b4f48cb98a0e867cb122fc841c7510b7d60d069d5f6f53452f1586eaeeeec",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

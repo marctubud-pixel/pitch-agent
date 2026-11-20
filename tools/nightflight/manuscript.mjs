@@ -121,7 +121,7 @@ const draftSchemaFor=figures=>object({
 export async function formatManuscriptInput(materials) {
   const skill=await Promise.all(skillFiles.map(file=>readFile(new URL(file,skillRoot),'utf8')));
   return [
-    '# 夜航逐页编稿 · ppt-slide-script v3',
+    '# 夜航逐页编稿 · ppt-slide-script v4',
     ...skill.map((body,i)=>'## '+skillFiles[i]+'\n\n'+body.trim()),
     '## 夜航交付字段',
     '本次只执行 Stage 1。完整执行上面的选模板、编稿、精简和朗读检查。按 JSON Schema 交回正文，夜航负责页面编号。cover 写封面，chapters 写目录所用的 3–5 个短章名及各章正文，closing 写封底一句话。附录中的页码是示例。章名不要编号、页码、页数或方案答案。每页 title 是客户看到的大字，points 是简短要点，无正文填 []。',

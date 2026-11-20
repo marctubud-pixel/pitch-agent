@@ -100,7 +100,7 @@ test('只整理材料包时读取原图并停在编稿前', async t => {
   assert(result.artifacts.some(a=>a.name.startsWith('采用原图读图-')));
 });
 
-test('采用并写逐页稿时加载 v3，按章出稿并绑定本版来源、原文案和原图', async t=>{
+test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、原文案和原图', async t=>{
   const {root,project}=await fixture(t);
   project.research.findings[0].chapter='竞争与同类传播';
   project.research.findings.push({chapter:'人群与接触情境',conclusion:'家长关注活动时间',
@@ -143,6 +143,7 @@ test('采用并写逐页稿时加载 v3，按章出稿并绑定本版来源、�
   assert.equal(request.model,'deepseek-test');
   assert.equal(request.inputPacketSha256,hash(JSON.stringify(request.request)));
   const prompt=request.request.body.messages.at(-1).content;
+  assert.match(prompt,/^# 夜航逐页编稿 · ppt-slide-script v4\n/u);
   for (const path of ['SKILL.md','references/proposal-blueprints.md','references/copy-polish-rules.md']) {
     const skill=await readFile(new URL('../../skills/ppt-slide-script/'+path,import.meta.url),'utf8');
     assert(prompt.includes(skill.trim()),'实际提示词包含完整 '+path);
