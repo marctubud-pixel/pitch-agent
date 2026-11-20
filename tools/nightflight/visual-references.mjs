@@ -109,7 +109,7 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
 }
 
-export async function selectVisualReferences({call, project, images, active, observations=new Map()}) {
+export async function selectVisualReferences({call, project, images, active, observations=new Map(), priorAdmissions=[]}) {
   const names = project.directions;
   const directionIds = ['A','B','C'];
   const catalog = new Map();
@@ -125,7 +125,7 @@ export async function selectVisualReferences({call, project, images, active, obs
   }
   const packet = {brief:project.brief,strategy:project.strategyText,directions,previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],feedback:project.feedback ?? [],sources:sources.map(s=>({
     source:s.imageId,...(s.sourceUrl ? {} : {name:s.name}),pageUrl:s.pageUrl,title:s.title,carrier:s.carrier,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
-  }))};
+  })),priorAdmissions};
   if (!sources.length) throw Object.assign(Error('视觉主参考缺失：'+active.join('、')+'。可在对话区补充原图后重试。'),{missing:active});
 
   const readSeparately=sources.length>4 || sources.some(image=>image.sourceUrl);
@@ -146,6 +146,7 @@ export async function selectVisualReferences({call, project, images, active, obs
     '先为各方向分配互不重复的主参考，再按需选至多两张作用不同的辅助图。source 只填图册给出的图号，例如 R1。每张原图只分给一个用途。main 必须是一个对象，找不到时为 null 并写 gap。',
     '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
     '按 observations 里的可见原图写 borrow。Brief 的规格、品名、动作和新画法只写入 apply，原图看不到的细节不补写为原图事实。',
+    '有 priorAdmissions 时，按各案的具体问题调整借法或换图。原图适合而借法有问题时，明确能借的画面位置与必须重新画的物件。主图和辅助图各有具体作用。',
     'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
     '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。sharedBrand 只列本案上传的官方标志、VI 等实际约束。辅助按重要性排序。',
     'directions 按 A、B、C 三个键返回对象。每键填写对应 main、auxiliary 和 gap。填写图册给出的 source 编号。',

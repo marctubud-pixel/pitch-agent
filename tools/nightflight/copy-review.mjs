@@ -149,17 +149,18 @@ export function headlineMarkdown(draft) {
 
 const enginePhases = ['COPY_ENGINE_WRITE', 'COPY_ENGINE_RECOMMEND'];
 const engineRepairPhases = ['COPY_ENGINE_GROUND', 'COPY_ENGINE_PICK'];
-const engineDraftSchema = object({directions:list(object({
+const engineDirections = list(object({
   id:choice(ids), name:str, basis:str, claim:str, mechanism:str, strategyLink:str, secondary:str,
   candidates:list(object({text:str, use:str})),
-}))});
+}));
+const engineDraftSchema = object({directions:engineDirections});
 const enginePicks = object(Object.fromEntries(ids.map(id=>[id,choice([1,2,3,4].map(n=>id+n))])));
 const enginePairs = ['AB','AC','BC'];
 const engineAuthorCheck = object({
   selections:list(object({directionId:choice(ids),phrase:str,takeaway:str,sloganReady:{type:'boolean'}})),
   pairs:list(object({pair:choice(enginePairs),distinct:{type:'boolean'},reason:str})),
 });
-const engineWriterSchema = object({workbook:engineDraftSchema,picks:enginePicks,authorCheck:engineAuthorCheck});
+const engineWriterSchema = object({directions:engineDirections,picks:enginePicks,authorCheck:engineAuthorCheck});
 const engineRecommendation = object({directionId:choice(ids),reason:str});
 
 function validateEngineDraft(draft, materials) {
@@ -276,14 +277,14 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
     [
       '你是本次写作 Agent。沿用当前 Brief、研究与策略，使用原版 slogan-engine 定位物料和受众。从本案有依据的事实与读者此刻的动作、关系、情境或感受之间，找到三个不同的创意连接，自拟各案名称和角度。每案的主标要用具体措辞让这个连接成立。把三个方向当作三个可展开的创意主题。',
       '主标给读者一个能记住、能转述的动作、画面或意思。直接列品牌型号、价格、场次、时段、预约或试穿条件，只完成了告知。把这类事实放在副标、信息栏或简报指定位置。事实参与创意连接时，允许按本案需要写入主标。事实性表述须有本案材料依据，遵守简报的品类与触点限制。',
-      '依据 basis 从当前材料逐字摘取一处简短的连续原文，保留原来的字、空格和标点。claim 写本案主张，mechanism 写哪两个具体事物怎样相连，strategyLink 写如何承接策略。按 A、B、C 提交 workbook。每案保留围绕同一连接的三到四条不同候选和各自用法，另写同案通用的简洁支撑副标 secondary。使用原件对场合、长短、声律的判断。候选按 A1、A2 等编号。作为创作者从每案原候选自选一句，把编号填入 picks。整组推荐交给负责人。',
+      '依据 basis 从当前材料逐字摘取一处简短的连续原文，保留原来的字、空格和标点。claim 写本案主张，mechanism 写哪两个具体事物怎样相连，strategyLink 写如何承接策略。按 A、B、C 返回 directions。每案保留围绕同一连接的三到四条不同候选和各自用法，另写同案通用的简洁支撑副标 secondary。使用原件对场合、长短、声律的判断。候选按 A1、A2 等编号。作为创作者从每案原候选自选一句，把编号填入 picks。整组推荐交给负责人。',
       '仍由你在本次交稿前核对三条自选句。authorCheck.selections 按案逐字摘出承载创意连接的主标措辞 phrase，takeaway 写读者单看这句能记住什么或看到什么画面。只有标题本身表达了本案连接且超出直接告知时才填 sloganReady=true。authorCheck.pairs 对 AB、AC、BC 逐对写 reason，说清两句唤起的连接怎么不同。只换价格、时段、行动信息、语气或信息顺序时填 distinct=false。只看标题就分不出创意时，回到连接重新构思再自选。文案字段逐项、单行填写，略过独立盲读和回写。',
-      '本次按系统给出的 JSON Schema 交稿。顶层依次交 workbook、picks、authorCheck。workbook 中只有 directions，三案各填规定的字段，authorCheck 中只有 selections 和 pairs。引擎的创作推导写入这些字段。',
+      '按系统给出的 JSON Schema 交稿。顶层的三个字段 directions、picks、authorCheck 并列。三案各填规定字段。authorCheck 中只有 selections 和 pairs。',
     ].join('\n'),
     engineWriterSchema,source,[skill,'包装方向的 slogan 用于命名和呈现提案主题。候选用途写提案页或明确委托的其他传播触点。包装本体的印字以简报确认的产品信息为准。']);
   requireThat(writing && Object.keys(writing).every(key=>Object.hasOwn(engineWriterSchema.properties,key)),'写作 Agent 交稿包含意外字段');
-  validateEngineDraft(writing.workbook);
-  const workbook={directions:writing.workbook.directions.map(direction=>({...direction}))};
+  validateEngineDraft({directions:writing.directions});
+  const workbook={directions:writing.directions.map(direction=>({...direction}))};
   const originals=[project.brief,...materials.map(item=>item.text)].filter(nonempty);
   const unsupported=workbook.directions.filter(d=>!originals.some(text=>text.includes(d.basis)));
   const repairs=[];

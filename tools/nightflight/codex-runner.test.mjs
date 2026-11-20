@@ -1169,7 +1169,7 @@ test('DeepSeek writer chooses each headline and the director only recommends amo
     selections:['A候选2','B候选3','C候选1'].map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'创意证据'+phrase,sloganReady:true})),
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'每对读出了不同的本案连接'})),
   };
-  const writing={workbook,picks:{A:'A2',B:'B3',C:'C1'},authorCheck};
+  const writing={...workbook,picks:{A:'A2',B:'B3',C:'C1'},authorCheck};
   const recommendation={directionId:'B',reason:'具体呈现茶与包装的联系'};
   await writeFile(executable,`#!/usr/bin/env node
 const fs=require('node:fs');
@@ -1237,7 +1237,7 @@ test('copy does not send notice-only choices, overlapping ideas or invented titl
     strategyLink:'记住馆内活动',secondary:'每场45分钟，须预约。',
     candidates:[text,'今晚'+text,'周末'+text].map(candidate=>({text:candidate,use:'微信封面'})),
   }))};
-  const writing={workbook,picks:{A:'A1',B:'B1',C:'C1'}};
+  const writing={...workbook,picks:{A:'A1',B:'B1',C:'C1'}};
   const checked={
     selections:titles.map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'带孩子认识馆内的昆虫',sloganReady:true})),
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'读者记住的场景不同'})),
@@ -1509,7 +1509,7 @@ test('DeepSeek copy repairs a missing pick and a broken quotation without rewrit
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'画面不同'})),
   };
   const replies={
-    COPY_ENGINE_WRITE:{workbook,picks:{A:'A1',B:'B4',C:'C3'},authorCheck:{...authorCheck,pairs:authorCheck.pairs.slice(0,2)}},
+    COPY_ENGINE_WRITE:{...workbook,picks:{A:'A1',B:'B4',C:'C3'},authorCheck:{...authorCheck,pairs:authorCheck.pairs.slice(0,2)}},
     COPY_ENGINE_GROUND:{citations:[{id:'B',basis,supported:true}]},
     COPY_ENGINE_PICK:{picks,authorCheck},
     COPY_ENGINE_RECOMMEND:{directionId:'C',reason:'承接通勤'},
@@ -1539,7 +1539,7 @@ test('DeepSeek copy repairs a missing pick and a broken quotation without rewrit
   await assert.rejects(runCopyReview({project:{brief:brief+'每盒净含量为80克。'},inputs:{texts:[]},rules:[skill],singleOwner:true,
     call:async instruction=>{
       const phase=instruction.split('\n')[0];
-      const parsedOutput=phase==='COPY_ENGINE_WRITE' ? {...replies.COPY_ENGINE_WRITE,workbook:conflicting} :
+      const parsedOutput=phase==='COPY_ENGINE_WRITE' ? {...replies.COPY_ENGINE_WRITE,...conflicting} :
         {citations:[{id:'B',supported:true,basis:'每盒净含量为80克'}]};
       assert.ok(['COPY_ENGINE_WRITE','COPY_ENGINE_GROUND'].includes(phase));
       return {parsedOutput,runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'b'.repeat(64)};

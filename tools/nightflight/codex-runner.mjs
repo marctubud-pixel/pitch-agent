@@ -64,6 +64,7 @@ const objectSchema = (properties) => ({
 });
 const finalTargets=['brief','research','strategy','copy','visual','layout'];
 const querySchema = objectSchema({ queries: stringList });
+const visualQuerySchema = objectSchema({queries:stringList,sceneCategory:stringField});
 const researchPlanSchema = objectSchema({
   carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
   anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
@@ -1032,9 +1033,15 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const attempted = new Set();
   const history = [];
   const observations = new Map();
+  let searchedCases=false;
   for (let pass=0; ; pass++) {
     try {
-      const plans=await selectVisualReferences({call,project,images:pool,active,observations});
+      const priorAdmissions=active.flatMap(direction=>{
+        const rejected=history.findLast(record=>record.direction===direction && !record.passed);
+        return rejected ? [{direction,pages:rejected.references.map(ref=>ref.pageUrl),
+          blockers:rejected.blockers.slice(0,3).map(message=>message.slice(0,360))}] : [];
+      });
+      const plans=await selectVisualReferences({call,project,images:pool,active,observations,priorAdmissions});
       const missing=[];
       for (const direction of active) {
         const plan=plans.get(direction);
@@ -1045,21 +1052,30 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         await writeFile(join(dir,'reference-admission-'+randomUUID()+'.json'),JSON.stringify(admission,null,2),{flag:'wx',mode:0o600});
         if (!admission.passed) {
           missing.push(direction);
-          const rejected=new Set(plan.images.filter(i=>i.sourceUrl).map(i=>i.sha256));
-          for (let i=pool.length-1;i>=0;i--) if(rejected.has(pool[i].sha256)) pool.splice(i,1);
+          if (pass>0) {
+            const rejected=new Set(plan.images.filter(i=>i.sourceUrl).map(i=>i.sha256));
+            for (let i=pool.length-1;i>=0;i--) if(rejected.has(pool[i].sha256)) pool.splice(i,1);
+          }
           diagnostics.push(direction+' 准入未过：'+admission.blockers.join('、'));
         } else {
           plan.handoff.admission=admission;
           plan.handoff.priorAdmissions=history.filter(a=>a.direction===direction && !a.passed);
         }
       }
-      if (missing.length) throw Object.assign(Error('公开参考未通过：'+missing.join('、')),{missing});
+      if (missing.length) {
+        if (pass===0) {
+          await onEvent?.('根据各方向的准入意见，先调整现有原图的借法');
+          continue;
+        }
+        throw Object.assign(Error('公开参考未通过：'+missing.join('、')),{missing});
+      }
       return plans;
     }
     catch (error) {
       if (!error.missing) throw error;
       if (pass===2) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
-      if (pass===0 && category && searchCases) {
+      if (!searchedCases && category && searchCases) {
+        searchedCases=true;
         const known=pool.length;
         await onEvent?.('按通用品类「'+category+'」打开品牌发布案例查找候选原图');
         const found=await searchCases({query:category,dir,signal});
@@ -1071,8 +1087,17 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         signal?.throwIfAborted();
         const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
         const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],gaps:diagnostics};
-        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系。给两条短公开检索词，每条最多三个常用词组。第一条只结合通用品类和载体，例如「坚果 包装」「茶饮 海报」。第二条选方向最重要的手法、动作或场所，可用英文。搜索不带具体规格、价格、配方或本案文案。优先品牌、设计机构或奖项的亚洲作品原页。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
+        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系。给两条短公开检索词，每条最多三个常用词组。第一条只结合通用品类和载体，例如「坚果 包装」「茶饮 海报」。第二条选方向最重要的手法、动作或场所，可用英文。sceneCategory 只写一个常用场景名，例如「办公室」「露营」「书店」，无关则留空。搜索不带具体规格、价格、配方或本案文案。优先品牌、设计机构或奖项的亚洲作品原页。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],visualQuerySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
         const queries=publicVisualQueries(plan,project).slice(0,2);
+        const [scene]=publicVisualQueries({parsedOutput:{queries:[plan.parsedOutput?.sceneCategory]}},project);
+        const caseKey=direction+' / 场景案例 '+scene;
+        if (searchCases && scene && scene!==category && /^[\p{Script=Han}]{2,8}$/u.test(scene) && !attempted.has(caseKey)) {
+          attempted.add(caseKey);
+          await onEvent?.('正在为「'+direction+'」按场景「'+scene+'」打开品牌发布案例');
+          const found=await searchCases({query:scene,dir,signal});
+          if (found.length) addCandidates(found.slice(0,3),direction);
+          diagnostics.push(caseKey+'，取得 '+found.length+' 张');
+        }
         const remaining=queries.filter(query=>!attempted.has(direction+' / '+query));
         const results=await independentCalls(remaining,async query=>{
           const key=direction+' / '+query;

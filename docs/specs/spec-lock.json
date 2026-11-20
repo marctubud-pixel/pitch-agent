@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.104.0",
-  "registrySha256": "88703f5444d96b427dfcf52ed6d4bdd505dc4e69d8e4ae59748b240d71b1ae1c",
+  "baselineVersion": "1.105.0",
+  "registrySha256": "415e354581b8918d7f9a866ee90acd8027ebdf2344d14f8abf09b9dbe716e528",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -210,10 +210,10 @@
       }
     },
     "method.visual": {
-      "version": "1.12.0",
+      "version": "1.13.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "1eb72748a798ab90a70ecaa282538650e4777047168264bb7eb2d3e1e053fc56",
+        "skills/visual-development-lead/SKILL.md": "e1d3d6270d8711684599aa5254ec6e3517c9dc4b9cbe4b0ce06e2274b492edb5",
         "skills/visual-development-lead/references/kv.md": "ee1747604dc809f22fc949bacf9f99b0b0d59baa11a63f8437e781baddae1773",
         "skills/visual-development-lead/references/packaging.md": "a7a60d80a2359bc665883a3303a7e423e8b444dfc6a287b5e9a2cf2e6964b6b9",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
@@ -510,10 +510,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.12.0",
+      "version": "1.13.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "eb5c349a3507b561ccfaf6d741d0b73140506d1384d15d251c67abd0037c5ad2"
+        "docs/specs/copy-generation.md": "9ced38f9637bab213be1fa9c84ebc42e8d523d7b0c082309a12959827204147c"
       }
     },
     "method.slogan-engine": {
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.28.0",
+      "version": "1.29.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "42bc7488b94137e189c5f49006a5ca61a5fc33a7f2dcacf951453299beafe5bc"
+        "docs/specs/nightflight-runtime.md": "8775ac41d5b46730e6d7f38a987a4aeccba807c93af12db402e8ca60f1e31629"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "1a07060e860bc4c54492306d7557e7fbabb29abe3846c193785df41448fae9e8",
+    "docs/specs/README.md": "af7925427715c95da5c80e1531efd69b0b7b329729cefba1faed6d9273f51515",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
