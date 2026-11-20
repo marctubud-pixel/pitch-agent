@@ -34,10 +34,11 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
       if (task.assignment==='海报借改逐项核对') return {...identity,parsedOutput:{items:rows}};
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
       if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
-      const fields = schema.properties.items.items.properties;
-      return {parsedOutput:{items:images.map((_,index)=>({candidate:index+1,reason:'原票认为主体清楚。',
+      const fields = schema.properties.candidate_1.properties;
+      const opinions=images.map((_,index)=>['candidate_'+(index+1),{reason:'原票认为主体清楚。',
         ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
-        ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:false} : {})}))}};
+        ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:false} : {})}]);
+      return {parsedOutput:Object.fromEntries(opinions)};
     }});
   return {batch,calls};
 }

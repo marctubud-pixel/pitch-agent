@@ -298,8 +298,10 @@ process.stdin.on('end',()=>{
      body={packaging:true,indices:count?[1]:[]};
    } else {
      if(count!==5 && count!==6)process.exit(9);
-     const fields=props.items.items.properties;
-     body={items:[1,2,3].map(n=>({candidate:n,reason:'可见依据',...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.onPackStatus?{onPackStatus:'verified'}:{}),...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}))};
+     const fields=props.candidate_1.properties;
+     body=Object.fromEntries([1,2,3].map(n=>['candidate_'+n,{reason:'可见依据',
+       ...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.onPackStatus?{onPackStatus:'verified'}:{}),
+       ...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}]));
    }
  } else if(action==='image' || action==='other-thread'){
    if(args[args.indexOf('code_mode_host')-1]!=='--enable'||args[args.indexOf('image_generation')-1]!=='--enable')process.exit(9);
@@ -923,18 +925,18 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
       call: async (_prompt, _images, schema, task) => {
         if (schema.properties.first) return {parsedOutput:{first:'一瓶茶',action:'水入杯',words:'无糖',alternative:'不确定'}};
         if (schema.properties.indices) return {parsedOutput:{packaging,indices:_images.length?[1]:[]}};
-        const fields = schema.properties.items.items.properties;
+        const fields = schema.properties.candidate_1.properties;
         if (fields.onPackStatus) {
           assert.deepEqual(_images.slice(-brandReferences.length),brandReferences);
           assert.equal(task.comparison,true);
         }
-        const items = scores.map((score, i) => ({
-          candidate: i+1, reason: '测试依据',
+        const items = scores.map((score, i) => ['candidate_'+(i+1),{
+          reason: '测试依据',
           ...(fields.score && {score}),
           ...(fields.onPackStatus && {onPackStatus: onPack[i]}),
           ...(fields.priority && {priority: 3-i, blocked: blocked.includes(i+1), edit:'无', research:'无'}),
-        }));
-        return {threadId: 'test', parsedOutput: {items}};
+        }]);
+        return {threadId: 'test', parsedOutput: Object.fromEntries(items)};
       },
     });
   }
@@ -974,11 +976,12 @@ test('poster recommendation requires the selected slogan to be read from the act
             slogan:readings[Number(pictures[0].sha256)-1]}};
         }
         if(schema.properties.indices) return {parsedOutput:{packaging:false,indices:[]}};
-        const fields = schema.properties.items.items.properties;
-        return {parsedOutput:{items:[1,2,3].map(candidate=>({candidate,reason:'各岗均支持推荐',
+        const fields = schema.properties.candidate_1.properties;
+        const items=[1,2,3].map(candidate=>['candidate_'+candidate,{reason:'各岗均支持推荐',
           ...(fields.score && {score:[5,4,5][candidate-1]}),
           ...(fields.priority && {priority:candidate,blocked:false,edit:'无',research:'无'}),
-        }))}};
+        }]);
+        return {parsedOutput:Object.fromEntries(items)};
       },
     });
   }
