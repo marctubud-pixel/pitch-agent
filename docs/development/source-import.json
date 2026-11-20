@@ -2251,16 +2251,16 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "755d486744bb7ca1ef2f6bd8fa17f246a4377570a5c2c3158bcae483297ed82b",
-      "reason": "全自动研究交接由后端按四维证据判定，移除浏览器打开项目时带缺口进入策略的动作。"
+      "sha256": "3ee9894aa3d07aa8f9df483eac4c11750e4e0fcf990f1c232c5b2fb96942df9b",
+      "reason": "接入按逐页稿排版的有版本操作。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "c75d590e6c324466c8c301bf2dbe2988637aef75f6965c1dfd16e7b20b8568da",
-      "reason": "待澄清时引导补充委托。视觉采用和文案选择按方向显示定稿 slogan。"
+      "sha256": "23b1fcb78617f82490f0bdb77482a6144ad3387389fcc7535f2ae5556456ed39",
+      "reason": "接入采用图后编逐页稿、整理材料包和直接排版的操作。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "9e9bb555bbae30a3fcf326912c0726c98b5d61986f91ebf61e6245021e0664fd",
@@ -2287,8 +2287,8 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "d8ad0e9624944cd97d728aaa0b1b4eb330795b880a3306e4468a39b7534c94d8",
-      "reason": "单负责人实验的研究提示、文案盲读与取舍及对应页面入口。"
+      "sha256": "2ddd093c3d5e9f29b332fb575b28b093ee3cbfd0de80df6d7be3ec58fac8aa45",
+      "reason": "根据逐页稿或材料包状态引导打开版式。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",
@@ -2323,12 +2323,12 @@
       "reason": " 接入按方向查看的视觉图册。 视觉图稿按画幅与产物用途展示。 接入视觉草图选择、版本或相应方法身份。"
     },
     "apps/workbench-preview/src/proposal/deck-studio/model.ts": {
-      "sha256": "f02b9c03a17a5ca4f129fef052a170bd97a02266bd97714cc6af318c9ba457e8",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "a6c8198e6baf3b2f03a2e3ec7e5b8fc11d187424c726b42a5515db443612089b",
+      "reason": "接入夜航 v3 逐页稿的原图展示、方向分屏和无页码目录。"
     },
     "apps/workbench-preview/src/proposal/deck-studio/templates.ts": {
-      "sha256": "d93f9c220c148f09d3b4ea7bf6b16f631e226526fd430da1867c7f93bf5ad10a",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "812115564084135525a36ec1fac7f53030881d113da2dcfef69251400ad94d67",
+      "reason": "接入夜航 v3 逐页稿的原图展示、方向分屏和无页码目录。"
     },
     "apps/workbench-preview/docs/DESIGN-SPEC.md": {
       "sha256": "02fd3d37d0660b1722fa8bbc804bae94a6f9b1aaa37a7edef3546000661bf097",

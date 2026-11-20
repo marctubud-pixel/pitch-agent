@@ -329,6 +329,90 @@ export async function legacyPages(sections, { compile, paginateText }, theme) {
   return { pages: compile(drafts, footerBrand, theme), status: '本地试运行' };
 }
 
+export async function compileManuscript(plan, sources, {compile}, theme, edits=[]) {
+  const slides=plan.pages.map(p=>({...p,points:[...p.points]}));
+  for (const edit of edits) {
+    const p=slides[edit.page-1];
+    if (!p) throw Error('找不到需修改的第 '+edit.page+' 页');
+    if (edit.imageSide) {
+      if (p.role!=='direction') throw Error('只有方向阐述页支持切换分屏主图位置');
+      p.imageSide=edit.imageSide;
+      continue;
+    }
+    const fields=[p.title,...p.points];
+    const matches=fields.flatMap((text,i)=>text.includes(edit.from)?[i]:[]);
+    if (matches.length!==1 || fields[matches[0]].split(edit.from).length!==2) throw Error('第 '+edit.page+' 页需提供唯一的原文');
+    const i=matches[0];
+    if (/^(?:主标|副标) · /u.test(fields[i])) throw Error('本版主副标须原样排版，改文案请回文案与主题');
+    fields[i]=fields[i].replace(edit.from,()=>edit.to);
+    [p.title,...p.points]=fields;
+  }
+  const media=new Map(await Promise.all(sources.map(async source=>{
+    const img=new Image();
+    img.src=source.data;
+    await img.decode();
+    return [source.id,{...source,width:img.naturalWidth,height:img.naturalHeight}];
+  })));
+  const figures=new Map(plan.figures.map(f=>[f.id,f]));
+  const placeholders=page=>[...page.imageNote.matchAll(/\[待补充\s*[:：]\s*([^\]]+)\]/gu)].map(m=>m[1]);
+  let direction=0;
+  const drafts=slides.map(page=>{
+    const images=page.figures.map(id=>media.get(figures.get(id).name));
+    if (images.some(image=>!image)) throw Error('第 '+page.number+' 页缺少逐页稿绑定的原图');
+    const points=page.points;
+    const lines=points.join('\n');
+    const addNotes=page.sources.map(({source,url})=>[source,url].filter(Boolean).join(' '));
+    const notes=[page.notes,...placeholders(page).map(text=>'待补充 '+text),...addNotes].filter(Boolean).join('\n');
+    const draft={id:'P'+String(page.number).padStart(2,'0'),title:page.title,chapter:page.chapter || page.label,
+      caption:'',eyebrow:page.label,notes};
+    switch(page.role) {
+      case 'cover': return {...draft,tone:'brand',template:{kind:'cover.type',sub:lines,meta:''}};
+      case 'contents': return {...draft,template:{kind:'contents.list',items:points.map(title=>({title}))}};
+      case 'strategy': return {...draft,tone:'brand',template:{kind:'summary.statement',statement:page.title,sub:''}};
+      case 'direction': {
+        const copy=points.filter(point=>/^(?:主标|副标) · /u.test(point));
+        const explanation=points.slice(copy.length).map((d,i)=>({k:['创意思路','画面重点'][i],d}));
+        const side=direction++%2===0?'左':'右';
+        const kind=(page.imageSide || side)==='左'?'design.half':'design.halfR';
+        return {...draft,template:{kind,image:images[0],intro:copy.join('\n'),points:explanation}};
+      }
+      case 'work': return {...draft,tone:'brand',template:{kind:'upload.framed',image:images[0]}};
+      case 'compare': return {...draft,template:{kind:'compare.lineup',sub:points.slice(images.length).join('\n'),
+        items:images.map((image,i)=>({image,name:figures.get(page.figures[i]).direction,desc:points[i] || ''}))}};
+      case 'close': return {...draft,template:{kind:'closing.type',sub:'',meta:''}};
+      default: return {...draft,template:points.length>=2?{kind:'summary.list',points:points.map(d=>({k:'',d}))}:
+        {kind:'summary.statement',statement:page.title,sub:lines}};
+    }
+  });
+  const visible=text=>text.replace(/\s/gu,'');
+  let pages;
+  try { pages=compile(drafts,theme.brandName || plan.project.title,theme); }
+  catch(error) {
+    const at=drafts.findIndex(draft=>{
+      try {compile([draft],theme.brandName || plan.project.title,theme);return false;} catch {return true;}
+    });
+    throw Error((at>=0?'逐页稿 P'+String(at+1).padStart(2,'0')+'：':'')+error.message,{cause:error});
+  }
+  if (pages.length!==plan.pages.length) throw Error('逐页稿和排版页数不一致');
+  for (const [i,page] of pages.entries()) {
+    const expected=slides[i];
+    const words=visible(page.nodes.filter(n=>n.kind==='text').map(n=>n.runs.length?n.runs.map(r=>r.text).join(''):n.lines.join('')).join(''));
+    const images=page.nodes.filter(n=>n.kind==='image').map(n=>n.image.id);
+    if (page.id!==drafts[i].id || [expected.title,...expected.points].some(text=>!words.includes(visible(text))) ||
+      expected.figures.some(id=>!images.includes(figures.get(id).name))) {
+      throw Error('逐页稿 '+page.id+' 的原文或原图未完整排入该页');
+    }
+  }
+  const gaps=slides.flatMap(p=>placeholders(p).map((reason,i)=>({instance_id:drafts[p.number-1].id+'-'+i,
+    chapter:p.title,reason})));
+  const outline={physical_page_count:pages.length,gaps,pages:slides.map((p,i)=>({
+    instance_id:pages[i].id,first_page:p.number,last_page:p.number,client_title:p.title,
+    content:p.points.join('\n'), material_ref:[...p.sources.map(s=>s.source),...p.figures.map(id=>id+' · '+figures.get(id).name)]
+      .filter(Boolean).join(' ｜ '),status:placeholders(p).length?'含待补材料':'已排版',
+  }))};
+  return {pages,outline,status:gaps.length?'逐页排版 · 含待补材料':'逐页排版'};
+}
+
 // Apply a user's precise correction to the same native text objects that feed both
 // the SVG preview and the editable PowerPoint. Ambiguous or overflowing edits pause.
 export function applyPageEdits(pages, edits) {

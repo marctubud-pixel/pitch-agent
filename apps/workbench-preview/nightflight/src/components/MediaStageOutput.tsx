@@ -173,6 +173,33 @@ export function MediaStageOutput({
   busy: boolean;
 }) {
   if (id === 'visual') return <VisualOutput key={JSON.stringify([p.id, name])} p={p} name={name} />;
+  if (id === 'layout' && p.layoutDraftOnly) {
+    const saved = p.artifacts.filter(file=>file.stage==='layout' && file.kind==='text');
+    const draft = saved.findLast(file=>file.name.startsWith('逐页稿-') && file.name.endsWith('.md'));
+    const material = saved.findLast(file=>file.name.startsWith('逐页材料包-'));
+    const result = p.layoutMaterialsOnly ? material : draft;
+    if (!result) return <p className="pending">{p.status==='running' ?
+      (p.layoutMaterialsOnly ? '正在核对材料和读图。' : '正在核对材料、读图并编写逐页稿。') :
+      p.error || (p.layoutMaterialsOnly ? '编稿材料包尚未就绪。' : '逐页稿尚未交回。')}</p>;
+    const downloads = [
+      ['逐页稿-', '下载完整逐页稿'],
+      ['逐页材料包-', '下载编稿材料包'],
+      ['DeepSeek实际请求-', '查看 DeepSeek 实际请求'],
+      ['采用原图读图-', '查看采用原图读图回执'],
+    ].flatMap(([prefix,label])=>{
+      const file = prefix==='逐页稿-' ? draft : saved.findLast(item=>item.name.startsWith(prefix));
+      return file ? [{file,label}] : [];
+    });
+    return <section className="block" data-artifact={result.name}>
+      <h2>{p.layoutMaterialsOnly ? '编稿材料包' : '逐页稿'}</h2>
+      {p.canRenderManuscript && <button type="button" className="btn btn-dark" disabled={busy}
+        onClick={()=>act('render_manuscript','确认逐页稿并排版')}>按逐页稿排版</button>}
+      <ul className="plain-list">
+        {downloads.map(({file,label})=><li key={file.url}><a href={safeURL(file.url)} download={file.name}>{label}</a></li>)}
+      </ul>
+      {draft?.text && <div className="live-text">{draft.text}</div>}
+    </section>;
+  }
   const deck = p.artifacts.find(isDeckPreview);
   const outlineId = deck?.name.match(/([0-9a-f-]{36})\.deck\.json$/i)?.[1];
   const outline = outlineId ? p.artifacts.find(file => file.stage === 'layout' && file.kind === 'text' &&
@@ -193,7 +220,9 @@ export function MediaStageOutput({
       </section>
     );
   }
-  const reviews = p.artifacts.filter((file) => file.stage === 'final' && file.kind === 'text');
+  const currentReviews = p.artifacts.filter((file) => file.stage === 'final' && file.kind === 'text');
+  const priorFinal = p.finalReturn ? p.versions?.findLast(v=>v.stage==='final') : undefined;
+  const reviews = priorFinal ? priorFinal.artifacts.filter(file=>file.stage==='final' && file.kind==='text') : currentReviews;
   if (!deck && !pptx.length && !reviews.length) {
     return <p className="pending">等待排版稿，随后进入终审。</p>;
   }
@@ -209,7 +238,7 @@ export function MediaStageOutput({
         <h2>终审记录</h2>
         {reviews.length ? (
           <>
-            <p className="demo-banner">本地审读演练 · 正式签收待人类比稿负责人确认</p>
+            <p className="demo-banner">{priorFinal ? '上一版退回意见' : '本地审读记录'} · 正式签收待人类比稿负责人确认</p>
             {reviews.map((review) => <ReviewRecord key={review.url} file={review} />)}
           </>
         ) : (
@@ -258,7 +287,7 @@ function ReviewRecord({ file }: { file: Artifact }) {
       </a>
     );
   const paragraphs = text.split(/\n\s*\n/);
-  const summary = paragraphs.find((paragraph) => /^(?:本次|本轮|本地|终审|审读|审核|综合|结论|裁定|建议|待修|待核|需修)/.test(paragraph));
+  const summary = paragraphs.find((paragraph) => /^(?:第 \d+|已对照|本次|本轮|本地|终审|审读|审核|综合|结论|裁定|建议|待修|待核|需修)/.test(paragraph));
   return (
     <div data-artifact={file.name} className="media-review">
       {summary && <p>{inlineText(summary)}</p>}

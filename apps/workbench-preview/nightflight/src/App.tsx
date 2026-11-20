@@ -184,7 +184,7 @@ export function App() {
         attachments,
         ...options,
         expectedRevision:
-          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
+          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;

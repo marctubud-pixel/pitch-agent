@@ -2,6 +2,7 @@ import {automaticResearchGaps} from './research-sources.mjs';
 import {validBriefScope} from './brief-intake.mjs';
 import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
+import {isManuscriptSupport, manuscriptArtifact} from './manuscript.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
 import {
@@ -164,6 +165,8 @@ function publicView(p) {
   return {
     ...visible,
     canRequestStrategy: Boolean(canRequestStrategy(p)),
+    canRenderManuscript: p.stage==='layout' && p.status==='waiting' && p.layoutDraftOnly && !p.layoutMaterialsOnly &&
+      Boolean(manuscriptArtifact(p.artifacts)),
     artifacts: p.artifacts.map(unstore),
     attachments: p.attachments.map(unstore),
     versions: p.versions.map((v) => ({ ...v, artifacts: v.artifacts.map(unstore) })),
@@ -192,11 +195,13 @@ const mime = {
   '.pdf': 'application/pdf',
   '.md': 'text/plain; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
   '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 };
 
-export function createNightflight({ root, runStage, runLayout }) {
+export function createNightflight({ root, runStage, runLayout, runManuscript }) {
   root = resolve(root);
+  const view = p => ({...publicView(p), canWriteManuscript:typeof runManuscript === 'function'});
   mkdirSync(root, { recursive: true, mode: 0o700 });
   // SQLite releases this exclusive writer reservation when the process dies.
   const lease = new DatabaseSync(join(root,'nightflight-owner.sqlite'));
@@ -398,7 +403,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
-              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, ...(p.stage==='layout' && p.visualAdoption?.artifacts.includes(record.storageKey) ? {adoptedForLayout:true} : {}), visualOnly:record.visualOnly, renderPage:record.renderPage, ...(record.strategyHash ? {strategyHash:record.strategyHash} : {}), path };
+              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, ...(p.visualAdoption?.artifacts?.includes(record.storageKey) ? {adoptedForLayout:true} : {}), visualOnly:record.visualOnly, renderPage:record.renderPage, ...(record.strategyHash ? {strategyHash:record.strategyHash} : {}), path };
             });
           }
           if (p.stage==='copy') {
@@ -421,16 +426,32 @@ export function createNightflight({ root, runStage, runLayout }) {
             }
           };
           onEvent('比稿负责人执行「'+labels[stages.indexOf(p.stage)]+'」');
-          const result = await (p.stage === 'layout' ? runLayout : runStage)({
+          const runner = p.stage === 'layout' ? (p.layoutDraftOnly ? runManuscript : runLayout) : runStage;
+          check(typeof runner === 'function', '当前工作台缺少这个阶段的执行器', 409);
+          const job={
             stage: p.stage,
             project: input,
             dir,
             onEvent,
             checkpointDir: join(root,id,'.call-checkpoints',p.attemptKey),
             signal: abort.signal,
-          });
+          };
+          let draftArtifacts=[];
+          if (p.stage==='layout' && p.layoutFromManuscript && !p.layoutDraftOnly && !manuscriptArtifact(input.artifacts)) {
+            check(typeof runManuscript==='function','请配置夜航文字及读图 API 后编稿',409);
+            const drafted=await runManuscript(job);
+            draftArtifacts=drafted.artifacts.map(file=>({...file,stage:'layout'}));
+            check(manuscriptArtifact(draftArtifacts),'排版前未取得同版逐页稿',422);
+            input.artifacts.push(...draftArtifacts);
+          }
+          const result = await runner(job);
+          if (draftArtifacts.length) result.artifacts=[...draftArtifacts,...result.artifacts];
           const live = get(id);
           check(live?.claim === claim, '该次运行已结束', 409);
+          if (p.stage === 'layout' && p.layoutDraftOnly) {
+            check(result.artifacts?.length && result.artifacts.every(a=>a.kind==='text'),
+              '仅写逐页稿时只接收文字产物', 422);
+          }
           if (p.researchDigestOnly) {
             const digest = validateResearchDigest(result.researchDigest,live.research.findings);
             const strategyAdvice = validateStrategyAdvice(result.strategyAdvice,digest);
@@ -560,6 +581,10 @@ export function createNightflight({ root, runStage, runLayout }) {
           } else if (p.stage === 'visual') {
             live.status = 'waiting';
             note(live, outputs.some(a=>a.visual?.candidate && !outputs.some(w=>w.visual?.direction===a.visual.direction && w.visual.recommended)) ? '有方向尚无达标主视觉，请查看原因并修改' : '每方向已推荐同批达标最高稿，等待采用');
+          } else if (p.stage === 'layout' && p.layoutDraftOnly) {
+            live.status = 'waiting';
+            note(live, p.layoutMaterialsOnly ? '本版编稿材料和读图回执已保存，可以在版式下载' :
+              '本版逐页稿、编稿材料和读图回执已保存，可以在版式查看');
           } else if (p.stage === 'final') {
             const review=result.finalReview;
             check(review && ['pass','return'].includes(review.outcome) && typeof review.reason==='string' && review.reason.trim() && Array.isArray(review.pages),'终审未交回有效裁定',422);
@@ -717,11 +742,12 @@ export function createNightflight({ root, runStage, runLayout }) {
     archiveVersion(p);
     const start=stages.indexOf(target);
     for (const stage of stages.slice(start)) bumpVersion(p,stage);
-    p.artifacts=p.artifacts.filter(a=>stages.indexOf(a.stage)<start);
+    const keepDraft=target==='layout' && p.layoutFromManuscript && !p.layoutDraftOnly;
+    p.artifacts=p.artifacts.filter(a=>stages.indexOf(a.stage)<start || keepDraft && a.stage==='layout' && isManuscriptSupport(a.name));
     if (target==='brief') delete p.briefScope;
     if (start<=1) { p.research=null; p.researchOnly=false; p.researchFollowup=false; p.researchQuestionAnswered=false; delete p.researchDigestOnly; }
     if (start<=3) { delete p.copyHandoff; p.copyReview=null; p.directions=[]; p.choice=null; }
-    if (start<=4) {p.visualAdoption=null; p.layoutChanges=[];}
+    if (start<=4) {p.visualAdoption=null; p.layoutChanges=[]; delete p.layoutDraftOnly; delete p.layoutMaterialsOnly;delete p.layoutFromManuscript;}
     if (start<4) p.visualRevisions=0;
     p.stage=target; p.error=null;
     delete p.finalReturn;
@@ -734,7 +760,7 @@ export function createNightflight({ root, runStage, runLayout }) {
     const text=(input.text || '').trim();
     check(typeof text === 'string' && text.length <= 64000, '消息过长');
     const attachments = input.attachments ?? [];
-    const commandHash = hash(JSON.stringify([kind, text, attachments, input.expectedRevision, ...(input.researchOnly === true ? [true] : []), ...['targetStage','candidateIds','overrideReason'].filter(k=>input[k]!==undefined).map(k=>[k,input[k]])]));
+    const commandHash = hash(JSON.stringify([kind, text, attachments, input.expectedRevision, ...(input.researchOnly === true ? [true] : []), ...['targetStage','candidateIds','overrideReason','draftOnly','materialsOnly'].filter(k=>input[k]!==undefined).map(k=>[k,input[k]])]));
     if (opId) {
       check(safeId.test(opId) && !Object.hasOwn(Object.prototype, opId), '动作编号无效');
       if (Object.hasOwn(p.commands, opId)) {
@@ -742,7 +768,7 @@ export function createNightflight({ root, runStage, runLayout }) {
         return p;
       }
     }
-    if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue')
+    if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue')
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
     if (p.stage==='brief' && p.briefScope && p.briefScope.status!=='accepted' && ['confirm_brief','retry'].includes(kind))
       check(false,'请先补充或重新描述提案需求',409);
@@ -762,6 +788,9 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
     } else if (kind === 'adopt') {
       check(p.status === 'waiting' && !p.finalReturn && p.stage === 'visual', '当前没有待采用的图稿', 409);
+      check(input.draftOnly === undefined || typeof input.draftOnly === 'boolean', '逐页编稿选项无效');
+      check(input.materialsOnly === undefined || (input.draftOnly === true && input.materialsOnly === true), '材料包选项无效');
+      check(!input.draftOnly || typeof runManuscript === 'function', '请在夜航配置文字与读图 API 后编写逐页稿', 409);
       const candidates = p.artifacts.filter(a=>a.visual?.candidate);
       const directions=p.mode==='collab' ? [p.choice] : p.directions;
       const selections=input.candidateIds;
@@ -782,9 +811,24 @@ export function createNightflight({ root, runStage, runLayout }) {
       const files = parseAttachments(attachments, [...p.attachments, ...p.artifacts], 'layout');
       p.visualAdoption = { at: now(), artifacts: chosen, ...(reason?.trim() ? {overrideReason:reason.trim()} : {}),
         materials: files.map(f => storeFile(p, f.name, f.bytes, 'attachment')) };
-      note(p, '用户采用本版视觉稿，继续本地排版');
+      if (input.draftOnly) p.layoutDraftOnly = true;
+      else delete p.layoutDraftOnly;
+      if (input.materialsOnly) p.layoutMaterialsOnly = true;
+      else delete p.layoutMaterialsOnly;
+      if (typeof runManuscript==='function' && !input.draftOnly) p.layoutFromManuscript=true;
+      else delete p.layoutFromManuscript;
+      note(p, p.layoutMaterialsOnly ? '用户采用本版视觉稿，整理同版编稿材料' :
+        p.layoutDraftOnly ? '用户采用本版视觉稿，整理同版材料并编写逐页稿' :
+        p.layoutFromManuscript ? '用户采用本版视觉稿，编写逐页稿后直接排版' : '用户采用本版视觉稿，继续本地排版');
       p.stage = 'layout';
       p.status = 'running';
+    } else if (kind === 'render_manuscript') {
+      check(p.stage==='layout' && p.status==='waiting' && p.layoutDraftOnly && !p.layoutMaterialsOnly &&
+        manuscriptArtifact(p.artifacts),'当前没有可排版的本版逐页稿',409);
+      delete p.layoutDraftOnly;
+      p.layoutFromManuscript=true;
+      p.status='running';
+      note(p,'用户确认本版逐页稿，开始排版');
     } else if (kind === 'research_digest') {
       check(!p.claim && p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.sections,'没有等待交接的已核研究结果',409);
       p.researchDigestOnly = true;
@@ -831,6 +875,9 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.directions = [];
       p.choice = null;
       p.visualAdoption = null;
+      delete p.layoutDraftOnly;
+      delete p.layoutMaterialsOnly;
+      delete p.layoutFromManuscript;
       for (const stage of stages.slice(1)) bumpVersion(p,stage);
       if (text)
         p.feedback.push({
@@ -903,18 +950,18 @@ export function createNightflight({ root, runStage, runLayout }) {
         return;
       }
       if (parts.length === 2 && req.method === 'POST') {
-        send(201, { project: publicView(create(await body(req))) });
+        send(201, { project: view(create(await body(req))) });
         return;
       }
       const input = req.method === 'POST' ? await body(req) : null;
       const p = get(parts[2]);
       check(p, '项目不存在', 404);
       if (parts.length === 3 && req.method === 'GET') {
-        send(200, { project: publicView(p) });
+        send(200, { project: view(p) });
         return;
       }
       if (parts.length === 4 && parts[3] === 'action' && req.method === 'POST') {
-        send(200, { project: publicView(action(p, input)) });
+        send(200, { project: view(action(p, input)) });
         return;
       }
       if (parts.length === 5 && parts[3] === 'files' && req.method === 'GET') {
