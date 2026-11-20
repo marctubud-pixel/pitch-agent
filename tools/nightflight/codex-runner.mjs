@@ -2,7 +2,7 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {broadVisualQueries,campaignPages,minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,reusableResearchFindings,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
+import {broadVisualQueries,campaignPages,visualLookupCategory,minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,reusableResearchFindings,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {readManuscriptPlan} from './manuscript.mjs';
@@ -502,8 +502,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const category=plan.parsedOutput.comparisonCategory?.trim();
   const comparisonBrands=Array.isArray(plan.parsedOutput.packagingBrands)
     ? plan.parsedOutput.packagingBrands.filter(b=>typeof b?.name==='string') : [];
-  const broad=plan.parsedOutput.visualCategory?.trim();
-  const broadCategory=broad && /^[\p{L}\p{N} ·-]{1,32}$/u.test(broad) ? broad : category;
+  const broadCategory=visualLookupCategory(category,plan.parsedOutput.visualCategory,plan.parsedOutput.catalogTerms);
   const commerce=/电商|网店|旗舰店|商品详情|商城|e-commerce/iu.test(project.brief || '');
   const broadQueries=broadVisualQueries(broadCategory,carriers,plan.parsedOutput.packagingTerm);
   const firstPass=await Promise.all(broadQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));

@@ -124,7 +124,9 @@ export function supportsPoster(row,quote) {
   const filmFrame=/视频(?:帧|截图|画面)|(?:广告片|影片|短片|宣传片)(?:中)?(?:的)?(?:截图|画面)|剧照|\b(?:film still|video frame)\b/iu;
   const movingWork=/广告片|短片|宣传片|电影|影片|轻喜剧|电视剧|视频|\b(?:video|film|tvc|trailer)\b/iu;
   const publishedPrint=/海报|平面广告|主视觉|宣传图|长图|\b(?:poster|key visual|print ad)\b/iu;
-  return !filmFrame.test(row.title) && (!movingWork.test(quote) || publishedPrint.test(quote));
+  const report=/报告|白皮书|趋势|调研|研究|\b(?:report|white paper|survey)\b/iu;
+  const reportOnly=report.test(row.title) && report.test(quote);
+  return !filmFrame.test(row.title) && (!(movingWork.test(quote) || reportOnly) || publishedPrint.test(quote));
 }
 
 // Count only conclusions visible on this research page and the originals they actually cite.
@@ -210,6 +212,17 @@ export function broadVisualQueries(category,carriers,packagingTerm='包装') {
   if (typeof category!=='string' || !/^[\p{L}\p{N} ·-]{1,32}$/u.test(category)) return [];
   const form=['包装盒','包装袋','瓶装包装','罐装包装'].includes(packagingTerm)?packagingTerm:'包装';
   return carriers.map(type=>category+' '+(type==='packaging'?form:'海报'));
+}
+
+export function visualLookupCategory(specific,planned,catalogTerms) {
+  const isTerm=term=>typeof term==='string' && /^[\p{L}\p{N} ·-]{1,32}$/u.test(term);
+  const topic=typeof planned==='string' ? planned.trim() : '';
+  if (isTerm(topic) && topic!==specific) return topic;
+  if (!isTerm(specific)) return undefined;
+  const broader=(Array.isArray(catalogTerms) ? catalogTerms : []).filter(term=>isTerm(term) &&
+    term.length>=2 && term.length<specific.length &&
+    (/\p{Script=Han}/u.test(term) ? specific.includes(term) : specific.toLowerCase().split(/[^a-z0-9]+/u).includes(term.toLowerCase())));
+  return broader.sort((a,b)=>b.length-a.length)[0] || specific;
 }
 
 // Start from the category itself. The planner's project-specific searches follow these lookups.

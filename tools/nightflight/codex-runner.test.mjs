@@ -1522,3 +1522,18 @@ test('DeepSeek copy repairs a missing pick and a broken quotation without rewrit
   copyReview.repairs[0].threadId=copyReview.calls[0].threadId;
   assert.equal(engineCopyHandoffReady(copyReview,directions,body),false);
 });
+
+test('visual directory lookups can broaden a repeated category using the plan’s own catalog terms',async()=>{
+  const {visualLookupCategory}=await import('./research-sources.mjs');
+  assert.equal(visualLookupCategory('混合坚果','混合坚果',['每日坚果','坚果','小袋坚果','零食']),'坚果');
+  assert.equal(visualLookupCategory('混合坚果','坚果炒货',['坚果']),'坚果炒货');
+  assert.equal(visualLookupCategory('steam cleaner','steam cleaner',['team','cleaner']),'cleaner');
+  assert.equal(visualLookupCategory('猫粮','猫粮',['猫砂','宠物']),'猫粮');
+});
+
+test('research charts are not released promotional posters even if a vision response gives them the same label',async()=>{
+  const {supportsPoster}=await import('./research-sources.mjs');
+  const assetType='宣传海报或主视觉';
+  assert.equal(supportsPoster({assetType,title:'食品饮料包装十大趋势'},'研究团队总结了包装趋势。'),false);
+  assert.equal(supportsPoster({assetType,title:'食饮趋势活动'},'品牌在本次包装趋势展发布系列海报。'),true);
+});
