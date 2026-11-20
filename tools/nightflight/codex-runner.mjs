@@ -1031,9 +1031,10 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const diagnostics = [];
   const attempted = new Set();
   const history = [];
+  const observations = new Map();
   for (let pass=0; ; pass++) {
     try {
-      const plans=await selectVisualReferences({call,project,images:pool,active});
+      const plans=await selectVisualReferences({call,project,images:pool,active,observations});
       const missing=[];
       for (const direction of active) {
         const plan=plans.get(direction);

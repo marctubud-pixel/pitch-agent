@@ -275,7 +275,7 @@ process.stdin.on('end',()=>{
  } else if(input.includes('公开参考包对抗')){
    body={issue:'',evidence:'核对瓶口和品牌色'};
  } else if(input.includes('公开参考包独立裁定')){
-   body={decisions:['visual','brand','user','spread'].map(role=>({role,accepted:false,reason:'已核原票'})),compatible:true,reason:'画面与用途互补'};
+   body={decisions:Object.fromEntries(['visual','brand','user','spread'].map(role=>[role,{status:'通过',reason:'已核原票'}])),compatible:true,reason:'画面与用途互补'};
  } else if(input.includes('视觉参考原图登记')){
    const rows=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    body={observations:rows.map(r=>({source:r.source,visible:'原图可见的画面特征'}))};

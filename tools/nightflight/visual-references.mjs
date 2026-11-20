@@ -109,7 +109,7 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
 }
 
-export async function selectVisualReferences({call, project, images, active}) {
+export async function selectVisualReferences({call, project, images, active, observations=new Map()}) {
   const names = project.directions;
   const directionIds = ['A','B','C'];
   const catalog = new Map();
@@ -128,22 +128,24 @@ export async function selectVisualReferences({call, project, images, active}) {
   }))};
   if (!sources.length) throw Object.assign(Error('视觉主参考缺失：'+active.join('、')+'。可在对话区补充原图后重试。'),{missing:active});
 
-  // Inspect larger pools in groups that fit the real four-image model transport.
-  if (sources.length > 4) {
-    packet.observations = [];
-    for (let i=0;i<sources.length;i+=4) {
-      const group = sources.slice(i,i+4);
-      const result = await call('逐张记录可见内容、载体、配色、布局、景别、笔法、字体和使用情境。用所附图片的 source 身份返回。',group,observationSchema,{
-        assignment:'视觉参考原图登记',context:JSON.stringify(group.map(s=>({source:s.imageId,title:s.title ?? s.name}))),
+  const readSeparately=sources.length>4 || sources.some(image=>image.sourceUrl);
+  if (readSeparately) {
+    const unread=sources.filter(image=>!observations.has(image.sha256));
+    for (let i=0;i<unread.length;i+=4) {
+      const group = unread.slice(i,i+4);
+      const result = await call('按附件顺序逐张只读原图，记录真实载体、主体、颜色、布局、景别、笔法、字体和使用情境。包装写清可见的袋、罐或盒及位置。数量和印字看不清就写未核实。用所附图号返回。',group,observationSchema,{
+        assignment:'视觉参考原图登记',context:JSON.stringify(group.map(s=>({source:s.imageId}))),
       });
       const rows=result.parsedOutput?.observations;
       if (!Array.isArray(rows) || rows.length!==group.length || !group.every(s=>rows.some(r=>r.source===s.imageId && nonempty(r.visible)))) throw invalidOutput('视觉参考原图观察与输入不对应，请重试。');
-      packet.observations.push(...rows);
+      for (const image of group) observations.set(image.sha256,{visible:rows.find(row=>row.source===image.imageId).visible,threadId:result.threadId});
     }
+    packet.observations=sources.map(image=>({source:image.imageId,visible:observations.get(image.sha256).visible}));
   }
   const selection = [
     '先为各方向分配互不重复的主参考，再按需选至多两张作用不同的辅助图。source 只填图册给出的图号，例如 R1。每张原图只分给一个用途。main 必须是一个对象，找不到时为 null 并写 gap。',
     '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
+    '按 observations 里的可见原图写 borrow。Brief 的规格、品名、动作和新画法只写入 apply，原图看不到的细节不补写为原图事实。',
     'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
     '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。sharedBrand 只列本案上传的官方标志、VI 等实际约束。辅助按重要性排序。',
     'directions 按 A、B、C 三个键返回对象。每键填写对应 main、auxiliary 和 gap。填写图册给出的 source 编号。',
@@ -153,7 +155,7 @@ export async function selectVisualReferences({call, project, images, active}) {
   const directionFields = {main:{anyOf:[itemSchema,{type:'null'}]},auxiliary:{...list(itemSchema),maxItems:2},gap:string};
   const directionSchema = object(directionFields);
   const outputSchema = object({sharedBrand:list(itemSchema),directions:object(Object.fromEntries(directionIds.map(id=>[id,directionSchema])))});
-  const result = await call(selection,sources.length<=4 ? sources : [],outputSchema,{
+  const result = await call(selection,readSeparately ? [] : sources,outputSchema,{
     assignment:'比稿负责人分配参考图',context:JSON.stringify(packet),
   });
   const byDirection=result.parsedOutput?.directions;
@@ -174,7 +176,8 @@ export async function selectVisualReferences({call, project, images, active}) {
       throw invalidOutput('不同方向的专用参考图发生冲突，请核对参考图归属。');
     }
     assigned.set(image.sha256,owner);
-    return {image,reference:{role,name:image.name,sha256:image.sha256,...(image.sourceUrl ? {pageUrl:image.pageUrl,sourceUrl:image.sourceUrl,query:image.query,why:entry.why.trim(),avoid:entry.avoid.trim()} : {}),borrow:entry.borrow.trim(),apply:entry.apply.trim()}};
+    return {image,reference:{role,name:image.name,sha256:image.sha256,...(image.sourceUrl ? {pageUrl:image.pageUrl,sourceUrl:image.sourceUrl,query:image.query,why:entry.why.trim(),avoid:entry.avoid.trim()} : {}),
+      ...(observations.has(image.sha256) ? {observation:observations.get(image.sha256)} : {}),borrow:entry.borrow.trim(),apply:entry.apply.trim()}};
   }
   const common = shared.map(e=>bind(e,'sharedBrand','sharedBrand'));
   const primaries = new Map();
@@ -204,15 +207,21 @@ export async function selectVisualReferences({call, project, images, active}) {
 }
 
 const roles = {visual:['quality','composition'],brand:['compatibility','translation'],user:['understanding','feasibility'],spread:['memory','difference']};
-const voteSchema = object({items:list(object({dimension:string, score:{type:['integer','null']}, evidence:string})), hardReject:string});
+const voteSchema = dimensions=>object({
+  items:{...list(object({dimension:{...string,enum:dimensions},score:{enum:[1,2,3,4,5,null]},evidence:string})),minItems:2,maxItems:2},
+  hardReject:string,
+});
 const challengeSchema = object({issue:string, evidence:string});
-const rulingSchema = object({decisions:list(object({role:string,accepted:{type:'boolean'},reason:string})), compatible:{type:'boolean'}, reason:string});
+const rulingFields = Object.fromEntries(Object.keys(roles).map(role=>[role,object({status:{...string,enum:['通过','阻断']},reason:string})]));
+const rulingSchema = object({decisions:object(rulingFields),compatible:{type:'boolean'},reason:string});
 
 export async function reviewReferencePlan({call, project, direction, images, handoff, otherDirections}) {
-  const packet = {brief:project.brief,strategy:project.strategyText, directions:project.copyReview?.draft?.directions ?? project.directions, direction, references:handoff.references,otherDirections};
-  const instruction='本次审整组 direction 而非独立材质 component。两项维度均须判断。证据说明画面位置、所见、影响与本案转译。1事实抵触，2机制不成立，3连接或执行条件缺失，4有图卡依据，5另需具体对照优势。关键未知填 null。没有销售依据不能断言销量。只换品牌文案或配色而整体复制参考结构等有证硬退写入 hardReject，无则留空。';
+  const references=handoff.references.map((ref,index)=>({...ref,imageNumber:index+1}));
+  const packet = {brief:project.brief,strategy:project.strategyText, directions:project.copyReview?.draft?.directions ?? project.directions, direction,references,otherDirections};
+  const scope='附件依图号对应公开参考原图或本案上传的参考素材，目前尚未生成本案稿件。审核对象是这一方向的借鉴方案，区分原图可见特征与 apply、avoid 约定的新画法。原参考的品牌、规格和场景与本案不同，只在借法必须依赖这项且无法转译时影响评分。硬退须引用具体借法及图上依据，证明照搬风险或关键要求冲突。本案成稿的印字、规格、相似度和设计完成度将在出图后另审。';
+  const instruction=scope+' 两项维度均须判断。证据简述图号、实际位置、可见特征及转译用途。对比没有项目上下文时的原图观察，读不清就标明。总分尺度为 1 至 5。1事实抵触，2机制不成立，3连接或执行条件缺失，4有图卡依据，5另需具体对照优势。仅在有关键未核事实时填 null。没有销售依据不能断言销量。借法只换品牌文案或配色且复制整体结构时写入 hardReject，无成立硬伤留空。';
   const votes=await independentCalls(Object.entries(roles),async ([role,dimensions])=>{
-    const result=await call(instruction,images,voteSchema,{delegate:true,rules:[],assignment:'公开参考包独立评分',context:JSON.stringify({...packet,role,dimensions})});
+    const result=await call(instruction,images,voteSchema(dimensions),{delegate:true,rules:[],assignment:'公开参考包独立评分',context:JSON.stringify({...packet,role,dimensions})});
     const vote=result.parsedOutput;
     if (!Array.isArray(vote?.items) || vote.items.length!==2 || !dimensions.every(key=>vote.items.some(i=>i.dimension===key && nonempty(i.evidence) &&
         (i.score===null || (Number.isInteger(i.score) && i.score>=1 && i.score<=5)))) || typeof vote.hardReject!=='string') throw invalidOutput('公开参考包缺少完整的本岗原票及图证。');
@@ -221,24 +230,29 @@ export async function reviewReferencePlan({call, project, direction, images, han
   const challenges=await independentCalls(votes,async vote=>{
     const ctx={...packet,role:vote.role};
     const task={delegate:true,rules:[],assignment:'公开参考包对抗',context:JSON.stringify(ctx)};
-    const first=await call('先独立检查本岗两维有无遗漏或过度推断，写明可见依据。不另打分，无异议填空 issue。',images,challengeSchema,task);
+    const first=await call(scope+' 先独立检查本岗两维有无遗漏或过度推断，写明可见依据。不另打分，无异议填空 issue。',images,challengeSchema,task);
     if(typeof first.parsedOutput?.issue!=='string' || !nonempty(first.parsedOutput.evidence)) throw invalidOutput('公开参考对抗缺少核对依据。');
-    const checked=await call('结合独立发现核对原票，写出仍成立的问题与依据，不另打分。',images,challengeSchema,{...task,context:JSON.stringify({...ctx,findings:first.parsedOutput,vote})});
+    const checked=await call(scope+' 结合独立发现核对原票。只保留仍成立且有证的问题，缺少问题就留空 issue。不另打分。',images,challengeSchema,{...task,context:JSON.stringify({...ctx,findings:first.parsedOutput,vote})});
     if(typeof checked.parsedOutput?.issue!=='string' || !nonempty(checked.parsedOutput.evidence)) throw invalidOutput('公开参考对抗缺少核对依据。');
     return {role:vote.role,independent:{threadId:first.threadId,...first.parsedOutput},threadId:checked.threadId,...checked.parsedOutput};
   });
-  const result=await call('按岗逐条裁定对抗意见，accepted 表示仍有成立阻断问题，reason 给出依据；另核主参考机制、辅助互补性、跨方向重复和禁止整体照搬边界，compatible 表示整组相容。不可改原分。',images,rulingSchema,{delegate:true,rules:[],assignment:'公开参考包独立裁定',context:JSON.stringify({...packet,votes,challenges})});
+  const result=await call(scope+' 按岗逐条裁定对抗意见。decisions 按 visual、brand、user、spread 四个岗的固定键填写。找得到该岗 issue 中仍成立且足以阻断的具体问题时填「阻断」，reason 引用问题并指出图或拟采用的做法。无具体阻断问题填「通过」。另核主参考机制、辅助互补性、跨方向重复和整体照搬风险，compatible 表示借鉴方案相容。不可改原分。',images,rulingSchema,{delegate:true,rules:[],assignment:'公开参考包独立裁定',context:JSON.stringify({...packet,votes,challenges})});
   const ruling=result.parsedOutput;
-  if (typeof ruling?.compatible!=='boolean' || !nonempty(ruling.reason) || ruling.decisions?.length!==4 ||
-      !Object.keys(roles).every(role=>ruling.decisions.some(d=>d.role===role && typeof d.accepted==='boolean' && nonempty(d.reason)))) throw invalidOutput('公开参考包裁定不完整。');
+  if (typeof ruling?.compatible!=='boolean' || !nonempty(ruling.reason) || Object.keys(ruling.decisions ?? {}).length!==4 ||
+      !challenges.every(challenge=>{
+        const decision=ruling.decisions[challenge.role];
+        return ['通过','阻断'].includes(decision?.status) && nonempty(decision.reason) &&
+          (decision.status==='通过' || nonempty(challenge.issue));
+      })) throw invalidOutput('公开参考包裁定须按四岗分别填写通过或具体阻断。');
+  const decisions=Object.keys(roles).map(role=>({role,...ruling.decisions[role],accepted:ruling.decisions[role].status==='阻断'}));
   const blockers=[];
   for (const vote of votes) {
     for (const item of vote.items) if (item.score===null || item.score<4) blockers.push(vote.role+'.'+item.dimension+'：'+item.evidence);
     if (vote.hardReject.trim()) blockers.push(vote.hardReject);
   }
-  for (const d of ruling.decisions) if(d.accepted) blockers.push(d.reason);
+  for (const d of decisions) if(d.accepted) blockers.push(d.reason);
   if (!ruling.compatible) blockers.push(ruling.reason);
   const threads=[handoff.selectionThread,...votes.map(v=>v.threadId),...challenges.flatMap(c=>[c.independent.threadId,c.threadId]),result.threadId];
   if(threads.some(t=>!nonempty(t)) || new Set(threads).size!==threads.length) throw invalidOutput('公开参考包复核会话未独立。');
-  return {scope:'direction',direction,references:handoff.references,hashes:images.map(i=>i.sha256),votes,challenges,ruling:{threadId:result.threadId,...ruling},passed:!blockers.length,blockers};
+  return {scope:'direction',direction,references:handoff.references,hashes:images.map(i=>i.sha256),votes,challenges,ruling:{threadId:result.threadId,...ruling,decisions},passed:!blockers.length,blockers};
 }
