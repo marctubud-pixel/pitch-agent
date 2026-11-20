@@ -339,12 +339,13 @@ export function applyManuscriptEdits(plan, edits) {
       p.imageSide=edit.imageSide;
       continue;
     }
-    const fields=[p.title,...p.points];
+    const fields=[p.title,...p.points,p.label];
     const matches=fields.flatMap((text,i)=>text.includes(edit.from)?[i]:[]);
     if (matches.length!==1 || fields[matches[0]].split(edit.from).length!==2) throw Error('第 '+edit.page+' 页需提供唯一的原文');
     const i=matches[0];
     if (/^(?:主标|副标) · /u.test(fields[i])) throw Error('本版主副标须原样排版，改文案请回文案与主题');
     fields[i]=fields[i].replace(edit.from,()=>edit.to);
+    p.label=fields.pop();
     [p.title,...p.points]=fields;
   }
   return {...plan,pages:slides};

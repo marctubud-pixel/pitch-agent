@@ -132,13 +132,21 @@ else {
    const ctx=JSON.parse(prompt.split('实际项目输入（JSON）\\n\\n')[1]);
    const pages=ctx['本批PPT'];
    const role=['逻辑岗','措辞岗','美术岗'].find(key=>prompt.includes(key+'：'));
-   const issue={level:'P0',problem:'把预约写成待定',evidence:'原 Brief 写须预约',change:'明确预约。',
+   const issue={level:'P0',impact:'proposal',problem:'把预约写成待定',evidence:'原 Brief 写须预约',change:'明确预约。',
      operation:'text',target:'layout',quote:'须预约',from:'报名方式待定。',to:'客户已确认须预约。'};
    const issues=[];
    if (role==='逻辑岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。')))) issues.push({...issue,page:3});
+   if (role==='措辞岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。'))))
+     issues.push({...issue,page:3,from:'报名方式待定',to:'须预约'});
+   if (role==='逻辑岗' && pages.some(p=>p['页码']===8))
+     issues.push({...issue,page:8,impact:'production',operation:'hold',target:'brief',from:'',to:'',quote:'',
+       problem:'上线发布前须拿到正式报名链接',evidence:'本轮只交公众号封面提案',change:'记录为后续发布待确认'});
    if (role==='美术岗' && pages.some(p=>p['页码']===7 && p.notes.join('').includes('排版前请核对展签') && !p.text.includes('A1 · 采用原图')))
      issues.push({...issue,page:7,level:'P1',problem:'单图无展签',evidence:'全开图页的左右留空',change:'用双线画框和展签。',
        operation:'gallery',from:'',to:'',quote:''});
+   if (role==='措辞岗' && pages.some(p=>p['页码']===7 && p.text.includes('成品展示')))
+     issues.push({...issue,page:7,level:'P1',problem:'区分方案和可发布成品',change:'把眉标改为方案效果图。',
+       from:'成品展示',to:'方案效果图',quote:''});
    if (role==='逻辑岗' && existsSync(${JSON.stringify(protectedCase)}) && pages.some(p=>p['页码']===5))
      issues.push({...issue,page:5,from:${JSON.stringify(strategy)},to:'删掉预约要求。'});
    appendFileSync(${JSON.stringify(log)},JSON.stringify({role,pages:pages.map(p=>p['页码']),actual:pages.map(p=>p.text.join(''))})+'\\n');
@@ -179,7 +187,7 @@ else {
   assert.equal(state.status,'waiting');
   assert.equal(state.finalReview.outcome,'ready',JSON.stringify(state.finalReview));
   assert.equal(state.finalReview.rounds,2);
-  assert.equal(state.finalReview.changed,2);
+  assert.equal(state.finalReview.changed,3);
   assert.equal(state.finalReview.acceptedAt,undefined);
   assert.equal(state.versions.at(-1).artifacts.filter(a=>a.renderPage).length,9);
   assert.equal(state.finalReview.pages.length,9);
@@ -196,6 +204,7 @@ else {
   assert.match(xml('ppt/slides/slide6.xml'),/<p:pic>/u);
   assert.match(xml('ppt/slides/slide7.xml'),/<p:pic>/u);
   assert.match(xml('ppt/slides/slide7.xml'),/A1 · 采用原图/u);
+  assert.match(xml('ppt/slides/slide7.xml'),/方案效果图/u);
   assert.match(xml('ppt/slides/slide7.xml'),/<a:effectLst\/>/u);
   assert.doesNotMatch(xml('ppt/slides/slide7.xml'),/排版前请核对展签/u);
   assert.match(xml('ppt/notesSlides/notesSlide7.xml'),/排版前请核对展签/u);
@@ -211,6 +220,9 @@ else {
   assert(reads.some(item=>item.role==='全览'));
   assert(reads.some(item=>item.pages.includes(3) && item.actual.some(text=>text.includes('客户已确认须预约。'))));
   assert(state.artifacts.some(item=>item.kind==='image' && item.name===state.finalReview.contact));
+  const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
+  assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
+  assert.doesNotMatch(report,/第 3 页 · P0/u);
   await request({kind:'accept_final',expectedRevision:state.revision-1},409);
   state=await request({kind:'accept_final',expectedRevision:state.revision});
   assert.equal(state.status,'done');

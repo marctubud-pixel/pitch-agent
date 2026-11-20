@@ -71,6 +71,7 @@ async function readEdition(artifacts,plan,dir,signal) {
     const shown=norm(native[index].text.join(''));
     requireEdition(slide.id===id && ref?.name==='page-'+String(number).padStart(4,'0')+'-'+batch+'.jpg' &&
       [planned.title,...planned.points].every(value=>shown.includes(norm(value))) &&
+      (planned.role!=='work' || shown.includes(norm(planned.label))) &&
       expected.every(figure=>pictures.some(pic=>pic.name===figure?.name && pic.sha256===figure.sha256)) &&
       JSON.stringify(native[index].images)===JSON.stringify(pictures),'第 '+number+' 页错版、串图或原生正文与逐页稿对不上');
     const path=pathFor(ref.name), bytes=await readFile(path), digest=sha(bytes);
@@ -82,14 +83,14 @@ async function readEdition(artifacts,plan,dir,signal) {
 
 function issueSchema(pages) {
   return object({issues:{type:'array',maxItems:12,items:object({
-    page:{type:'integer',enum:pages},level:{type:'string',enum:['P0','P1']},
+    page:{type:'integer',enum:pages},level:{type:'string',enum:['P0','P1']},impact:{type:'string',enum:['proposal','production']},
     problem:text,evidence:text,change:text,operation:{type:'string',enum:choices},
     target:{type:'string',enum:['layout',...upstream]},from:text,to:text,quote:text,
   })}});
 }
 
-const policy='P0 只用于事实、数据、已确认要求、关键图文或可读性错误，P1 用于表达、美术和可读的局部细节。以客户选案所需信息为界。';
-const operations='每项填页码、严重程度、问题、实际证据、改法和责任。operation=text 时给可在本页 title 或单条 points 找到的唯一原文 from、短的替换 to 和本版原材料逐字引用 quote。作为同义精简时 quote 可空。保持数据、限定和方向，已核事实写准，待核说明写清。图表口径混排时，在同页将有直接依据的数据分别写清各自对象和时期。gallery 对单张作品图加展框和极简展签。comparison 等比优化并排图。reflow 调中文断行。rhythm 调页脚对比和节奏。shadows 清理默认投影。凡需变更已定策略、主副标、补商品事实或重绘原图，用 hold 且给实际责任阶段。其余 target=layout。非 text 项的 from、to、quote 填空。同一项在本批只报一次。已明确的演练缺口保留待核。';
+const policy='以 Brief 的本轮交付为准。影响本轮提案的标 impact=proposal。P0 只用于事实、数据、已确认要求、关键图文或可读性错误。P1 用于表达、美术和可读的局部细节。已明确标为待核的资料，如果只影响后续制版、印刷或发布，标 impact=production、P1，放入待确认。';
+const operations='每项填页码、严重程度、问题、实际证据、改法和责任。operation=text 时给能在本页 title、眉标 label 或单条 points 找到的唯一原文 from、短的替换 to 和本版原材料逐字引用 quote。同义精简的 quote 可空。保持数据、限定和方向，已核事实写准，待核说明写清。图表口径混排时，在同页将有直接依据的数据分别写清各自对象和时期。gallery 对单张作品图加展框和极简展签。comparison 等比优化并排图。reflow 调中文断行。rhythm 调页脚对比和节奏。shadows 清理默认投影。凡需变更已定策略、主副标、补商品事实或重绘原图，用 hold 且给实际责任阶段。眉标或说明不准确可由版式改字。其余 target=layout。非 text 项的 from、to、quote 填空。同一项在本批只报一次。';
 
 async function audit({call,plan,edition,round,selected,prior=[],verify=false,receipts,onEvent}) {
   const findings=[];
@@ -112,18 +113,18 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
       await onEvent?.('终审第 '+round+' 轮 · '+roleNames[role]+' · 第 '+numbers.join('、')+' 页'+(verify?'复验':''));
       const response=await call([roles[role],
         '按附件顺序审页 '+numbers.join('、')+'。只判断自己的审稿职责。',
-        verify?'逐项复核本批实际修后图和正文。已解决不重复，有问题依然按证据记。':'结合全册页序读本批，逐页给证据。',
+        verify || round>1?'逐项对照本批实际修后图、正文和旧意见，只交回新版仍存在的问题。':'结合全册页序读本批，逐页给证据。',
         policy,operations].join('\n'),images,issueSchema(numbers),{delegate:true,context});
       const issues=response.parsedOutput?.issues;
       if (!Array.isArray(issues) || issues.length>12 || issues.some(issue=>!numbers.includes(issue?.page) ||
-        !['P0','P1'].includes(issue.level) || !choices.includes(issue.operation) ||
+        !['P0','P1'].includes(issue.level) || !['proposal','production'].includes(issue.impact) || !choices.includes(issue.operation) ||
         !(issue.operation==='hold'?upstream.includes(issue.target):issue.target==='layout') ||
         [issue.problem,issue.evidence,issue.change].some(value=>typeof value!=='string'||!value.trim()) ||
         [issue.from,issue.to,issue.quote].some(value=>typeof value!=='string'))) {
         throw invalidOutput('终审意见须有本批页码、P0/P1、证据、改法和有效权限');
       }
       receipts.push({round,role,pages:numbers,verify,model:response.model,completionId:response.threadId,inputSha256:response.inputPacketHash});
-      return issues.map(issue=>({...issue,role}));
+      return issues.map(issue=>({...issue,role,level:issue.impact==='production'?'P1':issue.level}));
     });
     findings.push(...batches.flat());
   }
@@ -134,14 +135,14 @@ const numbers=value=>norm(value).match(/\d+(?:[.,]\d+)?%?/gu) ?? [];
 const qualifications=[/待核|未核|未验证/u,/目标价/u,/拟铺/u,/不(?:上|印)瓶/u,/仅限|仅在|仅有/u,/示意|占位/u];
 
 function authorizeText(plan,page,issue) {
-  const fields=[page.title,...page.points];
+  const fields=[page.title,...page.points,page.label];
   const field=fields.find(value=>issue.from && value.includes(issue.from));
   if (!field || !issue.to.trim() || issue.to===issue.from || /[\r\n]/u.test(issue.to) || issue.to.length>260)
     throw Error('请提供本页唯一短句和可直接放入版面的改文');
   if (page.role==='strategy' || /^(?:主标|副标) · /u.test(field)) throw Error('已定策略和主副标需人工确认');
   const after=field.replace(issue.from,()=>issue.to);
   if (qualifications.some(flag=>flag.test(field) && !flag.test(after))) throw Error('原文的待核、适用范围或使用边界须保留');
-  const sources=[plan.brief.original,plan.brief.task.body,...plan.strategy.map(item=>item.body),
+  const sources=[plan.brief.original,plan.brief.task.body,plan.adoption.explanation,...plan.strategy.map(item=>item.body),
     ...plan.copy.flatMap(item=>[item.main,item.secondary]),...page.sources.flatMap(item=>[item.evidence,item.conclusion,item.sampleScope]),
     ...plan.figures.filter(figure=>page.figures.includes(figure.id)).flatMap(figure=>[
       figure.observation.composition,...figure.observation.legibleText,...figure.observation.visibleDetails,
@@ -155,14 +156,30 @@ function authorizeText(plan,page,issue) {
   return applyManuscriptEdits(plan,[{page:issue.page,from:issue.from,to:issue.to}]);
 }
 
+function issueKey(issue) {
+  return [issue.page,issue.operation,issue.target,issue.from,issue.to,issue.operation==='hold'?issue.problem:''].join('\0');
+}
+
 function mergeIssues(issues) {
   const seen=new Map();
   for (const issue of issues) {
-    const key=[issue.page,issue.operation,issue.from,issue.to,issue.operation==='hold'?issue.problem:''].join('\0');
+    const key=issueKey(issue);
     const previous=seen.get(key);
     if (!previous || previous.level==='P1' && issue.level==='P0') seen.set(key,issue);
   }
   return [...seen.values()].sort((a,b)=>a.page-b.page || a.level.localeCompare(b.level));
+}
+
+async function recheck(options) {
+  const start=options.receipts.length;
+  const latest=await audit(options);
+  const covered=new Set(options.receipts.slice(start).flatMap(item=>item.pages.map(page=>item.role+'/'+page)));
+  const prior=options.prior;
+  const known=new Map(prior.map(issue=>[issueKey(issue),issue.blockedBy]));
+  return mergeIssues([
+    ...(options.keep ?? prior).filter(issue=>!covered.has(issue.role+'/'+issue.page)),
+    ...latest.map(issue=>({...issue,blockedBy:known.get(issueKey(issue))})),
+  ]);
 }
 
 function prepareEdits(plan,issues,oldEdition) {
@@ -284,22 +301,22 @@ export async function reviewFinalDeck({project,manuscript,dir,call,onEvent,signa
   const context={project,dir,signal,onEvent};
   current=await refine({current,issues,...context,force:true});
   applied.push(...current.applied);
-  const retained=current.remaining;
+  const retained=new Map(current.remaining.map(issue=>[issueKey(issue),issue]));
   const scope=[...new Set([...issues.map(issue=>issue.page),...current.applied.map(issue=>issue.page)])].sort((a,b)=>a-b);
   rounds=2;
   await overview({call,current,round:rounds,receipts});
-  issues=await audit({call,plan:current.plan,edition:current.edition,round:rounds,
-    selected:scope.length?scope:[1],prior:issues,receipts,onEvent});
+  issues=await recheck({call,plan:current.plan,edition:current.edition,round:rounds,
+    selected:scope.length?scope:[1],prior:issues.map(issue=>retained.get(issueKey(issue)) ?? issue),
+    keep:current.remaining,receipts,onEvent});
   current=await refine({current,issues,...context});
   applied.push(...current.applied);
-  let pending=mergeIssues([...retained.filter(issue=>issue.operation==='hold' ||
-    !applied.some(done=>done.page===issue.page && done.operation===issue.operation && done.from===issue.from)),
-    ...current.remaining]);
+  let pending=mergeIssues(current.remaining);
   if (current.applied.length) {
     await overview({call,current,round:rounds,receipts});
     const selected=[...new Set(current.applied.map(issue=>issue.page))].sort((a,b)=>a-b);
-    pending=mergeIssues([...pending,...await audit({call,plan:current.plan,edition:current.edition,round:rounds,
-      selected,prior:current.applied,verify:true,receipts,onEvent})]);
+    const prior=mergeIssues([...pending,...current.applied.filter(issue=>selected.includes(issue.page))]);
+    pending=await recheck({call,plan:current.plan,edition:current.edition,round:rounds,selected,
+      prior,keep:pending,verify:true,receipts,onEvent});
   }
   const retryable=pending.some(issue=>issue.level==='P0'&&issue.operation!=='hold');
   if (retryable) {
@@ -308,8 +325,9 @@ export async function reviewFinalDeck({project,manuscript,dir,call,onEvent,signa
     applied.push(...current.applied);
     await overview({call,current,round:rounds,receipts});
     const selected=[...new Set([...pending.filter(issue=>issue.level==='P0'),...current.applied].map(issue=>issue.page))].sort((a,b)=>a-b);
-    pending=mergeIssues([...current.remaining,...await audit({call,plan:current.plan,edition:current.edition,round:rounds,
-      selected,prior:pending,verify:true,receipts,onEvent})]);
+    const prior=mergeIssues([...current.remaining,...current.applied]);
+    pending=await recheck({call,plan:current.plan,edition:current.edition,round:rounds,selected,
+      prior,keep:current.remaining,verify:true,receipts,onEvent});
   }
   const blocking=pending.filter(issue=>issue.level==='P0');
   const outcome=blocking.length?'blocked':'ready';
