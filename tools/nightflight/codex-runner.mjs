@@ -1077,15 +1077,24 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         accepted:[...accepted.values()].map(({handoff})=>({direction:handoff.direction,references:handoff.references}))});
       const plans=new Map([...accepted,...proposed]);
       const missing=[];
+      const missingReasons={};
+      let rejected=false;
       for (const direction of remaining) {
         const plan=plans.get(direction);
+        if (plan.missing) {
+          missing.push(direction);
+          missingReasons[direction]=plan.gap || '缺少能表达该方向的原图';
+          continue;
+        }
         if (!plan.images.some(i=>i.sourceUrl)) {accepted.set(direction,plan);continue;}
         const otherDirections=active.filter(n=>n!==direction).map(n=>({direction:n,references:plans.get(n).handoff.references}));
         const admission=await reviewReferencePlan({call,project,direction,otherDirections,...plan});
         history.push(admission);
         await writeFile(join(dir,'reference-admission-'+randomUUID()+'.json'),JSON.stringify(admission,null,2),{flag:'wx',mode:0o600});
         if (!admission.passed) {
+          rejected=true;
           missing.push(direction);
+          missingReasons[direction]=admission.blockers.join('、');
           if (revisedBorrow) {
             const rejected=new Set(plan.images.filter(i=>i.sourceUrl).map(i=>i.sha256));
             for (let i=pool.length-1;i>=0;i--) if(rejected.has(pool[i].sha256)) pool.splice(i,1);
@@ -1099,12 +1108,12 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
       }
       if (missing.length) {
         if (accepted.size) await onEvent?.('沿用已经完成准入的原图与借法：'+[...accepted.keys()].join('、'));
-        if (!revisedBorrow) {
+        if (rejected && !revisedBorrow) {
           revisedBorrow=true;
           await onEvent?.('根据各方向的准入意见，先调整现有原图的借法');
           continue;
         }
-        throw Object.assign(Error('公开参考未通过：'+missing.join('、')),{missing});
+        throw Object.assign(Error('视觉主参考待补：'+missing.map(n=>n+'（'+missingReasons[n]+'）').join('、')+'。可在对话区补图后重试。'),{missing,missingReasons});
       }
       return plans;
     }
@@ -1145,7 +1154,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
           attempted.add(key);
           await onEvent?.('正在为「'+direction+'」查找公开参考图：'+query);
           try {
-            const found=await search({query,dir,signal});
+            const found=await search({query,dir,signal,creativeFallback:!!referenceTasks});
             return {found,message:key+'，取得 '+found.length+' 张'};
           } catch(error) {
             signal?.throwIfAborted();
@@ -1271,7 +1280,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         if (!cached) return fetchImages(args);
         const sourceDir=join(checkpointDir,'search',hash(args.query));
         await mkdir(sourceDir,{recursive:true,mode:0o700});
-        return cached({type:'public-search',query:args.query},async()=>{
+        return cached({type:'public-search',query:args.query,creativeFallback:!!args.creativeFallback},async()=>{
           const found=await fetchImages({...args,dir:sourceDir});
           if(!found.length) throw Error('本次未取得公开参考原图');
           return found;

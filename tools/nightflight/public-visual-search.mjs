@@ -214,7 +214,7 @@ function campaignBodyImages(bytes, base) {
   return {urls:[...urls],text:paragraphs.join('\n').slice(0,16000)};
 }
 
-export async function searchVisualImages({query,dir,signal,pages}, {
+export async function searchVisualImages({query,dir,signal,pages,creativeFallback=false}, {
   capture=capturePublicSource, search=searchPublicReferences,
 }={}) {
   if (typeof query !== 'string' || !query.trim() || query.length>180 || /[\x00-\x1f]/.test(query)) throw Error('参考检索词为空、过长或含控制字符');
@@ -319,6 +319,21 @@ export async function searchVisualImages({query,dir,signal,pages}, {
     }
   } catch { signal?.throwIfAborted(); }
   if (pages || found.size>=3) return [...found.values()];
+  if (creativeFallback) {
+    const index=new URL('https://api.openverse.org/v1/images/');
+    index.search=new URLSearchParams({q:query,page_size:'5'});
+    try {
+      const {record}=await acquire(index.href,512*1024);
+      const data=JSON.parse(await readFile(join(root,record.raw.file),'utf8'));
+      for (const image of (Array.isArray(data.results) ? data.results : []).slice(0,5)) {
+        if (typeof image?.url==='string' && image.url.startsWith('https://') &&
+            typeof image.foreign_landing_url==='string' && image.foreign_landing_url.startsWith('https://')) {
+          await collect(image.url,image.foreign_landing_url,image.title || 'Openverse 公开艺术参考');
+        }
+        if (found.size>=3) return [...found.values()];
+      }
+    } catch { signal?.throwIfAborted(); }
+  }
   const api=new URL('https://commons.wikimedia.org/w/api.php');
   api.search=new URLSearchParams({action:'query',format:'json',generator:'search',gsrnamespace:'6',gsrlimit:'8',
     gsrsearch:query,prop:'imageinfo',iiprop:'url|mime|size'});

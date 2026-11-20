@@ -64,6 +64,31 @@ test('web discovery uses a public page and its captured image when the Commons r
   assert.equal(images[0].pageUrl,page);
 });
 
+test('creative fallback keeps the publisher page and the actual indexed image, only when opted in',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'visual-search-index-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const page='https://photos.example.org/author/135', original='https://images.example.org/135.png';
+  const attempts=[];
+  const capture=options=>capturePublicSource(options,{
+    lookup:async()=>[{address:'93.184.216.34',family:4}],
+    transport:async({url})=>{
+      attempts.push(url.href);
+      if (url.hostname==='api.openverse.org') return {status:200,headers:{'content-type':'application/json'},
+        body:Buffer.from(JSON.stringify({results:[{url:original,foreign_landing_url:page,title:'微距切面',thumbnail:'https://thumb.example.org/135'}]}))};
+      if (url.href===original) return {status:200,headers:{'content-type':'image/png'},body:png};
+      throw Error('unavailable');
+    },
+  });
+  const deps={capture,search:async()=>({receipt:{results:[]}})};
+  assert.deepEqual(await searchVisualImages({dir,query:'fruit macro'},deps),[]);
+  assert.ok(attempts.every(url=>!url.includes('openverse.org')));
+  const [photo]=await searchVisualImages({dir,query:'fruit macro',creativeFallback:true},deps);
+  assert.deepEqual(await readFile(photo.path),png);
+  assert.equal(photo.sourceUrl,original);
+  assert.equal(photo.pageUrl,page);
+  assert.ok(attempts.every(url=>!url.includes('thumb.example.org')));
+});
+
 test('competitor board binds a read image to its declaring page, disregards invented URLs and preserves the accepted bytes',async t=>{
   const {researchCompetitors}=await import('./research-competitors.mjs');
   const dir=await mkdtemp(join(tmpdir(),'research-competitors-'));

@@ -658,7 +658,9 @@ test('reference handoff rejects missing primary, duplicated originals and a reas
     };
     return selectVisualReferences({call,project:{...project,previousVisual},images:[source,alias],active:['B']});
   }
-  await assert.rejects(plan([]),/B.*缺主参考/);
+  const unassigned=await plan([]);
+  assert.equal(unassigned.get('B').missing,true);
+  assert.equal(unassigned.get('B').gap,'缺主参考');
   await assert.rejects(plan(['A','B']),/专用参考图发生冲突/);
   await assert.rejects(plan(['B'],[{visual:{direction:'A',referenceHandoff:{references:[source]}}}]),/专用参考图发生冲突/);
   await assert.rejects(selectVisualReferences({project,images:[],active:['B']}),/对话区.*重试/);
