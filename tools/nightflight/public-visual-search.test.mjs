@@ -140,6 +140,31 @@ test('an uploaded case only binds its image and author quote through their own s
   assert.equal(unrelated,null);
 });
 
+test('publication evidence uses the original sentence for the image and still rejects film-only proof',async t=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const dir=await mkdtemp(join(tmpdir(),'research-poster-excerpts-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const page={url:'https://public.example.org/case',title:'果园新品专场',carrier:'kv'};
+  const release='果园品牌携手便利店开启秋季专场，为顾客提供当季产品。';
+  const film='同期推出了介绍果园产地的宣传片。';
+  const image={path:join(dir,'image.png'),imageId:'ref_1',pageUrl:page.url,sourceUrl:page.url+'/image.png',
+    title:page.title,name:'image.png',sha256:createHash('sha256').update(png).digest('hex'),width:300,height:480,articleText:release+film};
+  await writeFile(image.path,png);
+  const args={dir,carrier:'kv',pages:[page],acquiredByPage:new Map([[page,[image]]]),project:{brief:'秋季果园海报'}};
+  const result=option=>researchCompetitors({...args,call:async(_prompt,[image],_schema,task)=>{
+    const [entry]=JSON.parse(task.context).sources;
+    assert.deepEqual(entry.publicationChoices,[{id:'P1',text:release},{id:'P2',text:film}]);
+    return {parsedOutput:{conclusion:'同类用当季产品作主视觉',implication:'首屏突出当季产品',samples:[{
+      source:image.imageId,title:page.title,observation:'画面展示当季产品和活动名',sameCategory:true,
+      assetType:'宣传海报或主视觉',publishedPoster:true,publicationRef:option,publicationQuote:'开启秋季专场，同期推出了宣传片。',
+    }]}};
+  }});
+  const board=await result('P1');
+  assert.equal(board.finding.images[0].publicationQuote,release);
+  assert.equal(board.finding.images[0].pageUrl,page.url);
+  for (const option of ['','P2','P3']) assert.equal(await result(option),null);
+});
+
 test('named packages retain the first read by image across follow-ups and inspect real crops for the brief',async t=>{
   const {researchCompetitors}=await import('./research-competitors.mjs');
   const dir=await mkdtemp(join(tmpdir(),'research-detail-'));
