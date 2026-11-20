@@ -712,13 +712,27 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
         const named=proposed.filter(b=>typeof b?.name==='string' && b.name.trim() && !tried.has(b.name.trim()) &&
           sources.some(s=>s.url===b.url && (s.title.includes(b.name) || s.text.includes(b.name)))).slice(0,2);
         const normalizeBrand=value=>value.normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
-        const alternatives=await Promise.all(named.map(async ({name,officialDomain})=>{
-          const domain=brandDomain(officialDomain);
-          if (!domain || retailDomains.some(host=>matchesDomain(brandHome(domain),host))) return {name};
+        async function verifyDomain(name,input) {
+          const domain=brandDomain(input);
+          if (!domain || retailDomains.some(host=>matchesDomain(brandHome(domain),host))) return '';
           const website=await capture(brandHome(domain));
-          if (!website || !brandSite(website.url,domain) || !normalizeBrand(website.source).includes(normalizeBrand(name))) return {name};
-          return {name,officialDomain:domain};
-        }));
+          return website && brandSite(website.url,domain) && normalizeBrand(website.source).includes(normalizeBrand(name)) ? domain : '';
+        }
+        let alternatives=await Promise.all(named.map(async ({name,officialDomain})=>({name,officialDomain:await verifyDomain(name,officialDomain)})));
+        const missing=alternatives.filter(brand=>!brand.officialDomain).map(brand=>brand.name);
+        if (missing.length) {
+          await onEvent?.('已核公开品牌名，正在单独寻找可实测的品牌官网');
+          const leads=await call('只为给定公开品牌提供官网线索。每个品牌给一两个你知道或可实际打开核对的中国官网根域，已有案例无需写出该域名。不要填社交、电商或媒体网址。夜航会实际打开并核对同站域、页面品牌名称和商品图。完全不知道时返回空数组。',[],
+            objectSchema({brands:{type:'array',items:objectSchema({name:stringField,domains:stringList})}}),
+            {editorial:true,rules:[],context:JSON.stringify({brands:missing})}).catch(()=>{signal?.throwIfAborted();return null;});
+          const suggestions=Array.isArray(leads?.parsedOutput?.brands) ? leads.parsedOutput.brands : [];
+          alternatives=await Promise.all(alternatives.map(async brand=>{
+            if (brand.officialDomain) return brand;
+            const suggested=suggestions.find(row=>row?.name===brand.name);
+            const domains=await Promise.all(strings(suggested?.domains).slice(0,2).map(domain=>verifyDomain(brand.name,domain)));
+            return {...brand,officialDomain:domains.find(Boolean) ?? ''};
+          }));
+        }
         const extra=await discoverPackaging({brands:alternatives,...packagingOptions});
         discovered.push(...extra.searches);
         if (extra.pages.length) board=await researchCompetitors({...boardOptions,pages:extra.pages,
