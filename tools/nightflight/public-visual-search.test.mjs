@@ -79,7 +79,7 @@ test('competitor board binds a read image to its declaring page, disregards inve
       throw Error('Unexpected URL');
     }};
   const call=async(_prompt,images,schema)=> schema.properties.front ? {parsedOutput:{front:'乳白色盒身',regions:['左上']}} :
-    schema.properties.verifiedFront ? {parsedOutput:{verifiedFront:'包装正面品类名置顶。',checks:[{question:'品类',location:'顶部',marking:'原味',status:'看清'}]}} : ({parsedOutput:{samples:[
+    schema.properties.verifiedFront ? {parsedOutput:{actualPackaging:true,categoryMatch:'同类',visibleProduct:'原味燕麦饮',verifiedFront:'包装正面品类名置顶。',checks:[{question:'品类',location:'顶部',marking:'原味',status:'看清'}]}} : ({parsedOutput:{samples:[
     {source:images[0].imageId,title:'同类原味纸盒',sameCategory:true,observation:'包装正面品类名置顶。'},
     {source:'invented',title:'无原图案例',observation:'无依据'}],
     conclusion:'所示单品把品类信息放在正面上部。',implication:'可比较正面品类名与品牌名的层级。'}});
@@ -112,7 +112,7 @@ test('an uploaded case only binds its image and author quote through their own s
     documents:[{name:'品牌摘录.md',text:supplied}],uploadedImages:[{name,path,sha256}]};
   const caseCall=(rationaleQuote,rationaleSourceUrl)=>async(_prompt,images,_schema,task)=>{
     if (_schema.properties.front) return {parsedOutput:{front:'正面上方有字',regions:['中央']}};
-    if (_schema.properties.verifiedFront) return {parsedOutput:{verifiedFront:'正面上方有品类名称',checks:[{question:'品类',location:'顶部',marking:'原味',status:'看清'}]}};
+    if (_schema.properties.verifiedFront) return {parsedOutput:{actualPackaging:true,categoryMatch:'同类',visibleProduct:'原味燕麦饮',verifiedFront:'正面上方有品类名称',checks:[{question:'品类',location:'顶部',marking:'原味',status:'看清'}]}};
     const entry=JSON.parse(task.context).sources[0];
     assert.ok(entry.sourcePassages.some(s=>s.includes(quote)));
     return {parsedOutput:{samples:[{source:images[0].imageId,title:'原味纸盒',observation:'正面上方有品类名称',
@@ -167,7 +167,7 @@ test('named packages retain the first read by image across follow-ups and inspec
       assert.equal(details.length,1);
       const crop=await readFile(details[0].path);
       assert.equal(crop.readUInt32BE(16),1280);
-      return {parsedOutput:{verifiedFront:'白色标签居中。未见开盖提示。',checks:[{question:'标签',location:'正面中间',marking:'白色标签',status:'看清'},{question:'是否方便开盖',status:'未核实',location:'',marking:'编造的字'}]}};
+      return {parsedOutput:{actualPackaging:true,categoryMatch:'同类',visibleProduct:image.title,verifiedFront:'白色标签居中。未见开盖提示。',checks:[{question:'标签',location:'正面中间',marking:'白色标签',status:'看清'},{question:'是否方便开盖',status:'未核实',location:'',marking:'编造的字'}]}};
     }};
   const board=await researchCompetitors(args);
   const refs=board.finding.images;
@@ -200,4 +200,79 @@ test('a regional brand homepage leads through its category to the original in th
   assert.deepEqual(visited,['/','/cats/products','/cats/products/12','/original.png']);
   assert.equal(result[0].sourceUrl,site+'/original.png');
   assert.equal(result[0].pageUrl,site+'/cats/products/12');
+});
+
+test('a gift-box menu leads to its named SKU, whose own gallery wins over category icons and recommendations',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'gift-box-original-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const site='https://brand.example.cn';
+  const pages=new Map([
+    ['/','<a href="/nuts">坚果类</a><a href="/boxes">礼盒</a>'],
+    ['/boxes','<nav><img src="/icon.png" alt="坚果分类"></nav><article><a href="/p/781.html"><img src="/card.png" alt="什锦坚果礼盒">什锦坚果礼盒</a></article>'],
+    ['/p/781.html','<title>什锦坚果礼盒</title><div class="banner"><div class="swiper-slide"><img src="/banner.jpg" alt="乙系列坚果礼盒促销横幅"></div></div><main><h1>什锦坚果礼盒</h1><figure class="product-gallery"><img src="/original.jpg"></figure></main>'+
+      '<aside><a href="/p/782.html"><img data-src="/other.jpg" alt="坚果新品"></a></aside>'],
+    ['/nuts','<nav><img src="/icon.png" alt="坚果类"></nav>'],
+  ]);
+  const sample=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAKAAAADwCAAAAACiKjAGAAAAPElEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPBpbwAAHEOZGbAAAAAElFTkSuQmCC','base64');
+  const visited=[];
+  const capture=o=>capturePublicSource(o,{lookup:async()=>[{address:'93.184.216.34',family:4}],transport:async({url})=>{
+    visited.push(url.pathname);
+    if (url.pathname.endsWith('.jpg')) return {status:200,headers:{'content-type':'image/png'},body:sample};
+    return {status:pages.has(url.pathname)?200:404,headers:{'content-type':'text/html'},body:Buffer.from(pages.get(url.pathname)||'')};
+  }});
+  const image=await searchVisualImages({dir,query:'坚果 包装盒',pages:[{url:site+'/',brand:'品牌',official:true,
+    category:'混合坚果',catalogTerms:['坚果'],packagingTerm:'包装盒',carrier:'packaging'}]},{capture});
+  assert.deepEqual(image.map(i=>[i.pageUrl,i.sourceUrl]),[[site+'/p/781.html',site+'/original.jpg']]);
+  assert.ok(visited.indexOf('/boxes')<visited.indexOf('/nuts'));
+  assert.ok(!visited.includes('/other.jpg') && !visited.includes('/icon.png') && !visited.includes('/banner.jpg'));
+});
+
+test('campaign searches return the publisher’s body image and its text on the same capture',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'campaign-body-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const site='https://publisher.example.org';
+  const article='<head><meta property="og:image" content="/preview.png"></head><article>甲品牌发布了坚果海报。<img data-src="/ad.png">'+
+    '<aside>乙发布了海报。<img src="/other.png"></aside></article>';
+  const unknown='<head><meta property="og:image" content="/preview.png"></head><div>推荐<img src="/other.png"></div>';
+  const seen=[];
+  const capture=o=>capturePublicSource(o,{lookup:async()=>[{address:'93.184.216.34',family:4}],transport:async({url})=>{
+    seen.push(url.pathname);
+    if (url.pathname.endsWith('.png')) return {status:200,headers:{'content-type':'image/png'},body:png};
+    return {status:200,headers:{'content-type':'text/html'},body:Buffer.from(url.pathname==='/case'?article:unknown)};
+  }});
+  const images=await searchVisualImages({query:'坚果 海报',dir,pages:[{url:site+'/unknown',carrier:'kv'},{url:site+'/case',carrier:'kv'}]},{capture});
+  assert.deepEqual(images.map(i=>[i.sourceUrl,i.articleText]),[[site+'/ad.png','甲品牌发布了坚果海报。']]);
+  assert.ok(!seen.includes('/preview.png') && !seen.includes('/other.png'));
+});
+
+test('word boundaries distinguish English product names from navigation labels',()=>{
+  const html=Buffer.from('<section><article><img src="/nut.png">Mixed Nuts</article><article><img src="/nav.png">Catalogue</article></section>');
+  const site='https://brand.example.org';
+  assert.deepEqual(productCardImages(html,site,'Acme',[],['mixed nuts']).map(i=>i.url),[site+'/nut.png']);
+  assert.deepEqual(productCardImages(html,site,'Acme',[],['cat']),[]);
+});
+
+test('only a real same-category package passes, including a legible side view',async t=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const dir=await mkdtemp(join(tmpdir(),'package-kind-'));t.after(()=>rm(dir,{recursive:true,force:true}));
+  const objects=[['散装核桃仁',false,'同类'],['魔芋袋',true,'其他品类'],['空盒样板',false,'未核实'],['混合坚果礼盒侧面',true,'同类']];
+  const pages=[],acquiredByPage=new Map();
+  for (const [i,[title]] of objects.entries()) {
+    const bytes=Buffer.concat([png,Buffer.from([i])]),file=i+'.png',path=join(dir,file);
+    const url='https://brand.example.org/products/'+i,page={url,title,brand:'同一品牌'};
+    await writeFile(path,bytes);pages.push(page);
+    acquiredByPage.set(page,[{name:file,path,width:300,height:400,title,pageUrl:url,sourceUrl:url+'/large.png',
+      imageId:'ref_'+i,sha256:createHash('sha256').update(bytes).digest('hex')}]);
+  }
+  const call=async(_prompt,[image],schema,task)=>{
+    if (schema.properties.front) return {parsedOutput:{brand:'同一品牌',front:'实物',regions:['中央']}};
+    const query=JSON.parse(task.context);
+    assert.equal(query.targetCategory,'坚果');
+    assert.equal(query.comparisonCategory,'小袋混合坚果');
+    const [title,actualPackaging,categoryMatch]=objects[Number(image.imageId.slice(4))];
+    return {parsedOutput:{actualPackaging,categoryMatch,visibleProduct:title,verifiedFront:'',
+      checks:[{question:'可见标志',location:'侧面中央',marking:title,status:'看清'}]}};
+  };
+  const board=await researchCompetitors({dir,project:{brief:'坚果盒'},pages,acquiredByPage,carrier:'packaging',category:'小袋混合坚果',broadCategory:'坚果',call});
+  assert.deepEqual(board.finding.images.map(i=>[i.title,i.actualPackaging,i.categoryMatch]),[['混合坚果礼盒侧面',true,'同类']]);
 });

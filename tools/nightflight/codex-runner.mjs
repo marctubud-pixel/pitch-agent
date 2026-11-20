@@ -2,7 +2,7 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
+import {broadVisualQueries,campaignPages,minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,reusableResearchFindings,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {readManuscriptPlan} from './manuscript.mjs';
@@ -69,6 +69,8 @@ const researchPlanSchema = objectSchema({
   anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
   queries:stringList,
   comparisonCategory:stringField,
+  visualCategory:stringField,
+  packagingTerm:{type:'string',enum:['包装','包装盒','包装袋','瓶装包装','罐装包装']},
   catalogTerms:{type:'array',items:stringField,maxItems:8},
   consumerCategories:{type:'array',items:stringField,minItems:2,maxItems:4},
   packagingBrands:{type:'array',items:objectSchema({name:stringField,officialDomain:stringField}),maxItems:3},
@@ -225,7 +227,7 @@ function packagingTextGap(f) {
   return researchGap('visual','文字来源「'+f.source+'」记载：“'+f.evidence+'”。该文字所述外观缺对应原图，待核。'+(f.url?' '+f.url:''),'竞争与同类传播');
 }
 
-async function discoverPackaging({brands, category, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
+async function discoverPackaging({brands, category, broadCategory, packagingTerm, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
   const searches=[], pages=[];
   for (const target of (brands ?? []).slice(0,3)) {
     const name=target?.name?.trim();
@@ -233,6 +235,16 @@ async function discoverPackaging({brands, category, catalogTerms, discover, stor
     const domain=String(target.officialDomain ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
     const official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
     const seen=new Set();
+    if (official) {
+      const host=official.split('.').length===2 ? 'www.'+official : official;
+      const page={url:'https://'+host+'/',title:name,brand:name,category,catalogTerms,packagingTerm,official:true,carrier:'packaging'};
+      const query=(broadCategory || category || name);
+      const acquired=await searchVisualImages({dir,signal,query,pages:[page]},
+        {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
+      const usable=acquired.filter(i=>Math.min(i.width,i.height)>=140);
+      searches.push({query,via:name+'官网品类目录',results:[page]});
+      if (usable.length) { pages.push({...page,acquired:usable}); continue; }
+    }
     const categoryName=category && !name.includes(category) ? name+' '+category : name;
     const queries=[...new Set([categoryName,name,name+' 包装',...(official?[name+' site:'+official]:[])])];
     let retailPage;
@@ -254,7 +266,7 @@ async function discoverPackaging({brands, category, catalogTerms, discover, stor
       searches.push(found);
       const eligible=found.results.filter(r=>brandSite(r.url,official) || !retailPage && r.title.includes(name));
       const checked=await Promise.all(eligible.map(async r=>{
-        const page={...r,brand:name,category,catalogTerms,official:brandSite(r.url,official),carrier:'packaging'};
+        const page={...r,brand:name,category,catalogTerms,packagingTerm,official:brandSite(r.url,official),carrier:'packaging'};
         const images=await searchVisualImages({dir,signal,query,pages:[page]},
           {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
         const qualified=images.filter(i=>Math.min(i.width,i.height)>=140);
@@ -385,7 +397,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const scope = project.proposalKind || taskKind(project.brief || '',false);
   const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：同品类代表品牌或实际活动及其作品；有条件再对照渠道规格；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。catalogTerms 给品牌站内导航用的品类中英文词、短称和适用产品子类，不含渠道、规格价格。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。visualCategory 写公众检索同品类作品时用的短品类名，例如混合坚果用坚果；保留能识别品类的词。packagingTerm 只填包装载体通称。正面、首屏、克重、价格、场所只用于后面的细分比较。目录用短品类、图片用实际商品。catalogTerms 给品牌站内导航用的品类中英文词、短称和适用产品子类，不含渠道、规格价格。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面，线上线下同类品牌海报均可供比较，单独标明可核实的实际渠道。品牌＋品类／载体的公开检索由工作台依次执行，queries 勿重复堆入交付位置、案例、原图。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
@@ -400,7 +412,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const carrier = (scopedCarriers.length===2 ? 'packaging+kv' : scopedCarriers[0]) || project.proposalKind || (plan.parsedOutput.carrier==='packaging+kv' ? 'packaging+kv' : scope || plan.parsedOutput.carrier);
   const carriers = carrier==='packaging+kv' ? ['packaging','kv'] : ['packaging','kv'].includes(carrier) ? [carrier] : [];
   const visualEvidence = carriers.map(type => type === 'packaging'
-    ? '包装竞品：取在售单品原图，看清正面，逐张记录 SKU、来源页、原图网址和可见差异。'
+    ? '包装竞品：先核同品类实际包装及来源页、原图网址和可见差异；只有正面布局的结论需要看清正面。'
     : 'KV竞品：取实际发布的主画面，记录作品、媒介、原图与出处。');
   const researchTask = [dimensions, '本案四个问题：'+JSON.stringify(anchorQuestions),
     '研究载体：'+carrier, ...visualEvidence,
@@ -475,7 +487,31 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const discovered = [];
   const category=plan.parsedOutput.comparisonCategory?.trim();
   const comparisonBrands=plan.parsedOutput.packagingBrands ?? [];
-  const baseQueries=categoryLookups(category,carriers,project.briefScope?.types ?? [],comparisonBrands,project.researchFollowup);
+  const broad=plan.parsedOutput.visualCategory?.trim();
+  const broadCategory=broad && /^[\p{L}\p{N} ·-]{1,32}$/u.test(broad) ? broad : category;
+  const commerce=/电商|网店|旗舰店|商品详情|商城|e-commerce/iu.test(project.brief || '');
+  const broadQueries=broadVisualQueries(broadCategory,carriers,plan.parsedOutput.packagingTerm);
+  const firstPass=await Promise.all(broadQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
+  discovered.push(...firstPass);
+  const brands=carriers.includes('packaging') && Array.isArray(plan.parsedOutput.packagingBrands) ? plan.parsedOutput.packagingBrands : [];
+  const packaging=await discoverPackaging({brands,category,broadCategory,packagingTerm:plan.parsedOutput.packagingTerm,catalogTerms:[...new Set([broadCategory,...(plan.parsedOutput.catalogTerms ?? [])].filter(Boolean))],discover,storeRoot,dependencies,dir,signal});
+  discovered.push(...packaging.searches);
+  const campaignResults=[];
+  if (carriers.includes('kv') && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
+    const directoryTerms=[broadCategory,category,...(project.researchFollowup ? comparisonBrands.map(b=>b.name) : []),...terms];
+    for (const term of [...new Set(directoryTerms.filter(Boolean))].slice(0,4)) {
+      const hits=await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign');
+      const results=campaignPages(hits.filter(r=>!excluded.has(r.url)),{category,broadCategory,brands:comparisonBrands,commerce});
+      discovered.push({query:term,via:'SocialBeta 品牌发布案例',results});
+      for (const item of results) if (!campaignResults.some(r=>r.url===item.url)) campaignResults.push(item);
+      if (campaignResults.length>=4) break;
+    }
+  }
+  const baseQueries=[...new Set([
+    ...categoryLookups(broadCategory,carriers,project.briefScope?.types ?? [],[],project.researchFollowup),
+    ...(broadCategory && commerce && carriers.includes('kv') ? [broadCategory+' 电商宣传图'] : []),
+    ...categoryLookups(category,carriers,project.briefScope?.types ?? [],comparisonBrands,project.researchFollowup),
+  ])].filter(q=>!broadQueries.includes(q));
   const baseResults=await Promise.all(baseQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
   discovered.push(...baseResults);
   if (project.briefScope?.types?.includes('activity') && category &&
@@ -529,13 +565,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     discover,capture,call,discovered,signal,
     directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider),
   });
-  const brands=carriers.includes('packaging') && Array.isArray(plan.parsedOutput.packagingBrands) ? plan.parsedOutput.packagingBrands : [];
-  const packaging=await discoverPackaging({brands,category,catalogTerms:plan.parsedOutput.catalogTerms,discover,storeRoot,dependencies,dir,signal});
-  const revised = targeted.filter(t=>!brands.some(b=>b.name && t.query.includes(b.name)))
+  const revised = targeted
     .map(({query,domain})=>({query:query+' site:'+domain,domain})).filter(s=>!priorQueries.has(s.query));
-  const audienceSearches = queries.filter(query=>!brands.some(b=>b.name && query.includes(b.name)) && !priorQueries.has(query)).slice(0,4);
+  const audienceSearches = queries.filter(query=>!priorQueries.has(query) && !broadQueries.includes(query) && !baseQueries.includes(query)).slice(0,4);
   const searches = [...audienceSearches.map(query=>({query})),...revised.slice(0,4)].filter(s=>!baseQueries.includes(s.query));
-  discovered.push(...packaging.searches,...await Promise.all(searches.map(async search=>{
+  discovered.push(...await Promise.all(searches.map(async search=>{
     const found=await discover(search);
     if (!search.domain && /\p{Script=Han}/u.test(search.query) && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
       const extra=await discoverChinesePages(search.query,storeRoot,dependencies,signal);
@@ -544,15 +578,6 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     }
     return found;
   })));
-  const campaignResults=[];
-  if (carriers.includes('kv') && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
-    for (const term of [...new Set([category,...categories,...terms].filter(Boolean))].slice(0,3)) {
-      const results=(await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign')).filter(r=>!excluded.has(r.url)).slice(0,4);
-      discovered.push({query:term,via:'SocialBeta 品牌发布案例',results});
-      campaignResults.push(...results);
-      if (campaignResults.length>=4) break;
-    }
-  }
   signal?.throwIfAborted();
   const suppliedPages = (project.feedback ?? [])
     .filter(item => item.stage === 'research')
@@ -574,8 +599,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   if (!Array.isArray(offered) || !Array.isArray(draft.parsedOutput.gaps))
     throw Error('研究返回格式不完整，请重试研究');
   const replacements = [];
-  const prior = (project.previousResearch?.findings ?? []).filter(f=>!f.images?.some(i=>i.carrier==='kv' && (!i.sameCategory || !i.publicationQuote)));
-  const findings = [...prior];
+  const findings = reusableResearchFindings(project.previousResearch?.findings ?? []);
   for (const item of consumerReports.findings) {
     if (!findings.some(f=>f.subject===item.subject && f.url===item.url && f.evidence===item.evidence)) findings.push(item);
   }
@@ -629,15 +653,15 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   }
   const pages = [
     ...packaging.pages,
+    ...campaignResults.slice(0,4).map(r=>({...r,carrier:'kv'})),
     ...(draft.parsedOutput.competitorPages ?? []),
-    ...campaignResults.map(r=>({...r,carrier:'kv'})),
     ...originals.filter(item=>/产品|商品|包装|海报|案例|campaign|packaging|products?/iu.test(item.source+' '+item.url))
       .map(item=>({title:item.source,url:item.url})),
   ];
   const boards = [];
   const documents = inputs.texts.filter(t=>t.text && project.attachments?.some(a=>a.name===t.name));
   for (const type of carriers) {
-    const board = await researchCompetitors({call,dir,project,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
+    const board = await researchCompetitors({call,dir,project,category,broadCategory,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
       acquiredByPage:new Map(packaging.pages.map(p=>[p,p.acquired])),
       pages:pages.filter(p=>(!p.carrier || p.carrier===type) && (type!=='packaging' || !brands.length ||
         packaging.pages.includes(p) || ((draft.parsedOutput.competitorPages ?? []).includes(p) && originals.some(source=>source.url===p.url)) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),

@@ -118,10 +118,34 @@ export function missingAudienceTopics(rows) {
     [researchGap('source','缺少关于'+descriptions[i]+'的可核依据。','人群与接触情境')]);
 }
 
+// An article announcing a film can also release a poster, but a film-only quote cannot establish that.
+export function supportsPoster(row,quote) {
+  if (row.assetType!=='宣传海报或主视觉' || !quote) return false;
+  const filmFrame=/视频(?:帧|截图|画面)|(?:广告片|影片|短片|宣传片)(?:中)?(?:的)?(?:截图|画面)|剧照|\b(?:film still|video frame)\b/iu;
+  const movingWork=/广告片|短片|宣传片|电影|影片|轻喜剧|电视剧|视频|\b(?:video|film|tvc|trailer)\b/iu;
+  const publishedPrint=/海报|平面广告|主视觉|宣传图|长图|\b(?:poster|key visual|print ad)\b/iu;
+  return !filmFrame.test(row.title) && (!movingWork.test(quote) || publishedPrint.test(quote));
+}
+
 // Count only conclusions visible on this research page and the originals they actually cite.
 export function hasCategoryImage(images, type) {
   return images.some(i=>i.carrier===type && i.sameCategory && i.sha256 && i.pageUrl && i.sourceUrl &&
-    (type!=='kv' || i.publicationQuote));
+    (type==='packaging' ? i.actualPackaging===true && i.categoryMatch==='同类' && i.visibleProduct?.trim() : type!=='kv' || supportsPoster(i,i.publicationQuote) && ['article','attachment'].includes(i.publicationPlacement)));
+}
+
+// A mixed historical board may contain a verified original next to an obsolete image.
+// Keep only observations traceable to surviving images; the old group conclusion covers both.
+export function reusableResearchFindings(findings) {
+  return findings.flatMap(f=>{
+    if (!f.images?.length) return [f];
+    const kept=f.images.filter(i=>!['packaging','kv'].includes(i.carrier) || hasCategoryImage([i],i.carrier));
+    if (kept.length===f.images.length) return [f];
+    return kept.filter(i=>i.title && i.observation).map(i=>({
+      chapter:f.chapter,subject:'competitor',source:i.title,url:i.pageUrl,images:[i],visualOnly:false,
+      conclusion:i.title+'：'+i.observation,evidence:i.observation+(i.publicationQuote?'；'+i.publicationQuote:''),
+      implication:i.takeaway || '仅就该图可见的内容进行比较。',
+    }));
+  });
 }
 
 export function automaticResearchGaps(report, project) {
@@ -171,6 +195,21 @@ export function automaticResearchGaps(report, project) {
     if (!hasCategoryImage(comparisonImages,type)) gaps.push(researchGap('visual',type==='kv' ? '还缺同类品牌实际发布的海报原图和发布出处。' : '还缺已看过的同类包装原图和出处。',chapters[1]));
   }
   return gaps;
+}
+
+// Rank cases within the publisher's results. Commerce is a preference, never an admission gate.
+export function campaignPages(results,{category,broadCategory,brands=[],commerce=false}) {
+  const names=[...new Set([category,broadCategory,...brands.map(b=>b.name)].filter(Boolean))];
+  const resultScore=title=>Number(commerce && /电商|旗舰店|天猫|京东|商城|大促|双11|618/iu.test(title))*3+
+    Number(brands.some(b=>b.name && title.includes(b.name)))*2+Number(/海报|平面|宣传图/iu.test(title));
+  return results.filter(r=>names.some(n=>r.title?.includes(n)))
+    .sort((a,b)=>resultScore(b.title)-resultScore(a.title));
+}
+
+export function broadVisualQueries(category,carriers,packagingTerm='包装') {
+  if (typeof category!=='string' || !/^[\p{L}\p{N} ·-]{1,32}$/u.test(category)) return [];
+  const form=['包装盒','包装袋','瓶装包装','罐装包装'].includes(packagingTerm)?packagingTerm:'包装';
+  return carriers.map(type=>category+' '+(type==='packaging'?form:'海报'));
 }
 
 // Start from the category itself. The planner's project-specific searches follow these lookups.

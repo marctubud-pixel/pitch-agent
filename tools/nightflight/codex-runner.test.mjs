@@ -165,7 +165,7 @@ process.stdin.on('end',()=>{
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
      body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
-     if(action==='research-pack-lookup') Object.assign(body,{comparisonCategory:'茶饮',packagingBrands:[{name:'测试茶',officialDomain:'source.example.org'}]});
+     if(action==='research-pack-lookup') Object.assign(body,{visualCategory:'茶',packagingTerm:'包装盒',comparisonCategory:'茶饮',packagingBrands:[{name:'测试茶',officialDomain:'source.example.org'}]});
      if(action==='research-report-lookup') Object.assign(body,{queries:['即饮茶 市场 销量 销售额 价格带 报告','茶叶包装'],reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
    }
    else if(schema.reads) {
@@ -197,7 +197,7 @@ process.stdin.on('end',()=>{
      if(!args.includes('--image') || input.includes('source.example.org') || !JSON.parse(input.split('实际项目输入（JSON）').at(-1)).brief)process.exit(56);
      body={brand:'测试茶',front:'包装中央标有茶类',regions:['中央']};
    } else if(schema.verifiedFront) {
-     body={verifiedFront:'包装中央标有茶类',checks:[{question:'正面文字',location:'正面中央',marking:'茶类',status:'看清'}]};
+     body={visibleProduct:'测试茶',actualPackaging:true,categoryMatch:'同类',verifiedFront:'包装中央标有茶类',checks:[{question:'正面文字',location:'正面中央',marking:'茶类',status:'看清'}]};
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
@@ -717,7 +717,8 @@ test('packaging retries a short brand query, publishes its reviewed original and
   const f=await fixture(t,'research-pack-lookup');
   const {research}=await f.run('research');
   const queries=research.searchScope.queries;
-  assert.deepEqual(queries.slice(0,3),['茶饮 品牌包装','茶饮 热门话题','茶饮 社交平台关键词报告']);
+  assert.ok(queries.indexOf('茶 包装盒')>=0 && queries.indexOf('茶饮 品牌包装')>queries.indexOf('茶 包装盒'));
+  assert.ok(queries.includes('茶饮 社交平台关键词报告'));
   assert.deepEqual(queries.filter(q=>q.startsWith('测试茶')),['测试茶 茶饮','测试茶','测试茶 包装']);
   const photo=research.findings.flatMap(f=>f.images ?? [])[0];
   assert.equal(photo.pageUrl,'https://source.example.org/sku');
@@ -1372,7 +1373,7 @@ test('a verified same-category poster resolves only the general image gap', asyn
   const {writeResearchPage}=await import('./codex-runner.mjs');
   const chapter='竞争与同类传播';
   const image={title:'海报',carrier:'kv',sameCategory:true,sha256:'hash',pageUrl:'https://source.example.org/p',
-    sourceUrl:'https://source.example.org/i',publicationQuote:'品牌发布了海报。'};
+    sourceUrl:'https://source.example.org/i',publicationPlacement:'article',publicationQuote:'品牌发布了海报。'};
   const finding={chapter,images:[image],source:'同类发布页',url:image.pageUrl,evidence:'画面突出机身。',conclusion:'海报突出机身。'};
   const gaps=[{chapter,message:'缺同类海报。',scope:'kv',blocksStrategy:true},
     {chapter,message:'未查到商场灯箱投放。',scope:'optionalSegment',blocksStrategy:false}];
