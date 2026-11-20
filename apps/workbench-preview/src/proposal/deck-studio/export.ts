@@ -191,7 +191,21 @@ function normalizeChartBooks(bytes: Uint8Array, expected: number, theme?: Theme)
   }
   return zipSync(files, { level: 1 });
 }
-export async function exportDeckStudio(deck: Deck, signal: AbortSignal): Promise<Blob> {
+function clearSlideShadows(bytes: Uint8Array) {
+  const entries = unzipSync(bytes);
+  for (const path of Object.keys(entries).filter(path => /^ppt\/slides\/slide\d+\.xml$/.test(path))) {
+    const xml = strFromU8(entries[path])
+      .replace(/(<p:spPr\b[^>]*>)([\s\S]*?)(<\/p:spPr>)/g, (_, open: string, body: string, close: string) => {
+        const plain = body.replace(/<a:effect(?:Lst|Dag)\b[^>]*(?:\/>|>[\s\S]*?<\/a:effect(?:Lst|Dag)>)/g, '');
+        return open + plain.replace(/(?=<a:(?:scene3d|sp3d|extLst)\b)|$/u, '<a:effectLst/>') + close;
+      })
+      .replace(/(<a:effectRef\b[^>]*\bidx=")\d+"/g, (_, prefix: string) => prefix + '0"');
+    entries[path] = strToU8(xml);
+  }
+  return zipSync(entries, { level: 1 });
+}
+
+export async function exportDeckStudio(deck: Deck, signal: AbortSignal, clearShadows = false): Promise<Blob> {
   signal.throwIfAborted();
   const p = new PptxGenJS();
   p.layout = 'LAYOUT_WIDE';
@@ -215,6 +229,7 @@ export async function exportDeckStudio(deck: Deck, signal: AbortSignal): Promise
   if (!(result instanceof ArrayBuffer)) throw new Error('PPTX输出格式无效');
   let bytes = normalizeChartBooks(new Uint8Array(result), charts, deck.theme);
   if(deck.pages.some(page=>page.nodes.some(n=>(n.kind==='rect'||n.kind==='ellipse') && n.gradient))) bytes=writeGradients(bytes);
+  if(clearShadows) bytes=clearSlideShadows(bytes);
   signal.throwIfAborted();
   return new Blob([Uint8Array.from(bytes).buffer], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
 }

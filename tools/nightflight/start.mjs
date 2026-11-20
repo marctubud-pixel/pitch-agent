@@ -8,6 +8,7 @@ import { pipeline } from 'node:stream/promises';
 import { createNightflight } from './service.mjs';
 import { runStage } from './codex-runner.mjs';
 import { runLayout } from './layout.mjs';
+import { createManuscriptRunner } from './manuscript.mjs';
 
 const dist = fileURLToPath(new URL('../../apps/workbench-preview/dist/', import.meta.url));
 const dataHome = process.platform === 'darwin' ? 'Library/Application Support' : '.local/share';
@@ -68,7 +69,8 @@ const server = http.createServer(async (req, res) => {
 for (const warning of await checkDependencies()) console.warn(warning);
 const port = Number(process.env.NIGHTFLIGHT_PORT || 4420);
 server.listen(port, '127.0.0.1', () => {
-  service = createNightflight({ root, runStage, runLayout });
+  const native = process.env.ONEPITCH_TEXT_EXECUTABLE;
+  service = createNightflight({ root, runStage, runLayout, runManuscript:native ? createManuscriptRunner(native) : undefined });
   console.log('夜航提案台 http://127.0.0.1:'+server.address().port+'/ （等待用户开始）');
 });
 for (const sig of ['SIGINT', 'SIGTERM'])

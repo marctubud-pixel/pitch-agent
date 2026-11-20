@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.88.0",
-  "registrySha256": "fd27ba884ab9d16b0a5155a641e567ba40f9d60e0fa20326bb6af73582fd7fe7",
+  "baselineVersion": "1.95.0",
+  "registrySha256": "848513e092766116b65d2f6a4cb9512a2345cc10e7bf75a46661c0ecccfe7a48",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -130,17 +130,17 @@
       }
     },
     "page.layout": {
-      "version": "1.3.1",
+      "version": "1.7.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/layout.md": "8ddb1bc2aae14f01423650d3c74969d7c80a2025865ca16078e94224acd48c2b"
+        "docs/pages/layout.md": "3a98017b798aa70238f7434f350ce069ef43c4ce88a010d6c2b6bb75da1b9ff7"
       }
     },
     "page.delivery": {
-      "version": "1.1.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/delivery.md": "5b50be5ec09b24b3a9aecbdd48d269f7f4aa814733aebe7ac0f6529313b06b42"
+        "docs/pages/delivery.md": "f35061d92d81f17891ec00eeb688211f530950f083a8a7f8318a1b29d7c27685"
       }
     },
     "page.content_review": {
@@ -210,11 +210,11 @@
       }
     },
     "method.visual": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "d4a59c5459081269efe732e9954156a954033bdab5f1c46ff392c62a63f47f4c",
-        "skills/visual-development-lead/references/kv.md": "503da61f87877f8c69e2bb23cf7e997ed0ba2d2ee731c3c5c9ce2b85950a881f",
+        "skills/visual-development-lead/SKILL.md": "aa6f767dbe312574f813392b2685723f64d3fd626a3142792ae8d048971f7414",
+        "skills/visual-development-lead/references/kv.md": "ee1747604dc809f22fc949bacf9f99b0b0d59baa11a63f8437e781baddae1773",
         "skills/visual-development-lead/references/packaging.md": "a7a60d80a2359bc665883a3303a7e423e8b444dfc6a287b5e9a2cf2e6964b6b9",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
         "skills/visual-development-lead/references/stage-review.md": "a1059333fc2da94e49b15b7be19ba24dacf19e036dc7f9ac2fcc7c48cae68295",
@@ -241,11 +241,24 @@
         "docs/plans/客户提案结构与排版交接_试行.md": "1f87a59f578e5d35c1221193fb411b881736c5fed097eb149718fb1b087f26aa"
       }
     },
-    "method.proposal-structure": {
+    "method.ppt-slide-script": {
       "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "skills/proposal-structure-pilot/SKILL.md": "447d57895d854bf62e7f18b79abeaa7374150c8c33970e074ff3e1901fbb5b25",
+        "skills/ppt-slide-script/SKILL.md": "72cfa3dc7b7358becd8575520f9ea6c99fe3241968a3553810a124450323846d",
+        "skills/ppt-slide-script/references/copy-polish-rules.md": "05d2c05dc5d45adc5a5896bf66a65dce9981667b784038ec9877384f53ae7109",
+        "skills/ppt-slide-script/references/deck-studio-bridge.md": "ffd0358458c700529f1a2d7ddca144ad9710e637ebf24547bed6b3e83aa0f2a5",
+        "skills/ppt-slide-script/references/proposal-blueprints.md": "b680d2ba5fbb91b5ab55c29cd56654706bcbe02f217c6d9745d89625bf8c5488",
+        "skills/ppt-slide-script/references/route-b-ppt-design.md": "7c5c9f55f5bf398b94c7491e32b23118747b6f59c9681c9f85ccdd8b41db037f",
+        "skills/ppt-slide-script/scripts/render_preview.py": "888ecbd2b504d381c48966aca84dfd043462424811fa768b7bafd1f5acfb16d8",
+        "skills/ppt-slide-script/scripts/route_b_kit.py": "bd34afef709498f6d047bc50d310dc656d8606668cc1bf6fd6ce6cecaea22de9"
+      }
+    },
+    "method.proposal-structure": {
+      "version": "1.4.1",
+      "lifecycle": "current",
+      "files": {
+        "skills/proposal-structure-pilot/SKILL.md": "196be13c9b9e03e2be9ce456de5ff5a97c31b35842cdcbf735c0f924ffc4a5a3",
         "skills/proposal-structure-pilot/references/cases.md": "f03492b433044754047cee51b839faad9a093cf81ed0c71721ce1451fd755943",
         "skills/proposal-structure-pilot/references/page-library.json": "3d8a85f43205a27990cdb974438e1fff597b8fcf37167a515648f66a66b37ef3",
         "skills/proposal-structure-pilot/scripts/build_outline.py": "b3575f9a93fe24494de3421e3e266c7761bc267cfeec481f7c7e4bf0817df7a1"
@@ -497,10 +510,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "91f34671ce36c6892ccc471ab2b266199178edf3eddc23d7a53332b346e328c1"
+        "docs/specs/copy-generation.md": "88364412c1e6cda5f24030c6064e6e2fd55bdab29686d2b421c3b42375449de8"
       }
     },
     "method.slogan-engine": {
@@ -511,17 +524,17 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.13.0",
+      "version": "1.20.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "21a371e3242f74cfda94a113a4bde39d27269cb7ead1a1038e443deda2f0b1c0"
+        "docs/specs/nightflight-runtime.md": "852ca32299dc128ebaae7c6d6f0710f6adfc8551f3a51c15d04194afe3b4a8ab"
       }
     },
     "contract.nightflight-final-reader": {
-      "version": "1.0.0",
+      "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-final-reader.md": "a96abc6dfa8990ce8324066216570eb0adb2dfef7f65f771a2f94c2816ccbcfa"
+        "docs/specs/nightflight-final-reader.md": "eac1f36e1333f33f6aaedd489885b6f402f6737fb7f3e2ac08648734cd6ea5a9"
       }
     }
   },
@@ -532,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "629c8e93c682f4ad66c817f00b2ea9c91080c5a50eeb4bd851b5351b94322d21",
+    "docs/specs/README.md": "41408c1a35637520077705ff3cdf17edb6aef5e78bf952cd7090db0c14afedd2",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

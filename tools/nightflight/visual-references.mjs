@@ -9,7 +9,86 @@ const observationSchema = object({observations:list(object({source:string, visib
 const imagePromptSchema = object({prompt:string});
 const nonempty = s => typeof s === 'string' && s.trim().length > 0;
 
-export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging}) {
+export const visualElements = ['配色', '布局', '景别', '笔法', '字体'];
+
+export function posterStrategyPurpose(strategy) {
+  const sections = strategy.split(/^##\s+/m).slice(1);
+  return sections.flatMap(section => {
+    const [title,...lines] = section.trim().split('\n');
+    if (!['核心策略','人群洞察','品牌角色','核心主张'].includes(title.trim())) return [];
+    const statement = lines.find(line => line.trim() && !/^\s*[-*]/.test(line));
+    return statement ? [statement.trim()] : [];
+  }).join('\n');
+}
+
+export async function readPosterReference({call, image}) {
+  const result = await call(
+    '只描述这一张主参考原图实际可见的五项。布局写标题、留白和画面主体分别在哪里及占比。景别写看见多大范围，笔法写线条、切边或摄影质感，字体写字形和字重，配色写主要色和对比。' +
+    '逐项用简短一句话记录。不评价本案，不把后续改法写成原图特征。看不清的一项填「未核实」，原图确实没有文字也照实写。',
+    [image], object(Object.fromEntries(visualElements.map(element=>[element,string]))),
+    {delegate:true,rules:[],assignment:'海报主参考原图核读',context:'附件只有本方向主参考原图。'},
+  );
+  const observations = result.parsedOutput;
+  if (!observations || Object.keys(observations).length!==visualElements.length ||
+      !visualElements.every(element=>nonempty(observations[element])) || !nonempty(result.model) || !nonempty(result.threadId)) {
+    throw invalidOutput('海报主参考缺少实际原图的五项观察或读图回执。');
+  }
+  return {image,observations,model:result.model,threadId:result.threadId};
+}
+
+async function writePosterPrompt({call, images, context, posterReference, posterSlogan}) {
+  const {transfer, ...directionInput} = context;
+  const {image,observations} = posterReference;
+  const at = images.findIndex(input=>input.sha256===image.sha256);
+  if (at<0) throw Error('本张海报生图没有附上已核读的主参考原图。');
+  const schema = object({
+    format:string, subject:string, background:string, lettering:list(string),
+    changes:object(Object.fromEntries(transfer.change.map(element=>[element,string]))),
+  });
+  const result = await call([
+    '为这个海报方向写制图内容。把创意落到可见的主体、动作和背景，先从本案方向找到观众应先看到的事。',
+    'format 写简报给定的载体、横竖和其他硬性尺寸。subject 写主体和动作。background 写背景里实际有哪些东西。三个字段只描述画面内容，不加配色、构图、景别、笔法或字体指令。',
+    'changes 只写两项重新设计的内容。每项给可落图的目标，要看得出与原图观察的差异。改布局时说清主标题、主要画面主体及留白的新位置关系。改景别时说清画面现在看见的范围。',
+    '三项沿用内容由原图观察给出，直接沿用观察到的画面关系和表现方式。这三项不在其他字段重新指定。硬性设计位置仅来自客户本轮简报和任务卡。',
+    'lettering 只列需要印在画面中的简报信息或本案副标，逐条写实际文字。主标题已定稿。价格、型号或时段已在主标题中讲清时，避免重复列。未确认字样省略。',
+  ].join('\n'),[],schema,{
+    assignment:'夜航海报生图提示词写作',rules:[],context:JSON.stringify({
+      ...directionInput, posterSlogan, mainReference:{imageNumber:at+1,observations}, transfer,
+    }),
+  });
+  const plan = result.parsedOutput;
+  const normalize = value=>value.normalize('NFKC').replace(/[\s\p{P}]/gu,'');
+  if (!plan || !['format','subject','background'].every(field=>nonempty(plan[field]) && plan[field].length<=600) ||
+      !Array.isArray(plan.lettering) || plan.lettering.length>8 ||
+      !plan.lettering.every(value=>nonempty(value) && value.length<=120) ||
+      !plan.changes || Object.keys(plan.changes).length!==transfer.change.length ||
+      !transfer.change.every(element=>nonempty(plan.changes[element]) && plan.changes[element].length<=450 &&
+        normalize(plan.changes[element])!==normalize(observations[element])) ||
+      !nonempty(result.model) || !nonempty(result.threadId)) {
+    throw invalidOutput('海报生图文字须按借改项目写出两项明确的新画法和本方向的画面内容。');
+  }
+  const prompt = [
+    '生成一张完整海报／KV。' + plan.format,
+    '实际第 '+(at+1)+' 张附件是本方向已核读的主参考原图。人物、地景、图形和文字用本案内容重画。',
+    ...transfer.borrow.map(element=>'沿用主参考的'+element+'。'+observations[element]),
+    ...transfer.change.map(element=>'重新设计'+element+'。原图可见 '+observations[element]+'。本张改为 '+plan.changes[element]),
+    '构图和景别遵照以上逐项借改安排。画面内容按下述主体和背景重画。',
+    '画面主体和动作。'+plan.subject,
+    '背景。'+plan.background,
+    directionInput.auxiliaryNotes?.length ? '辅助参考的文字线索。'+directionInput.auxiliaryNotes.map(note=>note.apply).join(' ') : '',
+    '完整主标题「'+posterSlogan+'」须逐字排进画面。允许合理换行，保留原句和标点。',
+    plan.lettering.length ? '其它需印在画面的文字。'+plan.lettering.map(line=>'「'+line+'」').join('、') : '',
+    '保持文字清晰可读。采用附件里的品牌原件或返修稿时，以本张借改要求为准。',
+  ].filter(Boolean).join('\n');
+  return {model:result.model,threadId:result.threadId,prompt,plan};
+}
+
+export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging, posterReference}) {
+  if (posterReference) {
+    const promptWriting = await writePosterPrompt({call,images,context,posterReference,posterSlogan});
+    const result = await call(promptWriting.prompt,images,null,{exactImagePrompt:true});
+    return {result,promptWriting};
+  }
   const instruction = [
     '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
     '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。按制图要求写清载体上的文字。',
@@ -31,13 +110,17 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
 }
 
-export async function selectVisualReferences({call, project, images, active}) {
+export async function selectVisualReferences({call, project, images, active, fixedDirections=false}) {
   const names = project.directions;
+  const directionIds = ['A','B','C'];
   const catalog = new Map();
   for (const image of images) if (!catalog.has(image.sha256)) catalog.set(image.sha256,image);
   const sources = [...catalog.values()];
   const authors = project.copyReview?.draft?.directions ?? [];
-  const directions = names.map(name => authors.find(d=>d.name===name) ?? {name});
+  const directions = names.map((name,index) => {
+    const draft = authors.find(d=>d.name===name) ?? {name};
+    return fixedDirections ? {...draft,id:directionIds[index]} : draft;
+  });
   const previousOwners = new Map();
   for (const item of project.previousVisual ?? []) {
     for (const ref of item.visual?.referenceHandoff?.references ?? []) {
@@ -67,11 +150,24 @@ export async function selectVisualReferences({call, project, images, active}) {
     '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
     'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
     '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。无适用主参考时 main 留空并写 gap。sharedBrand 只列本案官方标志、VI 等实际约束。辅助按重要性排序。',
-  ].join('\n');
-  const result = await call(selection,sources.length<=4 ? sources : [],planSchema(sources.some(s=>s.sourceUrl)?publicUse:use),{
+    fixedDirections && 'directions 按 A、B、C 三个键返回对象。每键填写该案的 main、auxiliary 和 gap。source 照录图册里的 source 编号。',
+  ].filter(Boolean).join('\n');
+  const itemSchema = sources.some(s=>s.sourceUrl) ? publicUse : use;
+  const directionSchema = object({main:list(itemSchema),auxiliary:list(itemSchema),gap:string});
+  const outputSchema = fixedDirections ?
+    object({sharedBrand:list(itemSchema),directions:object(Object.fromEntries(directionIds.map(id=>[id,directionSchema])))}) :
+    planSchema(itemSchema);
+  const result = await call(selection,sources.length<=4 ? sources : [],outputSchema,{
     assignment:'比稿负责人分配参考图',context:JSON.stringify(packet),
   });
-  const rows=result.parsedOutput?.directions;
+  let rows=result.parsedOutput?.directions;
+  if (fixedDirections) {
+    if (!rows || Object.keys(rows).length!==directionIds.length ||
+        !directionIds.every(id=>Object.hasOwn(rows,id) && rows[id] && typeof rows[id]==='object')) {
+      throw invalidOutput('海报参考图 directions 需要 A、B、C 三个方向对象。');
+    }
+    rows=directionIds.map((id,index)=>({...rows[id],direction:names[index]}));
+  }
   if (!Array.isArray(rows) || rows.length!==names.length || !names.every(n=>rows.some(r=>r?.direction===n))) throw invalidOutput('参考图分派与三份文案方向不一致。');
   const shared = result.parsedOutput.sharedBrand;
   if (!Array.isArray(shared)) throw invalidOutput('请明确全案共用的品牌素材。');

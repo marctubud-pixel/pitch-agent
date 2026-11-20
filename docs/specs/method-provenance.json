@@ -112,5 +112,47 @@
     "path": "skills/slogan-engine/SKILL.md",
     "sourceVersion": "20261106-b7900017",
     "sha256": "b79000179b4df961d67acb662e66730bf97df88b7f5d2ca6493fd0beb36bc239"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/SKILL.md",
+    "sourceVersion": "v4",
+    "sha256": "72cfa3dc7b7358becd8575520f9ea6c99fe3241968a3553810a124450323846d"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/copy-polish-rules.md",
+    "sourceVersion": "v4",
+    "sha256": "05d2c05dc5d45adc5a5896bf66a65dce9981667b784038ec9877384f53ae7109"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/deck-studio-bridge.md",
+    "sourceVersion": "v4",
+    "sha256": "ffd0358458c700529f1a2d7ddca144ad9710e637ebf24547bed6b3e83aa0f2a5"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/proposal-blueprints.md",
+    "sourceVersion": "v4",
+    "sha256": "b680d2ba5fbb91b5ab55c29cd56654706bcbe02f217c6d9745d89625bf8c5488"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/route-b-ppt-design.md",
+    "sourceVersion": "v4",
+    "sha256": "7c5c9f55f5bf398b94c7491e32b23118747b6f59c9681c9f85ccdd8b41db037f"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/scripts/render_preview.py",
+    "sourceVersion": "v4",
+    "sha256": "888ecbd2b504d381c48966aca84dfd043462424811fa768b7bafd1f5acfb16d8"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/scripts/route_b_kit.py",
+    "sourceVersion": "v4",
+    "sha256": "bd34afef709498f6d047bc50d310dc656d8606668cc1bf6fd6ce6cecaea22de9"
   }
 ]

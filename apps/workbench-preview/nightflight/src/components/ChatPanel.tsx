@@ -14,7 +14,7 @@ import {STAGES} from '../data/project';
 import type {StageId} from '../types';
 import { BotFigure } from './Bot';
 import { AttachButton, AttachmentChips } from './Attachments';
-export type Act = (kind: Action, text: string, files?: File[], options?: {targetStage?:StageId; candidateIds?:string[]; overrideReason?:string}) => Promise<boolean>;
+export type Act = (kind: Action, text: string, files?: File[], options?: {targetStage?:StageId; candidateIds?:string[]; overrideReason?:string; draftOnly?:boolean; materialsOnly?:boolean}) => Promise<boolean>;
 function AdoptVisual({p,act,busy}:{p:Project;act:Act;busy:boolean}) {
   const [picks,setPicks]=useState<Record<string,string>>({});
   const [reason,setReason]=useState('');
@@ -25,6 +25,20 @@ function AdoptVisual({p,act,busy}:{p:Project;act:Act;busy:boolean}) {
     return batch.find(a=>a.url===picks[direction]) ?? batch.find(a=>a.visual?.recommended);
   });
   const override=selected.some(a=>a && !a.visual?.recommended);
+  const canAdopt=!busy && (!candidates.length || selected.every(Boolean)) && (!override || Boolean(reason.trim()));
+  function adopt(kind: 'draft' | 'materials' | 'layout') {
+    return act('adopt',{
+      draft:'采用当前视觉稿并写逐页稿',
+      materials:'采用当前视觉稿并整理编稿材料包',
+      layout:'采用当前视觉稿做本地排版',
+    }[kind],undefined,{
+      ...(kind !== 'layout' ? {draftOnly:true} : {}),
+      ...(kind === 'materials' ? {materialsOnly:true} : {}),
+      ...(candidates.length ? {
+        candidateIds:selected.map(a=>a!.url.split('/').at(-1)!),overrideReason:reason.trim(),
+      } : {}),
+    });
+  }
   return <div className="adoption-fields">
     {candidates.length>0 && groups.map((direction,i)=>{
       const slogan = publishedSlogan(p, direction);
@@ -38,10 +52,12 @@ function AdoptVisual({p,act,busy}:{p:Project;act:Act;busy:boolean}) {
       </label>;
     })}
     {override && <label>采用理由<input value={reason} onChange={e=>setReason(e.target.value)} placeholder="说明选这张稿的原因"/></label>}
-    <button className="btn btn-dark" disabled={busy || (candidates.length>0 && selected.some(a=>!a)) || (override && !reason.trim())}
-      onClick={()=>act('adopt','采用当前视觉稿做本地排版',undefined,candidates.length ? {
-        candidateIds:selected.map(a=>a!.url.split('/').at(-1)!),overrideReason:reason.trim(),
-      }:undefined)}>采用所选稿并排版</button>
+    {p.canWriteManuscript && <button className="btn btn-dark" disabled={!canAdopt}
+      onClick={()=>adopt('draft')}>采用并写逐页稿</button>}
+    {p.canWriteManuscript && <button className="btn" disabled={!canAdopt}
+      onClick={()=>adopt('materials')}>采用并整理材料包</button>}
+    <button className={p.canWriteManuscript ? 'btn' : 'btn btn-dark'} disabled={!canAdopt}
+      onClick={()=>adopt('layout')}>采用所选稿并排版</button>
   </div>;
 }
 export function RevisionStage({value,change}:{value:StageId;change:(stage:StageId)=>void}) {
@@ -61,6 +77,9 @@ export function Decisions({ p, act, busy }: { p: Project; act: Act; busy: boolea
       </div>
     );
   if (p.status !== 'waiting' || p.stage === 'research') return null;
+  if (p.stage==='final') return <div className="msg-body">{p.finalReview?.reason || '在终审与交付查看本版。'}</div>;
+  if (p.stage==='layout' && p.layoutDraftOnly) return <div className="msg-body">{p.layoutMaterialsOnly ?
+    '编稿材料包已保存，打开版式下载。' : '逐页稿已保存，打开版式查看。'}</div>;
   if (p.stage==='brief') return <div className="msg-body"><button className="btn btn-dark" disabled={busy} onClick={()=>act('confirm_brief','')}>确认任务卡，开始研究</button></div>;
   const copyText = p.stage === 'copy' ? sectionsOf(p.artifacts.filter((a) => a.stage === 'copy' && a.kind === 'text')
     .map((a) => a.text).filter(Boolean).join('\n\n')) : [];

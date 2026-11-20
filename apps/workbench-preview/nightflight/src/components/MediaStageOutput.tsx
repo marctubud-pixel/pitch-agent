@@ -120,7 +120,9 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
 
 function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
   const [text, setText] = useState('');
-  const [targetStage,setTargetStage]=useState<import('../types').StageId>('layout');
+  const [targetStage,setTargetStage]=useState<import('../types').StageId>(
+    p.finalReview?.outcome==='blocked' ? p.finalReview.returnStage : 'layout',
+  );
   const revisions = (p.feedback || []).filter((item) => 'stage' in item && item.stage === 'final');
   return (
     <section className="block">
@@ -129,10 +131,10 @@ function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
         className="feedback"
         onSubmit={async (e) => {
           e.preventDefault();
-          if (text.trim() && (await act('message', text.trim(),undefined,p.status==='done' ? {targetStage} : undefined))) setText('');
+          if (text.trim() && await act('message',text.trim(),undefined,{targetStage})) setText('');
         }}
       >
-        {p.status==='done' && <RevisionStage value={targetStage} change={setTargetStage}/>}
+        <RevisionStage value={targetStage} change={setTargetStage}/>
         <label className="sr-only" htmlFor="final-feedback">
           修改意见
         </label>
@@ -173,11 +175,40 @@ export function MediaStageOutput({
   busy: boolean;
 }) {
   if (id === 'visual') return <VisualOutput key={JSON.stringify([p.id, name])} p={p} name={name} />;
-  const deck = p.artifacts.find(isDeckPreview);
+  if (id === 'layout' && p.layoutDraftOnly) {
+    const saved = p.artifacts.filter(file=>file.stage==='layout' && file.kind==='text');
+    const draft = saved.findLast(file=>file.name.startsWith('逐页稿-') && file.name.endsWith('.md'));
+    const material = saved.findLast(file=>file.name.startsWith('逐页材料包-'));
+    const result = p.layoutMaterialsOnly ? material : draft;
+    if (!result) return <p className="pending">{p.status==='running' ?
+      (p.layoutMaterialsOnly ? '正在核对材料和读图。' : '正在核对材料、读图并编写逐页稿。') :
+      p.error || (p.layoutMaterialsOnly ? '编稿材料包尚未就绪。' : '逐页稿尚未交回。')}</p>;
+    const downloads = [
+      ['逐页稿-', '下载完整逐页稿'],
+      ['逐页材料包-', '下载编稿材料包'],
+      ['DeepSeek实际请求-', '查看 DeepSeek 实际请求'],
+      ['采用原图读图-', '查看采用原图读图回执'],
+    ].flatMap(([prefix,label])=>{
+      const file = prefix==='逐页稿-' ? draft : saved.findLast(item=>item.name.startsWith(prefix));
+      return file ? [{file,label}] : [];
+    });
+    return <section className="block" data-artifact={result.name}>
+      <h2>{p.layoutMaterialsOnly ? '编稿材料包' : '逐页稿'}</h2>
+      {p.canRenderManuscript && <button type="button" className="btn btn-dark" disabled={busy}
+        onClick={()=>act('render_manuscript','确认逐页稿并排版')}>按逐页稿排版</button>}
+      <ul className="plain-list">
+        {downloads.map(({file,label})=><li key={file.url}><a href={safeURL(file.url)} download={file.name}>{label}</a></li>)}
+      </ul>
+      {draft?.text && <div className="live-text">{draft.text}</div>}
+    </section>;
+  }
+  const priorFinal = id === 'final' && p.finalReturn ? p.versions?.findLast(v=>v.stage==='final') : undefined;
+  const saved = priorFinal?.artifacts ?? p.artifacts;
+  const deck = saved.find(isDeckPreview);
   const outlineId = deck?.name.match(/([0-9a-f-]{36})\.deck\.json$/i)?.[1];
-  const outline = outlineId ? p.artifacts.find(file => file.stage === 'layout' && file.kind === 'text' &&
+  const outline = outlineId ? saved.find(file => file.stage === 'layout' && file.kind === 'text' &&
     file.name.endsWith(outlineId + '.outline.json')) : undefined;
-  const pptx = p.artifacts.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
+  const pptx = saved.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
   if (id === 'layout') {
     if (!deck && !pptx.length) {
       const message = p.stage === 'layout'
@@ -193,7 +224,11 @@ export function MediaStageOutput({
       </section>
     );
   }
-  const reviews = p.artifacts.filter((file) => file.stage === 'final' && file.kind === 'text');
+  const reviews = saved.filter((file) => file.stage === 'final' && file.kind === 'text');
+  const refinement=p.finalReview;
+  const proof=refinement && (refinement.outcome==='ready' || refinement.outcome==='blocked') ? refinement : null;
+  const overview=proof && saved.find(file=>file.name===proof.contact);
+  const original=proof && p.versions?.flatMap(version=>version.artifacts).find(file=>file.name===proof.originalPptx);
   if (!deck && !pptx.length && !reviews.length) {
     return <p className="pending">等待排版稿，随后进入终审。</p>;
   }
@@ -201,34 +236,52 @@ export function MediaStageOutput({
     <>
       {(deck || !!pptx.length) && (
         <section className="block" data-artifact={deck?.name}>
-          <h2>本版提案</h2>
-          {deck && <DeckPreview key={deck.url} file={deck} foldIndex />}
+          <h2>{priorFinal ? '退回的提案' : proof ? '精修版提案' : '本版提案'}</h2>
+          {deck && <DeckPreview key={deck.url} file={deck} foldIndex outline={outline} />}
         </section>
       )}
       <section className="block">
         <h2>终审记录</h2>
         {reviews.length ? (
           <>
-            <p className="demo-banner">本地审读演练 · 正式签收待人类比稿负责人确认</p>
+            <p className="demo-banner">{proof?.outcome==='blocked' ? '必改项待处理' :
+              proof?.outcome==='ready' ? (proof.acceptedAt ? '提案人已验收' : '待提案人验收') :
+                priorFinal ? '上一版退回意见' : '本地审读记录'}</p>
             {reviews.map((review) => <ReviewRecord key={review.url} file={review} />)}
           </>
         ) : (
-          <p className="pending">{p.stage === 'final' && p.status === 'running' ? '正在审读本版排版稿。' : '本版尚无终审记录。'}</p>
+          <p className="pending">{p.stage === 'final' && p.status === 'running' ? '正在审读、精修和复验本版提案。' : p.error || '本版尚无终审记录。'}</p>
         )}
-        <DeckDownloads files={pptx} />
+        {overview && (
+          <details className="media-review">
+            <summary>查看整套全览</summary>
+            <a href={safeURL(overview.url)} target="_blank" rel="noreferrer">
+              <img width="100%" src={safeURL(overview.url)} alt="精修版 PPT 全册逐页预览"/>
+            </a>
+          </details>
+        )}
+        <DeckDownloads files={pptx} returned={Boolean(priorFinal)} />
+        {proof && <div className="deliver">
+          {proof.outcome==='ready' && !proof.acceptedAt && p.stage==='final' && p.status==='waiting' &&
+            <button type="button" className="btn btn-dark" disabled={busy}
+              onClick={()=>act('accept_final','验收本版精修 PPTX')}>验收这版</button>}
+          {original && <a className="btn" href={safeURL(original.url)} download={original.name}>下载初版 PPTX</a>}
+          {overview && <a className="btn" href={safeURL(overview.url)} download={overview.name}>下载全览图</a>}
+        </div>}
       </section>
-      {p.status === 'done' && <Feedback p={p} act={act} busy={busy} />}
+      {(p.status==='done' || proof && p.stage==='final' && p.status==='waiting') &&
+        <Feedback key={proof?.pptx} p={p} act={act} busy={busy} />}
     </>
   );
 }
 
-function DeckDownloads({ files }: { files: Artifact[] }) {
+function DeckDownloads({ files, returned = false }: { files: Artifact[]; returned?: boolean }) {
   if (!files.length) return null;
   return (
     <div className="deliver">
       {files.map((file) => (
         <a key={file.url} data-artifact={file.name} className="btn btn-dark" href={safeURL(file.url)} download={file.name}>
-          {files.length === 1 ? '下载可编辑 PPTX' : '下载 ' + file.name}
+          {files.length === 1 ? returned ? '下载退回版 PPTX' : '下载可编辑 PPTX' : '下载 ' + file.name}
         </a>
       ))}
     </div>
@@ -258,7 +311,7 @@ function ReviewRecord({ file }: { file: Artifact }) {
       </a>
     );
   const paragraphs = text.split(/\n\s*\n/);
-  const summary = paragraphs.find((paragraph) => /^(?:本次|本轮|本地|终审|审读|审核|综合|结论|裁定|建议|待修|待核|需修)/.test(paragraph));
+  const summary = paragraphs.find((paragraph) => /^(?:第 \d+|已对照|本次|本轮|本地|终审|审读|审核|综合|结论|裁定|建议|待修|待核|需修)/.test(paragraph));
   return (
     <div data-artifact={file.name} className="media-review">
       {summary && <p>{inlineText(summary)}</p>}

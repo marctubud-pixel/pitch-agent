@@ -5,6 +5,8 @@ import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop
 import {minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
+import {readManuscriptPlan} from './manuscript.mjs';
+import {reviewFinalDeck} from './final-review.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
 import {searchVisualImages} from './public-visual-search.mjs';
 import {locatedPackagingMarks,prioritizePackagingRows} from './research-packaging.mjs';
@@ -21,8 +23,8 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison } from './visual-comparison.mjs';
-import { generateVisualWithDesktopModels, selectVisualReferences, reviewReferencePlan } from './visual-references.mjs';
-import { reviewVisualBatch } from './visual-batch.mjs';
+import { generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -30,7 +32,6 @@ import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs
 const executeFile = promisify(execFile);
 const repo = fileURLToPath(new URL('../../', import.meta.url));
 const hash = value => createHash('sha256').update(value).digest('hex');
-const visualElements = ['配色', '布局', '景别', '笔法', '字体'];
 const visualBorrowings = [
   ['布局', '景别', '笔法'],
   ['配色', '笔法', '字体'],
@@ -61,6 +62,7 @@ const objectSchema = (properties) => ({
   required: Object.keys(properties),
   additionalProperties: false,
 });
+const finalTargets=['brief','research','strategy','copy','visual','layout'];
 const querySchema = objectSchema({ queries: stringList });
 const researchPlanSchema = objectSchema({
   carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
@@ -939,7 +941,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, onEvent}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, onEvent, fixedDirections}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -955,7 +957,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const history = [];
   for (let pass=0; ; pass++) {
     try {
-      const plans=await selectVisualReferences({call,project,images:pool,active});
+      const plans=await selectVisualReferences({call,project,images:pool,active,fixedDirections});
       const missing=[];
       for (const direction of active) {
         const plan=plans.get(direction);
@@ -1020,12 +1022,15 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       throw Error('请先在夜航的文字 API 设置中选择 DeepSeek，再重试文案与主题');
     }
     const [label, assignment] = stages[stage];
-    const rules = await Promise.all((extraRules[stage] || []).map(p=>readFile(join(repo,p),'utf8')));
+    const manuscript=stage==='final'?await readManuscriptPlan(project,dir):null;
+    if (stage==='final' && project.layoutFromManuscript && !manuscript) throw Error('终审缺少本版逐页稿及材料依据');
+    const rulePaths=stage==='final' && !manuscript ? [] : extraRules[stage] ?? [];
+    const rules=await Promise.all(rulePaths.map(path=>readFile(join(repo,path),'utf8')));
     const inputProject = stage === 'copy'
       ? {...project, artifacts: (project.artifacts || []).filter(a=>['brief','research','strategy'].includes(a.stage))}
       : project;
-    const inputs = project.researchDigestOnly ? {texts:[],images:[]} : await readInputs(dir,inputProject,stage,signal);
-    if (stage === 'final' && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
+    const inputs = manuscript || project.researchDigestOnly ? {texts:[],images:[]} : await readInputs(dir,inputProject,stage,signal);
+    if (stage === 'final' && !manuscript && !project.artifacts?.some(a=>a.stage==='layout' && a.kind==='pptx')) throw Error('尚未取得本版排版后的 PPTX');
     const context = JSON.stringify({
       title:project.title, brief:project.brief, proposalKind:project.proposalKind, outlineOptions:project.outlineOptions,
       mode:project.mode, feedback:project.feedback || [], directions:project.directions || [], choice:project.choice || null,
@@ -1103,6 +1108,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       await writeFile(join(dir,name),body+'\n',{flag:'wx',mode:0o600});
       artifacts.push({kind:'text',name,text:body});
     }
+    if (stage==='final' && manuscript) return reviewFinalDeck({project,manuscript,dir,call,onEvent,signal});
     await onEvent?.((desktop ? desktop.profile.host+' / '+desktop.profile.model : '本机 Codex')+' 正在处理「'+label+'」');
     if (stage === 'visual') {
       const all = project.directions || [];
@@ -1127,6 +1133,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       const carriers = scope.length ? scope : kind ? [kind] : [];
       const packaging = carriers.includes('packaging');
       const poster = carriers.includes('kv');
+      const checkPosterTransfer = desktop && poster && !packaging;
+      const strategyPurpose = checkPosterTransfer ? posterStrategyPurpose(strategyText) : strategyText;
       const copyFiles = new Set(project.artifacts?.filter(file=>file.stage==='copy' && file.kind==='text').map(file=>file.name));
       const copyFile = [...copyFiles].at(-1);
       const copyBody = inputs.texts.find(item=>item.name===copyFile)?.text ?? '';
@@ -1137,8 +1145,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           if (typeof slogan!=='string' || !slogan.trim()) throw Error('海报／KV 缺少「'+direction+'」本版已选 slogan，请核对文案交接。');
         }
       }
-      const plans = await prepareVisualPlans({call,project:{...project,strategyText},images:inputs.images,active:directions,dir,signal,search,onEvent});
-      const seen = new Set(), summaries = [];
+      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,onEvent,fixedDirections:checkPosterTransfer});
+      const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];
         const previous = project.previousVisual?.filter(item => item.visual?.direction === direction) ?? [];
@@ -1155,16 +1163,30 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const generationReferences = handoff.references.filter(ref=>ref.role==='main'||ref.role==='sharedBrand');
         const generationImages = references.filter(image=>generationReferences.some(ref=>ref.sha256===image.sha256));
         const sourceImages = best ? [best.image, ...generationImages] : generationImages;
+        let posterReference;
+        if (checkPosterTransfer) {
+          const main = generationReferences.find(ref=>ref.role==='main');
+          const image = generationImages.find(input=>input.sha256===main?.sha256);
+          if (!image) throw Error('本方向缺少可核读的海报主参考原图。');
+          await onEvent?.('正在核对「'+direction+'」主参考原图的五项特征');
+          posterReference = await readPosterReference({call,image});
+        }
         const creative = poster || packaging ? selected.get(direction) : project.copyReview?.draft?.directions?.find(d=>d.name===direction);
         const posterSlogan = poster ? creative.main : undefined;
         const materials = inputs.texts.filter(item=>!item.imageNumber && (!(poster || packaging) || !copyFiles.has(item.name)));
-        const generationContext = {...JSON.parse(context),materials,
+        const auxiliaryNotes = handoff.references.filter(ref=>ref.role==='auxiliary').map(({borrow,apply})=>({borrow,apply}));
+        const generationContext = checkPosterTransfer ? {
+          brief:project.brief, strategyPurpose,
+          taskCard:materials.find(item=>project.artifacts?.some(file=>file.name===item.name && file.stage==='brief'))?.text,
+          direction:creative, auxiliaryNotes,
+          feedback:(project.feedback ?? []).filter(item=>item.stage==='visual').map(item=>item.text),
+        } : {...JSON.parse(context),materials,
           direction:packaging && creative
             ? {name:creative.name, theme:creative.main, claim:creative.claim, mechanism:creative.mechanism, strategyLink:creative.strategyLink}
             : creative ?? direction,
           ...(posterSlogan ? {posterSlogan} : {}),
           referenceHandoff:{direction,references:generationReferences.map((ref,index)=>({...ref,imageNumber:index+1+Number(Boolean(best))}))},
-          auxiliaryNotes:handoff.references.filter(ref=>ref.role==='auxiliary').map(({borrow,apply})=>({borrow,apply}))};
+          auxiliaryNotes};
         const generated = await independentCalls(visualBorrowings, async (borrow,index) => {
           const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
           await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/3');
@@ -1181,7 +1203,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           ].filter(Boolean).join('\n');
           const input = {...generationContext,transfer};
           const {result,promptWriting} = desktop
-            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging})
+            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
             : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
           const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
           const digest = hash(original.bytes);
@@ -1190,7 +1212,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
           const path = join(dir,name);
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(promptWriting ? {promptWriting} : {}),...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId};
+          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
           return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
         });
@@ -1200,6 +1223,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const brandReferences = generationImages.filter(image=>handoff.references.some(ref=>ref.role==='sharedBrand' && ref.sha256===image.sha256));
         const review = await reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:[...inputs.images,...publicImages],
+          posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer)},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
             const [query]=publicVisualQueries(result,project);
@@ -1221,16 +1245,32 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
         for (const ref of comparatorPool) if (review.references.some(r=>r.name===ref.name)) await publishReference(ref);
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
-        for (const [i,record] of batch.entries()) {
+        const drafts = batch.map((record,i)=>{
           const verdict = review.candidates.find(row=>row.candidate===i+1);
-          artifacts.push({name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
-            blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}});
-        }
+          return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
+            ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
+            blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}};
+        });
+        artifacts.push(...drafts);
+        directionBatches.push({direction,images,drafts});
         if (review.board) artifacts.push({name:review.board,kind:'image',visual:{direction,role:'comparison',references:review.references.map(r=>r.name)}});
-        const winner = review.candidates.find(row=>row.candidate===review.winner);
-        summaries.push('## '+direction+'\n'+(winner ? '推荐第 '+winner.candidate+' 稿，四岗均分 '+winner.mean+'/5。'+winner.reason : '本批尚无达标主视觉。'+review.candidates.map(c=>c.reason).join('；')));
       }
-      await addText('# 主视觉推荐\n\n'+summaries.join('\n\n'));
+      if (checkPosterTransfer && directionBatches.length===3) {
+        await onEvent?.('正在并排核对三个海报方向的实际成图');
+        const representatives = directionBatches.map(({direction,images,drafts})=>{
+          const draft = drafts.find(item=>item.visual.recommended) ??
+            drafts.reduce((best,item)=>item.visual.mean>best.visual.mean ? item : best);
+          return {direction,image:images[draft.visual.candidate-1],draft,drafts};
+        });
+        const comparison = await reviewPosterDirections({call,entries:representatives.map(({direction,image})=>({direction,image}))});
+        await writeFile(join(dir,'visual-review-set.json'),JSON.stringify(comparison,null,2),{flag:'wx',mode:0o600});
+        holdSimilarPosterDirections(comparison,representatives);
+      }
+      await addText('# 主视觉推荐\n\n'+directionBatches.map(({direction,drafts})=>{
+        const winner = drafts.find(item=>item.visual.recommended)?.visual;
+        return '## '+direction+'\n'+(winner ? '推荐第 '+winner.candidate+' 稿，四岗均分 '+winner.mean+'/5。'+winner.reason :
+          '本批尚无达标主视觉。'+drafts.map(item=>item.visual.reason).join('；'));
+      }).join('\n\n'));
       return {artifacts};
     }
     if (stage === 'final') {
@@ -1243,7 +1283,6 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       const notes=[];
       const complete=expected.length>0 && expected.length===renders.length &&
         expected.every((n,i)=>n===i+1 && n===Number(renders[i].match[1]));
-      const targets=['brief','research','strategy','copy','visual','layout'];
       let finalReview={outcome:'return',returnStage:'layout',reason:'页级视觉审查待完成，请排版生成与当前 PPTX 对应的每页预览图。',pages:[]};
       if(complete) {
         for(let i=0;i<renders.length;i+=4) {
@@ -1251,11 +1290,11 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const result=await call('逐张检查页面 '+(i+1)+' 至 '+(i+chunk.length)+'，记录实际可见问题、具体页码和证据。',chunk.map(r=>r.image),textSchema,{delegate:true});
           notes.push(textOutput(result));
         }
-        const schema=objectSchema({outcome:{type:'string',enum:['pass','return']},returnStage:{type:'string',enum:['',...targets]},reason:stringField});
+        const schema=objectSchema({outcome:{type:'string',enum:['pass','return']},returnStage:{type:'string',enum:['',...finalTargets]},reason:stringField});
         const result=await call('根据实际页面审读与原生 PPTX 内容，判断是否完成本地检查。需要改稿时给出责任阶段和可执行原因及问题页；通过时留空 returnStage。\n'+JSON.stringify(notes),[],schema);
         const verdict=result.parsedOutput;
         if (!verdict?.reason?.trim() || !(verdict.outcome==='pass' && verdict.returnStage==='' ||
-            verdict.outcome==='return' && targets.includes(verdict.returnStage))) throw Error('终审返回的责任阶段或依据无效');
+            verdict.outcome==='return' && finalTargets.includes(verdict.returnStage))) throw Error('终审返回的责任阶段或依据无效');
         finalReview={outcome:verdict.outcome,returnStage:verdict.returnStage,reason:verdict.reason.trim(),pages:expected};
       }
       await addText('# 本地终审演练\n\n'+(finalReview.outcome==='pass'?'本地审读通过':'退回'+(stages[finalReview.returnStage]?.[0] ?? '版式'))+'。'+finalReview.reason+
@@ -1288,7 +1327,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
     if (body) await addText(body);
     return {artifacts,briefScope};
     }
-    if (!['visual','copy'].includes(stage)) return executeStage(directCall,dir);
+    if (!['visual','copy'].includes(stage) && !manuscript) return executeStage(directCall,dir);
     checkpointDir ??= join(dir,'.call-checkpoints');
     return runCheckpointed(checkpointDir,async cached=>{
       const call=async(instruction,images=inputs.images,schema=textSchema,task={})=>{
@@ -1302,7 +1341,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return result;
         });
       };
-      if(stage==='copy') return executeStage(call,dir,cached);
+      if(stage==='copy' || stage==='final') return executeStage(call,dir,cached);
       const work=await mkdtemp(join(dir,'.visual-pass-'));
       try {
         const result=await executeStage(call,work,cached);

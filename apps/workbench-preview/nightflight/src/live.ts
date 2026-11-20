@@ -167,9 +167,21 @@ export interface ResearchImage {
   takeaway?: string;
 }
 export interface ResearchGap {kind:string;chapter:string;message:string;findingRef:string}
+type RefinedReview = {
+  protocol: 'case-b-1.2.0';
+  reason: string;
+  rounds: 2 | 3;
+  changed: number;
+  pptx: string;
+  originalPptx: string;
+  contact: string;
+  report: string;
+} & ({outcome: 'ready'; acceptedAt?: string} | {outcome: 'blocked'; returnStage: StageId});
+
 export interface Project extends Summary {
   briefScope?: {status: 'accepted' | 'unclear' | 'unsupported'; types: string[]; reason: string};
   finalReturn?:{returnStage:StageId;reason:string};
+  finalReview?: RefinedReview | {outcome: 'pass' | 'return'; reason: string};
   revision: number;
   mode: Mode;
   brief: string;
@@ -177,6 +189,10 @@ export interface Project extends Summary {
   artifacts: Artifact[];
   versions?: { at: string; stage: StageId; artifacts: Artifact[]; research?: Project['research'] }[];
   canRequestStrategy?: boolean;
+  canWriteManuscript?: boolean;
+  canRenderManuscript?: boolean;
+  layoutDraftOnly?: boolean;
+  layoutMaterialsOnly?: boolean;
   researchFollowup?: boolean;
   research?: {
     searchScope?: {replacements?:{from:string;to:string}[];attempts?:{query:string;source:string;count:number}[];unreadable?:{url:string;reason:string}[];queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};
@@ -203,9 +219,9 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
+export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
-type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy'>>;
+type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy' | 'layoutDraftOnly' | 'layoutMaterialsOnly'>>;
 export const researchQuestion = (p: ResearchStatus) =>
   p.stage === 'research' &&
   p.status === 'waiting' &&
@@ -220,6 +236,7 @@ export function briefNeedsClarification(p: ResearchStatus) {
     (p.briefScope?.status === 'unclear' || p.briefScope?.status === 'unsupported');
 }
 export const projectStatus = (p: ResearchStatus) => {
+  if (p.stage === 'layout' && p.layoutDraftOnly && p.status === 'waiting') return p.layoutMaterialsOnly ? '材料包已就绪' : '逐页稿已就绪';
   if (briefNeedsClarification(p)) return p.briefScope?.status === 'unsupported' ? '委托超出范围' : '委托内容待明确';
   if (researchQuestion(p)) return '等待你的判断';
   if (p.stage === 'research' && p.status === 'running' && p.researchFollowup) return '定向补查中';
