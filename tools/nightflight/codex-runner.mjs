@@ -23,7 +23,7 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
-import { generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { describeReferenceTasks, generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
 import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -1040,7 +1040,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent, referenceTasks}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -1073,7 +1073,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         return rejected ? [{direction,pages:rejected.references.map(ref=>ref.pageUrl),
           blockers:rejected.blockers.slice(0,3).map(message=>message.slice(0,360))}] : [];
       });
-      const proposed=await selectVisualReferences({call,project,images:pool,active:remaining,observations,priorAdmissions,
+      const proposed=await selectVisualReferences({call,project,images:pool,active:remaining,observations,priorAdmissions,referenceTasks,
         accepted:[...accepted.values()].map(({handoff})=>({direction:handoff.direction,references:handoff.references}))});
       const plans=new Map([...accepted,...proposed]);
       const missing=[];
@@ -1125,7 +1125,8 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         directionSearches.set(direction,(directionSearches.get(direction) ?? 0)+1);
         signal?.throwIfAborted();
         const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
-        const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],
+        const packet = {direction,...(referenceTasks?.has(direction) ? {referenceTask:referenceTasks.get(direction),category} :
+          {brief:project.brief,creative,strategy:project.strategyText}),previousQueries:[...attempted],
           missingReason:error.missingReasons?.[direction],gaps:diagnostics};
         const plan = await call('从策略发力点、方向创意和缺图原因提炼要参考的具体画面关系。给两条短公开检索词，每条最多三个常用词组。第一条结合通用品类和载体，例如「坚果 包装」「茶饮 海报」。第二条查这个方向需要借的画法、动作或场所，可用英文。如果上一批同类案例没找到，改查能借到该画面关系的相邻品类或视觉主题。sceneCategory 写常用的品类、视觉主题或场景名，例如「水果」「办公室」「露营」，无关则留空。优先品牌、设计机构或奖项的亚洲作品原页。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。只用通用品类和公开视觉词，不要客户或品牌名、原话、项目名、联系人、规格、价格、未公开配方或附件内容。避开前次已查词。',[],visualQuerySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
         const queries=publicVisualQueries(plan,project).slice(0,2);
@@ -1301,7 +1302,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const batches=await Promise.all(pages.map(page=>fetchImages({query,dir,signal,pages:[{...page,carrier:'kv'}]})));
         return Array.from({length:3},(_,index)=>batches.flatMap(batch=>batch[index] ? [batch[index]] : [])).flat().slice(0,6);
       };
-      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent});
+      const referenceProject={...project,strategyText:strategyPurpose};
+      const referenceTasks=desktop ? await describeReferenceTasks({call,project:referenceProject,active:directions,carriers}) : undefined;
+      const plans = await prepareVisualPlans({call,project:referenceProject,images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent,referenceTasks});
       const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];

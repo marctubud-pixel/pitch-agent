@@ -599,6 +599,29 @@ test('empty uploads automatically acquire public bytes and deliver their provena
   const inputs=(await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
   assert.deepEqual(inputs.map(i=>i.received),[[sha256],[sha256],[sha256]]);
 });
+test('art reference search receives the visual task and original observations, without production specifications',async()=>{
+  const {describeReferenceTasks,selectVisualReferences}=await import('./visual-references.mjs');
+  const brief='包装正面必须有7袋×25克，价格29.9元。';
+  const project={directions:['正面一眼看清','主打口感','办公时光'],brief,strategyText:'宣传时用四种配料和实物。'};
+  const active=['正面一眼看清'];
+  const focus='图文分组对应，先看分区再读信息';
+  const referenceTasks=await describeReferenceTasks({project,active,carriers:['packaging'],call:async(_prompt,images,_schema,task)=>{
+    assert.deepEqual(images,[]);
+    assert.equal(JSON.parse(task.context).brief,brief);
+    return {threadId:'art-task',parsedOutput:{directions:{A:{focus,translation:'把这种对应关系重新画到包装上'}}}};
+  }});
+  const image={imageId:'example',name:'原图.png',sha256:'a'.repeat(64)};
+  const plans=await selectVisualReferences({project,active,referenceTasks,images:[image],call:async(_prompt,images,_schema,task)=>{
+    const packet=JSON.parse(task.context);
+    assert.deepEqual(images,[image]);
+    assert.equal(packet.directions[0].focus,focus);
+    assert.doesNotMatch(task.context,/7袋|25克|29\.9元|四种配料/);
+    return {threadId:'picked',parsedOutput:{sharedBrand:[],directions:{A:{main:{source:image.imageId,
+      borrow:'两处分格里的标题先后出现',apply:'重新组织本案包装标识的先后'},auxiliary:[],gap:''}}}};
+  }});
+  assert.equal(plans.get(active[0]).handoff.referenceTask.threadId,'art-task');
+});
+
 test('reference replanning keeps accepted originals out of the remaining directions',async()=>{
   const {selectVisualReferences}=await import('./visual-references.mjs');
   const project={directions:['方向甲','方向乙','方向丙'],brief:'包装'};

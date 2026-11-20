@@ -109,7 +109,25 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
 }
 
-export async function selectVisualReferences({call, project, images, active, observations=new Map(), priorAdmissions=[], accepted=[]}) {
+export async function describeReferenceTasks({call, project, active, carriers}) {
+  const directions=project.directions.flatMap((name,index)=>active.includes(name) ? [{
+    ...(project.copyReview?.draft?.directions ?? []).find(item=>item.name===name),name,id:['A','B','C'][index],
+  }] : []);
+  const keys=directions.map(direction=>direction.id);
+  const schema=object({directions:object(Object.fromEntries(keys.map(id=>[id,object({focus:string,translation:string})])))});
+  const result=await call(
+    '把已定各案写成找主参考的美术任务。focus 写原图可以提供的一种画面关系或笔法，translation 写本案如何使用这种关系。保留委托的艺术风格偏好。成分一目了然可找同类包装的标识层级，也可看其他作品怎样并排或分格呈现多个对象。只写画面关系，省略商品的具体配料、数量、规格、价格、品牌以及主副标原字。按输入的固定方向键回答。',
+    [],schema,{editorial:true,assignment:'视觉参考美术任务',context:JSON.stringify({directions,brief:project.brief,strategy:project.strategyText,carriers})});
+  const rows=result.parsedOutput?.directions;
+  if (!rows || Object.keys(rows).length!==keys.length ||
+      !keys.every(id=>nonempty(rows[id]?.focus) && nonempty(rows[id].translation)) || !nonempty(result.threadId)) {
+    throw invalidOutput('选参考前需要各方向的美术任务和请求回执。');
+  }
+  return new Map(directions.map(({name,id})=>[name,{focus:rows[id].focus,translation:rows[id].translation,
+    carriers,threadId:result.threadId}]));
+}
+
+export async function selectVisualReferences({call, project, images, active, observations=new Map(), priorAdmissions=[], accepted=[], referenceTasks}) {
   const names = project.directions;
   const fixedIds = ['A','B','C'];
   const acceptedNames = new Set(accepted.map(plan=>plan.direction));
@@ -119,7 +137,8 @@ export async function selectVisualReferences({call, project, images, active, obs
   const sources = [...catalog.values()].map((image,index)=>image.sourceUrl ? {...image,imageId:'R'+(index+1)} : image)
     .filter(image=>!reserved.has(image.sha256));
   const authors = project.copyReview?.draft?.directions ?? [];
-  const directions = names.map((name,index)=>({...authors.find(d=>d.name===name),name,id:fixedIds[index]})).filter(d=>!acceptedNames.has(d.name));
+  const directions = names.map((name,index)=>({name,id:fixedIds[index]})).filter(d=>!acceptedNames.has(d.name) &&
+    (!referenceTasks || referenceTasks.has(d.name)));
   const directionIds = directions.map(direction=>direction.id);
   const previousOwners = new Map();
   for (const item of project.previousVisual ?? []) {
@@ -127,9 +146,12 @@ export async function selectVisualReferences({call, project, images, active, obs
       previousOwners.set(ref.sha256, ref.role==='sharedBrand' ? 'sharedBrand' : item.visual.direction);
     }
   }
-  const packet = {brief:project.brief,strategy:project.strategyText,directions,previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],feedback:project.feedback ?? [],sources:sources.map(s=>({
+  const packet = { ...(referenceTasks ? {directions:directions.map(row=>({...row,...referenceTasks.get(row.name)}))} :
+    {brief:project.brief,strategy:project.strategyText,directions:directions.map(row=>({...authors.find(d=>d.name===row.name),...row})),feedback:project.feedback ?? []}),
+    previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],sources:sources.map(s=>({
     source:s.imageId,...(s.sourceUrl ? {} : {name:s.name}),pageUrl:s.pageUrl,title:s.title,carrier:s.carrier,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
-  })),priorAdmissions,...(accepted.length ? {acceptedDirections:accepted} : {})};
+  })),priorAdmissions,...(accepted.length ? {acceptedDirections:referenceTasks ? accepted.map(({direction,references})=>({direction,
+    references:references.map(({role,sha256,borrow})=>({role,sha256,borrow}))})) : accepted} : {})};
   if (!sources.length) throw Object.assign(Error('视觉主参考缺失：'+active.join('、')+'。可在对话区补充原图后重试。'),{missing:active});
 
   const readSeparately=sources.length>4 || sources.some(image=>image.sourceUrl);
@@ -148,13 +170,14 @@ export async function selectVisualReferences({call, project, images, active, obs
   }
   const selection = [
     '先为各方向分配互不重复的主参考，再按需选至多两张作用不同的辅助图。source 只填图册给出的图号，例如 R1。每张原图只分给一个用途。main 必须是一个对象，找不到时为 null 并写 gap。',
+    referenceTasks ? '主参考用图上一个可定位的形式、布局、笔法或动作关系建立本案的整体读法。优先载体相近的原图。没有时，选相邻类别中能够呈现同一关系的图文版面、艺术作品或活动图。信息需一项项看清时，可用并排、图文对应、分格后突出一项或按阅读顺序呈现。原图能承担这项转译即可作为主参考。确无可借的画面关系才填 main=null。具体包装形态、品牌、配料、规格、价格和文案由后续出图按 Brief 处理。' : '',
     '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
     '按 observations 里的可见原图写 borrow。Brief 的规格、品名、动作和新画法只写入 apply，原图看不到的细节不补写为原图事实。',
     '有 priorAdmissions 时，按各案的具体问题调整借法或换图。原图适合而借法有问题时，明确能借的画面位置与必须重新画的物件。主图和辅助图各有具体作用。',
     'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
     '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。sharedBrand 只列本案上传的官方标志、VI 等实际约束。辅助按重要性排序。',
     'directions 只返回输入 directions 列出的固定字母键。每键填写对应 main、auxiliary 和 gap。填写图册给出的 source 编号。若有 acceptedDirections，已准入方向沿用整包，只处理仍需选参考的方向。',
-  ].join('\n');
+  ].filter(Boolean).join('\n');
   const fields = sources.some(s=>s.sourceUrl) ? publicUse.properties : use.properties;
   const itemSchema = object({...fields,source:{...string,enum:sources.map(s=>s.imageId)}});
   const directionFields = {main:{anyOf:[itemSchema,{type:'null'}]},auxiliary:{...list(itemSchema),maxItems:2},gap:string};
@@ -203,6 +226,7 @@ export async function selectVisualReferences({call, project, images, active, obs
     if (remaining<0 && active.includes(row.direction)) throw invalidOutput('「'+row.direction+'」的共享品牌图和主参考超出生图附件上限，请注明本轮必须保留的品牌图后重试。');
     const selected = [...primary,...common,...auxiliary.slice(0,Math.max(0,remaining))];
     const handoff = {direction:row.direction,selectionThread:result.threadId,references:selected.map(s=>s.reference),
+      ...(referenceTasks?.has(row.direction) ? {referenceTask:referenceTasks.get(row.direction)} : {}),
       deferred:auxiliary.slice(Math.max(0,remaining)).map(s=>({...s.reference,reason:'本轮参考包优先保留主参考、品牌约束和最相关的文字借鉴线索。'}))};
     plans.set(row.direction,{images:selected.map(s=>s.image),handoff,missing:!primary.length,gap:row.gap});
   }
@@ -225,8 +249,9 @@ const rulingSchema = object({decisions:object(rulingFields),compatible:{type:'bo
 
 export async function reviewReferencePlan({call, project, direction, images, handoff, otherDirections}) {
   const references=handoff.references.map((ref,index)=>({...ref,imageNumber:index+1}));
-  const packet = {brief:project.brief,strategy:project.strategyText, directions:project.copyReview?.draft?.directions ?? project.directions, direction,references,otherDirections};
-  const scope='附件依图号对应公开参考原图或本案上传的参考素材，目前尚未生成本案稿件。审核对象是这一方向的借鉴方案，区分原图可见特征与 apply、avoid 约定的新画法。原参考的品牌、规格和场景与本案不同，只在借法必须依赖这项且无法转译时影响评分。硬退须引用具体借法及图上依据，证明照搬风险或关键要求冲突。本案成稿的印字、规格、相似度和设计完成度将在出图后另审。';
+  const packet = {direction,references,otherDirections,...(handoff.referenceTask ? {referenceTask:handoff.referenceTask} :
+    {brief:project.brief,strategy:project.strategyText,directions:project.copyReview?.draft?.directions ?? project.directions})};
+  const scope='附件依图号对应公开参考原图或本案上传的参考素材，目前尚未生成本案稿件。审核借法能否承接给定的美术任务，区分原图可见特征与 apply、avoid 约定的新画法。一项能说明本案画面关系的可见手法即可成立。原参考品牌、规格、场景或载体不同，只在借法必须保留且无法转译时影响评分。硬退须引用具体借法及图上依据，证明照搬风险或关键要求冲突。成稿印字、规格、相似度和设计完成度出图后另审。';
   const instruction=scope+' 两项维度均须判断。证据简述图号、实际位置、可见特征及转译用途。对比没有项目上下文时的原图观察，读不清就标明。总分尺度为 1 至 5。1事实抵触，2机制不成立，3连接或执行条件缺失，4有图卡依据，5另需具体对照优势。仅在有关键未核事实时填 null。没有销售依据不能断言销量。借法只换品牌文案或配色且复制整体结构时写入 hardReject，无成立硬伤留空。';
   const votes=await independentCalls(Object.entries(roles),async ([role,dimensions])=>{
     const result=await call(instruction,images,voteSchema(dimensions),{delegate:true,rules:[],assignment:'公开参考包独立评分',context:JSON.stringify({...packet,role,dimensions})});
