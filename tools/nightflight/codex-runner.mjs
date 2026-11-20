@@ -228,13 +228,21 @@ function packagingTextGap(f) {
   return researchGap('visual','文字来源「'+f.source+'」记载：“'+f.evidence+'”。该文字所述外观缺对应原图，待核。'+(f.url?' '+f.url:''),'竞争与同类传播');
 }
 
+function brandDomain(value) {
+  const domain=String(value ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
+  return /^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
+}
+
+function brandHome(domain) {
+  return 'https://'+(domain.split('.').length===2 ? 'www.'+domain : domain)+'/';
+}
+
 async function discoverPackaging({brands, category, broadCategory, packagingTerm, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
   const fetched=await Promise.all((brands ?? []).slice(0,3).map(async target=>{
     const searches=[], pages=[];
     const name=typeof target?.name==='string' && target.name.trim();
     if (!name || !/^[\p{L}\p{N} ·&-]{1,32}$/u.test(name)) return {searches,pages};
-    const domain=String(target.officialDomain ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
-    let official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
+    let official=brandDomain(target.officialDomain);
     let website;
     const seen=new Set();
     if (!official) {
@@ -248,8 +256,7 @@ async function discoverPackaging({brands, category, broadCategory, packagingTerm
       searches.push(names);
     }
     if (official) {
-      const host=official.split('.').length===2 ? 'www.'+official : official;
-      const page={url:website?.url ?? 'https://'+host+'/',title:name,brand:name,category,catalogTerms,packagingTerm,official:true,carrier:'packaging'};
+      const page={url:website?.url ?? brandHome(official),title:name,brand:name,category,catalogTerms,packagingTerm,official:true,carrier:'packaging'};
       const query=(broadCategory || category || name);
       const acquired=await searchVisualImages({dir,signal,query,pages:[page]},
         {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
@@ -271,8 +278,7 @@ async function discoverPackaging({brands, category, broadCategory, packagingTerm
       }
       // On the site-restricted retry, visit the brand's public site even if discovery is unavailable.
       if (official && query.endsWith(' site:'+official)) {
-        const host=official.split('.').length===2 ? 'www.'+official : official;
-        hits.unshift({url:'https://'+host+'/',title:name});
+        hits.unshift({url:brandHome(official),title:name});
       }
       found.results=hits.filter(r=>!seen.has(r.url) && seen.add(r.url)).slice(0,5);
       searches.push(found);
@@ -698,13 +704,21 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
         await onEvent?.('首批没有查到合格包装，沿已打开的同类案例寻找其他品牌');
         const tried=new Set(brands.map(b=>b?.name?.trim()).filter(Boolean));
         const sources=cases.slice(0,6).map(s=>({title:s.source,url:s.url,text:s.text.slice(0,3000)}));
-        const result=await call('首轮品牌未取得同类包装原图。只根据实际打开的案例，找至多两个还没试过、有该品类商品的品牌短名。每个短名必须在对应网页标题或原文出现。只选商品品牌，跳过平台、机构、同名其他行业和经销商。找不到返回空数组。只返回公开短名和原文网页的 url。',
-          [],objectSchema({brands:{type:'array',items:objectSchema({name:stringField,url:stringField})}}),
+        const result=await call('首轮品牌未取得同类包装原图。只根据实际打开的案例，找至多两个还没试过、有该品类商品的品牌短名。每个短名必须在对应网页标题或原文出现。只选商品品牌，跳过平台、机构、同名其他行业和经销商。找不到返回空数组。返回公开短名、原文网页 url，并在 officialDomain 写确知且目前公开的品牌中国官网根域。已读来源给出官网时优先使用。社交平台或电商域名不能当品牌官网。官网不确定就填空串。需要实际打开核对品牌身份后才采用。',
+          [],objectSchema({brands:{type:'array',items:objectSchema({name:stringField,url:stringField,officialDomain:stringField})}}),
           {editorial:true,rules:[],context:JSON.stringify({category,broadCategory,tried:[...tried],sources})})
           .catch(()=>{signal?.throwIfAborted();return null;});
         const proposed=Array.isArray(result?.parsedOutput?.brands) ? result.parsedOutput.brands : [];
-        const alternatives=proposed.filter(b=>typeof b?.name==='string' && b.name.trim() && !tried.has(b.name.trim()) &&
+        const named=proposed.filter(b=>typeof b?.name==='string' && b.name.trim() && !tried.has(b.name.trim()) &&
           sources.some(s=>s.url===b.url && (s.title.includes(b.name) || s.text.includes(b.name)))).slice(0,2);
+        const normalizeBrand=value=>value.normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
+        const alternatives=await Promise.all(named.map(async ({name,officialDomain})=>{
+          const domain=brandDomain(officialDomain);
+          if (!domain || retailDomains.some(host=>matchesDomain(brandHome(domain),host))) return {name};
+          const website=await capture(brandHome(domain));
+          if (!website || !brandSite(website.url,domain) || !normalizeBrand(website.source).includes(normalizeBrand(name))) return {name};
+          return {name,officialDomain:domain};
+        }));
         const extra=await discoverPackaging({brands:alternatives,...packagingOptions});
         discovered.push(...extra.searches);
         if (extra.pages.length) board=await researchCompetitors({...boardOptions,pages:extra.pages,

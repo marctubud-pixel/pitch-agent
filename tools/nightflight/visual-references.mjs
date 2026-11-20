@@ -237,13 +237,12 @@ export async function reviewReferencePlan({call, project, direction, images, han
     if(typeof checked.parsedOutput?.issue!=='string' || !nonempty(checked.parsedOutput.evidence)) throw invalidOutput('公开参考对抗缺少核对依据。');
     return {role:vote.role,independent:{threadId:first.threadId,...first.parsedOutput},threadId:checked.threadId,...checked.parsedOutput};
   });
-  const result=await call(scope+' 按岗逐条裁定对抗意见。decisions 按 visual、brand、user、spread 四个岗的固定键填写。找得到该岗 issue 中仍成立且足以阻断的具体问题时填「阻断」，reason 引用问题并指出图或拟采用的做法。无具体阻断问题填「通过」。另核主参考机制、辅助互补性、跨方向重复和整体照搬风险，compatible 表示借鉴方案相容。不可改原分。',images,rulingSchema,{delegate:true,rules:[],assignment:'公开参考包独立裁定',context:JSON.stringify({...packet,votes,challenges})});
+  const result=await call(scope+' 按岗逐条裁定对抗意见。decisions 按 visual、brand、user、spread 四个岗的固定键填写。该岗有仍成立且足以阻断的具体问题时填「阻断」，reason 引用问题并指出图号或拟采用的做法。独立裁定发现新问题时也要指出具体依据。无具体阻断问题填「通过」。另核主参考机制、辅助互补性、跨方向重复和整体照搬风险，compatible 表示借鉴方案相容。不可改原分。',images,rulingSchema,{delegate:true,rules:[],assignment:'公开参考包独立裁定',context:JSON.stringify({...packet,votes,challenges})});
   const ruling=result.parsedOutput;
   if (typeof ruling?.compatible!=='boolean' || !nonempty(ruling.reason) || Object.keys(ruling.decisions ?? {}).length!==4 ||
-      !challenges.every(challenge=>{
-        const decision=ruling.decisions[challenge.role];
-        return ['通过','阻断'].includes(decision?.status) && nonempty(decision.reason) &&
-          (decision.status==='通过' || nonempty(challenge.issue));
+      !Object.keys(roles).every(role=>{
+        const decision=ruling.decisions[role];
+        return ['通过','阻断'].includes(decision?.status) && nonempty(decision.reason);
       })) throw invalidOutput('公开参考包裁定须按四岗分别填写通过或具体阻断。');
   const decisions=Object.keys(roles).map(role=>({role,...ruling.decisions[role],accepted:ruling.decisions[role].status==='阻断'}));
   const blockers=[];

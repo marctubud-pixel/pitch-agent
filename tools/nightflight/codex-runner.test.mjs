@@ -620,6 +620,33 @@ test('reference handoff rejects missing primary, duplicated originals and a reas
   await assert.rejects(selectVisualReferences({project,images:[],active:['B']}),/对话区.*重试/);
 });
 
+test('reference adjudication can record a new grounded blocker without losing the four original decisions',async()=>{
+  const {reviewReferencePlan}=await import('./visual-references.mjs');
+  const roles=['visual','brand','user','spread'];
+  const reason='拟借法直接保留了参考图右上角的现有品牌标志。';
+  let id=0;
+  const report=await reviewReferencePlan({project:{brief:'试案',directions:['A','B','C']},direction:'A',
+    images:[{sha256:'a'.repeat(64)}],
+    handoff:{selectionThread:'chosen',references:[{role:'main',apply:'保留原图右上角的品牌标志'}]},
+    call:async(_instruction,_images,_schema,task)=>{
+      const threadId='role-'+(++id);
+      const input=JSON.parse(task.context);
+      let parsedOutput;
+      if(task.assignment==='公开参考包独立评分') {
+        parsedOutput={items:input.dimensions.map(dimension=>({dimension,score:4,evidence:'可见参考特征'})),hardReject:''};
+      } else if(task.assignment==='公开参考包对抗') {
+        parsedOutput={issue:'',evidence:'查看参考图'};
+      } else {
+        parsedOutput={decisions:Object.fromEntries(roles.map(role=>[role,role==='brand'
+          ? {status:'阻断',reason} : {status:'通过',reason:'无其他具体阻断'}])),compatible:true,reason:'核对拟借法'};
+      }
+      return {threadId,parsedOutput};
+    }});
+  assert.equal(report.passed,false);
+  assert.deepEqual(report.ruling.decisions.map(row=>row.role),roles);
+  assert.deepEqual(report.blockers,[reason]);
+});
+
 test('all nine visual calls use each direction’s main original and three different borrow and change plans',async t=>{
   const f=await fixture(t,'image');
   const originals=[png,'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQqTUBAAFuAMYhEMypAAAAAElFTkSuQmCC','iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMIqDUBAAIiAQIUhcD8AAAAAElFTkSuQmCC','iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGOYVmsCAAL0AUjegoXyAAAAAElFTkSuQmCC'];
