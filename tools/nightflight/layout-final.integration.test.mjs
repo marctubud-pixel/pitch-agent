@@ -125,7 +125,13 @@ else {
  const last=body.messages.at(-1).content;
  const prompt=Array.isArray(last)?last[0].text:last;
  let reply;
- if(prompt.includes('本批PPT')) {
+ if(prompt.includes('核对剩余必改项。')) {
+   if(!Array.isArray(last) || !last.some(item=>item.image_url)) throw Error('缺少必改项实页');
+   const ctx=JSON.parse(prompt.split('实际项目输入（JSON）\\n\\n')[1]);
+   reply={items:Object.fromEntries(Object.entries(ctx['待核所见']).map(([id,issue])=>[id,{
+     status:issue.page===2?'suggestion':'confirmed',visible:'对应实页与 Brief 原文',reason:'逐字比对给定的实际证据',
+   }]))};
+ } else if(prompt.includes('本批PPT')) {
    if(!Array.isArray(last) || !last.some(p=>p.image_url?.url.startsWith('data:image/jpeg;base64,')) || !prompt.includes('馆内讲解 · 须预约'))
      throw Error('审稿缺少本版图或原文案');
    if(!prompt.includes('Case B 执行版')) throw Error('未加载 1.2.0');
@@ -144,8 +150,11 @@ else {
      issues.push({...issue,page:8,impact:'production',operation:'hold',target:'brief',from:'',to:'',quote:'',
        problem:'上线发布前须拿到正式报名链接',evidence:'本轮只交公众号封面提案',change:'记录为后续发布待确认'});
    if (role==='美术岗' && pages.some(p=>p['页码']===2))
-     issues.push({...issue,page:2,level:'P1',operation:'layout',target:'visual',
+     issues.push({...issue,page:2,level:'P0',operation:'layout',target:'visual',
        problem:'目录导读可精简',evidence:'三个章名依次并列',change:'保留给排版设计判断'});
+   if (role==='美术岗' && pages.some(p=>p['页码']===7))
+     issues.push({...issue,page:7,level:'P1',operation:'visual',target:'visual',
+       problem:'可重绘原图光影',evidence:'领读主体背光',change:'留给视觉阶段提案人决定'});
    if (role==='美术岗' && pages.some(p=>p['页码']===7 && p.notes.join('').includes('排版前请核对展签') && !p.text.includes('A1 · 采用原图')))
      issues.push({...issue,page:7,level:'P1',problem:'单图无展签',evidence:'全开图页的左右留空',change:'用双线画框和展签。',
        operation:'gallery',from:'',to:'',quote:''});
@@ -228,6 +237,7 @@ else {
   const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
   assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
   assert.match(report,/第 2 页 · P1 · 目录导读可精简 · 版式/u);
+  assert.match(report,/第 7 页 · P1 · 可重绘原图光影 · 视觉/u);
   assert.doesNotMatch(report,/第 3 页 · P0/u);
   await request({kind:'accept_final',expectedRevision:state.revision-1},409);
   state=await request({kind:'accept_final',expectedRevision:state.revision});
