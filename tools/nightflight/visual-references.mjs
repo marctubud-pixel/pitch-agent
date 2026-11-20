@@ -109,14 +109,18 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
 }
 
-export async function selectVisualReferences({call, project, images, active, observations=new Map(), priorAdmissions=[]}) {
+export async function selectVisualReferences({call, project, images, active, observations=new Map(), priorAdmissions=[], accepted=[]}) {
   const names = project.directions;
-  const directionIds = ['A','B','C'];
+  const fixedIds = ['A','B','C'];
+  const acceptedNames = new Set(accepted.map(plan=>plan.direction));
+  const reserved = new Set(accepted.flatMap(plan=>plan.references.filter(ref=>ref.role!=='sharedBrand').map(ref=>ref.sha256)));
   const catalog = new Map();
   for (const image of images) if (!catalog.has(image.sha256)) catalog.set(image.sha256,image);
-  const sources = [...catalog.values()].map((image,index)=>image.sourceUrl ? {...image,imageId:'R'+(index+1)} : image);
+  const sources = [...catalog.values()].map((image,index)=>image.sourceUrl ? {...image,imageId:'R'+(index+1)} : image)
+    .filter(image=>!reserved.has(image.sha256));
   const authors = project.copyReview?.draft?.directions ?? [];
-  const directions = names.map((name,index)=>({...authors.find(d=>d.name===name),name,id:directionIds[index]}));
+  const directions = names.map((name,index)=>({...authors.find(d=>d.name===name),name,id:fixedIds[index]})).filter(d=>!acceptedNames.has(d.name));
+  const directionIds = directions.map(direction=>direction.id);
   const previousOwners = new Map();
   for (const item of project.previousVisual ?? []) {
     for (const ref of item.visual?.referenceHandoff?.references ?? []) {
@@ -125,7 +129,7 @@ export async function selectVisualReferences({call, project, images, active, obs
   }
   const packet = {brief:project.brief,strategy:project.strategyText,directions,previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],feedback:project.feedback ?? [],sources:sources.map(s=>({
     source:s.imageId,...(s.sourceUrl ? {} : {name:s.name}),pageUrl:s.pageUrl,title:s.title,carrier:s.carrier,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
-  })),priorAdmissions};
+  })),priorAdmissions,...(accepted.length ? {acceptedDirections:accepted} : {})};
   if (!sources.length) throw Object.assign(Error('视觉主参考缺失：'+active.join('、')+'。可在对话区补充原图后重试。'),{missing:active});
 
   const readSeparately=sources.length>4 || sources.some(image=>image.sourceUrl);
@@ -149,7 +153,7 @@ export async function selectVisualReferences({call, project, images, active, obs
     '有 priorAdmissions 时，按各案的具体问题调整借法或换图。原图适合而借法有问题时，明确能借的画面位置与必须重新画的物件。主图和辅助图各有具体作用。',
     'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
     '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。sharedBrand 只列本案上传的官方标志、VI 等实际约束。辅助按重要性排序。',
-    'directions 按 A、B、C 三个键返回对象。每键填写对应 main、auxiliary 和 gap。填写图册给出的 source 编号。',
+    'directions 只返回输入 directions 列出的固定字母键。每键填写对应 main、auxiliary 和 gap。填写图册给出的 source 编号。若有 acceptedDirections，已准入方向沿用整包，只处理仍需选参考的方向。',
   ].join('\n');
   const fields = sources.some(s=>s.sourceUrl) ? publicUse.properties : use.properties;
   const itemSchema = object({...fields,source:{...string,enum:sources.map(s=>s.imageId)}});
@@ -162,9 +166,9 @@ export async function selectVisualReferences({call, project, images, active, obs
   const byDirection=result.parsedOutput?.directions;
   if (!byDirection || Object.keys(byDirection).length!==directionIds.length ||
       !directionIds.every(id=>Object.hasOwn(byDirection,id) && byDirection[id] && typeof byDirection[id]==='object')) {
-    throw invalidOutput('参考图需按文案 A、B、C 三个固定方向交接。');
+    throw invalidOutput('参考图按当前待选方向的固定字母键 '+directionIds.join('、')+' 交接。');
   }
-  const rows=directionIds.map((id,index)=>({...byDirection[id],direction:names[index]}));
+  const rows=directions.map(({id,name})=>({...byDirection[id],direction:name}));
   const shared = result.parsedOutput.sharedBrand;
   if (!Array.isArray(shared)) throw invalidOutput('请明确全案共用的品牌素材。');
   const assigned = new Map(), plans = new Map();

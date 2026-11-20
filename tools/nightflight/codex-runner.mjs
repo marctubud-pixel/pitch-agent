@@ -1062,20 +1062,24 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const directionSearches = new Map();
   const history = [];
   const observations = new Map();
+  const accepted = new Map();
   let searchedCases=false;
   let revisedBorrow=false;
   for (;;) {
     try {
-      const priorAdmissions=active.flatMap(direction=>{
+      const remaining=active.filter(direction=>!accepted.has(direction));
+      const priorAdmissions=remaining.flatMap(direction=>{
         const rejected=history.findLast(record=>record.direction===direction && !record.passed);
         return rejected ? [{direction,pages:rejected.references.map(ref=>ref.pageUrl),
           blockers:rejected.blockers.slice(0,3).map(message=>message.slice(0,360))}] : [];
       });
-      const plans=await selectVisualReferences({call,project,images:pool,active,observations,priorAdmissions});
+      const proposed=await selectVisualReferences({call,project,images:pool,active:remaining,observations,priorAdmissions,
+        accepted:[...accepted.values()].map(({handoff})=>({direction:handoff.direction,references:handoff.references}))});
+      const plans=new Map([...accepted,...proposed]);
       const missing=[];
-      for (const direction of active) {
+      for (const direction of remaining) {
         const plan=plans.get(direction);
-        if (!plan.images.some(i=>i.sourceUrl)) continue;
+        if (!plan.images.some(i=>i.sourceUrl)) {accepted.set(direction,plan);continue;}
         const otherDirections=active.filter(n=>n!==direction).map(n=>({direction:n,references:plans.get(n).handoff.references}));
         const admission=await reviewReferencePlan({call,project,direction,otherDirections,...plan});
         history.push(admission);
@@ -1090,9 +1094,11 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         } else {
           plan.handoff.admission=admission;
           plan.handoff.priorAdmissions=history.filter(a=>a.direction===direction && !a.passed);
+          accepted.set(direction,plan);
         }
       }
       if (missing.length) {
+        if (accepted.size) await onEvent?.('沿用已经完成准入的原图与借法：'+[...accepted.keys()].join('、'));
         if (!revisedBorrow) {
           revisedBorrow=true;
           await onEvent?.('根据各方向的准入意见，先调整现有原图的借法');

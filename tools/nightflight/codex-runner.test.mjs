@@ -599,6 +599,25 @@ test('empty uploads automatically acquire public bytes and deliver their provena
   const inputs=(await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
   assert.deepEqual(inputs.map(i=>i.received),[[sha256],[sha256],[sha256]]);
 });
+test('reference replanning keeps accepted originals out of the remaining directions',async()=>{
+  const {selectVisualReferences}=await import('./visual-references.mjs');
+  const project={directions:['方向甲','方向乙','方向丙'],brief:'包装'};
+  const images=[1,2,3].map(n=>({imageId:'ref_'+n,sha256:String(n).repeat(64),name:'原图'+n+'.png'}));
+  const use=source=>({source,borrow:'正面布局',apply:'重排包装标识'});
+  const accepted=[{direction:'方向甲',references:[{role:'main',sha256:images[0].sha256}]}];
+  const plans=await selectVisualReferences({project,images,active:project.directions.slice(1),accepted,call:async(_instruction,attached,_schema,task)=>{
+    assert.deepEqual(attached,images.slice(1));
+    const input=JSON.parse(task.context);
+    assert.deepEqual(input.directions.map(d=>d.id),['B','C']);
+    assert.deepEqual(input.acceptedDirections,accepted);
+    return {threadId:'new-directions',parsedOutput:{sharedBrand:[],directions:{
+      B:{main:use('ref_2'),auxiliary:[],gap:''}, C:{main:use('ref_3'),auxiliary:[],gap:''},
+    }}};
+  }});
+  assert.deepEqual([...plans.keys()],project.directions.slice(1));
+  assert.deepEqual([...plans.values()].map(plan=>plan.handoff.references[0].sha256),images.slice(1).map(image=>image.sha256));
+});
+
 test('reference handoff rejects missing primary, duplicated originals and a reassigned private image before dispatch',async()=>{
   const {selectVisualReferences}=await import('./visual-references.mjs');
   const project={directions:['A','B','C'],brief:'包装'};
