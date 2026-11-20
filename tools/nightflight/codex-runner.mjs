@@ -1338,13 +1338,12 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const comparatorPool=[];
         const brandReferences = generationImages.filter(image=>handoff.references.some(ref=>ref.role==='sharedBrand' && ref.sha256===image.sha256));
         const reviewedSources=[...inputs.images,...publicImages];
-        const knownComparators=new Set(reviewedSources.map(image=>image.sha256));
+        const published=new Map(publicImages.map(ref=>[ref.sha256,ref]));
         const researchComparators=packaging ? (project.researchReferences ?? [])
-          .filter(ref=>ref.carrier==='packaging' && !knownComparators.has(ref.sha256))
-          .map(ref=>publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
-        reviewedSources.push(...researchComparators);
+          .filter(ref=>ref.carrier==='packaging')
+          .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
         const review = await reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
-          theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,
+          theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer)},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
@@ -1353,7 +1352,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             await onEvent?.('正在补查同类包装对照：'+query);
             try {
               const originals=await search({query,dir,signal});
-            const known=new Set(reviewedSources.map(i=>i.sha256));
+            const known=new Set([...reviewedSources,...researchComparators].map(i=>i.sha256));
               for(const item of originals.slice(0,3)) if(!known.has(item.sha256)) {
                 known.add(item.sha256);
                 comparatorPool.push(publicVisualCandidate(item,direction,'comparator_'+comparatorPool.length));
@@ -1365,7 +1364,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             return comparatorPool;
           },
           makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
-        for (const ref of [...researchComparators,...comparatorPool]) if (review.references.some(r=>r.name===ref.name)) await publishReference(ref);
+        for (const ref of [...researchComparators,...comparatorPool]) {
+          if (!published.has(ref.sha256) && review.references.some(r=>r.name===ref.name)) await publishReference(ref);
+        }
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
         const drafts = batch.map((record,i)=>{
           const verdict = review.candidates.find(row=>row.candidate===i+1);

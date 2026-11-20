@@ -166,7 +166,7 @@ export function holdSimilarPosterDirections(comparison, representatives) {
   }
 }
 
-export async function reviewVisualBatch({call, direction, images, context, packagingExpected, theme, posterSlogan, posterTransfer, sources = [], brandReferences = [], findComparators, makeBoard}) {
+export async function reviewVisualBatch({call, direction, images, context, packagingExpected, theme, posterSlogan, posterTransfer, sources = [], verifiedComparators = [], brandReferences = [], findComparators, makeBoard}) {
   if (images.length !== 3 || new Set(images.map(img => img.sha256)).size !== 3) throw invalidOutput('同方向需要三张不同的主视觉原图');
   const blindFields = ['first','action','words','alternative'];
   const properties = Object.fromEntries(blindFields.map(k=>[k,text]));
@@ -192,6 +192,15 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const productOriginals = packaging === false ? [] : brandReferences.slice(0,3);
   // The API accepts eight images, including the three candidates and the comparison board.
   const comparatorLimit = 4 - productOriginals.length;
+  const reusedResearch=[];
+  if (packaging) {
+    for (const ref of verifiedComparators) {
+      if (references.length>=comparatorLimit) break;
+      if (productOriginals.some(a=>a.sha256===ref.sha256) || references.some(a=>a.sha256===ref.sha256)) continue;
+      references.push(ref);
+      reusedResearch.push(ref.sha256);
+    }
+  }
   async function assessSources(pool) {
     for (let offset=0; offset<Math.max(pool.length,1) && references.length<comparatorLimit; offset+=4) {
       const group=pool.slice(offset,offset+4);
@@ -208,7 +217,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
       }
     }
   }
-  if (packaging !== false) await assessSources(sources.filter(image=>!productOriginals.some(ref=>ref.sha256===image.sha256)));
+  if (packaging !== false && !references.length) await assessSources(sources.filter(image=>!productOriginals.some(ref=>ref.sha256===image.sha256)));
   if (packaging && !references.length && findComparators) {
     const extra=await findComparators();
     if (extra.length) await assessSources(extra);
@@ -219,7 +228,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const packet = [...images,...references,...(board?[board]:[]),...supplied];
   const rules = ['候选为第1至3张，仅给候选评分。'];
   if (posterSlogan) rules.push('按海报或 KV 的传播场景查看画面与文字。');
-  if (board) rules.push('候选之后为同类原图和一张同序等框缩图。逐对定位相似与不同，区分单图和并排可见性。参考顺序为'+references.map(r=>r.name).join('、')+'。');
+  if (board) rules.push('候选之后为同类原图和一张同序等框缩图。逐对定位相似与不同，区分单图和并排可见性。比较按原件真实载体和规格成立，不要求两者相同。参考顺序为'+references.map(r=>r.name).join('、')+'。');
   else if (packaging) rules.push('本批没有可用同类包装，不得推断已完成同类对照。');
   if (supplied.length) rules.push('末尾 '+supplied.length+' 张是客户的品牌或产品原件，用来核对已确认的实物和字样。顺序为'+supplied.map(r=>r.name).join('、')+'。');
   async function read(assignment, instruction, fields, extra = '') {
@@ -275,5 +284,6 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   });
   const winner = candidates.filter(c=>!c.blocked && c.mean>=4).sort((a,b)=>b.mean-a.mean || a.priority-b.priority)[0];
   return {direction,packaging,...(posterSlogan ? {posterSlogan} : {}),...(transferAudit ? {transferAudit} : {}),
-    board:board?.name,references:references.map(ref=>({name:ref.name,sha256:ref.sha256})),selectionThread:selectionThreads[0],selectionThreads,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,winner:winner?.candidate ?? null};
+    board:board?.name,references:references.map(ref=>({name:ref.name,sha256:ref.sha256})),...(reusedResearch.length ? {reusedResearch} : {}),
+    selectionThread:selectionThreads[0],selectionThreads,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,winner:winner?.candidate ?? null};
 }

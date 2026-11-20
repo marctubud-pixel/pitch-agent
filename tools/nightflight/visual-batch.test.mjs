@@ -23,10 +23,10 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[]}={}) {
   const calls = [];
   const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,
-    sources:packaging ? [image(4)] : [],makeBoard:async()=>({name:'包装同品类并排图'}),
+    sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
     call:async(_instruction,actual,schema,task)=>{
       calls.push({actual,schema,task});
       if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:'预约',alternative:'展览',
@@ -93,6 +93,18 @@ test('the transfer assessment retains independent title, on-pack and visual fail
   assert.match(batch.candidates[0].reason,/布局应沿用/);
   assert.match(batch.candidates[0].edit,/海报主标题/);
   assert.match(batch.candidates[0].edit,/布局/);
+});
+
+test('workbench-verified packaging goes into the comparison with its original signature',async()=>{
+  const original=image(5);
+  const {batch,calls}=await review({packaging:true,verifiedComparators:[original,original]});
+  assert.deepEqual(batch.reusedResearch,[original.sha256]);
+  assert.deepEqual(batch.references,[{name:original.name,sha256:original.sha256}]);
+  assert.ok(!calls.some(call=>call.task.assignment==='核对同类参考'));
+  const scores=calls.find(call=>call.task.assignment==='品牌独立评分岗');
+  assert.ok(scores.actual.some(image=>image.sha256===original.sha256));
+  assert.equal(batch.winner,null);
+  assert.match(batch.candidates[0].reason,/主题印在包装本体/);
 });
 
 test('every candidate must have exactly five judgments with evidence for each attached image',async()=>{
