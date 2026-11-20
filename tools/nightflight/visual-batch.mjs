@@ -1,4 +1,4 @@
-import {invalidOutput} from './call-checkpoints.mjs';
+import {independentCalls,invalidOutput} from './call-checkpoints.mjs';
 import {visualElements} from './visual-references.mjs';
 const roles = ['视觉', '品牌', '用户', '传播'];
 const numeric = { type: 'integer' }, text = { type: 'string' };
@@ -174,8 +174,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const blindSchema = {type:'object',additionalProperties:false,properties,required:Object.keys(properties)};
   const blindInstruction = '只看这张原图。第一眼看到什么？画面里发生什么动作？哪些信息靠读字才知道？还有什么合理的读法？逐项用自己的话回答。';
   const transcribe = ' 另外单独填 slogan。按阅读顺序逐字抄写海报主标题，保留字词、数字、标点和实际换行，只抄实际看见的内容。把可见位置写入 location。区分海报主标题、画面里的包装印字、品牌标志和时间地点。能读完整填 readable；没有主标题填 missing，位置可以留空；有字看不清填 unreadable 并只抄看清的片段。';
-  const blind = [];
-  for (const image of images) {
+  const blind = await independentCalls(images,async image=>{
     const result = await call(blindInstruction+(posterSlogan ? transcribe : ''),
       [{...image,imageId:'anonymous'}],blindSchema,{delegate:true,rules:[],assignment:'独立读图者',context:'仅本张图片，保留图上文字。'});
     const words = result.parsedOutput;
@@ -185,8 +184,8 @@ export async function reviewVisualBatch({call, direction, images, context, packa
       (observed.status==='readable' && (!observed.text.trim() || !observed.location.trim())))) {
       throw invalidOutput('海报需要逐字记录看见的主标题和位置，缺失或无法读清时请如实标记。');
     }
-    blind.push({...words,sha256:image.sha256,thread:result.threadId,...(result.model ? {model:result.model} : {})});
-  }
+    return {...words,sha256:image.sha256,thread:result.threadId,...(result.model ? {model:result.model} : {})};
+  });
   const transferAudit = posterTransfer ? await reviewPosterTransfer(call,images,posterTransfer) : null;
   const references = [], selectionThreads = [];
   let packaging = packagingExpected ?? (posterSlogan ? false : undefined);
@@ -231,9 +230,8 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     }
     return {thread: result.threadId, items: rows,...(result.model ? {model:result.model} : {})};
   }
-  const votes = [], challenges = [];
   const duties = packaging ? {用户:'卖点动作、误读、哪些只能靠读字',传播:'同类并排辨识度及能否认回品牌',品牌:'逐张看实际包装本体的印字，引用可见原话与位置。核对品牌、品类、规格等产品信息的层级，以及方向名或主题 slogan 有无落在本体，区分盒身、价签和场景标题',视觉:'逐对核对原创转译、成套相似性与小尺寸完成度'} : {用户:'目标受众理解与可行性',传播:'传播场景、记忆及差异',品牌:'品牌匹配和主题表达',视觉:'美术、构图与视觉层级'};
-  for (const role of roles) {
+  const votes = await independentCalls(roles,async role=>{
     const checksPackagingText = packaging && role === '品牌';
     const placement = checksPackagingText ? '。onPackStatus：可核实且符合简报及产品资料填 verified，印上方向名或主题句填 theme_printed，存在其他字样错误或把价签等触点文字误印在本体填 text_mismatch，盒身文字或位置看不清填 unverified。reason 要写可见字样及位置' : '';
     const fields = {score:numeric,...(checksPackagingText ? {onPackStatus:{...text,enum:onPackStatuses}} : {})};
@@ -241,14 +239,14 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const report = await read(role+'独立评分岗', '对每张图给一个 1–5 整数整体分，按本岗责任：'+duties[role]+placement+'。同分也要说明差异，写可定位的依据。', fields, reviewInput);
     if (!report.items.every(row => Number.isInteger(row.score) && row.score >= 1 && row.score <= 5)) throw invalidOutput('主视觉原票分数无效');
     if (checksPackagingText && !report.items.every(row=>onPackStatuses.includes(row.onPackStatus))) throw invalidOutput('品牌原票缺少包装文字核验。');
-    votes.push({role,...report});
-  }
-  for (const role of roles) {
+    return {role,...report};
+  });
+  const challenges = await independentCalls(roles,async role=>{
     const independent = await read(role+'独立对抗岗', '从本岗职责逐图独立找漏项：'+duties[role]+'。不评分。', {});
     const checked = await read(role+'对抗核查岗', '结合独立发现逐项核查对应原票，列证据及仍成立的问题，不评分。', {},
       JSON.stringify({独立发现:independent.items,原票:votes.find(v=>v.role===role).items}));
-    challenges.push({role,independent,...checked});
-  }
+    return {role,independent,...checked};
+  });
   const ruling = await read('独立视觉总监', '逐图裁定原票及对抗意见。仍有成立硬伤或关键未知时 blocked 为 true；reason 写取舍理由、保留处和具体修改建议。为三张图给互不重复的优先次序 priority（1 最优），只用于合格同分时决胜。不得改分。edit 写具体部位与改法；research 写需补的实景、来源或产品资料。没有待办填无。素材不足须说明。',
     {blocked:{type:'boolean'},priority:numeric,edit:text,research:text}, JSON.stringify({votes,challenges,blind}));
   if (!ruling.items.every(row=>typeof row.blocked==='boolean' && row.edit?.trim() && row.research?.trim()) || ![1,2,3].every(n=>ruling.items.some(row=>row.priority===n))) throw invalidOutput('主视觉总监裁定不完整');
