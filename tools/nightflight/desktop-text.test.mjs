@@ -75,7 +75,12 @@ if (action === 'profile') {
     const content=body.messages[1].content;
     const instruction=typeof content==='string' ? content : content[0].text;
     let answer;
-    if (instruction.includes('海报主参考原图核读')) {
+    if (instruction.includes('视觉参考美术任务')) {
+      assert.equal(typeof content,'string');
+      const input=JSON.parse(instruction.split('实际项目输入（JSON）\\n\\n').at(-1));
+      assert.deepEqual(input.directions.map(({id,name})=>({id,name})),[{id:'B',name:'产品'}]);
+      answer={directions:{B:{focus:'剪纸剪影之间的空隙',translation:'让人物剪影衬出活动标题'}}};
+    } else if (instruction.includes('海报主参考原图核读')) {
       assert.equal(capability,'--vision-model');
       assert.equal(content.length,2);
       answer={配色:'蓝紫底与浅黄字',布局:'标题和日期居中，两侧剪影',景别:'馆舍远景',笔法:'颗粒插画',字体:'浅黄粗体'};
