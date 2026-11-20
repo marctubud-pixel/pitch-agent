@@ -2,7 +2,7 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {broadVisualQueries,campaignPages,visualLookupCategory,minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,reusableResearchFindings,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
+import {broadVisualQueries,campaignPages,visualLookupCategory,minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,reusableResearchFindings,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportAliasSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {readManuscriptPlan} from './manuscript.mjs';
@@ -492,6 +492,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const categories = strings(plan.parsedOutput?.reportCategories);
   const terms = strings(plan.parsedOutput?.segmentTerms).filter(t=>t.length<=30).slice(0,4);
   const industryQueries = reportSearchTerms(categories,[...priorQueries]);
+  const industryAliases=reportAliasSearchTerms(categories,plan.parsedOutput.consumerCategories,[...priorQueries,...industryQueries]);
   const discover = async ({query,domain}) => {
     const plausible=r=>(!domain || matchesDomain(r.url,domain)) && !excluded.has(r.url) &&
       !/百度百科|在线翻译|英汉词典|汉语词典|字词解释|素材模板|素材免费下载|海报模板/u.test(r.title);
@@ -540,9 +541,9 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   }
   const reportReads = [];
   const examined = new Set();
-  for (const query of industryQueries) {
-    const found = await discover({query});
-    discovered.push(found);
+  const industrySearches=await Promise.all([...industryQueries,...industryAliases].map(async query=>{
+    const found=await discover({query});
+    let directory;
     const isReport = r=>/报告|皮书|研究|统计公报|行业发展|行业市场|市场规模|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url);
     let candidates = found.results.filter(isReport);
     if (!candidates.length && /\p{Script=Han}/u.test(query) && !(dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL)) {
@@ -554,10 +555,13 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       const term=query.replace(/报告|白皮书$/u,'');
       const reports=await discoverChinesePages(term,storeRoot,dependencies,signal,'reports');
       const related=reports.filter(r=>r.title.includes(term) && !excluded.has(r.url)).slice(0,3);
-      discovered.push({query:term,via:'199IT 报告目录',results:related});
+      directory={query:term,via:'199IT 报告目录',results:related};
       candidates=[...new Map([...related,...candidates].map(r=>[r.url,r])).values()];
     }
-    found.results = candidates;
+    return {found:{...found,results:candidates},directory};
+  }));
+  discovered.push(...industrySearches.flatMap(({found,directory})=>directory ? [found,directory] : [found]));
+  for (const {found:{query,results:candidates}} of industrySearches) {
     const pages = (await Promise.all(candidates.map(r=>capture(r.url)))).filter(Boolean);
     const links = [...new Set(pages.flatMap(p=>p.pdfLinks))].slice(0,3);
     pages.push(...(await Promise.all(links.map(capture))).filter(Boolean));
@@ -607,7 +611,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
     modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。relevance 按该条证据是否回答该板块的研究问题选择 direct（本案细分）、category（同类或上位品类，实际指标能回答）、background（只沾边或指标答非所问）。平台热度证据的 socialMetric 填 platform、period、topic、measure，四项分别摘自同一原文，measure 包含原值与口径；公开关键词榜未提供数值时保留原榜名；其他证据这四项留空。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
-      '行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
+      '行业证据在上位品类实际覆盖本品时，可以按原统计品类和年份写有具体数据的 category 发现，准确区分已发生和预测。相邻品类或只泛称增长、没有可定位时间口径的资料仅作 background。缺本品细分数据单列，不覆盖已有上位市场结论。行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
     inputs.images,
     reportSchema,
   );
@@ -724,7 +728,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const research=await writeResearchPage({call,project,findings,gaps,carriers,anchorQuestions,onEvent,signal});
   const captured = new Map((await Promise.all(captures.values())).filter(Boolean).map(item=>[item.url,item]));
   research.searchScope = {
-    consumerReads:consumerReports.reads, reportReads, queries: discovered.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
+    visualCategory:broadCategory, consumerReads:consumerReports.reads, reportReads, queries: discovered.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
     unreadable: [...failedCaptures].map(([url,reason])=>({url,reason})),
     pages: [...captured.values()].map(({source,url})=>{
       const rejected = Array.isArray(draft.parsedOutput.rejectedSources) &&
@@ -1007,7 +1011,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, onEvent, fixedDirections}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent, fixedDirections}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -1018,6 +1022,11 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
     }
   }
   for (const image of project.previousReferences ?? []) addCandidates([image], image.direction);
+  addCandidates(project.researchReferences ?? []);
+  const scope=project.research?.searchScope;
+  const priorCategory=scope?.queries?.map(query=>/^([\p{Script=Han}]{2,12}) (?:海报|包装[盒袋]?)$/u.exec(query)?.[1]).find(Boolean);
+  const candidateCategory=scope?.visualCategory || priorCategory;
+  const [category]=publicVisualQueries({parsedOutput:{queries:[candidateCategory]}},project);
   const diagnostics = [];
   const attempted = new Set();
   const history = [];
@@ -1048,11 +1057,19 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
     catch (error) {
       if (!error.missing) throw error;
       if (pass===2) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
+      if (pass===0 && category && searchCases) {
+        const known=pool.length;
+        await onEvent?.('按通用品类「'+category+'」打开品牌发布案例查找候选原图');
+        const found=await searchCases({query:category,dir,signal});
+        addCandidates(found);
+        diagnostics.push(category+' / 品牌发布案例，新增 '+(pool.length-known)+' 张');
+        if (pool.length-known>=error.missing.length) continue;
+      }
       for (const direction of error.missing) {
         signal?.throwIfAborted();
         const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
         const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],gaps:diagnostics};
-        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系，给出两条不同的简短公开检索词，可用英文。一条组合品类、目标载体与该关系找设计案例，另一条找不同表达手法或可核实的场所细节。优先品牌、设计机构或奖项的作品图。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
+        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系。给两条短公开检索词，每条最多三个常用词组。第一条只结合通用品类和载体，例如「坚果 包装」「茶饮 海报」。第二条选方向最重要的手法、动作或场所，可用英文。搜索不带具体规格、价格、配方或本案文案。优先品牌、设计机构或奖项的亚洲作品原页。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
         const queries=publicVisualQueries(plan,project).slice(0,2);
         const remaining=queries.filter(query=>!attempted.has(direction+' / '+query));
         const results=await independentCalls(remaining,async query=>{
@@ -1211,7 +1228,13 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           if (typeof slogan!=='string' || !slogan.trim()) throw Error('海报／KV 缺少「'+direction+'」本版已选 slogan，请核对文案交接。');
         }
       }
-      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,onEvent,fixedDirections:checkPosterTransfer});
+      const searchCases=visualSearch ? undefined : async ({query,dir,signal})=>{
+        const hits=await discoverChinesePages(query,join(dir,'public-reference-sources'),researchDependencies,signal,'campaign');
+        const pages=campaignPages(hits,{category:query,broadCategory:query}).slice(0,3);
+        const batches=await Promise.all(pages.map(page=>fetchImages({query,dir,signal,pages:[{...page,carrier:'kv'}]})));
+        return batches.flat().slice(0,6);
+      };
+      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent,fixedDirections:checkPosterTransfer});
       const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];

@@ -128,7 +128,7 @@ export async function selectVisualReferences({call, project, images, active, fix
     }
   }
   const packet = {brief:project.brief,strategy:project.strategyText,directions,previousDrafts:[...new Set((project.previousVisual ?? []).map(p=>p.visual.direction))],feedback:project.feedback ?? [],sources:sources.map(s=>({
-    source:s.imageId,name:s.name,pageUrl:s.pageUrl,title:s.title,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
+    source:s.imageId,name:s.name,pageUrl:s.pageUrl,title:s.title,carrier:s.carrier,searchDirection:s.direction ?? null,previousDirection:previousOwners.get(s.sha256) ?? null,
   }))};
   if (!sources.length) throw Object.assign(Error('视觉主参考缺失：'+active.join('、')+'。可在对话区补充原图后重试。'),{missing:active});
 
@@ -176,6 +176,7 @@ export async function selectVisualReferences({call, project, images, active, fix
     const image = sources.find(s=>s.imageId===entry?.source);
     if (!image || !nonempty(entry.borrow) || !nonempty(entry.apply)) throw invalidOutput('参考图身份或借鉴用途不完整。');
     if (image.sourceUrl && (!nonempty(entry.why) || !nonempty(entry.avoid))) throw invalidOutput('公开参考缺少采用理由或禁止照搬的边界。');
+    if (image.sourceUrl && role==='sharedBrand') throw invalidOutput('公开竞品只能供方向借鉴，不能作为本案共用品牌资产。');
     if ((image.direction && image.direction!==owner) || assigned.has(image.sha256) || (previousOwners.has(image.sha256) && previousOwners.get(image.sha256)!==owner)) {
       throw invalidOutput('不同方向的专用参考图发生冲突，请核对参考图归属。');
     }

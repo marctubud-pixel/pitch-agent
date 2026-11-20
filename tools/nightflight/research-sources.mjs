@@ -41,12 +41,18 @@ export function reportSearchTerms(categories, previous = []) {
   const queries = [];
   for (const value of categories ?? []) {
     if (typeof value !== 'string') continue;
-    const category = value.trim().replace(/(?:行业)?(?:报告|白皮书)$/u,'');
+    const category = value.trim().replace(/(?:报告|白皮书)$/u,'').replace(/行业$/u,'');
     if (!/^[\p{L}\p{N}·-]{1,14}$/u.test(category) || /(?:20\d\d|增长率|销售额|同比|市场规模|渠道结构)/u.test(category)) continue;
     const query = ['报告','白皮书'].map(suffix=>category+suffix).find(q=>!previous.includes(q));
     if (query && !queries.includes(query)) queries.push(query);
   }
   return queries.slice(0,4);
+}
+
+export function reportAliasSearchTerms(categories, consumerCategories, previous) {
+  const common = categories.some(term=>/^(?:休闲食品|休闲零食|零食)$/u.test(term)) ? ['零食'] : [];
+  const shortConsumerNames = (consumerCategories ?? []).filter(term=>typeof term==='string' && /^[\p{Script=Han}]{2,3}$/u.test(term));
+  return reportSearchTerms([...common,...shortConsumerNames],previous).slice(0,2);
 }
 
 // Keep context around in-document matches even when the table is past the introductory pages.
@@ -220,10 +226,10 @@ export function visualLookupCategory(specific,planned,catalogTerms) {
   if (!isTerm(specific)) return isTerm(topic) ? topic : undefined;
   const isSuffix=term=>/\p{Script=Han}/u.test(term)
     ? specific.endsWith(term) : specific.toLowerCase().endsWith(' '+term.toLowerCase());
-  if (isTerm(topic) && topic!==specific &&
-      (!specific.toLowerCase().includes(topic.toLowerCase()) || isSuffix(topic))) return topic;
   const broader=(Array.isArray(catalogTerms) ? catalogTerms : []).filter(term=>isTerm(term) &&
     term.length>=2 && term.length<specific.length && isSuffix(term));
+  if (isTerm(topic) && topic!==specific &&
+      (!broader.length || !specific.toLowerCase().includes(topic.toLowerCase()) || isSuffix(topic))) return topic;
   return broader.sort((a,b)=>b.length-a.length)[0] || specific;
 }
 

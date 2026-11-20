@@ -1,9 +1,9 @@
 [
   {
-    "source": "夜航全链复测的搜图短词和已发布作品核验",
+    "source": "夜航全链复测的短词并行检索与上位市场取证",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r32-20261120",
-    "sha256": "92940ae87ad286ab21895b74db6ab55e753264f1d3fe58a8747a145a11d30340"
+    "sourceVersion": "r33-20261120",
+    "sha256": "6fa1556a07ecabbb0fce7d6cc6709bd3dbc8b9ddb96fd29113edc253e9772879"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",

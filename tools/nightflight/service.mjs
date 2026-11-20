@@ -1,4 +1,4 @@
-import {automaticResearchGaps} from './research-sources.mjs';
+import {automaticResearchGaps,hasCategoryImage} from './research-sources.mjs';
 import {validBriefScope} from './brief-intake.mjs';
 import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
@@ -372,6 +372,23 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             }
           }
           if (p.stage === 'visual') {
+            const retained = new Set();
+            input.researchReferences = [];
+            for (const finding of p.research?.findings ?? []) {
+              if (finding.visualOnly) continue;
+              for (const ref of finding.images ?? []) {
+                if (!['packaging','kv'].includes(ref.carrier) || !hasCategoryImage([ref],ref.carrier) || retained.has(ref.sha256)) continue;
+                const original=historicalImage(p,ref);
+                if (!original) continue;
+                const {file,bytes}=original;
+                const path=join(dir,'research-visual-'+ref.sha256+extname(file.name));
+                writeFileSync(path,bytes,{flag:'wx',mode:0o600});
+                retained.add(ref.sha256);
+                input.researchReferences.push({path,name:file.name,sha256:ref.sha256,byteLength:bytes.length,
+                  mediaType:mime[extname(file.name).toLowerCase()],carrier:ref.carrier,title:ref.title,
+                  sourceUrl:ref.sourceUrl,pageUrl:ref.pageUrl,query:'同版研究原图'});
+              }
+            }
             const last = p.versions.at(-1);
             const previous = last?.artifacts.some(a=>a.visual?.candidate) ? last : undefined;
             input.previousReferences = (previous?.artifacts ?? []).filter(a => a.visual?.role === 'reference').map(a => {

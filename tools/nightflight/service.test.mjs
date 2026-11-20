@@ -401,6 +401,28 @@ test('human adopts a non-recommended candidate with an explicit reason, or revis
   await project.settled();
 });
 
+test('visual handoff takes intact, traceable originals from the current study', async t=>{
+  const bytes=Buffer.from('fixture-original');
+  const sha256=createHash('sha256').update(bytes).digest('hex');
+  const ref={name:'真实包装.jpg',sha256,carrier:'packaging',sameCategory:true,categoryMatch:'同类',
+    actualPackaging:true,visibleProduct:'独立小袋和外盒',pageUrl:'https://example.org/item',sourceUrl:'https://example.org/item.jpg'};
+  const project=await legacyService(t,{stage:'visual',status:'failed',
+    artifacts:[{stage:'research',kind:'image',name:ref.name,storageKey:'box.jpg'}],
+    research:{findings:[{images:[{...ref,sha256:'0'.repeat(64)},ref,ref]}]}},
+  async ({project:input})=>{
+    assert.equal(input.researchReferences.length,1);
+    const [original]=input.researchReferences;
+    assert.equal(original.pageUrl,ref.pageUrl);
+    assert.equal(original.sourceUrl,ref.sourceUrl);
+    assert.equal(original.sha256,sha256);
+    assert.deepEqual(await readFile(original.path),bytes);
+    throw Error('只验证研究原图交接');
+  });
+  await writeFile(join(project.root,'example','files','box.jpg'),bytes);
+  assert.equal((await project.action({kind:'retry'})).status,200);
+  assert.equal((await project.settled()).error,'只验证研究原图交接');
+});
+
 test('recovery ignores a reused PID, excludes another server and migrates legacy artifact text and events', async t=>{
   const {DatabaseSync}=await import('node:sqlite');
   const before={stage:'brief',at:'2025-01-01',text:'原来的事件'};

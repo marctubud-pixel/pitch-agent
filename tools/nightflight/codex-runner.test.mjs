@@ -737,7 +737,7 @@ test('packaging retries a short brand query, publishes its reviewed original and
 test('industry search switches short category terms and verifies segment data deep inside the report',async t=>{
   const f=await fixture(t,'research-report-lookup');
   const {research}=await f.run('research');
-  assert.deepEqual(research.searchScope.attempts.filter(a=>a.source!=='SocialBeta 品牌发布案例').map(a=>a.query),['即饮茶报告','即饮茶','茶饮报告','茶饮','茶叶包装']);
+  assert.deepEqual(research.searchScope.attempts.filter(a=>a.source!=='SocialBeta 品牌发布案例').map(a=>a.query),['即饮茶报告','即饮茶','茶饮报告','茶饮','瓶装茶报告','瓶装茶','茶叶包装']);
   assert.equal(research.searchScope.attempts[1].source,'199IT 报告目录');
   assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
 });
@@ -1554,6 +1554,15 @@ test('visual directory lookups can broaden a repeated category using the plan’
   assert.equal(visualLookupCategory('猫粮','猫粮',['猫砂','宠物']),'猫粮');
   assert.equal(visualLookupCategory('无糖汽水','无糖',['无糖','汽水']),'汽水');
   assert.equal(visualLookupCategory('暖白光台灯','暖白光台灯',['暖白光','台灯']),'台灯');
+  assert.equal(visualLookupCategory('茶饮','茶',[]),'茶');
+});
+
+test('industry follow-up can use a short public synonym after detailed category searches',async()=>{
+  const {reportAliasSearchTerms,reportSearchTerms}=await import('./research-sources.mjs');
+  const first=reportSearchTerms(['混合坚果行业','坚果','坚果炒货','休闲食品']);
+  assert.deepEqual(first,['混合坚果报告','坚果报告','坚果炒货报告','休闲食品报告']);
+  assert.deepEqual(reportAliasSearchTerms(['休闲食品'],['坚果','休闲零食'],first),['零食报告','坚果白皮书']);
+  assert.equal(reportAliasSearchTerms(['咖啡'],['咖啡'],[])[0],'咖啡报告');
 });
 
 test('research charts are not released promotional posters even if a vision response gives them the same label',async()=>{
