@@ -16,7 +16,7 @@ const roles={
   craft:'美术岗：看实图的构图、领读、字号、断行、裁切、遮挡、展签、品牌和页脚。指出确实看得到的问题和具体位置。',
 };
 const roleNames={logic:'逻辑',copy:'措辞',craft:'美术'};
-const choices=['text','gallery','comparison','reflow','rhythm','shadows','hold'];
+const choices=['text','gallery','comparison','reflow','rhythm','shadows','hold','note'];
 const upstream=['brief','research','strategy','copy','visual'];
 const stageNames={brief:'简报',research:'研究',strategy:'策略',copy:'文案',visual:'视觉',layout:'版式'};
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -89,8 +89,8 @@ function issueSchema(pages) {
   })}});
 }
 
-const policy='以 Brief 的本轮交付为准。影响本轮提案的标 impact=proposal。P0 只用于事实、数据、已确认要求、关键图文或可读性错误。P1 用于表达、美术和可读的局部细节。已明确标为待核的资料，如果只影响后续制版、印刷或发布，标 impact=production、P1，放入待确认。';
-const operations='每项填页码、严重程度、问题、实际证据、改法和责任。operation=text 时给能在本页 title、眉标 label 或单条 points 找到的唯一原文 from、短的替换 to 和本版原材料逐字引用 quote。同义精简的 quote 可空。保持数据、限定和方向，已核事实写准，待核说明写清。图表口径混排时，在同页将有直接依据的数据分别写清各自对象和时期。gallery 对单张作品图加展框和极简展签。comparison 等比优化并排图。reflow 调中文断行。rhythm 调页脚对比和节奏。shadows 清理默认投影。凡需变更已定策略、主副标、补商品事实或重绘原图，用 hold 且给实际责任阶段。眉标或说明不准确可由版式改字。其余 target=layout。非 text 项的 from、to、quote 填空。同一项在本批只报一次。';
+const policy='以 Brief 的本轮交付为准。影响本轮提案的标 impact=proposal。P0 只用于已证实的事实或数据错写、违反已确认要求、关键图文缺失或不可辨认。逐项定位出错的原字、数据或被挡住的位置。P1 用于可读的长句、换行、留白、美术和局部表达；建议改美观或加快阅读时填 P1。已注明品牌待定、客户待选等正常提案事项按实情保留。只影响后续制版、印刷或发布的待核资料标 impact=production、P1。';
+const operations='每项填页码、严重程度、问题、实际证据、改法和责任。operation=text 时给能在本页 title、眉标 label 或单条 points 找到的唯一原文 from、短的替换 to 和本版原材料逐字引用 quote。同义精简的 quote 可空。保持数据、限定和方向，已核事实写准，待核说明写清。图表口径混排时，在同页将有直接依据的数据分别写清各自对象和时期。gallery 对单张作品图加展框和极简展签。comparison 等比优化并排图。reflow 调中文断行。rhythm 调页脚对比和节奏。shadows 清理默认投影。凡需变更已定策略、主副标、补商品事实或重绘原图，用 hold 且给实际责任阶段。眉标或说明不准确可由版式改字。无法用上述改法完成的版式意见填 note。直修和 note 的 target 填 layout。非 text 项的 from、to、quote 填空。同一项在本批只报一次，P1 每页合并为最值得做的一条。';
 
 async function audit({call,plan,edition,round,selected,prior=[],verify=false,receipts,onEvent}) {
   const findings=[];
@@ -100,23 +100,25 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
     const pages=numbers.map(n=>plan.pages[n-1]);
     const figureIds=new Set(pages.flatMap(page=>page.figures));
     const images=numbers.map(n=>edition.images[n-1]);
-    const context=JSON.stringify({
+    const context={
       全册页序:sequence,Brief:plan.brief,策略:plan.strategy,已选文案:plan.copy,采用说明:plan.adoption,
       采用图读图:plan.figures.filter(figure=>figureIds.has(figure.id)),本批逐页稿:pages,
       本批PPT:numbers.map(n=>({页码:n,...edition.native[n-1],图片对象数量:edition.native[n-1].images.length})),
-      本批待复核:prior.filter(issue=>numbers.includes(issue.page)).map(({page,role,problem,evidence,change,level})=>({page,role,problem,evidence,change,level})),
-    });
+    };
     const active=round===1 ? Object.keys(roles) :
       [...new Set(['craft',...prior.filter(issue=>numbers.includes(issue.page) &&
         (issue.level==='P0' || issue.operation==='text')).map(issue=>issue.role)])];
     const batches=await independentCalls(active,async role=>{
       await onEvent?.('终审第 '+round+' 轮 · '+roleNames[role]+' · 第 '+numbers.join('、')+' 页'+(verify?'复验':''));
+      const ownPrior=prior.filter(issue=>issue.role===role && numbers.includes(issue.page))
+        .map(({page,role,problem,evidence,change,level})=>({page,role,problem,evidence,change,level}));
       const response=await call([roles[role],
         '按附件顺序审页 '+numbers.join('、')+'。只判断自己的审稿职责。',
         verify || round>1?'逐项对照本批实际修后图、正文和旧意见，只交回新版仍存在的问题。':'结合全册页序读本批，逐页给证据。',
-        policy,operations].join('\n'),images,issueSchema(numbers),{delegate:true,context});
-      const issues=response.parsedOutput?.issues;
-      if (!Array.isArray(issues) || issues.length>12 || issues.some(issue=>!numbers.includes(issue?.page) ||
+        policy,operations].join('\n'),images,issueSchema(numbers),{delegate:true,context:JSON.stringify({...context,本批待复核:ownPrior})});
+      const reported=response.parsedOutput?.issues;
+      const issues=Array.isArray(reported) ? reported.map(issue=>issue?.operation==='layout' ? {...issue,operation:'note'} : issue) : null;
+      if (!Array.isArray(issues) || issues.some(issue=>!numbers.includes(issue?.page) ||
         !['P0','P1'].includes(issue.level) || !['proposal','production'].includes(issue.impact) || !choices.includes(issue.operation) ||
         (issue.operation==='hold' && !upstream.includes(issue.target)) ||
         [issue.problem,issue.evidence,issue.change].some(value=>typeof value!=='string'||!value.trim()) ||
@@ -191,6 +193,7 @@ function prepareEdits(plan,issues,oldEdition) {
     try {
       const slide=draft.pages[issue.page-1];
       if (issue.operation==='hold') throw Error('需提案人确认并交回责任阶段');
+      if (issue.operation==='note') throw Error('本项留给版式人工判断');
       if (issue.operation==='text') {
         const locked=slide.role==='strategy' ? 'strategy' :
           issue.from && slide.points.some(point=>/^(?:主标|副标) · /u.test(point) && point.includes(issue.from)) ? 'copy' : null;
