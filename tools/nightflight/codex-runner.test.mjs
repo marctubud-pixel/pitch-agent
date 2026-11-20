@@ -1373,7 +1373,7 @@ test('a verified same-category poster resolves only the general image gap', asyn
   const {writeResearchPage}=await import('./codex-runner.mjs');
   const chapter='竞争与同类传播';
   const image={title:'海报',carrier:'kv',sameCategory:true,sha256:'hash',pageUrl:'https://source.example.org/p',
-    sourceUrl:'https://source.example.org/i',publicationPlacement:'article',publicationQuote:'品牌发布了海报。'};
+    sourceUrl:'https://source.example.org/i',assetType:'宣传海报或主视觉',publicationPlacement:'article',publicationQuote:'品牌发布了海报。'};
   const finding={chapter,images:[image],source:'同类发布页',url:image.pageUrl,evidence:'画面突出机身。',conclusion:'海报突出机身。'};
   const gaps=[{chapter,message:'缺同类海报。',scope:'kv',blocksStrategy:true},
     {chapter,message:'未查到商场灯箱投放。',scope:'optionalSegment',blocksStrategy:false}];
