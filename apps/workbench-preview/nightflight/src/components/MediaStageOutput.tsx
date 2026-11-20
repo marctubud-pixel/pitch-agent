@@ -200,11 +200,13 @@ export function MediaStageOutput({
       {draft?.text && <div className="live-text">{draft.text}</div>}
     </section>;
   }
-  const deck = p.artifacts.find(isDeckPreview);
+  const priorFinal = id === 'final' && p.finalReturn ? p.versions?.findLast(v=>v.stage==='final') : undefined;
+  const saved = priorFinal?.artifacts ?? p.artifacts;
+  const deck = saved.find(isDeckPreview);
   const outlineId = deck?.name.match(/([0-9a-f-]{36})\.deck\.json$/i)?.[1];
-  const outline = outlineId ? p.artifacts.find(file => file.stage === 'layout' && file.kind === 'text' &&
+  const outline = outlineId ? saved.find(file => file.stage === 'layout' && file.kind === 'text' &&
     file.name.endsWith(outlineId + '.outline.json')) : undefined;
-  const pptx = p.artifacts.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
+  const pptx = saved.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
   if (id === 'layout') {
     if (!deck && !pptx.length) {
       const message = p.stage === 'layout'
@@ -220,9 +222,7 @@ export function MediaStageOutput({
       </section>
     );
   }
-  const currentReviews = p.artifacts.filter((file) => file.stage === 'final' && file.kind === 'text');
-  const priorFinal = p.finalReturn ? p.versions?.findLast(v=>v.stage==='final') : undefined;
-  const reviews = priorFinal ? priorFinal.artifacts.filter(file=>file.stage==='final' && file.kind==='text') : currentReviews;
+  const reviews = saved.filter((file) => file.stage === 'final' && file.kind === 'text');
   if (!deck && !pptx.length && !reviews.length) {
     return <p className="pending">等待排版稿，随后进入终审。</p>;
   }
@@ -230,8 +230,8 @@ export function MediaStageOutput({
     <>
       {(deck || !!pptx.length) && (
         <section className="block" data-artifact={deck?.name}>
-          <h2>本版提案</h2>
-          {deck && <DeckPreview key={deck.url} file={deck} foldIndex />}
+          <h2>{priorFinal ? '退回的提案' : '本版提案'}</h2>
+          {deck && <DeckPreview key={deck.url} file={deck} foldIndex outline={outline} />}
         </section>
       )}
       <section className="block">
@@ -244,20 +244,20 @@ export function MediaStageOutput({
         ) : (
           <p className="pending">{p.stage === 'final' && p.status === 'running' ? '正在审读本版排版稿。' : '本版尚无终审记录。'}</p>
         )}
-        <DeckDownloads files={pptx} />
+        <DeckDownloads files={pptx} returned={Boolean(priorFinal)} />
       </section>
       {p.status === 'done' && <Feedback p={p} act={act} busy={busy} />}
     </>
   );
 }
 
-function DeckDownloads({ files }: { files: Artifact[] }) {
+function DeckDownloads({ files, returned = false }: { files: Artifact[]; returned?: boolean }) {
   if (!files.length) return null;
   return (
     <div className="deliver">
       {files.map((file) => (
         <a key={file.url} data-artifact={file.name} className="btn btn-dark" href={safeURL(file.url)} download={file.name}>
-          {files.length === 1 ? '下载可编辑 PPTX' : '下载 ' + file.name}
+          {files.length === 1 ? returned ? '下载退回版 PPTX' : '下载可编辑 PPTX' : '下载 ' + file.name}
         </a>
       ))}
     </div>

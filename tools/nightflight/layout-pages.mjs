@@ -379,7 +379,11 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
       case 'work': return {...draft,tone:'brand',template:{kind:'upload.framed',image:images[0]}};
       case 'compare': return {...draft,template:{kind:'compare.lineup',sub:points.slice(images.length).join('\n'),
         items:images.map((image,i)=>({image,name:figures.get(page.figures[i]).direction,desc:points[i] || ''}))}};
-      case 'close': return {...draft,template:{kind:'closing.type',sub:'',meta:''}};
+      case 'close': {
+        const greeting=page.title.match(/^((?:感谢观看|谢谢观看|谢谢)(?:[，,。！!]|$))\s*(.*)$/u);
+        if (greeting) return {...draft,title:greeting[1],template:{kind:'closing.type',sub:greeting[2],meta:''}};
+        return {...draft,tone:'brand',template:{kind:'summary.statement',statement:page.title,sub:''}};
+      }
       default: return {...draft,template:points.length>=2?{kind:'summary.list',points:points.map(d=>({k:'',d}))}:
         {kind:'summary.statement',statement:page.title,sub:lines}};
     }

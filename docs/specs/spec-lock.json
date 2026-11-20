@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baselineVersion": "1.93.0",
-  "registrySha256": "eb295c89fdcb408c3ca090d89e9a24826130c8a58bb48f88d9c086c373e2f94e",
+  "registrySha256": "820206764ef8210c2be2d55e03595627039e0d03624854b67058af9686fccbdb",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -137,10 +137,10 @@
       }
     },
     "page.delivery": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/delivery.md": "c960da004b7d5623781e780cf01e2bda27f15fff7344122dd1a0588eb4aff924"
+        "docs/pages/delivery.md": "fa944b2c6cb186dd87e3948ff8beffc939d976c738c19a2b60b02b9461078e12"
       }
     },
     "page.content_review": {

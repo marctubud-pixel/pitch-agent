@@ -292,7 +292,7 @@
       "kind": "page",
       "title": "终审与交付",
       "path": "docs/pages/delivery.md",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "dependsOn": [
         "agent.final-review-owner",

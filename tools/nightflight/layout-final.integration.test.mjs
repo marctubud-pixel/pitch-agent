@@ -109,7 +109,7 @@ test('v3: confirms a manuscript, preserves its pages in PPTX, returns a sourced 
     {title:'核心策略',pages:[page('strategy',strategy)]},
     {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['突出馆内场景。']}),
       page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),page('decision','请确认素材')]},
-  ],closing:'感谢观看'};
+  ],closing:'感谢观看，期待与您确认下一步方向。'};
   const executable=join(root,'review-fixture.mjs');
   await writeFile(executable,`#!/usr/bin/env node
 import {randomUUID} from 'node:crypto';
@@ -176,6 +176,7 @@ else {
   assert.match(xml('ppt/slides/slide7.xml'),/<p:pic>/u);
   assert.doesNotMatch(xml('ppt/slides/slide7.xml'),/排版前请核对展签/u);
   assert.match(xml('ppt/notesSlides/notesSlide7.xml'),/排版前请核对展签/u);
+  assert.match(xml('ppt/slides/slide9.xml'),/期待与您确认下一步方向。/u);
   const deckFile=state.artifacts.find(a=>a.name.endsWith('.deck.json'));
   const deck=JSON.parse(await readFile(join(storage,deckFile.url.split('/').at(-1)),'utf8'));
   assert.equal(deck.pages[5].template,'design.halfR');
