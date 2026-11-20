@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.97.0",
+  "baselineVersion": "1.98.0",
   "date": "2026-11-20",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -863,7 +863,7 @@
       "kind": "method",
       "title": "文案三方向创作与交付",
       "path": "docs/specs/copy-generation.md",
-      "version": "1.10.0",
+      "version": "1.11.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.review",

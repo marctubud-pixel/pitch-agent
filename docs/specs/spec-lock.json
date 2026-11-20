@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.97.0",
-  "registrySha256": "dbac8e09a30741b20f313a83ef1e442c0f9e3996c353864b760172b4507673c6",
+  "baselineVersion": "1.98.0",
+  "registrySha256": "c8fd9fe7b9560d41ba8ceee7864768154bfd81d81906ae0751720e25be86a707",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -510,10 +510,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.10.0",
+      "version": "1.11.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "88364412c1e6cda5f24030c6064e6e2fd55bdab29686d2b421c3b42375449de8"
+        "docs/specs/copy-generation.md": "863147f10a23953a6e41cbe93a46661b7716ba03bfcbbea939012c6f41e7be3c"
       }
     },
     "method.slogan-engine": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "62019da3bdba8b99a1ec4c5b32254cc982109be5e67a50ce0c7a0f36635ecad3",
+    "docs/specs/README.md": "42f3e4cabfc2c59c548e40de51f6fcbb068c1d8509bba68b15da7ed7f4ef5437",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

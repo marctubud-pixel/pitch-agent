@@ -1483,3 +1483,42 @@ test('consumer research opens precise publisher results ahead of broader directo
   assert.equal(seen[0],resource);
   assert.equal(result.findings[0].evidence,quote);
 });
+
+test('DeepSeek copy repairs a missing pick and a broken quotation without rewriting the original candidates',async()=>{
+  const {runCopyReview,engineCopyHandoffReady}=await import('./copy-review.mjs');
+  const skill=await readFile(new URL('../../skills/slogan-engine/SKILL.md',import.meta.url),'utf8');
+  const brief='制作燕麦饮包装。每瓶有燕麦和水。用于通勤早餐。';
+  const basis='用于通勤早餐';
+  const workbook={directions:['A','B','C'].map(id=>({
+    id,name:id+'方向',basis:id==='B'?'拼接的错误依据':basis,claim:id+'主张',mechanism:id+'机制',strategyLink:'承接通勤',
+    secondary:'燕麦饮',candidates:[1,2,3].map(n=>({text:id+'候选'+n,use:'提案页'})),
+  }))};
+  const picks={A:'A1',B:'B2',C:'C3'};
+  const authorCheck={
+    selections:['A候选1','B候选2','C候选3'].map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'创意证据'+phrase,sloganReady:true})),
+    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'画面不同'})),
+  };
+  const replies={
+    COPY_ENGINE_WRITE:{workbook},
+    COPY_ENGINE_GROUND:{citations:[{id:'B',basis}]},
+    COPY_ENGINE_PICK:{picks,authorCheck},
+    COPY_ENGINE_RECOMMEND:{directionId:'C',reason:'承接通勤'},
+  };
+  const calls=[];
+  const {copyReview,body,directions}=await runCopyReview({project:{brief},inputs:{texts:[]},rules:[skill],singleOwner:true,
+    call:async (instruction,_images,_schema,task)=>{
+      const phase=instruction.split('\n')[0];
+      calls.push(phase);
+      const packet=JSON.parse(task.context);
+      if (phase.endsWith('GROUND')) assert.deepEqual(packet.listedDirections.map(d=>d.id),['B']);
+      if (phase.endsWith('PICK')) assert.deepEqual(packet.workbook.directions.map(d=>d.candidates),workbook.directions.map(d=>d.candidates));
+      return {parsedOutput:replies[phase],runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'b'.repeat(64)};
+    }});
+  assert.deepEqual(calls,Object.keys(replies));
+  assert.equal(workbook.directions[1].basis,'拼接的错误依据');
+  assert.equal(copyReview.workbook.directions[1].basis,basis);
+  assert.deepEqual(copyReview.repairs.map(r=>r.phase),['COPY_ENGINE_GROUND','COPY_ENGINE_PICK']);
+  assert.equal(engineCopyHandoffReady(copyReview,directions,body),true);
+  copyReview.repairs[0].threadId=copyReview.calls[0].threadId;
+  assert.equal(engineCopyHandoffReady(copyReview,directions,body),false);
+});
