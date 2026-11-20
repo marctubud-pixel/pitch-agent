@@ -128,10 +128,15 @@ else {
  if(prompt.includes('核对剩余必改项。')) {
    if(!Array.isArray(last) || !last.some(item=>item.image_url)) throw Error('缺少必改项实页');
    const ctx=JSON.parse(prompt.split('实际项目输入（JSON）\\n\\n')[1]);
-   reply={items:Object.fromEntries(Object.entries(ctx['待核所见']).map(([id,issue])=>[id,{
-     kind:issue.page===2?'readable_suggestion':'fact_conflict',actual:'对应实页',required:issue.page===2?'':'须预约',
-     location:'正文',reason:'逐字比对给定的实际证据',source:issue.page===2?'':'B1',
-   }]))};
+   reply={items:Object.fromEntries(Object.entries(ctx['待核所见']).map(([id,issue])=>{
+     const location='正文',reason='逐字比对给定的实际证据';
+     if(issue.problem==='建议统一馆内的叫法')
+       return [id,{kind:'pending_confirmation',actual:'馆内',required:'馆内亲子活动',source:'B1',location,reason}];
+     if(issue.problem==='策略页需重列参加条件')
+       return [id,{kind:'confirmed_requirement_missing',actual:'',required:'策略页需重列参加条件',source:'S1',location,reason}];
+     return [id,{kind:issue.page===2?'readable_suggestion':'fact_conflict',actual:'对应实页',
+       required:issue.page===2?'':'须预约',location,reason,source:issue.page===2?'':'B1'}];
+   }))};
  } else if(prompt.includes('本批PPT')) {
    if(!Array.isArray(last) || !last.some(p=>p.image_url?.url.startsWith('data:image/jpeg;base64,')) || !prompt.includes('馆内讲解 · 须预约'))
      throw Error('审稿缺少本版图或原文案');
@@ -147,6 +152,12 @@ else {
    if (role==='逻辑岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。')))) issues.push({...issue,page:3});
    if (role==='措辞岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。'))))
      issues.push({...issue,page:3,target:'copy',from:'报名方式待定',to:'须预约'});
+   if (role==='措辞岗' && pages.some(p=>p['页码']===3 && p.text.includes('馆内讲解面向亲子。')))
+     issues.push({...issue,page:3,operation:'hold',target:'brief',from:'',to:'',quote:'',
+       problem:'建议统一馆内的叫法',evidence:'实页和原简报写馆内',change:'核对更正式的叫法'});
+   if (role==='逻辑岗' && pages.some(p=>p['页码']===5))
+     issues.push({...issue,page:5,operation:'hold',target:'strategy',from:'',to:'',quote:'',
+       problem:'策略页需重列参加条件',evidence:'策略页只呈现已定策略句',change:'加一遍参加条件'});
    if (role==='逻辑岗' && pages.some(p=>p['页码']===8))
      issues.push({...issue,page:8,impact:'production',operation:'hold',target:'brief',from:'',to:'',quote:'',
        problem:'上线发布前须拿到正式报名链接',evidence:'本轮只交公众号封面提案',change:'记录为后续发布待确认'});
@@ -238,6 +249,8 @@ else {
   const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
   assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
   assert.match(report,/第 2 页 · P1 · 目录导读可精简 · 版式/u);
+  assert.match(report,/第 3 页 · P1 · 建议统一馆内的叫法/u);
+  assert.match(report,/第 5 页 · P1 · 策略页需重列参加条件/u);
   assert.match(report,/第 7 页 · P1 · 可重绘原图光影 · 视觉/u);
   assert.doesNotMatch(report,/第 3 页 · P0/u);
   await request({kind:'accept_final',expectedRevision:state.revision-1},409);

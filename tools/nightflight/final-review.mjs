@@ -203,15 +203,16 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent}) {
     const batch=pages.slice(offset,offset+4);
     const claims=critical.filter(issue=>batch.includes(issue.page));
     const ids=claims.map((_,index)=>String(index+1));
-    const schema=object({items:object(Object.fromEntries(ids.map(id=>[id,object({
-      kind:{...text,enum:kinds},actual:text,required:text,location:text,reason:text,source:text,
-    })])))});
     const confirmed=Object.fromEntries([
       ['B1',{出处:'客户原始 Brief',原话:plan.brief.original}],
       ...plan.strategy.map((item,index)=>['S'+(index+1),{出处:'已定策略',原话:item.body}]),
       ...plan.copy.map((item,index)=>['C'+(index+1),{出处:'已选主副标',原话:[item.main,item.secondary].filter(Boolean).join('\n')}]),
       ...batch.flatMap(page=>plan.pages[page-1].sources ?? []).map((item,index)=>['R'+(index+1),{出处:item.source,原话:item.evidence}]),
     ].filter(([,entry])=>meaningful(entry.原话)));
+    const schema=object({items:object(Object.fromEntries(ids.map(id=>[id,object({
+      kind:{...text,enum:kinds},actual:text,required:text,location:text,reason:text,
+      source:{...text,enum:['',...Object.keys(confirmed)]},
+    })])))});
     const context=JSON.stringify({
       Brief:plan.brief,策略:plan.strategy,采用文案:plan.copy,
       本批页图:batch.map(page=>({页码:page,逐页稿:plan.pages[page-1],PPT:edition.native[page-1]})),
@@ -221,10 +222,11 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent}) {
     await onEvent?.('核实仍待处理的必改项 · 第 '+batch.join('、')+' 页');
     const result=await call([
       '核对剩余必改项。结合实际页图和同版正文，逐条读取所报位置。按给定编号只返回一份判断。',
-      '先按实图逐字转录相关字样 actual，location 写看到的位置。逐项选一个证据类型 kind。fact_conflict 需要实际原字与本版已确认事实冲突。confirmed_requirement_missing 需要本页应交付的已确认信息确实缺失。key_content_unreadable 需要字实际被遮挡、裁掉或模糊到读不出。前三类在 required 中逐字摘录本版给定材料中的必要原句、要求或关键字样。',
+      '先按实图逐字转录意见直接质疑的最短字样 actual，location 写看到的位置。逐项选一个证据类型 kind。fact_conflict 需要实际原字与本版已确认事实冲突。confirmed_requirement_missing 需要本页应交付的已确认信息确实缺失。key_content_unreadable 需要字实际被遮挡、裁掉或模糊到读不出。前三类在 required 中逐字摘录本版给定材料中的必要原句、要求或关键字样。',
       '实际内容能读全，意见只是标点、句式、普通断行、留白或美术，选 readable_suggestion。中英文标点或行尾形式本身属于这一类。报告描述的现象没有发生选 not_found。还缺实际证据选 unresolved。若这三类没有必要原话，required 留空。',
       'work 是作品整图页，创意思路在 direction 页。品牌名待定和待客户选案按原任务保留。reason 只写实图和原件能支持的理由。',
       '商品事实冲突或缺少已确认要求时，必须在 source 填确认材料的编号，并在 required 逐字引用该条原话。讲稿备注只用于识别实际所见。备注要求「后续、实拍时、待客户确认」某事实而确认材料未提供时，选 pending_confirmation，将本项留作后续制作提示。文字被挡或裁切时用 key_content_unreadable，required 写本页应读取的关键字样，source 留空。无需引用的类别 source 留空。',
+      '用词意见先逐字对照原简报，以及已定策略或文案。实际已经沿用客户词，若仅建议核实更合适的叫法，选 readable_suggestion。核心策略句在本页完整呈现时，按该页职责判断；只有取得本页必须另设信息的已确认原句，才按缺失处理。',
     ].join('\n'),batch.map(page=>edition.images[page-1]),schema,{delegate:true,context});
     const items=result.parsedOutput?.items;
     if (!items || Object.keys(items).length!==ids.length || !ids.every(id=>kinds.includes(items[id]?.kind) &&
@@ -236,12 +238,21 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent}) {
       const observed=norm(decision.actual);
       const authority=Object.hasOwn(confirmed,decision.source) ? confirmed[decision.source] : null;
       const sourceMatches=authority && expected.length>=2 && norm(authority.原话).includes(expected);
-      const note=plan.pages[issue.page-1].notes ?? '';
+      const slide=plan.pages[issue.page-1];
+      const nativeText=norm(edition.native[issue.page-1].text.join(''));
+      const note=slide.notes ?? '';
       const productionNote=decision.kind==='pending_confirmation' && !sourceMatches && observed && norm(note).includes(observed);
+      const wordingNote=decision.kind==='pending_confirmation' && sourceMatches && observed.length>=2 &&
+        norm(authority.原话).includes(observed) && nativeText.includes(observed);
       const showsExpected=expected && expected===observed && (sourceMatches || decision.kind==='key_content_unreadable');
-      if (productionNote || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind)) {
-        updates.set(issue,{...issue,level:'P1',blockedBy:(productionNote?'保留为后续制作待确认。':'按本版实页复核。')+decision.location+' '+decision.reason});
-      } else if (['fact_conflict','confirmed_requirement_missing'].includes(decision.kind) && !sourceMatches) {
+      const unsupported=['fact_conflict','confirmed_requirement_missing'].includes(decision.kind) && !sourceMatches;
+      const heading=norm(slide.title);
+      const approvedStrategy=unsupported && slide.role==='strategy' && !slide.points.length && heading && nativeText.includes(heading) &&
+        plan.strategy.some(item=>meaningful(item.body) && norm(item.body).includes(heading));
+      if (productionNote || wordingNote || approvedStrategy || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind)) {
+        const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':'按本版实页复核。';
+        updates.set(issue,{...issue,level:'P1',blockedBy:qualification+decision.location+' '+decision.reason});
+      } else if (unsupported) {
         updates.set(issue,{...issue,blockedBy:'引用尚未绑定本版已确认原话，保留待核。'+decision.location+' '+decision.reason});
       }
     }
