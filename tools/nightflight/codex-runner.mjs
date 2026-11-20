@@ -14,7 +14,7 @@ import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
-import { access, lstat, readFile, readdir, realpath, writeFile, mkdir, mkdtemp, link, rm } from 'node:fs/promises';
+import { access, lstat, readFile, readdir, realpath, writeFile, mkdir, mkdtemp, link, rename, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { basename, delimiter, dirname, extname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -1558,7 +1558,12 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       const work=await mkdtemp(join(dir,'.visual-pass-'));
       try {
         const result=await executeStage(call,work,cached);
-        for(const name of await readdir(work)) await link(join(work,name),join(dir,name));
+        for (const entry of await readdir(work,{withFileTypes:true})) {
+          if (entry.isFile()) await link(join(work,entry.name),join(dir,entry.name));
+          else if (entry.isDirectory() && entry.name==='public-reference-sources') {
+            await rename(join(work,entry.name),join(dir,'.visual-search-evidence'));
+          }
+        }
         return result;
       } finally {await rm(work,{recursive:true,force:true});}
     },onEvent);

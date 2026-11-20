@@ -320,7 +320,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
           if (!entry.isDirectory() || !/^attempt-[a-zA-Z0-9]{6}$/.test(entry.name) || path===keep) continue;
           const receipts=join(root,id,'receipts',entry.name);
           for (const file of readdirSync(path,{withFileTypes:true})) {
-            if (!['.codex-runs','.image-api-runs','.research-evidence'].includes(file.name) && !/^(copy-review-attempt-|reference-admission-|visual-review-).*\.json$|\.receipt\.json$/.test(file.name)) continue;
+            if (!['.codex-runs','.image-api-runs','.research-evidence','.visual-search-evidence'].includes(file.name) && !/^(copy-review-attempt-|reference-admission-|visual-review-).*\.json$|\.receipt\.json$/.test(file.name)) continue;
             mkdirSync(receipts,{recursive:true,mode:0o700});
             renameSync(join(path,file.name),join(receipts,file.name));
           }
