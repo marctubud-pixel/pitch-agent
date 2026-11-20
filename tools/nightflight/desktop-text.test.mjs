@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'node:test';
 import {createStageRunner} from './codex-runner.mjs';
-import {desktopTextProvider} from './desktop-text.mjs';
+import {desktopImageProvider, desktopTextProvider} from './desktop-text.mjs';
 
 test('API stages use configured providers without a Codex installation and record the answering models', async (t) => {
   const dir = await mkdtemp(join(tmpdir(), 'onepitch-models-'));
@@ -59,6 +59,73 @@ if (action === 'profile') {
   assert.equal(review.model,'actual-vision-model');
   assert.ok(events.some(x=>x.includes('文字 API 回执') && x.includes('actual-text-model') && x.includes('request-text-model')));
   assert.ok(events.some(x=>x.includes('视觉理解 API 回执') && x.includes('actual-vision-model') && x.includes('request-vision-model')));
+});
+
+test('the desktop replays only marked pre-dispatch TLS failures for text and vision', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'onepitch-tls-'));
+  t.after(() => rm(dir,{recursive:true,force:true}));
+  const executable = join(dir,'fixture.mjs');
+  const trace = join(dir,'requests.jsonl');
+  const imagePath = join(dir,'attachment.png');
+  await writeFile(imagePath,'fixture image bytes');
+  await writeFile(trace,'');
+  await writeFile(executable,`#!/usr/bin/env node
+import {appendFileSync, readFileSync} from 'node:fs';
+const [mode, action] = process.argv.slice(2);
+const model = mode.slice(2);
+if (action === 'profile') {
+  console.log(JSON.stringify({host:'fixture.test',base:'https://fixture.test',model}));
+} else {
+  const chunks = [];
+  for await (const chunk of process.stdin) chunks.push(chunk);
+  const bytes = Buffer.concat(chunks);
+  const {body} = JSON.parse(bytes);
+  const message = body.messages?.[1].content;
+  const prompt = body.prompt ?? (Array.isArray(message) ? message[0].text : message);
+  const path = ${JSON.stringify(trace)};
+  const previous = readFileSync(path,'utf8').split('\\n').filter(Boolean).map(line=>JSON.parse(line));
+  const alreadySent = previous.some(entry=>entry.mode===mode && entry.prompt===prompt);
+  appendFileSync(path,JSON.stringify({mode,prompt,bytes:bytes.toString('base64')})+'\\n');
+  const tls = 'An SSL error has occurred and a secure connection to the server cannot be made.';
+  const failures = {'plain SSL':tls,'certificate':'The certificate for this server is invalid.',HTTP:'视觉理解接口 HTTP 401'};
+  if (Object.hasOwn(failures,prompt)) {
+    console.log(JSON.stringify({failure:failures[prompt]}));
+  } else if (!alreadySent || prompt==='persistent' || mode==='--image-model') {
+    console.log(JSON.stringify({failure:tls,retryCause:'tls-before-send'}));
+  } else {
+    console.log(JSON.stringify({id:'accepted-'+model,model,choices:[{message:{content:'{"body":"received"}'}}]}));
+  }
+}`);
+  await chmod(executable,0o700);
+  const events = [];
+  const provider = await desktopTextProvider(executable,undefined,line=>events.push(line));
+  const images = [{path:imagePath,mediaType:'image/png'}];
+  const execute = (prompt,attached=[])=>provider.execute({runId:prompt,prompt,images:attached,outputSchema:{}});
+  const sent = async (mode,prompt)=>(await readFile(trace,'utf8')).trim().split('\n')
+    .map(line=>JSON.parse(line)).filter(entry=>entry.mode===mode && entry.prompt===prompt);
+  const assertSamePair = async (mode,prompt)=>{
+    const requests = await sent(mode,prompt);
+    assert.equal(requests.length,2);
+    assert.equal(requests[0].bytes,requests[1].bytes);
+    return createHash('sha256').update(Buffer.from(requests[0].bytes,'base64')).digest('hex');
+  };
+
+  for (const [mode,attached] of [['--text-model',[]],['--vision-model',images]]) {
+    const result = await execute('recover',attached);
+    assert.deepEqual(result.parsedOutput,{body:'received'});
+    assert.equal(result.threadId,'accepted-'+mode.slice(2));
+    assert.equal(result.inputPacketHash,await assertSamePair(mode,'recover'));
+  }
+  await assert.rejects(execute('persistent',images),{code:'TLS_BEFORE_SEND'});
+  await assertSamePair('--vision-model','persistent');
+  for (const [prompt,error] of [['plain SSL',/SSL error/],['certificate',/certificate/],['HTTP',/HTTP 401/]]) {
+    await assert.rejects(execute(prompt,images),error);
+    assert.equal((await sent('--vision-model',prompt)).length,1);
+  }
+  const imageProvider = desktopImageProvider(executable,dir,undefined,line=>events.push(line));
+  await assert.rejects(imageProvider.execute({runId:'image',prompt:'image',images}),{code:'TLS_BEFORE_SEND'});
+  assert.equal((await sent('--image-model','image')).length,1);
+  assert.equal(events.filter(line=>line.includes('原样自动重试一次')).length,3);
 });
 
 test('desktop visual generation sends the configured writer’s exact prompt and the selected original to the image API', async t=>{

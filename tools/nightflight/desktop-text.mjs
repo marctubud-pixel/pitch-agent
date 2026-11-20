@@ -3,6 +3,7 @@ import {execFile} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
+import {setTimeout as delay} from 'node:timers/promises';
 import {inspectImage} from '../workbench/image-evidence.mjs';
 
 function invoke(executable, action, input, signal, mode = '--text-model') {
@@ -11,7 +12,11 @@ function invoke(executable, action, input, signal, mode = '--text-model') {
       if(error) return reject(new Error('模型请求未完成：'+(error.code || error.name)));
       try {
         const response=JSON.parse(data);
-        if(response.failure) throw Error(response.failure);
+        if(response.failure) {
+          const failure=Error(response.failure);
+          if (response.retryCause==='tls-before-send') failure.code='TLS_BEFORE_SEND';
+          throw failure;
+        }
         resolve(response);
       } catch(e){reject(e)}
     });
@@ -44,7 +49,13 @@ export async function desktopTextProvider(executable,signal,onEvent) {
     }
     const packet=JSON.stringify(jsonModelRequest(profile,content,outputSchema));
     await onEvent?.(capability+' API 请求 · '+profile.host+' · '+profile.model);
-    const result=await invoke(executable,'completion',packet,signal,mode);
+    const result=await invoke(executable,'completion',packet,signal,mode).catch(async error=>{
+      if (error.code!=='TLS_BEFORE_SEND') throw error;
+      await onEvent?.(capability+' API 握手失败，尚未发送请求。原样自动重试一次 · '+profile.host);
+      await delay(750,undefined,{signal});
+      await onEvent?.(capability+' API 请求 · '+profile.host+' · '+profile.model);
+      return invoke(executable,'completion',packet,signal,mode);
+    });
     if(!result.id || !result.model) throw Error('文字服务未返回模型身份或请求编号');
     await onEvent?.(capability+' API 回执 · '+profile.host+' · 实际模型 '+result.model+' · '+result.id);
     const responseText=result.choices?.[0]?.message?.content;

@@ -155,12 +155,17 @@ if ["--text-model","--image-model","--vision-model"].contains(CommandLine.argume
             request.setValue("application/json",forHTTPHeaderField:"Content-Type")
         }
         request.setValue("Bearer "+secret,forHTTPHeaderField:"Authorization")
-        let session = URLSession(configuration:.ephemeral,delegate:NoRedirect(),delegateQueue:nil)
+        let transport = NoRedirect()
+        let session = URLSession(configuration:.ephemeral,delegate:transport,delegateQueue:nil)
         let done = DispatchSemaphore(value:0)
         session.dataTask(with:request) { data,response,error in
             defer { done.signal() }
             guard error == nil, let http = response as? HTTPURLResponse else {
-                reply(["failure":error?.localizedDescription ?? "连接服务失败"]); return
+                var failure = ["failure":error?.localizedDescription ?? "连接服务失败"]
+                if capability != .image && response == nil && (data == nil || data?.isEmpty == true) && transport.isUnsentHandshakeFailure(error) {
+                    failure["retryCause"] = "tls-before-send"
+                }
+                reply(failure); return
             }
             guard (200..<300).contains(http.statusCode), let data = data else {
                 reply(["failure":capability.rawValue + "接口 HTTP " + String(http.statusCode)]); return
