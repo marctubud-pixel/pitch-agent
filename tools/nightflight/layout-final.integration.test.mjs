@@ -85,6 +85,10 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const strategy='先看出馆内活动，再读预约。';
   const copy='本版文案稿';
   const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4uoAAAAASUVORK5CYII=','base64');
+  const visualIntent='用家长牵孩子进馆的动作表现亲子参与。';
+  const observation={composition:'左边标题，右边展柜',legibleText:['天黑进馆'],visibleDetails:['展柜'],uncertain:['未看清人物动作']};
+  const peerSource={chapter:'竞争与同类传播',source:'场馆原文',url:'https://example.invalid/venue',
+    conclusion:'活动名在海报上方',evidence:'上方标题区为活动名称'};
   const artifact=(stage,name,kind='text')=>({stage,name,kind,storageKey:name});
   await Promise.all(Object.entries({'任务卡.md':brief,'策略.md':strategy,'文案.md':copy,'原图.png':image})
     .map(([name,bytes])=>writeFile(join(storage,name),bytes)));
@@ -93,10 +97,10 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
     commands:{},claim:null,owner:null,attachments:[],versions:[],feedback:[],events:[],
     briefScope:{status:'accepted',types:['kv']},directions:['馆内夜游'],choice:'馆内夜游',
     copyReview:{status:'ready',bodyHash:sha(copy),draft:{directions:[{name:'馆内夜游',main:'天黑进馆',secondary:'馆内讲解 · 须预约'}]}},
-    research:{findings:[{chapter:'竞争与同类传播',source:'场馆原文',url:'https://example.invalid/venue',
-      conclusion:'活动名在海报上方',evidence:'上方标题区为活动名称'}],sections:[{chapter:'竞争与同类传播',evidenceIndices:[0]}]},
+    research:{findings:[peerSource],sections:[{chapter:peerSource.chapter,evidenceIndices:[0]}]},
     artifacts:[artifact('brief','任务卡.md'),artifact('strategy','策略.md'),artifact('copy','文案.md'),
-      {...artifact('visual','原图.png','image'),visual:{direction:'馆内夜游',role:'main',candidate:1,recommended:true,sha256:sha(image)}}],
+      {...artifact('visual','原图.png','image'),visual:{direction:'馆内夜游',role:'main',candidate:1,recommended:true,sha256:sha(image),
+        referenceHandoff:{referenceTask:{translation:visualIntent}}}}],
   };
   const db=new DatabaseSync(join(root,'nightflight.sqlite'));
   db.exec('CREATE TABLE projects(id TEXT PRIMARY KEY,revision INTEGER,state TEXT)');
@@ -181,8 +185,19 @@ else {
    appendFileSync(${JSON.stringify(log)},JSON.stringify({role:'全览',pages:[]})+'\\n');
    reply={observation:'已检查全览'};
  } else if(Array.isArray(last)) {
-   reply={composition:'左边标题，右边展柜',legibleText:['天黑进馆'],visibleDetails:['展柜'],uncertain:[]};
- } else reply=${JSON.stringify(draft)};
+   if(mode!=='--vision-model' || !last.some(item=>item.image_url?.url===${JSON.stringify('data:image/png;base64,'+image.toString('base64'))}))
+     throw Error('读图未收到本版采用的原图');
+   reply=${JSON.stringify(observation)};
+ } else {
+   const materials=JSON.parse(prompt.split(String.fromCharCode(96).repeat(3)).at(-2).slice(4));
+   const figure=materials.figures[0];
+   if(mode!=='--text-model' || figure.id!=='A1' || figure.sha256!==${JSON.stringify(sha(image))} ||
+      figure.visualIntent!==${JSON.stringify(visualIntent)} || JSON.stringify(figure.observation)!==JSON.stringify(${JSON.stringify(observation)}))
+     throw Error('DeepSeek 编稿未分开接收同版原图的画面意图和实际读图');
+   if(JSON.stringify(materials.research.findings)!==JSON.stringify([${JSON.stringify(peerSource)}]) ||
+      materials.research.sections[0].evidenceIndices[0]!==0) throw Error('DeepSeek 编稿未收到同版同类结论和出处');
+   reply=${JSON.stringify(draft)};
+ }
  console.log(JSON.stringify({model,id:randomUUID(),choices:[{message:{content:JSON.stringify(reply)}}]}));
 }`,{mode:0o700});
   const previous=process.env.ONEPITCH_TEXT_EXECUTABLE;

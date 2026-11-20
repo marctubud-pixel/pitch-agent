@@ -1,7 +1,7 @@
 import {createHash,randomUUID} from 'node:crypto';
 import {execFile} from 'node:child_process';
 import {readFile,writeFile} from 'node:fs/promises';
-import {basename,join} from 'node:path';
+import {basename,extname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {promisify} from 'node:util';
 import {independentCalls,invalidOutput} from './call-checkpoints.mjs';
@@ -15,7 +15,7 @@ const roles={
   copy:'措辞岗：把大屏上的长句和调研腔压成短句，保留限定、证据和已定策略及主副标。按现有材料纠正错误表述。',
   craft:'美术岗：看实图的构图、领读、字号、断行、裁切、遮挡、展签、品牌和页脚。指出确实看得到的问题和具体位置。',
 };
-const roleNames={logic:'逻辑',copy:'措辞',craft:'美术',critical:'必改证据核实'};
+const roleNames={logic:'逻辑',copy:'措辞',craft:'美术',critical:'必改证据核实',productUse:'采用原图场景核实',survey:'实页调查数据核实'};
 const choices=['text','gallery','comparison','reflow','rhythm','shadows','hold','note'];
 const upstream=['brief','research','strategy','copy','visual'];
 const stageNames={brief:'简报',research:'研究',strategy:'策略',copy:'文案',visual:'视觉',layout:'版式'};
@@ -193,7 +193,89 @@ async function recheck(options) {
   ]);
 }
 
-async function qualifyCritical({call,current,pending,round,receipts,onEvent}) {
+const packageAmounts=value=>norm(value).match(/\d+(?:[.]\d+)?(?:袋|包|盒|瓶|罐|杯|片|粒|支|份|枚|克|g)/giu) ?? [];
+const packCounts=value=>packageAmounts(value).filter(amount=> !/(?:克|g)$/iu.test(amount));
+const countLabel={type:'integer',minimum:0};
+const parsedCount=value=>Number(value.match(/^\d+/u)?.[0]);
+
+async function verifyProductUse({call,project,plan,slide,edition,round,receipts,onEvent,issue,decision}) {
+  const complaint=issue.problem+' '+issue.evidence;
+  if (slide.role!=='work' || slide.figures.length!==1 || !['fact_conflict','confirmed_requirement_missing'].includes(decision.kind) ||
+      !/(?:仅|只)(?:见|有|放|装|显示)|少(?:了|装)|袋数|份数|实物数量|装量|槽位|插槽|空位|缺少第/u.test(complaint) || !packCounts(complaint).length) return '';
+  const figure=plan.figures.find(item=>item.id===slide.figures[0]);
+  const artifact=project.artifacts.find(item=>item.adoptedForLayout && item.name===figure?.name);
+  const visualIntent=figure?.visualIntent ?? artifact?.visual?.referenceHandoff?.referenceTask?.translation;
+  const observation=figure?.observation;
+  const mediaType={'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp'}[extname(artifact?.name ?? '').toLowerCase()];
+  if (!mediaType || !meaningful(visualIntent) || !observation?.legibleText?.length || !artifact.path ||
+      !edition.native[issue.page-1].images.some(image=>image.name===figure.name && image.sha256===figure.sha256)) return '';
+  const bytes=await readFile(artifact.path).catch(error=>{if(error.code!=='ENOENT') throw error; return null;});
+  if (!bytes || sha(bytes)!==figure.sha256) return '';
+  const schema=object({printed:text,display:{...text,enum:['closed_pack','taken_out','unclear']},empty:text,matching:text,contradiction:text,
+    insideCount:countLabel,matchingOutsideCount:countLabel});
+  const instruction=[
+    '先看采用原图，再对照之前的观察和画面意图。意图本身不能证明画上内容。请核对商品外盒上写的规格和实际展示情形，不采纳讲稿的改稿意见。',
+    'closed_pack 指明确展示的是未取出任何一份的整盒。taken_out 指盒内确有对应空位，盒外同时有与盒内同款的单份，画面正在示意使用。无法核实时填 unclear。请用 empty 写空位位置，用 matching 写同款包装的可见痕迹。',
+    'printed 照抄盒上装量。contradiction 写可见的另一种装量、取出后仍明显缺少商品，或违反本案明确的展示方式；缺证时如实留空，无法判断展示关系填 unclear。盒外不相关的摆件不能算一份。',
+    '遇到空位，把两边实际可见的满槽分开数，再把满槽数量相加写 insideCount，空位不计。matchingOutsideCount 只数确实同款且对应空位的单份。之前的读图可用于定位，复核时不要按印刷字样补齐件数，无法数清则填 0 并填 unclear。',
+  ].join('\n');
+  const context=JSON.stringify({客户原始要求:plan.brief.original,画面意图:visualIntent,原图读图实答:observation});
+  await onEvent?.('核对采用原图的商品展示 · 第 '+issue.page+' 页');
+  const reply=await call(instruction,[{path:artifact.path,mediaType,sha256:figure.sha256}],schema,{delegate:true,context});
+  const answer=reply.parsedOutput;
+  if (!answer || !['closed_pack','taken_out','unclear'].includes(answer.display) ||
+      ![answer.printed,answer.empty,answer.matching,answer.contradiction].every(value=>typeof value==='string'))
+    throw invalidOutput('商品展示复核须逐字记录盒身规格、空位、同款依据和实际冲突');
+  receipts.push({round,role:'productUse',pages:[issue.page],verify:true,model:reply.model,completionId:reply.threadId,
+    inputSha256:reply.inputPacketHash,observation:[answer.display,answer.printed,answer.empty,answer.matching,answer.contradiction,
+      '盒内 '+answer.insideCount+'，盒外同款 '+answer.matchingOutsideCount].filter(Boolean).join('，')});
+  const amounts=packageAmounts(answer.printed);
+  const counts=packCounts(answer.printed);
+  const briefAmounts=packageAmounts(plan.brief.original);
+  const {insideCount,matchingOutsideCount}=answer;
+  const verified=answer.display==='taken_out' && meaningful(answer.empty) && meaningful(answer.matching) && !meaningful(answer.contradiction) &&
+    counts.length===1 && amounts.every(amount=>briefAmounts.includes(amount)) &&
+    [insideCount,matchingOutsideCount].every(count=>Number.isSafeInteger(count) && count>0) &&
+    insideCount+matchingOutsideCount===parsedCount(counts[0]) &&
+    observation.legibleText.some(line=>norm(line).includes(norm(answer.printed)));
+  return verified?'采用原图已核实取用场景。'+answer.empty+'，'+answer.matching+'。盒内 '+insideCount+'，盒外同款 '+matchingOutsideCount+'，盒身印字「'+answer.printed+'」。':'';
+}
+
+async function verifySurvey({call,slide,edition,round,receipts,onEvent,issue,decision}) {
+  const native=edition.native[issue.page-1];
+  const concern=issue.problem+' '+issue.evidence;
+  if (slide.role!=='trend' || native.charts!==0 || !['pending_confirmation','confirmed_requirement_missing'].includes(decision.kind) ||
+      !/样本|口径|统计|调查/u.test(concern)) return '';
+  const normNumber=value=>value.replaceAll(',','');
+  const values=value=>numbers(value).map(normNumber);
+  const points=slide.points.filter(line=>values(line).some(number=>number.endsWith('%')));
+  const sources=slide.sources;
+  if (points.length<2 || !sources.length || !points.every(point=>norm(native.text.join('')).includes(norm(point)))) return '';
+  const ids=points.map((_,i)=>String(i+1));
+  const refs=sources.map((_,i)=>'R'+(i+1));
+  const schema=object({rows:object(Object.fromEntries(ids.map(id=>[id,object({actual:text,quote:text,
+    source:{...text,enum:['',...refs]},comparison:{...text,enum:['matches','conflicts','unclear']}})]))),
+    relationship:{...text,enum:['separate_claims','mixed_denominator','unclear']}});
+  const context=JSON.stringify({页题:slide.title,实页条目:Object.fromEntries(ids.map((id,i)=>[id,points[i]])),
+    研究来源:Object.fromEntries(refs.map((ref,i)=>[ref,sources[i]]))});
+  await onEvent?.('核对实页调查数据的对应口径 · 第 '+issue.page+' 页');
+  const response=await call('按真实页图逐条抄出 actual，选择一份对应研究来源 source，quote 摘录其中一条连续原句。分别核实数字、时期、对象和样本口径，不能从百分比或题名猜。每条填 matches、conflicts 或 unclear。看页上是分别叙述不同调查，还是用同一分母对比；分别选 separate_claims、mixed_denominator 或 unclear。',
+    [edition.images[issue.page-1]],schema,{delegate:true,context});
+  const answer=response.parsedOutput;
+  receipts.push({round,role:'survey',pages:[issue.page],verify:true,model:response.model,completionId:response.threadId,
+    inputSha256:response.inputPacketHash,observation:JSON.stringify(answer)});
+  const grounded=answer?.relationship==='separate_claims' && ids.every((id,i)=>{
+    const row=answer.rows?.[id];
+    const source=sources[refs.indexOf(row?.source)];
+    if (!meaningful(source?.evidence) || row?.comparison!=='matches' || !meaningful(row.actual) || norm(row.actual)!==norm(points[i]) ||
+        !meaningful(row.quote) || !norm(source.evidence).includes(norm(row.quote))) return false;
+    const allowed=values(source.evidence+' '+(source.sampleScope ?? ''));
+    return values(points[i]).every(number=>allowed.includes(number));
+  });
+  return grounded?'实页数据分别陈述，数字已逐条对到原研究。口径呈现另作措辞建议。':'';
+}
+
+async function qualifyCritical({call,current,pending,round,receipts,onEvent,project}) {
   const {plan,edition}=current;
   const critical=pending.filter(issue=>issue.level==='P0');
   const pages=[...new Set(critical.map(issue=>issue.page))];
@@ -215,7 +297,8 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent}) {
     })])))});
     const context=JSON.stringify({
       Brief:plan.brief,策略:plan.strategy,采用文案:plan.copy,
-      本批页图:batch.map(page=>({页码:page,逐页稿:plan.pages[page-1],PPT:edition.native[page-1]})),
+      本批页图:batch.map(page=>({页码:page,逐页稿:plan.pages[page-1],PPT:edition.native[page-1],
+        采用原图观察:plan.figures.filter(figure=>plan.pages[page-1].figures.includes(figure.id))})),
       待核所见:Object.fromEntries(claims.map(({page,problem,evidence},index)=>[ids[index],{page,problem,evidence}])),
       确认材料:confirmed,
     });
@@ -249,9 +332,18 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent}) {
       const heading=norm(slide.title);
       const approvedStrategy=unsupported && slide.role==='strategy' && !slide.points.length && heading && nativeText.includes(heading) &&
         plan.strategy.some(item=>meaningful(item.body) && norm(item.body).includes(heading));
-      if (productionNote || wordingNote || approvedStrategy || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind)) {
-        const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':'按本版实页复核。';
-        updates.set(issue,{...issue,level:'P1',blockedBy:qualification+decision.location+' '+decision.reason});
+      const requestedConfirmation=unsupported && decision.kind==='confirmed_requirement_missing' && slide.role==='decision' &&
+        /品牌名.{0,18}(?:标志|商标|logo).{0,12}(?:待定|未定|还没定|未确认)/iu.test(plan.brief.original) &&
+        slide.points.some(point=>/^(?:请)?确认.{0,22}品牌名.{0,18}(?:标志|商标|logo).{0,25}替换.{0,18}占位/iu.test(point) &&
+          observed.includes(norm(point)) && nativeText.includes(norm(point)));
+      const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
+      const check={call,project,plan,slide,edition,round,receipts,onEvent,issue,decision};
+      const additional=clear?'':await verifyProductUse(check) || ((!sourceMatches || decision.source.startsWith('R')) && await verifySurvey(check));
+      if (clear || additional) {
+        const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':
+          requestedConfirmation?'实页已将占位替换列为客户待确认事项。':'按本版实页复核。';
+        const detail=requestedConfirmation?qualification:qualification+decision.location+' '+decision.reason;
+        updates.set(issue,{...issue,level:'P1',blockedBy:additional || detail});
       } else if (unsupported) {
         updates.set(issue,{...issue,blockedBy:'引用尚未绑定本版已确认原话，保留待核。'+decision.location+' '+decision.reason});
       }
@@ -402,7 +494,7 @@ export async function reviewFinalDeck({project,manuscript,dir,call,onEvent,signa
     pending=await recheck({call,plan:current.plan,edition:current.edition,round:rounds,selected,
       prior,keep:pending,verify:true,receipts,onEvent});
   }
-  pending=await qualifyCritical({call,current,pending,round:rounds,receipts,onEvent});
+  pending=await qualifyCritical({call,current,pending,round:rounds,receipts,onEvent,project});
   const retryable=pending.some(issue=>issue.level==='P0'&&issue.operation!=='hold');
   if (retryable) {
     rounds=3;
@@ -413,7 +505,7 @@ export async function reviewFinalDeck({project,manuscript,dir,call,onEvent,signa
     const prior=mergeIssues([...current.remaining,...current.applied]);
     pending=await recheck({call,plan:current.plan,edition:current.edition,round:rounds,selected,
       prior,keep:current.remaining,verify:true,receipts,onEvent});
-    pending=await qualifyCritical({call,current,pending,round:rounds,receipts,onEvent});
+    pending=await qualifyCritical({call,current,pending,round:rounds,receipts,onEvent,project});
   }
   const blocking=pending.filter(issue=>issue.level==='P0');
   const outcome=blocking.length?'blocked':'ready';
