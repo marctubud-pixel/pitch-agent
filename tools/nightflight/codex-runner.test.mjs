@@ -282,11 +282,11 @@ process.stdin.on('end',()=>{
  } else if(input.includes('比稿负责人分配参考图')){
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    fs.writeFileSync(path.join(home,'比稿负责人分配参考图.json'),JSON.stringify(packet));
-   body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:packet.directions.map((d,i)=>{
+   body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:Object.fromEntries(packet.directions.map(d=>{
      const refs=packet.sources.filter(s=>s.searchDirection===d.name || s.name?.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
      const use=r=>({source:r.source,borrow:'参考图可见的局部',apply:'作为本案用色依据',why:'帮助说明产品特征',avoid:'不沿用对方的标志与瓶标图案'});
-     return {direction:d.name,main:refs.length?use(refs[0]):null,auxiliary:refs.slice(1,3).map(use),gap:refs.length?'':'缺原图'};
-   })};
+     return [d.id,{main:refs.length?use(refs[0]):null,auxiliary:refs.slice(1,3).map(use),gap:refs.length?'':'缺原图'}];
+   }))};
  } else if(action==='image' && args.includes('--output-schema')){
    if(args[args.indexOf('image_generation')-1]!=='--disable')process.exit(9);
    const props=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1])).properties;
@@ -608,9 +608,9 @@ test('reference handoff rejects missing primary, duplicated originals and a reas
   async function plan(assignments,previousVisual){
     const call=async(instruction,images)=>{
       assert.deepEqual(images,[source]);
-      return {threadId:'selection',parsedOutput:{sharedBrand:[],directions:project.directions.map(direction=>({
-        direction,main:assignments.includes(direction)?use:null,auxiliary:[],gap:'缺主参考',
-      }))}};
+      return {threadId:'selection',parsedOutput:{sharedBrand:[],directions:Object.fromEntries(project.directions.map(direction=>[direction,{
+        main:assignments.includes(direction)?use:{source:null,borrow:'',apply:''},auxiliary:[],gap:'缺主参考',
+      }]))}};
     };
     return selectVisualReferences({call,project:{...project,previousVisual},images:[source,alias],active:['B']});
   }

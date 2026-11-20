@@ -1011,7 +1011,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent, fixedDirections}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -1024,7 +1024,8 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   for (const image of project.previousReferences ?? []) addCandidates([image], image.direction);
   addCandidates(project.researchReferences ?? []);
   const scope=project.research?.searchScope;
-  const priorCategory=scope?.queries?.map(query=>/^([\p{Script=Han}]{2,12}) (?:海报|包装[盒袋]?)$/u.exec(query)?.[1]).find(Boolean);
+  // Older runs recorded the category in the case directory search, before any brand follow-up.
+  const priorCategory=scope?.attempts?.find(attempt=>attempt.source==='SocialBeta 品牌发布案例')?.query;
   const candidateCategory=scope?.visualCategory || priorCategory;
   const [category]=publicVisualQueries({parsedOutput:{queries:[candidateCategory]}},project);
   const diagnostics = [];
@@ -1032,7 +1033,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const history = [];
   for (let pass=0; ; pass++) {
     try {
-      const plans=await selectVisualReferences({call,project,images:pool,active,fixedDirections});
+      const plans=await selectVisualReferences({call,project,images:pool,active});
       const missing=[];
       for (const direction of active) {
         const plan=plans.get(direction);
@@ -1232,9 +1233,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const hits=await discoverChinesePages(query,join(dir,'public-reference-sources'),researchDependencies,signal,'campaign');
         const pages=campaignPages(hits,{category:query,broadCategory:query}).slice(0,3);
         const batches=await Promise.all(pages.map(page=>fetchImages({query,dir,signal,pages:[{...page,carrier:'kv'}]})));
-        return batches.flat().slice(0,6);
+        return Array.from({length:3},(_,index)=>batches.flatMap(batch=>batch[index] ? [batch[index]] : [])).flat().slice(0,6);
       };
-      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent,fixedDirections:checkPosterTransfer});
+      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent});
       const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];

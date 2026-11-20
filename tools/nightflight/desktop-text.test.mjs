@@ -97,9 +97,7 @@ if (action === 'profile') {
         main:d.name==='产品'?{source:input.sources[0].source,borrow:'剪纸笔法',apply:'重画本案街景'}:null,
         auxiliary:[],gap:'',
       }));
-      answer={sharedBrand:[],directions:input.directions[0].id ?
-        Object.fromEntries(input.directions.map((d,i)=>[d.id,directions[i]])) :
-        input.directions.map((d,i)=>({direction:d.name,...directions[i]}))};
+      answer={sharedBrand:[],directions:Object.fromEntries(input.directions.map((d,i)=>[d.id,directions[i]]))};
     } else {
       const input=JSON.parse(instruction.split('实际项目输入（JSON）\\n\\n').at(-1));
       assert.equal(typeof content,'string');

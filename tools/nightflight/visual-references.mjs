@@ -109,17 +109,14 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
 }
 
-export async function selectVisualReferences({call, project, images, active, fixedDirections=false}) {
+export async function selectVisualReferences({call, project, images, active}) {
   const names = project.directions;
   const directionIds = ['A','B','C'];
   const catalog = new Map();
   for (const image of images) if (!catalog.has(image.sha256)) catalog.set(image.sha256,image);
   const sources = [...catalog.values()].map((image,index)=>image.sourceUrl ? {...image,imageId:'R'+(index+1)} : image);
   const authors = project.copyReview?.draft?.directions ?? [];
-  const directions = names.map((name,index) => {
-    const draft = authors.find(d=>d.name===name) ?? {name};
-    return fixedDirections ? {...draft,id:directionIds[index]} : draft;
-  });
+  const directions = names.map((name,index)=>({...authors.find(d=>d.name===name),name,id:directionIds[index]}));
   const previousOwners = new Map();
   for (const item of project.previousVisual ?? []) {
     for (const ref of item.visual?.referenceHandoff?.references ?? []) {
@@ -149,27 +146,22 @@ export async function selectVisualReferences({call, project, images, active, fix
     '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
     'searchDirection 标注的公开图及已有专用图只给其所属方向。稳健方向观察品类惯例，产品方向观察具体特征，用户方向观察使用情境和行为。销售判断需要销售来源。',
     '公开图在 why 说明任务关系和取舍，在 avoid 指明需要用本案内容重新设计的部分。sharedBrand 只列本案上传的官方标志、VI 等实际约束。辅助按重要性排序。',
-    fixedDirections && 'directions 按 A、B、C 三个键返回对象。每键填写该案的 main、auxiliary 和 gap。source 照录图册里的 source 编号。',
-  ].filter(Boolean).join('\n');
+    'directions 按 A、B、C 三个键返回对象。每键填写对应 main、auxiliary 和 gap。填写图册给出的 source 编号。',
+  ].join('\n');
   const fields = sources.some(s=>s.sourceUrl) ? publicUse.properties : use.properties;
   const itemSchema = object({...fields,source:{...string,enum:sources.map(s=>s.imageId)}});
   const directionFields = {main:{anyOf:[itemSchema,{type:'null'}]},auxiliary:{...list(itemSchema),maxItems:2},gap:string};
   const directionSchema = object(directionFields);
-  const outputSchema = fixedDirections ?
-    object({sharedBrand:list(itemSchema),directions:object(Object.fromEntries(directionIds.map(id=>[id,directionSchema])))}) :
-    object({sharedBrand:list(itemSchema),directions:list(object({direction:string,...directionFields}))});
+  const outputSchema = object({sharedBrand:list(itemSchema),directions:object(Object.fromEntries(directionIds.map(id=>[id,directionSchema])))});
   const result = await call(selection,sources.length<=4 ? sources : [],outputSchema,{
     assignment:'比稿负责人分配参考图',context:JSON.stringify(packet),
   });
-  let rows=result.parsedOutput?.directions;
-  if (fixedDirections) {
-    if (!rows || Object.keys(rows).length!==directionIds.length ||
-        !directionIds.every(id=>Object.hasOwn(rows,id) && rows[id] && typeof rows[id]==='object')) {
-      throw invalidOutput('海报参考图 directions 需要 A、B、C 三个方向对象。');
-    }
-    rows=directionIds.map((id,index)=>({...rows[id],direction:names[index]}));
+  const byDirection=result.parsedOutput?.directions;
+  if (!byDirection || Object.keys(byDirection).length!==directionIds.length ||
+      !directionIds.every(id=>Object.hasOwn(byDirection,id) && byDirection[id] && typeof byDirection[id]==='object')) {
+    throw invalidOutput('参考图需按文案 A、B、C 三个固定方向交接。');
   }
-  if (!Array.isArray(rows) || rows.length!==names.length || !names.every(n=>rows.some(r=>r?.direction===n))) throw invalidOutput('参考图分派与三份文案方向不一致。');
+  const rows=directionIds.map((id,index)=>({...byDirection[id],direction:names[index]}));
   const shared = result.parsedOutput.sharedBrand;
   if (!Array.isArray(shared)) throw invalidOutput('请明确全案共用的品牌素材。');
   const assigned = new Map(), plans = new Map();
@@ -189,7 +181,8 @@ export async function selectVisualReferences({call, project, images, active, fix
   for (const row of rows) {
     if (row.main!==null && (typeof row.main!=='object' || Array.isArray(row.main)) ||
         !Array.isArray(row.auxiliary) || row.auxiliary.length>2) throw invalidOutput('每方向最多一张主参考、两张辅助参考。');
-    primaries.set(row.direction,row.main ? [bind(row.main,'main',row.direction)] : []);
+    const empty = row.main && row.main.source===null && !nonempty(row.main.borrow) && !nonempty(row.main.apply) && nonempty(row.gap);
+    primaries.set(row.direction,row.main && !empty ? [bind(row.main,'main',row.direction)] : []);
   }
   for (const row of rows) {
     const primary = primaries.get(row.direction);
