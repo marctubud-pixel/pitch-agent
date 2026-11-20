@@ -518,7 +518,13 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
                 /^[a-f0-9]{64}$/.test(v.sha256) && [v.pageUrl,v.sourceUrl].every(url => URL.canParse(url) && new URL(url).protocol === 'https:') &&
                 typeof v.query === 'string' && v.query.trim() && !v.candidate && !v.recommended, '公开参考图来源或方向记录无效', 422);
             }
-            const images = result.artifacts.filter(a=>a.kind==='image' && !['comparison','reference'].includes(a.visual?.role));
+            const images = result.artifacts.filter(a=>a.kind==='image' && !['comparison','reference','slogan-original'].includes(a.visual?.role));
+            for (const original of result.artifacts.filter(a=>a.visual?.role==='slogan-original')) {
+              const v=original.visual;
+              check(original.kind==='image' && /^[a-f0-9]{64}$/.test(v.sha256) && !v.candidate && !v.recommended &&
+                images.some(a=>a.visual?.direction===v.direction && a.visual.sloganRepair?.sourceName===original.name &&
+                  a.visual.sloganRepair.sourceSha256===v.sha256), '标题修订缺少同方向初稿或对应回执', 422);
+            }
             check(images.length===expected.length*3 && expected.every(direction=>{
               const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
               if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
@@ -844,7 +850,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
         check(selected.every(Boolean) && directions.every(d=>selected.filter(a=>a.visual.direction===d).length===1),'只能选择当前各方向的候选稿',409);
         check(selected.every(a=>a.visual.recommended) || reason?.trim(),'采用非推荐稿时请写明理由');
       } else {
-        selected=p.artifacts.filter(a=>a.stage==='visual' && a.kind==='image' && !['reference','comparison'].includes(a.visual?.role) && (!candidates.length || a.visual?.recommended));
+        selected=p.artifacts.filter(a=>a.stage==='visual' && a.kind==='image' && !['reference','comparison','slogan-original'].includes(a.visual?.role) && (!candidates.length || a.visual?.recommended));
         check(!candidates.length || directions.every(d=>selected.some(a=>a.visual.direction===d)),'请为每个方向选择图稿并说明采用理由',409);
       }
       const chosen=selected.map(a=>a.storageKey);

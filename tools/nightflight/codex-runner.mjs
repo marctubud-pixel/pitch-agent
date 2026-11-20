@@ -23,7 +23,7 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
-import { describeReferenceTasks, generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { describeReferenceTasks, generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
 import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -1346,6 +1346,21 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           ...(posterSlogan ? {posterSlogan} : {}),
           referenceHandoff:{direction,references:generationReferences.map((ref,index)=>({...ref,imageNumber:index+1+Number(Boolean(best))}))},
           auxiliaryNotes};
+        async function saveVisual({result,promptWriting},index,transfer,attached,sloganRepair) {
+          const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
+          const digest = hash(original.bytes);
+          if (seen.has(digest)) throw invalidOutput('主视觉候选返回了重复图片，请重试视觉阶段');
+          seen.add(digest);
+          const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
+          const path = join(dir,name);
+          await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
+          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId};
+          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:attached.map(i=>i.sha256),sha256:digest,thread:result.threadId,
+            ...(sloganRepair ? {sloganRepair} : {}),...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),
+            ...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
+          return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
+        }
         const generated = await independentCalls(visualBorrowings, async (borrow,index) => {
           const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
           await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/3');
@@ -1361,20 +1376,10 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
           const input = {...generationContext,transfer};
-          const {result,promptWriting} = desktop
+          const attempt = desktop
             ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
             : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
-          const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
-          const digest = hash(original.bytes);
-          if (seen.has(digest)) throw invalidOutput('主视觉候选返回了重复图片，请重试视觉阶段');
-          seen.add(digest);
-          const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
-          const path = join(dir,name);
-          await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId};
-          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
-          await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
-          return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
+          return saveVisual(attempt,index,transfer,sourceImages);
         });
         for(const item of generated){batch.push(item.record);images.push(item.image);}
         await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
@@ -1385,7 +1390,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const researchComparators=packaging ? (project.researchReferences ?? [])
           .filter(ref=>ref.carrier==='packaging')
           .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
-        const review = await reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
+        const compare = () => reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
           ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal)} : {}),
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer)},
@@ -1408,6 +1413,27 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             return comparatorPool;
           },
           makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
+        let review=await compare();
+        const correction=review.sloganRepair;
+        if (desktop && project.mode==='auto' && correction) {
+          const index=correction.candidate-1;
+          const source=batch[index];
+          const image=images[index];
+          await onEvent?.('「'+direction+'」第 '+correction.candidate+' 稿只差标题标点，正在局部修字。');
+          const attempt=await repairVisualTitle({call,image,posterSlogan,observed:correction.observed});
+          if (!seen.has(hash(attempt.result.original.bytes))) {
+            const proof={sourceName:source.name,sourceSha256:source.sha256,expected:posterSlogan,observed:correction.observed};
+            const revised=await saveVisual(attempt,index,source.transfer,[image],proof);
+            await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'-before-title.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
+            artifacts.push({name:source.name,kind:'image',visual:{role:'slogan-original',direction,sha256:source.sha256}});
+            batch[index]=revised.record;
+            images[index]=revised.image;
+            await onEvent?.('「'+direction+'」已收到标题修订原图，重新独立评审这一案。');
+            review=await compare();
+          } else {
+            await onEvent?.('「'+direction+'」标题修订未改变原图，保留原判。');
+          }
+        }
         for (const ref of [...researchComparators,...comparatorPool]) {
           if (!published.has(ref.sha256) && review.references.some(r=>r.name===ref.name)) await publishReference(ref);
         }
@@ -1415,7 +1441,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const drafts = batch.map((record,i)=>{
           const verdict = review.candidates.find(row=>row.candidate===i+1);
           return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
-            ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
+            ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),...(record.sloganRepair ? {sloganRepair:record.sloganRepair} : {}),
             blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}};
         });
         artifacts.push(...drafts);
@@ -1493,6 +1519,17 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
     const {briefScope,body}=await makeBriefCard(call,project,inputs);
     if (body) await addText(body);
     return {artifacts,briefScope};
+    }
+    if (stage==='research' && desktop) {
+      const call=async(instruction,images,schema,task)=>{
+        try { return await directCall(instruction,images,schema,task); }
+        catch (error) {
+          if (error.code!=='INVALID_STAGE_OUTPUT' || error.message!=='文字模型未返回有效 JSON') throw error;
+          await onEvent?.('本次研究输出无法读取，沿用同一批材料，只重问这一项。');
+          return directCall(instruction,images,schema,task,'文字模型未返回有效 JSON。确认每条发现的字段都在对应对象内，返回一个完整 JSON 对象。');
+        }
+      };
+      return executeStage(call,dir);
     }
     if (!['visual','copy'].includes(stage) && !manuscript) return executeStage(directCall,dir);
     checkpointDir ??= join(dir,'.call-checkpoints');

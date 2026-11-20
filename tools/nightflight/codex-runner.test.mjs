@@ -993,7 +993,15 @@ test('poster recommendation requires the selected slogan to be read from the act
   assert.equal(some.blind[1].model,'gpt-6.2-sol');
   const none = await review([shortened,absent,unreadable]);
   assert.equal(none.winner,null);
+  assert.equal(none.sloganRepair,undefined);
   assert.match(none.candidates[1].reason,/缺少已选 slogan/);
+  const extraPeriod = {...correct,text:correct.text+'。'};
+  const punctuation = await review([extraPeriod,absent,unreadable]);
+  assert.equal(punctuation.winner,null);
+  assert.deepEqual(punctuation.sloganRepair,{candidate:1,observed:extraPeriod});
+  const alreadyReady = await review([extraPeriod,correct,unreadable]);
+  assert.equal(alreadyReady.winner,2);
+  assert.equal(alreadyReady.sloganRepair,undefined);
   const english = await review([{...correct,text:'JUSTDOIT'},{...correct,text:'JUST\nDO IT'},absent],'JUST DO IT');
   assert.equal(english.winner,2);
   const wrap = await review([absent,{...correct,text:'COOL,\nFRESH 20\n26!'},absent],'COOL,FRESH 2026!');

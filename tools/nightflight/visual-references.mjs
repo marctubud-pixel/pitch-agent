@@ -92,6 +92,18 @@ function includesPosterSlogan(prompt, slogan) {
   return new RegExp(literal,'u').test(prompt);
 }
 
+async function submitVisualPrompt({call,images,written,posterSlogan}) {
+  const prompt = written.parsedOutput?.prompt;
+  if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
+    throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
+  }
+  if (posterSlogan && !includesPosterSlogan(prompt,posterSlogan)) {
+    throw invalidOutput('海报生图提示词缺少该方向已选 slogan 的原句，请按制图要求完整写入。');
+  }
+  const result = await call(prompt,images,null,{exactImagePrompt:true});
+  return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
+}
+
 export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging, posterReference}) {
   if (posterReference) {
     const promptWriting = await writePosterPrompt({call,images,context,posterReference,posterSlogan});
@@ -108,15 +120,14 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
   const written = await call(instruction,[],imagePromptSchema,{
     assignment:'夜航生图提示词写作',rules:[],context:JSON.stringify({...context,drawingBrief}),
   });
-  const prompt = written.parsedOutput?.prompt;
-  if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
-    throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
-  }
-  if (posterSlogan && !includesPosterSlogan(prompt,posterSlogan)) {
-    throw invalidOutput('海报生图提示词缺少该方向已选 slogan 的原句，请按制图要求完整写入。');
-  }
-  const result = await call(prompt,images,null,{exactImagePrompt:true});
-  return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
+  return submitVisualPrompt({call,images,written,posterSlogan});
+}
+
+export async function repairVisualTitle({call,image,posterSlogan,observed}) {
+  const written=await call(
+    '夜航局部修字。根据成稿的实际盲读，为图像编辑服务写一条制图指令。原样保留整张图、标题位置、字形、字号、配色、背景、包装、产品和其他字。只按定稿原句修主标题的标点，保留全部原字。明确要求画面不要出现指令中的引号。把核定原句完整写入提示词。返回 JSON 对象，仅含 prompt。',
+    [],imagePromptSchema,{assignment:'视觉标题标点修正',rules:[],context:JSON.stringify({已见字样:observed.text,实际位置:observed.location,核定原句:posterSlogan,载体:'海报／KV主标题'})});
+  return submitVisualPrompt({call,images:[image],written,posterSlogan});
 }
 
 export async function describeReferenceTasks({call, project, active, carriers}) {

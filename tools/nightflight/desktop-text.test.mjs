@@ -24,6 +24,14 @@ if (action === 'profile') {
   const content = body.messages[1].content;
   if (vision !== Array.isArray(content) || body.model !== model) process.exit(2);
   if (vision && !content[1].image_url.url.startsWith('data:image/png;base64,')) process.exit(3);
+  if (!vision && content.includes('比稿负责人整理研究摘要')) {
+    const corrected=content.includes('这次只修正本次响应的校验问题：文字模型未返回有效 JSON');
+    const result={digest:[{findingIndex:0,chapter:'行业与市场',title:'品类规模增长',detail:'2025年增长7%。'}],
+      strategyAdvice:[{recommendation:'先展示份量',findingIndices:[0]}]};
+    console.log(JSON.stringify({id:corrected?'research-corrected':'research-malformed',model:'actual-'+model,
+      choices:[{message:{content:corrected?JSON.stringify(result):'{"digest":[}'}}]}));
+    process.exit(0);
+  }
   console.log(JSON.stringify({id:'request-'+model,model:'actual-'+model,
     choices:[{message:{content:JSON.stringify(vision ? {body:'测试任务卡'} : {briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'},facts:[{label:'提案任务',value:'测试',quote:'测试'}],unknowns:[]})}}]}));
 }`);
@@ -39,6 +47,11 @@ if (action === 'profile') {
   const run = createStageRunner({binary:join(dir,'no-codex'),codexHome:join(dir,'no-home')});
   const brief = await run({stage:'brief',project:{brief:'测试',title:'测试'},dir,onEvent});
   assert.match(await readFile(join(dir,brief.artifacts[0].name),'utf8'),/提案任务：测试/);
+  const research = await run({stage:'research',project:{brief:'测试',title:'测试',researchDigestOnly:true,
+    research:{findings:[{chapter:'行业与市场',conclusion:'2025年增长7%',evidence:'2025年增长7%',source:'测试报告'}]}},dir,onEvent});
+  assert.equal(research.researchDigest[0].findingIndex,0);
+  assert.equal(events.filter(line=>/API 回执.*research-(?:malformed|corrected)$/.test(line)).length,2);
+  assert.equal(events.filter(line=>line.includes('只重问这一项')).length,1);
   const path = join(dir,'fixture.png');
   await writeFile(path, 'fixture image bytes');
   const provider = await desktopTextProvider(executable,undefined,onEvent);
@@ -211,6 +224,27 @@ test('a complete wrapped headline reaches the image API without changing the wri
     else await assert.rejects(run,/缺少该方向已选 slogan 的原句/);
     assert.deepEqual(sent,allowed?[prompt]:[]);
   }
+});
+
+test('a title correction sends only the actual draft and retains the writer’s exact instructions', async () => {
+  const {repairVisualTitle}=await import('./visual-references.mjs');
+  const image={name:'已评候选.png',sha256:'a'.repeat(64)};
+  const posterSlogan='在一袋里碰头';
+  const observed={text:posterSlogan+'。',location:'左上方'};
+  const prompt='只去掉句号，标题写「在一袋里碰头」。';
+  const result=await repairVisualTitle({image,posterSlogan,observed,call:async(instruction,images,schema,task)=>{
+    if (schema) {
+      assert.deepEqual(images,[]);
+      assert.deepEqual(JSON.parse(task.context),{已见字样:observed.text,实际位置:observed.location,核定原句:posterSlogan,载体:'海报／KV主标题'});
+      return {model:'text-model',threadId:'original-writer',parsedOutput:{prompt}};
+    }
+    assert.deepEqual(images,[image]);
+    assert.equal(instruction,prompt);
+    assert.equal(task.exactImagePrompt,true);
+    return {requestId:'image-edit'};
+  }});
+  assert.equal(result.result.requestId,'image-edit');
+  assert.equal(result.promptWriting.threadId,'original-writer');
 });
 
 test('KV原参考居中时，借布局的自由提示词不能替换成左文右图', async () => {

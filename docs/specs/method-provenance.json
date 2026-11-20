@@ -1,9 +1,9 @@
 [
   {
-    "source": "同一发布页与同一海报原图的出处对照",
+    "source": "同批研究材料的真实 JSON 格式回复对照",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r36-20261121",
-    "sha256": "800d9a37fc86cd9cb2aecae2786d28b0ccfadb50f84b3cdc953cf4c863b08f62"
+    "sourceVersion": "r37-20261121",
+    "sha256": "3093959b25af228c4e4f9f7120bf4c6f9dfe55384c1676b22b26444fbb31f598"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",

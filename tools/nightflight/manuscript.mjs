@@ -70,7 +70,7 @@ export async function collectManuscriptMaterials(project, dir) {
     const item = matches.length === 1 ? matches[0] : visible.length === 1 && selected.length === 1 && !selected[0].visual ? selected[0] : null;
     if (!item) throw Error('每个展示方向须有一张本版采用原图：'+name);
     const mediaType = imageTypes[extname(item.name).toLowerCase()];
-    if (!mediaType || ['reference','comparison'].includes(item.visual?.role)) throw Error('采用的主稿图片身份无效：'+item.name);
+    if (!mediaType || ['reference','comparison','slogan-original'].includes(item.visual?.role)) throw Error('采用的主稿图片身份无效：'+item.name);
     const file = await attemptFile(root,item);
     if (item.visual?.sha256 && item.visual.sha256 !== file.sha256) throw Error('采用图与本版登记不一致：'+item.name);
     const letter = String.fromCharCode(65+project.directions.indexOf(name));

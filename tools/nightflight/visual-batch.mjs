@@ -303,6 +303,10 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const reading = blind[row.candidate-1];
     const posterIssue = posterSlogan ? sloganIssue(posterSlogan, reading.slogan) : '';
     const audit = transferAudit?.items[row.candidate-1];
+    const otherBlocker = row.blocked || missing || !!printIssue || audit?.passed===false;
+    const exactWords = posterSlogan?.replace(/\p{P}/gu,'');
+    const punctuationOnly = posterIssue && !otherBlocker && reading.slogan.status==='readable' && nonempty(exactWords) &&
+      sameSlogan(exactWords,reading.slogan.text.replace(/\p{P}/gu,''));
     let reason = posterIssue || (printIssue ? printIssue+brand.reason : row.reason);
     let edit = posterIssue ? '在海报主标题位置清楚排入本轮原句「'+posterSlogan+'」，逐字核对。' : row.edit;
     if (audit && !audit.passed) {
@@ -315,13 +319,16 @@ export async function reviewVisualBatch({call, direction, images, context, packa
         edit = edit==='无' ? correction : edit+' '+correction;
       }
     }
-    return {...row,blocked:row.blocked || missing || !!printIssue || !!posterIssue || audit?.passed===false,
+    return {...row,blocked:otherBlocker || !!posterIssue,...(punctuationOnly ? {titlePunctuation:true} : {}),
       reason,edit,...(audit ? {transferAudit:audit} : {}),
       research:missing?'补充同类包装正面原图。'+(row.research==='无'?'':row.research):row.research,blind:reading,scores,mean:scores.reduce((sum,v)=>sum+v.score,0)/roles.length};
   });
-  const winner = candidates.filter(c=>!c.blocked && c.mean>=4).sort((a,b)=>b.mean-a.mean || a.priority-b.priority)[0];
+  const ranked = candidates.filter(c=>c.mean>=4).sort((a,b)=>b.mean-a.mean || a.priority-b.priority);
+  const winner = ranked.find(c=>!c.blocked);
+  const repair = !winner && ranked.find(c=>c.titlePunctuation);
   return {direction,packaging,...(posterSlogan ? {posterSlogan} : {}),...(transferAudit ? {transferAudit} : {}),
     board:board?.name,references:references.map(ref=>({name:ref.name,sha256:ref.sha256})),...(reusedResearch.length ? {reusedResearch} : {}),
     ...(previewEvidence.length ? {previewEvidence} : {}),...(onPackAudits.size ? {onPackAudits:Object.fromEntries(onPackAudits)} : {}),
-    selectionThread:selectionThreads[0],selectionThreads,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,winner:winner?.candidate ?? null};
+    selectionThread:selectionThreads[0],selectionThreads,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,
+    winner:winner?.candidate ?? null,...(repair ? {sloganRepair:{candidate:repair.candidate,observed:repair.blind.slogan}} : {})};
 }
