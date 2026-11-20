@@ -251,7 +251,11 @@ process.stdin.on('end',()=>{
      constraints:'价格与配料属于任务卡的模拟设定。',opportunity:derivation,decision:derivation,priority:derivation,intersection:'货架辨认和原味表达相交。'};
    if (packet.carrier==='general') outcome.touchpoints=[{kind:'contact',name:'若在门店首次接触',action:'查看品名'}];
    if (packet.carrier==='kv') outcome.touchpoints=[];
-   if (['kv','packaging+kv'].includes(packet.carrier)) outcome.touchpoints.push({kind:'kv',name:'门店海报',action:'用瓶身衔接货架。'});
+   if (action==='onepager-front-kv') {
+     if (packet.requiredFaces?.join()!=='front') process.exit(56);
+     outcome.touchpoints=outcome.touchpoints.slice(0,1);
+   }
+   if (['kv','packaging+kv'].includes(packet.carrier)) outcome.touchpoints.push({kind:'kv',name:action==='onepager-front-kv'?'电商详情页首屏':'门店海报',action:'用瓶身衔接货架。'});
    if(['onepager-compact','onepager-bad-edit'].includes(action)) outcome.coreStrategy='让顾客在经过货架时注意到这一盒茶。再仔细看清品名、口味和配方。';
    if(action==='onepager-wrong-touch') outcome.touchpoints.pop();
    if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
@@ -1041,15 +1045,19 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
 });
 
 
-for (const action of ['ok','kv','linked','general','reader','compact','bad-edit','return','wrong-ref','wrong-touch','scored','internal']) {
+for (const action of ['ok','kv','linked','front-kv','general','reader','compact','bad-edit','return','wrong-ref','wrong-touch','scored','internal']) {
   test('one-page packaging strategy from verified findings: '+action,async t=>{
     const f=await fixture(t,'onepager-'+action);
     if (action==='general') f.project.brief='为测试茶制作新品上市创意提案';
     if (action==='kv') f.project.brief='制作测试茶的春节KV';
     if (action==='linked') f.project.brief='设计测试茶包装与KV';
+    if (action==='front-kv') {
+      f.project.brief='测试茶包装做外盒正面，KV 用在电商详情页首屏。';
+      f.project.proposalKind='packaging+kv';
+    }
     const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
     f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
-    if (!['ok','kv','linked','general','reader','compact','bad-edit'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    if (!['ok','kv','linked','front-kv','general','reader','compact','bad-edit'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
     const result=await f.run('strategy');
     const md=result.artifacts[0].text,front=md.split('## 研究结论')[0];
     assert.deepEqual(result.strategy.findingNumbers,[2]);
@@ -1061,9 +1069,11 @@ for (const action of ['ok','kv','linked','general','reader','compact','bad-edit'
     if (action==='compact') assert.equal(result.strategy.focus,'让找原味的人一眼认出茶。');
     if (action==='bad-edit') assert.match(result.strategy.focus,/再仔细看清/);
     assert.match(md,/## 核心策略[\s\S]*## 衡量方式[\s\S]*## 研究结论[\s\S]*研究 2/);
-    assert.ok(md.includes(action==='general'?'## 视觉与传播触点':action==='kv'?'## 视觉与 KV 触点':action==='linked'?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
+    assert.ok(md.includes(action==='general'?'## 视觉与传播触点':action==='kv'?'## 视觉与 KV 触点':['linked','front-kv'].includes(action)?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
     assert.equal(md.includes('- 正面：'),!['kv','general'].includes(action));
-    assert.equal(md.includes('- 门店海报：'),action==='kv' || action==='linked');
+    assert.equal(md.includes('- 门店海报：'),['kv','linked'].includes(action));
+    assert.equal(md.includes('- 电商详情页首屏：'),action==='front-kv');
+    if (action==='front-kv') assert.doesNotMatch(md,/- (?:背面|侧面)：/u);
     assert.equal(front.match(/（待测）/g)?.length,3);
     assert.doesNotMatch(front,/模拟设定|待测：|发现2/);
     assert.doesNotMatch(result.strategy.focus,/发现2/);
@@ -1499,8 +1509,8 @@ test('DeepSeek copy repairs a missing pick and a broken quotation without rewrit
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'画面不同'})),
   };
   const replies={
-    COPY_ENGINE_WRITE:{workbook},
-    COPY_ENGINE_GROUND:{citations:[{id:'B',basis}]},
+    COPY_ENGINE_WRITE:{workbook,picks:{A:'A1',B:'B4',C:'C3'},authorCheck:{...authorCheck,pairs:authorCheck.pairs.slice(0,2)}},
+    COPY_ENGINE_GROUND:{citations:[{id:'B',basis,supported:true}]},
     COPY_ENGINE_PICK:{picks,authorCheck},
     COPY_ENGINE_RECOMMEND:{directionId:'C',reason:'承接通勤'},
   };
@@ -1511,7 +1521,10 @@ test('DeepSeek copy repairs a missing pick and a broken quotation without rewrit
       calls.push(phase);
       const packet=JSON.parse(task.context);
       if (phase.endsWith('GROUND')) assert.deepEqual(packet.listedDirections.map(d=>d.id),['B']);
-      if (phase.endsWith('PICK')) assert.deepEqual(packet.workbook.directions.map(d=>d.candidates),workbook.directions.map(d=>d.candidates));
+      if (phase.endsWith('PICK')) {
+        assert.deepEqual(packet.workbook.directions.map(d=>d.candidates),workbook.directions.map(d=>d.candidates));
+        assert.deepEqual(packet.fixedPicks,{A:'A1',C:'C3'});
+      }
       return {parsedOutput:replies[phase],runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'b'.repeat(64)};
     }});
   assert.deepEqual(calls,Object.keys(replies));
@@ -1521,6 +1534,16 @@ test('DeepSeek copy repairs a missing pick and a broken quotation without rewrit
   assert.equal(engineCopyHandoffReady(copyReview,directions,body),true);
   copyReview.repairs[0].threadId=copyReview.calls[0].threadId;
   assert.equal(engineCopyHandoffReady(copyReview,directions,body),false);
+  const conflicting=structuredClone(workbook);
+  conflicting.directions[1].claim='每盒100克';
+  await assert.rejects(runCopyReview({project:{brief:brief+'每盒净含量为80克。'},inputs:{texts:[]},rules:[skill],singleOwner:true,
+    call:async instruction=>{
+      const phase=instruction.split('\n')[0];
+      const parsedOutput=phase==='COPY_ENGINE_WRITE' ? {...replies.COPY_ENGINE_WRITE,workbook:conflicting} :
+        {citations:[{id:'B',supported:true,basis:'每盒净含量为80克'}]};
+      assert.ok(['COPY_ENGINE_WRITE','COPY_ENGINE_GROUND'].includes(phase));
+      return {parsedOutput,runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'b'.repeat(64)};
+    }}),/主张缺少与原件一致的依据/);
 });
 
 test('visual directory lookups can broaden a repeated category using the plan’s own catalog terms',async()=>{
@@ -1529,6 +1552,8 @@ test('visual directory lookups can broaden a repeated category using the plan’
   assert.equal(visualLookupCategory('混合坚果','坚果炒货',['坚果']),'坚果炒货');
   assert.equal(visualLookupCategory('steam cleaner','steam cleaner',['team','cleaner']),'cleaner');
   assert.equal(visualLookupCategory('猫粮','猫粮',['猫砂','宠物']),'猫粮');
+  assert.equal(visualLookupCategory('无糖汽水','无糖',['无糖','汽水']),'汽水');
+  assert.equal(visualLookupCategory('暖白光台灯','暖白光台灯',['暖白光','台灯']),'台灯');
 });
 
 test('research charts are not released promotional posters even if a vision response gives them the same label',async()=>{

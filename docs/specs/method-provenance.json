@@ -102,10 +102,10 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "夜航所有策略统一使用一页纸，未定载体按条件说明。",
+    "source": "夜航全链复测的委托触点范围",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.9.1-20261117",
-    "sha256": "3e9e14ad9bd80f6085c49fdf20bec0603453f0a7c1752cd35752a22507554964"
+    "sourceVersion": "v1.10.0-20261120",
+    "sha256": "023a1181566c7e9250c40d4fa0c715ef8ba3e2536ac6a962fb4338e914d3fedc"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",

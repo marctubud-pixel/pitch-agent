@@ -217,11 +217,13 @@ export function broadVisualQueries(category,carriers,packagingTerm='包装') {
 export function visualLookupCategory(specific,planned,catalogTerms) {
   const isTerm=term=>typeof term==='string' && /^[\p{L}\p{N} ·-]{1,32}$/u.test(term);
   const topic=typeof planned==='string' ? planned.trim() : '';
-  if (isTerm(topic) && topic!==specific) return topic;
-  if (!isTerm(specific)) return undefined;
+  if (!isTerm(specific)) return isTerm(topic) ? topic : undefined;
+  const isSuffix=term=>/\p{Script=Han}/u.test(term)
+    ? specific.endsWith(term) : specific.toLowerCase().endsWith(' '+term.toLowerCase());
+  if (isTerm(topic) && topic!==specific &&
+      (!specific.toLowerCase().includes(topic.toLowerCase()) || isSuffix(topic))) return topic;
   const broader=(Array.isArray(catalogTerms) ? catalogTerms : []).filter(term=>isTerm(term) &&
-    term.length>=2 && term.length<specific.length &&
-    (/\p{Script=Han}/u.test(term) ? specific.includes(term) : specific.toLowerCase().split(/[^a-z0-9]+/u).includes(term.toLowerCase())));
+    term.length>=2 && term.length<specific.length && isSuffix(term));
   return broader.sort((a,b)=>b.length-a.length)[0] || specific;
 }
 

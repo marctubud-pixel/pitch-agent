@@ -217,6 +217,14 @@ function engineReceipt(receipt, phase) {
     /^deepseek(?:[-_/]|$)/i.test(receipt.model ?? '') && /^[a-f0-9]{64}$/.test(receipt.inputPacketHash ?? '');
 }
 
+function repairableQuantityClaims(direction, brief, basis) {
+  const quantities=text=>(text ?? '').normalize('NFKC').replace(/\s/gu,'').toLowerCase()
+    .match(/\d+(?:\.\d+)?(?:千克|毫克|公斤|克|毫升|分钟|小时|元|%|kg|ml|g\b)/giu) ?? [];
+  const sourced=new Set([...quantities(brief),...quantities(basis)]);
+  const visible=[direction.claim,direction.secondary,...direction.candidates.map(c=>c.text)];
+  return visible.every(text=>quantities(text).every(value=>sourced.has(value)));
+}
+
 export function engineCopyHandoffReady(review, names, text) {
   try {
     if (!isEngineCopyProtocol(review?.protocol) || review.version!==1 || review.status!=='ready' ||
@@ -282,26 +290,40 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
   if (unsupported.length) {
     await onEvent?.('原作者正在核对无法定位的文案依据，保留本版候选');
     const required=unsupported.map(d=>d.id);
-    const schema=object({citations:list(object({id:choice(required),basis:str}))});
+    const schema=object({citations:list(object({id:choice(required),supported:{type:'boolean'},basis:optionalText}))});
     const {output,receipt}=await run(engineRepairPhases[0],
-      '只为 listedDirections 各选一处可以支持这案的连续短原文，逐字复制 sourceText 中已有的原字与空格。返回各案 id 和 basis。保留原作者候选和自选。',
-      schema,{listedDirections:unsupported.map(({id,claim,mechanism})=>({id,claim,mechanism})),sourceText:originals});
+      '核对 listedDirections 的主张、候选和副标。只为原件确实支持的一案找连续短引，逐字复制，填 supported=true。材料与卖点、规格、数字或答案不相符时填 supported=false，basis 留空。保留原作者候选和自选。',
+      schema,{listedDirections:unsupported,sourceText:originals});
     validate(output,schema,'文案依据核对');
     requireThat(exactly(output.citations.map(c=>c.id),required),'文案依据需要覆盖每个待核方向');
-    for (const {id,basis} of output.citations) workbook.directions.find(d=>d.id===id).basis=basis;
+    for (const {id,basis,supported} of output.citations) {
+      const direction=workbook.directions.find(d=>d.id===id);
+      requireThat(supported && basis.trim() && repairableQuantityClaims(direction,project.brief,basis),
+        '方向 '+id+' 的文案主张缺少与原件一致的依据');
+      direction.basis=basis;
+    }
     repairs.push(receipt);
   }
   validateEngineDraft(workbook,originals);
   let {picks,authorCheck}=writing;
   const selectionSchema=object({picks:enginePicks,authorCheck:engineAuthorCheck});
-  try { validate({picks,authorCheck},selectionSchema,'作者选句'); }
+  const fixedPicks=Object.fromEntries(workbook.directions.flatMap(d=>{
+    const code=picks?.[d.id];
+    return d.candidates.some((_,index)=>code===d.id+(index+1)) ? [[d.id,code]] : [];
+  }));
+  try {
+    validate({picks,authorCheck},selectionSchema,'作者选句');
+    requireThat(Object.keys(fixedPicks).length===ids.length && exactly(authorCheck.pairs.map(p=>p.pair),enginePairs) &&
+      exactly(authorCheck.selections.map(s=>s.directionId),ids),'作者选句缺少有效编号或必要自检');
+  }
   catch(error) {
     if (error.code!=='INVALID_STAGE_OUTPUT') throw error;
     await onEvent?.('原作者按本版已写候选补齐选句编号和自检');
     const {output,receipt}=await run(engineRepairPhases[1],
-      '你是写出本案三组原候选的作者。使用这些原候选，从每案选一句，返回 A、B、C 对应的 picks 和 authorCheck。三案候选原文保持一致。selections 引用选句中承载创意的原字，pairs 写清各案想起的画面区别。',
-      selectionSchema,{workbook,brief:project.brief,existingAuthorCheck:authorCheck},[skill]);
+      '你是写出本案三组原候选的作者。保持 fixedPicks 中已有效的编号。只给缺少有效编号的方向补选。返回 A、B、C 对应的完整 picks 和 authorCheck。三案候选原文保持一致。selections 引用选句中承载创意的原字，pairs 写清各案想起的画面区别。',
+      selectionSchema,{workbook,brief:project.brief,fixedPicks,existingAuthorCheck:authorCheck},[skill]);
     validate(output,selectionSchema,'作者选句');
+    requireThat(Object.entries(fixedPicks).every(([id,code])=>output.picks[id]===code),'已有效的作者选句需要保留');
     ({picks,authorCheck}=output);
     repairs.push(receipt);
   }

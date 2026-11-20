@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.99.0",
-  "registrySha256": "631d18f926adacc162e3dcac65df937b2de9e762de9ad7b0177baf072c02c363",
+  "baselineVersion": "1.100.0",
+  "registrySha256": "2363bf4018521926445b86a70f64df561d6f1efe8d23a729b59f96009ceac251",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -25,10 +25,10 @@
       }
     },
     "agent.strategy-owner": {
-      "version": "1.7.1",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/strategy-owner.md": "0e794f477722a2c8f9bca16065b12ab763719e0532055fd0d0162a795a6124e9"
+        "docs/agents/strategy-owner.md": "b1e64096a8a7402680c572a9dc87936f247fd64080e130661b9263526e946103"
       }
     },
     "agent.copy-owner": {
@@ -109,10 +109,10 @@
       }
     },
     "page.strategy": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "b265d2b5be233aca157758a1639b8d403292e37ad61c9a0e23b73c0c03ec183d"
+        "docs/pages/strategy.md": "7e7ef945ccc0d3431dedefa898dc78d05a2494586326078ca5083a6ecb83512c"
       }
     },
     "page.themes": {
@@ -203,10 +203,10 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.9.1",
+      "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "3e9e14ad9bd80f6085c49fdf20bec0603453f0a7c1752cd35752a22507554964"
+        "skills/strategy-one-pager/SKILL.md": "023a1181566c7e9250c40d4fa0c715ef8ba3e2536ac6a962fb4338e914d3fedc"
       }
     },
     "method.visual": {
@@ -510,10 +510,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.11.0",
+      "version": "1.12.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "863147f10a23953a6e41cbe93a46661b7716ba03bfcbbea939012c6f41e7be3c"
+        "docs/specs/copy-generation.md": "eb5c349a3507b561ccfaf6d741d0b73140506d1384d15d251c67abd0037c5ad2"
       }
     },
     "method.slogan-engine": {
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.23.0",
+      "version": "1.24.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "ac81437f557edfbd21e45c54a4b5c26bd34e889a22da6f3dbaab462b993d6ab0"
+        "docs/specs/nightflight-runtime.md": "536f8276f90606a120ca9584d2a51ac1b53ea506607ae096a57a4dd935db3742"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "5390421bb33b9c391ed49ed6f1ec56bb17dae613eed2a77ce76274e25bcc6ff4",
+    "docs/specs/README.md": "1c5883ab1ff2317b4371571411bdc46011a61250d1eb3b0d35b2b3c5ff62b264",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

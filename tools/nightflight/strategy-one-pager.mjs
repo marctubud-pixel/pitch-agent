@@ -5,6 +5,7 @@ const object = properties => ({type:'object',properties,required:Object.keys(pro
 const list = (items, limits={}) => ({type:'array',items,...limits});
 const exactlyThree = {minItems:3,maxItems:3};
 const numbered = {type:'integer'};
+const faces={front:/正面|正标|\bfront(?: panel| label)?\b/iu,side:/侧面|侧标|\bside(?: panel| label)?\b/iu,back:/背面|背标|\bback(?: panel| label)?\b/iu};
 const basis = object({text:string,findingNumbers:list(numbered)});
 const touchpointSchema = object({kind:{type:'string',enum:['front','side','back','kv','contact']},name:string,action:string});
 const publicFields = {
@@ -73,7 +74,19 @@ function compactnessIssue(out) {
   return '';
 }
 
-function renderStrategy(out, findings, eligible, carrier) {
+export function strategyPackagingFaces(brief) {
+  const all=Object.keys(faces);
+  const text=brief ?? '';
+  if (/全套包装|完整包装|包装全套|完整盒身|所有包装面|\ball (?:package )?panels\b/iu.test(text)) return all;
+  const requested=text.split(/[。；;！？!?，,\n]/u).filter(clause=>
+    /包装|外盒|礼盒|瓶标|标签|背标|packag(?:e|ing)|label|box/iu.test(clause) &&
+    /做|设计|交付|改版|只|仅|限于|\b(?:design|deliver|only)\b/iu.test(clause) &&
+    !/不做|不设计|不交付|不要/u.test(clause));
+  const named=all.filter(face=>requested.some(clause=>faces[face].test(clause)));
+  return named.length ? named : all;
+}
+
+function renderStrategy(out, findings, eligible, carrier, requiredFaces) {
   if (![out.coreStrategy,out.insight,out.brandRole,out.proposition,out.constraints,out.intersection].every(singleLine))
     throw Error('策略正文或事实边界不完整');
   if (!Array.isArray(out.actions) || out.actions.length!==3 || !out.actions.every(singleLine) || !distinct(out.actions))
@@ -82,10 +95,10 @@ function renderStrategy(out, findings, eligible, carrier) {
   if (!Array.isArray(touchpoints) || !touchpoints.length || !touchpoints.every(t=>singleLine(t.name) && singleLine(t.action)))
     throw Error('缺少载体触点与任务');
   const kinds = touchpoints.map(t=>t.kind);
-  const packaging = ['packaging','packaging+kv'].includes(carrier), kv = ['kv','packaging+kv'].includes(carrier);
-  if (['front','side','back'].some(k=>kinds.filter(i=>i===k).length!==(packaging?1:0)) ||
-      kinds.includes('kv')!==kv || !kinds.every(k=>carrier==='general' ? k==='contact' : ['front','side','back','kv'].includes(k)) ||
-      !distinct(touchpoints.map(t=>t.name))) throw Error('触点未覆盖本案的包装面或实际 KV 媒介');
+  const kv = ['kv','packaging+kv'].includes(carrier);
+  if (Object.keys(faces).some(k=>kinds.filter(i=>i===k).length!==(requiredFaces.includes(k)?1:0)) ||
+      kinds.includes('kv')!==kv || !kinds.every(k=>carrier==='general' ? k==='contact' : Object.hasOwn(faces,k) || k==='kv') ||
+      !distinct(touchpoints.map(t=>t.name))) throw Error('触点须覆盖'+[...requiredFaces,...(kv?['kv']:[]),...(carrier==='general'?['contact']:[])].join('、')+' 所指的委托版面或媒介');
   const metrics=out.metrics;
   if (!Array.isArray(metrics) || metrics.length!==3 || !metrics.every(m=>singleLine(m.name) && singleLine(m.method)) ||
       !distinct(metrics.map(m=>m.name)) || metrics.some(m=>/实测(?:显示|结果)|验证表明|测得|已(?:经)?(?:达到|提升|证实)/u.test(m.name+m.method)))
@@ -114,7 +127,8 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
     ? [{...f,findingNumber:i+1}] : []);
   const eligible=new Set(rows.map(f=>f.findingNumber));
   if (!rows.length) throw Error('当前策略输入缺少可引用的研究记录');
-  const instruction='按本次载体完成夜航一页策略。general 表示载体未指定或其他提案，触点 kind 填 contact，按简报写传播任务。渠道未定时写条件性应用，不默认承诺包装或KV。核心策略只留一个简短、能读出选购场景和优先任务的句子；其余四节用客户听得懂的短句。行业上新数量支持设计取舍，不能推出消费者注意或记忆时长。不要将浏览量推成审美偏好或购买原因。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。先检验本轮研究提出的条件性方向；渠道、执行细节和待测数据缺失，写入约束。直接提出本轮研究可以支撑的策略发力点。对客交稿前先提炼：核心策略一句只写本案最重要的取舍及对人的用处，以约30字为写作目标。移走与这项选择无关的条件清单。洞察只讲顾客的一个难题；角色只讲品牌能兑现什么；主张只讲一个产品理由。三个动作各用短句写一个可指认的变化。触点按实际媒介或包装面列，只补该处的阅读条件或任务。一个屏幕或一支短片只算一个媒介，开头、中段、结尾属于动作，勿在触点重写一遍。其他栏目每项一到两句，优先一句；每个事实只在它最有用的一处展开，保留必要限定。属性要紧跟它修饰的具体产品或原料，避免省词后变成另一种产品。未验证的用户顾虑用问题表达。详细指标、依据与推导写入原稿。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
+  const requiredFaces=['packaging','packaging+kv'].includes(carrier) ? strategyPackagingFaces(project.brief) : [];
+  const instruction='按本次载体完成夜航一页策略。general 表示载体未指定或其他提案，触点 kind 填 contact，按简报写传播任务。渠道未定时写条件性应用，不默认承诺包装或KV。核心策略只留一个简短、能读出选购场景和优先任务的句子；其余四节用客户听得懂的短句。行业上新数量支持设计取舍，不能推出消费者注意或记忆时长。不要将浏览量推成审美偏好或购买原因。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装只按 requiredFaces 填每个委托包装面一次，front 对应正面、side 对应侧面、back 对应背面。KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。先检验本轮研究提出的条件性方向；渠道、执行细节和待测数据缺失，写入约束。直接提出本轮研究可以支撑的策略发力点。对客交稿前先提炼：核心策略一句只写本案最重要的取舍及对人的用处，以约30字为写作目标。移走与这项选择无关的条件清单。洞察只讲顾客的一个难题；角色只讲品牌能兑现什么；主张只讲一个产品理由。三个动作各用短句写一个可指认的变化。触点按实际媒介或包装面列，只补该处的阅读条件或任务。一个屏幕或一支短片只算一个媒介，开头、中段、结尾属于动作，勿在触点重写一遍。其他栏目每项一到两句，优先一句；每个事实只在它最有用的一处展开，保留必要限定。属性要紧跟它修饰的具体产品或原料，避免省词后变成另一种产品。未验证的用户顾虑用问题表达。详细指标、依据与推导写入原稿。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
   const productJudgments = project.research.sections?.filter(row=>row.chapter==='产品与品牌')
     .map(row=>({recommendation:row.conclusion+' '+row.explanation,findingIndices:row.evidenceIndices}));
   const advice=(productJudgments ?? project.research.strategyAdvice ?? []).flatMap(a=>{
@@ -122,10 +136,10 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
     const findingNumbers=a.findingIndices.map(i=>i+1);
     return findingNumbers.every(n=>eligible.has(n)) ? [{recommendation:a.recommendation,findingNumbers}] : [];
   });
-  const context=JSON.stringify({carrier,brief:project.brief,materials:inputs.texts,findings:rows,
+  const context=JSON.stringify({carrier,requiredFaces,brief:project.brief,materials:inputs.texts,findings:rows,
     handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
-  const render = draft => renderStrategy(draft,findings,eligible,carrier);
+  const render = draft => renderStrategy(draft,findings,eligible,carrier,requiredFaces);
   let out;
   for (let attempt=0;attempt<2;attempt++) {
     const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
