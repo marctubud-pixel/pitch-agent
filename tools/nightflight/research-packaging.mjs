@@ -17,9 +17,12 @@ const detailSchema=object({actualPackaging:{type:'boolean'},visibleProduct:strin
 
 const inspectionTopics=[
   [/规格|净含量|容量|盒内|每袋|每盒|克|毫升|\d\s*(?:kg|ml|g)\b/iu,'画面上可见的容器形状，规格或净含量原字'],
+  [/分装|小袋|开盒|内托|固定|夹层|隔层/u,'画面上可见的内包装、分装或固定结构'],
   [/配料|原料|成分|口味|混合|冻干/u,'包装上可辨的配料或口味原字'],
   [/开袋|袋口|开盖|瓶盖|封口|密封|回封|复封|收好|拉链|开合|易撕/u,'开口及开合、回封标识的位置与原字'],
   [/开窗|透明|材料|环保|工艺/u,'图上能分辨的开窗、材质或工艺标识'],
+  [/追溯|二维码|认证|产地|保质期|过期|生产日期/u,'包装上可辨的溯源、认证、产地或日期标识及对应位置'],
+  [/字体|易读|识别|字大|字号/u,'具体文字的位置、与底色的对比和辨认难度'],
 ];
 
 export async function readPackaging({call,dir,image,brief,category,broadCategory,previous,signal}) {

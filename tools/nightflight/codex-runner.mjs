@@ -230,14 +230,15 @@ function packagingTextGap(f) {
 async function discoverPackaging({brands, category, broadCategory, packagingTerm, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
   const fetched=await Promise.all((brands ?? []).slice(0,3).map(async target=>{
     const searches=[], pages=[];
-    const name=target?.name?.trim();
+    const name=typeof target?.name==='string' && target.name.trim();
     if (!name || !/^[\p{L}\p{N} ·&-]{1,32}$/u.test(name)) return {searches,pages};
     const domain=String(target.officialDomain ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
     let official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
+    let website;
     const seen=new Set();
     if (!official) {
       const names=await discover({query:name});
-      const website=names.results.find(r=>r.title.includes(name) && /官网|官方网站|official site/iu.test(r.title) &&
+      website=names.results.find(r=>r.title.includes(name) && /官网|官方网站|official site/iu.test(r.title) &&
         !retailDomains.some(host=>matchesDomain(r.url,host)));
       if (website) {
         official=new URL(website.url).hostname.replace(/^www\./iu,'');
@@ -247,12 +248,12 @@ async function discoverPackaging({brands, category, broadCategory, packagingTerm
     }
     if (official) {
       const host=official.split('.').length===2 ? 'www.'+official : official;
-      const page={url:'https://'+host+'/',title:name,brand:name,category,catalogTerms,packagingTerm,official:true,carrier:'packaging'};
+      const page={url:website?.url ?? 'https://'+host+'/',title:name,brand:name,category,catalogTerms,packagingTerm,official:true,carrier:'packaging'};
       const query=(broadCategory || category || name);
       const acquired=await searchVisualImages({dir,signal,query,pages:[page]},
         {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
       const usable=acquired.filter(i=>Math.min(i.width,i.height)>=140);
-      searches.push({query,via:name+'官网品类目录',results:[page]});
+      searches.push({query,via:name+'品牌目录候选',results:[page]});
       if (usable.length) return {searches,pages:[{...page,acquired:usable}]};
     }
     const categoryName=category && !name.includes(category) ? name+' '+category : name;
@@ -328,7 +329,8 @@ print(json.dumps([{'title':item.findtext('title'),'url':item.findtext('link')} f
       { signal, timeout: 5000, maxBuffer: 65536 },
     );
     const results = JSON.parse(stdout)
-      .filter((row) => typeof row.url === 'string' && row.url.startsWith('https://'))
+      .filter(row=>typeof row.title==='string' && row.title.trim() && typeof row.url==='string' &&
+        row.url.startsWith('https://') && URL.canParse(row.url))
       .slice(0, 3);
     return { query, results, via: url.hostname };
   } catch (error) {
@@ -388,7 +390,8 @@ export async function researchConsumerReports({brief,topics,openedReports=[],dis
       return {query,via,results};
     }));
     discovered.push(...sources);
-    await examine(sources.flatMap(s=>s.results),term);
+    const candidates=sources.flatMap(s=>s.results);
+    await examine([...candidates.filter(relevant),...candidates.filter(r=>!relevant(r))],term);
     if (canStop && enough()) break;
   }
   if (topics.length && !enough() && openedReports.length) {
@@ -497,20 +500,22 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   };
   const discovered = [];
   const category=plan.parsedOutput.comparisonCategory?.trim();
-  const comparisonBrands=plan.parsedOutput.packagingBrands ?? [];
+  const comparisonBrands=Array.isArray(plan.parsedOutput.packagingBrands)
+    ? plan.parsedOutput.packagingBrands.filter(b=>typeof b?.name==='string') : [];
   const broad=plan.parsedOutput.visualCategory?.trim();
   const broadCategory=broad && /^[\p{L}\p{N} ·-]{1,32}$/u.test(broad) ? broad : category;
   const commerce=/电商|网店|旗舰店|商品详情|商城|e-commerce/iu.test(project.brief || '');
   const broadQueries=broadVisualQueries(broadCategory,carriers,plan.parsedOutput.packagingTerm);
   const firstPass=await Promise.all(broadQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
   discovered.push(...firstPass);
-  const brands=carriers.includes('packaging') && Array.isArray(plan.parsedOutput.packagingBrands) ? plan.parsedOutput.packagingBrands : [];
+  const brands=carriers.includes('packaging') ? comparisonBrands : [];
   const packagingOptions={category,broadCategory,packagingTerm:plan.parsedOutput.packagingTerm,catalogTerms:[...new Set([broadCategory,...(plan.parsedOutput.catalogTerms ?? [])].filter(Boolean))],discover,storeRoot,dependencies,dir,signal};
   const packaging=await discoverPackaging({brands,...packagingOptions});
   discovered.push(...packaging.searches);
   const campaignResults=[];
-  if ((carriers.includes('kv') || carriers.includes('packaging') && brands.length && !packaging.pages.length) && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
-    const directoryTerms=[broadCategory,category,...(project.researchFollowup ? comparisonBrands.map(b=>b.name) : []),...terms];
+  async function discoverCampaigns() {
+    if (dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL) return;
+    const directoryTerms=[broadCategory,category,...(project.researchFollowup ? comparisonBrands.map(b=>b?.name) : []),...terms];
     for (const term of [...new Set(directoryTerms.filter(Boolean))].slice(0,4)) {
       const hits=await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign');
       const results=campaignPages(hits.filter(r=>!excluded.has(r.url)),{category,broadCategory,brands:comparisonBrands,commerce});
@@ -519,6 +524,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       if (campaignResults.length>=4) break;
     }
   }
+  if (carriers.includes('kv')) await discoverCampaigns();
   const baseQueries=[...new Set([
     ...categoryLookups(broadCategory,carriers,project.briefScope?.types ?? [],[],project.researchFollowup),
     ...(broadCategory && commerce && carriers.includes('kv') ? [broadCategory+' 电商宣传图'] : []),
@@ -680,15 +686,20 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
         packaging.pages.includes(p) || ((draft.parsedOutput.competitorPages ?? []).includes(p) && originals.some(source=>source.url===p.url)) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
       previous:(project.previousResearchImages ?? []).filter(image=>!image.carrier || image.carrier===type)});
     if (type==='packaging' && !hasCategoryImage(board?.finding.images ?? [],type)) {
-      const cases=originals.filter(item=>campaignResults.some(r=>r.url===item.url));
+      if (!carriers.includes('kv')) await discoverCampaigns();
+      const publicCases=[...new Set([...campaignResults.map(r=>r.url),
+        ...findings.filter(f=>f.subject==='competitor' && f.url).map(f=>f.url)])];
+      const cases=(await Promise.all(publicCases.slice(0,6).map(capture))).filter(Boolean);
       if (cases.length) {
         await onEvent?.('首批没有查到合格包装，沿已打开的同类案例寻找其他品牌');
-        const tried=new Set(brands.map(b=>b.name));
+        const tried=new Set(brands.map(b=>b?.name?.trim()).filter(Boolean));
         const sources=cases.slice(0,6).map(s=>({title:s.source,url:s.url,text:s.text.slice(0,3000)}));
         const result=await call('首轮品牌未取得同类包装原图。只根据实际打开的案例，找至多两个还没试过、有该品类商品的品牌短名。每个短名必须在对应网页标题或原文出现。只选商品品牌，跳过平台、机构、同名其他行业和经销商。找不到返回空数组。只返回公开短名和原文网页的 url。',
           [],objectSchema({brands:{type:'array',items:objectSchema({name:stringField,url:stringField})}}),
-          {editorial:true,rules:[],context:JSON.stringify({category,broadCategory,tried:[...tried],sources})});
-        const alternatives=(result.parsedOutput?.brands ?? []).filter(b=>b.name?.trim() && !tried.has(b.name) &&
+          {editorial:true,rules:[],context:JSON.stringify({category,broadCategory,tried:[...tried],sources})})
+          .catch(()=>{signal?.throwIfAborted();return null;});
+        const proposed=Array.isArray(result?.parsedOutput?.brands) ? result.parsedOutput.brands : [];
+        const alternatives=proposed.filter(b=>typeof b?.name==='string' && b.name.trim() && !tried.has(b.name.trim()) &&
           sources.some(s=>s.url===b.url && (s.title.includes(b.name) || s.text.includes(b.name)))).slice(0,2);
         const extra=await discoverPackaging({brands:alternatives,...packagingOptions});
         discovered.push(...extra.searches);

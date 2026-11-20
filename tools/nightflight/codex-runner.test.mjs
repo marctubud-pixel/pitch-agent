@@ -733,7 +733,7 @@ test('packaging retries a short brand query, publishes its reviewed original and
 test('industry search switches short category terms and verifies segment data deep inside the report',async t=>{
   const f=await fixture(t,'research-report-lookup');
   const {research}=await f.run('research');
-  assert.deepEqual(research.searchScope.queries,['即饮茶报告','即饮茶','茶饮报告','茶饮','茶叶包装']);
+  assert.deepEqual(research.searchScope.attempts.filter(a=>a.source!=='SocialBeta 品牌发布案例').map(a=>a.query),['即饮茶报告','即饮茶','茶饮报告','茶饮','茶叶包装']);
   assert.equal(research.searchScope.attempts[1].source,'199IT 报告目录');
   assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
 });
@@ -1467,4 +1467,19 @@ test('automatic research uses its evidence gate even if the writer reports that 
   assert.match(report.next,/进入策略/u);
   assert.equal((await outcome(rows.filter((_,i)=>i!==3))).ready,false);
   assert.equal((await outcome(rows,'collab')).ready,false);
+});
+
+test('consumer research opens precise publisher results ahead of broader directory suggestions',async()=>{
+  const {researchConsumerReports}=await import('./codex-runner.mjs');
+  const resource='https://example.org/cat-survey';
+  const quote='受访者通常为室内成年猫购买猫粮。';
+  const seen=[];
+  const result=await researchConsumerReports({brief:'猫粮包装',topics:[{term:'猫粮',queries:[]}],discovered:[],
+    directory:async(_term,provider)=>provider==='reports' ? [{title:'猫粮购买调研报告',url:resource}] :
+      [0,1,2].map(i=>({title:'消费观察'+i,url:'https://example.org/'+provider+i})),
+    capture:async url=>{seen.push(url);return {url,source:'报告',text:url===resource?quote:'通用资料'};},
+    call:async()=>({parsedOutput:{observations:[{url:resource,title:'猫粮购买调研',scope:'该调查受访者',angle:'决策',quote,conclusion:'样本多为室内成年猫购买猫粮。'}]}}),
+  });
+  assert.equal(seen[0],resource);
+  assert.equal(result.findings[0].evidence,quote);
 });

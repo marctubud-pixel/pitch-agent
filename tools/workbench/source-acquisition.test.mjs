@@ -132,3 +132,14 @@ test('HTML static extraction excludes executable content and keeps unknown dates
   const attributes = extractHtml('<img disabled loading = lazy SRC = "/first.jpg" src="/second.jpg" alt=\'A > B &amp; C\'><img data-note="src=\'/fake.jpg\'" data-src=/fallback.jpg>', 'https://example.com');
   assert.deepEqual(attributes.images.map(image => [image.url, image.alt]), [['https://example.com/first.jpg', 'A > B & C'], ['https://example.com/fallback.jpg', '']]);
 });
+
+test('simultaneous reads of identical public bytes converge with intact records',async()=>{
+  const options=await setup();
+  const body='<p>'+'同一份公开商品资料。'.repeat(10000)+'</p>';
+  const dependencies={lookup,now,transport:async()=>response(body)};
+  const records=await Promise.all(Array.from({length:16},()=>capturePublicSource(options,dependencies)));
+  assert.equal(new Set(records.map(item=>item.recordPath)).size,1);
+  const {record}=records[0];
+  assert.equal(await readFile(path.join(options.storeRoot,record.raw.file),'utf8'),body);
+  assert.equal(record.raw.sha256,sha(body));
+});

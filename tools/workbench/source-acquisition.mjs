@@ -2,8 +2,8 @@ import {declaredArticleImages} from './script-image-declarations.mjs';
 import https from 'node:https';
 import dns from 'node:dns/promises';
 import net from 'node:net';
-import { createHash } from 'node:crypto';
-import { mkdir, writeFile, readFile, lstat, realpath } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { mkdir, writeFile, readFile, lstat, realpath, link, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
@@ -171,10 +171,16 @@ async function immutableWrite(root, relative, bytes) {
   await mkdir(directory, { recursive: true });
   if ((await realpath(directory)) !== directory) throw new Error('Capture directory must not contain symlinks');
   const filename = path.join(root, relative);
-  try { await writeFile(filename, bytes, { flag: 'wx', mode: 0o444 }); }
-  catch (error) {
-    if (error.code !== 'EEXIST') throw error;
-    if (!(await lstat(filename)).isFile() || !(await readFile(filename)).equals(Buffer.from(bytes))) throw new Error('Immutable capture collision or unsafe path');
+  const temporary = path.join(directory,'.capture-'+randomUUID());
+  try {
+    await writeFile(temporary, bytes, { flag:'wx',mode:0o444 });
+    try { await link(temporary,filename); }
+    catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      if (!(await lstat(filename)).isFile() || !(await readFile(filename)).equals(Buffer.from(bytes))) throw new Error('Immutable capture collision or unsafe path');
+    }
+  } finally {
+    await unlink(temporary).catch(error=>{if (error.code!=='ENOENT') throw error;});
   }
   return filename;
 }
