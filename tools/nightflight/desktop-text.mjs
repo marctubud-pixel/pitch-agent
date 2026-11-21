@@ -19,6 +19,10 @@ const readRetryReasons=new Map([
   ['READ_SSL','旧版组件返回安全连接失败'],['READ_CONNECTION_LOST','在等待回复时连接中断'],
 ]);
 
+export function isReadTransportFailure(error) {
+  return readRetryReasons.has(error?.code) || readRetryReasons.has(error?.cause?.code);
+}
+
 function invoke(executable, action, input, signal, mode = '--text-model') {
   return new Promise((resolve,reject) => {
     const child=execFile(executable,[mode,action],{signal,timeout:300000,maxBuffer:32*1024*1024},(error,data)=>{

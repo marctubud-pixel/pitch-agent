@@ -1,5 +1,6 @@
 import {supportsPoster} from './research-sources.mjs';
 import {readPackaging} from './research-packaging.mjs';
+import {isReadTransportFailure} from './desktop-text.mjs';
 import {link} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import {searchVisualImages} from './public-visual-search.mjs';
@@ -113,7 +114,12 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   if (carrier==='packaging') {
     await Promise.all(images.map(async image=>{
       const read=await readPackaging({call,dir,image,brief:project.brief,category,broadCategory,signal,
-        previous:previous.find(ref=>ref.sha256===image.sha256)});
+        previous:previous.find(ref=>ref.sha256===image.sha256)}).catch(async error=>{
+        signal?.throwIfAborted();
+        if (!isReadTransportFailure(error)) throw error;
+        await onEvent?.('单张竞品包装读图未完成，原图暂未核实 · '+image.pageUrl+' · '+image.sha256.slice(0,12));
+        return null;
+      });
       if (read) packagingReads.set(image.imageId,read);
     }));
   }
@@ -126,7 +132,7 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     const samples=reads.filter(Boolean);
     result={samples,conclusion:samples.map(s=>s.title+'：'+s.observation).join('；'),implication:'将上述已核包装当作同货架参照，比较本案商品名、品类和识别图案的位置。'};
   }
-  const remaining=images.filter(image=>!isNamedProduct(image));
+  const remaining=images.filter(image=>!isNamedProduct(image) && (carrier!=='packaging' || packagingReads.has(image.imageId)));
   const implications=new Map();
   if (remaining.length) {
     const groups=carrier==='kv' ? remaining.map(image=>[image]) : [remaining];
