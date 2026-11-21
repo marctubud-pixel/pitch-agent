@@ -1186,7 +1186,7 @@ test('strategy keeps a target-only price out of artwork unless the Brief explici
     touchpoints:[base.touchpoints[0],{...base.touchpoints[1],action:'手机首屏在单袋旁读到'+appearance+'。'}]});
   const bare=prices('29.9元/盒');
   const qualified=prices('电商目标价29.9元/盒');
-  const run=(input,drafts,calls)=>makeStrategyOnePager({project:{brief:input,research:{findings:[finding]}},
+  const run=(input,drafts,calls,sourceFinding=finding)=>makeStrategyOnePager({project:{brief:input,research:{findings:[sourceFinding]}},
     carrier:'packaging+kv',inputs,rules:['同一份策略规则'],call:async(instruction,attachments,schema,task)=>{
       calls.push({instruction,attachments,schema,task});
       if (task.delegate) return {parsedOutput:{issues:[]}};
@@ -1196,6 +1196,23 @@ test('strategy keeps a target-only price out of artwork unless the Brief explici
       assert.ok(index<drafts.length);
       return {parsedOutput:{outcome:structuredClone(drafts[index])}};
     }});
+  await t.test('only verified packaging observations reach the strategy author; archival readings and attachments stay intact',async()=>{
+    const pack={actualPackaging:true,sourceUrl:'https://example.com/front.jpg',pageUrl:'https://example.com/item',
+      sha256:createHash('sha256').update(competitorPng).digest('hex'),observation:'正面印有净含量：1.565kg。',
+      firstRead:{front:'右侧透窗可见6瓶装',raw:'未核初读'}};
+    const poster={actualPackaging:false,observation:'已发布海报中的陈列',firstRead:{front:'海报有独立首读'}};
+    const calls=[];
+    await run(brief+target,[base],calls,{...finding,images:[pack,poster]});
+    const [actualPack,actualPoster]=JSON.parse(calls[0].task.context).findings[0].images;
+    const {firstRead,...verified}=pack;
+    assert.deepEqual(actualPack,verified);
+    assert.equal(Object.hasOwn(actualPack,'firstRead'),false);
+    assert.deepEqual(actualPoster,poster);
+    assert.equal(pack.firstRead,firstRead);
+    assert.equal(firstRead.front,'右侧透窗可见6瓶装');
+    assert.equal(calls[0].attachments,images);
+  });
+
   await t.test('retries only the unsafe draft with unchanged evidence and publishes the corrected wording',async()=>{
     const calls=[];
     const result=await run(brief+target,[bare,base],calls);

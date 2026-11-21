@@ -86,7 +86,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const copy='本版文案稿';
   const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4uoAAAAASUVORK5CYII=','base64');
   const visualIntent='用家长牵孩子进馆的动作表现亲子参与。';
-  const observation={composition:'左边标题，右边展柜',legibleText:['天黑进馆'],visibleDetails:['展柜'],uncertain:['未看清人物动作']};
+  const observation={composition:'左边标题，右边展柜',legibleText:['天黑进馆','预约'],visibleDetails:['展柜'],uncertain:['未看清人物动作']};
   const peerSource={chapter:'竞争与同类传播',source:'场馆原文',url:'https://example.invalid/venue',
     conclusion:'活动名在海报上方',evidence:'上方标题区为活动名称'};
   const competitorRow='洽洽礼盒用透明容器和多罐分装展示不同坚果，规格为1.308—1.988千克。';
@@ -107,6 +107,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
     research:{findings:[peerSource,packagingSource],sections:[{chapter:peerSource.chapter,evidenceIndices:[0,1]}]},
     artifacts:[artifact('brief','任务卡.md'),artifact('strategy','策略.md'),artifact('copy','文案.md'),
       {...artifact('visual','原图.png','image'),visual:{direction:'馆内夜游',role:'main',candidate:1,recommended:true,sha256:sha(image),
+        blind:{sha256:sha(image)},scores:[{role:'品牌',candidate:1,score:5,onPackStatus:'verified',reason:'品牌名以空白框做占位。'}],
         referenceHandoff:{referenceTask:{translation:visualIntent}}}}],
   };
   const db=new DatabaseSync(join(root,'nightflight.sqlite'));
@@ -123,6 +124,8 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const allegedMissingGlyph='海报上方呈活动名。';
   const croppedTranscription='海报下方呈现活动名。';
   const footerConcern='封底页缺少页码和页脚品牌标识，导致分页和全册视觉节奏不统一。';
+  const sampleConcern='图中产品样稿未重画替换品牌占位';
+  const sameWording='报名用词“预约”与简报“预约”不一致';
   const decisionLines=[joinedDecision,sizePending,pricePending,wrongPriceUnit];
   const wrappedDecisions={
     '缺少七袋装外盒正面实物尺寸及结构信息':sizePending,
@@ -134,7 +137,8 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
     {title:'活动需求',pages:[page('brief','家长先看清参加条件',{points:['报名方式待定。','馆内讲解面向亲子。','品牌名与正式标志待定。']}),
       page('peers','同类把活动名放上方',{points:[printed,competitorRow],sourceIndices:[0,1]})]},
     {title:'核心策略',pages:[page('strategy',strategy)]},
-    {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['拟突出馆内场景。'],visibleQuotes:['右边展柜']}),
+    {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['拟突出馆内场景。'],visibleQuotes:['右边展柜'],
+      internalNote:'图中产品为样稿，后续重画并替换品牌占位。'}),
       page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),
       page('decision','请确认素材',{points:decisionLines})]},
   ],closing:'感谢观看，期待与您确认下一步方向。'};
@@ -191,6 +195,10 @@ else {
      if(issue.problem===${JSON.stringify(footerConcern)})
        return [id,{kind:'confirmed_requirement_missing',actual:'封底无数字页码且无品牌页脚标识。',
          required:'全册需统一视觉节奏，含统一的位置页码与页脚品牌标识，确保册内导航与品牌识别连贯。',source:'S1',location,reason}];
+     if(issue.problem===${JSON.stringify(sampleConcern)})
+       return [id,{kind:'confirmed_requirement_missing',actual:issue.problem,required:'本页必须把占位重画成正式品牌。',source:'B1',location,reason}];
+     if(issue.problem===${JSON.stringify(sameWording)})
+       return [id,{kind:'fact_conflict',actual:issue.problem,required:'已确认用词“预约”',source:'B1',location,reason}];
      if(issue.problem==='待确认的两项需提案人拍板')
        return [id,{kind:'confirmed_requirement_missing',actual:'第8页两项仍需客户决定，不宜代客户拍板。',
          required:${JSON.stringify(joinedDecision)},source:'B1,S1',location,reason}];
@@ -240,6 +248,10 @@ else {
    if (role==='逻辑岗' && pages.some(p=>p['页码']===5))
      issues.push({...issue,page:5,operation:'hold',target:'strategy',from:'',to:'',quote:'',
        problem:'策略页需重列参加条件',evidence:'策略页只呈现已定策略句',change:'加一遍参加条件'});
+   if (role==='逻辑岗' && pages.some(p=>p['页码']===6)) {
+     for (const problem of [${JSON.stringify(sampleConcern)},${JSON.stringify(sameWording)}])
+       issues.push({...issue,page:6,operation:'note',problem,evidence:problem,change:'交给责任阶段'});
+   }
    if (role==='逻辑岗' && pages.some(p=>p['页码']===8)) {
      issues.push({...issue,page:8,operation:'note',target:'layout',from:'',to:'',quote:'',
        problem:'决策页缺少品牌标识占位',evidence:'决策页只有品牌名文字，没有单独图形',change:'建议加品牌图形'});
@@ -285,7 +297,7 @@ else {
    if(mode!=='--text-model' || figure.id!=='A1' || figure.sha256!==${JSON.stringify(sha(image))} ||
       figure.visualIntent!==${JSON.stringify(visualIntent)} || JSON.stringify(figure.observation)!==JSON.stringify(${JSON.stringify(observation)}))
      throw Error('DeepSeek 编稿未分开接收同版原图的画面意图和实际读图');
-   if(JSON.stringify(materials.research.findings)!==JSON.stringify(${JSON.stringify([peerSource,packagingSource])}) ||
+   if(JSON.stringify(materials.research.findings)!==JSON.stringify(${JSON.stringify([peerSource,{...packagingSource,images:packagingSource.images.map(({firstRead,...image})=>image)}])}) ||
       materials.research.sections[0].evidenceIndices.join()!=='0,1') throw Error('DeepSeek 编稿未收到同版同类结论和出处');
    reply=${JSON.stringify(draft)};
  }
@@ -388,6 +400,10 @@ else {
   assert.match(report,/第 2 页 · P1 · 目录导读可精简 · 版式/u);
   assert.match(report,/第 3 页 · P1 · 建议统一馆内的叫法/u);
   assert.match(report,/第 5 页 · P1 · 策略页需重列参加条件/u);
+  assert.ok(report.includes('第 6 页 · P1 · '+sampleConcern));
+  assert.ok(report.includes('第 6 页 · P1 · '+sameWording));
+  assert.match(report,/采用原图的独立品牌核对已确认空白占位/u);
+  assert.match(report,/实页原生文字、同版采用原图读字与已确认材料均为「预约」/u);
   assert.match(report,/第 7 页 · P1 · 可重绘原图光影 · 视觉/u);
   assert.doesNotMatch(report,/第 3 页 · P0/u);
   await request({kind:'accept_final',expectedRevision:state.revision-1},409);

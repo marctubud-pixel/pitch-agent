@@ -6,6 +6,7 @@ import { readPublishedCopy } from './copy-review.mjs';
 import { desktopTextProvider, jsonModelRequest, modelProfile } from './desktop-text.mjs';
 import { fullPackageArrangement, specifiedPackageArrangement } from './packaging-quantity.mjs';
 import { hasWrongOwnNutGroup, ownRecipe } from './product-recipe.mjs';
+import { researchFindingForGeneration } from './strategy-one-pager.mjs';
 
 const upstream = ['brief', 'research', 'strategy', 'copy', 'visual'];
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -452,7 +453,8 @@ export async function writeManuscript(provider, {materials,checkpointDir,onEvent
     selected.some(d=>figures.filter(f=>f.direction===d.name).length!==1)) {
     throw Error('同版各案文案与采用图无法核对');
   }
-  const prompt=await formatManuscriptInput(materials);
+  const research={...materials.research,findings:materials.research.findings.map(researchFindingForGeneration)};
+  const prompt=await formatManuscriptInput({...materials,research});
   const draftSchema=draftSchemaFor(figures);
   await onEvent?.('本版编稿沿用 '+figures.map(f=>f.id).join('、')+' 的原图观察');
   const r=await runCheckpointed(checkpointDir,cached=>

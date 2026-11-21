@@ -209,6 +209,25 @@ test('包装逐页稿按采用图首读核实共同印字和实物陈列',async 
     return {result,sent};
   }
 
+  await t.test('DeepSeek 看竞品包装的已核文字，材料包和本案采用图原字仍可完整核对',async()=>{
+    const withResearch=structuredClone(materials);
+    const pack={actualPackaging:true,sourceUrl:'https://example.com/pack.png',pageUrl:'https://example.com/pack',
+      sha256:hash('竞品原图'),observation:'盒正面印有净含量：1.565kg。',firstRead:{front:'右侧透窗可见6瓶装',raw:'竞品原始读图回执'}};
+    const nonPackaging={observation:'文化周海报',firstRead:{front:'海报原始读图'}};
+    withResearch.research.findings=[{images:[pack,nonPackaging]}];
+    const {result,sent}=await replay(withResearch,draft);
+    const fromPrompt=prompt=>JSON.parse(prompt.split('## 同版编稿材料').at(-1).split('```json\n')[1].split('\n```')[0]);
+    const actual=fromPrompt(sent[0]);
+    const {firstRead,...verified}=pack;
+    assert.deepEqual(actual.research.findings[0].images,[verified,nonPackaging]);
+    assert.deepEqual(actual.figures,withResearch.figures);
+    assert.deepEqual(result.plan.figures,withResearch.figures);
+    assert.equal(result.plan.researchSha256,hash(JSON.stringify(withResearch.research)));
+    const archive=fromPrompt(await formatManuscriptInput(withResearch));
+    assert.deepEqual(archive.research.findings[0].images,[pack,nonPackaging]);
+    assert.equal(firstRead.front,'右侧透窗可见6瓶装');
+  });
+
   await t.test('退回原来的三个错误，保持首读原件和锁定策略',async()=>{
     const wrong=structuredClone(draft);
     setPoint(wrong,'execution',falseExecution);

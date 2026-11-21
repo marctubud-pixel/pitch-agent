@@ -10,7 +10,7 @@ import {runLayout} from './layout.mjs';
 import {pythonBinary} from './runtime-dependencies.mjs';
 
 export const finalProtocol='case-b-1.2.0';
-const finalRuleVersion='1.2.2';
+const finalRuleVersion='1.2.3';
 const roles={
   logic:'逻辑岗：审既定要求、客户立场、全册叙事衔接、事实和统计口径。图表不能共用不同分母、单位或时期。用本版可核对的原文定位。',
   copy:'措辞岗：把大屏上的长句和调研腔压成短句，保留限定、证据和已定策略及主副标。按现有材料纠正错误表述。',
@@ -183,7 +183,7 @@ function authorizeText(plan,page,issue) {
 }
 
 function issueKey(issue) {
-  return [issue.page,issue.operation,issue.target,issue.from,issue.to,issue.operation==='hold'?issue.problem:''].join('\0');
+  return [issue.page,issue.operation,issue.target,issue.from,issue.to,['hold','note'].includes(issue.operation)?issue.problem:''].join('\0');
 }
 
 function mergeIssues(issues) {
@@ -275,12 +275,13 @@ function verifiesPeerWeight({project,plan,slide,nativeText,decision,sourceMatche
     packageWeights(image.firstRead.front).includes(amount) && packageWeights(image.observation ?? '').includes(amount)));
 }
 
+const brand=/品牌名|品牌标识|正式标志|商标|\blogo\b/iu;
+const pendingBrand=/待定|未定|还没定|尚未确定|未确认|确认后.{0,20}替换|请确认|定名后/u;
+
 function alreadyExplainsPendingBrand(plan,edition,slide,issue,decision) {
   if (decision.kind!=='confirmed_requirement_missing' || !['cover','decision'].includes(slide.role)) return false;
-  const brand=/品牌名|品牌标识|正式标志|商标|\blogo\b/iu;
-  const pending=/待定|未定|还没定|尚未确定|未确认|确认后.{0,20}替换|请确认|定名后/u;
   const brief=plan.brief.original;
-  if (!brief.split(/[。；;\r\n]/u).some(line=>brand.test(line) && pending.test(line)) ||
+  if (!brief.split(/[。；;\r\n]/u).some(line=>brand.test(line) && pendingBrand.test(line)) ||
       !brand.test(issue.problem+' '+issue.evidence) || !/占位|未定|待定|提示|标志|\blogo\b/iu.test(issue.problem)) return false;
   const location=slide.role==='cover'?/封面|首页|第一页|第1页|\bP0?1\b/iu:/决策页|决定页|待确认页|收尾页/iu;
   const instructions=[brief,...plan.strategy.map(item=>item.body)];
@@ -290,7 +291,51 @@ function alreadyExplainsPendingBrand(plan,edition,slide,issue,decision) {
   if (requiresHere) return false;
   const duty=slide.role==='cover'?'brief':'decision';
   return plan.pages.filter(page=>page.role===duty).some(page=>page.points.some(point=>
-    brand.test(point) && pending.test(point) && norm(edition.native[page.number-1].text.join('')).includes(norm(point))));
+    brand.test(point) && pendingBrand.test(point) && norm(edition.native[page.number-1].text.join('')).includes(norm(point))));
+}
+
+function verifyAdoptedArtwork({project,plan,slide,native,issue,decision,sourceMatches}) {
+  if (!['direction','work'].includes(slide.role) || slide.figures.length!==1) return '';
+  const figure=plan.figures.find(item=>item.id===slide.figures[0]);
+  if (!figure || !native.images.some(image=>image.name===figure.name && image.sha256===figure.sha256)) return '';
+  const adopted=project.artifacts.find(item=>item.adoptedForLayout && item.name===figure.name &&
+    item.visual?.blind?.sha256===figure.sha256);
+  if (!adopted) return '';
+
+  if (decision.kind==='confirmed_requirement_missing' && !sourceMatches) {
+    const note=slide.notes ?? '';
+    const nextStep=/样稿.{0,45}(?:重画|重绘|重做|重制)/u;
+    const complaint=issue.problem+' '+issue.evidence+' '+decision.actual;
+    const directConflict=/无(?:任何|品牌)?占位|没(?:有|看到)(?:[^，。]{0,8})占位|缺少(?:[^，。]{0,8})占位|(?:冒用|误用|借用|沿用).{0,8}(?:商标|品牌|logo)|品牌(?:名|标识).{0,6}写错/iu;
+    const brandPending=plan.brief.original.split(/[。；;\r\n]/u).some(line=>brand.test(line) && pendingBrand.test(line));
+    const requiresProduction=/可编辑|印刷文件|印刷原件|制作原件|可印刷|直接(?:投放|发布)|投放原件|分开(?:交付|出图)|独立(?:交付|出图|原件)|分别(?:交付|出图)/u.test(plan.brief.original);
+    const verified=adopted.visual.scores?.some(score=>score.role==='品牌' && score.onPackStatus==='verified' &&
+      /(?:品牌|标志|logo).{0,18}(?:空白|留白|预留).{0,8}占位/iu.test(score.reason));
+    if (brandPending && !requiresProduction && verified && nextStep.test(note) && nextStep.test(decision.actual) &&
+        /品牌占位/u.test(note+decision.actual) && !directConflict.test(complaint)) {
+      return '采用原图的独立品牌核对已确认空白占位。备注中的重绘、替换留作后续制作。';
+    }
+  }
+
+  if (decision.kind!=='fact_conflict' || !/配料.{0,10}(?:标注|标签|命名|名称)|用词/u.test(issue.problem)) return '';
+  const quotes=value=>[...value.matchAll(/[“「‘"]([^”」’"]+)[”」’"]/gu)].map(match=>norm(match[1]));
+  const actual=quotes(decision.actual);
+  const required=quotes(decision.required);
+  const token=required[0];
+  if (!token || !/^\p{L}{2,12}$/u.test(token) || !actual.length ||
+      ![...actual,...required,...quotes(issue.problem),...quotes(issue.evidence)].every(value=>value===token)) return '';
+  const authority=[plan.brief.original,...plan.strategy.map(item=>item.body)].map(norm);
+  const confirmed=value=>authority.some(line=>line.includes(value));
+  const legible=(figure.observation?.legibleText ?? []).map(norm);
+  const letters=Array.from(token);
+  const similarUnconfirmed=letters.length>=3 && legible.flatMap(line=>line.split(/[,、。;:]/u)).some(term=>{
+    const written=Array.from(term);
+    return written.length===letters.length && written.filter((letter,index)=>letter!==letters[index]).length===1 && !confirmed(term);
+  });
+  if (legible.includes(token) && !similarUnconfirmed && native.text.some(line=>norm(line).includes(token)) && confirmed(token)) {
+    return '实页原生文字、同版采用原图读字与已确认材料均为「'+token+'」。';
+  }
+  return '';
 }
 
 function optionalClosingFooter(plan,edition,slide,issue,decision) {
@@ -486,6 +531,7 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       '先按实图逐字转录意见直接质疑的最短字样 actual，location 写看到的位置。逐项选一个证据类型 kind。fact_conflict 需要实际原字与本版已确认事实冲突。confirmed_requirement_missing 需要本页应交付的已确认信息确实缺失。key_content_unreadable 需要字实际被遮挡、裁掉或模糊到读不出。前三类在 required 中逐字摘录本版给定材料中的必要原句、要求或关键字样。',
       '实际内容能读全，意见只是标点、句式、普通断行、留白或美术，选 readable_suggestion。中英文标点或行尾形式本身属于这一类。报告描述的现象没有发生选 not_found。还缺实际证据选 unresolved。若这三类没有必要原话，required 留空。',
       '按实际角色判断这一页该有什么。封面负责识别提案，需求页列项目约束，方案页呈现设计，决策页列客户需确定的事。只有同版原话要求在当前页显示的品牌占位才必需；包装或 KV 的占位要求归作品。只有看到实际可定位的现象才作事实判断。',
+      '作品备注里样稿待重绘、待换正式标志属于后续制作说明。到同一页采用的作品上核对实际占位；只报告可以定位的缺失、错字或其他违反已确认委托的现象。核对是否同一个词时，actual 和 required 各写最短的原字，原字一致选 not_found。',
       '同类参考页先核实规格所指的是哪款商品，再对照该商品的同版来源。有来源的竞品数值与本品规格不同，不能据此判为事实冲突。',
       '趋势页须逐字查看同一条陈述已经写出的样本或品类限制。先确认与该条原研究是否一致。仅担心读者误解已写清的口径，选 readable_suggestion。',
       '致谢封底正文完整时，常规页码或页脚样式属于美术建议。页码错误、实体缺页、关键内容缺失，或客户明确委托该页增加页脚和页码时，按同版原话和实图核实。',
@@ -523,9 +569,10 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       const peerWeight=verifiesPeerWeight({project,plan,slide,nativeText,decision,sourceMatches});
       const ref=Object.hasOwn(confirmed,decision.source) && /^R([1-9]\d*)$/u.exec(decision.source);
       const surveyScope=ref && verifiesSurveyScope({project,slide,native:edition.native[issue.page-1],nativeText,decision,source:research[Number(ref[1])-1]});
+      const artwork=verifyAdoptedArtwork({project,plan,slide,native:edition.native[issue.page-1],issue,decision,sourceMatches});
       const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || approvedBrand || closingFooter || targetPrice || peerWeight || surveyScope || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
       const check={call,project,plan,slide,edition,round,receipts,onEvent,issue,decision};
-      const additional=clear?'':await verifyPrintedText(check) || await verifyProductUse(check) ||
+      const additional=clear?'':artwork || await verifyPrintedText(check) || await verifyProductUse(check) ||
         ((!sourceMatches || decision.source.startsWith('R')) && await verifySurvey(check));
       if (clear || additional) {
         const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':

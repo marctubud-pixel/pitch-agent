@@ -167,10 +167,20 @@ function renderStrategy(out, findings, eligible, carrier, requiredFaces) {
   return {body:sections.join('\n\n'),strategy:{findingNumbers,intersection:out.intersection,focus:customerText(out.coreStrategy)}};
 }
 
+export function researchFindingForGeneration(finding) {
+  if (!Array.isArray(finding.images)) return finding;
+  const images=finding.images.map(image=>{
+    if (image?.actualPackaging!==true) return image;
+    const {firstRead:_firstRead,...verified}=image;
+    return verified;
+  });
+  return {...finding,images};
+}
+
 export async function makeStrategyOnePager({call,project,inputs,carrier,rules,onEvent,signal}) {
   const findings=project.research?.findings ?? [];
   const rows=findings.flatMap((f,i)=>f && !f.visualOnly && [f.conclusion,f.source,f.evidence,f.implication].every(v=>typeof v==='string' && v.trim())
-    ? [{...f,findingNumber:i+1}] : []);
+    ? [{...researchFindingForGeneration(f),findingNumber:i+1}] : []);
   const eligible=new Set(rows.map(f=>f.findingNumber));
   if (!rows.length) throw Error('当前策略输入缺少可引用的研究记录');
   const requiredFaces=['packaging','packaging+kv'].includes(carrier) ? strategyPackagingFaces(project.brief) : [];

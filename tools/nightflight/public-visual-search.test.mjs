@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
+import {mkdtemp,readFile,readdir,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -231,6 +231,41 @@ test('named packages retain the first read by image across follow-ups and inspec
   const next=await researchCompetitors({...args,previous:refs});
   assert.equal(firstCount,2);
   assert.deepEqual(next.finding.images.map(r=>r.firstRead),refs.map(r=>r.firstRead));
+});
+
+test('packaging evidence preserves printed specifications but does not publish conflicting crop positions or unprinted window counts',async t=>{
+  const {readPackaging}=await import('./research-packaging.mjs');
+  const dir=await mkdtemp(join(tmpdir(),'packaging-precision-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const path=join(dir,'pack.png');
+  await writeFile(path,png);
+  const image={path,mediaType:'image/png',sha256:createHash('sha256').update(png).digest('hex'),pageUrl:'https://brand.example.org/item'};
+  const first={brand:'洽洽',front:'左上印有“洽洽 坚果礼”。右侧透窗可见6瓶装。净含量1.565kg。盒内规格印有“盒内7袋”。',regions:['中央','左上','右上']};
+  const packCheck='画面上可见的内包装、分装或固定结构';
+  const layout='商品是什么，包装主面的信息怎么摆放';
+  const weight='画面上可见的容器形状，规格或净含量原字';
+  const checked=(question,location,marking)=>({question,location,marking,status:'看清'});
+  const observed=[checked(layout,'中央','洽洽 坚果礼'),checked(layout,'左上','洽洽 坚果礼'),
+    checked(packCheck,'中央','5个透明塑料瓶，顶部为金色瓶盖'),
+    checked(packCheck,'右侧','六个不同口味的透明罐子'),
+    checked(packCheck,'正面','印有“盒内7袋”'),checked(weight,'底部','净含量：1.565kg'),
+    checked('开口及开合、回封标识的位置与原字','右上','easyopen & zipsystem')];
+  const result=await readPackaging({image,dir,brief:'混合坚果包装独立小袋，规格与开合结构',category:'坚果礼盒',
+    call:async (_prompt,_images,schema)=>schema.properties.front ? {parsedOutput:first,responseText:'原始首次实答'} :
+      {parsedOutput:{actualPackaging:true,visibleProduct:'洽洽坚果礼',categoryMatch:'同类',verifiedFront:'正面',checks:observed}}});
+  assert.equal(result.firstRead.raw,'原始首次实答');
+  assert.match(result.observation,/正面，洽洽 坚果礼/u);
+  assert.match(result.observation,/左上，洽洽 坚果礼/u);
+  assert.doesNotMatch(result.observation,/中央，洽洽 坚果礼|5个透明塑料瓶|六个不同口味/u);
+  assert.match(result.observation,/多个透明塑料瓶，顶部为金色瓶盖/u);
+  assert.match(result.observation,/印有“盒内7袋”/u);
+  assert.match(result.observation,/净含量：1.565kg/u);
+  assert.match(result.observation,/右上，easyopen & zipsystem/u);
+  const evidence=join(dir,'.research-evidence','packaging-reads');
+  const [folder]=await readdir(evidence);
+  const detail=JSON.parse(await readFile(join(evidence,folder,'detail.json'),'utf8'));
+  assert.deepEqual(detail.checks,observed);
+  assert.equal(detail.observation,result.observation);
 });
 
 test('a regional brand homepage leads through its category to the original in the product gallery',async t=>{

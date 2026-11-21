@@ -14,10 +14,12 @@ const firstSchema=object({brand:string,front:string,regions:{type:'array',items:
 const detailSchema=object({actualPackaging:{type:'boolean'},visibleProduct:string,categoryMatch:{type:'string',enum:['同类','其他品类','未核实']},verifiedFront:string,checks:{type:'array',items:object({
   question:string,location:string,marking:string,status:{type:'string',enum:['看清','未核实']},
 })}});
+const frontLayout='商品是什么，包装主面的信息怎么摆放';
+const distribution='画面上可见的内包装、分装或固定结构';
 
 const inspectionTopics=[
   [/规格|净含量|容量|盒内|每袋|每盒|克|毫升|\d\s*(?:kg|ml|g)\b/iu,'画面上可见的容器形状，规格或净含量原字'],
-  [/分装|小袋|开盒|内托|固定|夹层|隔层/u,'画面上可见的内包装、分装或固定结构'],
+  [/分装|小袋|开盒|内托|固定|夹层|隔层/u,distribution],
   [/配料|原料|成分|口味|混合|冻干/u,'包装上可辨的配料或口味原字'],
   [/开袋|袋口|开盖|瓶盖|封口|密封|回封|复封|收好|拉链|开合|易撕/u,'开口及开合、回封标识的位置与原字'],
   [/开窗|透明|材料|环保|工艺/u,'图上能分辨的开窗、材质或工艺标识'],
@@ -25,11 +27,37 @@ const inspectionTopics=[
   [/字体|易读|识别|字大|字号/u,'具体文字的位置、与底色的对比和辨认难度'],
 ];
 
+const compact=value=>value.normalize('NFKC').replace(/\s/gu,'');
+
+function frontPosition(location,marking,firstRead) {
+  const zone=zones.find(value=>location.includes(value));
+  const label=compact(marking).split(/[,、。；;]/u)[0];
+  const clauses=compact(firstRead.front ?? '').split(/[,。；;]/u);
+  return zone && label.length>=2 && clauses.some(clause=>clause.includes(zone) && clause.includes(label)) ? location : '正面';
+}
+
+function visibleDistribution(marking) {
+  return marking.replace(/([\d０-９]+|[一二两三四五六七八九十百]+)(?:个(?=[^：:，,、。；;\r\n]{0,16}[瓶罐袋包杯盒])|(?=[瓶罐袋包杯盒]))/gu,(matched,count,index,text)=>{
+    const phrase=text.slice(0,index).split(/[，,。；;\r\n]/u).at(-1);
+    const printed=/(?:印有|标(?:有|注|明|示)|写(?:有|着)|印字|原字)[：:「“"\s]*(?:盒内|每盒|内含|内装)?\s*$/u.test(phrase);
+    const nominal=compact(count);
+    if (printed || ['一','1'].includes(nominal)) return matched;
+    return nominal==='0' ? '数量未核实' : matched.replace(count,'多');
+  });
+}
+
+function observationLine({question,location,marking,status},firstRead) {
+  if (status!=='看清' || !location?.trim() || !marking?.trim()) return question+'：未核实。';
+  const position=question===frontLayout?frontPosition(location,marking,firstRead):location;
+  const seen=question===distribution?visibleDistribution(marking):marking;
+  return question+'：'+position+'，'+seen;
+}
+
 export async function readPackaging({call,dir,image,brief,category,broadCategory,previous,signal}) {
   const root=join(dir,'.research-evidence','packaging-reads');
   await mkdir(root,{recursive:true});
   const folder=await mkdtemp(join(root,image.sha256+'-'));
-  const questions=['商品是什么，包装主面的信息怎么摆放',
+  const questions=[frontLayout,
     ...inspectionTopics.filter(([pattern])=>pattern.test(brief ?? '')).map(([,question])=>question)];
   let firstRead=previous?.firstRead;
   if (!firstRead) {
@@ -48,14 +76,13 @@ export async function readPackaging({call,dir,image,brief,category,broadCategory
     return {name:zone+'.png',imageId:'detail_'+i,mediaType:'image/png',path,byteLength:bytes.length,
       sha256:createHash('sha256').update(bytes).digest('hex')};
   }));
-  const review=await call('第一张是原图，接着是同一原图的真实局部放大，顺序见 regions。visibleProduct 写图上可辨的商品名或品类，省略口号、规格和成分。独立核对图上商品与 targetCategory 的通用品类。actualPackaging 只在原图有实际销售商品的包装和可辨标识时为 true。散装食材、图标和空盒模板须排除。同类、异类和品类不清分别写“同类”“其他品类”“未核实”。比较 comparisonCategory 的细分时，以图上实见为准。verifiedFront 只记录可辨的正面，侧背面可留空。checks 先写能识别商品的图文或布局，再按 questions 记录具体位置及可辨原字或图形。数字、净含量、配料和盒内总数只抄图上有明确标签、且能准确辨认的字样。若透窗只露出部分，描述可见罐、袋或其他容器，盒内总数写未核实。无法辨认或不能从本图核对的都写未核实。图上标识只说明印了什么，实际使用效果另需实测。',[image,...details],detailSchema,
+  const review=await call('第一张是原图，接着是同一原图的真实局部放大，顺序见 regions。location 一律以第一张原图为坐标；局部图中央不等于包装正面中央。visibleProduct 写图上可辨的商品名或品类，省略口号、规格和成分。独立核对图上商品与 targetCategory 的通用品类。actualPackaging 只在原图有实际销售商品的包装和可辨标识时为 true。散装食材、图标和空盒模板须排除。同类、异类和品类不清分别写“同类”“其他品类”“未核实”。比较 comparisonCategory 的细分时，以图上实见为准。verifiedFront 只记录可辨的正面，侧背面可留空。checks 先写能识别商品的图文或布局，再按 questions 记录具体位置及可辨原字或图形。数字、净含量、配料和盒内总数只抄图上有明确标签、且能准确辨认的字样，标明“印有”并抄原字。若透窗只露出部分，描述可见罐、袋或其他容器，盒内总数写未核实。无法辨认或不能从本图核对的都写未核实。图上标识只说明印了什么，实际使用效果另需实测。',[image,...details],detailSchema,
     {rules:[],assignment:'单张包装核图',context:JSON.stringify({questions,targetCategory:broadCategory || category,comparisonCategory:category,regions})});
   const {actualPackaging,visibleProduct,categoryMatch,checks=[]}=review.parsedOutput;
   await writeFile(join(folder,'category.json'),JSON.stringify({sha256:image.sha256,targetCategory:broadCategory || category,comparisonCategory:category,actualPackaging,visibleProduct,categoryMatch}),{mode:0o600});
   if (actualPackaging!==true || categoryMatch!=='同类' || !visibleProduct?.trim()) return null;
   if (!checks.some(c=>c.status==='看清' && c.location?.trim() && c.marking?.trim())) return null;
-  const lines=checks.filter(c=>c.question?.trim()).map(c=>c.status==='看清' && c.location?.trim() && c.marking?.trim()
-    ? c.question+'：'+c.location+'，'+c.marking : c.question+'：未核实。');
+  const lines=checks.filter(c=>c.question?.trim()).map(check=>observationLine(check,firstRead));
   // Only located observations and explicit unknowns are evidence for the research writer.
   const observation=lines.join('\n');
   await writeFile(join(folder,'detail.json'),JSON.stringify({sha256:image.sha256,regions,checks,observation}),{mode:0o600});

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.145.0",
-  "registrySha256": "dd5d95a822f677e66bbfb031ecfe4063e62c3d1a3ea54d2cf2b793b2003210be",
+  "baselineVersion": "1.146.0",
+  "registrySha256": "ae1df6b020c6eddb475a061e3f198d013928ac175da7d7f90bfc160e8e2f2135",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.32.0",
+      "version": "1.33.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "ab1939ed3d676abedf35fd09902908ef900096455df2d5eee8ac3fd73c36baa7",
+        "skills/design-research-lead/SKILL.md": "50f2b207fd824aa09552f85d28268a1480870eb4febe11182878f67e2090b4eb",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -524,17 +524,17 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.69.0",
+      "version": "1.70.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "f7c0ae18ba39427cbd01cc4bd36700d461aa892944a91e776507d81aacaaf12e"
+        "docs/specs/nightflight-runtime.md": "3bf0d8e8014d6f605a6293bd1b55694b1d79b9961ce27352097b5fe9f25c6d3b"
       }
     },
     "contract.nightflight-final-reader": {
-      "version": "1.2.2",
+      "version": "1.2.3",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-final-reader.md": "5d7cf92a630bbd010c66e354b3aca6bd88aad9665fccde167724ce555fc98e05"
+        "docs/specs/nightflight-final-reader.md": "6372a40bf0d871e8ddd4a90989dfe1c3fc7d4635648b763f84d7742cbc715d8f"
       }
     }
   },
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "36159094867a7a195ef9f4d9c8910623bff05b745f51ad9c81403e8ae557ddc9",
+    "docs/specs/README.md": "16858afb8c987e6605f306babf3c2e5943e8d670c9dee817d4ec7f10251b5472",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
