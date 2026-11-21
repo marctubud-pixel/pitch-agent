@@ -15,6 +15,7 @@ function invoke(executable, action, input, signal, mode = '--text-model') {
         if(response.failure) {
           const failure=Error(response.failure);
           if (response.retryCause==='tls-before-send') failure.code='TLS_BEFORE_SEND';
+          if (response.retryCause==='read-timeout' || response.failure==='The request timed out.' || response.failure==='请求超时。') failure.code='READ_TIMEOUT';
           throw failure;
         }
         resolve(response);
@@ -50,8 +51,9 @@ export async function desktopTextProvider(executable,signal,onEvent) {
     const packet=JSON.stringify(jsonModelRequest(profile,content,outputSchema));
     await onEvent?.(capability+' API 请求 · '+profile.host+' · '+profile.model);
     const result=await invoke(executable,'completion',packet,signal,mode).catch(async error=>{
-      if (error.code!=='TLS_BEFORE_SEND') throw error;
-      await onEvent?.(capability+' API 握手失败，尚未发送请求。原样自动重试一次 · '+profile.host);
+      if (!['TLS_BEFORE_SEND','READ_TIMEOUT'].includes(error.code)) throw error;
+      const reason=error.code==='TLS_BEFORE_SEND' ? '握手失败，尚未发送请求' : '在等待回复时超时';
+      await onEvent?.(capability+' API '+reason+'。原样自动重试一次 · '+profile.host);
       await delay(750,undefined,{signal});
       await onEvent?.(capability+' API 请求 · '+profile.host+' · '+profile.model);
       return invoke(executable,'completion',packet,signal,mode);

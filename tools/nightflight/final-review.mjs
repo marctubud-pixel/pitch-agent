@@ -206,6 +206,14 @@ function containsDecisionRequests(slide,nativeText,required) {
   return requested.length>0 && requested.every(clause=>clause.length>=4 && printed.includes(clause));
 }
 
+function confirmsTargetPrice(slide,nativeText,brief,issue) {
+  const quoted=norm(brief).match(/目标价(?:格)?(?:为|是)?[:：]?[¥￥]?(\d+(?:\.\d+)?)(?:元|块)/u)?.[1];
+  if (!quoted || /波动|浮动|变动说明|实际成交为准/u.test(brief) || !/浮动|波动|价格变动|价格固定/u.test(issue.problem+' '+issue.evidence)) return false;
+  const target=new RegExp('(?:^|[^\\d.])'+RegExp.escape(quoted)+'(?:元|块)','u');
+  return /目标价/u.test(issue.evidence) && target.test(norm(issue.evidence)) && slide.points.some(point=>
+    /确认.*目标价/u.test(point) && target.test(norm(point)) && nativeText.includes(norm(point)));
+}
+
 async function verifyProductUse({call,project,plan,slide,edition,round,receipts,onEvent,issue,decision}) {
   const complaint=issue.problem+' '+issue.evidence;
   if (slide.role!=='work' || slide.figures.length!==1 || !['fact_conflict','confirmed_requirement_missing'].includes(decision.kind) ||
@@ -355,13 +363,15 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
           /品牌名.{0,18}(?:标志|商标|logo).{0,12}(?:待定|未定|还没定|未确认)/iu.test(plan.brief.original) &&
           slide.points.some(point=>/^(?:请)?确认.{0,22}品牌名.{0,18}(?:标志|商标|logo).{0,25}替换.{0,18}占位/iu.test(point) &&
             observed.includes(norm(point)) && nativeText.includes(norm(point))));
-      const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
+      const targetPrice=sourceMatches && decision.source==='B1' && decision.kind==='fact_conflict' && slide.role==='decision' &&
+        confirmsTargetPrice(slide,nativeText,plan.brief.original,issue);
+      const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || targetPrice || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
       const check={call,project,plan,slide,edition,round,receipts,onEvent,issue,decision};
       const additional=clear?'':await verifyProductUse(check) || ((!sourceMatches || decision.source.startsWith('R')) && await verifySurvey(check));
       if (clear || additional) {
         const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':
-          requestedConfirmation?'实页已列出所报的客户待确认事项。':'按本版实页复核。';
-        const detail=requestedConfirmation?qualification:qualification+decision.location+' '+decision.reason;
+          requestedConfirmation?'实页已列出所报的客户待确认事项。':targetPrice?'实页金额与简报一致，已明确列为目标价并请客户确认。':'按本版实页复核。';
+        const detail=requestedConfirmation || targetPrice ? qualification : qualification+decision.location+' '+decision.reason;
         updates.set(issue,{...issue,level:'P1',blockedBy:additional || detail});
       } else if (unsupported) {
         updates.set(issue,{...issue,blockedBy:'引用尚未绑定本版已确认原话，保留待核。'+decision.location+' '+decision.reason});

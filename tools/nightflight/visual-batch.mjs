@@ -186,11 +186,12 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const blindFields = ['first','action','words','alternative'];
   const properties = Object.fromEntries(blindFields.map(k=>[k,text]));
   if (posterSlogan) properties.slogan=sloganSchema;
-  const blindSchema = {type:'object',additionalProperties:false,properties,required:Object.keys(properties)};
   const blindInstruction = '只看这张原图。第一眼看到什么？画面里发生什么动作？哪些信息靠读字才知道？还有什么合理的读法？逐项用自己的话回答。';
   const transcribe = ' 另外单独填 slogan。按阅读顺序逐字抄写海报主标题，保留字词、数字、标点和实际换行，只抄实际看见的内容。把可见位置写入 location。区分海报主标题、画面里的包装印字、品牌标志和时间地点。能读完整填 readable；没有主标题填 missing，位置可以留空；有字看不清填 unreadable 并只抄看清的片段。';
   const blind = await independentCalls(images,async image=>{
-    const result = await call(blindInstruction+(posterSlogan ? transcribe : ''),
+    const quantity=image.visiblePackageUnits ? ' 单独核对图上实际可辨的同款独立包装，按从左到右逐个定位，把每件的位置分别写入 units.positions，盒上规格字和印出的图案不计为实物。仅当清楚看到完整内装或能看到从空位取出、对应的同款时，complete 填 true。看不清或有重叠遮挡就填 false。' : '';
+    const blindSchema=object(quantity ? {...properties,units:object({positions:{type:'array',items:text},complete:{type:'boolean'}})} : properties);
+    const result = await call(blindInstruction+(posterSlogan ? transcribe : '')+quantity,
       [{...image,imageId:'anonymous'}],blindSchema,{delegate:true,rules:[],assignment:'独立读图者',context:'仅本张图片，保留图上文字。'});
     const words = result.parsedOutput;
     if (!blindFields.every(k=>typeof words?.[k]==='string' && words[k].trim())) throw invalidOutput('匿名盲读原话不完整');
@@ -199,6 +200,9 @@ export async function reviewVisualBatch({call, direction, images, context, packa
       (observed.status==='readable' && (!observed.text.trim() || !observed.location.trim())))) {
       throw invalidOutput('海报需要逐字记录看见的主标题和位置，缺失或无法读清时请如实标记。');
     }
+    if (quantity && (!Array.isArray(words.units?.positions) || !words.units.positions.every(nonempty) ||
+        new Set(words.units.positions).size!==words.units.positions.length || typeof words.units.complete!=='boolean'))
+      throw invalidOutput('完整包装展示须逐项记录实际可见实物的位置。');
     return {...words,sha256:image.sha256,thread:result.threadId,...(result.model ? {model:result.model} : {})};
   });
   const transferAudit = posterTransfer ? await reviewPosterTransfer(call,images,posterTransfer) : null;
@@ -302,15 +306,18 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const printIssue = packaging ? onPackIssues[brand.onPackStatus] : undefined;
     const reading = blind[row.candidate-1];
     const posterIssue = posterSlogan ? sloganIssue(posterSlogan, reading.slogan) : '';
+    const promised=images[row.candidate-1].visiblePackageUnits;
+    const quantityIssue=promised && (!reading.units?.complete || reading.units.positions.length!==promised) ?
+      '完整展示约定 '+promised+' 件，原图可定位 '+(reading.units?.positions.length ?? 0)+' 件，完整盒内件数未核实。' : '';
     const audit = transferAudit?.items[row.candidate-1];
-    const otherBlocker = row.blocked || missing || !!printIssue || audit?.passed===false;
+    const otherBlocker = row.blocked || missing || !!printIssue || !!quantityIssue || audit?.passed===false;
     const exactWords = posterSlogan?.replace(/\p{P}/gu,'');
     const punctuationOnly = posterIssue && !otherBlocker && reading.slogan.status==='readable' && nonempty(exactWords) &&
       sameSlogan(exactWords,reading.slogan.text.replace(/\p{P}/gu,''));
-    let reason = posterIssue || (printIssue ? printIssue+brand.reason : row.reason);
-    let edit = posterIssue ? '在海报主标题位置清楚排入本轮原句「'+posterSlogan+'」，逐字核对。' : row.edit;
+    let reason = [posterIssue,printIssue && printIssue+brand.reason,quantityIssue].filter(Boolean).join(' ') || row.reason;
+    let edit = posterIssue ? '在海报主标题位置清楚排入本轮原句「'+posterSlogan+'」，逐字核对。' :
+      quantityIssue ? '调整实物摆放与遮挡，逐件核对客户要求展示的完整数量。' : row.edit;
     if (audit && !audit.passed) {
-      if (posterIssue && printIssue) reason += ' '+printIssue+brand.reason;
       for (const [axis,check] of Object.entries(audit.checks)) {
         if (check.status==='matched') continue;
         const action = check.required==='borrow' ? '沿用' : '改变';

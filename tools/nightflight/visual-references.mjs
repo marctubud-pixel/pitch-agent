@@ -94,14 +94,36 @@ function includesPosterSlogan(prompt, slogan) {
   const blocks = prompt.match(new RegExp('^(?:'+labeledLine+'(?:\\r?\\n|$)){2,}','gmu')) ?? [];
   const linePattern = new RegExp('^'+labeledLine+'$','u');
   const complete = new RegExp('^'+literal+'$','u');
-  return blocks.some(block=>{
-    const rows=block.trimEnd().split(/\r?\n/u).map(line=>line.match(linePattern));
-    return rows.every((row,i)=>row && (row[1]===String(i+1) || row[1]==='一二三四五六七八九十'[i])) &&
-      complete.test(rows.map(row=>row[2].trimEnd()).join('\n'));
-  });
+  const exactRows=rows=>rows.length>=2 && rows.every((row,i)=>row && (row[1]===String(i+1) || row[1]==='一二三四五六七八九十'[i])) &&
+    complete.test(rows.map(row=>row[2].trimEnd()).join('\n'));
+  if (blocks.some(block=>exactRows(block.trimEnd().split(/\r?\n/u).map(line=>line.match(linePattern))))) return true;
+  const quotedRows=[...prompt.matchAll(/第([一二三四五六七八九十]|[1-9]\d*)行[ \t]*[:：]?[ \t]*「([^」\r\n]+)」/gu)];
+  return exactRows(quotedRows);
 }
 
-async function submitVisualPrompt({call,images,written,posterSlogan}) {
+const allPackageUnitsVisible=/(?<count>\d{1,3}|[一二三四五六七八九十两]+)\s*(?:只|袋|包|瓶|罐|杯|支|份|盒|件)\s*(?:须|需|要|应)?\s*(?:全部|全数|都|均)\s*(?:清晰|清楚|完整)?\s*(?:可见|可数|能数清|看得见|展示|露出)/gu;
+
+function promisedPackageUnits(value) {
+  const digits='一二三四五六七八九';
+  const countOf=char=>!char?0:char==='两'?2:digits.indexOf(char)+1;
+  for (const match of value.matchAll(allPackageUnitsVisible)) {
+    if (/不(?:要求|用|必|需要)|无需|避免|勿让|不得/u.test(value.slice(Math.max(0,match.index-9),match.index))) continue;
+    const raw=match.groups.count;
+    const [tens,ones]=raw.split('十');
+    const number=Number(raw) || (ones!==undefined ? (countOf(tens) || 1)*10+countOf(ones) : countOf(raw));
+    if (number>1) return number;
+  }
+  return 0;
+}
+
+function unqualifiedTargetPrice(prompt,brief) {
+  const target=brief.match(/(?:目标价(?:格)?|拟售价(?:格)?)\s*(?:为|是)?\s*[:：]?\s*[¥￥]?\s*(\d+(?:\.\d+)?)\s*(?:元|块)/u)?.[1];
+  if (!target) return false;
+  const amount=new RegExp('(?:^|[^\\d.])'+RegExp.escape(target)+'\\s*(?:元|块)','u');
+  return prompt.split(/[。；;\r\n]/u).some(line=>amount.test(line) && !/目标价|拟售|暂定|价格示意|待确认|不(?:用|要|可)?(?:写|放|展示|印|出现)|省略|去掉/u.test(line));
+}
+
+async function submitVisualPrompt({call,images,written,posterSlogan,packagingBrief}) {
   const prompt = written.parsedOutput?.prompt;
   if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
     throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
@@ -109,8 +131,16 @@ async function submitVisualPrompt({call,images,written,posterSlogan}) {
   if (posterSlogan && !includesPosterSlogan(prompt,posterSlogan)) {
     throw invalidOutput('海报生图提示词缺少该方向已选 slogan 的原句，请按制图要求完整写入。');
   }
+  const visiblePackageUnits=packagingBrief ? promisedPackageUnits(prompt) : 0;
+  if (visiblePackageUnits && visiblePackageUnits!==promisedPackageUnits(packagingBrief)) {
+    throw invalidOutput('客户只确认了包装规格时，请让盒身写清件数。用闭盒正面、局部露出或单件取用表达创意，不承诺全部内装可见或可数。');
+  }
+  if (packagingBrief && unqualifiedTargetPrice(prompt,packagingBrief)) {
+    throw invalidOutput('目标价保留待确认限定。简报未要求价格露出时，省略画面价签。');
+  }
   const result = await call(prompt,images,null,{exactImagePrompt:true});
-  return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt}};
+  return {result,promptWriting:{model:written.model,threadId:written.threadId,prompt,
+    ...(visiblePackageUnits ? {visiblePackageUnits} : {})}};
 }
 
 export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging, posterReference}) {
@@ -123,13 +153,13 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
     '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
     '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。按制图要求写清载体上的文字。',
     posterSlogan && '海报或 KV 要把本方向已选 slogan 的完整原句排成画面主标题。提示词中逐字列出原句，明确文字放在画面上。标题分行时用连续的行写全原字和标点。',
-    packaging && '包装画面的设计主题转化成画面关系，包装本体只列确认可印的实际文字。',
+    packaging && '包装画面的设计主题转化成画面关系，包装本体只列确认可印的实际文字。盒内件数印在外盒上，单件只标对应单件规格。简报若只规定装量和外盒正面，优先闭盒正面或只露出局部、展示单件取用；不可凭空要求全数内装同时可见或可数。客户明确要求把全部内装画出时按原要求。目标价或拟售价留在提案材料，简报未要求上画时省略价签；要求上画时保留该限定。',
     '返回一个 prompt 字段，内容是完整的生图提示词。',
   ].filter(Boolean).join('\n');
   const written = await call(instruction,[],imagePromptSchema,{
     assignment:'夜航生图提示词写作',rules:[],context:JSON.stringify({...context,drawingBrief}),
   });
-  return submitVisualPrompt({call,images,written,posterSlogan});
+  return submitVisualPrompt({call,images,written,posterSlogan,...(packaging ? {packagingBrief:context.brief} : {})});
 }
 
 export async function repairVisualTitle({call,image,posterSlogan,observed}) {

@@ -61,7 +61,7 @@ if (action === 'profile') {
   assert.ok(events.some(x=>x.includes('视觉理解 API 回执') && x.includes('actual-vision-model') && x.includes('request-vision-model')));
 });
 
-test('the desktop replays only marked pre-dispatch TLS failures for text and vision', async t => {
+test('the desktop bounds pre-dispatch TLS and read timeout retries to text and vision', async t => {
   const dir = await mkdtemp(join(tmpdir(), 'onepitch-tls-'));
   t.after(() => rm(dir,{recursive:true,force:true}));
   const executable = join(dir,'fixture.mjs');
@@ -90,7 +90,9 @@ if (action === 'profile') {
   const failures = {'plain SSL':tls,'certificate':'The certificate for this server is invalid.',HTTP:'视觉理解接口 HTTP 401'};
   if (Object.hasOwn(failures,prompt)) {
     console.log(JSON.stringify({failure:failures[prompt]}));
-  } else if (!alreadySent || prompt==='persistent' || mode==='--image-model') {
+  } else if (prompt==='legacy timeout' && !alreadySent) {
+    console.log(JSON.stringify({failure:'The request timed out.'}));
+  } else if (!alreadySent || prompt==='persistent' || prompt==='image') {
     console.log(JSON.stringify({failure:tls,retryCause:'tls-before-send'}));
   } else {
     console.log(JSON.stringify({id:'accepted-'+model,model,choices:[{message:{content:'{"body":"received"}'}}]}));
@@ -116,6 +118,10 @@ if (action === 'profile') {
     assert.equal(result.threadId,'accepted-'+mode.slice(2));
     assert.equal(result.inputPacketHash,await assertSamePair(mode,'recover'));
   }
+  const recovered = await execute('legacy timeout',images);
+  assert.equal(recovered.threadId,'accepted-vision-model');
+  assert.equal(recovered.inputPacketHash,await assertSamePair('--vision-model','legacy timeout'));
+  assert.equal(events.filter(line=>line.includes('在等待回复时超时。原样自动重试一次')).length,1);
   await assert.rejects(execute('persistent',images),{code:'TLS_BEFORE_SEND'});
   await assertSamePair('--vision-model','persistent');
   for (const [prompt,error] of [['plain SSL',/SSL error/],['certificate',/certificate/],['HTTP',/HTTP 401/]]) {
@@ -125,7 +131,9 @@ if (action === 'profile') {
   const imageProvider = desktopImageProvider(executable,dir,undefined,line=>events.push(line));
   await assert.rejects(imageProvider.execute({runId:'image',prompt:'image',images}),{code:'TLS_BEFORE_SEND'});
   assert.equal((await sent('--image-model','image')).length,1);
-  assert.equal(events.filter(line=>line.includes('原样自动重试一次')).length,3);
+  await assert.rejects(imageProvider.execute({runId:'image-timeout',prompt:'legacy timeout',images}),/The request timed out\./u);
+  assert.equal((await sent('--image-model','legacy timeout')).length,1);
+  assert.equal(events.filter(line=>line.includes('原样自动重试一次')).length,4);
 });
 
 test('desktop visual generation sends the configured writer’s exact prompt and the selected original to the image API', async t=>{
@@ -284,6 +292,9 @@ test('a complete wrapped headline reaches the image API without changing the wri
     {line:'倒出来，四种都认得',prompt:numbered.replace('第二行','第一行'),allowed:false},
     {line:'倒出来，四种都认得',prompt:numbered.replace('倒出来，','倒出来'),allowed:false},
     {line:'倒出来，四种都认得',prompt:numbered.replace('四种都认得','四种都认得。'),allowed:false},
+    {line:'倒出来，四种都认得',prompt:'画面标题第一行「倒出来，」，第二行「四种都认得」。',allowed:true},
+    {line:'倒出来，四种都认得',prompt:'画面标题第二行「倒出来，」，第一行「四种都认得」。',allowed:false},
+    {line:'倒出来，四种都认得',prompt:'画面标题第一行「倒出来，」，第二行「四种都认得。」',allowed:false},
   ];
   for (const {line,prompt,allowed} of samples) {
     const sent=[];
@@ -295,6 +306,48 @@ test('a complete wrapped headline reaches the image API without changing the wri
     if (allowed) await run;
     else await assert.rejects(run,/缺少该方向已选 slogan 的原句/);
     assert.deepEqual(sent,allowed?[prompt]:[]);
+  }
+});
+
+test('the image API receives an all-visible pack count only when the brief confirms it', async () => {
+  const {generateVisualWithDesktopModels}=await import('./visual-references.mjs');
+  const posterSlogan='下午，缺一点脆，也缺一点酸';
+  const brief='做七袋装混合坚果外盒正面及电商KV。盒内7袋，每袋25克。';
+  const explicit=brief+'客户要求七只全部可见、可数。';
+  const priceBrief=brief+'电商目标价29.9元/盒。';
+  const partial='闭盒正面印「7袋×25克」，盒旁展示取用一袋。';
+  const all='外盒印「7袋×25克」，盒口七只全部可见、可数。';
+  const reference={name:'原始主参考.png',sha256:'a'.repeat(64)};
+  for (const sample of [
+    {brief,prompt:all,blocked:true},
+    {brief,prompt:partial},
+    {brief:explicit,prompt:all,count:7},
+    {brief:explicit,prompt:all.replace('七只全部','八只全部'),blocked:true},
+    {brief:priceBrief,prompt:partial+'价签大字写「29.9元/盒」。',priceBlocked:true},
+    {brief:priceBrief,prompt:partial+'标示为「目标价29.9元/盒」。'},
+  ]) {
+    const sent=[];
+    const prompt='画面主标题逐字排「'+posterSlogan+'」。'+sample.prompt;
+    const run=generateVisualWithDesktopModels({images:[reference],context:{brief:sample.brief},
+      drawingBrief:'包装与电商KV',posterSlogan,packaging:true,call:async(instruction,images,schema,task)=>{
+        if (schema) {
+          assert.match(instruction,/不可凭空要求全数内装同时可见或可数/u);
+          assert.deepEqual(images,[]);
+          return {model:'deepseek-flash',threadId:'writer',parsedOutput:{prompt}};
+        }
+        assert.deepEqual(images,[reference]);
+        assert.equal(task.exactImagePrompt,true);
+        sent.push(instruction);
+        return {requestId:'image-fixture'};
+      }});
+    if (sample.blocked) await assert.rejects(run,{code:'INVALID_STAGE_OUTPUT',message:/不承诺全部内装可见或可数/u});
+    else if (sample.priceBlocked) await assert.rejects(run,{code:'INVALID_STAGE_OUTPUT',message:/目标价保留待确认限定/u});
+    else {
+      const result=await run;
+      assert.equal(result.result.requestId,'image-fixture');
+      assert.equal(result.promptWriting.visiblePackageUnits,sample.count);
+    }
+    assert.deepEqual(sent,sample.blocked||sample.priceBlocked?[]:[prompt]);
   }
 });
 

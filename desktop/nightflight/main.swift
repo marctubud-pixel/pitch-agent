@@ -162,8 +162,12 @@ if ["--text-model","--image-model","--vision-model"].contains(CommandLine.argume
             defer { done.signal() }
             guard error == nil, let http = response as? HTTPURLResponse else {
                 var failure = ["failure":error?.localizedDescription ?? "连接服务失败"]
-                if capability != .image && response == nil && (data == nil || data?.isEmpty == true) && transport.isUnsentHandshakeFailure(error) {
-                    failure["retryCause"] = "tls-before-send"
+                if capability != .image && response == nil && (data == nil || data?.isEmpty == true) {
+                    if transport.isUnsentHandshakeFailure(error) {
+                        failure["retryCause"] = "tls-before-send"
+                    } else if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut {
+                        failure["retryCause"] = "read-timeout"
+                    }
                 }
                 reply(failure); return
             }

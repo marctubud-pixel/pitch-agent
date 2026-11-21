@@ -1368,7 +1368,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             ...(sloganRepair ? {sloganRepair} : {}),...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),
             ...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
           await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
-          return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
+          return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png',
+            ...(promptWriting?.visiblePackageUnits ? {visiblePackageUnits:promptWriting.visiblePackageUnits} : {})}};
         }
         const generated = await independentCalls(visualBorrowings, async (borrow,index) => {
           const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
@@ -1432,6 +1433,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const attempt=await repairVisualTitle({call,image,posterSlogan,observed:correction.observed});
           if (!seen.has(hash(attempt.result.original.bytes))) {
             const proof={sourceName:source.name,sourceSha256:source.sha256,expected:posterSlogan,observed:correction.observed};
+            if (source.promptWriting?.visiblePackageUnits) attempt.promptWriting.visiblePackageUnits=source.promptWriting.visiblePackageUnits;
             const revised=await saveVisual(attempt,index,source.transfer,[image],proof);
             await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'-before-title.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
             artifacts.push({name:source.name,kind:'image',visual:{role:'slogan-original',direction,sha256:source.sha256}});
