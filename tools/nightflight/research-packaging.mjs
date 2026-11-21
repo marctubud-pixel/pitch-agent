@@ -16,11 +16,12 @@ const detailSchema=object({actualPackaging:{type:'boolean'},visibleProduct:strin
 })}});
 const frontLayout='商品是什么，包装主面的信息怎么摆放';
 const distribution='画面上可见的内包装、分装或固定结构';
+const ingredientLabels='包装上可辨的配料或口味原字';
 
 const inspectionTopics=[
   [/规格|净含量|容量|盒内|每袋|每盒|克|毫升|\d\s*(?:kg|ml|g)\b/iu,'画面上可见的容器形状，规格或净含量原字'],
   [/分装|小袋|开盒|内托|固定|夹层|隔层/u,distribution],
-  [/配料|原料|成分|口味|混合|冻干/u,'包装上可辨的配料或口味原字'],
+  [/配料|原料|成分|口味|混合|冻干/u,ingredientLabels],
   [/开袋|袋口|开盖|瓶盖|封口|密封|回封|复封|收好|拉链|开合|易撕/u,'开口及开合、回封标识的位置与原字'],
   [/开窗|透明|材料|环保|工艺/u,'图上能分辨的开窗、材质或工艺标识'],
   [/追溯|二维码|认证|产地|保质期|过期|生产日期/u,'包装上可辨的溯源、认证、产地或日期标识及对应位置'],
@@ -28,16 +29,19 @@ const inspectionTopics=[
 ];
 
 const compact=value=>value.normalize('NFKC').replace(/\s/gu,'');
+const literal=value=>compact(value).replace(/[“”「」"'‘’]/gu,'').toLowerCase();
 
 function frontPosition(location,marking,firstRead) {
   const zone=zones.find(value=>location.includes(value));
-  const label=compact(marking).split(/[,、。；;]/u)[0];
-  const clauses=compact(firstRead.front ?? '').split(/[,。；;]/u);
-  return zone && label.length>=2 && clauses.some(clause=>clause.includes(zone) && clause.includes(label)) ? location : '正面';
+  const label=literal(marking).split(/[,、。；;]/u)[0];
+  const clauses=literal(firstRead.front ?? '').split(/[,。；;]/u);
+  return zone && label.length>=2 && clauses.some(clause=>clause.includes(zone) && clause.includes(label) &&
+    !zones.some(other=>other!==zone && clause.includes(other))) ? location : '正面';
 }
 
 function visibleDistribution(marking) {
-  return marking.replace(/([\d０-９]+|[一二两三四五六七八九十百]+)(?:个(?=[^：:，,、。；;\r\n]{0,16}[瓶罐袋包杯盒])|(?=[瓶罐袋包杯盒]))/gu,(matched,count,index,text)=>{
+  const structure=marking.split(/[，,；;。]\s*(?:(?:依次|分别)(?:为|标注|标有|写有)|(?:各|每)(?:瓶|罐|袋|包|盒)(?:身)?(?:的)?(?:标注|标签)|(?:配料|口味)(?:为|标注|标签))/u)[0];
+  return structure.replace(/([\d０-９]+|[一二两三四五六七八九十百]+)(?:个(?=[^：:，,、。；;\r\n]{0,16}(?:[瓶罐袋包杯盒]|容器))|(?=[瓶罐袋包杯盒]))/gu,(matched,count,index,text)=>{
     const phrase=text.slice(0,index).split(/[，,。；;\r\n]/u).at(-1);
     const printed=/(?:印有|标(?:有|注|明|示)|写(?:有|着)|印字|原字)[：:「“"\s]*(?:盒内|每盒|内含|内装)?\s*$/u.test(phrase);
     const nominal=compact(count);
@@ -46,11 +50,29 @@ function visibleDistribution(marking) {
   });
 }
 
-function observationLine({question,location,marking,status},firstRead) {
+function observationLine({question,location,marking,status},firstRead,visibleProduct) {
   if (status!=='看清' || !location?.trim() || !marking?.trim()) return question+'：未核实。';
-  const position=question===frontLayout?frontPosition(location,marking,firstRead):location;
+  if (question===frontLayout || question===ingredientLabels) {
+    const certain=literal(firstRead.front ?? '').split(/[,。；;!?！？]/u).filter(part=>
+      !/未核实|没看清|未看清|看不清|不确定|疑似|像是|可能|并非|不是/u.test(part));
+    const agrees=value=>literal(value).length>=2 && certain.some(part=>part.includes(literal(value)));
+    if (question===frontLayout) {
+      const same=agrees(marking);
+      const label=same?marking:[firstRead.brand,visibleProduct].filter(value=>typeof value==='string' && agrees(value) &&
+        literal(marking).includes(literal(value))).filter((value,index,all)=>!all.slice(index+1).some(other=>literal(other).includes(literal(value)))).join(' ');
+      if (!label) return question+'：未核实。';
+      return question+'：'+frontPosition(location,label,firstRead)+'，'+label+(same?'':'\n其余包装标注：未核实。');
+    }
+    const candidates=marking.replace(/^[^：:]{0,24}(?:标注|印有|分别为|依次为)[^：:]{0,8}[：:]\s*/u,'')
+      .replace(/\s*[（(][^（）()]{0,20}(?:标签|罐身|袋身)[^（）()]{0,8}[）)]\s*$/u,'')
+      .split(/[、，,；;。]+|(?<=\p{Script=Han})\s+(?=\p{Script=Han})/u).map(value=>value.trim()).filter(Boolean);
+    const labels=[...new Set(candidates.filter(agrees))];
+    if (!labels.length) return question+'：未核实。';
+    const position=labels.length===1?frontPosition(location,labels[0],firstRead):'正面';
+    return question+'：'+position+'，'+labels.join('、')+(candidates.every(value=>labels.includes(value))?'':'\n其余配料或口味原字：未核实。');
+  }
   const seen=question===distribution?visibleDistribution(marking):marking;
-  return question+'：'+position+'，'+seen;
+  return question+'：'+location+'，'+seen;
 }
 
 export async function readPackaging({call,dir,image,brief,category,broadCategory,previous,signal}) {
@@ -82,7 +104,7 @@ export async function readPackaging({call,dir,image,brief,category,broadCategory
   await writeFile(join(folder,'category.json'),JSON.stringify({sha256:image.sha256,targetCategory:broadCategory || category,comparisonCategory:category,actualPackaging,visibleProduct,categoryMatch}),{mode:0o600});
   if (actualPackaging!==true || categoryMatch!=='同类' || !visibleProduct?.trim()) return null;
   if (!checks.some(c=>c.status==='看清' && c.location?.trim() && c.marking?.trim())) return null;
-  const lines=checks.filter(c=>c.question?.trim()).map(check=>observationLine(check,firstRead));
+  const lines=checks.filter(c=>c.question?.trim()).map(check=>observationLine(check,firstRead,visibleProduct));
   // Only located observations and explicit unknowns are evidence for the research writer.
   const observation=lines.join('\n');
   await writeFile(join(folder,'detail.json'),JSON.stringify({sha256:image.sha256,regions,checks,observation}),{mode:0o600});

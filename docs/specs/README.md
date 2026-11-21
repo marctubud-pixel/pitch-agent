@@ -1,6 +1,6 @@
 # 提案工作台 · 规范基线
 
-基线版本 **1.147.0**，整理日期 **2026-11-21**。此处是后续开发和人工编排的规范入口，涵盖岗位、页面、固定 Skill、双团协议和排版后终审协议。
+基线版本 **1.148.0**，整理日期 **2026-11-21**。此处是后续开发和人工编排的规范入口，涵盖岗位、页面、固定 Skill、双团协议和排版后终审协议。
 
 先看[Agent组织与职责总览](../agents/README.md)，了解业务与开发两条统筹线、各岗位内部执行者和独立评审关系；再看[页面基线与责任索引](../pages/README.md)，按页面找责任、既有结构、实际路由和待定范围。
 
@@ -17,7 +17,7 @@
 | --- | --- | --- | --- |
 | 比稿统筹 | [比稿 Agent](../agents/proposal-director.md) | [项目概览](../pages/overview.md) | 逐阶段及排版前简核；夜航使用 [ppt-slide-script v4](../../skills/ppt-slide-script/SKILL.md) |
 | 简报 | [简报负责人](../agents/brief-owner.md) | [新建](../pages/new.md)、[简报与任务](../pages/brief.md) | 任务卡、确认和版本合同 |
-| 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r41](../../skills/design-research-lead/SKILL.md) |
+| 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r42](../../skills/design-research-lead/SKILL.md) |
 | 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | [夜航一页策略](../../skills/strategy-one-pager/SKILL.md)，触点按委托载体选择 |
 | 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [自由三案创作、作者自选与负责人推荐](copy-generation.md) |
 | 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.25.0](../../skills/visual-development-lead/SKILL.md) |

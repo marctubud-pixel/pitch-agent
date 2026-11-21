@@ -177,15 +177,21 @@ test('publication evidence uses the original sentence for the image and still re
   await writeFile(image.path,png);
   const args={dir,carrier:'kv',pages:[page],acquiredByPage:new Map([[page,[image]]]),project:{brief:'秋季果园海报'}};
   const result=option=>researchCompetitors({...args,call:async(_prompt,[image],_schema,task)=>{
+    if (task.assignment==='海报原图内容核读') {
+      assert.deepEqual(JSON.parse(task.context),{原图指纹:image.sha256});
+      return {parsedOutput:{observation:'画面展示当季产品和活动名'}};
+    }
     const [entry]=JSON.parse(task.context).sources;
     assert.deepEqual(entry.publicationChoices,[{id:'P1',text:release},{id:'P2',text:film}]);
     return {parsedOutput:{conclusion:'同类用当季产品作主视觉',implication:'首屏突出当季产品',samples:[{
-      source:image.imageId,title:page.title,observation:'画面展示当季产品和活动名',sameCategory:true,
+      source:image.imageId,title:page.title,observation:'画面出现报道所说的便利店',sameCategory:true,
       assetType:'宣传海报或主视觉',publishedPoster:true,publicationRef:option,publicationQuote:'开启秋季专场，同期推出了宣传片。',
     }]}};
   }});
   const board=await result('P1');
   assert.equal(board.finding.images[0].publicationQuote,release);
+  assert.equal(board.finding.images[0].observation,'画面展示当季产品和活动名');
+  assert.doesNotMatch(board.finding.evidence,/画面出现报道所说的便利店/u);
   assert.equal(board.finding.images[0].pageUrl,page.url);
   for (const option of ['','P2','P3']) assert.equal(await result(option),null);
 });
@@ -295,14 +301,19 @@ test('packaging evidence preserves printed specifications but does not publish c
   const path=join(dir,'pack.png');
   await writeFile(path,png);
   const image={path,mediaType:'image/png',sha256:createHash('sha256').update(png).digest('hex'),pageUrl:'https://brand.example.org/item'};
-  const first={brand:'洽洽',front:'左上印有“洽洽 坚果礼”。右侧透窗可见6瓶装。净含量1.565kg。盒内规格印有“盒内7袋”。',regions:['中央','左上','右上']};
+  const first={brand:'洽洽',front:'左上印有“洽洽 坚果礼”。右侧透窗可见6瓶装，罐身标有小白杏核、夏威夷果和草本核桃。没看清是否为枸杞。净含量1.565kg。盒内规格印有“盒内7袋”。',regions:['中央','左上','右上']};
   const packCheck='画面上可见的内包装、分装或固定结构';
   const layout='商品是什么，包装主面的信息怎么摆放';
   const weight='画面上可见的容器形状，规格或净含量原字';
+  const ingredients='包装上可辨的配料或口味原字';
   const checked=(question,location,marking)=>({question,location,marking,status:'看清'});
   const observed=[checked(layout,'中央','洽洽 坚果礼'),checked(layout,'左上','洽洽 坚果礼'),
+    checked(layout,'中央','洽洽 坚果礼 袋坚果原味'),
     checked(packCheck,'中央','5个透明塑料瓶，顶部为金色瓶盖'),
     checked(packCheck,'右侧','六个不同口味的透明罐子'),
+    checked(packCheck,'中央','六个透明圆筒形容器，依次为洽洽菌干、小白杏核、草本枸杞'),
+    checked(ingredients,'中央','各罐标注分别为：菌干、小白杏核、夏威夷果、枸杞、草本枸杞'),
+    checked(ingredients,'左上','菌干'),
     checked(packCheck,'正面','印有“盒内7袋”'),checked(weight,'底部','净含量：1.565kg'),
     checked('开口及开合、回封标识的位置与原字','右上','easyopen & zipsystem')];
   const result=await readPackaging({image,dir,brief:'混合坚果包装独立小袋，规格与开合结构',category:'坚果礼盒',
@@ -311,8 +322,11 @@ test('packaging evidence preserves printed specifications but does not publish c
   assert.equal(result.firstRead.raw,'原始首次实答');
   assert.match(result.observation,/正面，洽洽 坚果礼/u);
   assert.match(result.observation,/左上，洽洽 坚果礼/u);
-  assert.doesNotMatch(result.observation,/中央，洽洽 坚果礼|5个透明塑料瓶|六个不同口味/u);
+  assert.doesNotMatch(result.observation,/中央，洽洽 坚果礼|5个透明塑料瓶|六个不同口味|六个透明圆筒形容器|菌干|枸杞|袋坚果原味/u);
   assert.match(result.observation,/多个透明塑料瓶，顶部为金色瓶盖/u);
+  assert.match(result.observation,/多个透明圆筒形容器/u);
+  assert.match(result.observation,/配料或口味原字：正面，小白杏核、夏威夷果\n其余配料或口味原字：未核实/u);
+  assert.match(result.observation,/包装上可辨的配料或口味原字：未核实/u);
   assert.match(result.observation,/印有“盒内7袋”/u);
   assert.match(result.observation,/净含量：1.565kg/u);
   assert.match(result.observation,/右上，easyopen & zipsystem/u);

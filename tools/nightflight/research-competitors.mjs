@@ -1,6 +1,7 @@
 import {supportsPoster} from './research-sources.mjs';
 import {readPackaging} from './research-packaging.mjs';
 import {isReadTransportFailure} from './desktop-text.mjs';
+import {independentCalls} from './call-checkpoints.mjs';
 import {link} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import {searchVisualImages} from './public-visual-search.mjs';
@@ -42,6 +43,14 @@ function documentPassages(documents, url, relatedUrls = []) {
 }
 
 const pageKey = page=>[page.url,page.brand || ''].join('\n');
+
+async function captionPoster(call, candidate) {
+  const {image,description}=candidate;
+  const result=await call('只观察这一张海报原图，写一句可定位的画面观察。看画面里的主体、布局、色彩或清晰读到的字样。只在品牌或名称字样在实际图上清晰可辨时才写该原字。图没有显露的参与品牌、活动规模、投放渠道和人群效果都不属于这条观察。细小或模糊处留作未核实。',[image],
+    object({observation:string}),{rules:[],assignment:'海报原图内容核读',context:JSON.stringify({原图指纹:image.sha256})});
+  const observation=result.parsedOutput?.observation?.trim();
+  return observation ? {image,description:{...description,observation}} : null;
+}
 
 export async function researchCompetitors({call, dir, pages, acquiredByPage = new Map(), previous = [], project, category, broadCategory, carrier, signal, dependencies, onEvent, readSource, documents = [], uploadedImages = []}) {
   const uniquePages = new Map();
@@ -104,6 +113,12 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     return {sourceUrl,passages};
   }));
   const released=carrier==='kv' ? caseSources.map(({passages})=>releaseExcerpts(passages)) : [];
+  const markUnread=async (error,image)=>{
+    signal?.throwIfAborted();
+    if (!isReadTransportFailure(error)) throw error;
+    await onEvent?.('单张竞品'+(carrier==='kv'?'海报':'包装')+'读图未完成，原图暂未核实 · '+image.pageUrl+' · '+image.sha256.slice(0,12));
+    return null;
+  };
   const packet = {brief:project.brief,category,broadCategory,carrier, sources:images.map((image,index)=>({
     imageNumber:index+1,source:image.imageId,title:image.title,pageUrl:image.pageUrl,
     rationaleSourceUrl:caseSources[index].sourceUrl,sourcePassages:caseSources[index].passages.map(p=>p.text),
@@ -112,16 +127,11 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
   // Read the original before source commentary, and retain the earliest answer across follow-ups.
   const packagingReads=new Map();
   if (carrier==='packaging') {
-    await Promise.all(images.map(async image=>{
+    await independentCalls(images,async image=>{
       const read=await readPackaging({call,dir,image,brief:project.brief,category,broadCategory,signal,
-        previous:previous.find(ref=>ref.sha256===image.sha256)}).catch(async error=>{
-        signal?.throwIfAborted();
-        if (!isReadTransportFailure(error)) throw error;
-        await onEvent?.('单张竞品包装读图未完成，原图暂未核实 · '+image.pageUrl+' · '+image.sha256.slice(0,12));
-        return null;
-      });
+        previous:previous.find(ref=>ref.sha256===image.sha256)}).catch(error=>markUnread(error,image));
       if (read) packagingReads.set(image.imageId,read);
-    }));
+    });
   }
   let result;
   if (blindPackaging) {
@@ -154,7 +164,8 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     }
   }
   if (!Array.isArray(result?.samples) || !result.conclusion?.trim() || !result.implication?.trim()) return null;
-  const selected = [], seen = new Set();
+  let selected = [];
+  const seen = new Set();
   for (const row of result.samples) {
     const image = images.find(i=>i.imageId===row.source);
     if (!image || seen.has(row.source) || !row.title?.trim() || !row.observation?.trim()) continue;
@@ -177,6 +188,8 @@ export async function researchCompetitors({call, dir, pages, acquiredByPage = ne
     selected.push({image,description:{name:'research-peer-'+image.sha256+extname(basename(image.name)),
       sha256:image.sha256,sourceUrl:image.sourceUrl,pageUrl:image.pageUrl,carrier,...(carrier==='kv' ? {assetType:row.assetType,publicationQuote,publicationPlacement:placement} : {}),sameCategory:row.sameCategory===true,...(image.imageAttachment ? {imageAttachment:image.imageAttachment,imageProvenanceAttachment:image.imageProvenanceAttachment} : {}),title:row.title.trim(),observation:read?.observation ?? row.observation.trim(),...(read ? {firstRead:read.firstRead,detailRegions:read.regions,categoryMatch:read.categoryMatch,visibleProduct:read.visibleProduct,actualPackaging:read.actualPackaging} : {}),takeaway:matched ? row.takeaway?.trim() || '' : '',...rationale}});
   }
+  if (carrier==='kv') selected=(await independentCalls(selected,candidate=>captionPoster(call,candidate)
+    .catch(error=>markUnread(error,candidate.image)))).filter(Boolean);
   if (!selected.length) return null;
   const refs = selected.map(row=>row.description);
   const grounded = refs.filter(ref=>ref.creatorRationale || ref.sameCategory);

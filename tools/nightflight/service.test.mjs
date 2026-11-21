@@ -614,7 +614,7 @@ test('a product image and an untraceable poster quote cannot become a published 
   async function observe(publishedPoster,publicationQuote,sameCategory=true) {
     return researchCompetitors({project:{brief:'一张海报'},carrier:'kv',pages:[page],
       acquiredByPage:new Map([[page,[image]]]),readSource:async()=>({text:quote}),
-      call:async()=>({parsedOutput:{conclusion:'看过的案例',implication:'画面比较',
+      call:async(_prompt,_images,_schema,task)=>({parsedOutput:task.assignment==='海报原图内容核读'?{observation:'中央为标题'}:{conclusion:'看过的案例',implication:'画面比较',
         samples:[{source:'ref-a',title:'已看图',observation:'中央为标题',sameCategory,assetType:'宣传海报或主视觉',publishedPoster,publicationQuote}]}})});
   }
   assert.equal(await observe(false,quote),null);
@@ -668,6 +668,7 @@ test('a stored poster keeps its own publication evidence when a sidebar changes'
   async function check(quote) {
     return researchCompetitors({carrier:'kv',project:{brief:'坚果海报'},previous:[old],readSource:async()=>({text:sidebar}),
       call:async(_prompt,_images,_schema,task)=>{
+        if (task.assignment==='海报原图内容核读') return {parsedOutput:{observation:'坚果插画'}};
         assert.deepEqual(JSON.parse(task.context).sources[0].sourcePassages,[original]);
         return {parsedOutput:{samples:[{source:'ref-a',title:'甲海报',observation:'坚果插画',sameCategory:true,assetType:'宣传海报或主视觉',publishedPoster:true,publicationQuote:quote}],
           conclusion:'甲活动用了坚果插画',implication:'比较实际画面'}};
@@ -683,7 +684,7 @@ test('a released video frame cannot count as a poster even when the model also m
   const image={name:'image.png',sha256:'c'.repeat(64),imageId:'c',sourceUrl:url+'/image.png',pageUrl:url,articleText:original,width:400,height:640};
   async function review(title,assetType,quote) {
     return researchCompetitors({carrier:'kv',project:{brief:'坚果海报'},pages:[page],acquiredByPage:new Map([[page,[image]]]),
-      call:async()=>({parsedOutput:{samples:[{source:'c',title,observation:'可见标题',assetType,publishedPoster:true,sameCategory:true,publicationQuote:quote}],
+      call:async(_prompt,_images,_schema,task)=>({parsedOutput:task.assignment==='海报原图内容核读'?{observation:'可见标题'}:{samples:[{source:'c',title,observation:'可见标题',assetType,publishedPoster:true,sameCategory:true,publicationQuote:quote}],
         conclusion:'画面有标题',implication:'比较层级'}})});
   }
   assert.equal(await review('请问大师','视频画面','品牌发布贺岁轻喜剧。'),null);
@@ -713,7 +714,12 @@ test('two posters from one campaign each receive only their own image and cannot
   const board=await researchCompetitors({carrier:'kv',project:{brief:'坚果海报'},pages:[page],acquiredByPage:new Map([[page,images]]),
     call:async(_prompt,group,schema,task)=>{
       assert.equal(group.length,1);
-      const id=group[0].imageId;seen.push(id);
+      const id=group[0].imageId;
+      if (task.assignment==='海报原图内容核读') {
+        assert.equal(id,'b');
+        return {parsedOutput:{observation:'节日礼盒'}};
+      }
+      seen.push(id);
       assert.deepEqual(schema.properties.samples.items.properties.source.enum,[id]);
       assert.deepEqual(JSON.parse(task.context).sources.map(x=>[x.source,x.imageNumber]),[[id,1]]);
       return {parsedOutput:{conclusion:'主题',implication:'只属于'+id,samples:[{source:'b',title:'画面来自'+id,observation:'节日礼盒',
