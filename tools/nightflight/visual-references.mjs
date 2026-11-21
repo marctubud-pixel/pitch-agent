@@ -90,14 +90,17 @@ function includesPosterSlogan(prompt, slogan) {
     ? Array.from(part, RegExp.escape).join('(?:'+wrap+')?')
     : '(?:'+RegExp.escape(part)+'|'+wrap+')').join('');
   if (new RegExp(literal,'u').test(prompt)) return true;
-  const labeledLine = '[ \\t]*第([一二三四五六七八九十]|[1-9]\\d*)行(?:逐字)?[ \\t]*[:：][ \\t]*([^\\r\\n]+)';
+  const rowLabel='第([一二三四五六七八九十]|[1-9]\\d*)行(?:逐字)?[ \\t]*(?:(?:写|排)(?:成|为)?[ \\t]*)?';
+  const labeledLine = '[ \\t]*'+rowLabel+'[:：][ \\t]*([^\\r\\n]+)';
   const blocks = prompt.match(new RegExp('^(?:'+labeledLine+'(?:\\r?\\n|$)){2,}','gmu')) ?? [];
   const linePattern = new RegExp('^'+labeledLine+'$','u');
   const complete = new RegExp('^'+literal+'$','u');
   const exactRows=rows=>rows.length>=2 && rows.every((row,i)=>row && (row[1]===String(i+1) || row[1]==='一二三四五六七八九十'[i])) &&
     complete.test(rows.map(row=>row[2].trimEnd()).join('\n'));
   if (blocks.some(block=>exactRows(block.trimEnd().split(/\r?\n/u).map(line=>line.match(linePattern))))) return true;
-  const quotedRows=[...prompt.matchAll(/第([一二三四五六七八九十]|[1-9]\d*)行(?:逐字)?[ \t]*[:：]?[ \t]*「([^」\r\n]+)」/gu)];
+  const quotedRow=new RegExp(rowLabel+'[:：]?[ \\t]*(?:「([^」\\r\\n]+)」|“([^”\\r\\n]+)”)','gu');
+  const quotedRows=[...prompt.matchAll(quotedRow)]
+    .map(([,number,corner,curly])=>[null,number,corner ?? curly]);
   return exactRows(quotedRows);
 }
 
@@ -121,8 +124,21 @@ function unqualifiedTargetPrice(prompt,brief) {
   const target=brief.match(/(?:目标价(?:格)?|拟售价(?:格)?)\s*(?:为|是)?\s*[:：]?\s*[¥￥]?\s*(\d+(?:\.\d+)?)\s*(?:元|块)/u)?.[1];
   if (!target) return false;
   const amount=new RegExp('(?:^|[^\\d.])'+RegExp.escape(target)+'\\s*(?:元|块)','u');
-  return prompt.split(/[。；;\r\n]/u).some(line=>amount.test(line) &&
-    !/目标价|拟售|暂定|价格示意|待确认|不(?:用|要|可)?(?:写|放|展示|印|出现)|省略|去掉|不画(?:价签|价格|售价|标价)|(?:元|块)(?:\/[^，,\s]{1,6})?\s*(?:只|仅)?留在提案材料/u.test(line));
+  const retained=/目标价|拟售|暂定|价格示意|待确认|不(?:用|要|可)?(?:写|放|展示|印|出现)|省略|去掉|不画(?:价签|价格|售价|标价)|(?:元|块)(?:\/[^，,\s]{1,6})?\s*(?:只|仅)?留在提案材料/u;
+  const priceCommand=new RegExp('(?:展示|显示|露出|印(?:上|出)?|写(?:上|出)?|放|标(?:上|出|为)?|贴).{0,10}'+RegExp.escape(target)+'\\s*(?:元|块)','u');
+  let exclusion=false;
+  for (const raw of prompt.split(/\r?\n/u)) {
+    if (!raw.trim()) {exclusion=false;continue;}
+    for (const part of raw.split(/(?=【[^】\r\n]+】)/u)) {
+      const section=part.match(/^\s*【([^】]+)】\s*[:：]?\s*/u);
+      if (section) exclusion=/^(?:画面)?(?:不出现|不得出现|不可出现|禁止出现|不画|不加入|排除项|禁止项|负面提示词)$/u.test(section[1].trim());
+      else if (/^[^：:，,。；;]{2,22}[：:]/u.test(part.trim())) exclusion=false;
+      const body=section ? part.slice(section[0].length) : part;
+      if (body.split(/[。；;]/u).some(clause=>amount.test(clause) && !retained.test(clause) &&
+          (!exclusion || priceCommand.test(clause)))) return true;
+    }
+  }
+  return false;
 }
 
 async function submitVisualPrompt({call,images,written,posterSlogan,packagingBrief}) {

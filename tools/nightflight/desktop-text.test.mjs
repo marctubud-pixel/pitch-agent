@@ -311,6 +311,8 @@ test('a complete wrapped headline reaches the image API without changing the wri
     {line:'倒出来，四种都认得',prompt:'画面标题第一行「倒出来，」，第二行「四种都认得」。',allowed:true},
     {line:'倒出来，四种都认得',prompt:'画面标题第二行「倒出来，」，第一行「四种都认得」。',allowed:false},
     {line:'倒出来，四种都认得',prompt:'画面标题第一行「倒出来，」，第二行「四种都认得。」',allowed:false},
+    {line:'三点一到，拆一袋',prompt:'载体文字：第一行写“三点一到，”，第二行写“拆一袋”；保留中文逗号。',allowed:true},
+    {line:'三点一到，拆一袋',prompt:'载体文字：第一行写“三点一到！”，第二行写“拆一袋”。',allowed:false},
   ];
   for (const {line,prompt,allowed} of samples) {
     const sent=[];
@@ -333,6 +335,7 @@ test('the image API receives an all-visible pack count only when the brief confi
   const priceBrief=brief+'电商目标价29.9元/盒。';
   const partial='闭盒正面印「7袋×25克」，盒旁展示取用一袋。';
   const all='外盒印「7袋×25克」，盒口七只全部可见、可数。';
+  const exclusions='\n【不出现】\n价签、29.9 元、促销角标、优惠信息；保鲜、补能、健康功效类话术；认证与奖项图标；可识别人脸；第三方 logo。';
   const reference={name:'原始主参考.png',sha256:'a'.repeat(64)};
   for (const sample of [
     {brief,prompt:all,blocked:true},
@@ -346,6 +349,9 @@ test('the image API receives an all-visible pack count only when the brief confi
     {brief:priceBrief,prompt:partial+'不画价签、价格和促销角标，29.9 元/盒留在提案材料里。'},
     {brief:priceBrief,prompt:partial+'不画品牌，右下角印29.9元/盒。',priceBlocked:true},
     {brief:priceBrief,prompt:partial+'标示为「目标价29.9元/盒」。'},
+    {brief:priceBrief,prompt:partial+exclusions},
+    {brief:priceBrief,prompt:partial+exclusions+'\n【画面文字】\n右下角印29.9元/盒。',priceBlocked:true},
+    {brief:priceBrief,prompt:partial+exclusions+'\n\n右下角印29.9元/盒。',priceBlocked:true},
   ]) {
     const sent=[];
     const prompt='画面主标题逐字排「'+posterSlogan+'」。'+sample.prompt;
