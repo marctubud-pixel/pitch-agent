@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { collectManuscriptMaterials, createManuscriptRunner, formatManuscriptInput } from './manuscript.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
-const strategy = '# 核心策略\n先识别活动，再读预约。';
+const strategy = '# 策略一页纸\n\n## 核心策略\n\n先识别活动，再读预约。\n\n## 触点\n公众号横版封面。';
 const published = '# 本版文案\n进馆看虫';
 
 async function fixture(t) {
@@ -116,7 +116,7 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
         page('trend','家长会先看时间',{points:['受访家长提到活动时间。'],sourceIndices:[1]}),
         page('trend','夜场增加导览',{points:['馆方公布两场夜间导览。'],sourceIndices:[2]}),
         page('peers','同类把活动名放在画面中央',{points:['海报中央写活动名。'],sourceIndices:[0]})]},
-      {title:'策略与版式',pages:[page('strategy','先识别活动，再读预约。'),page('execution','把预约放在活动名旁')]},
+      {title:'策略与版式',pages:[page('strategy','不讲展柜，只讲预约'),page('execution','把预约放在活动名旁')]},
       {title:'作品与决定',pages:[page('direction','天黑进馆',{figureId:'A2',points:['让围着展柜的孩子进入画面。']}),
         page('work','完整封面',{figureId:'A2',imageNote:'横幅全页展示',internalNote:'检查展柜边角的裁切。'}),
         page('decision','请确认预约入口')]},
@@ -138,6 +138,8 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
   const planFile=result.artifacts.find(a=>a.name.endsWith('.plan.json'));
   const plan=JSON.parse(await readFile(join(root,planFile.name),'utf8'));
   assert.equal(plan.version,3);
+  assert.equal(plan.pages.find(p=>p.role==='strategy').title,'先识别活动，再读预约。');
+  assert(!draft.includes('不讲展柜'));
   assert.deepEqual(plan.pages.filter(p=>p.role==='direction'||p.role==='work').map(p=>p.figures),[['A2'],['A2']]);
   const request=JSON.parse(await readFile(join(root,result.artifacts.find(a=>a.name.startsWith('DeepSeek实际请求-')).name),'utf8'));
   assert.equal(request.model,'deepseek-test');

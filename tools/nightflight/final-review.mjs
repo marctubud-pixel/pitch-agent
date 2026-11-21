@@ -198,20 +198,32 @@ const packCounts=value=>packageAmounts(value).filter(amount=> !/(?:克|g)$/iu.te
 const countLabel={type:'integer',minimum:0};
 const parsedCount=value=>Number(value.match(/^\d+/u)?.[0]);
 
-function containsDecisionRequests(slide,nativeText,required) {
+const briefTargetPrice=brief=>norm(brief).match(/目标价(?:格)?(?:为|是)?[:：]?[¥￥]?(\d+(?:\.\d+)?)(?:元|块)(\/(?:\d+(?:\.\d+)?)?(?:袋|包|盒|箱|瓶|罐|杯|件|份|公斤|千克|克|kg|g))?/iu);
+
+function containsDecisionRequests(slide,nativeText,required,brief) {
   const clauses=value=>value.split(/[。；;]+/u).map(norm).filter(Boolean);
-  const requested=clauses(required);
-  const printed=slide.points.filter(point=>/^(?:[^，,。]+(?:后|时)[，,]\s*)?(?:请)?(?:确认|决定|选择|选定)/u.test(point) &&
-    nativeText.includes(norm(point))).flatMap(clauses);
-  return requested.length>0 && requested.every(clause=>clause.length>=4 && printed.includes(clause));
+  const quoted=required.trim().match(/^决策页[：:]\s*[‘“「]([^\r\n]+)[’”」]$/u)?.[1] ?? required;
+  const requested=clauses(quoted);
+  const printed=slide.points.filter(point=>nativeText.includes(norm(point)));
+  const requests=printed.filter(point=>/^(?:[^，,。]+(?:后|时)[，,]\s*)?(?:请)?(?:确认|决定|选择|选定)/u.test(point)).flatMap(clauses);
+  if (requested.length>0 && requested.every(clause=>clause.length>=4 && requests.includes(clause))) return true;
+  const target=briefTargetPrice(brief);
+  const hasDimensions=/\d+(?:\.\d+)?(?:[x×*]\d+(?:\.\d+)?){1,2}(?:毫米|厘米|公分|mm|cm)|\bA[0-7]\b|(?:尺寸|版面比例|长宽高)[：:]?\d|(?:盒型|盒结构|外盒结构)(?:为|是|用|采用|选用|定为)/iu.test(norm(brief));
+  return printed.some(point=>{
+    if (norm(point)!==norm(quoted)) return false;
+    if (!hasDimensions && /尺寸.{0,10}(?:未提供|未给出|待补)/u.test(point) && /请补|请提供|待补/u.test(point)) return true;
+    const shown=norm(point).match(/^(\d+(?:\.\d+)?)(?:元|块)(\/[^;。；]+)?为(?:电商)?目标价[;；]/u);
+    return Boolean(shown && target && shown[1]===target[1] && shown[2]===target[2] && /[；;].*(?:待核实|待确认)后/u.test(point));
+  });
 }
 
 function confirmsTargetPrice(slide,nativeText,brief,issue) {
-  const quoted=norm(brief).match(/目标价(?:格)?(?:为|是)?[:：]?[¥￥]?(\d+(?:\.\d+)?)(?:元|块)/u)?.[1];
-  if (!quoted || /波动|浮动|变动说明|实际成交为准/u.test(brief) || !/浮动|波动|价格变动|价格固定/u.test(issue.problem+' '+issue.evidence)) return false;
+  const price=briefTargetPrice(brief);
+  if (!price || /波动|浮动|变动说明|实际成交为准/u.test(brief) || !/浮动|波动|价格变动|价格固定/u.test(issue.problem+' '+issue.evidence)) return false;
+  const [,quoted,unit]=price;
   const target=new RegExp('(?:^|[^\\d.])'+RegExp.escape(quoted)+'(?:元|块)','u');
   return /目标价/u.test(issue.evidence) && target.test(norm(issue.evidence)) && slide.points.some(point=>
-    /确认.*目标价/u.test(point) && target.test(norm(point)) && nativeText.includes(norm(point)));
+    /确认.*目标价/u.test(point) && target.test(norm(point)) && briefTargetPrice(point)?.[2]===unit && nativeText.includes(norm(point)));
 }
 
 async function verifyProductUse({call,project,plan,slide,edition,round,receipts,onEvent,issue,decision}) {
@@ -334,7 +346,7 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       '先按实图逐字转录意见直接质疑的最短字样 actual，location 写看到的位置。逐项选一个证据类型 kind。fact_conflict 需要实际原字与本版已确认事实冲突。confirmed_requirement_missing 需要本页应交付的已确认信息确实缺失。key_content_unreadable 需要字实际被遮挡、裁掉或模糊到读不出。前三类在 required 中逐字摘录本版给定材料中的必要原句、要求或关键字样。',
       '实际内容能读全，意见只是标点、句式、普通断行、留白或美术，选 readable_suggestion。中英文标点或行尾形式本身属于这一类。报告描述的现象没有发生选 not_found。还缺实际证据选 unresolved。若这三类没有必要原话，required 留空。',
       'work 是作品整图页，创意思路在 direction 页。品牌名待定和待客户选案按原任务保留。reason 只写实图和原件能支持的理由。',
-      '商品事实冲突或缺少已确认要求时，必须在 source 填确认材料的编号，并在 required 逐字引用该条原话。讲稿备注只用于识别实际所见。备注要求「后续、实拍时、待客户确认」某事实而确认材料未提供时，选 pending_confirmation，将本项留作后续制作提示。文字被挡或裁切时用 key_content_unreadable，required 写本页应读取的关键字样，source 留空。无需引用的类别 source 留空。',
+      '商品事实冲突或缺少已确认要求时，必须在 source 填确认材料的编号，并在 required 逐字引用该条原话。讲稿备注只用于识别实际所见。决策页或讲稿备注已列明待确认、待提供的事项时，确认材料没有说它已定的，选 pending_confirmation，actual 逐字记录已印条目或备注。文字被挡或裁切时用 key_content_unreadable，required 写本页应读取的关键字样，source 留空。无需引用的类别 source 留空。',
       '用词意见先逐字对照原简报，以及已定策略或文案。实际已经沿用客户词，若仅建议核实更合适的叫法，选 readable_suggestion。核心策略句在本页完整呈现时，按该页职责判断；只有取得本页必须另设信息的已确认原句，才按缺失处理。',
     ].join('\n'),batch.map(page=>edition.images[page-1]),schema,{delegate:true,context});
     const items=result.parsedOutput?.items;
@@ -350,7 +362,8 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       const slide=plan.pages[issue.page-1];
       const nativeText=norm(edition.native[issue.page-1].text.join(''));
       const note=slide.notes ?? '';
-      const productionNote=decision.kind==='pending_confirmation' && !sourceMatches && observed && norm(note).includes(observed);
+      const productionNote=decision.kind==='pending_confirmation' && !sourceMatches && observed &&
+        (norm(note).includes(observed) || slide.role==='decision' && containsDecisionRequests(slide,nativeText,decision.actual,plan.brief.original));
       const wordingNote=decision.kind==='pending_confirmation' && sourceMatches && observed.length>=2 &&
         norm(authority.原话).includes(observed) && nativeText.includes(observed);
       const showsExpected=expected && expected===observed && (sourceMatches || decision.kind==='key_content_unreadable');
@@ -359,7 +372,7 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       const approvedStrategy=unsupported && slide.role==='strategy' && !slide.points.length && heading && nativeText.includes(heading) &&
         plan.strategy.some(item=>meaningful(item.body) && norm(item.body).includes(heading));
       const requestedConfirmation=unsupported && decision.kind==='confirmed_requirement_missing' && slide.role==='decision' &&
-        (containsDecisionRequests(slide,nativeText,decision.required) ||
+        (containsDecisionRequests(slide,nativeText,decision.required,plan.brief.original) ||
           /品牌名.{0,18}(?:标志|商标|logo).{0,12}(?:待定|未定|还没定|未确认)/iu.test(plan.brief.original) &&
           slide.points.some(point=>/^(?:请)?确认.{0,22}品牌名.{0,18}(?:标志|商标|logo).{0,25}替换.{0,18}占位/iu.test(point) &&
             observed.includes(norm(point)) && nativeText.includes(norm(point))));

@@ -110,6 +110,18 @@ const sourceChapters={trend:['行业与市场','人群与接触情境'],peers:['
 const evidenceRoles=new Set([...Object.keys(sourceChapters),'insight']);
 const skillRoot=new URL('../../skills/ppt-slide-script/',import.meta.url);
 const skillFiles=['SKILL.md','references/proposal-blueprints.md','references/copy-polish-rules.md'];
+
+function coreStrategy(documents) {
+  const singleLine=body=>{
+    const lines=body.split(/\r?\n/u).map(line=>line.trim()).filter(Boolean);
+    return lines.length===1 && !/^[#|<>]/u.test(lines[0]) ? lines[0] : '';
+  };
+  const sections=documents.flatMap(({body})=>body.split(/(?=^#{1,6}[\t ]+)/mu).filter(section=>section.startsWith('#')));
+  const candidates=sections.map(section=>section.split(/\r?\n/u)).filter(([heading])=>/^#{1,6}[\t ]+核心策略[\t ]*$/u.test(heading));
+  if (candidates.length===1) return singleLine(candidates[0].slice(1).join('\n'));
+  return documents.length===1 && !sections.length ? singleLine(documents[0].body) : '';
+}
+
 const draftSchemaFor=figures=>object({
   cover:object({title:str,subtitle:str,imageNote:str}),
   chapters:{type:'array',minItems:3,maxItems:5,items:object({title:str,pages:{type:'array',items:object({
@@ -129,7 +141,7 @@ export async function formatManuscriptInput(materials) {
     '本次只执行 Stage 1。完整执行上面的选模板、编稿、精简和朗读检查。按 JSON Schema 交回正文，夜航负责页面编号。cover 写封面，chapters 写目录所用的 3–5 个短章名及各章正文，closing 写封底一句话。附录中的页码是示例。章名不要编号、页码、页数或方案答案。每页 title 是客户看到的大字，points 是简短要点，无正文填 []。',
     '所有章连起来的 role 顺序固定为：brief 一页 → trend、peers、insight 按需要分别写证据页 → strategy 一页且 points=[] → execution（有执行要点时） → 每个 figure 依次写一页 direction 和至少一页 work → 多图时 compare 一页 → decision 一页。每章标题只作目录。比较、推荐与决定归正文最后，策略摘要和作品细节写进各自的角色。返回前逐项核对这一顺序。',
     '从 brief 开始。趋势或人群洞察用 trend，同类做法用 peers，两组有已用研究材料时各写一页。只有能改变策略判断的新证据才加 insight，别另起一页复述需求、同类案例或缺口。每页保留能推出策略的两三条依据，大而宽泛又不影响设计的总量数据留在材料包。只有这三类证据页填 sourceIndices，使用 research.findings 从 0 开始的原下标，可对照 sections.evidenceIndices。趋势选行业／人群出处，同类只选竞品出处。用「在某调查中」写清范围，样本边界写在事实中。标题也要受原样本与数据约束。部分机构的尝试不能写成行业普遍做法，场景占比不能写成高频或首位，除非原统计确实支持。',
-    'strategy 的 title 沿用本案的策略判断，只写一句有取舍的话，points 填 []。有视觉、触点或拍摄执行内容时用下一页 execution 展开。按 figures 的次序逐案连写。每案 direction 写创意理由与画面重点两条以内，主副标由夜航按原文插入，imageNote 留空，由夜航将本案原图绑定到分屏。后接 work 整版呈现同一张原图，纯图页 points 填 []。这两种页的 figureId 填本案实际采用图号，其他角色留空。图上只见品类字样或占位时，按已见原字写；要求要做的事用「拟」「预留」，不得写成图上已经实现。',
+    'strategy 的 title 逐字沿用同版策略的核心句，points 填 []。夜航从同版原件绑定核心句。有视觉、触点或拍摄执行内容时用下一页 execution 展开。按 figures 的次序逐案连写。每案 direction 写创意理由与画面重点两条以内，主副标由夜航按原文插入，imageNote 留空，由夜航将本案原图绑定到分屏。后接 work 整版呈现同一张原图，纯图页 points 填 []。这两种页的 figureId 填本案实际采用图号，其他角色留空。图上只见品类字样或占位时，按已见原字写；要求要做的事用「拟」「预留」，不得写成图上已经实现。',
     'work 和 compare 的 imageNote 只写横竖幅、怎么摆和必要的看点。图号与文件名由夜航附上，不在这两类页的 imageNote 重写文件名。需要哪张素材就标 [待补充: …]，纯文字页 imageNote 留空。网页案例有可核对的出处但未交原图时，可以写文字观察或留缺图位。没有登记原图比例时只写横幅或竖幅，别照搬模板里的比例。',
     '采用原图的 visualIntent 是该版生图前的画面意图，observation 是原图的实际观察。二者吻合时可把动作关系写清，例如从整组取出一份。在包装和用法演示图中，分别核对容器内外的同款包装、空位及实际印字；只数盒内可见件数不能证明整盒少装。未看清的当作未核，勿自行写成需重拍、补做或更改客户规格。',
     '单活动沿用混合模板的活动模块，围绕真实邀请、现场参与和动线，未确认的场地流程只作为建议。包装主题用于讲方案，成品图以可见包装本身为准；品牌、规格、食品宣称及印字按已确认资料。视频已印时码、台词或音效的图板整版展示，写思路时不逐帧抄图上文字。组合图用真实整板或同一张的左／右局部。材料只有合板且委托有独立投放物时，每一案的成品页在 imageNote 写 [待补充: 独立投放原件] 并写清是哪种物料。',
@@ -198,6 +210,7 @@ function checkDraft(draft, materials) {
 
 function buildManuscriptPlan(draft, materials) {
   const {project,figures,copy,research,brief,strategy,adoption}=materials;
+  const approvedCore=coreStrategy(strategy);
   const figuresById=new Map(figures.map(f=>[f.id,f]));
   const copyByDirection=new Map(copy.directions.map(d=>[d.name,d]));
   const kvAndTvc=project.carriers?.includes('kv') && project.carriers?.includes('tvc');
@@ -226,7 +239,8 @@ function buildManuscriptPlan(draft, materials) {
         const {source,url,conclusion,evidence,sampleScope}=research.findings[index];
         return {source,url,conclusion,evidence,sampleScope};
       }):[];
-      add({...p,chapter:chapter.title.trim(),points,imageNote,figures:shown,notes:p.internalNote,sources});
+      add({...p,title:p.role==='strategy' && approvedCore ? approvedCore : p.title,
+        chapter:chapter.title.trim(),points,imageNote,figures:shown,notes:p.internalNote,sources});
     }
   }
   add({role:'close',title:draft.closing});

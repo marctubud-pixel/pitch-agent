@@ -81,7 +81,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   t.after(()=>rm(root,{recursive:true,force:true}));
   const id='layout-case-b', storage=join(root,id,'files');
   await mkdir(storage,{recursive:true});
-  const brief='为馆内亲子活动做一张公众号封面，须预约。';
+  const brief='为馆内亲子活动做一张公众号封面，须预约。联名七袋装外盒的电商目标价为29.9元/盒。';
   const strategy='先看出馆内活动，再读预约。';
   const copy='本版文案稿';
   const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4uoAAAAASUVORK5CYII=','base64');
@@ -107,8 +107,18 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   db.prepare('INSERT INTO projects VALUES(?,?,?)').run(id,1,JSON.stringify(project));
   db.close();
   const page=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',internalNote:'',sourceIndices:[],...fields});
-  const decisionLines=['品牌名与正式标志提供后，确认公众号封面的可替换标志区。','确认封面图片比例与文字安全区。'];
-  const joinedDecision=decisionLines.map(line=>line.slice(0,-1)).join('；')+'。';
+  const sizePending='七袋装外盒正面尺寸与结构未提供：请补实物尺寸，确认版面比例。';
+  const pricePending='29.9元/盒为电商目标价；同规格竞品价与四种内容物营养声称待核实后再定价值表达。';
+  const wrongPriceUnit=pricePending.replace('元/盒','元/袋');
+  const absentPending='实物包装背标照片未提供：请补照片，确认背标排版。';
+  const joinedDecision='品牌名与正式标志提供后，确认公众号封面的可替换标志区；确认封面图片比例与文字安全区。';
+  const decisionLines=[joinedDecision,sizePending,pricePending,wrongPriceUnit];
+  const wrappedDecisions={
+    '缺少七袋装外盒正面实物尺寸及结构信息':sizePending,
+    '定价核实后才能确认文案表达':pricePending,
+    '遗漏待确认的包装背标照片':absentPending,
+    '目标价写成按袋计价':wrongPriceUnit,
+  };
   const draft={cover:{title:'馆内活动',subtitle:'公众号封面提案',imageNote:''},chapters:[
     {title:'活动需求',pages:[page('brief','家长先看清参加条件',{points:['报名方式待定。','馆内讲解面向亲子。']}),
       page('peers','同类把活动名放上方',{points:['海报上方呈现活动名。'],sourceIndices:[0]})]},
@@ -144,6 +154,10 @@ else {
      if(issue.problem==='待确认的两项需提案人拍板')
        return [id,{kind:'confirmed_requirement_missing',actual:'第8页两项仍需客户决定，不宜代客户拍板。',
          required:${JSON.stringify(joinedDecision)},source:'B1,S1',location,reason}];
+     const quotedDecision=${JSON.stringify(wrappedDecisions)}[issue.problem];
+     if(quotedDecision)
+       return [id,{kind:'confirmed_requirement_missing',actual:issue.problem,
+         required:'决策页：‘'+quotedDecision+'’',source:'S1',location,reason}];
      return [id,{kind:issue.page===2?'readable_suggestion':'fact_conflict',actual:'对应实页',
        required:issue.page===2?'':'须预约',location,reason,source:issue.page===2?'':'B1'}];
    }))};
@@ -173,6 +187,11 @@ else {
        problem:'上线发布前须拿到正式报名链接',evidence:'本轮只交公众号封面提案',change:'记录为后续发布待确认'});
      issues.push({...issue,page:8,operation:'hold',target:'brief',from:'',to:'',quote:'',
        problem:'待确认的两项需提案人拍板',evidence:${JSON.stringify(joinedDecision)},change:'提案人确认后执行'});
+     for (const [problem,evidence] of Object.entries(${JSON.stringify(wrappedDecisions)})) {
+       if (['遗漏待确认的包装背标照片','目标价写成按袋计价'].includes(problem) &&
+           !existsSync(${JSON.stringify(protectedCase)})) continue;
+       issues.push({...issue,page:8,operation:'hold',target:'brief',from:'',to:'',quote:'',problem,evidence,change:'请提案人确认'});
+     }
    }
    if (role==='美术岗' && pages.some(p=>p['页码']===2))
      issues.push({...issue,page:2,level:'P0',operation:'layout',target:'visual',
@@ -275,6 +294,8 @@ else {
   const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
   assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
   assert.match(report,/第 8 页 · P1 · 待确认的两项需提案人拍板/u);
+  assert.match(report,/第 8 页 · P1 · 缺少七袋装外盒正面实物尺寸及结构信息/u);
+  assert.match(report,/第 8 页 · P1 · 定价核实后才能确认文案表达/u);
   assert.match(report,/当前 · 实页已列出所报的客户待确认事项。/u);
   assert.match(report,/第 2 页 · P1 · 目录导读可精简 · 版式/u);
   assert.match(report,/第 3 页 · P1 · 建议统一馆内的叫法/u);
@@ -293,6 +314,10 @@ else {
   assert.equal(state.finalReview.outcome,'blocked');
   assert.equal(state.finalReview.returnStage,'strategy');
   assert.equal(state.finalReview.rounds,2);
+  assert.ok(state.finalReview.blockingPages.includes(8));
+  const protectedReport=state.artifacts.find(item=>item.name===state.finalReview.report).text;
+  assert.match(protectedReport,/第 8 页 · P0 · 遗漏待确认的包装背标照片/u);
+  assert.match(protectedReport,/第 8 页 · P0 · 目标价写成按袋计价/u);
   const protectedPptx=state.artifacts.find(a=>a.kind==='pptx');
   const kept=unzipSync(await readFile(join(storage,protectedPptx.url.split('/').at(-1))));
   assert.match(strFromU8(kept['ppt/slides/slide5.xml']),/先看出馆内活动，再读预约。/u);
