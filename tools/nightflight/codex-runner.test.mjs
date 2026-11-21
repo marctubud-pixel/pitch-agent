@@ -1422,6 +1422,69 @@ test('copy does not send notice-only choices, overlapping ideas or invented titl
   });
 });
 
+test('packaged copy checks all author candidates against the Brief before the director recommends',async t=>{
+  const {runCopyReview,engineCopyHandoffReady}=await import('./copy-review.mjs');
+  const skill=await readFile(new URL('../../skills/slogan-engine/SKILL.md',import.meta.url),'utf8');
+  const recipe='包含巴旦木、腰果、核桃和冻干草莓。';
+  const brief='帮我做独立小袋混合坚果的包装及电商首屏。每袋25克，盒内7袋，'+recipe+'面向在办公室下午加餐的年轻上班族。';
+  const writing={
+    directions:[
+      {id:'A',name:'工位小歇',claim:'下午加餐随手取一袋',mechanism:'把敲键盘的间隙连到加餐',secondary:'独立小袋，撕开就吃。',
+        lines:['给键盘放个小假','下午的工位小歇','忙里拨两分钟']},
+      {id:'B',name:'七个下午',claim:'一盒七袋，分着吃',mechanism:'用盒内七袋写出每日加餐的节奏',secondary:'每袋25克，一盒7袋。',
+        lines:['这盒装着七个下午','和下午约好七次','一盒的下午计划']},
+      {id:'C',name:'酸的惊喜',claim:'三种坚果加冻干草莓',mechanism:'用冻干草莓带来颜色上的反差',secondary:'巴旦木、腰果、核桃和冻干草莓。',
+        lines:['坚果里，来点草莓','三种坚果遇见草莓','下午来点红']},
+    ].map(({lines,...direction})=>({...direction,basis:recipe,strategyLink:'回到办公室下午加餐',
+      candidates:lines.map(text=>({text,use:'包装提案页'}))})),
+    picks:{A:'A1',B:'B1',C:'C1'},
+  };
+  writing.authorCheck={
+    selections:writing.directions.map(d=>({directionId:d.id,phrase:d.candidates[0].text,takeaway:d.claim,sloganReady:true})),
+    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'从工位动作、七袋节奏、配料反差三处展开'})),
+  };
+  for (const scenario of [
+    {label:'rejects wrong ingredient classification in an unpicked candidate',d:2,line:'四种坚果里，藏着一颗酸的',candidate:true},
+    {label:'rejects invented fruit count in the subtitle',d:2,line:'巴旦木、腰果、核桃，加一颗冻干草莓。'},
+    {label:'rejects a one-hand opening claim in a candidate',d:0,line:'一只手撕开，另一只手还在键盘上',candidate:true},
+    {label:'keeps the three author picks with ordinary opening and the actual recipe'},
+    {label:'keeps exact opening and piece-count facts when the Brief confirms them',
+      approved:'小袋能单手撕开。每袋含一颗冻干草莓。'},
+  ]) await t.test(scenario.label,async()=>{
+    const fromWriter=structuredClone(writing);
+    const input=brief+(scenario.approved ?? '');
+    if (scenario.candidate) fromWriter.directions[scenario.d].candidates[2].text=scenario.line;
+    else if (scenario.line) fromWriter.directions[scenario.d].secondary=scenario.line;
+    if (scenario.approved) {
+      fromWriter.directions[0].candidates[2].text='一只手撕开，另一只手还在键盘上';
+      fromWriter.directions[2].secondary='每袋含一颗冻干草莓。';
+    }
+    const phases=[];
+    const review=runCopyReview({project:{brief:input,proposalKind:'packaging'},inputs:{texts:[]},rules:[skill],singleOwner:true,
+      call:async (instruction,_images,_schema,task)=>{
+        const phase=instruction.split('\n')[0];
+        phases.push(phase);
+        if (phase==='COPY_ENGINE_WRITE') assert.ok(task.rules.includes(skill));
+        else {
+          assert.equal(phase,'COPY_ENGINE_RECOMMEND');
+          assert.deepEqual(JSON.parse(task.context).directions,writing.directions.map(d=>({id:d.id,name:d.name,main:d.candidates[0].text})));
+        }
+        const parsedOutput=phase==='COPY_ENGINE_WRITE' ? fromWriter : {directionId:'B',reason:'与每天一次的加餐节奏相连'};
+        return {parsedOutput,runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'a'.repeat(64)};
+      }});
+    if (scenario.line) {
+      await assert.rejects(review,{code:'INVALID_STAGE_OUTPUT',message:/文案事实须与 Brief 一致/});
+      assert.deepEqual(phases,['COPY_ENGINE_WRITE']);
+    } else {
+      const {copyReview,body,directions}=await review;
+      assert.deepEqual(phases,['COPY_ENGINE_WRITE','COPY_ENGINE_RECOMMEND']);
+      assert.deepEqual(copyReview.workbook.directions,fromWriter.directions);
+      assert.equal(copyReview.recommendation.directionId,'B');
+      assert.equal(engineCopyHandoffReady(copyReview,directions,body),true);
+    }
+  });
+});
+
 test('single director copy requires a configured DeepSeek text model',async t=>{
   if(process.env.ONEPITCH_TEXT_EXECUTABLE) t.skip('requires missing desktop text configuration');
   else {

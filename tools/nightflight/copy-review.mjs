@@ -162,6 +162,7 @@ const engineAuthorCheck = object({
 });
 const engineWriterSchema = object({directions:engineDirections,picks:enginePicks,authorCheck:engineAuthorCheck});
 const engineRecommendation = object({directionId:choice(ids),reason:str});
+const engineFactInstruction='作者交稿前核对每一条候选、每案副标和用于选句的事实。已确认组成、归类、规格、计量单位与适用对象以本版原始 Brief 为准；品类名称不代表每项配料都属于该品类，说明种数时按对应类别计算。确认含某配料不等于确认每袋或每次的颗数、配比和口感强度；这些未给时只写已知组成，避开定量承诺。未确认包装结构、开启方式或使用性能时，场景可以帮助想象，勿把具体开启能力写成产品保证。逐字依据存在也要逐句核对主张是否由它支持。按原版 slogan-engine 保留三个独立创意方向、每案原候选与作者自选。';
 
 function validateEngineDraft(draft, materials) {
   validate(draft,engineDraftSchema,'创作底稿');
@@ -181,6 +182,40 @@ function validateEngineDraft(draft, materials) {
       d.candidates.every(c=>normalize(c.text)), '每个方向需要三到四条不同的原候选');
     requireThat(!materials || materials.some(text=>text.includes(d.basis)),'方向 '+d.id+' 的依据无法定位到当前上游原文');
   }
+}
+
+function validatePackagedCopyFacts(directions, source) {
+  const brief=source.normalize('NFKC').replace(/\s/gu,'');
+  const description=brief.match(/(?:配料[：:]|配料为|包含|内含|含有)([^。；;！？!?]{2,90})/u)?.[1] ?? '';
+  const recipe=description.split(/[，,](?=(?:面向|适合|用于|主要|每袋|每盒|售价|价格|包装|电商|品牌))/u)[0];
+  const ingredients=[...new Set(recipe.split(/[、，,和及与]/u).filter(Boolean))];
+  const nuts=/^(?:巴旦木|杏仁|扁桃仁|腰果|核桃(?:仁)?|榛子|开心果|碧根果|夏威夷果|松子|花生|板栗|栗子)$/u;
+  const fruits=/^(?:冻干)?(?:草莓|蓝莓|蔓越莓|苹果|芒果|香蕉|葡萄|桑葚|桃|菠萝)(?:干|片|粒)?$/u;
+  const fruitIngredients=ingredients.filter(item=>fruits.test(item));
+  const nutCount=ingredients.filter(item=>nuts.test(item)).length;
+  const mixed=nutCount>0 && fruitIngredients.length>0 && nutCount+fruitIngredients.length===ingredients.length;
+  const types=/(\d+|[一二两三四五六七八九十])(?:种|类|款|样)坚果/gu;
+  const count=value=>Number(value) || (value==='两'?2:'一二三四五六七八九十'.indexOf(value)+1);
+  const groupCounts=text=>[...text.matchAll(types)].filter(match=>
+    !/(?:并非|不是|并不是|不写成|不得写成|避免说成)$/u.test(text.slice(Math.max(0,match.index-6),match.index))).map(match=>count(match[1]));
+  const namedCounts=groupCounts(brief);
+  const oneHand=/(?:单手|一只手|一手)(?:就能|也能|即可|能|可|轻松|轻轻|直接)?(?:撕开|打开|拆开|开启|开袋)|(?:撕开|打开|拆开|开启|开袋).{0,5}(?:只需|只要|仅需)(?:单手|一只手|一手)/u;
+  const canUseOneHand=brief.split(/[。；;，,！!？?]/u).some(clause=>oneHand.test(clause) && !/不能|不可|未确认|未经验证|未知|无法/u.test(clause));
+  const quantityPattern=fruitIngredients.length ? new RegExp('(?:每袋(?:仅有|只有|有|含有?|装有?)?|加(?:了)?|含有?|内有)(?<count>[一二两三四五六七八九十]|\\d+)(?<unit>颗|粒|片|块)(?<item>'+fruitIngredients.map(RegExp.escape).join('|')+')','gu') : null;
+  const knownQuantity=quantityPattern ? [...brief.matchAll(quantityPattern)].map(({groups})=>[count(groups.count),groups.unit,groups.item].join('|')) : [];
+  const findings=[];
+  for (const direction of directions) {
+    const lines=[direction.name,direction.claim,direction.mechanism,direction.strategyLink,direction.secondary,...direction.candidates.map(candidate=>candidate.text)];
+    for (const line of new Set(lines)) {
+      const compact=line.normalize('NFKC').replace(/\s/gu,'');
+      const wrongGroup=mixed && groupCounts(compact).some(value=>value!==nutCount && !namedCounts.includes(value));
+      const inventedAmount=quantityPattern && [...compact.matchAll(quantityPattern)].some(({groups})=>
+        !knownQuantity.includes([count(groups.count),groups.unit,groups.item].join('|')));
+      const promisedOpening=!canUseOneHand && oneHand.test(compact) && !/没有证实|未确认|未承诺|未验证|无法|不能/u.test(compact);
+      if (wrongGroup || inventedAmount || promisedOpening) findings.push(direction.id+'案「'+line.slice(0,58)+'」');
+    }
+  }
+  requireThat(!findings.length,'文案事实须与 Brief 一致，核对配料类别、单袋颗数与开启能力：'+findings.slice(0,5).join('；')+'。请原作者保留各案创意连接，只纠正无依据的事实。');
 }
 
 function resolveEnginePicks(workbook, picks) {
@@ -279,11 +314,15 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
       '主标给读者一个能记住、能转述的动作、画面或意思。直接列品牌型号、价格、场次、时段、预约或试穿条件，只完成了告知。把这类事实放在副标、信息栏或简报指定位置。事实参与创意连接时，允许按本案需要写入主标。事实性表述须有本案材料依据，遵守简报的品类与触点限制。',
       '依据 basis 从当前材料逐字摘取一处简短的连续原文，保留原来的字、空格和标点。claim 写本案主张，mechanism 写哪两个具体事物怎样相连，strategyLink 写如何承接策略。按 A、B、C 返回 directions。每案保留围绕同一连接的三到四条不同候选和各自用法，另写同案通用的简洁支撑副标 secondary。使用原件对场合、长短、声律的判断。候选按 A1、A2 等编号。作为创作者从每案原候选自选一句，把编号填入 picks。整组推荐交给负责人。',
       '仍由你在本次交稿前核对三条自选句。authorCheck.selections 按案逐字摘出承载创意连接的主标措辞 phrase，takeaway 写读者单看这句能记住什么或看到什么画面。只有标题本身表达了本案连接且超出直接告知时才填 sloganReady=true。authorCheck.pairs 对 AB、AC、BC 逐对写 reason，说清两句唤起的连接怎么不同。只换价格、时段、行动信息、语气或信息顺序时填 distinct=false。只看标题就分不出创意时，回到连接重新构思再自选。文案字段逐项、单行填写，略过独立盲读和回写。',
+      engineFactInstruction,
       '按系统给出的 JSON Schema 交稿。顶层的三个字段 directions、picks、authorCheck 并列。三案各填规定字段。authorCheck 中只有 selections 和 pairs。',
     ].join('\n'),
     engineWriterSchema,source,[skill,'包装方向的 slogan 用于命名和呈现提案主题。候选用途写提案页或明确委托的其他传播触点。包装本体的印字以简报确认的产品信息为准。']);
   requireThat(writing && Object.keys(writing).every(key=>Object.hasOwn(engineWriterSchema.properties,key)),'写作 Agent 交稿包含意外字段');
   validateEngineDraft({directions:writing.directions});
+  if (project.briefScope?.types?.includes('packaging') || /包装|外盒|小袋|瓶标|手撕/u.test(project.brief)) {
+    validatePackagedCopyFacts(writing.directions,[project.brief,...source.feedback.map(entry=>entry.text)].filter(nonempty).join('\n'));
+  }
   const workbook={directions:writing.directions.map(direction=>({...direction}))};
   const originals=[project.brief,...materials.map(item=>item.text)].filter(nonempty);
   const unsupported=workbook.directions.filter(d=>!originals.some(text=>text.includes(d.basis)));

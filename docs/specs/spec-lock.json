@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.135.0",
-  "registrySha256": "54d7b009a621985c7c97d75b25248233b3de1c7ac59a97fe891502ea3e897753",
+  "baselineVersion": "1.136.0",
+  "registrySha256": "eb5d2f950bb920d8603bdaa44c75c158164a7d1028ffee8853a821b217e1576b",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -510,10 +510,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.13.0",
+      "version": "1.14.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "9ced38f9637bab213be1fa9c84ebc42e8d523d7b0c082309a12959827204147c"
+        "docs/specs/copy-generation.md": "b0baeb3ef415e04aa045b3dc7ad43ab7cd31fed2c0dbefd6730f114464caffab"
       }
     },
     "method.slogan-engine": {
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.59.0",
+      "version": "1.60.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "f04561d0e3b3973b5e76e9437434f15f9812d664deb8dcab5b8ce850e6d69067"
+        "docs/specs/nightflight-runtime.md": "c7d1d124f16ab6510a78ba0e32c8875e50e188ca77f592bc621703c3c9c88b9c"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "32e67ad43a5cfa27f672e6ff37fbec5b74d48d8bf4cca7209121d807e49582a0",
+    "docs/specs/README.md": "cd59f3519e68e38eb0b8e7b90d7a09c33e38250e9384567b17aa2ca3a2e3d67e",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
