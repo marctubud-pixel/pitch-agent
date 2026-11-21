@@ -6,6 +6,19 @@ import {join} from 'node:path';
 import {setTimeout as delay} from 'node:timers/promises';
 import {inspectImage} from '../workbench/image-evidence.mjs';
 
+const nativeRetryCodes=new Map([
+  ['tls-before-send','TLS_BEFORE_SEND'],['read-timeout','READ_TIMEOUT'],['read-connection-lost','READ_CONNECTION_LOST'],
+]);
+const legacyRetryCodes=new Map([
+  ['The request timed out.','READ_TIMEOUT'],['请求超时。','READ_TIMEOUT'],
+  ['An SSL error has occurred and a secure connection to the server cannot be made.','READ_SSL'],
+  ['The network connection was lost.','READ_CONNECTION_LOST'],
+]);
+const readRetryReasons=new Map([
+  ['TLS_BEFORE_SEND','握手失败，尚未发送请求'],['READ_TIMEOUT','在等待回复时超时'],
+  ['READ_SSL','旧版组件返回安全连接失败'],['READ_CONNECTION_LOST','在等待回复时连接中断'],
+]);
+
 function invoke(executable, action, input, signal, mode = '--text-model') {
   return new Promise((resolve,reject) => {
     const child=execFile(executable,[mode,action],{signal,timeout:300000,maxBuffer:32*1024*1024},(error,data)=>{
@@ -14,8 +27,7 @@ function invoke(executable, action, input, signal, mode = '--text-model') {
         const response=JSON.parse(data);
         if(response.failure) {
           const failure=Error(response.failure);
-          if (response.retryCause==='tls-before-send') failure.code='TLS_BEFORE_SEND';
-          if (response.retryCause==='read-timeout' || response.failure==='The request timed out.' || response.failure==='请求超时。') failure.code='READ_TIMEOUT';
+          failure.code=nativeRetryCodes.get(response.retryCause) ?? (response.nativeTransport ? undefined : legacyRetryCodes.get(response.failure));
           throw failure;
         }
         resolve(response);
@@ -51,8 +63,8 @@ export async function desktopTextProvider(executable,signal,onEvent) {
     const packet=JSON.stringify(jsonModelRequest(profile,content,outputSchema));
     await onEvent?.(capability+' API 请求 · '+profile.host+' · '+profile.model);
     const result=await invoke(executable,'completion',packet,signal,mode).catch(async error=>{
-      if (!['TLS_BEFORE_SEND','READ_TIMEOUT'].includes(error.code)) throw error;
-      const reason=error.code==='TLS_BEFORE_SEND' ? '握手失败，尚未发送请求' : '在等待回复时超时';
+      const reason=readRetryReasons.get(error.code);
+      if (!reason) throw error;
       await onEvent?.(capability+' API '+reason+'。原样自动重试一次 · '+profile.host);
       await delay(750,undefined,{signal});
       await onEvent?.(capability+' API 请求 · '+profile.host+' · '+profile.model);

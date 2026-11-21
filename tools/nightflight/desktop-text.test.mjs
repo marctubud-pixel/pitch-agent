@@ -61,12 +61,17 @@ if (action === 'profile') {
   assert.ok(events.some(x=>x.includes('视觉理解 API 回执') && x.includes('actual-vision-model') && x.includes('request-vision-model')));
 });
 
-test('the desktop bounds pre-dispatch TLS and read timeout retries to text and vision', async t => {
+test('the desktop bounds transport retries to text and vision', async t => {
   const dir = await mkdtemp(join(tmpdir(), 'onepitch-tls-'));
   t.after(() => rm(dir,{recursive:true,force:true}));
   const executable = join(dir,'fixture.mjs');
   const trace = join(dir,'requests.jsonl');
   const imagePath = join(dir,'attachment.png');
+  const legacyFailures = {
+    'legacy timeout':'The request timed out.',
+    'legacy SSL':'An SSL error has occurred and a secure connection to the server cannot be made.',
+    'connection lost':'The network connection was lost.',
+  };
   await writeFile(imagePath,'fixture image bytes');
   await writeFile(trace,'');
   await writeFile(executable,`#!/usr/bin/env node
@@ -86,14 +91,14 @@ if (action === 'profile') {
   const previous = readFileSync(path,'utf8').split('\\n').filter(Boolean).map(line=>JSON.parse(line));
   const alreadySent = previous.some(entry=>entry.mode===mode && entry.prompt===prompt);
   appendFileSync(path,JSON.stringify({mode,prompt,bytes:bytes.toString('base64')})+'\\n');
-  const tls = 'An SSL error has occurred and a secure connection to the server cannot be made.';
-  const failures = {'plain SSL':tls,'certificate':'The certificate for this server is invalid.',HTTP:'视觉理解接口 HTTP 401'};
+  const legacyFailures = ${JSON.stringify(legacyFailures)};
+  const failures = {'plain SSL':'SSL error','certificate':'The certificate for this server is invalid.',HTTP:'视觉理解接口 HTTP 401'};
   if (Object.hasOwn(failures,prompt)) {
     console.log(JSON.stringify({failure:failures[prompt]}));
-  } else if (prompt==='legacy timeout' && !alreadySent) {
-    console.log(JSON.stringify({failure:'The request timed out.'}));
+  } else if (!alreadySent && Object.hasOwn(legacyFailures,prompt)) {
+    console.log(JSON.stringify({failure:legacyFailures[prompt]}));
   } else if (!alreadySent || prompt==='persistent' || prompt==='image') {
-    console.log(JSON.stringify({failure:tls,retryCause:'tls-before-send'}));
+    console.log(JSON.stringify({failure:legacyFailures['legacy SSL'],retryCause:'tls-before-send'}));
   } else {
     console.log(JSON.stringify({id:'accepted-'+model,model,choices:[{message:{content:'{"body":"received"}'}}]}));
   }
@@ -118,9 +123,15 @@ if (action === 'profile') {
     assert.equal(result.threadId,'accepted-'+mode.slice(2));
     assert.equal(result.inputPacketHash,await assertSamePair(mode,'recover'));
   }
-  const recovered = await execute('legacy timeout',images);
-  assert.equal(recovered.threadId,'accepted-vision-model');
-  assert.equal(recovered.inputPacketHash,await assertSamePair('--vision-model','legacy timeout'));
+  for (const [prompt,mode,attached] of [
+    ['legacy timeout','--vision-model',images],
+    ['legacy SSL','--vision-model',images],
+    ['connection lost','--text-model',[]],
+  ]) {
+    const recovered = await execute(prompt,attached);
+    assert.equal(recovered.threadId,'accepted-'+mode.slice(2));
+    assert.equal(recovered.inputPacketHash,await assertSamePair(mode,prompt));
+  }
   assert.equal(events.filter(line=>line.includes('在等待回复时超时。原样自动重试一次')).length,1);
   await assert.rejects(execute('persistent',images),{code:'TLS_BEFORE_SEND'});
   await assertSamePair('--vision-model','persistent');
@@ -131,9 +142,11 @@ if (action === 'profile') {
   const imageProvider = desktopImageProvider(executable,dir,undefined,line=>events.push(line));
   await assert.rejects(imageProvider.execute({runId:'image',prompt:'image',images}),{code:'TLS_BEFORE_SEND'});
   assert.equal((await sent('--image-model','image')).length,1);
-  await assert.rejects(imageProvider.execute({runId:'image-timeout',prompt:'legacy timeout',images}),/The request timed out\./u);
-  assert.equal((await sent('--image-model','legacy timeout')).length,1);
-  assert.equal(events.filter(line=>line.includes('原样自动重试一次')).length,4);
+  for (const [prompt,message] of Object.entries(legacyFailures)) {
+    await assert.rejects(imageProvider.execute({runId:prompt,prompt,images}),{message});
+    assert.equal((await sent('--image-model',prompt)).length,1);
+  }
+  assert.equal(events.filter(line=>line.includes('原样自动重试一次')).length,6);
 });
 
 test('desktop visual generation sends the configured writer’s exact prompt and the selected original to the image API', async t=>{

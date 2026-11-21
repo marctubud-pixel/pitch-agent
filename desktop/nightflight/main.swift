@@ -161,12 +161,13 @@ if ["--text-model","--image-model","--vision-model"].contains(CommandLine.argume
         session.dataTask(with:request) { data,response,error in
             defer { done.signal() }
             guard error == nil, let http = response as? HTTPURLResponse else {
-                var failure = ["failure":error?.localizedDescription ?? "连接服务失败"]
+                var failure = ["failure":error?.localizedDescription ?? "连接服务失败", "nativeTransport":"typed"]
                 if capability != .image && response == nil && (data == nil || data?.isEmpty == true) {
                     if transport.isUnsentHandshakeFailure(error) {
                         failure["retryCause"] = "tls-before-send"
-                    } else if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut {
-                        failure["retryCause"] = "read-timeout"
+                    } else if let error = error as NSError?, error.domain == NSURLErrorDomain {
+                        if error.code == NSURLErrorTimedOut { failure["retryCause"] = "read-timeout" }
+                        if error.code == NSURLErrorNetworkConnectionLost { failure["retryCause"] = "read-connection-lost" }
                     }
                 }
                 reply(failure); return
