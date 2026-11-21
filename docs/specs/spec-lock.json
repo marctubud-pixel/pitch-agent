@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.127.0",
-  "registrySha256": "7bb569054c11bb57f6d4babb3288721840d4466e5ba8b1ccc89d21924243aeec",
+  "baselineVersion": "1.128.0",
+  "registrySha256": "8d05372df9dd481293f81c5da5122bbcaafadaa65da7a9fa5ceb6460c14f2065",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.51.0",
+      "version": "1.52.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "72b2e9b9f3700fa145b68f6fcc60e56e77eaeff0102edf5531bb255a853920a4"
+        "docs/specs/nightflight-runtime.md": "ef17dea4b2f103998f465cfac6d8c561e5985f91af9e92745f8b32d6c21a3519"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "685ef51aecba163740a2128c11d071416e923cbe809fafd27f0cbcb79052b639",
+    "docs/specs/README.md": "4a33938e931bb109ebc6f39aeccba26bd0be1cd9e6da44c9d168ab5ccfee28e6",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

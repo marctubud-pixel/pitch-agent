@@ -249,7 +249,7 @@ async function verifyProductUse({call,project,plan,slide,edition,round,receipts,
   return verified?'采用原图已核实取用场景。'+answer.empty+'，'+answer.matching+'。盒内 '+insideCount+'，盒外同款 '+matchingOutsideCount+'，盒身印字「'+answer.printed+'」。':'';
 }
 
-async function verifySurvey({call,slide,edition,round,receipts,onEvent,issue,decision}) {
+async function verifySurvey({call,project,slide,edition,round,receipts,onEvent,issue,decision}) {
   const native=edition.native[issue.page-1];
   const concern=issue.problem+' '+issue.evidence;
   if (slide.role!=='trend' || native.charts!==0 || !['pending_confirmation','confirmed_requirement_missing'].includes(decision.kind) ||
@@ -257,7 +257,12 @@ async function verifySurvey({call,slide,edition,round,receipts,onEvent,issue,dec
   const normNumber=value=>value.replaceAll(',','');
   const values=value=>numbers(value).map(normNumber);
   const points=slide.points.filter(line=>values(line).some(number=>number.endsWith('%')));
-  const sources=slide.sources;
+  const sources=slide.sources.map(source=>{
+    const finding=project.research?.findings?.find(item=>item.url===source.url && meaningful(item.passage) &&
+      meaningful(item.evidence) && meaningful(source.evidence) && norm(item.evidence)===norm(source.evidence) &&
+      norm(item.passage).includes(norm(item.evidence)));
+    return {...source,passage:finding?.passage};
+  });
   if (points.length<2 || !sources.length || !points.every(point=>norm(native.text.join('')).includes(norm(point)))) return '';
   const ids=points.map((_,i)=>String(i+1));
   const refs=sources.map((_,i)=>'R'+(i+1));
@@ -272,13 +277,18 @@ async function verifySurvey({call,slide,edition,round,receipts,onEvent,issue,dec
   const answer=response.parsedOutput;
   receipts.push({round,role:'survey',pages:[issue.page],verify:true,model:response.model,completionId:response.threadId,
     inputSha256:response.inputPacketHash,observation:JSON.stringify(answer)});
+  const dateText=value=>norm(value).replace(/[—–－~～至到]/gu,'-');
+  const period= /\d{4}年(?:\d{1,2}月)?-\d{4}年(?:\d{1,2}月)?/gu;
   const grounded=answer?.relationship==='separate_claims' && ids.every((id,i)=>{
     const row=answer.rows?.[id];
     const source=sources[refs.indexOf(row?.source)];
     if (!meaningful(source?.evidence) || row?.comparison!=='matches' || !meaningful(row.actual) || norm(row.actual)!==norm(points[i]) ||
         !meaningful(row.quote) || !norm(source.evidence).includes(norm(row.quote))) return false;
-    const allowed=values(source.evidence+' '+(source.sampleScope ?? ''));
-    return values(points[i]).every(number=>allowed.includes(number));
+    const reported=values(row.quote);
+    const context=[source.evidence,source.sampleScope,source.passage].filter(meaningful).join(' ');
+    const contextNumbers=values(context);
+    return values(points[i]).every(number=>(number.endsWith('%')?reported:contextNumbers).includes(number)) &&
+      (dateText(points[i]).match(period) ?? []).every(range=>dateText(context).includes(range));
   });
   return grounded?'实页数据分别陈述，数字已逐条对到原研究。口径呈现另作措辞建议。':'';
 }
