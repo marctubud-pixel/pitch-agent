@@ -53,6 +53,7 @@ export function unsupportedOpeningClaims(line,brief) {
 }
 
 export function confirmsInnerPackets(brief) {
+  if (typeof brief!=='string') return false;
   const text=brief.normalize('NFKC').replace(/[^\S\r\n]/gu,'');
   const count='(?:[1-9][0-9]*|[一二三四五六七八九十两]+)';
   return new RegExp('(?:盒内|每盒|一盒)(?:有|含|装有?|为)?'+count+'(?:个|只)?(?:独立)?(?:小袋|袋|独立小包)','u').test(text) &&

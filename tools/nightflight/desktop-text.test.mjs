@@ -393,8 +393,12 @@ test('the image API receives an all-visible pack count only when the brief confi
       const result=await run;
       assert.equal(result.result.requestId,'image-fixture');
       assert.equal(result.promptWriting.visiblePackageUnits,sample.count);
+      assert.equal(result.promptWriting.prompt,sent[0]);
+      const [written,structure]=sent[0].split('\n\n【已确认的包装结构】');
+      assert.equal(written,prompt);
+      assert.match(structure,/外盒中的产品是独立内袋/u);
     }
-    assert.deepEqual(sent,sample.blocked||sample.priceBlocked?[]:[prompt]);
+    assert.equal(sent.length,sample.blocked||sample.priceBlocked?0:1);
   }
 });
 
