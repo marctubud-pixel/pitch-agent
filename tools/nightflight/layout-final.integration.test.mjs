@@ -113,7 +113,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   db.exec('CREATE TABLE projects(id TEXT PRIMARY KEY,revision INTEGER,state TEXT)');
   db.prepare('INSERT INTO projects VALUES(?,?,?)').run(id,1,JSON.stringify(project));
   db.close();
-  const page=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',internalNote:'',sourceIndices:[],...fields});
+  const page=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',internalNote:'',sourceIndices:[],visibleQuotes:[],...fields});
   const sizePending='七袋装外盒正面尺寸与结构未提供：请补实物尺寸，确认版面比例。';
   const pricePending='29.9元/盒为电商目标价；同规格竞品价与四种内容物营养声称待核实后再定价值表达。';
   const wrongPriceUnit=pricePending.replace('元/盒','元/袋');
@@ -134,7 +134,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
     {title:'活动需求',pages:[page('brief','家长先看清参加条件',{points:['报名方式待定。','馆内讲解面向亲子。','品牌名与正式标志待定。']}),
       page('peers','同类把活动名放上方',{points:[printed,competitorRow],sourceIndices:[0,1]})]},
     {title:'核心策略',pages:[page('strategy',strategy)]},
-    {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['突出馆内场景。']}),
+    {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['拟突出馆内场景。'],visibleQuotes:['右边展柜']}),
       page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),
       page('decision','请确认素材',{points:decisionLines})]},
   ],closing:'感谢观看，期待与您确认下一步方向。'};

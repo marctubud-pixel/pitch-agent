@@ -1,4 +1,4 @@
-import {promisedPackageUnits} from './packaging-quantity.mjs';
+import {promisedPackageUnits, confirmsInnerPackets} from './packaging-quantity.mjs';
 import {invalidOutput,independentCalls} from './call-checkpoints.mjs';
 const string = {type:'string'};
 const list = items => ({type:'array',items});
@@ -181,11 +181,14 @@ function unqualifiedTargetPrice(prompt,brief) {
   return false;
 }
 
+const innerPacketsArtwork='【已确认的包装结构】外盒中的产品是独立内袋。配料特写作为可辨的平面印刷图案或盒外的使用场景。参考图的开窗式布局只借框形和位置，包装正面无真实食材窗时应完全封闭。客户明确要求透窗或打开外盒时，只能看到完整的独立小袋，不能看到外盒内未分袋的内容。';
+
 async function submitVisualPrompt({call,images,written,posterSlogan,packagingBrief}) {
-  const prompt = written.parsedOutput?.prompt;
-  if (!nonempty(prompt) || prompt.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
+  const draft = written.parsedOutput?.prompt;
+  if (!nonempty(draft) || draft.length>32000 || !nonempty(written.model) || !nonempty(written.threadId)) {
     throw invalidOutput('文字服务未交回可用的生图提示词与模型回执。');
   }
+  const prompt=packagingBrief && confirmsInnerPackets(packagingBrief) ? draft+'\n\n'+innerPacketsArtwork : draft;
   if (posterSlogan && !includesPosterSlogan(prompt,posterSlogan)) {
     throw invalidOutput('海报生图提示词缺少该方向已选 slogan 的原句，请按制图要求完整写入。');
   }
@@ -212,6 +215,7 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
     '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。按制图要求写清载体上的文字。',
     posterSlogan && '海报或 KV 要把本方向已选 slogan 的完整原句排成画面主标题。提示词中逐字列出原句，明确文字放在画面上。标题分行时用连续的行写全原字和标点。',
     packaging && '包装画面的设计主题转化成画面关系，包装本体只列确认可印的实际文字。盒内件数印在外盒上，单件只标对应单件规格。简报若只规定装量和外盒正面，优先闭盒正面或只露出局部、展示单件取用；不可凭空要求全数内装同时可见或可数。客户明确要求把全部内装画出时按原要求。目标价或拟售价留在提案材料，简报未要求上画时省略价签；要求上画时保留该限定。',
+    packaging && confirmsInnerPackets(context.brief) && '外盒装的是独立小袋。参考图的透明窗、陈列框或食材区只能转用它的版面框形和位置；不能沿用与本品内装不符的盒型结构、材质或装料形态。若要借开窗式布局，画成明确可识别的平面印刷图框，或把食材特写放在外盒之外；若简报明确委托透窗，实物窗里只能显示完整独立袋。全篇的画面、借法、附件用途与包装转化要使用同一说法。',
     '返回一个 prompt 字段，内容是完整的生图提示词。',
   ].filter(Boolean).join('\n');
   const written = await call(instruction,[],imagePromptSchema,{

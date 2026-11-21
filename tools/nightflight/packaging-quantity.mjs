@@ -51,3 +51,10 @@ export function unsupportedOpeningClaims(line,brief) {
     openingSentences(line).some(sentence=>claim.test(sentence) && !unconfirmedOpening.test(sentence)) &&
     !given.some(sentence=>claim.test(sentence) && !unconfirmedOpening.test(sentence) && !/是否|能否/u.test(sentence)));
 }
+
+export function confirmsInnerPackets(brief) {
+  const text=brief.normalize('NFKC').replace(/[^\S\r\n]/gu,'');
+  const count='(?:[1-9][0-9]*|[一二三四五六七八九十两]+)';
+  return new RegExp('(?:盒内|每盒|一盒)(?:有|含|装有?|为)?'+count+'(?:个|只)?(?:独立)?(?:小袋|袋|独立小包)','u').test(text) &&
+    /独立(?:小袋|包装|小包)|每袋/u.test(text);
+}

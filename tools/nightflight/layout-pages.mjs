@@ -379,7 +379,8 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
       case 'strategy': return {...draft,tone:'brand',template:{kind:'summary.statement',statement:page.title,sub:''}};
       case 'direction': {
         const copy=points.filter(point=>/^(?:主标|副标) · /u.test(point));
-        const explanation=points.slice(copy.length).map((d,i)=>({k:['创意思路','画面重点'][i],d}));
+        const explanation=points.slice(copy.length).map((d,i)=>d.startsWith('原图 · ')?
+          {k:'画面重点',d:d.slice('原图 · '.length)}:{k:['创意思路','画面重点'][i],d});
         const side=direction++%2===0?'左':'右';
         const kind=(page.imageSide || side)==='左'?'design.half':'design.halfR';
         return {...draft,template:{kind,image:images[0],intro:copy.join('\n'),points:explanation}};
@@ -413,7 +414,8 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
     }
     const words=visible(page.nodes.filter(n=>n.kind==='text').map(n=>n.runs.length?n.runs.map(r=>r.text).join(''):n.lines.join('')).join(''));
     const images=page.nodes.filter(n=>n.kind==='image').map(n=>n.image.id);
-    if (page.id!==drafts[i].id || [expected.title,...expected.points].some(text=>!words.includes(visible(text))) ||
+    const original=expected.role==='direction'?expected.points.map(text=>text.replace(/^原图 · /u,'')):expected.points;
+    if (page.id!==drafts[i].id || [expected.title,...original].some(text=>!words.includes(visible(text))) ||
       expected.figures.some(id=>!images.includes(figures.get(id).name))) {
       throw Error('逐页稿 '+page.id+' 的原文或原图未完整排入该页');
     }

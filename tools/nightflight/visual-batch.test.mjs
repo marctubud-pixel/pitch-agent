@@ -23,14 +23,15 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets}={}) {
   const calls = [];
   const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,
     sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
     call:async(instruction,actual,schema,task)=>{
       calls.push({instruction,actual,schema,task});
       if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:'预约',alternative:'展览',
-        slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'}}};
+        slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'},
+        ...(innerPackets ? {innerPackets:innerPackets[images.findIndex(frame=>frame.sha256===actual[0].sha256)]} : {})}};
       if (task.assignment==='海报借改逐项核对') return {...identity,parsedOutput:{items:rows}};
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
       if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
@@ -272,4 +273,23 @@ test('similar representatives hold the affected directions without promoting unc
     assert.equal(drafts[2].visual.reason,'单稿原票');
   }
   assert.equal(represented[2].draft.visual.recommended,true);
+});
+
+
+test('a loose-filled window never wins a box for individual bags, but printed food can remain',async()=>{
+  const productBrief='外盒内装七袋，每袋25克。请做正面包装与KV。';
+  const innerPackets=[
+    {form:'loose_in_outer_box',evidence:'窗内直接堆着未分装的散粒',location:'外盒正面开窗'},
+    {form:'printed_illustration',evidence:'草莓为盒面平整印刷图案',location:'外盒正面'},
+    {form:'not_shown',evidence:'盒面封闭，只见一袋在桌上',location:'画面正中'},
+  ];
+  const printed=images.map(()=>({status:'verified',printed:[{text:'盒内七袋',location:'外盒正面'}],reason:'规格正确'}));
+  const {batch,calls}=await review({posterTransfer:null,packaging:true,productBrief,printed,innerPackets});
+  assert.equal(batch.candidates[0].mean,5);
+  assert.equal(batch.candidates[0].blocked,true);
+  assert.equal(batch.winner,2);
+  assert.match(batch.candidates[0].reason,/外盒正面开窗可见散装内容/u);
+  assert.equal(batch.candidates[0].blind.innerPackets.form,'loose_in_outer_box');
+  assert.equal(batch.candidates[2].blocked,false);
+  assert.equal(calls.filter(entry=>entry.task.assignment==='独立读图者').length,3);
 });

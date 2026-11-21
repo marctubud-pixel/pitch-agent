@@ -1,3 +1,4 @@
+import {confirmsInnerPackets} from './packaging-quantity.mjs';
 import {independentCalls,invalidOutput} from './call-checkpoints.mjs';
 import {visualElements} from './visual-references.mjs';
 const roles = ['视觉', '品牌', '用户', '传播'];
@@ -50,6 +51,9 @@ const posterArtworkIssues={
   unconfirmed_claim:'图上写了本案未确认或已抵触的产品信息',
 };
 const posterArtworkSchema={...list(object({kind:{...text,enum:Object.keys(posterArtworkIssues)},observed:text,location:text})),maxItems:5};
+const packetForms=['individually_wrapped','loose_in_outer_box','printed_illustration','not_shown','unclear'];
+const innerPacketsSchema=object({form:{...text,enum:packetForms},evidence:text,location:text});
+const innerPacketsRead='另单独核对外盒内容。指出在候选实际看见的容器位置和内容。只有真实开口或透窗内见到散粒直接装在外盒里时选 loose_in_outer_box；可辨完整独立袋选 individually_wrapped；清楚是印刷的食材图选 printed_illustration；不露出内装选 not_shown；区分不了透明开窗和印刷或看不清内容选 unclear。桌面、盘中及独立小袋内的配料都不算外盒散装。evidence 和 location 写可指认的像素特征及位置。';
 const candidateKeys = ['candidate_1','candidate_2','candidate_3'];
 const nonempty = value => typeof value==='string' && !!value.trim();
 const hasHash = image => /^[a-f0-9]{64}$/.test(image?.sha256 ?? '');
@@ -193,15 +197,17 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   if (sourcePolicy && (!nonempty(productBrief) || typeof sourcePolicy.mainReferenceExclusions!=='string')) {
     throw Error('海报品牌事实核对需要客户原始简报和本方向参考排除项。');
   }
+  const checksInnerPackets=packagingExpected===true && productBrief && confirmsInnerPackets(productBrief);
   const blindFields = ['first','action','words','alternative'];
   const properties = Object.fromEntries(blindFields.map(k=>[k,text]));
   if (posterSlogan) properties.slogan=sloganSchema;
+  if (checksInnerPackets) properties.innerPackets=innerPacketsSchema;
   const blindInstruction = '只看这张原图。第一眼看到什么？画面里发生什么动作？哪些信息靠读字才知道？还有什么合理的读法？逐项用自己的话回答。';
   const transcribe = ' 另外单独填 slogan。按阅读顺序逐字抄写海报主标题，保留字词、数字、标点和实际换行，只抄实际看见的内容。把可见位置写入 location。区分海报主标题、画面里的包装印字、品牌标志和时间地点。标题行之外的独立装饰图标不抄进标题，确实代替标题里的文字或标点才抄入。能读完整填 readable；没有主标题填 missing，位置可以留空；有字看不清填 unreadable 并只抄看清的片段。';
   const blind = await independentCalls(images,async image=>{
     const quantity=image.visiblePackageUnits ? ' 单独核对图上实际可辨的同款独立包装，按从左到右逐个定位，把每件的位置分别写入 units.positions，盒上规格字和印出的图案不计为实物。仅当清楚看到完整内装或能看到从空位取出、对应的同款时，complete 填 true。看不清或有重叠遮挡就填 false。' : '';
     const blindSchema=object(quantity ? {...properties,units:object({positions:{type:'array',items:text},complete:{type:'boolean'}})} : properties);
-    const result = await call(blindInstruction+(posterSlogan ? transcribe : '')+quantity,
+    const result = await call(blindInstruction+(posterSlogan ? transcribe : '')+quantity+(checksInnerPackets ? ' '+innerPacketsRead : ''),
       [{...image,imageId:'anonymous'}],blindSchema,{delegate:true,rules:[],assignment:'独立读图者',context:'仅本张图片，保留图上文字。'});
     const words = result.parsedOutput;
     if (!blindFields.every(k=>typeof words?.[k]==='string' && words[k].trim())) throw invalidOutput('匿名盲读原话不完整');
@@ -210,6 +216,9 @@ export async function reviewVisualBatch({call, direction, images, context, packa
       (observed.status==='readable' && (!observed.text.trim() || !observed.location.trim())))) {
       throw invalidOutput('海报需要逐字记录看见的主标题和位置，缺失或无法读清时请如实标记。');
     }
+    const structure=words.innerPackets;
+    if (checksInnerPackets && (!packetForms.includes(structure?.form) || !nonempty(structure.evidence) || !nonempty(structure.location)))
+      throw invalidOutput('独立分装需记录外盒内装或印刷图示的可见证据。');
     if (quantity && (!Array.isArray(words.units?.positions) || !words.units.positions.every(nonempty) ||
         new Set(words.units.positions).size!==words.units.positions.length || typeof words.units.complete!=='boolean'))
       throw invalidOutput('完整包装展示须逐项记录实际可见实物的位置。');
@@ -335,6 +344,9 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const printIssue = packaging ? onPackIssues[brand.onPackStatus] : undefined;
     const reading = blind[row.candidate-1];
     const posterIssue = posterSlogan ? sloganIssue(posterSlogan, reading.slogan) : '';
+    const contents=reading.innerPackets;
+    const packageIssue=checksInnerPackets && contents.form==='loose_in_outer_box'
+      ? '外盒应装独立小袋，'+contents.location+'可见散装内容：'+contents.evidence+'。' : '';
     const posterArtworkCheck = sourcePolicy ? {sha256:images[row.candidate-1].sha256,threadId:brandVote.thread,
       model:brandVote.model,inputPacketHash:brandVote.inputPacketHash,issues:brand.artworkIssues} : undefined;
     const artworkIssue=posterArtworkCheck?.issues.map(({kind,observed,location})=>
@@ -347,13 +359,14 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const {width,height}=images[row.candidate-1];
     const paperIssue=paper && (!width || !height || Math.abs((width/height)/(paper.width/paper.height)-1)>0.015)
       ? '实图尺寸 '+(width && height ? width+'×'+height : '待核')+' 不能按 '+paper.name+' 比例交付。' : '';
-    const otherBlocker = row.blocked || missing || !!printIssue || !!quantityIssue || !!artworkIssue || !!paperIssue || audit?.passed===false;
+    const otherBlocker = row.blocked || missing || !!printIssue || !!quantityIssue || !!packageIssue || !!artworkIssue || !!paperIssue || audit?.passed===false;
     const exactWords = posterSlogan?.replace(/\p{P}/gu,'');
     const punctuationOnly = posterIssue && !otherBlocker && reading.slogan.status==='readable' && nonempty(exactWords) &&
       sameSlogan(exactWords,reading.slogan.text.replace(/\p{P}/gu,''));
-    let reason = [posterIssue,printIssue && printIssue+brand.reason,quantityIssue,artworkIssue,paperIssue].filter(Boolean).join(' ') || row.reason;
+    let reason = [posterIssue,printIssue && printIssue+brand.reason,quantityIssue,packageIssue,artworkIssue,paperIssue].filter(Boolean).join(' ') || row.reason;
     let edit = posterIssue ? '在海报主标题位置清楚排入本轮原句「'+posterSlogan+'」，逐字核对。' :
       quantityIssue ? '调整实物摆放与遮挡，逐件核对客户要求展示的完整数量。' :
+      packageIssue ? '外盒透窗或开口仅展示独立小袋；配料特写放在盒外或作清楚可辨的印刷插图。' :
       paperIssue ? '在实际成图里按 '+paper.name+' 比例重排，保留完整图文。' : row.edit;
     if (artworkIssue) {
       const change='移除核查定位到的未授权标志、参考专有形象或无依据的产品表述，保留客户确认的品牌文字和商品信息。';

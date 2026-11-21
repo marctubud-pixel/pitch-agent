@@ -10,6 +10,7 @@ import {runLayout} from './layout.mjs';
 import {pythonBinary} from './runtime-dependencies.mjs';
 
 export const finalProtocol='case-b-1.2.0';
+const finalRuleVersion='1.2.2';
 const roles={
   logic:'逻辑岗：审既定要求、客户立场、全册叙事衔接、事实和统计口径。图表不能共用不同分母、单位或时期。用本版可核对的原文定位。',
   copy:'措辞岗：把大屏上的长句和调研腔压成短句，保留限定、证据和已定策略及主副标。按现有材料纠正错误表述。',
@@ -432,6 +433,25 @@ async function verifySurvey({call,project,slide,edition,round,receipts,onEvent,i
   return grounded?'实页数据分别陈述，数字已逐条对到原研究。口径呈现另作措辞建议。':'';
 }
 
+function verifiesSurveyScope({project,slide,native,nativeText,decision,source}) {
+  if (slide.role!=='trend' || native.charts!==0 || decision.kind!=='fact_conflict' || !source?.url || !slide.sources.includes(source)) return false;
+  const finding=project.research?.findings?.find(item=>item.url===source.url && meaningful(source.evidence) &&
+    meaningful(item.passage) && norm(item.evidence ?? '')===norm(source.evidence) && norm(item.passage).includes(norm(source.evidence)));
+  if (!finding || !meaningful(finding.conclusion) || !meaningful(finding.sampleScope)) return false;
+  const observed=norm(decision.actual);
+  const claims=slide.points.map(norm).filter(row=>nativeText.includes(row)).map(row=>
+    row.match(/^(\d{4})年?([\p{L}·]{2,20}):(([\p{L}/、]{2,24})是([\p{L}]{2,18}?)(?:的)?主要(?:消费)?场景之一),(非([\p{L}]{2,18})实测)[。.]?$/u))
+    .filter(match=>match && observed.includes(match[3]) && observed.includes(match[6]));
+  if (claims.length!==1) return false;
+  const [,year,author,,scene,subject,,excluded]=claims[0];
+  if (subject===excluded || !norm(finding.source ?? '').includes(author) ||
+      !new RegExp(year+'年(?:\\d{1,2}月(?:\\d{1,2}日)?)?发布','u').test(norm(finding.sampleScope)) ||
+      !norm(finding.conclusion).includes(subject+'而非'+excluded)) return false;
+  const sceneClaim=new RegExp('(?:^|[,:、])'+RegExp.escape(scene)+'(?:[,、][\\p{L}/]{2,12})*,?(?:都|均)?(?:是|为)'+
+    RegExp.escape(subject)+'(?:的)?主要(?:消费)?场景(?:之一)?$','u');
+  return norm(source.evidence).split(/[。；;!?！？]/u).some(statement=>sceneClaim.test(statement));
+}
+
 async function qualifyCritical({call,current,pending,round,receipts,onEvent,project}) {
   const {plan,edition}=current;
   const critical=pending.filter(issue=>issue.level==='P0');
@@ -442,11 +462,12 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
     const batch=pages.slice(offset,offset+4);
     const claims=critical.filter(issue=>batch.includes(issue.page));
     const ids=claims.map((_,index)=>String(index+1));
+    const research=batch.flatMap(page=>plan.pages[page-1].sources ?? []);
     const confirmed=Object.fromEntries([
       ['B1',{出处:'客户原始 Brief',原话:plan.brief.original}],
       ...plan.strategy.map((item,index)=>['S'+(index+1),{出处:'已定策略',原话:item.body}]),
       ...plan.copy.map((item,index)=>['C'+(index+1),{出处:'已选主副标',原话:[item.main,item.secondary].filter(Boolean).join('\n')}]),
-      ...batch.flatMap(page=>plan.pages[page-1].sources ?? []).map((item,index)=>['R'+(index+1),{出处:item.source,原话:item.evidence}]),
+      ...research.map((item,index)=>['R'+(index+1),{出处:item.source,原话:item.evidence}]),
     ].filter(([,entry])=>meaningful(entry.原话)));
     const schema=object({items:object(Object.fromEntries(ids.map(id=>[id,object({
       kind:{...text,enum:kinds},actual:text,required:text,location:text,reason:text,
@@ -466,6 +487,7 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       '实际内容能读全，意见只是标点、句式、普通断行、留白或美术，选 readable_suggestion。中英文标点或行尾形式本身属于这一类。报告描述的现象没有发生选 not_found。还缺实际证据选 unresolved。若这三类没有必要原话，required 留空。',
       '按实际角色判断这一页该有什么。封面负责识别提案，需求页列项目约束，方案页呈现设计，决策页列客户需确定的事。只有同版原话要求在当前页显示的品牌占位才必需；包装或 KV 的占位要求归作品。只有看到实际可定位的现象才作事实判断。',
       '同类参考页先核实规格所指的是哪款商品，再对照该商品的同版来源。有来源的竞品数值与本品规格不同，不能据此判为事实冲突。',
+      '趋势页须逐字查看同一条陈述已经写出的样本或品类限制。先确认与该条原研究是否一致。仅担心读者误解已写清的口径，选 readable_suggestion。',
       '致谢封底正文完整时，常规页码或页脚样式属于美术建议。页码错误、实体缺页、关键内容缺失，或客户明确委托该页增加页脚和页码时，按同版原话和实图核实。',
       '商品事实冲突或缺少已确认要求时，必须在 source 填确认材料的编号，并在 required 逐字引用该条原话。讲稿备注只用于识别实际所见。决策页或讲稿备注已列明待确认、待提供的事项时，确认材料没有说它已定的，选 pending_confirmation，actual 逐字记录已印条目或备注。文字被挡或裁切时用 key_content_unreadable，required 写本页应读取的关键字样，source 留空。无需引用的类别 source 留空。',
       '用词意见先逐字对照原简报，以及已定策略或文案。实际已经沿用客户词，若仅建议核实更合适的叫法，选 readable_suggestion。核心策略句在本页完整呈现时，按该页职责判断；只有取得本页必须另设信息的已确认原句，才按缺失处理。',
@@ -499,7 +521,9 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       const targetPrice=sourceMatches && decision.source==='B1' && decision.kind==='fact_conflict' && slide.role==='decision' &&
         confirmsTargetPrice(slide,nativeText,plan.brief.original,issue);
       const peerWeight=verifiesPeerWeight({project,plan,slide,nativeText,decision,sourceMatches});
-      const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || approvedBrand || closingFooter || targetPrice || peerWeight || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
+      const ref=Object.hasOwn(confirmed,decision.source) && /^R([1-9]\d*)$/u.exec(decision.source);
+      const surveyScope=ref && verifiesSurveyScope({project,slide,native:edition.native[issue.page-1],nativeText,decision,source:research[Number(ref[1])-1]});
+      const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || approvedBrand || closingFooter || targetPrice || peerWeight || surveyScope || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
       const check={call,project,plan,slide,edition,round,receipts,onEvent,issue,decision};
       const additional=clear?'':await verifyPrintedText(check) || await verifyProductUse(check) ||
         ((!sourceMatches || decision.source.startsWith('R')) && await verifySurvey(check));
@@ -507,8 +531,9 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
         const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':
           approvedBrand?'品牌待确定已列在对应职责页，当前页无需另设品牌标记。':closingFooter?'封底原句完整，页脚与页码作为版式建议。':
           requestedConfirmation?'实页已列出所报的客户待确认事项。':targetPrice?'实页金额与简报一致，已明确列为目标价并请客户确认。':
-          peerWeight?'实页为同类产品的规格，已逐一对到对应品牌的包装原图读字。':'按本版实页复核。';
-        const detail=requestedConfirmation || approvedBrand || closingFooter || targetPrice || peerWeight ? qualification : qualification+decision.location+' '+decision.reason;
+          peerWeight?'实页为同类产品的规格，已逐一对到对应品牌的包装原图读字。':
+          surveyScope?'实页原句与对应研究一致，且同条已写明未实测本案品类。':'按本版实页复核。';
+        const detail=requestedConfirmation || approvedBrand || closingFooter || targetPrice || peerWeight || surveyScope ? qualification : qualification+decision.location+' '+decision.reason;
         updates.set(issue,{...issue,level:'P1',blockedBy:additional || detail});
       } else if (unsupported) {
         updates.set(issue,{...issue,blockedBy:'引用尚未绑定本版已确认原话，保留待核。'+decision.location+' '+decision.reason});
@@ -600,7 +625,7 @@ async function refine({current,issues,project,dir,signal,onEvent,force=false}) {
 }
 
 function makeRecord({rounds,original,current,receipts,applied,pending,reason}) {
-  return ['# 本版 PPT 终审 · 1.2.0',reason,
+  return ['# 本版 PPT 终审 · '+finalRuleVersion,reason,
     '原版 '+original.file+'\n精修版 '+current.edition.file+'\n终审 '+rounds+' 轮',
     '## 已落地的修改',
     ...applied.map((issue,i)=>'### '+(i+1)+' · 第 '+issue.page+' 页 · '+roleNames[issue.role]+' · '+issue.level+

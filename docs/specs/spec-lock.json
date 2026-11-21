@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.144.0",
-  "registrySha256": "0eb9b5128e5391b5ea7ba16e86a6e0160466d9c6cd47592bac4086048bd46249",
+  "baselineVersion": "1.145.0",
+  "registrySha256": "dd5d95a822f677e66bbfb031ecfe4063e62c3d1a3ea54d2cf2b793b2003210be",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -210,12 +210,12 @@
       }
     },
     "method.visual": {
-      "version": "1.26.0",
+      "version": "1.27.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "c43ad9545dc583df262897900d95de80bc8ad1990d9bb1fa1363569ecbcf6186",
+        "skills/visual-development-lead/SKILL.md": "27f1a093f2224b2c358c3f7450fd6b05008069a027572894f7924cb49519189b",
         "skills/visual-development-lead/references/kv.md": "e3754d3ae098da967358a2738188479c210da35d2f69d76ef29939f541d163ce",
-        "skills/visual-development-lead/references/packaging.md": "6f02d40162aefd2191c4d7b48106f01b087ecffc6ca9181270c8786add94a6fa",
+        "skills/visual-development-lead/references/packaging.md": "5fc42d40044503528b2a8e24c014595b1da76f87763954b7d43e8bf6cc5775d6",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
         "skills/visual-development-lead/references/stage-review.md": "602ac5039e76e21bcf205337451e9f1b4a2bc7562bbf0a04731c4fbafd769899",
         "skills/visual-development-lead/scripts/check-stage.mjs": "73396ea1949f443b4437837a541a4f0f594bf6bae785b5a76ca1fa7c3c3eff75",
@@ -524,17 +524,17 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.68.0",
+      "version": "1.69.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "f4241e170ec987720107bc4017ecf83285fc801c5f5a391fef71b120df857995"
+        "docs/specs/nightflight-runtime.md": "f7c0ae18ba39427cbd01cc4bd36700d461aa892944a91e776507d81aacaaf12e"
       }
     },
     "contract.nightflight-final-reader": {
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-final-reader.md": "7bc8510d30ee0f3b81f9f65c9c8e02be4e9efcbb50e2df91d031a0e64fd12261"
+        "docs/specs/nightflight-final-reader.md": "5d7cf92a630bbd010c66e354b3aca6bd88aad9665fccde167724ce555fc98e05"
       }
     }
   },
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "547deeee7920053c123ed0970440e3fd305397de7513028e5148f32a4818166d",
+    "docs/specs/README.md": "36159094867a7a195ef9f4d9c8910623bff05b745f51ad9c81403e8ae557ddc9",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
