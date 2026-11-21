@@ -64,7 +64,13 @@ function auditIdentity(result) {
   return {threadId:result.threadId,model:result.model,...(result.inputPacketHash ? {inputPacketHash:result.inputPacketHash} : {})};
 }
 
-async function reviewPosterTransfer(call, images, {reference,transfers}) {
+function reviewPreviewEvidence(originals,previews) {
+  return originals.flatMap((frame,index)=>frame.sha256===previews[index].sha256 ? [] : [{
+    originalSha256:frame.sha256,reviewSha256:previews[index].sha256,originalBytes:frame.byteLength,reviewBytes:previews[index].byteLength,
+  }]);
+}
+
+async function reviewPosterTransfer(call, images, {reference,transfers}, makePreviews) {
   if (!hasHash(reference?.image) || !images.every(hasHash) || !nonempty(reference.threadId) || !nonempty(reference.model) ||
       !hasAxes(reference.observations) || !visualElements.every(axis=>nonempty(reference.observations[axis]))) {
     throw Error('海报借改核对需要本方向主参考原图、五项观察及其模型回执。');
@@ -77,16 +83,21 @@ async function reviewPosterTransfer(call, images, {reference,transfers}) {
 
   const comparison = object({relation:{...text,enum:relations},referenceEvidence:text,candidateEvidence:text});
   const checks = object(Object.fromEntries(visualElements.map(axis=>[axis,comparison])));
-  const output = object({items:list(object({candidate:numeric,checks}))});
+  const output = object(Object.fromEntries(candidateKeys.map(key=>[key,checks])));
+  const originals=[reference.image,...images];
+  const frames=makePreviews ? await makePreviews(originals) : originals;
+  const previewEvidence=reviewPreviewEvidence(originals,frames);
   const result = await call(
-    '图1是主参考原图，图2、3、4分别是候选1、2、3。每张候选都单独与图1对照配色、布局、景别、笔法、字体。每项填三个字段：referenceEvidence 只写图1实见的特征与位置，candidateEvidence 只写这一候选实见的特征与位置，relation 写两者的关系。三栏都要填写。每项只比较自己的特征：配色看主色、辅助色及对比；布局看标题、留白和各层主体的相对位置；景别看主体占画面的大小及环境范围；笔法看边缘、线条与材质；字体看字形和字重。字色变化在配色里判断，人物或物件替换本身不改变布局或景别。画面特征可见沿用填 same，出现清楚变化填 different，看不清或无法比对填 unknown，并在对应证据写明位置和原因。按画面独立作答。',
-    [reference.image,...images],output,{delegate:true,rules:[],assignment:'海报借改逐项核对',context:'仅依据四张实际图片。'});
+    '图1是主参考，图2、3、4依次填入固定对象 candidate_1、candidate_2、candidate_3，三个对象全部要填。每张候选都单独与图1对照配色、布局、景别、笔法、字体。每项填三个字段：referenceEvidence 只写图1实见的特征与位置，candidateEvidence 只写这一候选实见的特征与位置，relation 写两者的关系。三栏都要填写。每项只比较自己的特征：配色看主色、辅助色及对比；布局看标题、留白和各层主体的相对位置；景别看主体占画面的大小及环境范围；笔法看边缘、线条与材质；字体看字形和字重。字色变化在配色里判断，人物或物件替换本身不改变布局或景别。画面特征可见沿用填 same，出现清楚变化填 different，看不清或无法比对填 unknown，并在对应证据写明位置和原因。按画面独立作答。',
+    frames,output,{delegate:true,rules:[],assignment:'海报借改逐项核对',context:'仅依据四张实际图件，包含原图或其完整阅览版。'});
   const identity = auditIdentity(result);
-  const rows = result.parsedOutput?.items;
-  if (!Array.isArray(rows) || rows.length!==3) throw invalidOutput('海报借改核对须逐一覆盖三个候选。');
+  const rows = result.parsedOutput;
+  if (!rows || Object.keys(rows).length!==3 || !candidateKeys.every(key=>Object.hasOwn(rows,key))) {
+    throw invalidOutput('海报借改核对须逐一覆盖三个候选。');
+  }
   const items = images.map((image,index)=>{
     const candidate = index+1;
-    const values = rows.find(row=>row?.candidate===candidate)?.checks;
+    const values = rows[candidateKeys[index]];
     if (!hasAxes(values)) throw invalidOutput('海报借改核对缺少候选 '+candidate+' 对应的五项记录。');
     const checks = {};
     for (const axis of visualElements) {
@@ -107,7 +118,7 @@ async function reviewPosterTransfer(call, images, {reference,transfers}) {
       passed:visualElements.every(axis=>checks[axis].status==='matched')};
   });
   return {...identity,referenceSha256:reference.image.sha256,referenceThreadId:reference.threadId,
-    referenceModel:reference.model,observations:reference.observations,items};
+    referenceModel:reference.model,observations:reference.observations,items,...(previewEvidence.length ? {previewEvidence} : {})};
 }
 
 export async function reviewPosterDirections({call, entries}) {
@@ -255,7 +266,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
       throw invalidOutput('完整包装展示须逐项记录实际可见实物的位置。');
     return {...words,sha256:image.sha256,thread:result.threadId,...(result.model ? {model:result.model} : {})};
   });
-  const transferAudit = posterTransfer ? await reviewPosterTransfer(call,images,posterTransfer) : null;
+  const transferAudit = posterTransfer ? await reviewPosterTransfer(call,images,posterTransfer,makePreviews) : null;
   const references = [], selectionThreads = [];
   let packaging = packagingExpected ?? (posterSlogan ? false : undefined);
   const productOriginals = packaging === false ? [] : brandReferences.slice(0,3);
@@ -296,9 +307,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const supplied = packaging ? productOriginals : [];
   const packet = [...images,...references,...(board?[board]:[]),...supplied];
   const reviewFrames=makePreviews ? await makePreviews(packet) : packet;
-  const previewEvidence=packet.flatMap((frame,index)=>frame.sha256===reviewFrames[index].sha256 ? [] : [{
-    originalSha256:frame.sha256,reviewSha256:reviewFrames[index].sha256,originalBytes:frame.byteLength,reviewBytes:reviewFrames[index].byteLength,
-  }]);
+  const previewEvidence=reviewPreviewEvidence(packet,reviewFrames);
   const rules = ['输出三个固定对象 candidate_1、candidate_2、candidate_3，依次对应最前面的三张候选原图。其余附件是参照，只可在候选理由中引用。'];
   if (posterSlogan) rules.push('按海报或 KV 的传播场景查看画面与文字。');
   if (board) rules.push('候选之后为同类包装参考和一张同序等框缩图。逐对定位相似与不同，区分单图和并排可见性。比较按原件真实载体和规格成立，不要求两者相同。参考顺序为'+references.map(r=>r.name).join('、')+'。');

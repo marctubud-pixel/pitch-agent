@@ -1435,11 +1435,13 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
           const input = {...generationContext,transfer,...(revision ? {revision} : {})};
+          const attached=revision?.referenceInput==='observations'
+            ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256) : sourceImages;
           const attempt = desktop
-            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
+            ? await generateVisualWithDesktopModels({call,images:attached,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
             : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
           if(revision && seen.has(hash(attempt.result.original.bytes))) return null;
-          return saveVisual(attempt,index,transfer,sourceImages,undefined,revision);
+          return saveVisual(attempt,index,transfer,attached,undefined,revision);
         }
         const generated = await independentCalls(visualBorrowings,(borrow,index)=>drawCandidate(borrow,index));
         for(const item of generated){batch.push(item.record);images.push(item.image);}
@@ -1504,7 +1506,11 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const source=batch[index];
           const revision={sourceName:source.name,sourceSha256:source.sha256,
             reason:top.reason,edit:top.edit};
+          if (posterReference.image.sourceUrl && top.posterArtworkCheck?.issues?.some(issue=>['foreign_identity','reference_asset'].includes(issue.kind))) {
+            revision.referenceInput='observations';
+          }
           await onEvent?.('「'+direction+'」未有达标海报。保留同一主参考，只重做第 '+top.candidate+' 稿并重审。');
+          if (revision.referenceInput==='observations') await onEvent?.('原稿出现未经授权的标识或图案。本次重画使用同一主参考的实读特征。');
           const revised=await drawCandidate(source.transfer.borrow,index,revision);
           if(revised) {
             await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'-before-artwork.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});

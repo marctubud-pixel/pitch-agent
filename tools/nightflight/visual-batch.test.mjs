@@ -32,7 +32,8 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
       if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:'预约',alternative:'展览',
         slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'},
         ...(innerPackets ? {innerPackets:innerPackets[images.findIndex(frame=>frame.sha256===actual[0].sha256)]} : {})}};
-      if (task.assignment==='海报借改逐项核对') return {...identity,parsedOutput:{items:rows}};
+      if (task.assignment==='海报借改逐项核对') return {...identity,
+        parsedOutput:Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,row.checks]))};
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
       if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
       const fields = schema.properties.candidate_1.properties;
@@ -71,7 +72,21 @@ test('a centrally composed reference and two left-hand candidates yield differen
   assert.deepEqual(calls.slice(0,3).map(c=>c.actual.map(i=>i.sha256)),images.map(c=>[c.sha256]));
   const auditCall = calls.find(c=>c.task.assignment==='海报借改逐项核对');
   assert.deepEqual(auditCall.actual,[reference.image,...images]);
+  assert.deepEqual(auditCall.schema.required,['candidate_1','candidate_2','candidate_3']);
   assert.ok(!auditCall.task.context.includes(slogan));
+});
+
+test('poster transfer records the exact lighter review frames and retains the original title inputs',async()=>{
+  const makePreviews=async frames=>frames.map((frame,i)=>({...frame,
+    sha256:(i+6).toString(16).repeat(64),byteLength:frame.byteLength/2}));
+  const {batch,calls}=await review({makePreviews});
+  const originals=[reference.image,...images];
+  const frames=await makePreviews(originals);
+  assert.deepEqual(calls.find(c=>c.task.assignment==='海报借改逐项核对').actual,frames);
+  assert.deepEqual(batch.transferAudit.previewEvidence,originals.map((frame,i)=>({
+    originalSha256:frame.sha256,reviewSha256:frames[i].sha256,originalBytes:frame.byteLength,reviewBytes:frames[i].byteLength})));
+  assert.deepEqual(batch.transferAudit.items.map(row=>row.sha256),images.map(frame=>frame.sha256));
+  assert.deepEqual(calls.filter(c=>c.task.assignment==='独立读图者').map(c=>c.actual[0].sha256),images.map(frame=>frame.sha256));
 });
 
 test('unverified original features and unreadable results do not support a recommendation',async()=>{

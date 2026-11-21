@@ -534,17 +534,17 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
   assert.equal(posterIdentityExclusions('勿仿照品牌专属字体；不保留右下橙色品牌标识。'),'勿仿照品牌专属字体；不保留右下橙色品牌标识');
   assert.equal(posterIdentityExclusions('不照搬黄色月亮和蝙蝠以及橙紫万圣节配色、橙色圆环品牌标识。'),
     '不照搬黄色月亮和蝙蝠、橙色圆环品牌标识');
-  async function run(transfer,repair,revisionFix=redraw) {
+  async function run(transfer,repair,revisionFix=redraw,attachments=[image]) {
     const writerPackets=[],dispatch=[];
     const context={brief:'做便利店冷柜旁的 A3 竖版海报，品牌午晴。产品名「乳白小杯原味酸奶」。',transfer,hasBrandArtwork:false,
       mainReferenceUse:{avoid,apply:'重画为手拿一杯，背景采用大面积低干扰冷色留白。'},
       referenceTask:{focus:'保留大面积冷色留白',translation:'画手拿唯一一杯，并用冷柜光照亮杯子。'},
       ...(repair ? {revision:repair} : {})};
     const raw=structuredClone({context,observations});
-    const out=await generateVisualWithDesktopModels({images:[image],context,posterSlogan,posterReference:{image,observations},
+    const out=await generateVisualWithDesktopModels({images:attachments,context,posterSlogan,posterReference:{image,observations},
       call:async(instruction,images,schema,task)=>{
         if (!schema) {
-          assert.deepEqual(images,[image]);
+          assert.deepEqual(images,attachments);
           assert.equal(task.exactImagePrompt,true);
           dispatch.push(instruction);
           return {requestId:'image-attempt'};
@@ -597,6 +597,15 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
   const factRevision=await run({borrow:['布局','景别','笔法'],change:['配色','字体']},
     {...revision,reason:'杯口出现未确认的莓果',edit:'画不带果肉的原味酸奶杯'},'杯口不出现莓果。');
   assert.match(factRevision.prompt,/上一稿的具体修正。杯口不出现莓果/u);
+  const noOriginal={...revision,referenceInput:'observations'};
+  const official={name:'客户品牌资料.png',sha256:'a'.repeat(64)};
+  const transfer={borrow:['布局','景别','笔法'],change:['配色','字体']};
+  const described=await run(transfer,noOriginal,redraw,[official]);
+  assert.equal(described.input.mainReference.descriptionOnly,true);
+  assert.equal(described.input.mainReference.imageNumber,undefined);
+  assert.match(described.prompt,/参照信息来自同一原图观察/u);
+  assert.doesNotMatch(described.prompt,/张附件是本方向主参考/u);
+  await assert.rejects(run(transfer,noOriginal),/实际附件.*不一致/u);
 });
 
 test('brief displays the client view separately and keeps its longer source in the manuscript',async()=>{

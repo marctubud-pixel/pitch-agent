@@ -115,7 +115,8 @@ async function writePosterPrompt({call, images, context, posterReference, poster
   const paper=paperAspect(brief);
   const briefQuotes=[...brief.matchAll(/[“「"]([^”」"]+)[”」"]/gu)].map(match=>match[1]);
   const at = images.findIndex(input=>input.sha256===image.sha256);
-  if (at<0) throw Error('本张海报生图没有附上已核读的主参考原图。');
+  const descriptionOnly=revision?.referenceInput==='observations';
+  if (descriptionOnly ? at>=0 : at<0) throw Error('本张海报实际附件与核定的主参考借法不一致。');
   const schema = object({
     format:string, subject:string, background:string, lettering:list(string),
     changes:object(Object.fromEntries(transfer.change.map(element=>[element,string]))),
@@ -134,7 +135,7 @@ async function writePosterPrompt({call, images, context, posterReference, poster
       ...directionInput, ...(mainReferenceUse && {mainReferenceUse:{apply:withoutColor(mainReferenceUse.apply ?? ''),avoid:exclusions}}),
       ...(referenceTask && {referenceTask:{...referenceTask,focus:withoutColor(referenceTask.focus ?? ''),translation:withoutColor(referenceTask.translation ?? '')}}),
       ...(revision && {revision:{...revision,axes:revisionAxes}}),
-      posterSlogan,mainReference:{imageNumber:at+1,observations:usableObservations},transfer,
+      posterSlogan,mainReference:{...(descriptionOnly ? {descriptionOnly:true} : {imageNumber:at+1}),observations:usableObservations},transfer,
       ...(typeof hasBrandArtwork==='boolean' ? {hasBrandArtwork} : {}),
     },posterSlogan),
   });
@@ -167,7 +168,8 @@ async function writePosterPrompt({call, images, context, posterReference, poster
   const prompt = [
     '生成一张完整海报／KV。' + plan.format,
     paper ? '成图画布使用 '+paper.name+'，宽高比 '+paper.width+':'+paper.height+'。保留完整标题与画面。' : '',
-    '实际第 '+(at+1)+' 张附件是本方向主参考原图，只借核定的画面关系或美术特征。',
+    descriptionOnly ? '参照信息来自同一原图观察，下方保留五项借改。请从空白画布重画本案。'
+      : '实际第 '+(at+1)+' 张附件是本方向主参考原图，只借核定的画面关系或美术特征。',
     flatIllustration ? '整张海报画成二维平涂插画。商品、人物、手、道具和背景都用统一的手绘轮廓与色块，商品杯型和文字仍须清楚可辨。避免实拍皮肤、摄影反光或混入三维商品样机。' : '',
     repair,
     ...transfer.borrow.map(element=>'沿用主参考的'+element+'。'+usableObservations[element]),
