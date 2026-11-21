@@ -233,6 +233,61 @@ test('named packages retain the first read by image across follow-ups and inspec
   assert.deepEqual(next.finding.images.map(r=>r.firstRead),refs.map(r=>r.firstRead));
 });
 
+test('package read transport failure keeps verified siblings and excludes failed originals from generic review',async t=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const dir=await mkdtemp(join(tmpdir(),'packaging-transport-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const page={url:'https://socialbeta.com/campaign/10042',title:'坚果活动案例'};
+  const images=[];
+  for (let index=0;index<3;index++) {
+    const name=index+'.png',path=join(dir,name);
+    const bytes=Buffer.concat([png,Buffer.from([index])]);
+    await writeFile(path,bytes);
+    images.push({name,path,width:300,height:400,title:'样本'+index,pageUrl:page.url,sourceUrl:page.url+'/'+name,
+      imageId:'ref_'+index,sha256:createHash('sha256').update(bytes).digest('hex')});
+  }
+  const args={dir,project:{brief:'坚果礼盒包装正面'},pages:[page],acquiredByPage:new Map([[page,images]]),
+    carrier:'packaging',category:'混合坚果礼盒',broadCategory:'坚果'};
+  const transport=Object.assign(Error('The network connection was lost.'),{code:'READ_CONNECTION_LOST'});
+  const exhausted=Error('视觉理解 API 调用失败：'+transport.message,{cause:transport});
+  const quota=Error('视觉理解 API 调用失败：视觉理解接口 HTTP 429',{cause:Error('视觉理解接口 HTTP 429')});
+  const checked={question:'标签',location:'正面',marking:'混合坚果',status:'看清'};
+  async function inspect({hasVerified,events,observed=[],failure=exhausted}) {
+    return researchCompetitors({...args,onEvent:message=>events.push(message),call:async(_instruction,attachments,schema)=>{
+      const image=attachments[0];
+      if (schema.properties.front) {
+        return {parsedOutput:{brand:'',front:'包装初读',regions:['中央']}};
+      }
+      if (schema.properties.actualPackaging) {
+        if (image.imageId==='ref_2') throw failure;
+        return {parsedOutput:{actualPackaging:hasVerified && image.imageId==='ref_0',categoryMatch:'同类',
+          visibleProduct:'混合坚果礼盒',verifiedFront:'包装正面',checks:[checked]}};
+      }
+      observed.push(...attachments.map(item=>item.imageId));
+      return {parsedOutput:{samples:attachments.map(item=>({source:item.imageId,title:item.title,observation:'画面可见坚果',sameCategory:true})),
+        conclusion:'外观观察',implication:'仅作信息层级比较'}};
+    }});
+  }
+  await t.test('a completed same-category package remains available, unlike the failed and unqualified items',async()=>{
+    const observed=[],events=[];
+    const board=await inspect({hasVerified:true,observed,events});
+    assert.deepEqual(board.finding.images.map(image=>image.sha256),[images[0].sha256]);
+    assert(!observed.includes('ref_2'));
+    assert.equal(events.filter(line=>line.includes(page.url)).length,1);
+  });
+  await t.test('one broken read and two non-packages produce no evidence board',async()=>{
+    const observed=[],events=[];
+    assert.equal(await inspect({hasVerified:false,observed,events}),null);
+    assert(!observed.includes('ref_2'));
+    assert.equal(events.filter(line=>line.includes(page.url)).length,1);
+  });
+  await t.test('a quota or other untyped error still stops the operation',async()=>{
+    const events=[];
+    await assert.rejects(inspect({hasVerified:true,events,failure:quota}),err=>err===quota);
+    assert(!events.some(line=>line.includes(page.url)));
+  });
+});
+
 test('packaging evidence preserves printed specifications but does not publish conflicting crop positions or unprinted window counts',async t=>{
   const {readPackaging}=await import('./research-packaging.mjs');
   const dir=await mkdtemp(join(tmpdir(),'packaging-precision-'));
