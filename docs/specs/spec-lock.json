@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.140.0",
-  "registrySha256": "ba2e3f7191e6634b6caf752816a00d42068fc0a823d17e139bfe3e6c1e8d005f",
+  "baselineVersion": "1.141.0",
+  "registrySha256": "8406f50b4ea207002298b5a1c6817201fd5f25e88ef04bbdd392993b93356385",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.31.0",
+      "version": "1.32.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "d14ba74b57d28e3be3535395bae8b2ac7694017ad9d29140642ce5b7e2bf423c",
+        "skills/design-research-lead/SKILL.md": "ab1939ed3d676abedf35fd09902908ef900096455df2d5eee8ac3fd73c36baa7",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -203,10 +203,10 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.11.0",
+      "version": "1.12.0",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "6cd0a4a1e49797da1c825bc96d12abf7f9ebe8215312ec00b034c6abb3747575"
+        "skills/strategy-one-pager/SKILL.md": "09cafc3b83ab47de3094ce6a5b0a4792280d46cb815728935b1fa6ef4e0a3b6b"
       }
     },
     "method.visual": {
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.64.0",
+      "version": "1.65.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "1cb85a5cc3eabb49ce589acfc3953945b8c2ec3f1bcb7d66525d85c9962c4661"
+        "docs/specs/nightflight-runtime.md": "c6c3bdd1732b03ad23b2128c68846076ed6c2ffa2d4bbc2d70f93d4ed5d0e977"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "cad0b5a3868b3925a9ba0763f0a9ab07fe5309dbe82ae588581ab2e61db25378",
+    "docs/specs/README.md": "595f641565437c93b6913c954c0f15b415a67d2d5ef265a9b6c6c3985d01a755",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

@@ -1,9 +1,9 @@
 [
   {
-    "source": "同批已读调查两道题的真实回执与检索词对照",
+    "source": "同版坚果与酸奶实跑中的原引来源和原配料分类核验",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r38-20261121",
-    "sha256": "d14ba74b57d28e3be3535395bae8b2ac7694017ad9d29140642ce5b7e2bf423c"
+    "sourceVersion": "r39-20261121",
+    "sha256": "ab1939ed3d676abedf35fd09902908ef900096455df2d5eee8ac3fd73c36baa7"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
@@ -102,10 +102,10 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "夜航全链复测的委托触点和目标价约束",
+    "source": "夜航同版实际策略回执的装量与实物陈列对照",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.11.0-20261121",
-    "sha256": "6cd0a4a1e49797da1c825bc96d12abf7f9ebe8215312ec00b034c6abb3747575"
+    "sourceVersion": "v1.12.0-20261121",
+    "sha256": "09cafc3b83ab47de3094ce6a5b0a4792280d46cb815728935b1fa6ef4e0a3b6b"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",

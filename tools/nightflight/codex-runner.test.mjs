@@ -1801,3 +1801,61 @@ test('research charts are not released promotional posters even if a vision resp
   assert.equal(supportsPoster({assetType,title:'食品饮料包装十大趋势'},'研究团队总结了包装趋势。'),false);
   assert.equal(supportsPoster({assetType,title:'食饮趋势活动'},'品牌在本次包装趋势展发布系列海报。'),true);
 });
+
+test('research keeps the own mixed recipe distinct from verified external nut counts',async()=>{
+  const {hasWrongOwnNutGroup,ownRecipe,repairResearchRecipeMention}=await import('./product-recipe.mjs');
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const brief='帮我做一款独立小袋混合坚果的新品包装和电商上新 KV。每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓。面向想在办公室下午加餐的年轻上班族，电商目标价 29.9 元/盒。包装做七袋装外盒正面，KV 用在电商详情页首屏。品牌名和正式标志还没定。';
+  const anchor='产品与品牌：客户给定的 25 克×7 袋、29.9 元/盒、四种坚果与独立小袋条件，哪些卖点已有证明、哪些待验证，与竞品相比如何？';
+  const missing='未提供冻干草莓含量/比例、四种坚果配比、口味测试、保鲜或锁鲜技术证明。';
+  const outside='竞品礼盒外盒标示四种坚果。';
+  const source='每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓';
+  const chapter='产品与品牌';
+  const recipe=ownRecipe(brief);
+  assert.deepEqual(recipe.ingredients,['巴旦木','腰果','核桃','冻干草莓']);
+  assert.equal(recipe.nutCount,3);
+  assert.equal(repairResearchRecipeMention(anchor,recipe,true),anchor.replace('四种坚果','四种配料'));
+  assert.equal(repairResearchRecipeMention(missing,recipe),missing.replace('四种坚果','四种配料'));
+  assert.equal(repairResearchRecipeMention(outside,recipe,true),outside);
+  assert.equal(repairResearchRecipeMention('未取得四种坚果的相关公开数据。',recipe),'未取得四种坚果的相关公开数据。');
+  assert.equal(repairResearchRecipeMention(missing,ownRecipe('新品含坚果和时令果干。'),true),missing);
+  assert.equal(hasWrongOwnNutGroup('请确认四种坚果配比。',recipe),true);
+  assert.equal(hasWrongOwnNutGroup('本品不是四种坚果，是三种坚果加冻干草莓。',recipe),false);
+  const products={chapter,subject:'product',source:'客户原始 Brief',url:'',evidence:source,passage:brief};
+  const competitor={chapter:'竞争与同类传播',subject:'competitor',source:'对照外盒',url:'https://example.org/real',
+    evidence:outside,passage:outside};
+  const report=await writeResearchPage({project:{brief,mode:'collab'},carriers:[],anchorQuestions:[anchor],
+    findings:[products,competitor],gaps:[],call:async()=>({parsedOutput:{ready:false,rows:[
+      {chapter,conclusion:'本品以四种坚果和独立小袋做识别。',explanation:'规格仍按原简报。',evidenceIndices:[0,1]},
+      {chapter:competitor.chapter,conclusion:outside,explanation:'该品牌外盒所写。',evidenceIndices:[1]},
+    ],gaps:[
+      {chapter,scope:'other',message:missing,blocksStrategy:false},
+      {chapter:competitor.chapter,scope:'other',message:outside,blocksStrategy:false},
+    ]}})});
+  assert.ok(report.sections.some(r=>r.conclusion==='本品以四种配料和独立小袋做识别。'));
+  assert.ok(report.sections.some(r=>r.conclusion===outside));
+  assert.ok(report.gaps.some(g=>g.message===missing.replace('四种坚果','四种配料')));
+  assert.ok(report.gaps.some(g=>g.message===outside));
+  assert.equal(report.findings[0].evidence,source);
+  assert.equal(report.findings[1].evidence,outside);
+});
+
+test('owned product research binds a misattributed contiguous quote to the original Brief only',async()=>{
+  const {locateOwnBriefEvidence}=await import('./codex-runner.mjs');
+  for (const [name,brief,quote] of [
+    ['brief-15c567a6.md','每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓。','每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓'],
+    ['brief-acbaff04.md','海报要露出杯装产品，正式标志尚未定。','海报要露出杯装产品，正式标志尚未定'],
+  ]) {
+    const project={brief,artifacts:[{name,stage:'brief',kind:'text'}],attachments:[{name:'其他上传材料.md'}]};
+    const finding={subject:'product',url:'',source:name,evidence:quote};
+    const match=locateOwnBriefEvidence(project,finding);
+    assert.equal(match.original.source,'客户原始 Brief');
+    assert.equal(match.original.url,undefined);
+    assert.equal(match.match.evidence,quote);
+    assert.deepEqual(locateOwnBriefEvidence(project,{...finding,source:'客户原始 Brief'}),match);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,source:'其他上传材料.md'}),null);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,subject:'competitor'}),null);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,url:'https://example.org/product'}),null);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,evidence:quote+'且已有批准'}),null);
+  }
+});

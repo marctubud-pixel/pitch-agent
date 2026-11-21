@@ -4,6 +4,7 @@ import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
 import {broadVisualQueries,campaignPages,visualLookupCategory,minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,reusableResearchFindings,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportAliasSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
+import {ownRecipe,repairResearchRecipeMention} from './product-recipe.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {readManuscriptPlan} from './manuscript.mjs';
 import {reviewFinalDeck} from './final-review.mjs';
@@ -420,6 +421,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
 
   const scope = project.proposalKind || taskKind(project.brief || '',false);
+  const recipe = ownRecipe(project.brief ?? '');
   const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：同品类代表品牌或实际活动及其作品；有条件再对照渠道规格；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
     'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。visualCategory 写公众检索同品类作品时用的短品类名，例如混合坚果用坚果；保留能识别品类的词。packagingTerm 只填包装载体通称。正面、首屏、克重、价格、场所只用于后面的细分比较。目录用短品类、图片用实际商品。catalogTerms 给品牌站内导航用的品类中英文词、短称和适用产品子类，不含渠道、规格价格。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面，线上线下同类品牌海报均可供比较，单独标明可核实的实际渠道。品牌＋品类／载体的公开检索由工作台依次执行，queries 勿重复堆入交付位置、案例、原图。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
@@ -433,6 +435,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       objectSchema({anchorQuestions:stringList}), {editorial:true,context:JSON.stringify({brief:project.brief,anchorQuestions})}).catch(()=>{signal?.throwIfAborted();return null;});
     anchorQuestions = strings([...strings(repair?.parsedOutput?.anchorQuestions),...anchorQuestions]).slice(0,4);
   }
+  if (anchorQuestions[3]) anchorQuestions[3]=repairResearchRecipeMention(anchorQuestions[3],recipe,true);
   const scopedCarriers = (project.briefScope?.types ?? []).filter(t=>['packaging','kv'].includes(t));
   const carrier = (scopedCarriers.length===2 ? 'packaging+kv' : scopedCarriers[0]) || project.proposalKind || (plan.parsedOutput.carrier==='packaging+kv' ? 'packaging+kv' : scope || plan.parsedOutput.carrier);
   const carriers = carrier==='packaging+kv' ? ['packaging','kv'] : ['packaging','kv'].includes(carrier) ? [carrier] : [];
@@ -617,7 +620,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const material = originals.map(({ url, source, text }) => ({ url, source, text: examined.has(url) ? reportExcerpts(text,terms) : text.slice(0,7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
-    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。relevance 按该条证据是否回答该板块的研究问题选择 direct（本案细分）、category（同类或上位品类，实际指标能回答）、background（只沾边或指标答非所问）。平台热度证据的 socialMetric 填 platform、period、topic、measure，四项分别摘自同一原文，measure 包含原值与口径；公开关键词榜未提供数值时保留原榜名；其他证据这四项留空。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
+    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。relevance 按该条证据是否回答该板块的研究问题选择 direct（本案细分）、category（同类或上位品类，实际指标能回答）、background（只沾边或指标答非所问）。平台热度证据的 socialMetric 填 platform、period、topic、measure，四项分别摘自同一原文，measure 包含原值与口径；公开关键词榜未提供数值时保留原榜名；其他证据这四项留空。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件。引用任务卡时，source 必须逐字等于文件名；引用客户提交的原话时，source 写「客户原始 Brief」。evidence 使用相应材料原文的连续短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
       '行业证据在上位品类实际覆盖本品时，可以按原统计品类和年份写有具体数据的 category 发现，准确区分已发生和预测。相邻品类或只泛称增长、没有可定位时间口径的资料仅作 background。缺本品细分数据单列，不覆盖已有上位市场结论。行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
     inputs.images,
     reportSchema,
@@ -631,7 +634,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   for (const item of consumerReports.findings) {
     if (!findings.some(f=>f.subject===item.subject && f.url===item.url && f.evidence===item.evidence)) findings.push(item);
   }
-  const gaps = strings(draft.parsedOutput.gaps).map(message=>researchGap('decision',message));
+  const gaps = strings(draft.parsedOutput.gaps).map(message=>researchGap('decision',repairResearchRecipeMention(message,recipe)));
   const seen = new Set(findings.map(f=>JSON.stringify([f.url || f.source,f.conclusion])));
   for (const f of offered.slice(0,24)) {
     signal?.throwIfAborted();
@@ -644,6 +647,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     else if (project.attachments?.some(a=>a.name===f.source) || project.artifacts?.some(a=>a.stage==='brief' && a.kind==='text' && a.name===f.source))
       original=inputs.texts.find(t=>t.name===f.source && t.text);
     let match=original && locateQuote(original.text,f.evidence);
+    const briefEvidence=!match && locateOwnBriefEvidence(project,f);
+    if (briefEvidence) {
+      original=briefEvidence.original;
+      match=briefEvidence.match;
+    }
     if (!match && (original || f.url && originals.length)) {
       // A blocked origin can be replaced only by a different, actually captured primary source.
       const alternatives = original ? [original] : originals.slice(0,4);
@@ -668,7 +676,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     if (Object.values(f.socialMetric ?? {}).some(Boolean) &&
       (f.subject!=='audience' || !original.url || !supportedSocialMetric(f.socialMetric,original.text,match.passage))) continue;
     if (f.subject==='audience' && findings.some(old=>old.subject==='audience' && old.evidence===match.evidence)) continue;
+    const source=briefEvidence ? original.source : original.url && original.url!==f.url ? original.source : f.source;
+    const verifiedKey=JSON.stringify([original.url || source,f.conclusion]);
+    if (seen.has(verifiedKey)) continue;
     seen.add(key);
+    seen.add(verifiedKey);
     if (carriers.includes('kv') && f.describesPosterAppearance) continue;
     if (carriers.includes('kv') && f.subject==='competitor' && /(?:海报|画面|主视觉|构图|底色|配色|版式|字形|色块)/u.test(f.conclusion) && /构图|底色|配色|排版|版式|色块|视觉层级|画面.{0,10}(?:以|采用|呈现)|字形|留白/u.test(f.conclusion)) continue;
     if (carriers.includes('packaging') && (f.describesPackagingAppearance || f.chapter==='竞争与同类传播' &&
@@ -676,7 +688,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       gaps.push(packagingTextGap({...f,evidence:match.evidence}));
       continue;
     }
-    findings.push({...f,source:original.url && original.url!==f.url ? original.source : f.source,url:original.url || '',...match});
+    findings.push({...f,source,url:original.url || '',...match});
 
   }
   const pages = [
@@ -811,8 +823,20 @@ export function formatResearchHandoff(research, trace) {
     .join('\n\n');
 }
 
+export function locateOwnBriefEvidence(project,finding) {
+  if (finding.subject!=='product' || finding.url!=='') return null;
+  const source='客户原始 Brief';
+  const namesThisCard=project.artifacts?.some(item=>
+    item.stage==='brief' && item.kind==='text' && item.name===finding.source);
+  if (finding.source!==source && !namesThisCard) return null;
+  const text=project.brief ?? '';
+  const match=locateQuote(text,finding.evidence);
+  return match ? {original:{source,text},match} : null;
+}
+
 export async function writeResearchPage({call,project,findings,gaps,carriers,anchorQuestions,onEvent,signal}) {
   const mode=project.mode;
+  const recipe=ownRecipe(project.brief ?? '');
   const activity=project.briefScope?.types?.includes('activity');
   const canAsk=mode==='collab' && !project.researchQuestionAnswered;
   // The director writes once from located quotations and observed images, including earlier rounds.
@@ -866,11 +890,17 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
     research.sections=researchChapters.flatMap(chapter=>chapter===researchChapters[2] ? audience : research.sections.filter(r=>r.chapter===chapter));
     research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal);
     research.sections=prioritizePackagingRows(research.sections,output.packagingHighlights,marks,project.brief);
+    for (const row of research.sections) {
+      if (row.chapter!=='产品与品牌' || !row.evidenceIndices.some(i=>findings[i]?.subject==='product')) continue;
+      row.conclusion=repairResearchRecipeMention(row.conclusion,recipe);
+      row.explanation=repairResearchRecipeMention(row.explanation,recipe);
+    }
     const remainingGaps=output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter) &&
       !verifiedCarriers.includes(g.scope) && !(activity && g.scope==='participationMotive'));
     const blocking=remainingGaps.filter(g=>g.blocksStrategy && g.scope!=='optionalSegment');
     const resolvedBlocker=output.gaps.some(g=>g.blocksStrategy && (verifiedCarriers.includes(g.scope) || g.scope==='optionalSegment' || (activity && g.scope==='participationMotive')));
-    research.gaps = remainingGaps.map(g=>researchGap('decision',g.message,g.chapter));
+    research.gaps = remainingGaps.map(g=>researchGap('decision',
+      g.chapter==='产品与品牌' ? repairResearchRecipeMention(g.message,recipe,true) : g.message,g.chapter));
     research.ready = output.ready===true && !(mode==='auto' && blocking.length) && research.sections.some(row=>row.evidenceIndices.some(i=>{
       const f=findings[i];
       return !f.visualOnly && (f.url || project.attachments?.some(a=>a.name===f.source));

@@ -1,3 +1,4 @@
+import {fullPackageArrangement,specifiedPackageArrangement} from './packaging-quantity.mjs';
 import {taskKind} from './proposal-outline.mjs';
 
 const string = {type:'string'};
@@ -17,6 +18,7 @@ const schema = object({outcome:object({
     metrics:list(object({name:string,method:string}),exactlyThree),
     constraints:string,opportunity:basis,decision:basis,priority:basis,intersection:string,
   })});
+const packageArtworkRule='包装装量和画面摆放分开核对。盒内的总件数可按原 Brief 写成规格或正面标注。客户明确要求展示实物全数时，才把实际摆足件数写成这一轮画面动作或触点要求；仅给整盒装量时可用规格字样和单件取用场景表达分装。';
 const priceArtworkRule='价格与上画边界：先核对原始 Brief，金额已给与委托上画是两件事。仅有目标价、拟售价或待确认金额时，保留在项目约束和客户待确认事项中。不要把它写成已选画面价签、观众触点任务、读价指标或既定版面优先级。客户原文明确要求在某载体展示价格时，在指定载体保留原金额与原口径，例如“电商目标价”紧贴其金额；明确要求展示正式售价时，按原确认口径。保留简报已明确委托的载体、规格、配料与其他产品事实。';
 
 export function strategyCarrier(project, inputs) {
@@ -182,15 +184,25 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
   const context=JSON.stringify({carrier,requiredFaces,brief:project.brief,materials:inputs.texts,findings:rows,
     handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
-  const checkPrice=pendingPriceCheck([project.brief,...(project.feedback ?? []).map(item=>item.text)].filter(Boolean).join('\n'),carrier);
+  const inputsFromClient=[project.brief,...(project.feedback ?? []).map(item=>item.text)].filter(Boolean).join('\n');
+  const checkPrice=pendingPriceCheck(inputsFromClient,carrier);
+  const packaging=['packaging','packaging+kv'].includes(carrier);
+  const allowedUnits=packaging ? specifiedPackageArrangement(inputsFromClient) : 0;
   const render = draft => {
     const result=renderStrategy(draft,findings,eligible,carrier,requiredFaces);
     checkPrice?.(draft);
+    if(packaging && [draft.coreStrategy,draft.proposition,...draft.actions,...draft.touchpoints.map(t=>t.action)]
+      .some(line=>{
+        const visible=fullPackageArrangement(line,inputsFromClient);
+        return visible && visible!==allowedUnits;
+      })) {
+      throw Error('整盒装量可以写成规格。原 Brief 未确认要排列这些实物件数，请改为用装量标注或单件取用表达分装。');
+    }
     return result;
   };
   let out;
   for (let attempt=0;attempt<2;attempt++) {
-    const response=await call(instruction+'\n'+priceArtworkRule+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
+    const response=await call(instruction+'\n'+priceArtworkRule+(packaging?'\n'+packageArtworkRule:'')+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
     try {
       out=response.parsedOutput?.outcome ?? {};
       render(out);

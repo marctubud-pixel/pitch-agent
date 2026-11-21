@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.140.0",
+  "baselineVersion": "1.141.0",
   "date": "2026-11-20",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -389,10 +389,10 @@
     {
       "id": "method.research",
       "kind": "method",
-      "title": "调研负责人 Skill r38",
+      "title": "调研负责人 Skill r39",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.31.0",
-      "sourceVersion": "r38-20261121",
+      "version": "1.32.0",
+      "sourceVersion": "r39-20261121",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -401,8 +401,8 @@
       "kind": "method",
       "title": "包装与 KV 一页策略",
       "path": "skills/strategy-one-pager/SKILL.md",
-      "version": "1.11.0",
-      "sourceVersion": "v1.11.0-20261121",
+      "version": "1.12.0",
+      "sourceVersion": "v1.12.0-20261121",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -885,7 +885,7 @@
       "title": "夜航运行合同",
       "kind": "contract",
       "path": "docs/specs/nightflight-runtime.md",
-      "version": "1.64.0",
+      "version": "1.65.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",

@@ -4,7 +4,8 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { collectManuscriptMaterials, createManuscriptRunner, formatManuscriptInput } from './manuscript.mjs';
+import { jsonModelRequest } from './desktop-text.mjs';
+import { collectManuscriptMaterials, createManuscriptRunner, formatManuscriptInput, writeManuscript } from './manuscript.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const strategy = '# 策略一页纸\n\n## 核心策略\n\n先识别活动，再读预约。\n\n## 触点\n公众号横版封面。';
@@ -151,4 +152,123 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
     assert(prompt.includes(skill.trim()),'实际提示词包含完整 '+path);
   }
   assert.match(prompt,/左标题，右展柜/u);
+});
+
+test('包装逐页稿按采用图首读核实共同印字和实物陈列',async t=>{
+  const {root}=await fixture(t);
+  const brief='做七袋装外盒正面和电商首屏KV。每袋25克，盒内7袋，包含巴旦木、腰果、核桃和冻干草莓。';
+  const recipe='巴旦木、腰果、核桃、冻干草莓';
+  const approved='正面最先看到的是七袋独立分装，办公室下午加餐随手一袋。';
+  const outline=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',sourceIndices:[],internalNote:'',...fields});
+  const directions=[
+    {id:'A2',name:'拆一袋的下午',slogan:'下午拆一袋，盒子合上'},
+    {id:'B1',name:'一点草莓红',slogan:'下午这袋坚果，有一点草莓红'},
+    {id:'C1',name:'七个下午',slogan:'抽屉里，备着七个下午'},
+  ];
+  const materials={
+    project:{title:'七袋混合坚果',carriers:['packaging','kv']},brief:{original:brief},
+    research:{findings:[]},strategy:[{body:'## 核心策略\n\n'+approved}],adoption:{},
+    copy:{directions:directions.map(({name,slogan})=>({name,main:slogan,displayed:true}))},
+    figures:directions.map(({id,name,slogan},i)=>({
+      id,direction:name,name:id+'.png',sha256:hash(id),reading:{completionId:id+'-first'},
+      observation:{composition:'桌面外盒旁有一只独立小袋。',
+        legibleText:[slogan,'混合坚果','25克×7袋',...(i<2?[recipe]:[])],
+        visibleDetails:['小包装袋印有'+recipe+'的图案。'],uncertain:[]},
+    })),
+  };
+  const observedExecution='三张采用图以盒身25克×7袋说明分装规格，画面展示单袋。';
+  const correctCompare='三案都保留25克×7袋；A2和B1写配料字样，C1用配料图示。';
+  const falseCompare='三案都保留25克×7袋与配料字样；区别在动作、颜色、收纳三个切入。';
+  const falseExecution='正面拟在中央摆放七袋小袋实物，露出坚果与冻干草莓。';
+  const falseDecision='请确认冻干草莓含量、四种坚果配比与口味测试是否补充，供包装和详情页文案使用。';
+  const draft={
+    cover:{title:'七袋混合坚果',subtitle:'外盒与首屏提案',imageNote:''},
+    chapters:[
+      {title:'需求与策略',pages:[outline('brief','七袋独立分装'),outline('strategy','模型写出的替代核心句'),
+        outline('execution','包装正面与首屏',{points:[observedExecution]})]},
+      {title:'三案呈现',pages:directions.flatMap(({id,name})=>[
+        outline('direction',name,{figureId:id}),outline('work',name,{figureId:id,imageNote:'原图整版展示'})])},
+      {title:'对比与决定',pages:[outline('compare','三案对比',{points:[correctCompare],imageNote:'三案并列'}),
+        outline('decision','请确认配方',{points:['请确认配料配比。']})]},
+    ],
+    closing:'谢谢观看',
+  };
+  const setPoint=(spec,role,point)=>{spec.chapters.flatMap(chapter=>chapter.pages).find(page=>page.role===role).points=[point];};
+  const profile={base:'https://example.com',model:'deepseek-test'};
+  let index=0;
+  async function replay(input,first,correction=first) {
+    const sent=[];
+    const provider={profile,async execute({prompt,images,outputSchema}){
+      assert.deepEqual(images,[]);
+      sent.push(prompt);
+      return {parsedOutput:sent.length===1?first:correction,model:profile.model,threadId:'fixture-'+sent.length,
+        inputPacketHash:hash(JSON.stringify(jsonModelRequest(profile,prompt,outputSchema)))};
+    }};
+    const result=await writeManuscript(provider,{materials:input,checkpointDir:join(root,'replay-'+index++)});
+    return {result,sent};
+  }
+
+  await t.test('退回原来的三个错误，保持首读原件和锁定策略',async()=>{
+    const wrong=structuredClone(draft);
+    setPoint(wrong,'execution',falseExecution);
+    setPoint(wrong,'compare',falseCompare);
+    setPoint(wrong,'decision',falseDecision);
+    const {result,sent}=await replay(materials,wrong,draft);
+    assert.equal(sent.length,2);
+    assert(sent[1].startsWith(sent[0]));
+    const correction=sent[1].slice(sent[0].length);
+    assert.match(correction,/C1 的首次读图原字/u);
+    assert.match(correction,/实物时，全数陈列/u);
+    assert.match(correction,/不要把水果算入坚果种数/u);
+    assert.equal(result.plan.pages.find(page=>page.role==='strategy').title,approved);
+    assert.deepEqual(result.plan.figures,materials.figures);
+    assert.match(result.draft,/C1用配料图示/u);
+    assert.doesNotMatch(result.draft,/四种坚果配比|摆放七袋小袋实物/u);
+  });
+
+  await t.test('后续可试的陈列和已确认的装量可以写',async()=>{
+    const proposed=structuredClone(draft);
+    setPoint(proposed,'execution','盒内7袋是规格。后续可另试在中央摆放七袋小袋实物。');
+    const {sent}=await replay(materials,proposed);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('原简报明确要求陈列全部时保留已委托的动作',async()=>{
+    const explicit=structuredClone(materials);
+    explicit.brief.original+='客户要求七袋全部可见、可数。';
+    const confirmed=structuredClone(draft);
+    setPoint(confirmed,'execution',falseExecution);
+    const {sent}=await replay(explicit,confirmed);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('采用图首读确实核到同数实物时可以描述实际陈列',async()=>{
+    const allVisible=structuredClone(materials);
+    for (const figure of allVisible.figures) figure.observation.visibleDetails.push('前景摆放七袋小袋实物。');
+    const seen=structuredClone(draft);
+    setPoint(seen,'execution','采用图在前景摆放七袋小袋实物。');
+    const {sent}=await replay(allVisible,seen);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('确实在三张图读到了配料的原字才能写共有印字',async()=>{
+    const allLabeled=structuredClone(materials);
+    allLabeled.figures[2].observation.legibleText.push(recipe);
+    const described=structuredClone(draft);
+    setPoint(described,'compare',falseCompare);
+    const {sent}=await replay(allLabeled,described);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('分行的主标和看不清的配料不能当配料印字',async()=>{
+    const noLabels=structuredClone(materials);
+    noLabels.copy.directions[2].main=recipe;
+    noLabels.figures[2].observation.legibleText=['巴旦木、腰果','核桃、冻干草莓','混合坚果','25克×7袋'];
+    noLabels.figures[2].observation.uncertain=['疑似配料：'+recipe];
+    const wrong=structuredClone(draft);
+    setPoint(wrong,'compare',falseCompare);
+    const {sent}=await replay(noLabels,wrong,draft);
+    assert.equal(sent.length,2);
+    assert.match(sent[1].slice(sent[0].length),/C1 的首次读图原字/u);
+  });
 });

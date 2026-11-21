@@ -1,4 +1,5 @@
 import {invalidOutput} from './call-checkpoints.mjs';
+import {hasWrongOwnNutGroup,ownRecipe,recipeCount} from './product-recipe.mjs';
 import {blindSlogans,buildSloganWorkbook,checkSloganChoices,fullSloganHash} from './slogan-workbook.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
@@ -185,32 +186,20 @@ function validateEngineDraft(draft, materials) {
 }
 
 function validatePackagedCopyFacts(directions, source) {
-  const brief=source.normalize('NFKC').replace(/\s/gu,'');
-  const description=brief.match(/(?:配料[：:]|配料为|包含|内含|含有)([^。；;！？!?]{2,90})/u)?.[1] ?? '';
-  const recipe=description.split(/[，,](?=(?:面向|适合|用于|主要|每袋|每盒|售价|价格|包装|电商|品牌))/u)[0];
-  const ingredients=[...new Set(recipe.split(/[、，,和及与]/u).filter(Boolean))];
-  const nuts=/^(?:巴旦木|杏仁|扁桃仁|腰果|核桃(?:仁)?|榛子|开心果|碧根果|夏威夷果|松子|花生|板栗|栗子)$/u;
-  const fruits=/^(?:冻干)?(?:草莓|蓝莓|蔓越莓|苹果|芒果|香蕉|葡萄|桑葚|桃|菠萝)(?:干|片|粒)?$/u;
-  const fruitIngredients=ingredients.filter(item=>fruits.test(item));
-  const nutCount=ingredients.filter(item=>nuts.test(item)).length;
-  const mixed=nutCount>0 && fruitIngredients.length>0 && nutCount+fruitIngredients.length===ingredients.length;
-  const types=/(\d+|[一二两三四五六七八九十])(?:种|类|款|样)坚果/gu;
-  const count=value=>Number(value) || (value==='两'?2:'一二三四五六七八九十'.indexOf(value)+1);
-  const groupCounts=text=>[...text.matchAll(types)].filter(match=>
-    !/(?:并非|不是|并不是|不写成|不得写成|避免说成)$/u.test(text.slice(Math.max(0,match.index-6),match.index))).map(match=>count(match[1]));
-  const namedCounts=groupCounts(brief);
+  const recipe=ownRecipe(source);
+  const {brief,fruitIngredients}=recipe;
   const oneHand=/(?:单手|一只手|一手)(?:就能|也能|即可|能|可|轻松|轻轻|直接)?(?:撕开|打开|拆开|开启|开袋)|(?:撕开|打开|拆开|开启|开袋).{0,5}(?:只需|只要|仅需)(?:单手|一只手|一手)/u;
   const canUseOneHand=brief.split(/[。；;，,！!？?]/u).some(clause=>oneHand.test(clause) && !/不能|不可|未确认|未经验证|未知|无法/u.test(clause));
   const quantityPattern=fruitIngredients.length ? new RegExp('(?:每袋(?:仅有|只有|有|含有?|装有?)?|加(?:了)?|含有?|内有)(?<count>[一二两三四五六七八九十]|\\d+)(?<unit>颗|粒|片|块)(?<item>'+fruitIngredients.map(RegExp.escape).join('|')+')','gu') : null;
-  const knownQuantity=quantityPattern ? [...brief.matchAll(quantityPattern)].map(({groups})=>[count(groups.count),groups.unit,groups.item].join('|')) : [];
+  const knownQuantity=quantityPattern ? [...brief.matchAll(quantityPattern)].map(({groups})=>[recipeCount(groups.count),groups.unit,groups.item].join('|')) : [];
   const findings=[];
   for (const direction of directions) {
     const lines=[direction.name,direction.claim,direction.mechanism,direction.strategyLink,direction.secondary,...direction.candidates.map(candidate=>candidate.text)];
     for (const line of new Set(lines)) {
       const compact=line.normalize('NFKC').replace(/\s/gu,'');
-      const wrongGroup=mixed && groupCounts(compact).some(value=>value!==nutCount && !namedCounts.includes(value));
+      const wrongGroup=hasWrongOwnNutGroup(line,recipe);
       const inventedAmount=quantityPattern && [...compact.matchAll(quantityPattern)].some(({groups})=>
-        !knownQuantity.includes([count(groups.count),groups.unit,groups.item].join('|')));
+        !knownQuantity.includes([recipeCount(groups.count),groups.unit,groups.item].join('|')));
       const promisedOpening=!canUseOneHand && oneHand.test(compact) && !/没有证实|未确认|未承诺|未验证|无法|不能/u.test(compact);
       if (wrongGroup || inventedAmount || promisedOpening) findings.push(direction.id+'案「'+line.slice(0,58)+'」');
     }
