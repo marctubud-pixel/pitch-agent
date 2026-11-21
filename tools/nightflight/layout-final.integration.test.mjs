@@ -81,7 +81,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   t.after(()=>rm(root,{recursive:true,force:true}));
   const id='layout-case-b', storage=join(root,id,'files');
   await mkdir(storage,{recursive:true});
-  const brief='为馆内亲子活动做一张公众号封面，须预约。联名七袋装外盒的电商目标价为29.9元/盒。';
+  const brief='为馆内亲子活动做一张公众号封面，须预约。联名七袋装外盒的电商目标价为29.9元/盒。品牌名和正式标志还没定。';
   const strategy='先看出馆内活动，再读预约。';
   const copy='本版文案稿';
   const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4uoAAAAASUVORK5CYII=','base64');
@@ -111,7 +111,10 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const pricePending='29.9元/盒为电商目标价；同规格竞品价与四种内容物营养声称待核实后再定价值表达。';
   const wrongPriceUnit=pricePending.replace('元/盒','元/袋');
   const absentPending='实物包装背标照片未提供：请补照片，确认背标排版。';
-  const joinedDecision='品牌名与正式标志提供后，确认公众号封面的可替换标志区；确认封面图片比例与文字安全区。';
+  const joinedDecision='品牌名与正式标志提供后，请确认公众号封面的可替换标志区；确认封面图片比例与文字安全区。';
+  const printed='海报上方呈现活动名。';
+  const allegedMissingGlyph='海报上方呈活动名。';
+  const croppedTranscription='海报下方呈现活动名。';
   const decisionLines=[joinedDecision,sizePending,pricePending,wrongPriceUnit];
   const wrappedDecisions={
     '缺少七袋装外盒正面实物尺寸及结构信息':sizePending,
@@ -120,8 +123,8 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
     '目标价写成按袋计价':wrongPriceUnit,
   };
   const draft={cover:{title:'馆内活动',subtitle:'公众号封面提案',imageNote:''},chapters:[
-    {title:'活动需求',pages:[page('brief','家长先看清参加条件',{points:['报名方式待定。','馆内讲解面向亲子。']}),
-      page('peers','同类把活动名放上方',{points:['海报上方呈现活动名。'],sourceIndices:[0]})]},
+    {title:'活动需求',pages:[page('brief','家长先看清参加条件',{points:['报名方式待定。','馆内讲解面向亲子。','品牌名与正式标志待定。']}),
+      page('peers','同类把活动名放上方',{points:[printed],sourceIndices:[0]})]},
     {title:'核心策略',pages:[page('strategy',strategy)]},
     {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['突出馆内场景。']}),
       page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),
@@ -142,7 +145,23 @@ else {
  const last=body.messages.at(-1).content;
  const prompt=Array.isArray(last)?last[0].text:last;
  let reply;
- if(prompt.includes('核对剩余必改项。')) {
+ if(prompt.includes('只转录裁片内实际可读的全部文字')) {
+   const ctx=JSON.parse(prompt.split('实际项目输入（JSON）\\n\\n')[1]);
+   const [crop]=last.filter(part=>part.type==='image_url');
+   if(mode!=='--vision-model' || last.length!==2 || !crop?.image_url.url.startsWith('data:image/png;base64,') ||
+      Object.keys(ctx).sort().join()!==['裁片位置','原始页图指纹','页码'].sort().join() || ctx['页码']!==4 ||
+      !/^[a-f0-9]{64}$/.test(ctx['原始页图指纹']) || ctx['裁片位置'].length!==4 || !ctx['裁片位置'].every(Number.isFinite))
+     throw Error('应只收到同版第4页的PNG裁片和定位');
+   if(JSON.stringify(body.messages).includes(${JSON.stringify(printed)}) ||
+      JSON.stringify(body.messages).includes(${JSON.stringify(allegedMissingGlyph)}) || prompt.includes('待核所见'))
+     throw Error('裁片盲读泄露了原文或旧审查');
+   const bytes=Buffer.from(crop.image_url.url.split(',')[1],'base64');
+   if(bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a' || bytes.readUInt32BE(16)<=1 || bytes.readUInt32BE(20)<=1)
+     throw Error('不是从实页取得的局部图');
+   const negative=existsSync(${JSON.stringify(protectedCase)});
+   appendFileSync(${JSON.stringify(log)},JSON.stringify({role:'裁片盲读',pages:[4],unreadable:negative})+'\\n');
+   reply=negative?{legibility:'unreadable',transcript:'海报上方'}:{legibility:'readable',transcript:${JSON.stringify(croppedTranscription)}};
+ } else if(prompt.includes('核对剩余必改项。')) {
    if(!Array.isArray(last) || !last.some(item=>item.image_url)) throw Error('缺少必改项实页');
    const ctx=JSON.parse(prompt.split('实际项目输入（JSON）\\n\\n')[1]);
    reply={items:Object.fromEntries(Object.entries(ctx['待核所见']).map(([id,issue])=>{
@@ -151,6 +170,12 @@ else {
        return [id,{kind:'pending_confirmation',actual:'馆内',required:'馆内亲子活动',source:'B1',location,reason}];
      if(issue.problem==='策略页需重列参加条件')
        return [id,{kind:'confirmed_requirement_missing',actual:'',required:'策略页需重列参加条件',source:'S1',location,reason}];
+     if(['封面缺少品牌标识占位','决策页缺少品牌标识占位'].includes(issue.problem))
+       return [id,{kind:'confirmed_requirement_missing',actual:'页上未见品牌标识占位图形',
+         required:'品牌名和正式标志还没定，当前页应加品牌占位图形',source:'B1',location,reason}];
+     if(issue.problem==='同类参考点列少字')
+       return [id,{kind:'fact_conflict',actual:'文本显示“'+${JSON.stringify(allegedMissingGlyph)}+'”',
+         required:${JSON.stringify(printed)},source:'',location,reason}];
      if(issue.problem==='待确认的两项需提案人拍板')
        return [id,{kind:'confirmed_requirement_missing',actual:'第8页两项仍需客户决定，不宜代客户拍板。',
          required:${JSON.stringify(joinedDecision)},source:'B1,S1',location,reason}];
@@ -173,6 +198,12 @@ else {
    const issue={level:'P0',impact:'proposal',problem:'把预约写成待定',evidence:'原 Brief 写须预约',change:'明确预约。',
      operation:'text',target:'layout',quote:'须预约',from:'报名方式待定。',to:'客户已确认须预约。'};
    const issues=[];
+   if (role==='逻辑岗' && pages.some(p=>p['页码']===1))
+     issues.push({...issue,page:1,operation:'note',target:'layout',from:'',to:'',quote:'',
+       problem:'封面缺少品牌标识占位',evidence:'品牌名待确认，封面没有画占位',change:'建议封面加品牌图形'});
+   if (role==='措辞岗' && pages.some(p=>p['页码']===4))
+     issues.push({...issue,page:4,operation:'note',target:'layout',from:'',to:'',quote:'',
+       problem:'同类参考点列少字',evidence:${JSON.stringify(allegedMissingGlyph)},change:'补字'});
    if (role==='逻辑岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。')))) issues.push({...issue,page:3});
    if (role==='措辞岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。'))))
      issues.push({...issue,page:3,target:'copy',from:'报名方式待定',to:'须预约'});
@@ -183,6 +214,8 @@ else {
      issues.push({...issue,page:5,operation:'hold',target:'strategy',from:'',to:'',quote:'',
        problem:'策略页需重列参加条件',evidence:'策略页只呈现已定策略句',change:'加一遍参加条件'});
    if (role==='逻辑岗' && pages.some(p=>p['页码']===8)) {
+     issues.push({...issue,page:8,operation:'note',target:'layout',from:'',to:'',quote:'',
+       problem:'决策页缺少品牌标识占位',evidence:'决策页只有品牌名文字，没有单独图形',change:'建议加品牌图形'});
      issues.push({...issue,page:8,impact:'production',operation:'hold',target:'brief',from:'',to:'',quote:'',
        problem:'上线发布前须拿到正式报名链接',evidence:'本轮只交公众号封面提案',change:'记录为后续发布待确认'});
      issues.push({...issue,page:8,operation:'hold',target:'brief',from:'',to:'',quote:'',
@@ -289,9 +322,15 @@ else {
     assert.deepEqual(reads.filter(item=>item.role===role).slice(0,3).flatMap(item=>item.pages),[1,2,3,4,5,6,7,8,9]);
   }
   assert(reads.some(item=>item.role==='全览'));
+  assert(reads.some(item=>item.role==='裁片盲读' && !item.unreadable));
   assert(reads.some(item=>item.pages.includes(3) && item.actual.some(text=>text.includes('客户已确认须预约。'))));
   assert(state.artifacts.some(item=>item.kind==='image' && item.name===state.finalReview.contact));
   const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
+  assert.match(report,/第 1 页 · P1 · 封面缺少品牌标识占位/u);
+  assert.match(report,/第 4 页 · P1 · 同类参考点列少字/u);
+  assert.match(report,/第 8 页 · P1 · 决策页缺少品牌标识占位/u);
+  assert.match(report,/品牌待确定已列在对应职责页/u);
+  assert.match(report,/实页放大读到「呈现活动名。」，所报漏字在同版原生正文与实图均可核对/u);
   assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
   assert.match(report,/第 8 页 · P1 · 待确认的两项需提案人拍板/u);
   assert.match(report,/第 8 页 · P1 · 缺少七袋装外盒正面实物尺寸及结构信息/u);
@@ -314,8 +353,11 @@ else {
   assert.equal(state.finalReview.outcome,'blocked');
   assert.equal(state.finalReview.returnStage,'strategy');
   assert.equal(state.finalReview.rounds,2);
+  assert.ok(state.finalReview.blockingPages.includes(4));
   assert.ok(state.finalReview.blockingPages.includes(8));
   const protectedReport=state.artifacts.find(item=>item.name===state.finalReview.report).text;
+  assert.match(protectedReport,/第 4 页 · P0 · 同类参考点列少字/u);
+  assert.match(protectedReport,/unreadable 海报上方/u);
   assert.match(protectedReport,/第 8 页 · P0 · 遗漏待确认的包装背标照片/u);
   assert.match(protectedReport,/第 8 页 · P0 · 目标价写成按袋计价/u);
   const protectedPptx=state.artifacts.find(a=>a.kind==='pptx');
