@@ -378,6 +378,81 @@ test('the image API receives an all-visible pack count only when the brief confi
   }
 });
 
+test('the packaging image writer only receives amounts authorized for the artwork', async t=>{
+  const {generateVisualWithDesktopModels}=await import('./visual-references.mjs');
+  const posterSlogan='15:00，拆一袋';
+  const base='做外盒正面及电商首屏 KV。每盒125克，盒内7袋。下午15:00食用。';
+  const pending=base+'电商目标价 29.9 元/盒。';
+  const drawingBrief='用本案主标题「'+posterSlogan+'」。提案只留目标价29.9元/盒，图上展示125克。';
+  const materials=[
+    {name:'任务卡.md',text:'目标价29.9元/盒，下午15:00，125克。'},
+    {name:'研究.md',text:'同类129.9元，某调查29.9%，本项目目标价为29.9 元/盒。'},
+    {name:'策略.md',text:'目标价 ¥29.9 留到提案；展示125克。'},
+  ];
+  const reference={name:'原始主参考.png',sha256:'a'.repeat(64)};
+  const cleanPrompt='首屏写「'+posterSlogan+'」。盒身标125克。';
+  function run(brief,prompt,seen) {
+    const context={brief,materials,posterSlogan,direction:{name:'到点拆袋',theme:posterSlogan}};
+    const original=structuredClone(context);
+    const result=generateVisualWithDesktopModels({images:[reference],context,drawingBrief,posterSlogan,packaging:true,
+      call:async(instruction,images,schema,task)=>{
+        assert.deepEqual(context,original);
+        if (schema) {
+          seen.context=JSON.parse(task.context);
+          assert.deepEqual(images,[]);
+          return {model:'deepseek-flash',threadId:'writer',parsedOutput:{prompt}};
+        }
+        assert.deepEqual(images,[reference]);
+        assert.equal(task.exactImagePrompt,true);
+        seen.dispatched.push(instruction);
+        return {requestId:'image-fixture'};
+      }});
+    return result.finally(()=>assert.deepEqual(context,original));
+  }
+  function assertPendingHidden(context) {
+    for (const line of [context.brief,context.drawingBrief,...context.materials.map(item=>item.text)]) {
+      assert.doesNotMatch(line,/(?<![\d.])29\.9\s*元|¥\s*29\.9/u);
+    }
+    assert.equal(context.posterSlogan,posterSlogan);
+    assert.equal(context.direction.theme,posterSlogan);
+    assert.match(context.brief,/125克.*15:00/u);
+    assert.match(context.drawingBrief,/15:00，拆一袋.*125克/u);
+    assert.match(context.materials[1].text,/129\.9元.*29\.9%/u);
+  }
+  await t.test('omits the pending amount from every writer field only',async()=>{
+    const seen={dispatched:[]};
+    await run(pending,cleanPrompt,seen);
+    assertPendingHidden(seen.context);
+    assert.deepEqual(seen.dispatched,[cleanPrompt]);
+  });
+  await t.test('still refuses a naked amount in the actual image instructions',async()=>{
+    const seen={dispatched:[]};
+    await assert.rejects(run(pending,cleanPrompt+'首屏价签写29.9元/盒。',seen),
+      {code:'INVALID_STAGE_OUTPUT',message:/目标价保留待确认限定/u});
+    assertPendingHidden(seen.context);
+    assert.deepEqual(seen.dispatched,[]);
+  });
+  await t.test('retains the target amount when the client explicitly asks for a qualified KV price',async()=>{
+    const seen={dispatched:[]};
+    const brief=pending+'请在电商首屏 KV 标出电商目标价 29.9 元/盒。';
+    const prompt=cleanPrompt+'KV 显示「电商目标价 29.9 元/盒」。';
+    await run(brief,prompt,seen);
+    assert.equal(seen.context.brief,brief);
+    assert.deepEqual(seen.context.materials,materials);
+    assert.equal(seen.context.drawingBrief,drawingBrief);
+    assert.deepEqual(seen.dispatched,[prompt]);
+  });
+  await t.test('retains the actual confirmed sale price',async()=>{
+    const seen={dispatched:[]};
+    const brief=pending+'现在已确认电商售价为29.9元/盒。';
+    const prompt=cleanPrompt+'标售价29.9元/盒。';
+    await run(brief,prompt,seen);
+    assert.equal(seen.context.brief,brief);
+    assert.deepEqual(seen.context.materials,materials);
+    assert.deepEqual(seen.dispatched,[prompt]);
+  });
+});
+
 test('a title correction sends only the actual draft and retains the writer’s exact instructions', async () => {
   const {repairVisualTitle}=await import('./visual-references.mjs');
   const image={name:'已评候选.png',sha256:'a'.repeat(64)};

@@ -51,9 +51,9 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     '三项沿用内容由原图观察给出，直接沿用观察到的画面关系和表现方式。这三项不在其他字段重新指定。硬性设计位置仅来自客户本轮简报和任务卡。',
     'lettering 只列需要印在画面中的简报信息或本案副标，逐条写实际文字。主标题已定稿。价格、型号或时段已在主标题中讲清时，避免重复列。未确认字样省略。',
   ].join('\n'),[],schema,{
-    assignment:'夜航海报生图提示词写作',rules:[],context:JSON.stringify({
+    assignment:'夜航海报生图提示词写作',rules:[],context:visualWriterContext({
       ...directionInput, posterSlogan, mainReference:{imageNumber:at+1,observations}, transfer,
-    }),
+    },posterSlogan),
   });
   const plan = result.parsedOutput;
   const normalize = value=>value.normalize('NFKC').replace(/[\s\p{P}]/gu,'');
@@ -120,11 +120,40 @@ function promisedPackageUnits(value) {
   return 0;
 }
 
+function targetPriceAmount(brief='') {
+  const text=brief.normalize('NFKC');
+  const target=text.match(/(?:目标价(?:格)?|拟售价(?:格)?)\s*(?:为|是)?\s*[:：]?\s*[¥￥]?\s*(\d+(?:\.\d+)?)\s*(?:元|块)/u)?.[1] ??
+    text.match(/(\d+(?:\.\d+)?)\s*(?:元|块)(?:\s*\/[^，,。；;\s]{1,6})?\s*(?:为|是)\s*(?:电商)?\s*(?:目标价|拟售价)/u)?.[1];
+  if (!target) return '';
+  const confirmed=new RegExp('(?:已确认|已定|正式|最终)(?:零售|电商)?售价\\s*(?:为|是)?\\s*[:：]?\\s*[¥￥]?\\s*'+RegExp.escape(target)+'\\s*(?:元|块)','u');
+  return confirmed.test(text)?'':target;
+}
+
+function visualWriterContext(context,posterSlogan) {
+  const brief=context.brief ?? '';
+  const target=targetPriceAmount(brief);
+  if (!target) return JSON.stringify(context);
+  const price=/目标价|拟售价|售价|价格|价签|标价/u;
+  const canvas=/画面|包装|盒面|正面|标签|海报|主视觉|首屏|\bKV\b/u;
+  const directive=/(?:请|需要|必须|务必|要求|须|要|把|将).{0,18}(?:标|印|放|露出|展示|显示|写|贴)|(?:海报|画面|首屏|盒面|包装上)(?:右下|左下|上)?(?:标出|印上|写上|展示|标注|露出)/u;
+  const show=brief.split(/[。；;，,\r\n]/u).some(line=>price.test(line) && canvas.test(line) && directive.test(line) &&
+    !/不要|不必|无需|不得|不允许|不用|不印|不标|不展示|不放|确认后/u.test(line));
+  if (show) return JSON.stringify(context);
+  const literal=RegExp.escape(target);
+  const currency='(?<![\\d.])(?:[¥￥][ \\t]*)?'+literal+'[ \\t]*(?:元|块)(?:[ \\t]*[/／][ \\t]*(?:千克|公斤|克|袋|包|盒|箱|瓶|罐|杯|件|份))?|[¥￥][ \\t]*'+literal+'(?![\\d.])';
+  if (posterSlogan && new RegExp(currency,'u').test(posterSlogan)) {
+    throw invalidOutput('已选海报标题含未获上画授权的目标价。请在文案核对价格原意后再交图。');
+  }
+  const amount=new RegExp(currency,'gu');
+  return JSON.stringify(context,(key,value)=>typeof value==='string' && !/^(?:id|name|file(?:name)?|mediaType)$|(?:id|url|path|sha256)$/iu.test(key) ?
+    value.replace(amount,'（未确认且不上画）') : value);
+}
+
 function unqualifiedTargetPrice(prompt,brief) {
-  const target=brief.match(/(?:目标价(?:格)?|拟售价(?:格)?)\s*(?:为|是)?\s*[:：]?\s*[¥￥]?\s*(\d+(?:\.\d+)?)\s*(?:元|块)/u)?.[1];
+  const target=targetPriceAmount(brief);
   if (!target) return false;
   const amount=new RegExp('(?:^|[^\\d.])'+RegExp.escape(target)+'\\s*(?:元|块)','u');
-  const retained=/目标价|拟售|暂定|价格示意|待确认|不(?:用|要|可)?(?:写|放|展示|印|出现)|省略|去掉|不画(?:价签|价格|售价|标价)|(?:元|块)(?:\/[^，,\s]{1,6})?\s*(?:只|仅)?留在提案材料/u;
+  const retained=/目标价|拟售|暂定|价格示意|待确认|不(?:用|要|可)?(?:写|放|展示|印|出现)|省略|去掉|不画(?:价签|价格|售价|标价)|(?:元|块)(?:\/[^，,\s]{1,6})?\s*(?:只|仅)?留在提案材料|属于提案材料[，,]\s*不上画面/u;
   const priceCommand=new RegExp('(?:展示|显示|露出|印(?:上|出)?|写(?:上|出)?|放|标(?:上|出|为)?|贴).{0,10}'+RegExp.escape(target)+'\\s*(?:元|块)','u');
   let exclusion=false;
   for (const raw of prompt.split(/\r?\n/u)) {
@@ -175,7 +204,7 @@ export async function generateVisualWithDesktopModels({call, images, context, dr
     '返回一个 prompt 字段，内容是完整的生图提示词。',
   ].filter(Boolean).join('\n');
   const written = await call(instruction,[],imagePromptSchema,{
-    assignment:'夜航生图提示词写作',rules:[],context:JSON.stringify({...context,drawingBrief}),
+    assignment:'夜航生图提示词写作',rules:[],context:visualWriterContext({...context,drawingBrief},posterSlogan),
   });
   return submitVisualPrompt({call,images,written,posterSlogan,...(packaging ? {packagingBrief:context.brief} : {})});
 }

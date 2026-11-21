@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.137.0",
-  "registrySha256": "6897dd63e84dc0f9a407d3fca71386d3ce6819867ecfe6c728345a12b66b2d80",
+  "baselineVersion": "1.138.0",
+  "registrySha256": "2d3b2a77f3f28e4104a08169b58e8fbd846aac7acd1315e1080eebbf39d9523e",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -210,12 +210,12 @@
       }
     },
     "method.visual": {
-      "version": "1.24.0",
+      "version": "1.25.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "5c45523d209276809e7077f53862909c05e3ae436847fe0605e112cf81730e68",
+        "skills/visual-development-lead/SKILL.md": "dba052a6c676f2a2615283df8653e82a313f68ce79f6d2aa471d3bf64360c6dc",
         "skills/visual-development-lead/references/kv.md": "ee1747604dc809f22fc949bacf9f99b0b0d59baa11a63f8437e781baddae1773",
-        "skills/visual-development-lead/references/packaging.md": "26317c82451bc02c88be8965e410f940afd464978e8b1c6216a4a081837fece8",
+        "skills/visual-development-lead/references/packaging.md": "6f02d40162aefd2191c4d7b48106f01b087ecffc6ca9181270c8786add94a6fa",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
         "skills/visual-development-lead/references/stage-review.md": "602ac5039e76e21bcf205337451e9f1b4a2bc7562bbf0a04731c4fbafd769899",
         "skills/visual-development-lead/scripts/check-stage.mjs": "73396ea1949f443b4437837a541a4f0f594bf6bae785b5a76ca1fa7c3c3eff75",
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.61.0",
+      "version": "1.62.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "2cd97f646c9b47c3a9cf16de2a5d2454fcdb80b0eebb9e66970465b26774b4d7"
+        "docs/specs/nightflight-runtime.md": "d1da425ed3d81c8a111e6cfe13515c441a019ebe9ae89e3aa9735e1ca4fc1d8a"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "6e1b02770a1765e3693f67a0c8e7029e8449bc1757a06bb0df4a79837454d553",
+    "docs/specs/README.md": "7183e54748e5ae67a6f5e9169d646ea13d4bc72ec4c59918c8cb716cf06e93ec",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"
