@@ -176,6 +176,95 @@ test('a reduced side-by-side packet never certifies where the theme is printed',
   assert.deepEqual(batch.previewEvidence.map(evidence=>evidence.originalSha256),images.map(image=>image.sha256));
 });
 
+test('weekly packaging checks use exact original labels and retain the punctuation-only sibling',async t=>{
+  const caption='七袋，分好一周';
+  const weeklyImages=[
+    {...images[0],sha256:'75aa3f6b431a46f3ff28f8112845a1858a5e1f7c35db1f3b69751e58e876ed9b'},
+    {...images[1],sha256:'1fd5d5ad9fedf8a4fc02d2102b14b7a897beccdd93b9deea358300de351012e2'},
+    images[2],
+  ];
+  // Native reads on the two real O/76 originals, with the positively identified panel check.
+  const absent={labels:[],location:'',uncertain:''};
+  const duplicate={labels:['周二','周二','周三','周四','周五','周六','周日'],
+    location:'盒身正面中下部，每个小包装上方的横排星期标签',uncertain:''};
+  const receipts=['chatcmpl-Emi44LSkBBoaf44CcVfDAWl6Z9XKp','chatcmpl-Emi5Jz7iyerWrWbnvWcOSdZiUlVOE','fixture-3'];
+  const packetHashes=['15f12a22ce580db3ae7f9fc6b351c15cd0ca4483ccc2bd883cb069a14bed7cb5',
+    'ea45b82e61df623ebd5795df23bb6e5604debc3bb3ee2a6b387b3a2728890252','a'.repeat(64)];
+  const model='gpt-4.1-mini-2025-04-14';
+  async function run(labelReads,{direction='七袋分一周',mentionsWeek=true}={}) {
+    const calls=[];
+    const batch=await reviewVisualBatch({direction,images:weeklyImages,context:'已确认项目材料',
+      packagingExpected:true,theme:direction,posterSlogan:caption,productBrief:'做包装外盒正面和电商上新 KV。每袋25克，盒内7袋。',
+      sources:[image(4)],makeBoard:async()=>({name:'包装同品类并排图'}),
+      call:async(instruction,actual,schema,task)=>{
+        const index=weeklyImages.findIndex(img=>img.sha256===actual[0]?.sha256);
+        if(task.assignment==='独立读图者') return {parsedOutput:{first:'外盒',action:'桌面陈列',alternative:'独立分装',
+          words:mentionsWeek && index===1 ? '盒面从周一到周日' : '盒面写25克',
+          innerPackets:{form:'printed_illustration',location:'盒面',evidence:'盒面印有小袋图示'},
+          slogan:{status:'readable',text:caption+(index===0?'。':''),location:'画面顶部'}}};
+        if(task.assignment==='核对同类参考') return {parsedOutput:{packaging:true,indices:[1]}};
+        if(task.assignment==='独立核对包装本体原图') return {model,threadId:'existing-on-pack-audit',
+          parsedOutput:{status:'verified',printed:[{text:direction,location:'盒身中央'}],reason:'图上确实印了方向题名。'}};
+        if(task.assignment==='独立核读包装日序') {
+          calls.push({instruction,actual,task});
+          return {model,threadId:receipts[index],inputPacketHash:packetHashes[index],parsedOutput:labelReads[index]};
+        }
+        const fields=schema.properties.candidate_1.properties;
+        return {parsedOutput:Object.fromEntries(weeklyImages.map((_,i)=>['candidate_'+(i+1),{reason:'原票认为主体可读。',
+          ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:i===2?'theme_printed':'verified'} : {}),
+          ...(fields.priority ? {priority:i===1?1:i===0?2:3,edit:'无',research:'无',blocked:false} : {})}]))};
+      }});
+    return {batch,calls};
+  }
+
+  await t.test('the duplicated Tuesday in the verified O/76 winner blocks without flagging the unlabelled package',async()=>{
+    const {batch,calls}=await run([absent,duplicate,absent]);
+    assert.equal(batch.votes.find(v=>v.role==='品牌').items[1].onPackStatus,'verified');
+    assert.equal(batch.ruling.items[1].blocked,false);
+    assert.equal(batch.winner,null);
+    assert.equal(batch.sloganRepair.candidate,1);
+    assert.equal(batch.candidates[0].titlePunctuation,true);
+    assert.equal(batch.candidates[0].weeklyLabelCheck.issue,undefined);
+    assert.equal(batch.candidates[1].blocked,true);
+    assert.match(batch.candidates[1].reason,/周二、周二、周三/u);
+    assert.match(batch.candidates[1].edit,/去掉重复日期/u);
+    assert.match(batch.candidates[2].reason,/主题印在包装本体/u);
+    assert.deepEqual(batch.candidates[1].weeklyLabelCheck,{...duplicate,issue:batch.candidates[1].weeklyLabelCheck.issue,
+      sha256:weeklyImages[1].sha256,model,threadId:receipts[1],inputPacketHash:packetHashes[1]});
+    assert.deepEqual(calls.map(call=>call.actual),weeklyImages.map(draft=>[draft]));
+    for (const call of calls) {
+      assert.doesNotMatch(call.task.context,/周二|分好一周/u);
+      assert.match(call.instruction,/没有任何可定位的实际星期原字时，labels 填空数组/u);
+    }
+  });
+
+  await t.test('unique weekday labels pass, and only a positively identified unreadable label blocks',async()=>{
+    const complete={...duplicate,labels:['周一','周二','周三','周四','周五','周六','周天']};
+    const ambiguous={labels:['',''],location:'包装盒正面中心中部',uncertain:'所有星期栏目均看不清'};
+    const {batch:pass}=await run([ambiguous,complete,absent]);
+    assert.equal(pass.candidates[0].weeklyLabelCheck.issue,undefined);
+    assert.equal(pass.candidates[0].titlePunctuation,true);
+    assert.equal(pass.winner,2);
+    for(const unread of [
+      {...complete,labels:['周一','周二','','周四','周五','周六','周日'],uncertain:'第三格未核实'},
+      {...complete,labels:complete.labels.slice(0,6)},
+    ]) {
+      const {batch}=await run([absent,unread,absent]);
+      assert.equal(batch.candidates[1].blocked,true);
+      assert.ok(batch.candidates[1].weeklyLabelCheck.issue);
+      assert.equal(batch.sloganRepair.candidate,1);
+    }
+  });
+
+  await t.test('a weekday hint seen only in a specific blind read does not send the other originals',async()=>{
+    const {batch,calls}=await run([absent,duplicate,absent],{direction:'桌面分装'});
+    assert.deepEqual(calls.map(call=>call.actual),[[weeklyImages[1]]]);
+    assert.equal(batch.candidates[0].weeklyLabelCheck,undefined);
+    const noHint=await run([absent,absent,absent],{direction:'桌面分装',mentionsWeek:false});
+    assert.equal(noHint.calls.length,0);
+  });
+});
+
 test('every candidate must have exactly five judgments with evidence for each attached image',async()=>{
   for (const mutate of [
     rows=>{rows[0].candidate=2;}, rows=>{rows.pop();}, rows=>{delete rows[1].checks.布局;},
