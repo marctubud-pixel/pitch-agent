@@ -133,6 +133,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const executable=join(root,'review-fixture.mjs');
   const log=join(root,'case-b-calls.jsonl');
   const protectedCase=join(root,'protected-case');
+  const unreadableCase=join(root,'unreadable-case');
   await writeFile(executable,`#!/usr/bin/env node
 import {randomUUID} from 'node:crypto';
 import {appendFileSync,existsSync} from 'node:fs';
@@ -158,7 +159,7 @@ else {
    const bytes=Buffer.from(crop.image_url.url.split(',')[1],'base64');
    if(bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a' || bytes.readUInt32BE(16)<=1 || bytes.readUInt32BE(20)<=1)
      throw Error('不是从实页取得的局部图');
-   const negative=existsSync(${JSON.stringify(protectedCase)});
+   const negative=existsSync(${JSON.stringify(unreadableCase)});
    appendFileSync(${JSON.stringify(log)},JSON.stringify({role:'裁片盲读',pages:[4],unreadable:negative})+'\\n');
    reply=negative?{legibility:'unreadable',transcript:'海报上方'}:{legibility:'readable',transcript:${JSON.stringify(croppedTranscription)}};
  } else if(prompt.includes('核对剩余必改项。')) {
@@ -302,6 +303,7 @@ else {
   assert.equal(Object.keys(zip).filter(name=>/^ppt\/slides\/slide\d+\.xml$/u.test(name)).length,9);
   assert.match(xml('ppt/slides/slide3.xml'),/客户已确认须预约。/u);
   assert.match(strFromU8(before['ppt/slides/slide3.xml']),/报名方式待定。/u);
+  assert.ok(xml('ppt/slides/slide4.xml').includes(printed));
   assert.match(xml('ppt/slides/slide6.xml'),/天黑进馆/u);
   assert.match(xml('ppt/slides/slide6.xml'),/<p:pic>/u);
   assert.match(xml('ppt/slides/slide7.xml'),/<p:pic>/u);
@@ -331,6 +333,7 @@ else {
   assert.match(report,/第 8 页 · P1 · 决策页缺少品牌标识占位/u);
   assert.match(report,/品牌待确定已列在对应职责页/u);
   assert.match(report,/实页放大读到「呈现活动名。」，所报漏字在同版原生正文与实图均可核对/u);
+  assert.ok(report.includes('readable '+croppedTranscription));
   assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
   assert.match(report,/第 8 页 · P1 · 待确认的两项需提案人拍板/u);
   assert.match(report,/第 8 页 · P1 · 缺少七袋装外盒正面实物尺寸及结构信息/u);
@@ -353,16 +356,24 @@ else {
   assert.equal(state.finalReview.outcome,'blocked');
   assert.equal(state.finalReview.returnStage,'strategy');
   assert.equal(state.finalReview.rounds,2);
-  assert.ok(state.finalReview.blockingPages.includes(4));
   assert.ok(state.finalReview.blockingPages.includes(8));
   const protectedReport=state.artifacts.find(item=>item.name===state.finalReview.report).text;
-  assert.match(protectedReport,/第 4 页 · P0 · 同类参考点列少字/u);
-  assert.match(protectedReport,/unreadable 海报上方/u);
   assert.match(protectedReport,/第 8 页 · P0 · 遗漏待确认的包装背标照片/u);
   assert.match(protectedReport,/第 8 页 · P0 · 目标价写成按袋计价/u);
   const protectedPptx=state.artifacts.find(a=>a.kind==='pptx');
   const kept=unzipSync(await readFile(join(storage,protectedPptx.url.split('/').at(-1))));
   assert.match(strFromU8(kept['ppt/slides/slide5.xml']),/先看出馆内活动，再读预约。/u);
+  await request({kind:'accept_final',expectedRevision:state.revision},409);
+
+  await rm(protectedCase);
+  await writeFile(unreadableCase,'1');
+  state=await wait(await request({kind:'message',expectedRevision:state.revision,targetStage:'final',text:'复看裁片'}));
+  assert.equal(state.finalReview.outcome,'blocked');
+  assert.equal(state.finalReview.returnStage,'layout');
+  assert.deepEqual(state.finalReview.blockingPages,[4]);
+  const unreadableReport=state.artifacts.find(item=>item.name===state.finalReview.report).text;
+  assert.match(unreadableReport,/第 4 页 · P0 · 同类参考点列少字/u);
+  assert.match(unreadableReport,/unreadable 海报上方/u);
   await request({kind:'accept_final',expectedRevision:state.revision},409);
 
   // A mixed-in render cannot even reach the reviewer.
