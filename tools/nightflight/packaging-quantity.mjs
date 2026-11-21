@@ -39,3 +39,15 @@ export function fullPackageArrangement(value,brief) {
   const arranged=specifiedPackageArrangement(value.normalize('NFKC'));
   return spec && arranged===packageCount(spec[1]) ? arranged : 0;
 }
+
+const oneHandOpening=/(?:单手|一只手|一手)(?:就能|也能|即可|能|可|轻松|轻轻|直接)?(?:撕开|打开|拆开|开启|开袋)|(?:撕开|打开|拆开|开启|开袋).{0,5}(?:只需|只要|仅需)(?:单手|一只手|一手)/u;
+const unopenedOuterBox=/(?:无须|无需|免于|不用|不必|不需要|不打开|不拆开)(?:(?:打开|拆开|开启)(?:整盒|外盒|盒盖)|(?:整盒|外盒|盒盖)(?:打开|拆开|开启|开封)|(?:整盒|外盒|盒盖)(?=[，。,；;！!？?\s]|$))|(?:整盒|外盒|盒盖)(?:保持|仍然|仍)?(?:不(?:用|必|需要)?|无须|无需)(?:打开|拆开|开启|开封)/u;
+const unconfirmedOpening=/未(?:明确|确认|承诺|验证|核实|定)|没有证实|未经(?:核实|验证)|未知|待(?:核|确认)|无法|不能|不可/u;
+const openingSentences=text=>text.normalize('NFKC').split(/[，,。；;！？!?\n]/u);
+
+export function unsupportedOpeningClaims(line,brief) {
+  const given=openingSentences(brief);
+  return [oneHandOpening,unopenedOuterBox].some(claim=>
+    openingSentences(line).some(sentence=>claim.test(sentence) && !unconfirmedOpening.test(sentence)) &&
+    !given.some(sentence=>claim.test(sentence) && !unconfirmedOpening.test(sentence) && !/是否|能否/u.test(sentence)));
+}

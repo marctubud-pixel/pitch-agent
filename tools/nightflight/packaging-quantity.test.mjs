@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {fullPackageArrangement,promisedPackageUnits,specifiedPackageArrangement} from './packaging-quantity.mjs';
+import {fullPackageArrangement,promisedPackageUnits,specifiedPackageArrangement,unsupportedOpeningClaims} from './packaging-quantity.mjs';
 import {makeStrategyOnePager} from './strategy-one-pager.mjs';
 
 test('only directions arranging physical items count as all-item presentation',()=>{
@@ -51,4 +51,36 @@ test('nightflight strategy keeps original box quantity and corrects an uncommiss
   const requested=await run(brief+'请在外盒正面摆放七袋小袋实物。');
   assert.equal(requested.calls.length,1);
   assert.ok(requested.body.includes(invalidAction));
+});
+
+
+test('strategy requires confirmed structure to promise how a packaged product opens',async()=>{
+  const brief='做混合坚果包装正面和电商 KV。每袋 25 克，七袋独立分装。';
+  const core='办公室下午想加餐，先放大七袋独立分装：一次一袋，不用整盒开封。';
+  assert.equal(unsupportedOpeningClaims(core,brief),true);
+  assert.equal(unsupportedOpeningClaims(core,'开启结构未确认能否不用整盒开封。'),true);
+  assert.equal(unsupportedOpeningClaims(core,brief+'本品有侧开取用口，无需打开外盒即可取袋。'),false);
+  assert.equal(unsupportedOpeningClaims('取用口还未确认能否单手打开。',brief),false);
+  assert.equal(unsupportedOpeningClaims('开盖方式未确认，一次取一袋。',brief),false);
+  assert.equal(unsupportedOpeningClaims('开盖方式未确认，不用整盒开封。',brief),true);
+  const finding={conclusion:'办公加餐情境',source:'调查',evidence:'办公室加餐',implication:'检验购买时的读序'};
+  const rationale={text:'在办公场景检验。',findingNumbers:[1]};
+  const draft={coreStrategy:core,insight:'下午加餐时怎么判断分装份量？',brandRole:'让办公加餐可分次取用。',
+    proposition:'一次取一袋。',actions:['正面写明七袋。','画出一袋实物。','手机首屏保留品类名。'],
+    touchpoints:[{kind:'front',name:'外盒正面',action:'保持配料字样可读。'},{kind:'kv',name:'电商首屏',action:'靠画面交代办公地点。'}],
+    metrics:[{name:'袋数',method:'展示后问数量。'},{name:'配料',method:'请观者逐个指认。'},{name:'场景',method:'问此时在什么地方。'}],
+    constraints:'分装已定，开启方式未确认。',intersection:'在两个触点表明分装。',opportunity:rationale,decision:rationale,priority:rationale,
+  };
+  const fixed='办公室下午加餐，先让人看懂一次取一袋。';
+  const calls=[];
+  const result=await makeStrategyOnePager({project:{brief,research:{findings:[finding]}},inputs:{texts:[],images:[]},
+    carrier:'packaging+kv',rules:[],call:async(instruction,_images,_schema,task)=>{
+      if(task.delegate) return {parsedOutput:{issues:[]}};
+      calls.push(instruction);
+      return {parsedOutput:{outcome:calls.length===1?draft:{...draft,coreStrategy:fixed}}};
+    }});
+  assert.equal(calls.length,2);
+  assert.match(calls[1],/原始 Brief 未确认具体开启能力/u);
+  assert.equal(result.strategy.focus,fixed);
+  assert.ok(!result.body.includes('不用整盒开封'));
 });

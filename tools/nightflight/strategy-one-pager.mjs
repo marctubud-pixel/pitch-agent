@@ -1,4 +1,4 @@
-import {fullPackageArrangement,specifiedPackageArrangement} from './packaging-quantity.mjs';
+import {fullPackageArrangement,specifiedPackageArrangement,unsupportedOpeningClaims} from './packaging-quantity.mjs';
 import {taskKind} from './proposal-outline.mjs';
 
 const string = {type:'string'};
@@ -19,6 +19,7 @@ const schema = object({outcome:object({
     constraints:string,opportunity:basis,decision:basis,priority:basis,intersection:string,
   })});
 const packageArtworkRule='包装装量和画面摆放分开核对。盒内的总件数可按原 Brief 写成规格或正面标注。客户明确要求展示实物全数时，才把实际摆足件数写成这一轮画面动作或触点要求；仅给整盒装量时可用规格字样和单件取用场景表达分装。';
+const packageOpeningRule='独立分装说明可以分次取用。是否需要先开外盒、如何开袋、能否单手开启或回封，须由原始 Brief 或已确认客户补充证明。不要用竞品的结构或便利性替本品许诺。不知道开启结构时，可写一次取一袋，具体开启方式留待确认。';
 const priceArtworkRule='价格与上画边界：先核对原始 Brief，金额已给与委托上画是两件事。仅有目标价、拟售价或待确认金额时，保留在项目约束和客户待确认事项中。不要把它写成已选画面价签、观众触点任务、读价指标或既定版面优先级。客户原文明确要求在某载体展示价格时，在指定载体保留原金额与原口径，例如“电商目标价”紧贴其金额；明确要求展示正式售价时，按原确认口径。保留简报已明确委托的载体、规格、配料与其他产品事实。';
 
 export function strategyCarrier(project, inputs) {
@@ -191,6 +192,10 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
   const render = draft => {
     const result=renderStrategy(draft,findings,eligible,carrier,requiredFaces);
     checkPrice?.(draft);
+    if(packaging && [draft.coreStrategy,draft.insight,draft.brandRole,draft.proposition,
+      ...draft.actions,...draft.touchpoints.map(t=>t.action)].some(line=>unsupportedOpeningClaims(line,inputsFromClient))) {
+      throw Error('独立分装支持分次取用。原始 Brief 未确认具体开启能力，请保留已知的取用动作，把开启方式留待确认。');
+    }
     if(packaging && [draft.coreStrategy,draft.proposition,...draft.actions,...draft.touchpoints.map(t=>t.action)]
       .some(line=>{
         const visible=fullPackageArrangement(line,inputsFromClient);
@@ -202,7 +207,7 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
   };
   let out;
   for (let attempt=0;attempt<2;attempt++) {
-    const response=await call(instruction+'\n'+priceArtworkRule+(packaging?'\n'+packageArtworkRule:'')+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
+    const response=await call(instruction+'\n'+priceArtworkRule+(packaging?'\n'+packageArtworkRule+'\n'+packageOpeningRule:'')+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
     try {
       out=response.parsedOutput?.outcome ?? {};
       render(out);

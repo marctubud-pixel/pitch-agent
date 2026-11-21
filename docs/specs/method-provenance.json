@@ -102,10 +102,10 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "夜航同版实际策略回执的装量与实物陈列对照",
+    "source": "夜航同版实际策略回执的装量、实物陈列与开启方式对照",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.12.0-20261121",
-    "sha256": "09cafc3b83ab47de3094ce6a5b0a4792280d46cb815728935b1fa6ef4e0a3b6b"
+    "sourceVersion": "v1.13.0-20261121",
+    "sha256": "38d36aa5f9ca7a4f1a8e74cd02da6b0e1354a896f1ecc92fa132011f44452b3a"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",

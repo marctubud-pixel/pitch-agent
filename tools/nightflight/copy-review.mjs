@@ -1,3 +1,4 @@
+import {unsupportedOpeningClaims} from './packaging-quantity.mjs';
 import {invalidOutput} from './call-checkpoints.mjs';
 import {hasWrongOwnNutGroup,ownRecipe,recipeCount} from './product-recipe.mjs';
 import {blindSlogans,buildSloganWorkbook,checkSloganChoices,fullSloganHash} from './slogan-workbook.mjs';
@@ -188,8 +189,6 @@ function validateEngineDraft(draft, materials) {
 function validatePackagedCopyFacts(directions, source) {
   const recipe=ownRecipe(source);
   const {brief,fruitIngredients}=recipe;
-  const oneHand=/(?:单手|一只手|一手)(?:就能|也能|即可|能|可|轻松|轻轻|直接)?(?:撕开|打开|拆开|开启|开袋)|(?:撕开|打开|拆开|开启|开袋).{0,5}(?:只需|只要|仅需)(?:单手|一只手|一手)/u;
-  const canUseOneHand=brief.split(/[。；;，,！!？?]/u).some(clause=>oneHand.test(clause) && !/不能|不可|未确认|未经验证|未知|无法/u.test(clause));
   const quantityPattern=fruitIngredients.length ? new RegExp('(?:每袋(?:仅有|只有|有|含有?|装有?)?|加(?:了)?|含有?|内有)(?<count>[一二两三四五六七八九十]|\\d+)(?<unit>颗|粒|片|块)(?<item>'+fruitIngredients.map(RegExp.escape).join('|')+')','gu') : null;
   const knownQuantity=quantityPattern ? [...brief.matchAll(quantityPattern)].map(({groups})=>[recipeCount(groups.count),groups.unit,groups.item].join('|')) : [];
   const findings=[];
@@ -200,7 +199,7 @@ function validatePackagedCopyFacts(directions, source) {
       const wrongGroup=hasWrongOwnNutGroup(line,recipe);
       const inventedAmount=quantityPattern && [...compact.matchAll(quantityPattern)].some(({groups})=>
         !knownQuantity.includes([recipeCount(groups.count),groups.unit,groups.item].join('|')));
-      const promisedOpening=!canUseOneHand && oneHand.test(compact) && !/没有证实|未确认|未承诺|未验证|无法|不能/u.test(compact);
+      const promisedOpening=unsupportedOpeningClaims(line,brief);
       if (wrongGroup || inventedAmount || promisedOpening) findings.push(direction.id+'案「'+line.slice(0,58)+'」');
     }
   }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.142.0",
-  "registrySha256": "253b767d11f0d831bc77666170aafce4055688ab3002cc79ae819988f5fed7e2",
+  "baselineVersion": "1.143.0",
+  "registrySha256": "0af9cbf5861d1af151f8af06a7a7afc894c45b3a3f23eeecbb8972bea05fdd12",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -203,10 +203,10 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.12.0",
+      "version": "1.13.0",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "09cafc3b83ab47de3094ce6a5b0a4792280d46cb815728935b1fa6ef4e0a3b6b"
+        "skills/strategy-one-pager/SKILL.md": "38d36aa5f9ca7a4f1a8e74cd02da6b0e1354a896f1ecc92fa132011f44452b3a"
       }
     },
     "method.visual": {
@@ -524,17 +524,17 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.66.0",
+      "version": "1.67.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "b9869abb6d4c8e8531dc1b398941d006572db133ebb3676fe586b527a1a37a77"
+        "docs/specs/nightflight-runtime.md": "18dcaef3183b5c1b74c853fe51e705ff95ea0d03f3857ab8dd54fc869198e12e"
       }
     },
     "contract.nightflight-final-reader": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-final-reader.md": "eac1f36e1333f33f6aaedd489885b6f402f6737fb7f3e2ac08648734cd6ea5a9"
+        "docs/specs/nightflight-final-reader.md": "7bc8510d30ee0f3b81f9f65c9c8e02be4e9efcbb50e2df91d031a0e64fd12261"
       }
     }
   },
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "ce64b2c2c171a06e389188922960a77a91582d368dd6e4314b6529102a02119d",
+    "docs/specs/README.md": "a14f64170c1fb2ab15d1a05c0cfa7014a675e273294c03cb863fe1d054682ec2",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

@@ -240,6 +240,40 @@ function confirmsTargetPrice(slide,nativeText,brief,issue) {
     /确认.*目标价/u.test(point) && target.test(norm(point)) && briefTargetPrice(point)?.[2]===unit && nativeText.includes(norm(point)));
 }
 
+function packageWeights(value) {
+  return [...norm(value).matchAll(/(?<![\d.])(?:(\d+(?:\.\d+)?)[—–\-~至到])?(\d+(?:\.\d+)?)(千克|公斤|克|kg|g)(?![a-z])/giu)]
+    .flatMap(([,start,end,unit])=>[start,end].filter(Boolean).map(amount=>Number(amount)*(unit==='克' || unit.toLowerCase()==='g'?1:1000)));
+}
+
+function verifiesPeerWeight({project,plan,slide,nativeText,decision,sourceMatches}) {
+  if (slide.role!=='peers') return false;
+  const requiredWeights=packageWeights(decision.required);
+  if (!requiredWeights.length) return false;
+  const briefConflict=decision.kind==='fact_conflict' && decision.source==='B1' && sourceMatches;
+  const ownArtwork=/^(?:[-*])?(?:本案(?:只)?(?:做|交付|呈现))?(?:[\d零一二三四五六七八九十百两]+袋装)?(?:外盒正面|包装正面|包装主画面|电商详情页首屏|KV(?:主画面|首屏))[:,。]/iu;
+  const artworkRequirement=decision.kind==='confirmed_requirement_missing' && ownArtwork.test(norm(decision.required)) &&
+    (/^S\d+$/u.test(decision.source) && sourceMatches || decision.source==='B1' &&
+      requiredWeights.every(amount=>packageWeights(plan.brief.original).includes(amount)));
+  if (!briefConflict && !artworkRequirement) return false;
+  const pageScope=new RegExp('(?:同类参考|同类对照|竞品页|竞品对照|竞品比较|竞品对比|比较页|每(?:一)?页|所有页|全册|第'+slide.number+'页|\\bP'+slide.number+'\\b)','iu');
+  const ownPlacement=[plan.brief.original,...plan.strategy.map(item=>item.body)].some(value=>value.split(/[。；;\r\n]/u).some(line=>
+    pageScope.test(line) && /规格|净含量|克|公斤|kg/iu.test(line) && /必须|须|需|请|要求|应|要|展示|列出|注明|写|标/u.test(line)));
+  if (ownPlacement) return false;
+  const quotes=[decision.actual,...[...decision.actual.matchAll(/[“「"]([^”」"]+)[”」"]/gu)].map(match=>match[1])]
+    .map(norm).filter(value=>packageWeights(value).length);
+  const rows=slide.points.map(norm).filter(point=>nativeText.includes(point) && quotes.some(quote=>point.includes(quote)));
+  if (rows.length!==1 || /本品|本案|本产品|项目产品|客户产品|我方|自家/u.test(rows[0])) return false;
+  const brand=rows[0].match(/^(?:竞品)?([\p{L}\p{N}]{2,16}?)(?:礼盒|每日坚果|包装|产品|商品|品牌|系列)/u)?.[1];
+  if (!brand) return false;
+  const evidence=project.research?.findings?.filter(finding=>slide.sources.some(source=>
+    source.url && source.url===finding.url && meaningful(source.evidence) && norm(source.evidence)===norm(finding.evidence ?? '')));
+  const packages=(evidence ?? []).flatMap(finding=>finding.images ?? []).filter(image=>
+    image.actualPackaging===true && meaningful(image.pageUrl) && meaningful(image.firstRead?.brand) && norm(image.firstRead.brand)===brand &&
+    meaningful(image.firstRead.front) && norm(image.firstRead.front).includes(brand));
+  return packageWeights(rows[0]).every(amount=>packages.some(image=>
+    packageWeights(image.firstRead.front).includes(amount) && packageWeights(image.observation ?? '').includes(amount)));
+}
+
 function alreadyExplainsPendingBrand(plan,edition,slide,issue,decision) {
   if (decision.kind!=='confirmed_requirement_missing' || !['cover','decision'].includes(slide.role)) return false;
   const brand=/品牌名|品牌标识|正式标志|商标|\blogo\b/iu;
@@ -431,6 +465,7 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       '先按实图逐字转录意见直接质疑的最短字样 actual，location 写看到的位置。逐项选一个证据类型 kind。fact_conflict 需要实际原字与本版已确认事实冲突。confirmed_requirement_missing 需要本页应交付的已确认信息确实缺失。key_content_unreadable 需要字实际被遮挡、裁掉或模糊到读不出。前三类在 required 中逐字摘录本版给定材料中的必要原句、要求或关键字样。',
       '实际内容能读全，意见只是标点、句式、普通断行、留白或美术，选 readable_suggestion。中英文标点或行尾形式本身属于这一类。报告描述的现象没有发生选 not_found。还缺实际证据选 unresolved。若这三类没有必要原话，required 留空。',
       '按实际角色判断这一页该有什么。封面负责识别提案，需求页列项目约束，方案页呈现设计，决策页列客户需确定的事。只有同版原话要求在当前页显示的品牌占位才必需；包装或 KV 的占位要求归作品。只有看到实际可定位的现象才作事实判断。',
+      '同类参考页先核实规格所指的是哪款商品，再对照该商品的同版来源。有来源的竞品数值与本品规格不同，不能据此判为事实冲突。',
       '致谢封底正文完整时，常规页码或页脚样式属于美术建议。页码错误、实体缺页、关键内容缺失，或客户明确委托该页增加页脚和页码时，按同版原话和实图核实。',
       '商品事实冲突或缺少已确认要求时，必须在 source 填确认材料的编号，并在 required 逐字引用该条原话。讲稿备注只用于识别实际所见。决策页或讲稿备注已列明待确认、待提供的事项时，确认材料没有说它已定的，选 pending_confirmation，actual 逐字记录已印条目或备注。文字被挡或裁切时用 key_content_unreadable，required 写本页应读取的关键字样，source 留空。无需引用的类别 source 留空。',
       '用词意见先逐字对照原简报，以及已定策略或文案。实际已经沿用客户词，若仅建议核实更合适的叫法，选 readable_suggestion。核心策略句在本页完整呈现时，按该页职责判断；只有取得本页必须另设信息的已确认原句，才按缺失处理。',
@@ -463,15 +498,17 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       const closingFooter=unsupported && optionalClosingFooter(plan,edition,slide,issue,decision);
       const targetPrice=sourceMatches && decision.source==='B1' && decision.kind==='fact_conflict' && slide.role==='decision' &&
         confirmsTargetPrice(slide,nativeText,plan.brief.original,issue);
-      const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || approvedBrand || closingFooter || targetPrice || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
+      const peerWeight=verifiesPeerWeight({project,plan,slide,nativeText,decision,sourceMatches});
+      const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || approvedBrand || closingFooter || targetPrice || peerWeight || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
       const check={call,project,plan,slide,edition,round,receipts,onEvent,issue,decision};
       const additional=clear?'':await verifyPrintedText(check) || await verifyProductUse(check) ||
         ((!sourceMatches || decision.source.startsWith('R')) && await verifySurvey(check));
       if (clear || additional) {
         const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':
           approvedBrand?'品牌待确定已列在对应职责页，当前页无需另设品牌标记。':closingFooter?'封底原句完整，页脚与页码作为版式建议。':
-          requestedConfirmation?'实页已列出所报的客户待确认事项。':targetPrice?'实页金额与简报一致，已明确列为目标价并请客户确认。':'按本版实页复核。';
-        const detail=requestedConfirmation || approvedBrand || closingFooter || targetPrice ? qualification : qualification+decision.location+' '+decision.reason;
+          requestedConfirmation?'实页已列出所报的客户待确认事项。':targetPrice?'实页金额与简报一致，已明确列为目标价并请客户确认。':
+          peerWeight?'实页为同类产品的规格，已逐一对到对应品牌的包装原图读字。':'按本版实页复核。';
+        const detail=requestedConfirmation || approvedBrand || closingFooter || targetPrice || peerWeight ? qualification : qualification+decision.location+' '+decision.reason;
         updates.set(issue,{...issue,level:'P1',blockedBy:additional || detail});
       } else if (unsupported) {
         updates.set(issue,{...issue,blockedBy:'引用尚未绑定本版已确认原话，保留待核。'+decision.location+' '+decision.reason});
