@@ -17,6 +17,7 @@ const schema = object({outcome:object({
     metrics:list(object({name:string,method:string}),exactlyThree),
     constraints:string,opportunity:basis,decision:basis,priority:basis,intersection:string,
   })});
+const priceArtworkRule='价格与上画边界：先核对原始 Brief，金额已给与委托上画是两件事。仅有目标价、拟售价或待确认金额时，保留在项目约束和客户待确认事项中。不要把它写成已选画面价签、观众触点任务、读价指标或既定版面优先级。客户原文明确要求在某载体展示价格时，在指定载体保留原金额与原口径，例如“电商目标价”紧贴其金额；明确要求展示正式售价时，按原确认口径。保留简报已明确委托的载体、规格、配料与其他产品事实。';
 
 export function strategyCarrier(project, inputs) {
   const kinds={'包装':'packaging','KV':'kv','包装与KV':'packaging+kv'};
@@ -86,6 +87,48 @@ export function strategyPackagingFaces(brief) {
   return named.length ? named : all;
 }
 
+function priceSurfaces(value) {
+  const named=Object.keys(faces).filter(name=>faces[name].test(value));
+  if (/海报|主视觉|首屏|封面|详情页|\bKV\b/iu.test(value)) named.push('kv');
+  if (!named.length && /包装|外盒|盒身|瓶身/u.test(value)) named.push('packaging');
+  return named;
+}
+
+function pendingPriceCheck(brief,carrier) {
+  const normalized=brief.normalize('NFKC').replace(/[^\S\r\n]/gu,'');
+  const currency='(\\d+(?:\\.\\d+)?)(?:元|块)';
+  const targetLabel='(?:目标价(?:格)?|拟售价(?:格)?)';
+  const price=normalized.match(new RegExp(targetLabel+'(?:为|是)?[:：]?[¥￥]?'+currency,'u'))?.[1] ??
+    normalized.match(new RegExp(currency+'(?:/[^，。；;\\r\\n]{1,6})?(?:为|是)(?:电商)?'+targetLabel,'u'))?.[1];
+  if (!price) return null;
+  const amount=new RegExp('(?:^|[^\\d.])'+RegExp.escape(price)+'(?:元|块)','u');
+  const confirmed=new RegExp('(?:已确认|已定|最终|正式)(?:零售|电商)?售价(?:为|是)?[:：]?[¥￥]?'+RegExp.escape(price)+'(?:元|块)','u');
+  if (confirmed.test(normalized)) return null;
+  const show=/(?:请|需要|必须|务必|要求|须|要)[^。；;]{0,24}(?:标价|露价|价签|(?:标出|印出|写出|展示|露出|列出|标注|印上|写上).{0,10}(?:价格|售价|目标价|拟售价|(?:元|块)))/u;
+  const requested=normalized.split(/[。；;，,！？!?\r\n]/u).filter(part=>
+    show.test(part) && !/不要|无需|不必|不须|不用|不可|不得|禁止|确认后/u.test(part));
+  const named=requested.flatMap(priceSurfaces);
+  const permitted=surfaces=>{
+    if (!surfaces.length || !named.length) return requested.length>0 && carrier!=='packaging+kv';
+    return surfaces.every(place=>named.includes(place) || named.includes('packaging') && Object.hasOwn(faces,place));
+  };
+  const isTarget=clause=>/目标价|拟售价|暂定价|价格示意/u.test(clause);
+  const staysPending=/(?:不(?:用|必|要|可|得)?(?:标|印|写|放|展示|露出)|省略|去掉).{0,12}(?:价|\d)|(?:价格|售价|目标价).{0,14}(?:确认|核定)后.{0,10}(?:再|才)/u;
+  return out=>{
+    const clauses=line=>line.normalize('NFKC').replace(/\s/gu,'').split(/[。；;]/u);
+    if (!clauses(out.constraints).some(clause=>amount.test(clause) && isTarget(clause))) {
+      throw Error('产品约束须写明原 Brief 的目标价和待确认身份。');
+    }
+    const artwork=[out.coreStrategy,out.proposition,...out.actions].map(line=>({line}));
+    artwork.push(...out.touchpoints.map(({action,kind})=>({line:action,kind})));
+    const behavior=[out.intersection,out.priority?.text,...out.metrics.map(({method})=>method)].filter(line=>
+      typeof line==='string' && /价签|读价|核对价格|提取价格|标价|露价|看(?:到|清).{0,12}(?:价格|售价|元|块)|(?:首屏|画面).{0,20}(?:标|写|放|看|读|认).{0,10}(?:元|块)/u.test(line));
+    const wrong=[...artwork,...behavior.map(line=>({line}))].some(({line,kind})=>clauses(line).some(clause=>
+      amount.test(clause) && !staysPending.test(clause) && (!permitted(kind?[kind]:priceSurfaces(clause)) || !isTarget(clause))));
+    if (wrong) throw Error('项目只给了目标价。金额放在约束和待确认里；重写动作、触点与指标，把画面优先级落到本轮可展示内容。只有原 Brief 要求露价的载体可以上画，保留目标价限定。');
+  };
+}
+
 function renderStrategy(out, findings, eligible, carrier, requiredFaces) {
   if (![out.coreStrategy,out.insight,out.brandRole,out.proposition,out.constraints,out.intersection].every(singleLine))
     throw Error('策略正文或事实边界不完整');
@@ -139,10 +182,15 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
   const context=JSON.stringify({carrier,requiredFaces,brief:project.brief,materials:inputs.texts,findings:rows,
     handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
-  const render = draft => renderStrategy(draft,findings,eligible,carrier,requiredFaces);
+  const checkPrice=pendingPriceCheck([project.brief,...(project.feedback ?? []).map(item=>item.text)].filter(Boolean).join('\n'),carrier);
+  const render = draft => {
+    const result=renderStrategy(draft,findings,eligible,carrier,requiredFaces);
+    checkPrice?.(draft);
+    return result;
+  };
   let out;
   for (let attempt=0;attempt<2;attempt++) {
-    const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
+    const response=await call(instruction+'\n'+priceArtworkRule+correction,inputs.images,schema,{rules,context,assignment:'依据本案简报和已核研究制定夜航一页策略。'});
     try {
       out=response.parsedOutput?.outcome ?? {};
       render(out);
@@ -166,7 +214,7 @@ async function compactStrategy(out,{call,project,carrier,render,onEvent,signal})
     const edit=await call('请作为同一负责人精简这份策略首页。'+issue+
       '保留原有策略取舍和事实限定，精简每个首页字段：核心策略约20–30字；洞察、角色、主张各一句；三个动作每条约15–25字，只保留画面中最重要的一处改变。'+
       '触点的 name 写原媒介或包装面，kind 须沿用原枚举；action 只补现场的一个阅读条件，一句约15–25字。把任何重复的镜头顺序从触点里删去。'+
-      '保留已经选定给观众看的商业信息及其出现位置，例如标价或规格。每个属性须保留它修饰的对象，不把原来分属不同原料的属性拼成一个新词。尚未实测的购买动机要写成问题。来源、机位、字号等可留给底稿。输出 copy，字段结构见 schema。',
+      '保留已确认给观众看的信息和位置。目标价留在约束，只有 Brief 明确要求露价时才保留价签和目标价原限定。每个属性须保留它修饰的对象，不把原来分属不同原料的属性拼成一个新词。尚未实测的购买动机要写成问题。来源、机位、字号等可留给底稿。输出 copy，字段结构见 schema。',
       [],object({copy:object(publicFields)}),{editorial:true,rules:[],assignment:'修改既有策略文稿的客户可见文字。',context:JSON.stringify({carrier,brief:project.brief,draft,constraints:out.constraints})});
     const copy=edit.parsedOutput?.copy;
     if (copy && Object.keys(publicFields).every(key=>Object.hasOwn(copy,key))) {

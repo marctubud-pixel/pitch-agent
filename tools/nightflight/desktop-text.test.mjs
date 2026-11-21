@@ -295,6 +295,7 @@ test('a complete wrapped headline reaches the image API without changing the wri
   const {generateVisualWithDesktopModels}=await import('./visual-references.mjs');
   const lines='主标题排入画面左上，分两行。\n下午的停顿，\n撕开一袋';
   const numbered='海报主标题按下列顺序排版。\n第一行：倒出来，\n第二行：四种都认得\n副标另排。';
+  const numberedLiteral='第一行逐字：不用开整盒，\n第二行逐字：下午拆一袋';
   const samples=[
     {line:'下午的停顿，撕开一袋',prompt:lines,allowed:true},
     {line:'下午的停顿，撕开一袋',prompt:lines.replace('停顿，','停顿！'),allowed:false},
@@ -302,6 +303,8 @@ test('a complete wrapped headline reaches the image API without changing the wri
     {line:'Try it，下午见',prompt:'画面写\nTry\n  it，\n下午见',allowed:true},
     {line:'Try it，下午见',prompt:'画面写\nTryit，\n下午见',allowed:false},
     {line:'倒出来，四种都认得',prompt:numbered,allowed:true},
+    {line:'不用开整盒，下午拆一袋',prompt:numberedLiteral,allowed:true},
+    {line:'不用开整盒，下午拆一袋',prompt:numberedLiteral.replace('整盒，','整盒'),allowed:false},
     {line:'倒出来，四种都认得',prompt:numbered.replace('第二行','第一行'),allowed:false},
     {line:'倒出来，四种都认得',prompt:numbered.replace('倒出来，','倒出来'),allowed:false},
     {line:'倒出来，四种都认得',prompt:numbered.replace('四种都认得','四种都认得。'),allowed:false},
@@ -334,9 +337,14 @@ test('the image API receives an all-visible pack count only when the brief confi
   for (const sample of [
     {brief,prompt:all,blocked:true},
     {brief,prompt:partial},
+    {brief,prompt:partial+'不要画盒内七袋同时露出，不要要求七袋全部可见或可数。'},
+    {brief,prompt:partial+'只用于理解分装关系；不得据此要求七袋全部可见或可数。'},
+    {brief,prompt:partial+'无需展示价格，七袋全部可见或可数。',blocked:true},
     {brief:explicit,prompt:all,count:7},
     {brief:explicit,prompt:all.replace('七只全部','八只全部'),blocked:true},
     {brief:priceBrief,prompt:partial+'价签大字写「29.9元/盒」。',priceBlocked:true},
+    {brief:priceBrief,prompt:partial+'不画价签、价格和促销角标，29.9 元/盒留在提案材料里。'},
+    {brief:priceBrief,prompt:partial+'不画品牌，右下角印29.9元/盒。',priceBlocked:true},
     {brief:priceBrief,prompt:partial+'标示为「目标价29.9元/盒」。'},
   ]) {
     const sent=[];

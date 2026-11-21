@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { validateStrategyAdvice, validateResearchDigest, reviewedFindings, missingResearchCoverage } from './research-digest.mjs';
-import { strategyCarrier, reviseFlaggedLines } from './strategy-one-pager.mjs';
+import { makeStrategyOnePager, strategyCarrier, reviseFlaggedLines } from './strategy-one-pager.mjs';
 import { createStageRunner } from './codex-runner.mjs';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
@@ -1162,6 +1162,82 @@ for (const action of ['ok','kv','linked','front-kv','general','reader','compact'
     assert.match(md.split('## 推导依据')[1],/模拟设定/);
   });
 }
+
+test('strategy keeps a target-only price out of artwork unless the Brief explicitly asks for it',async t=>{
+  const target='电商目标价29.9元/盒。';
+  const brief='做混合坚果包装正面和电商KV。每袋25克，盒内七袋。';
+  const finding={conclusion:'受访者下午买零食',evidence:'下午会买零食加餐',source:'消费者调查',implication:'优先安排工位食用'};
+  const images=[{name:'实际参考.png'}];
+  const inputs={images,texts:[{name:'调研正文.md',text:finding.evidence}]};
+  const rationale={text:'按加餐情境确定阅读重点。',findingNumbers:[1]};
+  const base={
+    coreStrategy:'办公室下午加餐，先看清七袋分装。',insight:'一次想吃多少？',
+    brandRole:'让上班族随手取用一袋。',proposition:'一盒可分七次吃。',
+    actions:['正面居中放品类名。','左下标每袋25克。','首屏单袋在前、整盒在后。'],
+    touchpoints:[{kind:'front',name:'外盒正面',action:'缩略图能辨认分装规格。'},
+      {kind:'kv',name:'电商详情页首屏',action:'手机首屏先看到这一袋怎么取用。'}],
+    metrics:[{name:'规格识别',method:'展示正面三秒，记录复述袋数的人数。'},
+      {name:'取用动作理解',method:'观看首屏，记录说出怎么取用的人数。'},
+      {name:'配料辨识',method:'观察盒面后说出能记住的配料。'}],
+    constraints:target+'实际售价待定。',intersection:'包装负责辨认，首屏给出用法。',
+    opportunity:rationale,decision:rationale,priority:rationale,
+  };
+  const prices=appearance=>({...base,actions:[...base.actions.slice(0,2),'首屏右下角标「'+appearance+'」。'],
+    touchpoints:[base.touchpoints[0],{...base.touchpoints[1],action:'手机首屏在单袋旁读到'+appearance+'。'}]});
+  const bare=prices('29.9元/盒');
+  const qualified=prices('电商目标价29.9元/盒');
+  const run=(input,drafts,calls)=>makeStrategyOnePager({project:{brief:input,research:{findings:[finding]}},
+    carrier:'packaging+kv',inputs,rules:['同一份策略规则'],call:async(instruction,attachments,schema,task)=>{
+      calls.push({instruction,attachments,schema,task});
+      if (task.delegate) return {parsedOutput:{issues:[]}};
+      assert.equal(task.assignment,'依据本案简报和已核研究制定夜航一页策略。');
+      assert.deepEqual(attachments,images);
+      const index=calls.length-1;
+      assert.ok(index<drafts.length);
+      return {parsedOutput:{outcome:structuredClone(drafts[index])}};
+    }});
+  await t.test('retries only the unsafe draft with unchanged evidence and publishes the corrected wording',async()=>{
+    const calls=[];
+    const result=await run(brief+target,[bare,base],calls);
+    const [first,retry,reader]=calls;
+    assert.equal(calls.length,3);
+    assert.deepEqual(retry.task,first.task);
+    assert.deepEqual(retry.schema,first.schema);
+    assert.match(retry.instruction,/上次输出需修正：项目只给了目标价/u);
+    assert.equal(reader.task.delegate,true);
+    assert.doesNotMatch(reader.task.context,/29\.9元/u);
+    const [page,constraints]=result.body.split('## 推导依据');
+    assert.doesNotMatch(page,/29\.9元/u);
+    assert.match(page,/首屏单袋在前、整盒在后/u);
+    assert.match(constraints,/电商目标价29\.9元\/盒/u);
+  });
+  await t.test('keeps the qualified target price when explicitly asked to show it on the KV',async()=>{
+    const calls=[];
+    const {body}=await run(brief+target+'请在KV首屏标注目标价。',[qualified],calls);
+    assert.equal(calls.length,2);
+    assert.match(body.split('## 衡量方式')[0],/电商目标价29\.9元\/盒/u);
+  });
+  await t.test('permission for the KV leaves the separate packaging price unsigned',async()=>{
+    const calls=[];
+    const unapproved={...qualified,touchpoints:[{...base.touchpoints[0],action:'外盒正面标出电商目标价29.9元/盒。'},qualified.touchpoints[1]]};
+    const {body}=await run(brief+target+'请在KV首屏标注目标价。',[unapproved,qualified],calls);
+    assert.equal(calls.length,3);
+    assert.doesNotMatch(body,/外盒正面标出电商目标价/u);
+    assert.match(body,/首屏右下角标「电商目标价29\.9元\/盒」/u);
+  });
+  await t.test('preserves an ordinary confirmed price as supplied',async()=>{
+    const calls=[];
+    const {body}=await run(brief+'售价29.9元/盒。',[{...bare,constraints:'售价29.9元/盒。'}],calls);
+    assert.equal(calls.length,2);
+    assert.match(body.split('## 衡量方式')[0],/标「29\.9元\/盒」/u);
+  });
+  await t.test('a target label alone does not give permission to print the price',async()=>{
+    const calls=[];
+    await assert.rejects(run(brief+target,[qualified,qualified],calls),/项目只给了目标价/u);
+    assert.equal(calls.length,2);
+    assert.ok(calls.every(item=>!item.task.delegate));
+  });
+});
 
 test('strategy owner may remove an unclear clause without substituting a reader’s guess',async()=>{
   const text='学生先看清这瓶是什么茶、是不是真茶。';
