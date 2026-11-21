@@ -27,7 +27,8 @@ function invoke(executable, action, input, signal, mode = '--text-model') {
         const response=JSON.parse(data);
         if(response.failure) {
           const failure=Error(response.failure);
-          failure.code=nativeRetryCodes.get(response.retryCause) ?? (response.nativeTransport ? undefined : legacyRetryCodes.get(response.failure));
+          if(response.nativeTransport==='typed') failure.code=nativeRetryCodes.get(response.retryCause);
+          else if(!response.nativeTransport) failure.code=legacyRetryCodes.get(response.failure);
           throw failure;
         }
         resolve(response);
@@ -90,8 +91,17 @@ export function desktopImageProvider(executable,dir,signal,onEvent) {
       inputs.push({mime:image.mediaType,data:bytes.toString('base64')});
     }
     const body = {model:profile.model,prompt,n:1,output_format:'png'};
-    await onEvent?.('生图 API 请求 · '+profile.host+' · '+profile.model+' · '+inputs.length+' 张参考图');
-    const result = await invoke(executable,'completion',JSON.stringify({base:profile.base,body,images:inputs}),signal,mode);
+    const packet = JSON.stringify({base:profile.base,body,images:inputs});
+    const request = async () => {
+      await onEvent?.('生图 API 请求 · '+profile.host+' · '+profile.model+' · '+inputs.length+' 张参考图');
+      return invoke(executable,'completion',packet,signal,mode);
+    };
+    const result = await request().catch(async error => {
+      if(error.code!=='TLS_BEFORE_SEND') throw error;
+      await onEvent?.('生图 API 握手失败，确认尚未发送。原样自动重试一次 · '+profile.host);
+      await delay(750,undefined,{signal});
+      return request();
+    });
     const item = result.data?.[0];
     if(!item?.b64_json) throw Error('生图接口未返回图像原件');
     const bytes = Buffer.from(item.b64_json,'base64');
