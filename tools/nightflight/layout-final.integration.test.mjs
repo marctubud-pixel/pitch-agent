@@ -81,7 +81,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   t.after(()=>rm(root,{recursive:true,force:true}));
   const id='layout-case-b', storage=join(root,id,'files');
   await mkdir(storage,{recursive:true});
-  const brief='为馆内亲子活动做一张公众号封面，须预约。联名七袋装外盒的电商目标价为29.9元/盒。品牌名和正式标志还没定。';
+  const brief='为馆内亲子活动做一张公众号封面，须预约。联名七袋装外盒的电商目标价为29.9元/盒。每袋25克，盒内7袋。品牌名和正式标志还没定。';
   const strategy='先看出馆内活动，再读预约。';
   const copy='本版文案稿';
   const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4uoAAAAASUVORK5CYII=','base64');
@@ -89,6 +89,13 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const observation={composition:'左边标题，右边展柜',legibleText:['天黑进馆'],visibleDetails:['展柜'],uncertain:['未看清人物动作']};
   const peerSource={chapter:'竞争与同类传播',source:'场馆原文',url:'https://example.invalid/venue',
     conclusion:'活动名在海报上方',evidence:'上方标题区为活动名称'};
+  const competitorRow='洽洽礼盒用透明容器和多罐分装展示不同坚果，规格为1.308—1.988千克。';
+  const competitorConcern='竞品规格与项目 Brief 冲突';
+  const packageImage=(brand,range)=>({actualPackaging:true,pageUrl:'https://example.invalid/package/'+range,
+    observation:'包装原图可见净含量：'+range,firstRead:{brand,front:brand+'礼盒，净含量：'+range}});
+  const packagingSource={chapter:peerSource.chapter,source:'礼盒包装原图',url:'https://example.invalid/package',
+    conclusion:'同类礼盒展示透明容器与分装',evidence:'洽洽 1.308kg、1.988kg；沃隆 520克',
+    images:[packageImage('洽洽','1.308kg'),packageImage('洽洽','1.988kg'),packageImage('沃隆','520克')]};
   const artifact=(stage,name,kind='text')=>({stage,name,kind,storageKey:name});
   await Promise.all(Object.entries({'任务卡.md':brief,'策略.md':strategy,'文案.md':copy,'原图.png':image})
     .map(([name,bytes])=>writeFile(join(storage,name),bytes)));
@@ -97,7 +104,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
     commands:{},claim:null,owner:null,attachments:[],versions:[],feedback:[],events:[],
     briefScope:{status:'accepted',types:['kv']},directions:['馆内夜游'],choice:'馆内夜游',
     copyReview:{status:'ready',bodyHash:sha(copy),draft:{directions:[{name:'馆内夜游',main:'天黑进馆',secondary:'馆内讲解 · 须预约'}]}},
-    research:{findings:[peerSource],sections:[{chapter:peerSource.chapter,evidenceIndices:[0]}]},
+    research:{findings:[peerSource,packagingSource],sections:[{chapter:peerSource.chapter,evidenceIndices:[0,1]}]},
     artifacts:[artifact('brief','任务卡.md'),artifact('strategy','策略.md'),artifact('copy','文案.md'),
       {...artifact('visual','原图.png','image'),visual:{direction:'馆内夜游',role:'main',candidate:1,recommended:true,sha256:sha(image),
         referenceHandoff:{referenceTask:{translation:visualIntent}}}}],
@@ -125,7 +132,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   };
   const draft={cover:{title:'馆内活动',subtitle:'公众号封面提案',imageNote:''},chapters:[
     {title:'活动需求',pages:[page('brief','家长先看清参加条件',{points:['报名方式待定。','馆内讲解面向亲子。','品牌名与正式标志待定。']}),
-      page('peers','同类把活动名放上方',{points:[printed],sourceIndices:[0]})]},
+      page('peers','同类把活动名放上方',{points:[printed,competitorRow],sourceIndices:[0,1]})]},
     {title:'核心策略',pages:[page('strategy',strategy)]},
     {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['突出馆内场景。']}),
       page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),
@@ -178,6 +185,9 @@ else {
      if(issue.problem==='同类参考点列少字')
        return [id,{kind:'fact_conflict',actual:'文本显示“'+${JSON.stringify(allegedMissingGlyph)}+'”',
          required:${JSON.stringify(printed)},source:'',location,reason}];
+     if(issue.problem===${JSON.stringify(competitorConcern)})
+       return [id,{kind:'fact_conflict',actual:'页面提及“规格为1.308—1.988千克”，与Brief的“每袋25克，盒内7袋”冲突',
+         required:'每袋25克，盒内7袋',source:'B1',location,reason}];
      if(issue.problem===${JSON.stringify(footerConcern)})
        return [id,{kind:'confirmed_requirement_missing',actual:'封底无数字页码且无品牌页脚标识。',
          required:'全册需统一视觉节奏，含统一的位置页码与页脚品牌标识，确保册内导航与品牌识别连贯。',source:'S1',location,reason}];
@@ -218,6 +228,9 @@ else {
    if (role==='措辞岗' && pages.some(p=>p['页码']===4))
      issues.push({...issue,page:4,operation:'note',target:'layout',from:'',to:'',quote:'',
        problem:'同类参考点列少字',evidence:${JSON.stringify(allegedMissingGlyph)},change:'补字'});
+   if (role==='逻辑岗' && pages.some(p=>p['页码']===4 && p.text.includes(${JSON.stringify(competitorRow)})))
+     issues.push({...issue,page:4,operation:'hold',target:'research',from:'',to:'',quote:'',
+       problem:${JSON.stringify(competitorConcern)},evidence:${JSON.stringify(competitorRow)},change:'把规格改为每袋25克'});
    if (role==='逻辑岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。')))) issues.push({...issue,page:3});
    if (role==='措辞岗' && pages.some(p=>p.text.some(line=>line.includes('报名方式待定。'))))
      issues.push({...issue,page:3,target:'copy',from:'报名方式待定',to:'须预约'});
@@ -272,8 +285,8 @@ else {
    if(mode!=='--text-model' || figure.id!=='A1' || figure.sha256!==${JSON.stringify(sha(image))} ||
       figure.visualIntent!==${JSON.stringify(visualIntent)} || JSON.stringify(figure.observation)!==JSON.stringify(${JSON.stringify(observation)}))
      throw Error('DeepSeek 编稿未分开接收同版原图的画面意图和实际读图');
-   if(JSON.stringify(materials.research.findings)!==JSON.stringify([${JSON.stringify(peerSource)}]) ||
-      materials.research.sections[0].evidenceIndices[0]!==0) throw Error('DeepSeek 编稿未收到同版同类结论和出处');
+   if(JSON.stringify(materials.research.findings)!==JSON.stringify(${JSON.stringify([peerSource,packagingSource])}) ||
+      materials.research.sections[0].evidenceIndices.join()!=='0,1') throw Error('DeepSeek 编稿未收到同版同类结论和出处');
    reply=${JSON.stringify(draft)};
  }
  console.log(JSON.stringify({model,id:randomUUID(),choices:[{message:{content:JSON.stringify(reply)}}]}));
@@ -320,6 +333,7 @@ else {
   assert.match(xml('ppt/slides/slide3.xml'),/客户已确认须预约。/u);
   assert.match(strFromU8(before['ppt/slides/slide3.xml']),/报名方式待定。/u);
   assert.ok(xml('ppt/slides/slide4.xml').includes(printed));
+  assert.ok(xml('ppt/slides/slide4.xml').includes(competitorRow));
   assert.match(xml('ppt/slides/slide6.xml'),/天黑进馆/u);
   assert.match(xml('ppt/slides/slide6.xml'),/<p:pic>/u);
   assert.match(xml('ppt/slides/slide7.xml'),/<p:pic>/u);
@@ -355,6 +369,8 @@ else {
   const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
   assert.match(report,/第 1 页 · P1 · 封面缺少品牌标识占位/u);
   assert.match(report,/第 4 页 · P1 · 同类参考点列少字/u);
+  assert.ok(report.includes('第 4 页 · P1 · '+competitorConcern));
+  assert.match(report,/实页为同类产品的规格，已逐一对到对应品牌的包装原图读字/u);
   assert.match(report,/第 8 页 · P1 · 决策页缺少品牌标识占位/u);
   assert.match(report,/品牌待确定已列在对应职责页/u);
   assert.match(report,/实页放大读到「呈现活动名。」，所报漏字在同版原生正文与实图均可核对/u);
