@@ -115,6 +115,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const printed='海报上方呈现活动名。';
   const allegedMissingGlyph='海报上方呈活动名。';
   const croppedTranscription='海报下方呈现活动名。';
+  const footerConcern='封底页缺少页码和页脚品牌标识，导致分页和全册视觉节奏不统一。';
   const decisionLines=[joinedDecision,sizePending,pricePending,wrongPriceUnit];
   const wrappedDecisions={
     '缺少七袋装外盒正面实物尺寸及结构信息':sizePending,
@@ -177,6 +178,9 @@ else {
      if(issue.problem==='同类参考点列少字')
        return [id,{kind:'fact_conflict',actual:'文本显示“'+${JSON.stringify(allegedMissingGlyph)}+'”',
          required:${JSON.stringify(printed)},source:'',location,reason}];
+     if(issue.problem===${JSON.stringify(footerConcern)})
+       return [id,{kind:'confirmed_requirement_missing',actual:'封底无数字页码且无品牌页脚标识。',
+         required:'全册需统一视觉节奏，含统一的位置页码与页脚品牌标识，确保册内导航与品牌识别连贯。',source:'S1',location,reason}];
      if(issue.problem==='待确认的两项需提案人拍板')
        return [id,{kind:'confirmed_requirement_missing',actual:'第8页两项仍需客户决定，不宜代客户拍板。',
          required:${JSON.stringify(joinedDecision)},source:'B1,S1',location,reason}];
@@ -230,6 +234,9 @@ else {
    if (role==='美术岗' && pages.some(p=>p['页码']===2))
      issues.push({...issue,page:2,level:'P0',operation:'layout',target:'visual',
        problem:'目录导读可精简',evidence:'三个章名依次并列',change:'保留给排版设计判断'});
+   if (role==='美术岗' && pages.some(p=>p['页码']===9 && p.text.includes('感谢观看，') && p.text.includes('期待与您确认下一步方向。')))
+     issues.push({...issue,page:9,operation:'note',from:'',to:'',quote:'',problem:${JSON.stringify(footerConcern)},
+       evidence:'第1至第8页均有页码与页脚标识，第9页无数字页码且无品牌页脚。',change:'补充该页页码并加品牌页脚。'});
    if (role==='美术岗' && pages.some(p=>p['页码']===7))
      issues.push({...issue,page:7,level:'P1',operation:'visual',target:'visual',
        problem:'可重绘原图光影',evidence:'领读主体背光',change:'留给视觉阶段提案人决定'});
@@ -319,6 +326,7 @@ else {
   const deck=JSON.parse(await readFile(join(storage,deckFile.url.split('/').at(-1)),'utf8'));
   assert.equal(deck.pages[5].template,'design.half');
   assert.equal(deck.pages[6].template,'upload.framed');
+  assert.equal(deck.pages[8].template,'closing.type');
   const reads=(await readFile(log,'utf8')).trim().split('\n').map(JSON.parse);
   for (const role of ['逻辑岗','措辞岗','美术岗']) {
     assert.deepEqual(reads.filter(item=>item.role===role).slice(0,3).flatMap(item=>item.pages),[1,2,3,4,5,6,7,8,9]);
@@ -333,6 +341,8 @@ else {
   assert.match(report,/第 8 页 · P1 · 决策页缺少品牌标识占位/u);
   assert.match(report,/品牌待确定已列在对应职责页/u);
   assert.match(report,/实页放大读到「呈现活动名。」，所报漏字在同版原生正文与实图均可核对/u);
+  assert.ok(report.includes('第 9 页 · P1 · '+footerConcern));
+  assert.match(report,/封底原句完整，页脚与页码作为版式建议/u);
   assert.ok(report.includes('readable '+croppedTranscription));
   assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
   assert.match(report,/第 8 页 · P1 · 待确认的两项需提案人拍板/u);
