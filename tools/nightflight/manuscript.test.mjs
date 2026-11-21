@@ -328,6 +328,33 @@ test('包装逐页稿按采用图首读核实共同印字和实物陈列',async 
     assert.ok(result.draft.includes(observed+'。适合讲一袋用量'));
   });
 
+  await t.test('并排建议只去掉同一槽位的已绑定图号，保留逐图原字及位置校验',async()=>{
+    const labeled=structuredClone(draft);
+    const compare=labeled.chapters[2].pages[0];
+    compare.points=['A2 适合讲分装','B1：适合讲配料','C1 · 适合讲一袋用量'];
+    const raw=structuredClone(labeled);
+    const {result,sent}=await replay(materials,labeled);
+    assert.equal(sent.length,1);
+    assert.deepEqual(labeled,raw);
+    assert.deepEqual(result.plan.pages.find(page=>page.role==='compare').points,[
+      '一只独立小袋。适合讲分装',recipe+'。适合讲配料',quoteDetails+'适合讲一袋用量',
+    ]);
+    const badCases=[
+      {points:['B1 适合讲分装','A2 适合讲配料',compare.points[2]],hint:/并排页 points/u},
+      {points:['D1 适合讲分装',...compare.points.slice(1)],hint:/并排页 points/u},
+      {points:['A2 画面已经展示七袋实物',...compare.points.slice(1)],hint:/并排页 points/u},
+      {visibleQuotes:['',...compare.visibleQuotes.slice(1)],hint:/并排页 points/u},
+      {visibleQuotes:['下午这袋坚果，有一点草莓红',...compare.visibleQuotes.slice(1)],hint:/并排页 visibleQuotes/u},
+    ];
+    for (const {hint,...overrides} of badCases) {
+      const wrong=structuredClone(labeled);
+      Object.assign(wrong.chapters[2].pages[0],overrides);
+      const retry=await replay(materials,wrong,labeled);
+      assert.equal(retry.sent.length,2);
+      assert.match(retry.sent[1].slice(retry.sent[0].length),hint);
+    }
+  });
+
   await t.test('保留 2019 调查 84% 的完整测量对象，也允许省略数值',async()=>{
     const survey=structuredClone(materials);
     survey.research.findings=[{chapter:'人群与接触情境',source:'2019 益普索包装问卷',

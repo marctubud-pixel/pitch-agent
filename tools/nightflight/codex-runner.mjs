@@ -1509,6 +1509,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
             ...(verdict.posterArtworkCheck ? {posterArtworkCheck:verdict.posterArtworkCheck} : {}),
+            ...(verdict.weeklyLabelCheck ? {weeklyLabelCheck:verdict.weeklyLabelCheck} : {}),
             ...(record.sloganRepair ? {sloganRepair:record.sloganRepair} : {}),
             ...(record.artworkRevision ? {artworkRevision:record.artworkRevision} : {}),
             blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}};

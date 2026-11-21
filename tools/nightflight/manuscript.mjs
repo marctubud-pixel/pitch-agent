@@ -243,6 +243,11 @@ function observedQuote(figure, quote) {
   return '';
 }
 
+function compareSuggestion(point,figureId) {
+  const prefix=new RegExp('^'+RegExp.escape(figureId)+'[\\p{Zs}\\t:：、·]+(?=适合)','u');
+  return point.replace(prefix,'');
+}
+
 function checkVisualDraft(pages, figures) {
   for (const p of pages) {
     const quotes=p.visibleQuotes ?? [];
@@ -263,7 +268,7 @@ function checkVisualDraft(pages, figures) {
           ' 顺序，每项逐字摘自对应采用图首次实际观察，未核清则该项留空');
       }
       if (p.points.length && (p.points.length!==figures.length || p.points.some((point,i)=>
-        point && (!quotes[i] || !/^适合/u.test(point))))) {
+        point && (!quotes[i] || !/^适合/u.test(compareSuggestion(point,figures[i].id)))))) {
         throw invalidOutput('并排页 points 只写对应已观察画面的「适合……」建议，按原图顺序，无建议填 [] 或对应项留空');
       }
     } else if (quotes.length) {
@@ -370,7 +375,7 @@ function buildManuscriptPlan(draft, materials) {
       } else if (p.role==='compare') {
         points=p.visibleQuotes.map((quote,i)=>{
           const seen=quote?observedQuote(figures[i],quote):'';
-          return points[i] ? seen.replace(/[。；;]$/u,'')+'。'+points[i] : seen;
+          return points[i] ? seen.replace(/[。；;]$/u,'')+'。'+compareSuggestion(points[i],figures[i].id) : seen;
         });
       }
       const shown=p.role==='compare'?figures:figure?[figure]:[];
