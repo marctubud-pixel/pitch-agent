@@ -93,7 +93,10 @@ export function reportExcerpts(text, terms) {
 export const minimumAudienceFacts=2;
 export const audiencePriorities=['人群','使用场景','选择因素'];
 export const audienceTopics=[...audiencePriorities,'使用频率','其他'];
-const questionKey=value=>(typeof value==='string' ? value : '').normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
+function questionKey(value) {
+  const key=(typeof value==='string' ? value : '').normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
+  return /^(?:在哪[里儿]?|在哪个场景|哪个场景|在?什么场景)(?:饮用|使用|消费|喝|用|吃)?$/u.test(key) ? '在什么场景使用' : key;
+}
 
 // A survey question may have several answer options, several quotations and several publication URLs.
 export function selectAudienceRows(rows) {
@@ -102,7 +105,7 @@ export function selectAudienceRows(rows) {
     .sort((a,b)=>audienceTopics.indexOf(a.audienceTopic)-audienceTopics.indexOf(b.audienceTopic));
   for (const row of ordered) {
     const duplicate=selected.find(s=>questionKey(s.surveyQuestion)===questionKey(row.surveyQuestion) ||
-      (row.audienceTopic!=='其他' && s.audienceTopic===row.audienceTopic));
+      (row.evidenceIndices.length>0 && s.evidenceIndices[0]===row.evidenceIndices[0]));
     if (!duplicate) {
       selected.push({...row,evidenceIndices:[...row.evidenceIndices]});
       continue;
@@ -260,7 +263,7 @@ export function consumerSearchTopics(categories, followup=false) {
   const topics=[];
   for (const raw of categories ?? []) {
     if (typeof raw!=='string') continue;
-    const term=raw.trim().replace(/(?:消费者调查|消费报告|行业报告|白皮书|报告)$/u,'').replace(/(?:行业|消费)$/u,'');
+    const term=raw.trim().replace(/(?:消费者调查|消费报告|行业报告|白皮书|报告)$/u,'').replace(/消费者$/u,'').replace(/(?:行业|消费)$/u,'');
     if (!/^[\p{L}\p{N}·-]{1,12}$/u.test(term) || topics.some(t=>t.term===term)) continue;
     const suffixes=followup ? ['消费白皮书','行业报告'] : ['消费报告','消费者调查'];
     topics.push({term,queries:suffixes.map(s=>term+s)});

@@ -640,6 +640,26 @@ test('two options of the same audience question form one row and cannot unlock s
   assert.equal(selectAudienceRows([sections[0],mislabeled]).length,1);
 });
 
+test('different selection questions in the same consumer report retain two sourced rows',async()=>{
+  const {selectAudienceRows,automaticResearchGaps}=await import('./research-sources.mjs');
+  const chapter='人群与接触情境';
+  const url='https://www.iimedia.cn/c400/108605.html';
+  const facts=[
+    {question:'不同社交场景下对休闲食品的需求差异是什么？',
+      quote:'最突出的是“独自享用时更关注口味和品质”，占比高达70.71%',
+      conclusion:'独自享用零食时，70.71%更看重口味和品质。'},
+    {question:'购买休闲食品的主要原因是什么？',
+      quote:'“休闲消遣”占比42.53%，是所有选项中占比最高的。其次是“本来就喜欢吃”，占比40.52%。',
+      conclusion:'购买休闲食品的首要原因是休闲消遣（42.53%）。'},
+  ];
+  const findings=facts.map(({quote})=>({subject:'audience',evidence:quote,passage:quote,source:'艾媒咨询',url}));
+  const sections=facts.map(({question,quote,conclusion},i)=>({chapter,conclusion,explanation:quote,
+    audienceTopic:'选择因素',surveyQuestion:question,evidenceIndices:[i]}));
+  assert.deepEqual(selectAudienceRows(sections).map(row=>[row.surveyQuestion,row.evidenceIndices]),
+    facts.map(({question},i)=>[question,[i]]));
+  assert.ok(!automaticResearchGaps({sections,findings},{}).some(g=>g.chapter===chapter));
+});
+
 test('a stored poster keeps its own publication evidence when a sidebar changes',async()=>{
   const {researchCompetitors}=await import('./research-competitors.mjs');
   const page='https://publisher.example.org/a', original='甲为坚果活动发布系列海报。', sidebar='乙发布另一活动。';

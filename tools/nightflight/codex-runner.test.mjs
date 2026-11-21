@@ -1380,6 +1380,15 @@ test('director keeps approved A and B while repairing only C after blind reading
   assert.equal(book.discarded.length,1);
 });
 
+test('consumer search strips a trailing consumer label and deduplicates the categories',async()=>{
+  const {consumerSearchTopics}=await import('./research-sources.mjs');
+  assert.deepEqual(consumerSearchTopics(['混合坚果','混合坚果消费者','休闲零食消费者','办公室零食消费者','休闲零食']),[
+    {term:'混合坚果',queries:['混合坚果消费报告','混合坚果消费者调查']},
+    {term:'休闲零食',queries:['休闲零食消费报告','休闲零食消费者调查']},
+    {term:'办公室零食',queries:['办公室零食消费报告','办公室零食消费者调查']},
+  ]);
+});
+
 test('consumer research broadens across categories and opens publisher reports after irrelevant results',async()=>{
   const {consumerSearchTopics}=await import('./research-sources.mjs');
   const {researchConsumerReports}=await import('./codex-runner.mjs');

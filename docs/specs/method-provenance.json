@@ -1,9 +1,9 @@
 [
   {
-    "source": "同批研究材料的真实 JSON 格式回复对照",
+    "source": "同批已读调查两道题的真实回执与检索词对照",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r37-20261121",
-    "sha256": "3093959b25af228c4e4f9f7120bf4c6f9dfe55384c1676b22b26444fbb31f598"
+    "sourceVersion": "r38-20261121",
+    "sha256": "d14ba74b57d28e3be3535395bae8b2ac7694017ad9d29140642ce5b7e2bf423c"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
