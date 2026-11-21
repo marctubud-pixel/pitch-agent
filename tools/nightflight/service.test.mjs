@@ -401,6 +401,80 @@ test('human adopts a non-recommended candidate with an explicit reason, or revis
   await project.settled();
 });
 
+test('visual handoff preserves a revised poster original without making it a candidate',async t=>{
+  const directions=['A','B','C'];
+  const sourceName='visual-1-before.png';
+  const sourceBytes=Buffer.from('original poster bytes');
+  const sourceSha256=createHash('sha256').update(sourceBytes).digest('hex');
+  const wrongSha256='0'.repeat(64);
+  const revision={sourceName,sourceSha256,reason:'旧稿品牌露出不对',edit:'重做同一方向'};
+  async function runCase(t,change=(original,proof)=>({original,proof}),layoutInputs=[]) {
+    return legacyService(t,{stage:'visual',status:'failed',mode:'auto',directions,briefScope:{types:['kv']}},async({project,stage,dir})=>{
+      if (stage==='layout') {
+        layoutInputs.push(project.artifacts.map(a=>a.name));
+        throw Error('只验证采用对象');
+      }
+      assert.equal(stage,'visual');
+      const {original,proof}=change({role:'poster-original',direction:'A',sha256:sourceSha256},{...revision});
+      await writeFile(join(dir,sourceName),sourceBytes);
+      const artifacts=[{name:sourceName,kind:'image',visual:original}];
+      for(const direction of directions) for(const candidate of [1,2,3]) {
+        const name=direction+candidate+'.png';
+        const score=candidate===1?5:4;
+        await writeFile(join(dir,name),'current poster '+name);
+        artifacts.push({name,kind:'image',visual:{role:'main',direction,candidate,mean:score,recommended:candidate===1,
+          blind:{first:'新品',action:'开盖',words:'原味',alternative:'杯装'},edit:'无',research:'无',blocked:false,
+          reason:'同版独立核对',scores:['视觉','品牌','用户','传播'].map(role=>({role,score})),
+          ...(direction==='A' && candidate===1 ? {artworkRevision:proof} : {}),
+        }});
+      }
+      return {artifacts};
+    });
+  }
+
+  await t.test('publishes nine candidates and retains the original only for traceability',async t=>{
+    const layoutInputs=[];
+    const p=await runCase(t,undefined,layoutInputs);
+    assert.equal((await p.action({kind:'retry'})).status,200);
+    const ready=await p.settled();
+    assert.equal(ready.status,'waiting',ready.error);
+    const archived=ready.artifacts.find(a=>a.visual?.role==='poster-original');
+    assert.equal(archived.name,sourceName);
+    assert.equal(archived.visual.sha256,sourceSha256);
+    assert.equal(archived.visual.candidate,undefined);
+    const key=a=>a.url.split('/').at(-1);
+    assert.deepEqual(await readFile(join(p.root,'example','files',key(archived))),sourceBytes);
+    const candidates=ready.artifacts.filter(a=>a.visual?.candidate);
+    assert.equal(candidates.length,9);
+    const winners=candidates.filter(a=>a.visual.recommended);
+    assert.deepEqual(winners.map(a=>a.name),['A1.png','B1.png','C1.png']);
+    assert.deepEqual(winners[0].visual.artworkRevision,revision);
+    assert.equal((await p.action({kind:'adopt',expectedRevision:ready.revision,
+      candidateIds:[key(archived),...winners.slice(1).map(key)]})).status,409);
+    const adopted=await p.action({kind:'adopt',expectedRevision:ready.revision});
+    assert.equal(adopted.status,200);
+    assert.deepEqual(adopted.data.project.visualAdoption.artifacts,winners.map(key));
+    await p.settled();
+    assert.deepEqual(layoutInputs,[winners.map(a=>a.name)]);
+  });
+
+  for(const [name,change] of [
+    ['rejects a revision record without a source hash',(original,{sourceSha256,...proof})=>({original,proof})],
+    ['rejects an original from another direction',(original,proof)=>({original:{...original,direction:'B'},proof})],
+    ['rejects mismatched source hashes',(original,proof)=>({original,proof:{...proof,sourceSha256:wrongSha256}})],
+    ['rejects a matching declared hash for different original bytes',(original,proof)=>({
+      original:{...original,sha256:wrongSha256},proof:{...proof,sourceSha256:wrongSha256},
+    })],
+  ]) await t.test(name,async t=>{
+    const p=await runCase(t,change);
+    assert.equal((await p.action({kind:'retry'})).status,200);
+    const stopped=await p.settled();
+    assert.equal(stopped.status,'failed');
+    assert.match(stopped.error,/修订|原图|初稿|哈希/u);
+    assert.equal(stopped.artifacts.some(a=>a.stage==='visual'),false);
+  });
+});
+
 test('visual handoff takes intact, traceable originals from the current study', async t=>{
   const bytes=Buffer.from('fixture-original');
   const sha256=createHash('sha256').update(bytes).digest('hex');

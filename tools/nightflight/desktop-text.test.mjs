@@ -516,6 +516,89 @@ test('KV原参考居中时，借布局的自由提示词不能替换成左文右
   assert.equal(imageCalls,0);
 });
 
+test('A3 pure-poster transfer keeps per-axis color and redraw guidance independent of source asset bans',async()=>{
+  const {generateVisualWithDesktopModels,posterIdentityExclusions}=await import('./visual-references.mjs');
+  const image={name:'主参考.jpg',sha256:'44539bee0542aeeb9bc502b2d5abb65822c5e79cce970921e04c0483a44075f4'};
+  const posterSlogan='下班这杯，原味就好';
+  const avoid='不照搬自嘲熊、南瓜装、蝙蝠、满月、橙紫万圣节配色、合作标识及“萃果狂欢”等原字；不保留多角色群像和底部弧形品牌条。';
+  const observations={配色:'主体用橙色和紫色为主色，黄色月亮形成强烈对比，黑色蝙蝠作为点缀。',
+    布局:'标题区在上部中央，占整体高度约15%，留白主要在背景大面积橙色，主体在下部中间，占画面约35%。',
+    景别:'中景比例，显示三角色占全景约三分之一，背景简化为抽象地平线及月亮。',
+    笔法:'线条简洁明快，轮廓清晰，画风扁平卡通，色块分明。',字体:'字体为圆润的无衬线体，字重适中偏粗，黄色填充与背景形成较好区分。'};
+  const revision={sourceName:'已退回稿.png',reason:'布局应沿用，实图与要求不符。景别应沿用，实图与要求不符。笔法应沿用，实图与要求不符。',
+    edit:'参照原图的留白和中景。增加真实感，避免过于扁平。'};
+  const redraw='标题保持上部居中，手和杯聚在下半部，保持环境范围，用醒目的手绘边缘重画。';
+  const newDesign={配色:'乳白与浅蓝为底，使用冷柜白光。',字体:'改用利落的无衬线字、中等字重、深色字。',笔法:'改用油画厚涂和柔和边缘。'};
+  const safe=posterIdentityExclusions(avoid);
+  assert.equal(safe,'不照搬自嘲熊、南瓜装、蝙蝠、满月、合作标识及“萃果狂欢”等原字；不保留多角色群像和底部弧形品牌条');
+  assert.equal(posterIdentityExclusions('勿仿照品牌专属字体；不保留右下橙色品牌标识。'),'勿仿照品牌专属字体；不保留右下橙色品牌标识');
+  assert.equal(posterIdentityExclusions('不照搬黄色月亮和蝙蝠以及橙紫万圣节配色、橙色圆环品牌标识。'),
+    '不照搬黄色月亮和蝙蝠、橙色圆环品牌标识');
+  async function run(transfer,repair,revisionFix=redraw) {
+    const writerPackets=[],dispatch=[];
+    const context={brief:'做便利店冷柜旁的 A3 竖版海报，品牌午晴。产品名「乳白小杯原味酸奶」。',transfer,hasBrandArtwork:false,
+      mainReferenceUse:{avoid,apply:'重画为手拿一杯，背景采用大面积低干扰冷色留白。'},
+      referenceTask:{focus:'保留大面积冷色留白',translation:'画手拿唯一一杯，并用冷柜光照亮杯子。'},
+      ...(repair ? {revision:repair} : {})};
+    const raw=structuredClone({context,observations});
+    const out=await generateVisualWithDesktopModels({images:[image],context,posterSlogan,posterReference:{image,observations},
+      call:async(instruction,images,schema,task)=>{
+        if (!schema) {
+          assert.deepEqual(images,[image]);
+          assert.equal(task.exactImagePrompt,true);
+          dispatch.push(instruction);
+          return {requestId:'image-attempt'};
+        }
+        assert.deepEqual(images,[]);
+        const input=JSON.parse(task.context);
+        writerPackets.push(input);
+        assert.equal(input.mainReferenceUse.avoid,safe);
+        assert.doesNotMatch(input.mainReferenceUse.apply+input.referenceTask.focus,/冷色/u);
+        assert.doesNotMatch(input.mainReference.observations.布局,/橙/u);
+        assert.doesNotMatch(input.mainReference.observations.配色,/月亮|蝙蝠/u);
+        assert.equal(input.mainReference.observations.景别,'中景，主体约占画面 三分之一，环境简化');
+        assert.equal(Boolean(schema.properties.revisionFix),Boolean(repair));
+        return {model:'deepseek-flash',threadId:'same-writer',parsedOutput:{format:'便利店冷柜旁海报',subject:'穿白衣服的人伸手拿橙色手套旁的午晴「乳白小杯原味酸奶」',
+          background:'低干扰冷色留白与冷柜光',lettering:[posterSlogan,'午晴','乳白小杯原味酸奶'],changes:Object.fromEntries(transfer.change.map(key=>[key,newDesign[key]])),
+          ...(repair ? {revisionFix} : {})}};
+      }});
+    assert.equal(writerPackets.length,1);
+    assert.equal(dispatch.length,1);
+    assert.deepEqual({context,observations},raw);
+    assert.equal(out.promptWriting.prompt,dispatch[0]);
+    assert.match(dispatch[0],/A3竖版，宽高比 297:420/u);
+    assert.match(dispatch[0],/完整主标题「下班这杯，原味就好」/u);
+    assert.match(dispatch[0],/杯盖、盒身及侧面留白/u);
+    assert.equal(dispatch[0].split(posterSlogan).length,2);
+    assert.match(dispatch[0],/不保留多角色群像和底部弧形品牌条/u);
+    assert.doesNotMatch(dispatch[0],/背景大面积橙色|橙紫万圣节配色/u);
+    assert.match(dispatch[0],/画面主体和动作。穿衣服的人伸手拿手套旁的午晴「乳白小杯原味酸奶」/u);
+    return {prompt:dispatch[0],input:writerPackets[0],plan:out.promptWriting.plan};
+  }
+  const keepPalette=await run({borrow:['配色','布局','景别'],change:['笔法','字体']});
+  assert.match(keepPalette.prompt,/沿用主参考的配色。橙色、紫色（主色）；黄色（对比）；黑色（点缀）/u);
+  assert.match(keepPalette.prompt,/标题区在上部中央，占整体高度约15%.*主体在下部中间，占画面约35%/u);
+  assert.match(keepPalette.prompt,/沿用主参考的景别。中景，主体约占画面 三分之一，环境简化/u);
+  assert.doesNotMatch(keepPalette.prompt,/冷色留白|本轮重新绘制/u);
+  const colorFix='让橙色与紫色分别占较大的色域，黄色只作对比。';
+  const colorRevision=await run({borrow:['配色','布局','景别'],change:['笔法','字体']},
+    {...revision,reason:'配色应沿用，实图与要求不符。'},colorFix);
+  assert.match(colorRevision.prompt,/重画上一稿的配色。执行下列已核定/u);
+  assert.match(colorRevision.prompt,/沿用主参考的配色。橙色、紫色（主色）/u);
+  assert.doesNotMatch(colorRevision.prompt,/分别占较大的色域/u);
+  const revised=await run({borrow:['布局','景别','笔法'],change:['配色','字体']},revision,
+    redraw+'避免扁平质感，换成实物摄影。');
+  assert.deepEqual(revised.input.revision.axes,['布局','景别','笔法']);
+  assert.match(revised.plan.revisionFix,/换成实物摄影/u);
+  assert.match(revised.prompt,/重画上一稿的布局、景别、笔法/u);
+  assert.match(revised.prompt,/整张海报画成二维平涂插画。商品、人物、手、道具和背景都用统一的手绘轮廓与色块/u);
+  assert.match(revised.prompt,/重新设计配色。本张改为 乳白与浅蓝为底/u);
+  assert.doesNotMatch(revised.prompt,/沿用主参考的配色|换成实物摄影|避免过于扁平|已退回稿.png/u);
+  const factRevision=await run({borrow:['布局','景别','笔法'],change:['配色','字体']},
+    {...revision,reason:'杯口出现未确认的莓果',edit:'画不带果肉的原味酸奶杯'},'杯口不出现莓果。');
+  assert.match(factRevision.prompt,/上一稿的具体修正。杯口不出现莓果/u);
+});
+
 test('brief displays the client view separately and keeps its longer source in the manuscript',async()=>{
   const {makeBriefCard}=await import('./brief-intake.mjs');
   const brief='请设计包装。产品无糖，用泉水。我认为主要卖点是无糖。正面必须标注容量。';

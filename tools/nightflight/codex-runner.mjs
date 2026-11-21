@@ -24,7 +24,7 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
-import { describeReferenceTasks, generateVisualWithDesktopModels, paperAspect, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
 import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -1000,7 +1000,7 @@ async function readInputs(dir, project, stage, signal) {
       const bytes = await readFile(path);
       if (bytes.length > 8 * 1024 * 1024) throw Error('「'+item.name+'」超过单张图片 8 MiB 的限制，请缩小后再上传');
       const dimensions = await inspectImage(bytes,{pythonBinary:await pythonBinary()});
-      images.push({name:item.name,imageId:'ref_' + images.length, sha256:hash(bytes), path, byteLength:bytes.length, mediaType:dimensions.mediaType});
+      images.push({name:item.name,imageId:'ref_' + images.length, sha256:hash(bytes), path, byteLength:bytes.length, ...dimensions});
       texts.push({name:item.name, imageNumber:images.length});
     } else if (item.kind === 'text' || ['.txt','.md'].includes(ext)) {
       append(item.name, await readFile(path,'utf8'));
@@ -1070,7 +1070,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent, referenceTasks}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent, referenceTasks, paper}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -1080,8 +1080,13 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
       pool.push(publicVisualCandidate(item,direction,'public_'+item.sha256.slice(0,24)));
     }
   }
-  for (const image of project.previousReferences ?? []) addCandidates([image], image.direction);
-  addCandidates(project.researchReferences ?? []);
+  const knownReferences=[...(project.previousReferences ?? []),...(project.researchReferences ?? [])];
+  const measured=paper ? await independentCalls(knownReferences,async image=>{
+    if (image.width>0 && image.height>0) return image;
+    const size=await inspectImage(await readFile(image.path),{pythonBinary:await pythonBinary()});
+    return {...image,width:size.width,height:size.height};
+  }) : knownReferences;
+  for (const image of measured) addCandidates([image],image.direction);
   const scope=project.research?.searchScope;
   // Older runs recorded the category in the case directory search, before any brand follow-up.
   const priorCategory=scope?.attempts?.find(attempt=>attempt.source==='SocialBeta 品牌发布案例')?.query;
@@ -1103,7 +1108,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         return rejected ? [{direction,pages:rejected.references.map(ref=>ref.pageUrl),
           blockers:rejected.blockers.slice(0,3).map(message=>message.slice(0,360))}] : [];
       });
-      const proposed=await selectVisualReferences({call,project,images:pool,active:remaining,observations,priorAdmissions,referenceTasks,
+      const proposed=await selectVisualReferences({call,project,images:pool,active:remaining,observations,priorAdmissions,referenceTasks,paper,
         accepted:[...accepted.values()].map(({handoff})=>({direction:handoff.direction,references:handoff.references}))});
       const plans=new Map([...accepted,...proposed]);
       const missing=[];
@@ -1114,6 +1119,13 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         if (plan.missing) {
           missing.push(direction);
           missingReasons[direction]=plan.gap || '缺少能表达该方向的原图';
+          continue;
+        }
+        const main=plan.images.find(i=>i.sha256===plan.handoff.references.find(r=>r.role==='main')?.sha256);
+        if (oppositePosterOrientation(main,paper) && !directionSearches.has(direction)) {
+          missing.push(direction);
+          missingReasons[direction]='当前主参考 '+main.width+'×'+main.height+' 与 '+paper.name+' 方向相反，先补同向独立海报。';
+          await onEvent?.('「'+direction+'」'+missingReasons[direction]);
           continue;
         }
         if (!plan.images.some(i=>i.sourceUrl)) {accepted.set(direction,plan);continue;}
@@ -1325,6 +1337,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       const packaging = carriers.includes('packaging');
       const poster = carriers.includes('kv');
       const checkPosterTransfer = desktop && poster && !packaging;
+      const posterPaper=checkPosterTransfer ? paperAspect(project.brief) : null;
       const strategyPurpose = checkPosterTransfer ? posterStrategyPurpose(strategyText) : strategyText;
       const copyFiles = new Set(project.artifacts?.filter(file=>file.stage==='copy' && file.kind==='text').map(file=>file.name));
       const copyFile = [...copyFiles].at(-1);
@@ -1344,7 +1357,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       };
       const referenceProject={...project,strategyText:strategyPurpose};
       const referenceTasks=desktop ? await describeReferenceTasks({call,project:referenceProject,active:directions,carriers}) : undefined;
-      const plans = await prepareVisualPlans({call,project:referenceProject,images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent,referenceTasks});
+      const plans = await prepareVisualPlans({call,project:referenceProject,images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent,referenceTasks,paper:posterPaper});
       const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];
@@ -1381,6 +1394,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           taskCard:materials.find(item=>project.artifacts?.some(file=>file.name===item.name && file.stage==='brief'))?.text,
           direction:creative, auxiliaryNotes, referenceTask:handoff.referenceTask,
           mainReferenceUse:{apply:mainReference.apply,avoid:mainReference.avoid},
+          hasBrandArtwork:generationReferences.some(ref=>ref.role==='sharedBrand'),
           feedback:(project.feedback ?? []).filter(item=>item.stage==='visual').map(item=>item.text),
         } : {...JSON.parse(context),materials,
           direction:packaging && creative
@@ -1441,8 +1455,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
           ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal)} : {}),
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer),
-            sourcePolicy:{mainReferenceExclusions:mainReference.avoid ?? '',approvedReferenceUse:mainReference.apply},
-            paperAspect:paperAspect(project.brief)},
+            sourcePolicy:{mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
+            paperAspect:posterPaper},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
             const [query]=publicVisualQueries(result,project);

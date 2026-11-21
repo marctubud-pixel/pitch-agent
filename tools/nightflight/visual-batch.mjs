@@ -79,7 +79,7 @@ async function reviewPosterTransfer(call, images, {reference,transfers}) {
   const checks = object(Object.fromEntries(visualElements.map(axis=>[axis,comparison])));
   const output = object({items:list(object({candidate:numeric,checks}))});
   const result = await call(
-    '图1是主参考原图，图2、3、4分别是候选1、2、3。每张候选都与图1对照配色、布局、景别、笔法、字体。每项各用一句话定位主参考和成图中实际可见的特征，判断关系。布局看标题、留白、前后景的相对位置。景别看主体占画面的大小及环境范围。笔法看边缘、线条与材质。字体看字形和字重。可见关系沿用填 same，出现清楚变化填 different，看不清或无法比对填 unknown，并在对应证据写明位置和原因。按画面独立作答。',
+    '图1是主参考原图，图2、3、4分别是候选1、2、3。每张候选都单独与图1对照配色、布局、景别、笔法、字体。每项填三个字段：referenceEvidence 只写图1实见的特征与位置，candidateEvidence 只写这一候选实见的特征与位置，relation 写两者的关系。三栏都要填写。每项只比较自己的特征：配色看主色、辅助色及对比；布局看标题、留白和各层主体的相对位置；景别看主体占画面的大小及环境范围；笔法看边缘、线条与材质；字体看字形和字重。字色变化在配色里判断，人物或物件替换本身不改变布局或景别。画面特征可见沿用填 same，出现清楚变化填 different，看不清或无法比对填 unknown，并在对应证据写明位置和原因。按画面独立作答。',
     [reference.image,...images],output,{delegate:true,rules:[],assignment:'海报借改逐项核对',context:'仅依据四张实际图片。'});
   const identity = auditIdentity(result);
   const rows = result.parsedOutput?.items;
@@ -325,8 +325,8 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const checksPosterFacts = Boolean(sourcePolicy && role==='品牌');
     const placement = checksPackagingText ? '。onPackStatus：可核实且符合简报及产品资料填 verified，印上方向名或主题句填 theme_printed，存在其他字样错误或把价签等触点文字误印在本体填 text_mismatch，盒身文字或位置看不清填 unverified。reason 要写可见字样及位置' : '';
     const facts=checksPosterFacts ? [
-      '为每张成图另填 artworkIssues，只依据候选原图的可见字样或可识别图形和给定授权。看到未授权的其他品牌名、商标或联名印字，包括产品本体和背景里被当作本案品牌的标识，填 foreign_identity。',
-      '看到参考排除的可辨认角色、IP、标志造型或其他专有形象被照搬，填 reference_asset。普通杯形、构图、色块、通用道具或借改项的风格相似本身不算。',
+      '为每张成图另填 artworkIssues，只依据候选原图的可见字样或可识别图形和给定授权。foreign_identity 须识别出其他品牌名、商标或联名标识，并抄出品牌名或说明哪一处造型可认出该标识。颜色、背景气氛及通用装饰不能单独证明品牌身份。',
+      '看到参考排除的可辨认角色、IP、标志造型或其他专有形象被照搬，填 reference_asset。原图独特物件的组合如被复制，写明可辨组合与位置。普通杯形、构图、色块、通用道具或借改项的风格相似本身不算。',
       '看到未经客户确认的产品属性、配料口味、工艺功效或与已确认事实冲突的印字，填 unconfirmed_claim。图上明确把未确认配料当产品内容展示时也可写；单独背景里的通用食物道具不算。',
       '每项 observed 照录可读原字，或写能辨认的图形及特征，location 写候选上实际位置。参考信息用来排除，不提供本案品牌或产品授权。品牌名已确认、正式标志未定时可排品牌原名当普通文字，不借用其他品牌的标志。只列实际可定位的事实冲突；没有则填 []。评分高也要照填。',
     ].join('\n') : '';
