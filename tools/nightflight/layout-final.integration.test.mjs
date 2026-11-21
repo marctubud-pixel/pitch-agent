@@ -136,7 +136,7 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   const protectedCase=join(root,'protected-case');
   const unreadableCase=join(root,'unreadable-case');
   await writeFile(executable,`#!/usr/bin/env node
-import {randomUUID} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {appendFileSync,existsSync} from 'node:fs';
 const [mode,action]=process.argv.slice(2);
 const model=mode==='--vision-model'?'test-vision':'deepseek-fixture';
@@ -199,6 +199,15 @@ else {
    const pages=ctx['本批PPT'];
    const role=['逻辑岗','措辞岗','美术岗'].find(key=>prompt.includes(key+'：'));
    const roleId={'逻辑岗':'logic','措辞岗':'copy','美术岗':'craft'}[role];
+   const initial=prompt.includes('结合全册页序读本批');
+   const pageNumbers=pages.map(page=>page['页码']);
+   const images=last.filter(item=>item.type==='image_url').map(item=>createHash('sha256')
+     .update(Buffer.from(item.image_url.url.split(',')[1],'base64')).digest('hex'));
+   if(initial && role==='美术岗' && pageNumbers.join(',')==='1,2,3,4') {
+     appendFileSync(${JSON.stringify(log)},JSON.stringify({role,pages:pageNumbers,images,initial,truncated:true})+'\\n');
+     console.log(JSON.stringify({model,id:'truncated-craft-p1-p4',choices:[{finish_reason:'length',message:{content:'{"issues": ['}}]}));
+     process.exit(0);
+   }
    if (ctx['本批待复核'].some(issue=>issue.role!==roleId)) throw Error('复验混入其他岗位的意见');
    const issue={level:'P0',impact:'proposal',problem:'把预约写成待定',evidence:'原 Brief 写须预约',change:'明确预约。',
      operation:'text',target:'layout',quote:'须预约',from:'报名方式待定。',to:'客户已确认须预约。'};
@@ -248,7 +257,7 @@ else {
        from:'成品展示',to:'方案效果图',quote:''});
    if (role==='逻辑岗' && existsSync(${JSON.stringify(protectedCase)}) && pages.some(p=>p['页码']===5))
      issues.push({...issue,page:5,from:${JSON.stringify(strategy)},to:'删掉预约要求。'});
-   appendFileSync(${JSON.stringify(log)},JSON.stringify({role,pages:pages.map(p=>p['页码']),actual:pages.map(p=>p.text.join(''))})+'\\n');
+   appendFileSync(${JSON.stringify(log)},JSON.stringify({role,pages:pageNumbers,images,initial,actual:pages.map(p=>p.text.join(''))})+'\\n');
    reply={issues};
  } else if(prompt.includes('全览拼图')) {
    appendFileSync(${JSON.stringify(log)},JSON.stringify({role:'全览',pages:[]})+'\\n');
@@ -328,12 +337,20 @@ else {
   assert.equal(deck.pages[6].template,'upload.framed');
   assert.equal(deck.pages[8].template,'closing.type');
   const reads=(await readFile(log,'utf8')).trim().split('\n').map(JSON.parse);
-  for (const role of ['逻辑岗','措辞岗','美术岗']) {
+  for (const role of ['逻辑岗','措辞岗']) {
     assert.deepEqual(reads.filter(item=>item.role===role).slice(0,3).flatMap(item=>item.pages),[1,2,3,4,5,6,7,8,9]);
+    assert.equal(reads.filter(item=>item.role===role && item.initial && item.pages.join(',')==='1,2,3,4').length,1);
   }
+  const craft=reads.filter(item=>item.role==='美术岗' && item.initial);
+  assert.equal(craft.filter(item=>item.truncated).length,1);
+  assert.deepEqual(craft[0].pages,[1,2,3,4]);
+  const parts=craft.slice(1,3).sort((a,b)=>a.pages[0]-b.pages[0]);
+  assert.deepEqual(parts.map(item=>item.pages),[[1,2],[3,4]]);
+  assert.deepEqual(parts.flatMap(item=>item.images),craft[0].images);
+  assert.deepEqual(craft.slice(3,5).flatMap(item=>item.pages),[5,6,7,8,9]);
   assert(reads.some(item=>item.role==='全览'));
   assert(reads.some(item=>item.role==='裁片盲读' && !item.unreadable));
-  assert(reads.some(item=>item.pages.includes(3) && item.actual.some(text=>text.includes('客户已确认须预约。'))));
+  assert(reads.some(item=>item.pages.includes(3) && item.actual?.some(text=>text.includes('客户已确认须预约。'))));
   assert(state.artifacts.some(item=>item.kind==='image' && item.name===state.finalReview.contact));
   const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
   assert.match(report,/第 1 页 · P1 · 封面缺少品牌标识占位/u);

@@ -74,10 +74,13 @@ export async function desktopTextProvider(executable,signal,onEvent) {
     if(!result.id || !result.model) throw Error('文字服务未返回模型身份或请求编号');
     await onEvent?.(capability+' API 回执 · '+profile.host+' · 实际模型 '+result.model+' · '+result.id);
     const responseText=result.choices?.[0]?.message?.content;
-    if(result.choices?.[0]?.finish_reason==='length') throw Error('文字模型输出超过长度限制，请调整模型后重试');
+    const receipt = {threadId:result.id,model:result.model,inputPacketHash:createHash('sha256').update(packet).digest('hex')};
+    if(result.choices?.[0]?.finish_reason==='length') {
+      throw Object.assign(Error('模型回复超过长度限制，未收到完整结果'),{code:'MODEL_OUTPUT_LENGTH',receipt});
+    }
     let parsedOutput;
     try {parsedOutput=JSON.parse(responseText)} catch {throw Error('文字模型未返回有效 JSON')}
-    return {parsedOutput,responseText,runId,threadId:result.id,model:result.model,inputPacketHash:createHash('sha256').update(packet).digest('hex')};
+    return {parsedOutput,responseText,runId,...receipt};
   }};
 }
 

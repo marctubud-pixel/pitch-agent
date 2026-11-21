@@ -107,36 +107,50 @@ const operations='每项填页码、严重程度、问题、实际证据、改�
 async function audit({call,plan,edition,round,selected,prior=[],verify=false,receipts,onEvent}) {
   const findings=[];
   const sequence=plan.pages.map(({number,role,title})=>({number,role,title}));
-  for (let i=0;i<selected.length;i+=4) {
-    const numbers=selected.slice(i,i+4);
+  async function readRole(role,numbers) {
     const pages=numbers.map(n=>plan.pages[n-1]);
     const figureIds=new Set(pages.flatMap(page=>page.figures));
     const images=numbers.map(n=>edition.images[n-1]);
+    const ownPrior=prior.filter(issue=>issue.role===role && numbers.includes(issue.page))
+      .map(({page,role,problem,evidence,change,level})=>({page,role,problem,evidence,change,level}));
     const context={
       全册页序:sequence,Brief:plan.brief,策略:plan.strategy,已选文案:plan.copy,采用说明:plan.adoption,
       采用图读图:plan.figures.filter(figure=>figureIds.has(figure.id)),本批逐页稿:pages,
       本批PPT:numbers.map(n=>({页码:n,...edition.native[n-1],图片对象数量:edition.native[n-1].images.length})),
+      本批待复核:ownPrior,
     };
+    const place='终审第 '+round+' 轮 · '+roleNames[role]+' · 第 '+numbers.join('、')+' 页';
+    await onEvent?.(place+(verify?'复验':''));
+    let response;
+    try {
+      response=await call([roles[role],
+        '按附件顺序审页 '+numbers.join('、')+'。只判断自己的审稿职责。',
+        verify || round>1?'逐项对照本批实际修后图、正文和旧意见，只交回新版仍存在的问题。':'结合全册页序读本批，逐页给证据。',
+        policy,operations].join('\n'),images,issueSchema(numbers),{delegate:true,context:JSON.stringify(context)});
+    } catch(error) {
+      if(error.code!=='MODEL_OUTPUT_LENGTH') throw error;
+      const {model,threadId:completionId,inputPacketHash:inputSha256}=error.receipt;
+      receipts.push({round,role,pages:numbers,verify,model,completionId,inputSha256,truncated:true});
+      if(numbers.length===1) throw Error(place+'的模型回复仍被截断，审读未完成。',{cause:error});
+      await onEvent?.(place+'的模型回复被截断 · '+completionId+'。只将该岗这批实页拆小复审。');
+      const middle=Math.ceil(numbers.length/2);
+      return (await independentCalls([numbers.slice(0,middle),numbers.slice(middle)],batch=>readRole(role,batch))).flat();
+    }
+    const issues=response.parsedOutput?.issues;
+    if (!Array.isArray(issues) || issues.some(issue=>!numbers.includes(issue?.page) ||
+      !['P0','P1'].includes(issue.level) || !['proposal','production'].includes(issue.impact) ||
+      ![issue.problem,issue.evidence,issue.change].every(meaningful))) {
+      throw invalidOutput('终审意见须有本批页码、P0/P1、影响范围、实际证据和改法');
+    }
+    receipts.push({round,role,pages:numbers,verify,model:response.model,completionId:response.threadId,inputSha256:response.inputPacketHash});
+    return issues.map(issue=>routeIssue(issue,role));
+  }
+  for (let i=0;i<selected.length;i+=4) {
+    const numbers=selected.slice(i,i+4);
     const active=round===1 ? Object.keys(roles) :
       [...new Set(['craft',...prior.filter(issue=>numbers.includes(issue.page) &&
         (issue.level==='P0' || issue.operation==='text')).map(issue=>issue.role)])];
-    const batches=await independentCalls(active,async role=>{
-      await onEvent?.('终审第 '+round+' 轮 · '+roleNames[role]+' · 第 '+numbers.join('、')+' 页'+(verify?'复验':''));
-      const ownPrior=prior.filter(issue=>issue.role===role && numbers.includes(issue.page))
-        .map(({page,role,problem,evidence,change,level})=>({page,role,problem,evidence,change,level}));
-      const response=await call([roles[role],
-        '按附件顺序审页 '+numbers.join('、')+'。只判断自己的审稿职责。',
-        verify || round>1?'逐项对照本批实际修后图、正文和旧意见，只交回新版仍存在的问题。':'结合全册页序读本批，逐页给证据。',
-        policy,operations].join('\n'),images,issueSchema(numbers),{delegate:true,context:JSON.stringify({...context,本批待复核:ownPrior})});
-      const issues=response.parsedOutput?.issues;
-      if (!Array.isArray(issues) || issues.some(issue=>!numbers.includes(issue?.page) ||
-        !['P0','P1'].includes(issue.level) || !['proposal','production'].includes(issue.impact) ||
-        ![issue.problem,issue.evidence,issue.change].every(meaningful))) {
-        throw invalidOutput('终审意见须有本批页码、P0/P1、影响范围、实际证据和改法');
-      }
-      receipts.push({round,role,pages:numbers,verify,model:response.model,completionId:response.threadId,inputSha256:response.inputPacketHash});
-      return issues.map(issue=>routeIssue(issue,role));
-    });
+    const batches=await independentCalls(active,role=>readRole(role,numbers));
     findings.push(...batches.flat());
   }
   return findings;
@@ -184,7 +198,7 @@ function mergeIssues(issues) {
 async function recheck(options) {
   const start=options.receipts.length;
   const latest=await audit(options);
-  const covered=new Set(options.receipts.slice(start).flatMap(item=>item.pages.map(page=>item.role+'/'+page)));
+  const covered=new Set(options.receipts.slice(start).filter(item=>!item.truncated).flatMap(item=>item.pages.map(page=>item.role+'/'+page)));
   const prior=options.prior;
   const known=new Map(prior.map(issue=>[issueKey(issue),issue.blockedBy]));
   return mergeIssues([
@@ -561,7 +575,7 @@ function makeRecord({rounds,original,current,receipts,applied,pending,reason}) {
     '## 实际审读回执',
     ...receipts.map(item=>'- 第 '+item.round+' 轮 · '+(roleNames[item.role] ?? '全览')+
       (item.pages?' · '+item.pages.join('、')+' 页':'')+' · '+(item.model ?? '')+' · '+(item.completionId ?? '')+
-      '  '+(item.observation ?? '')),
+      '  '+(item.truncated ? '模型回复被截断，分批复审' : item.observation ?? '')),
   ].join('\n\n');
 }
 

@@ -1256,6 +1256,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return {...error.receipt, responseText:''};
         }
         if (desktop && /未返回有效 JSON|未返回模型身份/.test(error.message)) throw invalidOutput(error.message);
+        if (stage==='final' && error.code==='MODEL_OUTPUT_LENGTH') throw error;
         if (desktop) throw Error((stage === 'visual' && !schema ? '生图' : images.length ? '视觉理解' : '文字')+' API 调用失败：'+error.message, {cause:error});
         if (error.receipt?.rateLimit) throw Error('本机 Codex 已达使用限额，请稍后重试');
         throw Error('本机 Codex 调用失败（'+(error.code || error.message)+'）。请检查 Codex 登录、连接与本地阶段回执后重试', {cause:error});
@@ -1550,11 +1551,20 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const identity=desktop ? await modelProfile(process.env.ONEPITCH_TEXT_EXECUTABLE,signal,mode) : codexIdentity;
         const key={version:2,stage,mode,identity:desktop ? [identity.host,identity.base,identity.model] : identity,prompt:promptFor(instruction,task),schema,comparison:!!task.comparison,
           images:images.map(image=>[image.imageId,image.mediaType,image.sha256])};
-        return cached(key,async correction=>{
-          const result=await directCall(instruction,images,schema,task,correction);
-          if(!schema && !result.original) result.original=await ownGeneratedImage(result,await realpath(codexHome));
-          return result;
+        const result=await cached(key,async correction=>{
+          try {
+            const response=await directCall(instruction,images,schema,task,correction);
+            if(!schema && !response.original) response.original=await ownGeneratedImage(response,await realpath(codexHome));
+            return response;
+          } catch(error) {
+            if(stage==='final' && error.code==='MODEL_OUTPUT_LENGTH') return {truncatedReceipt:error.receipt};
+            throw error;
+          }
         });
+        if(result.truncatedReceipt) {
+          throw Object.assign(Error('模型回复超过长度限制，未收到完整结果'),{code:'MODEL_OUTPUT_LENGTH',receipt:result.truncatedReceipt});
+        }
+        return result;
       };
       if(stage==='copy' || stage==='final') return executeStage(call,dir,cached);
       const work=await mkdtemp(join(dir,'.visual-pass-'));
