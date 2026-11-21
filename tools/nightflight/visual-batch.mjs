@@ -44,6 +44,12 @@ const materialDifferences = ['layout','framing','focus','form'];
 const differenceKinds = [...materialDifferences,'surface','same','unknown'];
 const object = properties => ({type:'object',additionalProperties:false,properties,required:Object.keys(properties)});
 const list = items => ({type:'array',items});
+const posterArtworkIssues={
+  foreign_identity:'图上出现了未授权的其他品牌标识',
+  reference_asset:'图上照搬了参考中的可识别素材',
+  unconfirmed_claim:'图上写了本案未确认或已抵触的产品信息',
+};
+const posterArtworkSchema={...list(object({kind:{...text,enum:Object.keys(posterArtworkIssues)},observed:text,location:text})),maxItems:5};
 const candidateKeys = ['candidate_1','candidate_2','candidate_3'];
 const nonempty = value => typeof value==='string' && !!value.trim();
 const hasHash = image => /^[a-f0-9]{64}$/.test(image?.sha256 ?? '');
@@ -183,11 +189,15 @@ async function readOriginalPackaging(call,image,productBrief,theme,direction) {
 
 export async function reviewVisualBatch({call, direction, images, context, packagingExpected, theme, posterSlogan, posterTransfer, sources = [], verifiedComparators = [], brandReferences = [], findComparators, makeBoard, makePreviews, productBrief}) {
   if (images.length !== 3 || new Set(images.map(img => img.sha256)).size !== 3) throw invalidOutput('同方向需要三张不同的主视觉原图');
+  const sourcePolicy=packagingExpected!==true && posterSlogan ? posterTransfer?.sourcePolicy : null;
+  if (sourcePolicy && (!nonempty(productBrief) || typeof sourcePolicy.mainReferenceExclusions!=='string')) {
+    throw Error('海报品牌事实核对需要客户原始简报和本方向参考排除项。');
+  }
   const blindFields = ['first','action','words','alternative'];
   const properties = Object.fromEntries(blindFields.map(k=>[k,text]));
   if (posterSlogan) properties.slogan=sloganSchema;
   const blindInstruction = '只看这张原图。第一眼看到什么？画面里发生什么动作？哪些信息靠读字才知道？还有什么合理的读法？逐项用自己的话回答。';
-  const transcribe = ' 另外单独填 slogan。按阅读顺序逐字抄写海报主标题，保留字词、数字、标点和实际换行，只抄实际看见的内容。把可见位置写入 location。区分海报主标题、画面里的包装印字、品牌标志和时间地点。能读完整填 readable；没有主标题填 missing，位置可以留空；有字看不清填 unreadable 并只抄看清的片段。';
+  const transcribe = ' 另外单独填 slogan。按阅读顺序逐字抄写海报主标题，保留字词、数字、标点和实际换行，只抄实际看见的内容。把可见位置写入 location。区分海报主标题、画面里的包装印字、品牌标志和时间地点。标题行之外的独立装饰图标不抄进标题，确实代替标题里的文字或标点才抄入。能读完整填 readable；没有主标题填 missing，位置可以留空；有字看不清填 unreadable 并只抄看清的片段。';
   const blind = await independentCalls(images,async image=>{
     const quantity=image.visiblePackageUnits ? ' 单独核对图上实际可辨的同款独立包装，按从左到右逐个定位，把每件的位置分别写入 units.positions，盒上规格字和印出的图案不计为实物。仅当清楚看到完整内装或能看到从空位取出、对应的同款时，complete 填 true。看不清或有重叠遮挡就填 false。' : '';
     const blindSchema=object(quantity ? {...properties,units:object({positions:{type:'array',items:text},complete:{type:'boolean'}})} : properties);
@@ -255,26 +265,44 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   else if (packaging) rules.push('本批没有可用同类包装，不得推断已完成同类对照。');
   if (previewEvidence.length) rules.push('并排附件包含原图的轻量阅览版。字样或位置看不清时按未核实处理。');
   if (supplied.length) rules.push('末尾 '+supplied.length+' 张是客户的品牌或产品原件，用来核对已确认的实物和字样。顺序为'+supplied.map(r=>r.name).join('、')+'。');
-  async function read(assignment, instruction, fields, extra = '') {
+  async function read(assignment, instruction, fields, extra = '', posterFacts = false) {
     const item = object({reason:text,...fields});
     const output = object(Object.fromEntries(candidateKeys.map(key=>[key,item])));
-    const result = await call(instruction, reviewFrames, output, {delegate:true,rules, assignment, comparison:packet.length>4 || !!board, context: context + '\n本批方向：' + direction + extra});
+    const result = await call(instruction, posterFacts ? images : reviewFrames, output, {delegate:true,rules:posterFacts ? rules.slice(0,2) : rules,
+      assignment, comparison:posterFacts ? false : packet.length>4 || !!board, context:posterFacts ? extra : context + '\n本批方向：' + direction + extra});
     const reports = result.parsedOutput;
     if (!reports || Object.keys(reports).length!==candidateKeys.length || !candidateKeys.every(key=>nonempty(reports[key]?.reason))) {
       throw invalidOutput('主视觉评审只收 candidate_1、candidate_2、candidate_3。每张候选须有依据，参照不可单独列项。');
     }
     const rows = candidateKeys.map((key,index)=>({...reports[key],candidate:index+1}));
-    return {thread: result.threadId, items: rows,...(result.model ? {model:result.model} : {})};
+    const receipt=posterFacts ? auditIdentity(result) : {};
+    return {thread:result.threadId,items:rows,...(result.model ? {model:result.model} : {}),
+      ...(receipt.inputPacketHash ? {inputPacketHash:receipt.inputPacketHash} : {})};
   }
   const duties = packaging ? {用户:'卖点动作、误读、哪些只能靠读字',传播:'同类并排辨识度及能否认回品牌',品牌:'逐张看实际包装本体的印字，引用可见原话与位置。核对品牌、品类、规格等产品信息的层级，以及方向名或主题 slogan 有无落在本体，区分盒身、价签和场景标题',视觉:'逐对核对原创转译、成套相似性与小尺寸完成度'} : {用户:'目标受众理解与可行性',传播:'传播场景、记忆及差异',品牌:'品牌匹配和主题表达',视觉:'美术、构图与视觉层级'};
   const votes = await independentCalls(roles,async role=>{
     const checksPackagingText = packaging && role === '品牌';
+    const checksPosterFacts = Boolean(sourcePolicy && role==='品牌');
     const placement = checksPackagingText ? '。onPackStatus：可核实且符合简报及产品资料填 verified，印上方向名或主题句填 theme_printed，存在其他字样错误或把价签等触点文字误印在本体填 text_mismatch，盒身文字或位置看不清填 unverified。reason 要写可见字样及位置' : '';
-    const fields = {score:numeric,...(checksPackagingText ? {onPackStatus:{...text,enum:onPackStatuses}} : {})};
-    const reviewInput = checksPackagingText ? JSON.stringify({本案主题仅用于设计:theme}) : role==='用户' ? JSON.stringify(blind) : '';
-    const report = await read(role+'独立评分岗', '给前三张候选分别填 1–5 整数整体分，按本岗责任：'+duties[role]+placement+'。同分也要说明差异，写可定位的依据。', fields, reviewInput);
+    const facts=checksPosterFacts ? [
+      '为每张成图另填 artworkIssues，只依据候选原图的可见字样或可识别图形和给定授权。看到未授权的其他品牌名、商标或联名印字，包括产品本体和背景里被当作本案品牌的标识，填 foreign_identity。',
+      '看到参考排除的可辨认角色、IP、标志造型或其他专有形象被照搬，填 reference_asset。普通杯形、构图、色块、通用道具或借改项的风格相似本身不算。',
+      '看到未经客户确认的产品属性、配料口味、工艺功效或与已确认事实冲突的印字，填 unconfirmed_claim。图上明确把未确认配料当产品内容展示时也可写；单独背景里的通用食物道具不算。',
+      '每项 observed 照录可读原字，或写能辨认的图形及特征，location 写候选上实际位置。参考信息用来排除，不提供本案品牌或产品授权。品牌名已确认、正式标志未定时可排品牌原名当普通文字，不借用其他品牌的标志。只列实际可定位的事实冲突；没有则填 []。评分高也要照填。',
+    ].join('\n') : '';
+    const fields = {score:numeric,...(checksPackagingText ? {onPackStatus:{...text,enum:onPackStatuses}} : {}),
+      ...(checksPosterFacts ? {artworkIssues:posterArtworkSchema} : {})};
+    const reviewInput = checksPosterFacts ? JSON.stringify({客户原始简报:productBrief,本案方向:direction,
+      已确认品牌资料:sourcePolicy.brandFacts,允许借用的画面关系:sourcePolicy.approvedReferenceUse,参考排除项:sourcePolicy.mainReferenceExclusions}) :
+      checksPackagingText ? JSON.stringify({本案主题仅用于设计:theme}) : role==='用户' ? JSON.stringify(blind) : '';
+    const report = await read(role+'独立评分岗', ['给前三张候选分别填 1–5 整数整体分，按本岗责任：'+duties[role]+placement+'。同分也要说明差异，写可定位的依据。',facts].filter(Boolean).join('\n'),
+      fields,reviewInput,checksPosterFacts);
     if (!report.items.every(row => Number.isInteger(row.score) && row.score >= 1 && row.score <= 5)) throw invalidOutput('主视觉原票分数无效');
     if (checksPackagingText && !report.items.every(row=>onPackStatuses.includes(row.onPackStatus))) throw invalidOutput('品牌原票缺少包装文字核验。');
+    if (checksPosterFacts && !report.items.every(row=>Array.isArray(row.artworkIssues) && row.artworkIssues.length<=posterArtworkSchema.maxItems &&
+        row.artworkIssues.every(issue=>issue && Object.hasOwn(posterArtworkIssues,issue.kind) && nonempty(issue.observed) && nonempty(issue.location)))) {
+      throw invalidOutput('海报品牌事实原票须逐图记录实际看到的违规原字或可辨认图形及位置。');
+    }
     return {role,...report};
   });
   const onPackAudits=new Map();
@@ -300,23 +328,37 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     {blocked:{type:'boolean'},priority:numeric,edit:text,research:text}, JSON.stringify({votes:effectiveVotes,challenges,blind,
       ...(onPackAudits.size ? {包装本体印字以逐张原图核对为准:Object.fromEntries(onPackAudits)} : {})}));
   if (!ruling.items.every(row=>typeof row.blocked==='boolean' && row.edit?.trim() && row.research?.trim()) || ![1,2,3].every(n=>ruling.items.some(row=>row.priority===n))) throw invalidOutput('主视觉总监裁定不完整');
+  const brandVote = effectiveVotes.find(vote=>vote.role==='品牌');
   const candidates = ruling.items.map(row => {
     const scores = effectiveVotes.map(v=>({role:v.role,...v.items.find(i=>i.candidate===row.candidate)}));
     const brand = scores.find(v=>v.role==='品牌');
     const printIssue = packaging ? onPackIssues[brand.onPackStatus] : undefined;
     const reading = blind[row.candidate-1];
     const posterIssue = posterSlogan ? sloganIssue(posterSlogan, reading.slogan) : '';
+    const posterArtworkCheck = sourcePolicy ? {sha256:images[row.candidate-1].sha256,threadId:brandVote.thread,
+      model:brandVote.model,inputPacketHash:brandVote.inputPacketHash,issues:brand.artworkIssues} : undefined;
+    const artworkIssue=posterArtworkCheck?.issues.map(({kind,observed,location})=>
+      posterArtworkIssues[kind]+'。'+location+'可见「'+observed+'」。').join(' ');
     const promised=images[row.candidate-1].visiblePackageUnits;
     const quantityIssue=promised && (!reading.units?.complete || reading.units.positions.length!==promised) ?
       '完整展示约定 '+promised+' 件，原图可定位 '+(reading.units?.positions.length ?? 0)+' 件，完整盒内件数未核实。' : '';
     const audit = transferAudit?.items[row.candidate-1];
-    const otherBlocker = row.blocked || missing || !!printIssue || !!quantityIssue || audit?.passed===false;
+    const paper=posterTransfer?.paperAspect;
+    const {width,height}=images[row.candidate-1];
+    const paperIssue=paper && (!width || !height || Math.abs((width/height)/(paper.width/paper.height)-1)>0.015)
+      ? '实图尺寸 '+(width && height ? width+'×'+height : '待核')+' 不能按 '+paper.name+' 比例交付。' : '';
+    const otherBlocker = row.blocked || missing || !!printIssue || !!quantityIssue || !!artworkIssue || !!paperIssue || audit?.passed===false;
     const exactWords = posterSlogan?.replace(/\p{P}/gu,'');
     const punctuationOnly = posterIssue && !otherBlocker && reading.slogan.status==='readable' && nonempty(exactWords) &&
       sameSlogan(exactWords,reading.slogan.text.replace(/\p{P}/gu,''));
-    let reason = [posterIssue,printIssue && printIssue+brand.reason,quantityIssue].filter(Boolean).join(' ') || row.reason;
+    let reason = [posterIssue,printIssue && printIssue+brand.reason,quantityIssue,artworkIssue,paperIssue].filter(Boolean).join(' ') || row.reason;
     let edit = posterIssue ? '在海报主标题位置清楚排入本轮原句「'+posterSlogan+'」，逐字核对。' :
-      quantityIssue ? '调整实物摆放与遮挡，逐件核对客户要求展示的完整数量。' : row.edit;
+      quantityIssue ? '调整实物摆放与遮挡，逐件核对客户要求展示的完整数量。' :
+      paperIssue ? '在实际成图里按 '+paper.name+' 比例重排，保留完整图文。' : row.edit;
+    if (artworkIssue) {
+      const change='移除核查定位到的未授权标志、参考专有形象或无依据的产品表述，保留客户确认的品牌文字和商品信息。';
+      edit=edit==='无' ? change : edit+' '+change;
+    }
     if (audit && !audit.passed) {
       for (const [axis,check] of Object.entries(audit.checks)) {
         if (check.status==='matched') continue;
@@ -327,7 +369,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
       }
     }
     return {...row,blocked:otherBlocker || !!posterIssue,...(punctuationOnly ? {titlePunctuation:true} : {}),
-      reason,edit,...(audit ? {transferAudit:audit} : {}),
+      reason,edit,...(audit ? {transferAudit:audit} : {}),...(posterArtworkCheck ? {posterArtworkCheck} : {}),
       research:missing?'补充同类包装正面原图。'+(row.research==='无'?'':row.research):row.research,blind:reading,scores,mean:scores.reduce((sum,v)=>sum+v.score,0)/roles.length};
   });
   const ranked = candidates.filter(c=>c.mean>=4).sort((a,b)=>b.mean-a.mean || a.priority-b.priority);

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.141.0",
-  "registrySha256": "8406f50b4ea207002298b5a1c6817201fd5f25e88ef04bbdd392993b93356385",
+  "baselineVersion": "1.142.0",
+  "registrySha256": "253b767d11f0d831bc77666170aafce4055688ab3002cc79ae819988f5fed7e2",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -210,11 +210,11 @@
       }
     },
     "method.visual": {
-      "version": "1.25.0",
+      "version": "1.26.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "dba052a6c676f2a2615283df8653e82a313f68ce79f6d2aa471d3bf64360c6dc",
-        "skills/visual-development-lead/references/kv.md": "ee1747604dc809f22fc949bacf9f99b0b0d59baa11a63f8437e781baddae1773",
+        "skills/visual-development-lead/SKILL.md": "c43ad9545dc583df262897900d95de80bc8ad1990d9bb1fa1363569ecbcf6186",
+        "skills/visual-development-lead/references/kv.md": "e3754d3ae098da967358a2738188479c210da35d2f69d76ef29939f541d163ce",
         "skills/visual-development-lead/references/packaging.md": "6f02d40162aefd2191c4d7b48106f01b087ecffc6ca9181270c8786add94a6fa",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
         "skills/visual-development-lead/references/stage-review.md": "602ac5039e76e21bcf205337451e9f1b4a2bc7562bbf0a04731c4fbafd769899",
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.65.0",
+      "version": "1.66.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "c6c3bdd1732b03ad23b2128c68846076ed6c2ffa2d4bbc2d70f93d4ed5d0e977"
+        "docs/specs/nightflight-runtime.md": "b9869abb6d4c8e8531dc1b398941d006572db133ebb3676fe586b527a1a37a77"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "595f641565437c93b6913c954c0f15b415a67d2d5ef265a9b6c6c3985d01a755",
+    "docs/specs/README.md": "ce64b2c2c171a06e389188922960a77a91582d368dd6e4314b6529102a02119d",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

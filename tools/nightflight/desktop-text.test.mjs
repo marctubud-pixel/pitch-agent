@@ -208,7 +208,10 @@ if (action === 'profile') {
       assert.equal(input.posterSlogan,'这周六，把还喜欢的那件带来');
       assert.equal(input.strategyPurpose,'让附近住户认出旧衣修补活动。');
       assert.equal(input.mainReference.observations.布局,'标题和日期居中，两侧剪影');
-      assert.doesNotMatch(instruction,/左侧白底右侧柜台|重画本案街景|海报文案.md/);
+      assert.equal(input.mainReference.observations.景别,'远景');
+      assert.equal(input.referenceTask.translation,'让人物剪影衬出活动标题');
+      assert.equal(input.mainReferenceUse.apply,'重画本案街景');
+      assert.doesNotMatch(instruction,/左侧白底右侧柜台|海报文案.md|馆舍远景/);
       const redesign={配色:'深绿与橙红',布局:'标题沿底部横排，人物居中',景别:'近景呈现双手缝补',笔法:'干净的硬切色块',字体:'细字重的现代宋体'};
       answer={format:'社区活动横版海报',subject:'住户互相帮忙修补旧衣',background:'社区活动室',lettering:['本周六开放'],
         changes:Object.fromEntries(input.transfer.change.map(element=>[element,redesign[element]]))};
@@ -268,7 +271,7 @@ if (action === 'profile') {
   assert.equal(entries.filter(e=>e.planned).length,3);
   assert.equal(new Set(sent.map(e=>e.sent)).size,3);
   assert.equal(sent.filter(e=>e.sent.includes('沿用主参考的布局。标题和日期居中，两侧剪影')).length,2);
-  assert.equal(sent.filter(e=>e.sent.includes('重新设计布局。原图可见 标题和日期居中，两侧剪影。本张改为 标题沿底部横排，人物居中')).length,1);
+  assert.equal(sent.filter(e=>e.sent.includes('重新设计布局。本张改为 标题沿底部横排，人物居中')).length,1);
   for (const call of sent) {
     assert.deepEqual(call.images,[{mime:'image/png',data:png}]);
     assert.ok(call.sent.includes(posterSlogan));

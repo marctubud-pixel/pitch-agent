@@ -23,12 +23,12 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues}={}) {
   const calls = [];
   const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,
     sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
-    call:async(_instruction,actual,schema,task)=>{
-      calls.push({actual,schema,task});
+    call:async(instruction,actual,schema,task)=>{
+      calls.push({instruction,actual,schema,task});
       if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:'预约',alternative:'展览',
         slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'}}};
       if (task.assignment==='海报借改逐项核对') return {...identity,parsedOutput:{items:rows}};
@@ -36,9 +36,11 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
       if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
       const fields = schema.properties.candidate_1.properties;
       const opinions=images.map((_,index)=>['candidate_'+(index+1),{reason:'原票认为主体清楚。',
-        ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
+        ...(fields.score ? {score:fields.artworkIssues ? 4 : 5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
+        ...(fields.artworkIssues ? {artworkIssues:posterIssues?.[index]} : {}),
         ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:false} : {})}]);
-      return {parsedOutput:Object.fromEntries(opinions)};
+      return {...(fields.artworkIssues ? {threadId:'brand-originals-read',model:judgment.model,inputPacketHash:judgment.inputPacketHash} : {}),
+        parsedOutput:Object.fromEntries(opinions)};
     }});
   return {batch,calls};
 }
@@ -95,6 +97,49 @@ test('the transfer assessment retains independent title, on-pack and visual fail
   assert.match(batch.candidates[0].reason,/布局应沿用/);
   assert.match(batch.candidates[0].edit,/海报主标题/);
   assert.match(batch.candidates[0].edit,/布局/);
+});
+
+const posterPolicy={approvedReferenceUse:'只借产品与留白的相对位置。',mainReferenceExclusions:'不要照搬自嘲熊联名、标志和南瓜帽等专有形象。'};
+const yogurtBrief='为「午晴」做原味冷藏酸奶的 A3 竖版海报。150 克杯装，售价 5.9 元一杯，正式标志尚未定。';
+
+test('poster facts block copied brands, reference characters and invented claims even if scores and director pass',async()=>{
+  const {calls:oldCalls}=await review();
+  const makePreviews=async packet=>packet.map((frame,i)=>({...frame,sha256:String(i+6).repeat(64)}));
+  const posterIssues=[
+    [{kind:'foreign_identity',observed:'MoreYogurt 茉酸奶 × Joke Bear',location:'左上联名字和冷柜顶'},
+      {kind:'reference_asset',observed:'带牛角和南瓜帽的三个自嘲熊联名角色',location:'画面底部'}],
+    [{kind:'unconfirmed_claim',observed:'优质生牛乳／冷藏发酵／清洁配方',location:'画面右下功能字栏'}],
+    [],
+  ];
+  const {batch,calls}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
+    posterIssues,makePreviews});
+  assert.deepEqual(calls.map(call=>call.task.assignment),oldCalls.map(call=>call.task.assignment));
+  const brandCall=calls.find(call=>call.task.assignment==='品牌独立评分岗');
+  assert.deepEqual(brandCall.actual,images);
+  assert.deepEqual(JSON.parse(brandCall.task.context),{客户原始简报:yogurtBrief,本案方向:'时长',
+    允许借用的画面关系:posterPolicy.approvedReferenceUse,参考排除项:posterPolicy.mainReferenceExclusions});
+  assert.match(brandCall.instruction,/参考信息用来排除，不提供本案品牌或产品授权/u);
+  assert.equal(calls.find(call=>call.task.assignment==='视觉独立评分岗').actual[0].sha256,'6'.repeat(64));
+  assert.deepEqual(batch.ruling.items.map(c=>c.blocked),[false,false,false]);
+  assert.deepEqual(batch.candidates.map(c=>[c.mean,c.blocked]),[[4.75,true],[4.75,true],[4.75,false]]);
+  assert.equal(batch.winner,3);
+  assert.match(batch.candidates[0].reason,/左上联名字和冷柜顶可见「MoreYogurt 茉酸奶 × Joke Bear」/u);
+  assert.match(batch.candidates[0].reason,/画面底部可见「带牛角和南瓜帽的三个自嘲熊联名角色」/u);
+  assert.match(batch.candidates[1].reason,/画面右下功能字栏可见「优质生牛乳／冷藏发酵／清洁配方」/u);
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck,{sha256:images[0].sha256,threadId:'brand-originals-read',
+    model:judgment.model,inputPacketHash:judgment.inputPacketHash,issues:posterIssues[0]});
+});
+
+test('an artwork issue needs a located visible quote or identifiable asset',async()=>{
+  const scoped={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief};
+  for (const malformed of [
+    {kind:'foreign_identity',observed:'',location:'产品本体'},
+    {kind:'unconfirmed_claim',observed:'优质生牛乳',location:''},
+    {kind:'similar_color',observed:'暖黄',location:'标题右侧'},
+  ]) {
+    await assert.rejects(review({...scoped,posterIssues:[[malformed],[],[]]}),
+      {code:'INVALID_STAGE_OUTPUT',message:/违规原字或可辨认图形及位置/u});
+  }
 });
 
 test('workbench-verified packaging goes into the comparison with its original signature',async()=>{

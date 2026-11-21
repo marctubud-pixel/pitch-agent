@@ -24,7 +24,7 @@ export function posterStrategyPurpose(strategy) {
 export async function readPosterReference({call, image}) {
   const result = await call(
     '只描述这一张主参考原图实际可见的五项。布局写标题、留白和画面主体分别在哪里及占比。景别写看见多大范围，笔法写线条、切边或摄影质感，字体写字形和字重，配色写主要色和对比。' +
-    '逐项用简短一句话记录。不评价本案，不把后续改法写成原图特征。看不清的一项填「未核实」，原图确实没有文字也照实写。',
+    '逐项用简短一句话记录可借的抽象关系。用主体、标题区、前景物件等通称，不转录原画的品牌名、标志、联名角色、画面原字或原产品印花。景别只写比例与环境范围，笔法只写画法。本次不评价本案，不把后续改法写成原图特征。看不清的一项填「未核实」，原图确实没有文字也照实写。',
     [image], object(Object.fromEntries(visualElements.map(element=>[element,string]))),
     {delegate:true,rules:[],assignment:'海报主参考原图核读',context:'附件只有本方向主参考原图。'},
   );
@@ -36,9 +36,31 @@ export async function readPosterReference({call, image}) {
   return {image,observations,model:result.model,threadId:result.threadId};
 }
 
+// A placement such as a refrigerator belongs to the delivery brief; framing carries only scale and viewing range.
+export function posterFraming(value) {
+  const shot=value.match(/大特写|特写|中近景|中远景|近景|中景|远景|全景/u)?.[0];
+  const subject=value.match(/主体[^，。；]{0,16}?(?:占(?:画面)?(?:比例)?|约)\s*(\d{1,3})\s*%/u)?.[1];
+  const environment=value.match(/(?:环境|背景)(?:所占|的)?(?:范围|占比|比例)?(?:为|是)?(?:较|很|偏)?([大小宽窄])/u)?.[1] ??
+    value.match(/(大|小|宽|窄)(?:的)?环境(?:范围|比例|占比)/u)?.[1];
+  return [shot,subject && '主体约占画面 '+subject+'%',environment && '环境范围'+environment].filter(Boolean).join('，') ||
+    '沿用原图中主体占画面的大小和环境范围。用本案内容重画。';
+}
+
+export function paperAspect(brief) {
+  const named=brief.match(/\bA([0-6])\b/iu);
+  const portrait=/竖版|竖幅|竖向|纵向|\bportrait\b/iu.test(brief);
+  const landscape=/横版|横幅|横向|\blandscape\b/iu.test(brief);
+  if (!named || portrait===landscape) return null;
+  const aSeries=[[841,1189],[594,841],[420,594],[297,420],[210,297],[148,210],[105,148]];
+  const [short,long]=aSeries[Number(named[1])];
+  return {name:'A'+named[1]+(portrait?'竖版':'横版'),width:portrait?short:long,height:portrait?long:short};
+}
+
 async function writePosterPrompt({call, images, context, posterReference, posterSlogan}) {
   const {transfer, ...directionInput} = context;
   const {image,observations} = posterReference;
+  const usableObservations={...observations,景别:posterFraming(observations.景别)};
+  const paper=paperAspect(directionInput.brief ?? '');
   const at = images.findIndex(input=>input.sha256===image.sha256);
   if (at<0) throw Error('本张海报生图没有附上已核读的主参考原图。');
   const schema = object({
@@ -46,14 +68,15 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     changes:object(Object.fromEntries(transfer.change.map(element=>[element,string]))),
   });
   const result = await call([
-    '为这个海报方向写制图内容。把创意落到可见的主体、动作和背景，先从本案方向找到观众应先看到的事。',
-    'format 写简报给定的载体、横竖和其他硬性尺寸。subject 写主体和动作。background 写背景里实际有哪些东西。三个字段只描述画面内容，不加配色、构图、景别、笔法或字体指令。',
+    '为这个海报方向写制图内容。用 referenceTask 和 mainReferenceUse 里已经准入的本案画面关系来写，保留本案重点和动作取舍。参考图的主体、标识、联名角色、包装、装饰、配料和字样均不能当作本案元素。只有客户原 Brief 确认的品牌和产品信息可印。遵守 mainReferenceUse.avoid 和辅助参考各自的禁用内容。',
+    'format 写简报给定的载体、横竖、硬性尺寸和投放场所。subject 写本案画面主体和动作。background 写本案画面实际需要的背景。投放位置在冷柜、柜台或门店旁，不自动成为画面背景或动作。当前创意要求画它时再画。保留本方向的差异，看到场地相同也不用让三案画同一个购买过程。',
+    '主体和背景字段只写本案内容，不重新指定配色、构图、景别、笔法和字体。保持客户明确指定的画面和物料。',
     'changes 只写两项重新设计的内容。每项给可落图的目标，要看得出与原图观察的差异。改布局时说清主标题、主要画面主体及留白的新位置关系。改景别时说清画面现在看见的范围。',
     '三项沿用内容由原图观察给出，直接沿用观察到的画面关系和表现方式。这三项不在其他字段重新指定。硬性设计位置仅来自客户本轮简报和任务卡。',
-    'lettering 只列需要印在画面中的简报信息或本案副标，逐条写实际文字。主标题已定稿。价格、型号或时段已在主标题中讲清时，避免重复列。未确认字样省略。',
+    'lettering 只列需要印在画面中的简报信息或本案副标，逐条写实际文字。主标题已定稿。价格、型号或时段只在设计需要的位置出现一次。省略未确认字样，不新增产品标签上的原料、分类或功效。若有 revision，只针对已有原图的明确问题改写，并保留同一参考、该案意图和三借两改。',
   ].join('\n'),[],schema,{
     assignment:'夜航海报生图提示词写作',rules:[],context:visualWriterContext({
-      ...directionInput, posterSlogan, mainReference:{imageNumber:at+1,observations}, transfer,
+      ...directionInput, posterSlogan, mainReference:{imageNumber:at+1,observations:usableObservations}, transfer,
     },posterSlogan),
   });
   const plan = result.parsedOutput;
@@ -63,22 +86,25 @@ async function writePosterPrompt({call, images, context, posterReference, poster
       !plan.lettering.every(value=>nonempty(value) && value.length<=120) ||
       !plan.changes || Object.keys(plan.changes).length!==transfer.change.length ||
       !transfer.change.every(element=>nonempty(plan.changes[element]) && plan.changes[element].length<=450 &&
-        normalize(plan.changes[element])!==normalize(observations[element])) ||
+        normalize(plan.changes[element])!==normalize(usableObservations[element])) ||
       !nonempty(result.model) || !nonempty(result.threadId)) {
     throw invalidOutput('海报生图文字须按借改项目写出两项明确的新画法和本方向的画面内容。');
   }
   const prompt = [
     '生成一张完整海报／KV。' + plan.format,
-    '实际第 '+(at+1)+' 张附件是本方向已核读的主参考原图。人物、地景、图形和文字用本案内容重画。',
-    ...transfer.borrow.map(element=>'沿用主参考的'+element+'。'+observations[element]),
-    ...transfer.change.map(element=>'重新设计'+element+'。原图可见 '+observations[element]+'。本张改为 '+plan.changes[element]),
-    '构图和景别遵照以上逐项借改安排。画面内容按下述主体和背景重画。',
+    paper ? '成图画布使用 '+paper.name+'，宽高比 '+paper.width+':'+paper.height+'。保留完整标题与画面。' : '',
+    '实际第 '+(at+1)+' 张附件是本方向主参考原图，只借核定的画面关系或美术特征。',
+    '所有人物、商品包装、道具、背景、标志、图形与字样用本案内容重画。无品牌原件时只用本案确认的品牌原字。禁止使用参考品牌、联名标识或角色，也不要添加未确认的配方、功效和宣传声称。',
+    directionInput.mainReferenceUse?.avoid ? '原图内容的禁用项。'+directionInput.mainReferenceUse.avoid : '',
+    ...transfer.borrow.map(element=>'沿用主参考的'+element+'。'+usableObservations[element]),
+    ...transfer.change.map(element=>'重新设计'+element+'。本张改为 '+plan.changes[element]),
+    '构图和景别遵照以上逐项借改安排。以下是本方向的新画面，按主体和背景重画。',
     '画面主体和动作。'+plan.subject,
     '背景。'+plan.background,
-    directionInput.auxiliaryNotes?.length ? '辅助参考的文字线索。'+directionInput.auxiliaryNotes.map(note=>note.apply).join(' ') : '',
+    directionInput.auxiliaryNotes?.length ? '辅助参考的文字线索。'+directionInput.auxiliaryNotes.map(note=>[note.apply,note.avoid && '禁用：'+note.avoid].filter(Boolean).join(' ')).join(' ') : '',
     '完整主标题「'+posterSlogan+'」须逐字排进画面。允许合理换行，保留原句和标点。',
     plan.lettering.length ? '其它需印在画面的文字。'+plan.lettering.map(line=>'「'+line+'」').join('、') : '',
-    '保持文字清晰可读。采用附件里的品牌原件或返修稿时，以本张借改要求为准。',
+    '保持文字清晰可读。避免副标、价格等重复排印。主标题外的装饰不能代替标点。未定正式标志时可用已确认的文字品牌名，省略标志图案。',
   ].filter(Boolean).join('\n');
   return {model:result.model,threadId:result.threadId,prompt,plan};
 }
