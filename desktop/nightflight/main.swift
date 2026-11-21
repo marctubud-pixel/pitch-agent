@@ -108,6 +108,28 @@ final class Desktop: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUI
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool { true }
     func applicationWillTerminate(_ notification:Notification){if process?.isRunning == true {process?.terminate()}}
 }
+private func providerRateLimit(_ capability: String, response: HTTPURLResponse, body: Data?) -> [String: Any] {
+    let reasons = [
+        "rate_limit_exceeded": "服务商限流",
+        "credit_balance_exhausted": "API 预付额度已用完",
+        "organization_usage_limit_exceeded": "API 组织用量已达上限",
+        "organization_spend_limit_exceeded": "API 组织支出已达上限",
+        "project_spend_limit_exceeded": "API 项目支出已达上限",
+        "billing_hard_limit_reached": "API 账单支出已达上限",
+        "insufficient_quota": "API 额度不足",
+    ]
+    let parsed = body.flatMap { try? JSONSerialization.jsonObject(with: $0) } as? [String: Any]
+    let provider = parsed?["error"] as? [String: Any]
+    let code = [provider?["code"] as? String, provider?["type"] as? String]
+        .compactMap { $0 }.first { reasons[$0] != nil } ?? "unknown"
+    let reason = reasons[code] ?? "服务商未返回可识别的原因，请检查该 API 项目的限流和额度"
+    var failure: [String: Any] = ["failure": "\(capability)接口 HTTP 429（\(reason)）", "httpStatus": 429, "providerCode": code]
+    if let value = response.value(forHTTPHeaderField: "Retry-After"), let seconds = Int(value), (0...3600).contains(seconds) {
+        failure["retryAfterSeconds"] = seconds
+    }
+    return failure
+}
+
 if ["--text-model","--image-model","--vision-model"].contains(CommandLine.arguments.dropFirst().first ?? "") {
     let capability: Capability = CommandLine.arguments[1] == "--image-model" ? .image : CommandLine.arguments[1] == "--vision-model" ? .vision : .text
     var saved = profile(capability)
@@ -171,6 +193,9 @@ if ["--text-model","--image-model","--vision-model"].contains(CommandLine.argume
                     }
                 }
                 reply(failure); return
+            }
+            if http.statusCode == 429 {
+                reply(providerRateLimit(capability.rawValue, response: http, body: data)); return
             }
             guard (200..<300).contains(http.statusCode), let data = data else {
                 reply(["failure":capability.rawValue + "接口 HTTP " + String(http.statusCode)]); return
