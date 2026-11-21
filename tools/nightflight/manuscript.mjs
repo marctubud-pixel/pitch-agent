@@ -348,20 +348,24 @@ function buildManuscriptPlan(draft, materials) {
   const copyByDirection=new Map(copy.directions.map(d=>[d.name,d]));
   const kvAndTvc=project.carriers?.includes('kv') && project.carriers?.includes('tvc');
   const pages=[];
-  const add=({role,title,points=[],chapter='',imageNote='',figures:shown=[],notes='',sources=[]})=>{
+  const add=({role,title,points=[],chapter='',imageNote='',figures:shown=[],notes='',sources=[],observedPointIndex})=>{
     pages.push({number:pages.length+1,role,label:slideRoles[role] ?? {cover:'封面',contents:'目录',close:'封底'}[role],
-      title:title.trim(),points,chapter,imageNote,notes,figures:shown.map(f=>f.id),sources});
+      title:title.trim(),points,chapter,imageNote,notes,figures:shown.map(f=>f.id),sources,
+      ...(Number.isInteger(observedPointIndex)?{observedPointIndex}:{})});
   };
   add({role:'cover',title:draft.cover.title,points:[draft.cover.subtitle].filter(nonempty),imageNote:draft.cover.imageNote});
   add({role:'contents',title:'目录',points:draft.chapters.map(c=>c.title.trim())});
   for (const chapter of draft.chapters) {
     for (const p of chapter.pages) {
       const figure=figuresById.get(p.figureId);
-      let points=p.points;
+      let points=p.points,observedPointIndex;
       if (p.role==='direction') {
         const selected=copyByDirection.get(figure.direction);
-        points=['主标 · '+selected.main,...(selected.secondary?['副标 · '+selected.secondary]:[]),...points,
-          ...(p.visibleQuotes?.length?['原图 · '+observedQuote(figure,p.visibleQuotes[0])]:[])];
+        points=['主标 · '+selected.main,...(selected.secondary?['副标 · '+selected.secondary]:[]),...points];
+        if (p.visibleQuotes?.length) {
+          observedPointIndex=points.length;
+          points.push(observedQuote(figure,p.visibleQuotes[0]));
+        }
       } else if (p.role==='compare') {
         points=p.visibleQuotes.map((quote,i)=>{
           const seen=quote?observedQuote(figures[i],quote):'';
@@ -381,7 +385,7 @@ function buildManuscriptPlan(draft, materials) {
       const title=p.role==='strategy' && approvedCore ? approvedCore :
         p.role==='direction' ? figure.direction : p.role==='compare' ? '并排看差异与适用条件' : p.title;
       add({...p,title,
-        chapter:chapter.title.trim(),points,imageNote,figures:shown,notes:p.internalNote,sources});
+        chapter:chapter.title.trim(),points,imageNote,figures:shown,notes:p.internalNote,sources,observedPointIndex});
     }
   }
   add({role:'close',title:draft.closing});
@@ -401,7 +405,7 @@ function manuscriptText(plan) {
     }
     const sources=[...new Set(p.sources.map(({source,url})=>
       nonempty(source) && /^https?:\/\//u.test(url || '') && URL.canParse(url) ? '['+source.replace(/[\[\]]/gu,'')+'](<'+url+'>)' : source).filter(nonempty))];
-    const points=p.points.filter(nonempty);
+    const points=p.points.map((point,i)=>i===p.observedPointIndex?'原图 · '+point:point).filter(nonempty);
     const explanation=points.length?'\n'+points.map(point=>'  - '+point.replaceAll('\n','\n    ')).join('\n'):'无';
     const images=[p.imageNote,...p.figures.map(id=>'`'+id+'` · `'+byId.get(id).name+'`')].filter(nonempty).join(' ｜ ');
     lines.push([

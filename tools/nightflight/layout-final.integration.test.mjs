@@ -317,6 +317,7 @@ else {
   assert.equal(state.canRenderManuscript,true);
   state=await wait(await request({kind:'render_manuscript',expectedRevision:state.revision,opId:randomUUID()}));
   assert.equal(state.status,'waiting');
+  assert(state.finalReview,JSON.stringify({stage:state.stage,status:state.status,error:state.error,finalReturn:state.finalReturn,events:state.events.slice(-8)}));
   assert.equal(state.finalReview.outcome,'ready',JSON.stringify(state.finalReview));
   assert.equal(state.finalReview.rounds,2);
   assert.equal(state.finalReview.changed,3);
@@ -335,6 +336,8 @@ else {
   assert.ok(xml('ppt/slides/slide4.xml').includes(printed));
   assert.ok(xml('ppt/slides/slide4.xml').includes(competitorRow));
   assert.match(xml('ppt/slides/slide6.xml'),/天黑进馆/u);
+  assert.match(xml('ppt/slides/slide6.xml'),/右边展柜/u);
+  assert.doesNotMatch(xml('ppt/slides/slide6.xml'),/原图 · 右边展柜/u);
   assert.match(xml('ppt/slides/slide6.xml'),/<p:pic>/u);
   assert.match(xml('ppt/slides/slide7.xml'),/<p:pic>/u);
   assert.match(xml('ppt/slides/slide7.xml'),/A1 · 采用原图/u);

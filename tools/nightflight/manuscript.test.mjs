@@ -296,6 +296,19 @@ test('包装逐页稿按采用图首读核实共同印字和实物陈列',async 
     assert.match(rejected.sent[1].slice(rejected.sent[0].length),/A2 方向页 points 只收/u);
   });
 
+  await t.test('调序但逐字相同的两条观察沿用原图首读的顺序',async()=>{
+    const reordered=structuredClone(materials);
+    const observed='盒子立放在抽屉的右侧，袋子斜靠在抽屉左侧内壁';
+    reordered.figures[2].observation.composition=observed+'。';
+    const selected=structuredClone(draft);
+    selected.chapters[1].pages[4].visibleQuotes=['袋子斜靠在抽屉左侧内壁，盒子立放在抽屉的右侧'];
+    selected.chapters[2].pages[0].visibleQuotes[2]='袋子斜靠在抽屉左侧内壁，盒子立放在抽屉的右侧';
+    const {result,sent}=await replay(reordered,selected);
+    assert.equal(sent.length,1);
+    assert.ok(result.draft.includes('原图 · '+observed));
+    assert.ok(result.draft.includes(observed+'。适合讲一袋用量'));
+  });
+
   await t.test('保留 2019 调查 84% 的完整测量对象，也允许省略数值',async()=>{
     const survey=structuredClone(materials);
     survey.research.findings=[{chapter:'人群与接触情境',source:'2019 益普索包装问卷',
