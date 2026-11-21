@@ -107,12 +107,15 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   db.prepare('INSERT INTO projects VALUES(?,?,?)').run(id,1,JSON.stringify(project));
   db.close();
   const page=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',internalNote:'',sourceIndices:[],...fields});
+  const decisionLines=['品牌名与正式标志提供后，确认公众号封面的可替换标志区。','确认封面图片比例与文字安全区。'];
+  const joinedDecision=decisionLines.map(line=>line.slice(0,-1)).join('；')+'。';
   const draft={cover:{title:'馆内活动',subtitle:'公众号封面提案',imageNote:''},chapters:[
     {title:'活动需求',pages:[page('brief','家长先看清参加条件',{points:['报名方式待定。','馆内讲解面向亲子。']}),
       page('peers','同类把活动名放上方',{points:['海报上方呈现活动名。'],sourceIndices:[0]})]},
     {title:'核心策略',pages:[page('strategy',strategy)]},
     {title:'作品与确认',pages:[page('direction','馆内夜游',{figureId:'A1',points:['突出馆内场景。']}),
-      page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),page('decision','请确认素材')]},
+      page('work','完整封面',{figureId:'A1',imageNote:'横版完整显示',internalNote:'排版前请核对展签'}),
+      page('decision','请确认素材',{points:decisionLines})]},
   ],closing:'感谢观看，期待与您确认下一步方向。'};
   const executable=join(root,'review-fixture.mjs');
   const log=join(root,'case-b-calls.jsonl');
@@ -138,6 +141,9 @@ else {
        return [id,{kind:'pending_confirmation',actual:'馆内',required:'馆内亲子活动',source:'B1',location,reason}];
      if(issue.problem==='策略页需重列参加条件')
        return [id,{kind:'confirmed_requirement_missing',actual:'',required:'策略页需重列参加条件',source:'S1',location,reason}];
+     if(issue.problem==='待确认的两项需提案人拍板')
+       return [id,{kind:'confirmed_requirement_missing',actual:'第8页两项仍需客户决定，不宜代客户拍板。',
+         required:${JSON.stringify(joinedDecision)},source:'B1,S1',location,reason}];
      return [id,{kind:issue.page===2?'readable_suggestion':'fact_conflict',actual:'对应实页',
        required:issue.page===2?'':'须预约',location,reason,source:issue.page===2?'':'B1'}];
    }))};
@@ -162,9 +168,12 @@ else {
    if (role==='逻辑岗' && pages.some(p=>p['页码']===5))
      issues.push({...issue,page:5,operation:'hold',target:'strategy',from:'',to:'',quote:'',
        problem:'策略页需重列参加条件',evidence:'策略页只呈现已定策略句',change:'加一遍参加条件'});
-   if (role==='逻辑岗' && pages.some(p=>p['页码']===8))
+   if (role==='逻辑岗' && pages.some(p=>p['页码']===8)) {
      issues.push({...issue,page:8,impact:'production',operation:'hold',target:'brief',from:'',to:'',quote:'',
        problem:'上线发布前须拿到正式报名链接',evidence:'本轮只交公众号封面提案',change:'记录为后续发布待确认'});
+     issues.push({...issue,page:8,operation:'hold',target:'brief',from:'',to:'',quote:'',
+       problem:'待确认的两项需提案人拍板',evidence:${JSON.stringify(joinedDecision)},change:'提案人确认后执行'});
+   }
    if (role==='美术岗' && pages.some(p=>p['页码']===2))
      issues.push({...issue,page:2,level:'P0',operation:'layout',target:'visual',
        problem:'目录导读可精简',evidence:'三个章名依次并列',change:'保留给排版设计判断'});
@@ -249,6 +258,8 @@ else {
   assert.match(xml('ppt/slides/slide7.xml'),/<a:effectLst\/>/u);
   assert.doesNotMatch(xml('ppt/slides/slide7.xml'),/排版前请核对展签/u);
   assert.match(xml('ppt/notesSlides/notesSlide7.xml'),/排版前请核对展签/u);
+  const decisionText=Array.from(xml('ppt/slides/slide8.xml').matchAll(/<a:t>([^<]*)<\/a:t>/gu),match=>match[1]).join('');
+  for (const line of decisionLines) assert.ok(decisionText.includes(line));
   assert.match(xml('ppt/slides/slide9.xml'),/期待与您确认下一步方向。/u);
   const deckFile=state.artifacts.find(a=>a.name.endsWith('.deck.json'));
   const deck=JSON.parse(await readFile(join(storage,deckFile.url.split('/').at(-1)),'utf8'));
@@ -263,6 +274,8 @@ else {
   assert(state.artifacts.some(item=>item.kind==='image' && item.name===state.finalReview.contact));
   const report=state.artifacts.find(item=>item.name===state.finalReview.report).text.split('## 待决定或可继续优化')[1];
   assert.match(report,/第 8 页 · P1 · 上线发布前须拿到正式报名链接/u);
+  assert.match(report,/第 8 页 · P1 · 待确认的两项需提案人拍板/u);
+  assert.match(report,/当前 · 实页已列出所报的客户待确认事项。/u);
   assert.match(report,/第 2 页 · P1 · 目录导读可精简 · 版式/u);
   assert.match(report,/第 3 页 · P1 · 建议统一馆内的叫法/u);
   assert.match(report,/第 5 页 · P1 · 策略页需重列参加条件/u);

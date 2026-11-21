@@ -198,6 +198,14 @@ const packCounts=value=>packageAmounts(value).filter(amount=> !/(?:克|g)$/iu.te
 const countLabel={type:'integer',minimum:0};
 const parsedCount=value=>Number(value.match(/^\d+/u)?.[0]);
 
+function containsDecisionRequests(slide,nativeText,required) {
+  const clauses=value=>value.split(/[。；;]+/u).map(norm).filter(Boolean);
+  const requested=clauses(required);
+  const printed=slide.points.filter(point=>/^(?:[^，,。]+(?:后|时)[，,]\s*)?(?:请)?(?:确认|决定|选择|选定)/u.test(point) &&
+    nativeText.includes(norm(point))).flatMap(clauses);
+  return requested.length>0 && requested.every(clause=>clause.length>=4 && printed.includes(clause));
+}
+
 async function verifyProductUse({call,project,plan,slide,edition,round,receipts,onEvent,issue,decision}) {
   const complaint=issue.problem+' '+issue.evidence;
   if (slide.role!=='work' || slide.figures.length!==1 || !['fact_conflict','confirmed_requirement_missing'].includes(decision.kind) ||
@@ -333,15 +341,16 @@ async function qualifyCritical({call,current,pending,round,receipts,onEvent,proj
       const approvedStrategy=unsupported && slide.role==='strategy' && !slide.points.length && heading && nativeText.includes(heading) &&
         plan.strategy.some(item=>meaningful(item.body) && norm(item.body).includes(heading));
       const requestedConfirmation=unsupported && decision.kind==='confirmed_requirement_missing' && slide.role==='decision' &&
-        /品牌名.{0,18}(?:标志|商标|logo).{0,12}(?:待定|未定|还没定|未确认)/iu.test(plan.brief.original) &&
-        slide.points.some(point=>/^(?:请)?确认.{0,22}品牌名.{0,18}(?:标志|商标|logo).{0,25}替换.{0,18}占位/iu.test(point) &&
-          observed.includes(norm(point)) && nativeText.includes(norm(point)));
+        (containsDecisionRequests(slide,nativeText,decision.required) ||
+          /品牌名.{0,18}(?:标志|商标|logo).{0,12}(?:待定|未定|还没定|未确认)/iu.test(plan.brief.original) &&
+          slide.points.some(point=>/^(?:请)?确认.{0,22}品牌名.{0,18}(?:标志|商标|logo).{0,25}替换.{0,18}占位/iu.test(point) &&
+            observed.includes(norm(point)) && nativeText.includes(norm(point))));
       const clear=productionNote || wordingNote || approvedStrategy || requestedConfirmation || showsExpected || ['readable_suggestion','not_found'].includes(decision.kind);
       const check={call,project,plan,slide,edition,round,receipts,onEvent,issue,decision};
       const additional=clear?'':await verifyProductUse(check) || ((!sourceMatches || decision.source.startsWith('R')) && await verifySurvey(check));
       if (clear || additional) {
         const qualification=productionNote?'保留为后续制作待确认。':approvedStrategy?'实页已呈现原策略句，新增要求无同版原话。':
-          requestedConfirmation?'实页已将占位替换列为客户待确认事项。':'按本版实页复核。';
+          requestedConfirmation?'实页已列出所报的客户待确认事项。':'按本版实页复核。';
         const detail=requestedConfirmation?qualification:qualification+decision.location+' '+decision.reason;
         updates.set(issue,{...issue,level:'P1',blockedBy:additional || detail});
       } else if (unsupported) {
