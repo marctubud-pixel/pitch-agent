@@ -2,8 +2,9 @@ import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
 import {desktopTextProvider, desktopImageProvider, modelProfile} from './desktop-text.mjs';
-import {minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportExcerpts} from './research-sources.mjs';
+import {broadVisualQueries,campaignPages,visualLookupCategory,minimumAudienceFacts,audienceTopics,selectAudienceRows,missingAudienceTopics,automaticResearchGaps,hasCategoryImage,reusableResearchFindings,categoryLookups,supportedSocialMetric,followupSources,matchesDomain,locateQuote,researchGap,consumerSearchTopics,reportSearchTerms,reportAliasSearchTerms,reportExcerpts} from './research-sources.mjs';
 import {makeStrategyOnePager, strategyCarrier} from './strategy-one-pager.mjs';
+import {ownRecipe,repairResearchRecipeMention} from './product-recipe.mjs';
 import {taskKind} from './proposal-outline.mjs';
 import {readManuscriptPlan} from './manuscript.mjs';
 import {reviewFinalDeck} from './final-review.mjs';
@@ -14,7 +15,7 @@ import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
-import { access, lstat, readFile, readdir, realpath, writeFile, mkdir, mkdtemp, link, rm } from 'node:fs/promises';
+import { access, lstat, readFile, readdir, realpath, writeFile, mkdir, mkdtemp, link, rename, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { basename, delimiter, dirname, extname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,8 +23,8 @@ import { promisify } from 'node:util';
 import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
-import { makeComparison } from './visual-comparison.mjs';
-import { generateVisualWithDesktopModels, posterStrategyPurpose, readPosterReference, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
+import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
 import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -64,11 +65,14 @@ const objectSchema = (properties) => ({
 });
 const finalTargets=['brief','research','strategy','copy','visual','layout'];
 const querySchema = objectSchema({ queries: stringList });
+const visualQuerySchema = objectSchema({queries:stringList,sceneCategory:stringField});
 const researchPlanSchema = objectSchema({
   carrier:{type:'string',enum:['packaging','kv','packaging+kv','unspecified']},
   anchorQuestions: {type:'array',items:stringField,minItems:4,maxItems:4},
   queries:stringList,
   comparisonCategory:stringField,
+  visualCategory:stringField,
+  packagingTerm:{type:'string',enum:['包装','包装盒','包装袋','瓶装包装','罐装包装']},
   catalogTerms:{type:'array',items:stringField,maxItems:8},
   consumerCategories:{type:'array',items:stringField,minItems:2,maxItems:4},
   packagingBrands:{type:'array',items:objectSchema({name:stringField,officialDomain:stringField}),maxItems:3},
@@ -225,14 +229,42 @@ function packagingTextGap(f) {
   return researchGap('visual','文字来源「'+f.source+'」记载：“'+f.evidence+'”。该文字所述外观缺对应原图，待核。'+(f.url?' '+f.url:''),'竞争与同类传播');
 }
 
-async function discoverPackaging({brands, category, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
-  const searches=[], pages=[];
-  for (const target of (brands ?? []).slice(0,3)) {
-    const name=target?.name?.trim();
-    if (!name || !/^[\p{L}\p{N} ·&-]{1,32}$/u.test(name)) continue;
-    const domain=String(target.officialDomain ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
-    const official=/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
+function brandDomain(value) {
+  const domain=String(value ?? '').trim().replace(/^https?:\/\//iu,'').replace(/\/.*$/u,'').replace(/^www\./iu,'').toLowerCase();
+  return /^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iu.test(domain) ? domain : '';
+}
+
+function brandHome(domain) {
+  return 'https://'+(domain.split('.').length===2 ? 'www.'+domain : domain)+'/';
+}
+
+async function discoverPackaging({brands, category, broadCategory, packagingTerm, catalogTerms, discover, storeRoot, dependencies, dir, signal}) {
+  const fetched=await Promise.all((brands ?? []).slice(0,3).map(async target=>{
+    const searches=[], pages=[];
+    const name=typeof target?.name==='string' && target.name.trim();
+    if (!name || !/^[\p{L}\p{N} ·&-]{1,32}$/u.test(name)) return {searches,pages};
+    let official=brandDomain(target.officialDomain);
+    let website;
     const seen=new Set();
+    if (!official) {
+      const names=await discover({query:name});
+      website=names.results.find(r=>r.title.includes(name) && /官网|官方网站|official site/iu.test(r.title) &&
+        !retailDomains.some(host=>matchesDomain(r.url,host)));
+      if (website) {
+        official=new URL(website.url).hostname.replace(/^www\./iu,'');
+        seen.add(website.url);
+      }
+      searches.push(names);
+    }
+    if (official) {
+      const page={url:website?.url ?? brandHome(official),title:name,brand:name,category,catalogTerms,packagingTerm,official:true,carrier:'packaging'};
+      const query=(broadCategory || category || name);
+      const acquired=await searchVisualImages({dir,signal,query,pages:[page]},
+        {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
+      const usable=acquired.filter(i=>Math.min(i.width,i.height)>=140);
+      searches.push({query,via:name+'品牌目录候选',results:[page]});
+      if (usable.length) return {searches,pages:[{...page,acquired:usable}]};
+    }
     const categoryName=category && !name.includes(category) ? name+' '+category : name;
     const queries=[...new Set([categoryName,name,name+' 包装',...(official?[name+' site:'+official]:[])])];
     let retailPage;
@@ -247,14 +279,13 @@ async function discoverPackaging({brands, category, catalogTerms, discover, stor
       }
       // On the site-restricted retry, visit the brand's public site even if discovery is unavailable.
       if (official && query.endsWith(' site:'+official)) {
-        const host=official.split('.').length===2 ? 'www.'+official : official;
-        hits.unshift({url:'https://'+host+'/',title:name});
+        hits.unshift({url:brandHome(official),title:name});
       }
       found.results=hits.filter(r=>!seen.has(r.url) && seen.add(r.url)).slice(0,5);
       searches.push(found);
       const eligible=found.results.filter(r=>brandSite(r.url,official) || !retailPage && r.title.includes(name));
       const checked=await Promise.all(eligible.map(async r=>{
-        const page={...r,brand:name,category,catalogTerms,official:brandSite(r.url,official),carrier:'packaging'};
+        const page={...r,brand:name,category,catalogTerms,packagingTerm,official:brandSite(r.url,official),carrier:'packaging'};
         const images=await searchVisualImages({dir,signal,query,pages:[page]},
           {capture:(options,defaults)=>capturePublicSource(options,{...defaults,...dependencies})});
         const qualified=images.filter(i=>Math.min(i.width,i.height)>=140);
@@ -266,8 +297,9 @@ async function discoverPackaging({brands, category, catalogTerms, discover, stor
       if (retailPage && !official) break;
     }
     if (retailPage) pages.push(retailPage);
-  }
-  return {searches,pages};
+    return {searches,pages};
+  }));
+  return {searches:fetched.flatMap(r=>r.searches),pages:fetched.flatMap(r=>r.pages)};
 }
 
 export async function discoverPublicPages(query, storeRoot, dependencies = {}, signal) {
@@ -305,7 +337,8 @@ print(json.dumps([{'title':item.findtext('title'),'url':item.findtext('link')} f
       { signal, timeout: 5000, maxBuffer: 65536 },
     );
     const results = JSON.parse(stdout)
-      .filter((row) => typeof row.url === 'string' && row.url.startsWith('https://'))
+      .filter(row=>typeof row.title==='string' && row.title.trim() && typeof row.url==='string' &&
+        row.url.startsWith('https://') && URL.canParse(row.url))
       .slice(0, 3);
     return { query, results, via: url.hostname };
   } catch (error) {
@@ -357,11 +390,16 @@ export async function researchConsumerReports({brief,topics,openedReports=[],dis
     await examine(searches.flatMap(s=>s.results),term);
     if (canStop && searches.some(s=>s.results.length) && enough()) break;
     const sources=await Promise.all([['ipsos','益普索站内搜索',term],['iimedia','艾媒报告站',term],['reports','199IT 站内搜索',term+'消费']].map(async ([provider,via,query])=>{
-      const results=(await directory(query,provider)).filter(relevant).slice(0,3);
+      const hits=await directory(query,provider);
+      const exact=hits.filter(relevant);
+      const likelySurvey=provider!=='reports' ? hits.filter(r=>!exact.includes(r) &&
+        /消费|调研|研究|趋势|洞察|创新机遇/u.test(r.title)) : [];
+      const results=[...exact,...likelySurvey].slice(0,3);
       return {query,via,results};
     }));
     discovered.push(...sources);
-    await examine(sources.flatMap(s=>s.results),term);
+    const candidates=sources.flatMap(s=>s.results);
+    await examine([...candidates.filter(relevant),...candidates.filter(r=>!relevant(r))],term);
     if (canStop && enough()) break;
   }
   if (topics.length && !enough() && openedReports.length) {
@@ -383,9 +421,10 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     : '从输出目标、产品品类和品牌自述卖点提取第一轮研究问题。有这三项即可启动。缺少卖点证明只限制该条主张，继续查其余问题。';
 
   const scope = project.proposalKind || taskKind(project.brief || '',false);
+  const recipe = ownRecipe(project.brief ?? '');
   const dimensions = '行业与市场：整个品类的销量、销售额、增长、价格带与统计范围；竞品：同品类代表品牌或实际活动及其作品；有条件再对照渠道规格；用户：对应样本的购买场景、选择因素与方法；产品与品牌：客户给定条件、客户判断及待核证明。';
   const plan = await call(
-    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。catalogTerms 给品牌站内导航用的品类中英文词、短称和适用产品子类，不含渠道、规格价格。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
+    'Step 0，仅依据本案输入，不联网。为可能的补查准备 sourceTargets：分配到三个不同来源：消费者调查发布机构、行业协会或统计发布机构、竞品作品发布方。海报查具名品牌或创作者实际发布的海报案例，避开素材模板和零售图。补查对照上次缺口和排除原因改用同义词、相邻品类词和新发布方。列出相应官网，用公开域名与具体品牌或商品关键词组合；不含委托方名称、未公开事实或原话。未知域名不猜。先按实际要求确定 carrier：包装 packaging、主视觉 kv、二者明确要求交付 packaging+kv，未指定 unspecified；示例、已有品牌物料或否定任务不算委托。然后在 anchorQuestions 中依次写四个本案的问题：'+dimensions+'。锚点是待查问题，不写作事实。'+ modeInstruction + planning + coverageInstruction + '从简报中提取可公开搜索的品类、传播任务和使用场景。即使没有市场、人群或渠道，也必须提出可立即执行的检索词。行业单独填写 reportCategories：按顺序给2至4个常用公开品类名，覆盖通用品类、同义词、上一级；每项只写品类名，不加指标、年份、地区或空格。例如瓶装茶用即饮茶、茶饮、瓶装茶、茶饮料。segmentTerms 写报告正文中检索的具体细分及同义词。visualCategory 写公众检索同品类作品时用的短品类名，例如混合坚果用坚果；保留能识别品类的词。packagingTerm 只填包装载体通称。正面、首屏、克重、价格、场所只用于后面的细分比较。目录用短品类、图片用实际商品。catalogTerms 给品牌站内导航用的品类中英文词、短称和适用产品子类，不含渠道、规格价格。comparisonCategory 只填最贴近任务的公开通用品类名，如猫粮、扫地机器人、夜跑。剥掉本案品牌、城市、受众、时段、渠道、型号、价格、容量；保留定义品类的词。包装或海报项目在 packagingBrands 填二至三个该品类内有代表性的公开品牌短名，officialDomain 填已知品牌官网根域名，未知留空。竞品包装搜索统一由工作台执行，不要在 queries 重写品牌加一串包装关键词。consumerCategories 首项用本品类或活动使用者的通称，再补能作为消费者报告主题的常用大类，不退到与产品相隔多层的总行业，再补不同的大类或相关行业，合计二至四项。优先朴素常用词，不含具体产品属性、目标人群、购买动机或报告后缀。例如黑咖啡先用咖啡，再到饮料、即饮咖啡；通勤单车先用户外消费、出行消费，再到骑行、自行车。queries 只列其余研究事项；谁买、何时用、为何选是打开报告后读的问题。行业指标只用于阅读报告，不加入 queries。包装查品牌产品页上的包装正面，KV 查品牌发布或设计机构的广告主画面，线上线下同类品牌海报均可供比较，单独标明可核实的实际渠道。品牌＋品类／载体的公开检索由工作台依次执行，queries 勿重复堆入交付位置、案例、原图。项目内部产品输入可直接归纳，外部检索优先找可比较的品类材料。仅使用通用品类或情境词，不含本案品牌、客户原话、联系人、非公开卖点及附件内容。有上轮缺口时据此定向补查。',
     [],
     researchPlanSchema,
     {editorial:true},
@@ -396,11 +435,12 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       objectSchema({anchorQuestions:stringList}), {editorial:true,context:JSON.stringify({brief:project.brief,anchorQuestions})}).catch(()=>{signal?.throwIfAborted();return null;});
     anchorQuestions = strings([...strings(repair?.parsedOutput?.anchorQuestions),...anchorQuestions]).slice(0,4);
   }
+  if (anchorQuestions[3]) anchorQuestions[3]=repairResearchRecipeMention(anchorQuestions[3],recipe,true);
   const scopedCarriers = (project.briefScope?.types ?? []).filter(t=>['packaging','kv'].includes(t));
   const carrier = (scopedCarriers.length===2 ? 'packaging+kv' : scopedCarriers[0]) || project.proposalKind || (plan.parsedOutput.carrier==='packaging+kv' ? 'packaging+kv' : scope || plan.parsedOutput.carrier);
   const carriers = carrier==='packaging+kv' ? ['packaging','kv'] : ['packaging','kv'].includes(carrier) ? [carrier] : [];
   const visualEvidence = carriers.map(type => type === 'packaging'
-    ? '包装竞品：取在售单品原图，看清正面，逐张记录 SKU、来源页、原图网址和可见差异。'
+    ? '包装竞品：先核同品类实际包装及来源页、原图网址和可见差异；只有正面布局的结论需要看清正面。'
     : 'KV竞品：取实际发布的主画面，记录作品、媒介、原图与出处。');
   const researchTask = [dimensions, '本案四个问题：'+JSON.stringify(anchorQuestions),
     '研究载体：'+carrier, ...visualEvidence,
@@ -462,20 +502,44 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const categories = strings(plan.parsedOutput?.reportCategories);
   const terms = strings(plan.parsedOutput?.segmentTerms).filter(t=>t.length<=30).slice(0,4);
   const industryQueries = reportSearchTerms(categories,[...priorQueries]);
+  const industryAliases=reportAliasSearchTerms(categories,plan.parsedOutput.consumerCategories,[...priorQueries,...industryQueries]);
   const discover = async ({query,domain}) => {
+    const plausible=r=>(!domain || matchesDomain(r.url,domain)) && !excluded.has(r.url) &&
+      !/百度百科|在线翻译|英汉词典|汉语词典|字词解释|素材模板|素材免费下载|海报模板/u.test(r.title);
     const found = await discoverPublicPages(query,storeRoot,dependencies,signal);
-    if (!dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL && /\p{Script=Han}/u.test(query)) {
-      const alternatives=await discoverChinesePages(query,storeRoot,dependencies,signal,'yahoo');
-      found.results=[...new Map([...alternatives,...found.results].map(r=>[r.url,r])).values()];
-      found.via+=' + Yahoo';
-    }
-    return {...found,results:found.results.filter(r=>(!domain || matchesDomain(r.url,domain)) &&
-      !excluded.has(r.url) && !/在线翻译|英汉词典|素材模板|素材免费下载|海报模板/u.test(r.title)).slice(0,8)};
+    return {...found,results:found.results.filter(plausible).slice(0,8)};
   };
   const discovered = [];
   const category=plan.parsedOutput.comparisonCategory?.trim();
-  const comparisonBrands=plan.parsedOutput.packagingBrands ?? [];
-  const baseQueries=categoryLookups(category,carriers,project.briefScope?.types ?? [],comparisonBrands,project.researchFollowup);
+  const comparisonBrands=Array.isArray(plan.parsedOutput.packagingBrands)
+    ? plan.parsedOutput.packagingBrands.filter(b=>typeof b?.name==='string') : [];
+  const broadCategory=visualLookupCategory(category,plan.parsedOutput.visualCategory,plan.parsedOutput.catalogTerms);
+  const commerce=/电商|网店|旗舰店|商品详情|商城|e-commerce/iu.test(project.brief || '');
+  const broadQueries=broadVisualQueries(broadCategory,carriers,plan.parsedOutput.packagingTerm);
+  const firstPass=await Promise.all(broadQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
+  discovered.push(...firstPass);
+  const brands=carriers.includes('packaging') ? comparisonBrands : [];
+  const packagingOptions={category,broadCategory,packagingTerm:plan.parsedOutput.packagingTerm,catalogTerms:[...new Set([broadCategory,...(plan.parsedOutput.catalogTerms ?? [])].filter(Boolean))],discover,storeRoot,dependencies,dir,signal};
+  const packaging=await discoverPackaging({brands,...packagingOptions});
+  discovered.push(...packaging.searches);
+  const campaignResults=[];
+  async function discoverCampaigns() {
+    if (dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL) return;
+    const directoryTerms=[broadCategory,category,...(project.researchFollowup ? comparisonBrands.map(b=>b?.name) : []),...terms];
+    for (const term of [...new Set(directoryTerms.filter(Boolean))].slice(0,4)) {
+      const hits=await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign');
+      const results=campaignPages(hits.filter(r=>!excluded.has(r.url)),{category,broadCategory,brands:comparisonBrands,commerce});
+      discovered.push({query:term,via:'SocialBeta 品牌发布案例',results});
+      for (const item of results) if (!campaignResults.some(r=>r.url===item.url)) campaignResults.push(item);
+      if (campaignResults.length>=4) break;
+    }
+  }
+  if (carriers.includes('kv')) await discoverCampaigns();
+  const baseQueries=[...new Set([
+    ...categoryLookups(broadCategory,carriers,project.briefScope?.types ?? [],[],project.researchFollowup),
+    ...(broadCategory && commerce && carriers.includes('kv') ? [broadCategory+' 电商宣传图'] : []),
+    ...categoryLookups(category,carriers,project.briefScope?.types ?? [],comparisonBrands,project.researchFollowup),
+  ])].filter(q=>!broadQueries.includes(q));
   const baseResults=await Promise.all(baseQueries.filter(q=>!priorQueries.has(q)).map(query=>discover({query})));
   discovered.push(...baseResults);
   if (project.briefScope?.types?.includes('activity') && category &&
@@ -487,10 +551,10 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   }
   const reportReads = [];
   const examined = new Set();
-  for (const query of industryQueries) {
-    const found = await discover({query});
-    discovered.push(found);
-    const isReport = r=>/报告|皮书|研究|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url);
+  const industrySearches=await Promise.all([...industryQueries,...industryAliases].map(async query=>{
+    const found=await discover({query});
+    let directory;
+    const isReport = r=>/报告|皮书|研究|统计公报|行业发展|行业市场|市场规模|report|outlook|white.?paper|\.pdf/i.test(r.title+' '+r.url);
     let candidates = found.results.filter(isReport);
     if (!candidates.length && /\p{Script=Han}/u.test(query) && !(dependencies.searchRss || process.env.NIGHTFLIGHT_SEARCH_RSS_URL)) {
       const alternatives = await discoverChinesePages(query,storeRoot,dependencies,signal);
@@ -501,10 +565,13 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       const term=query.replace(/报告|白皮书$/u,'');
       const reports=await discoverChinesePages(term,storeRoot,dependencies,signal,'reports');
       const related=reports.filter(r=>r.title.includes(term) && !excluded.has(r.url)).slice(0,3);
-      discovered.push({query:term,via:'199IT 报告目录',results:related});
+      directory={query:term,via:'199IT 报告目录',results:related};
       candidates=[...new Map([...related,...candidates].map(r=>[r.url,r])).values()];
     }
-    found.results = candidates;
+    return {found:{...found,results:candidates},directory};
+  }));
+  discovered.push(...industrySearches.flatMap(({found,directory})=>directory ? [found,directory] : [found]));
+  for (const {found:{query,results:candidates}} of industrySearches) {
     const pages = (await Promise.all(candidates.map(r=>capture(r.url)))).filter(Boolean);
     const links = [...new Set(pages.flatMap(p=>p.pdfLinks))].slice(0,3);
     pages.push(...(await Promise.all(links.map(capture))).filter(Boolean));
@@ -529,13 +596,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     discover,capture,call,discovered,signal,
     directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider),
   });
-  const brands=carriers.includes('packaging') && Array.isArray(plan.parsedOutput.packagingBrands) ? plan.parsedOutput.packagingBrands : [];
-  const packaging=await discoverPackaging({brands,category,catalogTerms:plan.parsedOutput.catalogTerms,discover,storeRoot,dependencies,dir,signal});
-  const revised = targeted.filter(t=>!brands.some(b=>b.name && t.query.includes(b.name)))
+  const revised = targeted
     .map(({query,domain})=>({query:query+' site:'+domain,domain})).filter(s=>!priorQueries.has(s.query));
-  const audienceSearches = queries.filter(query=>!brands.some(b=>b.name && query.includes(b.name)) && !priorQueries.has(query)).slice(0,4);
+  const audienceSearches = queries.filter(query=>!priorQueries.has(query) && !broadQueries.includes(query) && !baseQueries.includes(query)).slice(0,4);
   const searches = [...audienceSearches.map(query=>({query})),...revised.slice(0,4)].filter(s=>!baseQueries.includes(s.query));
-  discovered.push(...packaging.searches,...await Promise.all(searches.map(async search=>{
+  discovered.push(...await Promise.all(searches.map(async search=>{
     const found=await discover(search);
     if (!search.domain && /\p{Script=Han}/u.test(search.query) && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
       const extra=await discoverChinesePages(search.query,storeRoot,dependencies,signal);
@@ -544,15 +609,6 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     }
     return found;
   })));
-  const campaignResults=[];
-  if (carriers.includes('kv') && !dependencies.searchRss && !process.env.NIGHTFLIGHT_SEARCH_RSS_URL) {
-    for (const term of [...new Set([category,...categories,...terms].filter(Boolean))].slice(0,3)) {
-      const results=(await discoverChinesePages(term,storeRoot,dependencies,signal,'campaign')).filter(r=>!excluded.has(r.url)).slice(0,4);
-      discovered.push({query:term,via:'SocialBeta 品牌发布案例',results});
-      campaignResults.push(...results);
-      if (campaignResults.length>=4) break;
-    }
-  }
   signal?.throwIfAborted();
   const suppliedPages = (project.feedback ?? [])
     .filter(item => item.stage === 'research')
@@ -564,8 +620,8 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const material = originals.map(({ url, source, text }) => ({ url, source, text: examined.has(url) ? reportExcerpts(text,terms) : text.slice(0,7500) }));
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
-    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。relevance 按该条证据是否回答该板块的研究问题选择 direct（本案细分）、category（同类或上位品类，实际指标能回答）、background（只沾边或指标答非所问）。平台热度证据的 socialMetric 填 platform、period、topic、measure，四项分别摘自同一原文，measure 包含原值与口径；公开关键词榜未提供数值时保留原榜名；其他证据这四项留空。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件，可引用生成的简报任务卡，source 必须逐字等于文件名，evidence 用原文连续单一短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
-      '行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
+    modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。relevance 按该条证据是否回答该板块的研究问题选择 direct（本案细分）、category（同类或上位品类，实际指标能回答）、background（只沾边或指标答非所问）。平台热度证据的 socialMetric 填 platform、period、topic、measure，四项分别摘自同一原文，measure 包含原值与口径；公开关键词榜未提供数值时保留原榜名；其他证据这四项留空。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件。引用任务卡时，source 必须逐字等于文件名；引用客户提交的原话时，source 写「客户原始 Brief」。evidence 使用相应材料原文的连续短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
+      '行业证据在上位品类实际覆盖本品时，可以按原统计品类和年份写有具体数据的 category 发现，准确区分已发生和预测。相邻品类或只泛称增长、没有可定位时间口径的资料仅作 background。缺本品细分数据单列，不覆盖已有上位市场结论。行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
     inputs.images,
     reportSchema,
   );
@@ -574,12 +630,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   if (!Array.isArray(offered) || !Array.isArray(draft.parsedOutput.gaps))
     throw Error('研究返回格式不完整，请重试研究');
   const replacements = [];
-  const prior = (project.previousResearch?.findings ?? []).filter(f=>!f.images?.some(i=>i.carrier==='kv' && (!i.sameCategory || !i.publicationQuote)));
-  const findings = [...prior];
+  const findings = reusableResearchFindings(project.previousResearch?.findings ?? []);
   for (const item of consumerReports.findings) {
     if (!findings.some(f=>f.subject===item.subject && f.url===item.url && f.evidence===item.evidence)) findings.push(item);
   }
-  const gaps = strings(draft.parsedOutput.gaps).map(message=>researchGap('decision',message));
+  const gaps = strings(draft.parsedOutput.gaps).map(message=>researchGap('decision',repairResearchRecipeMention(message,recipe)));
   const seen = new Set(findings.map(f=>JSON.stringify([f.url || f.source,f.conclusion])));
   for (const f of offered.slice(0,24)) {
     signal?.throwIfAborted();
@@ -592,6 +647,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     else if (project.attachments?.some(a=>a.name===f.source) || project.artifacts?.some(a=>a.stage==='brief' && a.kind==='text' && a.name===f.source))
       original=inputs.texts.find(t=>t.name===f.source && t.text);
     let match=original && locateQuote(original.text,f.evidence);
+    const briefEvidence=!match && locateOwnBriefEvidence(project,f);
+    if (briefEvidence) {
+      original=briefEvidence.original;
+      match=briefEvidence.match;
+    }
     if (!match && (original || f.url && originals.length)) {
       // A blocked origin can be replaced only by a different, actually captured primary source.
       const alternatives = original ? [original] : originals.slice(0,4);
@@ -616,7 +676,11 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
     if (Object.values(f.socialMetric ?? {}).some(Boolean) &&
       (f.subject!=='audience' || !original.url || !supportedSocialMetric(f.socialMetric,original.text,match.passage))) continue;
     if (f.subject==='audience' && findings.some(old=>old.subject==='audience' && old.evidence===match.evidence)) continue;
+    const source=briefEvidence ? original.source : original.url && original.url!==f.url ? original.source : f.source;
+    const verifiedKey=JSON.stringify([original.url || source,f.conclusion]);
+    if (seen.has(verifiedKey)) continue;
     seen.add(key);
+    seen.add(verifiedKey);
     if (carriers.includes('kv') && f.describesPosterAppearance) continue;
     if (carriers.includes('kv') && f.subject==='competitor' && /(?:海报|画面|主视觉|构图|底色|配色|版式|字形|色块)/u.test(f.conclusion) && /构图|底色|配色|排版|版式|色块|视觉层级|画面.{0,10}(?:以|采用|呈现)|字形|留白/u.test(f.conclusion)) continue;
     if (carriers.includes('packaging') && (f.describesPackagingAppearance || f.chapter==='竞争与同类传播' &&
@@ -624,24 +688,69 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       gaps.push(packagingTextGap({...f,evidence:match.evidence}));
       continue;
     }
-    findings.push({...f,source:original.url && original.url!==f.url ? original.source : f.source,url:original.url || '',...match});
+    findings.push({...f,source,url:original.url || '',...match});
 
   }
   const pages = [
     ...packaging.pages,
+    ...campaignResults.slice(0,4).map(r=>({...r,carrier:'kv'})),
     ...(draft.parsedOutput.competitorPages ?? []),
-    ...campaignResults.map(r=>({...r,carrier:'kv'})),
     ...originals.filter(item=>/产品|商品|包装|海报|案例|campaign|packaging|products?/iu.test(item.source+' '+item.url))
       .map(item=>({title:item.source,url:item.url})),
   ];
   const boards = [];
   const documents = inputs.texts.filter(t=>t.text && project.attachments?.some(a=>a.name===t.name));
   for (const type of carriers) {
-    const board = await researchCompetitors({call,dir,project,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images,
+    const boardOptions={call,dir,project,category,broadCategory,carrier:type,signal,dependencies,onEvent,readSource:capture,documents,uploadedImages:inputs.images};
+    let board = await researchCompetitors({...boardOptions,
       acquiredByPage:new Map(packaging.pages.map(p=>[p,p.acquired])),
       pages:pages.filter(p=>(!p.carrier || p.carrier===type) && (type!=='packaging' || !brands.length ||
         packaging.pages.includes(p) || ((draft.parsedOutput.competitorPages ?? []).includes(p) && originals.some(source=>source.url===p.url)) || documents.some(d=>d.text.includes(p.url) && p.imageUrl && d.text.includes(p.imageUrl)))),
       previous:(project.previousResearchImages ?? []).filter(image=>!image.carrier || image.carrier===type)});
+    if (type==='packaging' && !hasCategoryImage(board?.finding.images ?? [],type)) {
+      if (!carriers.includes('kv')) await discoverCampaigns();
+      const publicCases=[...new Set([...campaignResults.map(r=>r.url),
+        ...findings.filter(f=>f.subject==='competitor' && f.url).map(f=>f.url)])];
+      const cases=(await Promise.all(publicCases.slice(0,6).map(capture))).filter(Boolean);
+      if (cases.length) {
+        await onEvent?.('首批没有查到合格包装，沿已打开的同类案例寻找其他品牌');
+        const tried=new Set(brands.map(b=>b?.name?.trim()).filter(Boolean));
+        const sources=cases.slice(0,6).map(s=>({title:s.source,url:s.url,text:s.text.slice(0,3000)}));
+        const result=await call('首轮品牌未取得同类包装原图。只根据实际打开的案例，找至多两个还没试过、有该品类商品的品牌短名。每个短名必须在对应网页标题或原文出现。只选商品品牌，跳过平台、机构、同名其他行业和经销商。找不到返回空数组。返回公开短名、原文网页 url，并在 officialDomain 写确知且目前公开的品牌中国官网根域。已读来源给出官网时优先使用。社交平台或电商域名不能当品牌官网。官网不确定就填空串。需要实际打开核对品牌身份后才采用。',
+          [],objectSchema({brands:{type:'array',items:objectSchema({name:stringField,url:stringField,officialDomain:stringField})}}),
+          {editorial:true,rules:[],context:JSON.stringify({category,broadCategory,tried:[...tried],sources})})
+          .catch(()=>{signal?.throwIfAborted();return null;});
+        const proposed=Array.isArray(result?.parsedOutput?.brands) ? result.parsedOutput.brands : [];
+        const named=proposed.filter(b=>typeof b?.name==='string' && b.name.trim() && !tried.has(b.name.trim()) &&
+          sources.some(s=>s.url===b.url && (s.title.includes(b.name) || s.text.includes(b.name)))).slice(0,2);
+        const normalizeBrand=value=>value.normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
+        async function verifyDomain(name,input) {
+          const domain=brandDomain(input);
+          if (!domain || retailDomains.some(host=>matchesDomain(brandHome(domain),host))) return '';
+          const website=await capture(brandHome(domain));
+          return website && brandSite(website.url,domain) && normalizeBrand(website.source).includes(normalizeBrand(name)) ? domain : '';
+        }
+        let alternatives=await Promise.all(named.map(async ({name,officialDomain})=>({name,officialDomain:await verifyDomain(name,officialDomain)})));
+        const missing=alternatives.filter(brand=>!brand.officialDomain).map(brand=>brand.name);
+        if (missing.length) {
+          await onEvent?.('已核公开品牌名，正在单独寻找可实测的品牌官网');
+          const leads=await call('只为给定公开品牌提供官网线索。每个品牌给一两个你知道或可实际打开核对的中国官网根域，已有案例无需写出该域名。不要填社交、电商或媒体网址。夜航会实际打开并核对同站域、页面品牌名称和商品图。完全不知道时返回空数组。',[],
+            objectSchema({brands:{type:'array',items:objectSchema({name:stringField,domains:stringList})}}),
+            {editorial:true,rules:[],context:JSON.stringify({brands:missing})}).catch(()=>{signal?.throwIfAborted();return null;});
+          const suggestions=Array.isArray(leads?.parsedOutput?.brands) ? leads.parsedOutput.brands : [];
+          alternatives=await Promise.all(alternatives.map(async brand=>{
+            if (brand.officialDomain) return brand;
+            const suggested=suggestions.find(row=>row?.name===brand.name);
+            const domains=await Promise.all(strings(suggested?.domains).slice(0,2).map(domain=>verifyDomain(brand.name,domain)));
+            return {...brand,officialDomain:domains.find(Boolean) ?? ''};
+          }));
+        }
+        const extra=await discoverPackaging({brands:alternatives,...packagingOptions});
+        discovered.push(...extra.searches);
+        if (extra.pages.length) board=await researchCompetitors({...boardOptions,pages:extra.pages,
+          acquiredByPage:new Map(extra.pages.map(p=>[p,p.acquired]))}) ?? board;
+      }
+    }
     if (board) {
       boards.push(board);
       const hashes=new Set(board.finding.images.map(image=>image.sha256));
@@ -660,7 +769,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   const research=await writeResearchPage({call,project,findings,gaps,carriers,anchorQuestions,onEvent,signal});
   const captured = new Map((await Promise.all(captures.values())).filter(Boolean).map(item=>[item.url,item]));
   research.searchScope = {
-    consumerReads:consumerReports.reads, reportReads, queries: discovered.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
+    visualCategory:broadCategory, consumerReads:consumerReports.reads, reportReads, queries: discovered.map(s=>s.query), attempts: discovered.map(s=>({query:s.query,source:s.via,count:s.results.length})), urls:[...captures.keys()], readable:captured.size, replacements,
     unreadable: [...failedCaptures].map(([url,reason])=>({url,reason})),
     pages: [...captured.values()].map(({source,url})=>{
       const rejected = Array.isArray(draft.parsedOutput.rejectedSources) &&
@@ -714,8 +823,20 @@ export function formatResearchHandoff(research, trace) {
     .join('\n\n');
 }
 
+export function locateOwnBriefEvidence(project,finding) {
+  if (finding.subject!=='product' || finding.url!=='') return null;
+  const source='客户原始 Brief';
+  const namesThisCard=project.artifacts?.some(item=>
+    item.stage==='brief' && item.kind==='text' && item.name===finding.source);
+  if (finding.source!==source && !namesThisCard) return null;
+  const text=project.brief ?? '';
+  const match=locateQuote(text,finding.evidence);
+  return match ? {original:{source,text},match} : null;
+}
+
 export async function writeResearchPage({call,project,findings,gaps,carriers,anchorQuestions,onEvent,signal}) {
   const mode=project.mode;
+  const recipe=ownRecipe(project.brief ?? '');
   const activity=project.briefScope?.types?.includes('activity');
   const canAsk=mode==='collab' && !project.researchQuestionAnswered;
   // The director writes once from located quotations and observed images, including earlier rounds.
@@ -769,11 +890,17 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
     research.sections=researchChapters.flatMap(chapter=>chapter===researchChapters[2] ? audience : research.sections.filter(r=>r.chapter===chapter));
     research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal);
     research.sections=prioritizePackagingRows(research.sections,output.packagingHighlights,marks,project.brief);
+    for (const row of research.sections) {
+      if (row.chapter!=='产品与品牌' || !row.evidenceIndices.some(i=>findings[i]?.subject==='product')) continue;
+      row.conclusion=repairResearchRecipeMention(row.conclusion,recipe);
+      row.explanation=repairResearchRecipeMention(row.explanation,recipe);
+    }
     const remainingGaps=output.gaps.filter(g=>g.message?.trim() && researchChapters.includes(g.chapter) &&
       !verifiedCarriers.includes(g.scope) && !(activity && g.scope==='participationMotive'));
     const blocking=remainingGaps.filter(g=>g.blocksStrategy && g.scope!=='optionalSegment');
     const resolvedBlocker=output.gaps.some(g=>g.blocksStrategy && (verifiedCarriers.includes(g.scope) || g.scope==='optionalSegment' || (activity && g.scope==='participationMotive')));
-    research.gaps = remainingGaps.map(g=>researchGap('decision',g.message,g.chapter));
+    research.gaps = remainingGaps.map(g=>researchGap('decision',
+      g.chapter==='产品与品牌' ? repairResearchRecipeMention(g.message,recipe,true) : g.message,g.chapter));
     research.ready = output.ready===true && !(mode==='auto' && blocking.length) && research.sections.some(row=>row.evidenceIndices.some(i=>{
       const f=findings[i];
       return !f.visualOnly && (f.url || project.attachments?.some(a=>a.name===f.source));
@@ -789,10 +916,12 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
   if (!research.sections.length && !research.gaps.length) research.gaps.push(researchGap('decision','尚缺能支持本案判断的公开原文或可辨作品。'));
   if (mode==='auto') {
     const missing=automaticResearchGaps(research,project);
+    research.ready=missing.length===0;
     if (missing.length) {
-      research.ready=false;
       research.gaps.push(...missing);
       research.next=missing.map(g=>g.message).join(' ');
+    } else {
+      research.next='可按四维研究给出的取舍进入策略。';
     }
   }
   research.next ||= research.ready ? '可按四维研究给出的取舍进入策略。' : '补查仍缺的依据。';
@@ -871,7 +1000,7 @@ async function readInputs(dir, project, stage, signal) {
       const bytes = await readFile(path);
       if (bytes.length > 8 * 1024 * 1024) throw Error('「'+item.name+'」超过单张图片 8 MiB 的限制，请缩小后再上传');
       const dimensions = await inspectImage(bytes,{pythonBinary:await pythonBinary()});
-      images.push({name:item.name,imageId:'ref_' + images.length, sha256:hash(bytes), path, byteLength:bytes.length, mediaType:dimensions.mediaType});
+      images.push({name:item.name,imageId:'ref_' + images.length, sha256:hash(bytes), path, byteLength:bytes.length, ...dimensions});
       texts.push({name:item.name, imageNumber:images.length});
     } else if (item.kind === 'text' || ['.txt','.md'].includes(ext)) {
       append(item.name, await readFile(path,'utf8'));
@@ -941,7 +1070,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, onEvent, fixedDirections}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent, referenceTasks, paper}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -951,50 +1080,123 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
       pool.push(publicVisualCandidate(item,direction,'public_'+item.sha256.slice(0,24)));
     }
   }
-  for (const image of project.previousReferences ?? []) addCandidates([image], image.direction);
+  const knownReferences=[...(project.previousReferences ?? []),...(project.researchReferences ?? [])];
+  const measured=paper ? await independentCalls(knownReferences,async image=>{
+    if (image.width>0 && image.height>0) return image;
+    const size=await inspectImage(await readFile(image.path),{pythonBinary:await pythonBinary()});
+    return {...image,width:size.width,height:size.height};
+  }) : knownReferences;
+  for (const image of measured) addCandidates([image],image.direction);
+  const scope=project.research?.searchScope;
+  // Older runs recorded the category in the case directory search, before any brand follow-up.
+  const priorCategory=scope?.attempts?.find(attempt=>attempt.source==='SocialBeta 品牌发布案例')?.query;
+  const candidateCategory=scope?.visualCategory || priorCategory;
+  const [category]=publicVisualQueries({parsedOutput:{queries:[candidateCategory]}},project);
   const diagnostics = [];
   const attempted = new Set();
+  const directionSearches = new Map();
   const history = [];
-  for (let pass=0; ; pass++) {
+  const observations = new Map();
+  const accepted = new Map();
+  let searchedCases=false;
+  let revisedBorrow=false;
+  for (;;) {
     try {
-      const plans=await selectVisualReferences({call,project,images:pool,active,fixedDirections});
+      const remaining=active.filter(direction=>!accepted.has(direction));
+      const priorAdmissions=remaining.flatMap(direction=>{
+        const rejected=history.findLast(record=>record.direction===direction && !record.passed);
+        return rejected ? [{direction,pages:rejected.references.map(ref=>ref.pageUrl),
+          blockers:rejected.blockers.slice(0,3).map(message=>message.slice(0,360))}] : [];
+      });
+      const proposed=await selectVisualReferences({call,project,images:pool,active:remaining,observations,priorAdmissions,referenceTasks,paper,
+        accepted:[...accepted.values()].map(({handoff})=>({direction:handoff.direction,references:handoff.references}))});
+      const plans=new Map([...accepted,...proposed]);
       const missing=[];
-      for (const direction of active) {
+      const missingReasons={};
+      let rejected=false;
+      for (const direction of remaining) {
         const plan=plans.get(direction);
-        if (!plan.images.some(i=>i.sourceUrl)) continue;
+        if (plan.missing) {
+          missing.push(direction);
+          missingReasons[direction]=plan.gap || '缺少能表达该方向的原图';
+          continue;
+        }
+        const main=plan.images.find(i=>i.sha256===plan.handoff.references.find(r=>r.role==='main')?.sha256);
+        if (oppositePosterOrientation(main,paper) && !directionSearches.has(direction)) {
+          missing.push(direction);
+          missingReasons[direction]='当前主参考 '+main.width+'×'+main.height+' 与 '+paper.name+' 方向相反，先补同向独立海报。';
+          await onEvent?.('「'+direction+'」'+missingReasons[direction]);
+          continue;
+        }
+        if (!plan.images.some(i=>i.sourceUrl)) {accepted.set(direction,plan);continue;}
         const otherDirections=active.filter(n=>n!==direction).map(n=>({direction:n,references:plans.get(n).handoff.references}));
         const admission=await reviewReferencePlan({call,project,direction,otherDirections,...plan});
         history.push(admission);
         await writeFile(join(dir,'reference-admission-'+randomUUID()+'.json'),JSON.stringify(admission,null,2),{flag:'wx',mode:0o600});
         if (!admission.passed) {
+          rejected=true;
           missing.push(direction);
-          const rejected=new Set(plan.images.filter(i=>i.sourceUrl).map(i=>i.sha256));
-          for (let i=pool.length-1;i>=0;i--) if(rejected.has(pool[i].sha256)) pool.splice(i,1);
+          missingReasons[direction]=admission.blockers.join('、');
+          if (revisedBorrow) {
+            const rejected=new Set(plan.images.filter(i=>i.sourceUrl).map(i=>i.sha256));
+            for (let i=pool.length-1;i>=0;i--) if(rejected.has(pool[i].sha256)) pool.splice(i,1);
+          }
           diagnostics.push(direction+' 准入未过：'+admission.blockers.join('、'));
         } else {
           plan.handoff.admission=admission;
           plan.handoff.priorAdmissions=history.filter(a=>a.direction===direction && !a.passed);
+          accepted.set(direction,plan);
         }
       }
-      if (missing.length) throw Object.assign(Error('公开参考未通过：'+missing.join('、')),{missing});
+      if (missing.length) {
+        if (accepted.size) await onEvent?.('沿用已经完成准入的原图与借法：'+[...accepted.keys()].join('、'));
+        if (rejected && !revisedBorrow) {
+          revisedBorrow=true;
+          await onEvent?.('根据各方向的准入意见，先调整现有原图的借法');
+          continue;
+        }
+        throw Object.assign(Error('视觉主参考待补：'+missing.map(n=>n+'（'+missingReasons[n]+'）').join('、')+'。可在对话区补图后重试。'),{missing,missingReasons});
+      }
       return plans;
     }
     catch (error) {
       if (!error.missing) throw error;
-      if (pass===2) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
-      for (const direction of error.missing) {
+      if (!searchedCases && category && searchCases) {
+        searchedCases=true;
+        const known=pool.length;
+        await onEvent?.('按通用品类「'+category+'」打开品牌发布案例查找候选原图');
+        const found=await searchCases({query:category,dir,signal});
+        addCandidates(found);
+        diagnostics.push(category+' / 品牌发布案例，新增 '+(pool.length-known)+' 张');
+        if (pool.length-known>=error.missing.length) continue;
+      }
+      const pending=error.missing.filter(direction=>(directionSearches.get(direction) ?? 0)<2);
+      if (!pending.length) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
+      for (const direction of pending) {
+        directionSearches.set(direction,(directionSearches.get(direction) ?? 0)+1);
         signal?.throwIfAborted();
         const creative = project.copyReview?.draft?.directions?.find(d=>d.name===direction);
-        const packet = {brief:project.brief, direction, creative, strategy:project.strategyText, previousQueries:[...attempted],gaps:diagnostics};
-        const plan = await call('从策略发力点和本方向的创意解释提炼观众应读懂的关系，给出两条不同的简短公开检索词，可用英文。一条组合品类、目标载体与该关系找设计案例，另一条找不同表达手法或可核实的场所细节。优先品牌、设计机构或奖项的作品图。勿把上一稿某一处修图动作当作策略。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。兼顾辅助参考的构图、色彩或材质。只用通用品类和公开场景词，不要客户或品牌名、原话、项目名、联系人、未公开产品信息或附件内容。避开前次已查词。',[],querySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
+        const packet = {direction,...(referenceTasks?.has(direction) ? {referenceTask:referenceTasks.get(direction),category} :
+          {brief:project.brief,creative,strategy:project.strategyText}),previousQueries:[...attempted],
+          missingReason:error.missingReasons?.[direction],gaps:diagnostics};
+        const plan = await call('从策略发力点、方向创意和缺图原因提炼要参考的具体画面关系。给两条短公开检索词，每条最多三个常用词组。第一条结合通用品类和载体，例如「坚果 包装」「茶饮 海报」。第二条查这个方向需要借的画法、动作或场所，可用英文。如果上一批同类案例没找到，改查能借到该画面关系的相邻品类或视觉主题。sceneCategory 写常用的品类、视觉主题或场景名，例如「水果」「办公室」「露营」，无关则留空。优先品牌、设计机构或奖项的亚洲作品原页。稳健方向找该品类的常见代表；产品方向找能表现具体特征的画面；情绪方向找人物、场景和动作。只用通用品类和公开视觉词，不要客户或品牌名、原话、项目名、联系人、规格、价格、未公开配方或附件内容。避开前次已查词。',[],visualQuerySchema,{delegate:true,assignment:'视觉参考检索词',context:JSON.stringify(packet)});
         const queries=publicVisualQueries(plan,project).slice(0,2);
+        const [scene]=publicVisualQueries({parsedOutput:{queries:[plan.parsedOutput?.sceneCategory]}},project);
+        const caseKey=direction+' / 场景案例 '+scene;
+        if (searchCases && scene && scene!==category && /^[\p{Script=Han}]{2,8}$/u.test(scene) && !attempted.has(caseKey)) {
+          attempted.add(caseKey);
+          await onEvent?.('正在为「'+direction+'」按场景「'+scene+'」打开品牌发布案例');
+          const found=await searchCases({query:scene,dir,signal});
+          if (found.length) addCandidates(found.slice(0,3),direction);
+          diagnostics.push(caseKey+'，取得 '+found.length+' 张');
+        }
         const remaining=queries.filter(query=>!attempted.has(direction+' / '+query));
         const results=await independentCalls(remaining,async query=>{
           const key=direction+' / '+query;
           attempted.add(key);
           await onEvent?.('正在为「'+direction+'」查找公开参考图：'+query);
           try {
-            const found=await search({query,dir,signal});
+            const found=await search({query,dir,signal,creativeFallback:!!referenceTasks});
             return {found,message:key+'，取得 '+found.length+' 张'};
           } catch(error) {
             signal?.throwIfAborted();
@@ -1096,6 +1298,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return {...error.receipt, responseText:''};
         }
         if (desktop && /未返回有效 JSON|未返回模型身份/.test(error.message)) throw invalidOutput(error.message);
+        if (stage==='final' && error.code==='MODEL_OUTPUT_LENGTH') throw error;
         if (desktop) throw Error((stage === 'visual' && !schema ? '生图' : images.length ? '视觉理解' : '文字')+' API 调用失败：'+error.message, {cause:error});
         if (error.receipt?.rateLimit) throw Error('本机 Codex 已达使用限额，请稍后重试');
         throw Error('本机 Codex 调用失败（'+(error.code || error.message)+'）。请检查 Codex 登录、连接与本地阶段回执后重试', {cause:error});
@@ -1120,7 +1323,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         if (!cached) return fetchImages(args);
         const sourceDir=join(checkpointDir,'search',hash(args.query));
         await mkdir(sourceDir,{recursive:true,mode:0o700});
-        return cached({type:'public-search',query:args.query},async()=>{
+        return cached({type:'public-search',query:args.query,creativeFallback:!!args.creativeFallback},async()=>{
           const found=await fetchImages({...args,dir:sourceDir});
           if(!found.length) throw Error('本次未取得公开参考原图');
           return found;
@@ -1134,6 +1337,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       const packaging = carriers.includes('packaging');
       const poster = carriers.includes('kv');
       const checkPosterTransfer = desktop && poster && !packaging;
+      const posterPaper=checkPosterTransfer ? paperAspect(project.brief) : null;
       const strategyPurpose = checkPosterTransfer ? posterStrategyPurpose(strategyText) : strategyText;
       const copyFiles = new Set(project.artifacts?.filter(file=>file.stage==='copy' && file.kind==='text').map(file=>file.name));
       const copyFile = [...copyFiles].at(-1);
@@ -1145,7 +1349,15 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           if (typeof slogan!=='string' || !slogan.trim()) throw Error('海报／KV 缺少「'+direction+'」本版已选 slogan，请核对文案交接。');
         }
       }
-      const plans = await prepareVisualPlans({call,project:{...project,strategyText:strategyPurpose},images:inputs.images,active:directions,dir,signal,search,onEvent,fixedDirections:checkPosterTransfer});
+      const searchCases=visualSearch ? undefined : async ({query,dir,signal})=>{
+        const hits=await discoverChinesePages(query,join(dir,'public-reference-sources'),researchDependencies,signal,'campaign');
+        const pages=campaignPages(hits,{category:query,broadCategory:query}).slice(0,3);
+        const batches=await Promise.all(pages.map(page=>fetchImages({query,dir,signal,pages:[{...page,carrier:'kv'}]})));
+        return Array.from({length:3},(_,index)=>batches.flatMap(batch=>batch[index] ? [batch[index]] : [])).flat().slice(0,6);
+      };
+      const referenceProject={...project,strategyText:strategyPurpose};
+      const referenceTasks=desktop ? await describeReferenceTasks({call,project:referenceProject,active:directions,carriers}) : undefined;
+      const plans = await prepareVisualPlans({call,project:referenceProject,images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent,referenceTasks,paper:posterPaper});
       const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];
@@ -1174,11 +1386,15 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const creative = poster || packaging ? selected.get(direction) : project.copyReview?.draft?.directions?.find(d=>d.name===direction);
         const posterSlogan = poster ? creative.main : undefined;
         const materials = inputs.texts.filter(item=>!item.imageNumber && (!(poster || packaging) || !copyFiles.has(item.name)));
-        const auxiliaryNotes = handoff.references.filter(ref=>ref.role==='auxiliary').map(({borrow,apply})=>({borrow,apply}));
+        const auxiliaryNotes = handoff.references.filter(ref=>ref.role==='auxiliary')
+          .map(({borrow,apply,avoid})=>({borrow,apply,...(checkPosterTransfer && avoid ? {avoid} : {})}));
+        const mainReference=handoff.references.find(ref=>ref.role==='main');
         const generationContext = checkPosterTransfer ? {
           brief:project.brief, strategyPurpose,
           taskCard:materials.find(item=>project.artifacts?.some(file=>file.name===item.name && file.stage==='brief'))?.text,
-          direction:creative, auxiliaryNotes,
+          direction:creative, auxiliaryNotes, referenceTask:handoff.referenceTask,
+          mainReferenceUse:{apply:mainReference.apply,avoid:mainReference.avoid},
+          hasBrandArtwork:generationReferences.some(ref=>ref.role==='sharedBrand'),
           feedback:(project.feedback ?? []).filter(item=>item.stage==='visual').map(item=>item.text),
         } : {...JSON.parse(context),materials,
           direction:packaging && creative
@@ -1187,7 +1403,24 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           ...(posterSlogan ? {posterSlogan} : {}),
           referenceHandoff:{direction,references:generationReferences.map((ref,index)=>({...ref,imageNumber:index+1+Number(Boolean(best))}))},
           auxiliaryNotes};
-        const generated = await independentCalls(visualBorrowings, async (borrow,index) => {
+        async function saveVisual({result,promptWriting},index,transfer,attached,sloganRepair,artworkRevision) {
+          const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
+          const digest = hash(original.bytes);
+          if (seen.has(digest)) throw invalidOutput('主视觉候选返回了重复图片，请重试视觉阶段');
+          seen.add(digest);
+          const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
+          const path = join(dir,name);
+          await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
+          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId};
+          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:attached.map(i=>i.sha256),sha256:digest,thread:result.threadId,
+            ...(sloganRepair ? {sloganRepair} : {}),...(artworkRevision ? {artworkRevision} : {}),...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),
+            ...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
+          await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
+          return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png',
+            width:original.inspection.width,height:original.inspection.height,
+            ...(promptWriting?.visiblePackageUnits ? {visiblePackageUnits:promptWriting.visiblePackageUnits} : {})}};
+        }
+        async function drawCandidate(borrow,index,revision) {
           const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
           await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/3');
           const instruction = [
@@ -1201,29 +1434,31 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             best ? '第一张输入图为上一批原稿。保留成立处，结合用户意见和前版问题改稿。'+best.visual.reason : '',
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
-          const input = {...generationContext,transfer};
-          const {result,promptWriting} = desktop
-            ? await generateVisualWithDesktopModels({call,images:sourceImages,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
+          const input = {...generationContext,transfer,...(revision ? {revision} : {})};
+          const attached=revision?.referenceInput==='observations'
+            ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256) : sourceImages;
+          const attempt = desktop
+            ? await generateVisualWithDesktopModels({call,images:attached,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
             : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
-          const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
-          const digest = hash(original.bytes);
-          if (seen.has(digest)) throw invalidOutput('主视觉候选返回了重复图片，请重试视觉阶段');
-          seen.add(digest);
-          const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
-          const path = join(dir,name);
-          await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId};
-          const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:sourceImages.map(i=>i.sha256),sha256:digest,thread:result.threadId,...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
-          await writeFile(join(dir,name+'.receipt.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
-          return {record,image:{imageId:'candidate_'+(index+1),path,sha256:digest,byteLength:original.bytes.length,mediaType:'image/png'}};
-        });
+          if(revision && seen.has(hash(attempt.result.original.bytes))) return null;
+          return saveVisual(attempt,index,transfer,attached,undefined,revision);
+        }
+        const generated = await independentCalls(visualBorrowings,(borrow,index)=>drawCandidate(borrow,index));
         for(const item of generated){batch.push(item.record);images.push(item.image);}
         await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
         const comparatorPool=[];
         const brandReferences = generationImages.filter(image=>handoff.references.some(ref=>ref.role==='sharedBrand' && ref.sha256===image.sha256));
-        const review = await reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
-          theme:creative?.main,posterSlogan,brandReferences,sources:[...inputs.images,...publicImages],
-          posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer)},
+        const reviewedSources=[...inputs.images,...publicImages];
+        const published=new Map(publicImages.map(ref=>[ref.sha256,ref]));
+        const researchComparators=packaging ? (project.researchReferences ?? [])
+          .filter(ref=>ref.carrier==='packaging')
+          .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
+        const compare = () => reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
+          theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
+          ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal)} : {}),
+          posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer),
+            sourcePolicy:{mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
+            paperAspect:posterPaper},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
             const [query]=publicVisualQueries(result,project);
@@ -1231,7 +1466,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             await onEvent?.('正在补查同类包装对照：'+query);
             try {
               const originals=await search({query,dir,signal});
-              const known=new Set([...inputs.images,...publicImages].map(i=>i.sha256));
+            const known=new Set([...reviewedSources,...researchComparators].map(i=>i.sha256));
               for(const item of originals.slice(0,3)) if(!known.has(item.sha256)) {
                 known.add(item.sha256);
                 comparatorPool.push(publicVisualCandidate(item,direction,'comparator_'+comparatorPool.length));
@@ -1243,12 +1478,60 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             return comparatorPool;
           },
           makeBoard:(imgs,refs)=>makeComparison(dir,imgs,refs,signal)});
-        for (const ref of comparatorPool) if (review.references.some(r=>r.name===ref.name)) await publishReference(ref);
+        let review=await compare();
+        const correction=review.sloganRepair;
+        if (desktop && project.mode==='auto' && correction) {
+          const index=correction.candidate-1;
+          const source=batch[index];
+          const image=images[index];
+          await onEvent?.('「'+direction+'」第 '+correction.candidate+' 稿只差标题标点，正在局部修字。');
+          const attempt=await repairVisualTitle({call,image,posterSlogan,observed:correction.observed});
+          if (!seen.has(hash(attempt.result.original.bytes))) {
+            const proof={sourceName:source.name,sourceSha256:source.sha256,expected:posterSlogan,observed:correction.observed};
+            if (source.promptWriting?.visiblePackageUnits) attempt.promptWriting.visiblePackageUnits=source.promptWriting.visiblePackageUnits;
+            const revised=await saveVisual(attempt,index,source.transfer,[image],proof);
+            await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'-before-title.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
+            artifacts.push({name:source.name,kind:'image',visual:{role:'slogan-original',direction,sha256:source.sha256}});
+            batch[index]=revised.record;
+            images[index]=revised.image;
+            await onEvent?.('「'+direction+'」已收到标题修订原图，重新独立评审这一案。');
+            review=await compare();
+          } else {
+            await onEvent?.('「'+direction+'」标题修订未改变原图，保留原判。');
+          }
+        }
+        if (checkPosterTransfer && project.mode==='auto' && !review.winner && !correction) {
+          const top=review.candidates.toSorted((a,b)=>b.mean-a.mean || a.priority-b.priority)[0];
+          const index=top.candidate-1;
+          const source=batch[index];
+          const revision={sourceName:source.name,sourceSha256:source.sha256,
+            reason:top.reason,edit:top.edit};
+          if (posterReference.image.sourceUrl && top.posterArtworkCheck?.issues?.some(issue=>['foreign_identity','reference_asset'].includes(issue.kind))) {
+            revision.referenceInput='observations';
+          }
+          await onEvent?.('「'+direction+'」未有达标海报。保留同一主参考，只重做第 '+top.candidate+' 稿并重审。');
+          if (revision.referenceInput==='observations') await onEvent?.('原稿出现未经授权的标识或图案。本次重画使用同一主参考的实读特征。');
+          const revised=await drawCandidate(source.transfer.borrow,index,revision);
+          if(revised) {
+            await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'-before-artwork.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
+            artifacts.push({name:source.name,kind:'image',visual:{role:'poster-original',direction,sha256:source.sha256}});
+            batch[index]=revised.record;
+            images[index]=revised.image;
+            review=await compare();
+          }
+        }
+        for (const ref of [...researchComparators,...comparatorPool]) {
+          if (!published.has(ref.sha256) && review.references.some(r=>r.name===ref.name)) await publishReference(ref);
+        }
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
         const drafts = batch.map((record,i)=>{
           const verdict = review.candidates.find(row=>row.candidate===i+1);
           return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
+            ...(verdict.posterArtworkCheck ? {posterArtworkCheck:verdict.posterArtworkCheck} : {}),
+            ...(verdict.weeklyLabelCheck ? {weeklyLabelCheck:verdict.weeklyLabelCheck} : {}),
+            ...(record.sloganRepair ? {sloganRepair:record.sloganRepair} : {}),
+            ...(record.artworkRevision ? {artworkRevision:record.artworkRevision} : {}),
             blind:verdict.blind,edit:verdict.edit,research:verdict.research,scores:verdict.scores,blocked:verdict.blocked,reason:verdict.reason,recommended:review.winner===i+1}};
         });
         artifacts.push(...drafts);
@@ -1327,6 +1610,17 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
     if (body) await addText(body);
     return {artifacts,briefScope};
     }
+    if (stage==='research' && desktop) {
+      const call=async(instruction,images,schema,task)=>{
+        try { return await directCall(instruction,images,schema,task); }
+        catch (error) {
+          if (error.code!=='INVALID_STAGE_OUTPUT' || error.message!=='文字模型未返回有效 JSON') throw error;
+          await onEvent?.('本次研究输出无法读取，沿用同一批材料，只重问这一项。');
+          return directCall(instruction,images,schema,task,'文字模型未返回有效 JSON。确认每条发现的字段都在对应对象内，返回一个完整 JSON 对象。');
+        }
+      };
+      return executeStage(call,dir);
+    }
     if (!['visual','copy'].includes(stage) && !manuscript) return executeStage(directCall,dir);
     checkpointDir ??= join(dir,'.call-checkpoints');
     return runCheckpointed(checkpointDir,async cached=>{
@@ -1335,17 +1629,31 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const identity=desktop ? await modelProfile(process.env.ONEPITCH_TEXT_EXECUTABLE,signal,mode) : codexIdentity;
         const key={version:2,stage,mode,identity:desktop ? [identity.host,identity.base,identity.model] : identity,prompt:promptFor(instruction,task),schema,comparison:!!task.comparison,
           images:images.map(image=>[image.imageId,image.mediaType,image.sha256])};
-        return cached(key,async correction=>{
-          const result=await directCall(instruction,images,schema,task,correction);
-          if(!schema && !result.original) result.original=await ownGeneratedImage(result,await realpath(codexHome));
-          return result;
+        const result=await cached(key,async correction=>{
+          try {
+            const response=await directCall(instruction,images,schema,task,correction);
+            if(!schema && !response.original) response.original=await ownGeneratedImage(response,await realpath(codexHome));
+            return response;
+          } catch(error) {
+            if(stage==='final' && error.code==='MODEL_OUTPUT_LENGTH') return {truncatedReceipt:error.receipt};
+            throw error;
+          }
         });
+        if(result.truncatedReceipt) {
+          throw Object.assign(Error('模型回复超过长度限制，未收到完整结果'),{code:'MODEL_OUTPUT_LENGTH',receipt:result.truncatedReceipt});
+        }
+        return result;
       };
       if(stage==='copy' || stage==='final') return executeStage(call,dir,cached);
       const work=await mkdtemp(join(dir,'.visual-pass-'));
       try {
         const result=await executeStage(call,work,cached);
-        for(const name of await readdir(work)) await link(join(work,name),join(dir,name));
+        for (const entry of await readdir(work,{withFileTypes:true})) {
+          if (entry.isFile()) await link(join(work,entry.name),join(dir,entry.name));
+          else if (entry.isDirectory() && entry.name==='public-reference-sources') {
+            await rename(join(work,entry.name),join(dir,'.visual-search-evidence'));
+          }
+        }
         return result;
       } finally {await rm(work,{recursive:true,force:true});}
     },onEvent);

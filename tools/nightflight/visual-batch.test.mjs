@@ -23,20 +23,26 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets}={}) {
   const calls = [];
-  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,
-    sources:packaging ? [image(4)] : [],makeBoard:async()=>({name:'包装同品类并排图'}),
-    call:async(_instruction,actual,schema,task)=>{
-      calls.push({actual,schema,task});
+  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,
+    sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
+    call:async(instruction,actual,schema,task)=>{
+      calls.push({instruction,actual,schema,task});
       if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:'预约',alternative:'展览',
-        slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'}}};
-      if (task.assignment==='海报借改逐项核对') return {...identity,parsedOutput:{items:rows}};
+        slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'},
+        ...(innerPackets ? {innerPackets:innerPackets[images.findIndex(frame=>frame.sha256===actual[0].sha256)]} : {})}};
+      if (task.assignment==='海报借改逐项核对') return {...identity,
+        parsedOutput:Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,row.checks]))};
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
-      const fields = schema.properties.items.items.properties;
-      return {parsedOutput:{items:images.map((_,index)=>({candidate:index+1,reason:'原票认为主体清楚。',
-        ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
-        ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:false} : {})}))}};
+      if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
+      const fields = schema.properties.candidate_1.properties;
+      const opinions=images.map((_,index)=>['candidate_'+(index+1),{reason:'原票认为主体清楚。',
+        ...(fields.score ? {score:fields.artworkIssues ? 4 : 5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
+        ...(fields.artworkIssues ? {artworkIssues:posterIssues?.[index]} : {}),
+        ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:false} : {})}]);
+      return {...(fields.artworkIssues ? {threadId:'brand-originals-read',model:judgment.model,inputPacketHash:judgment.inputPacketHash} : {}),
+        parsedOutput:Object.fromEntries(opinions)};
     }});
   return {batch,calls};
 }
@@ -66,7 +72,21 @@ test('a centrally composed reference and two left-hand candidates yield differen
   assert.deepEqual(calls.slice(0,3).map(c=>c.actual.map(i=>i.sha256)),images.map(c=>[c.sha256]));
   const auditCall = calls.find(c=>c.task.assignment==='海报借改逐项核对');
   assert.deepEqual(auditCall.actual,[reference.image,...images]);
+  assert.deepEqual(auditCall.schema.required,['candidate_1','candidate_2','candidate_3']);
   assert.ok(!auditCall.task.context.includes(slogan));
+});
+
+test('poster transfer records the exact lighter review frames and retains the original title inputs',async()=>{
+  const makePreviews=async frames=>frames.map((frame,i)=>({...frame,
+    sha256:(i+6).toString(16).repeat(64),byteLength:frame.byteLength/2}));
+  const {batch,calls}=await review({makePreviews});
+  const originals=[reference.image,...images];
+  const frames=await makePreviews(originals);
+  assert.deepEqual(calls.find(c=>c.task.assignment==='海报借改逐项核对').actual,frames);
+  assert.deepEqual(batch.transferAudit.previewEvidence,originals.map((frame,i)=>({
+    originalSha256:frame.sha256,reviewSha256:frames[i].sha256,originalBytes:frame.byteLength,reviewBytes:frames[i].byteLength})));
+  assert.deepEqual(batch.transferAudit.items.map(row=>row.sha256),images.map(frame=>frame.sha256));
+  assert.deepEqual(calls.filter(c=>c.task.assignment==='独立读图者').map(c=>c.actual[0].sha256),images.map(frame=>frame.sha256));
 });
 
 test('unverified original features and unreadable results do not support a recommendation',async()=>{
@@ -93,6 +113,171 @@ test('the transfer assessment retains independent title, on-pack and visual fail
   assert.match(batch.candidates[0].reason,/布局应沿用/);
   assert.match(batch.candidates[0].edit,/海报主标题/);
   assert.match(batch.candidates[0].edit,/布局/);
+});
+
+const posterPolicy={approvedReferenceUse:'只借产品与留白的相对位置。',mainReferenceExclusions:'不要照搬自嘲熊联名、标志和南瓜帽等专有形象。'};
+const yogurtBrief='为「午晴」做原味冷藏酸奶的 A3 竖版海报。150 克杯装，售价 5.9 元一杯，正式标志尚未定。';
+
+test('poster facts block copied brands, reference characters and invented claims even if scores and director pass',async()=>{
+  const {calls:oldCalls}=await review();
+  const makePreviews=async packet=>packet.map((frame,i)=>({...frame,sha256:String(i+6).repeat(64)}));
+  const posterIssues=[
+    [{kind:'foreign_identity',observed:'MoreYogurt 茉酸奶 × Joke Bear',location:'左上联名字和冷柜顶'},
+      {kind:'reference_asset',observed:'带牛角和南瓜帽的三个自嘲熊联名角色',location:'画面底部'}],
+    [{kind:'unconfirmed_claim',observed:'优质生牛乳／冷藏发酵／清洁配方',location:'画面右下功能字栏'}],
+    [],
+  ];
+  const {batch,calls}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
+    posterIssues,makePreviews});
+  assert.deepEqual(calls.map(call=>call.task.assignment),oldCalls.map(call=>call.task.assignment));
+  const brandCall=calls.find(call=>call.task.assignment==='品牌独立评分岗');
+  assert.deepEqual(brandCall.actual,images);
+  assert.deepEqual(JSON.parse(brandCall.task.context),{客户原始简报:yogurtBrief,本案方向:'时长',
+    允许借用的画面关系:posterPolicy.approvedReferenceUse,参考排除项:posterPolicy.mainReferenceExclusions});
+  assert.match(brandCall.instruction,/参考信息用来排除，不提供本案品牌或产品授权/u);
+  assert.equal(calls.find(call=>call.task.assignment==='视觉独立评分岗').actual[0].sha256,'6'.repeat(64));
+  assert.deepEqual(batch.ruling.items.map(c=>c.blocked),[false,false,false]);
+  assert.deepEqual(batch.candidates.map(c=>[c.mean,c.blocked]),[[4.75,true],[4.75,true],[4.75,false]]);
+  assert.equal(batch.winner,3);
+  assert.match(batch.candidates[0].reason,/左上联名字和冷柜顶可见「MoreYogurt 茉酸奶 × Joke Bear」/u);
+  assert.match(batch.candidates[0].reason,/画面底部可见「带牛角和南瓜帽的三个自嘲熊联名角色」/u);
+  assert.match(batch.candidates[1].reason,/画面右下功能字栏可见「优质生牛乳／冷藏发酵／清洁配方」/u);
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck,{sha256:images[0].sha256,threadId:'brand-originals-read',
+    model:judgment.model,inputPacketHash:judgment.inputPacketHash,issues:posterIssues[0]});
+});
+
+test('an artwork issue needs a located visible quote or identifiable asset',async()=>{
+  const scoped={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief};
+  for (const malformed of [
+    {kind:'foreign_identity',observed:'',location:'产品本体'},
+    {kind:'unconfirmed_claim',observed:'优质生牛乳',location:''},
+    {kind:'similar_color',observed:'暖黄',location:'标题右侧'},
+  ]) {
+    await assert.rejects(review({...scoped,posterIssues:[[malformed],[],[]]}),
+      {code:'INVALID_STAGE_OUTPUT',message:/违规原字或可辨认图形及位置/u});
+  }
+});
+
+test('workbench-verified packaging goes into the comparison with its original signature',async()=>{
+  const original=image(5);
+  const {batch,calls}=await review({packaging:true,verifiedComparators:[original,original]});
+  assert.deepEqual(batch.reusedResearch,[original.sha256]);
+  assert.deepEqual(batch.references,[{name:original.name,sha256:original.sha256}]);
+  assert.ok(!calls.some(call=>call.task.assignment==='核对同类参考'));
+  const scores=calls.find(call=>call.task.assignment==='品牌独立评分岗');
+  assert.ok(scores.actual.some(image=>image.sha256===original.sha256));
+  assert.equal(batch.winner,null);
+  assert.match(batch.candidates[0].reason,/主题印在包装本体/);
+});
+
+test('a reduced side-by-side packet never certifies where the theme is printed',async()=>{
+  const productBrief='混合坚果，25 克。做包装正面和电商 KV。';
+  const printed=[
+    {status:'verified',printed:[{text:'混合坚果',location:'盒身中央'},{text:'25 克',location:'右下角'}],reason:'盒面为品名和规格。'},
+    {status:'verified',printed:[{text:slogan,location:'袋身左上'}],reason:'袋身左上可读。'},
+    {status:'unverified',printed:[],reason:'盒面反光，字样看不清。'},
+  ];
+  const makePreviews=async packet=>packet.map((image,index)=>index<3 ? {...image,sha256:String(index+6).repeat(64),byteLength:40} : image);
+  const {batch,calls}=await review({packaging:true,productBrief,printed,makePreviews});
+  assert.equal(batch.winner,1);
+  assert.deepEqual(batch.candidates.map(candidate=>candidate.blocked),[false,true,true]);
+  assert.deepEqual(batch.votes.find(vote=>vote.role==='品牌').items.map(row=>row.onPackStatus),Array(3).fill('theme_printed'));
+  assert.deepEqual(Object.values(batch.onPackAudits).map(audit=>audit.status),['verified','theme_printed','unverified']);
+  assert.equal(batch.onPackAudits[2].sha256,images[1].sha256);
+  assert.match(batch.candidates[1].reason,/袋身左上/);
+  assert.deepEqual(calls.filter(call=>call.task.assignment==='独立核对包装本体原图').map(call=>call.actual),images.map(image=>[image]));
+  assert.ok(calls.filter(call=>call.task.assignment==='独立核对包装本体原图').every(call=>!call.task.context.includes(slogan)));
+  assert.equal(calls.find(call=>call.task.assignment==='品牌独立评分岗').actual[0].sha256,'6'.repeat(64));
+  assert.deepEqual(batch.previewEvidence.map(evidence=>evidence.originalSha256),images.map(image=>image.sha256));
+});
+
+test('weekly packaging checks use exact original labels and retain the punctuation-only sibling',async t=>{
+  const caption='七袋，分好一周';
+  const weeklyImages=[
+    {...images[0],sha256:'75aa3f6b431a46f3ff28f8112845a1858a5e1f7c35db1f3b69751e58e876ed9b'},
+    {...images[1],sha256:'1fd5d5ad9fedf8a4fc02d2102b14b7a897beccdd93b9deea358300de351012e2'},
+    images[2],
+  ];
+  // Native reads on the two real O/76 originals, with the positively identified panel check.
+  const absent={labels:[],location:'',uncertain:''};
+  const duplicate={labels:['周二','周二','周三','周四','周五','周六','周日'],
+    location:'盒身正面中下部，每个小包装上方的横排星期标签',uncertain:''};
+  const receipts=['chatcmpl-Emi44LSkBBoaf44CcVfDAWl6Z9XKp','chatcmpl-Emi5Jz7iyerWrWbnvWcOSdZiUlVOE','fixture-3'];
+  const packetHashes=['15f12a22ce580db3ae7f9fc6b351c15cd0ca4483ccc2bd883cb069a14bed7cb5',
+    'ea45b82e61df623ebd5795df23bb6e5604debc3bb3ee2a6b387b3a2728890252','a'.repeat(64)];
+  const model='gpt-4.1-mini-2025-04-14';
+  async function run(labelReads,{direction='七袋分一周',mentionsWeek=true}={}) {
+    const calls=[];
+    const batch=await reviewVisualBatch({direction,images:weeklyImages,context:'已确认项目材料',
+      packagingExpected:true,theme:direction,posterSlogan:caption,productBrief:'做包装外盒正面和电商上新 KV。每袋25克，盒内7袋。',
+      sources:[image(4)],makeBoard:async()=>({name:'包装同品类并排图'}),
+      call:async(instruction,actual,schema,task)=>{
+        const index=weeklyImages.findIndex(img=>img.sha256===actual[0]?.sha256);
+        if(task.assignment==='独立读图者') return {parsedOutput:{first:'外盒',action:'桌面陈列',alternative:'独立分装',
+          words:mentionsWeek && index===1 ? '盒面从周一到周日' : '盒面写25克',
+          innerPackets:{form:'printed_illustration',location:'盒面',evidence:'盒面印有小袋图示'},
+          slogan:{status:'readable',text:caption+(index===0?'。':''),location:'画面顶部'}}};
+        if(task.assignment==='核对同类参考') return {parsedOutput:{packaging:true,indices:[1]}};
+        if(task.assignment==='独立核对包装本体原图') return {model,threadId:'existing-on-pack-audit',
+          parsedOutput:{status:'verified',printed:[{text:direction,location:'盒身中央'}],reason:'图上确实印了方向题名。'}};
+        if(task.assignment==='独立核读包装日序') {
+          calls.push({instruction,actual,task});
+          return {model,threadId:receipts[index],inputPacketHash:packetHashes[index],parsedOutput:labelReads[index]};
+        }
+        const fields=schema.properties.candidate_1.properties;
+        return {parsedOutput:Object.fromEntries(weeklyImages.map((_,i)=>['candidate_'+(i+1),{reason:'原票认为主体可读。',
+          ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:i===2?'theme_printed':'verified'} : {}),
+          ...(fields.priority ? {priority:i===1?1:i===0?2:3,edit:'无',research:'无',blocked:false} : {})}]))};
+      }});
+    return {batch,calls};
+  }
+
+  await t.test('the duplicated Tuesday in the verified O/76 winner blocks without flagging the unlabelled package',async()=>{
+    const {batch,calls}=await run([absent,duplicate,absent]);
+    assert.equal(batch.votes.find(v=>v.role==='品牌').items[1].onPackStatus,'verified');
+    assert.equal(batch.ruling.items[1].blocked,false);
+    assert.equal(batch.winner,null);
+    assert.equal(batch.sloganRepair.candidate,1);
+    assert.equal(batch.candidates[0].titlePunctuation,true);
+    assert.equal(batch.candidates[0].weeklyLabelCheck.issue,undefined);
+    assert.equal(batch.candidates[1].blocked,true);
+    assert.match(batch.candidates[1].reason,/周二、周二、周三/u);
+    assert.match(batch.candidates[1].edit,/去掉重复日期/u);
+    assert.match(batch.candidates[2].reason,/主题印在包装本体/u);
+    assert.deepEqual(batch.candidates[1].weeklyLabelCheck,{...duplicate,issue:batch.candidates[1].weeklyLabelCheck.issue,
+      sha256:weeklyImages[1].sha256,model,threadId:receipts[1],inputPacketHash:packetHashes[1]});
+    assert.deepEqual(calls.map(call=>call.actual),weeklyImages.map(draft=>[draft]));
+    for (const call of calls) {
+      assert.doesNotMatch(call.task.context,/周二|分好一周/u);
+      assert.match(call.instruction,/没有任何可定位的实际星期原字时，labels 填空数组/u);
+    }
+  });
+
+  await t.test('unique weekday labels pass, and only a positively identified unreadable label blocks',async()=>{
+    const complete={...duplicate,labels:['周一','周二','周三','周四','周五','周六','周天']};
+    const ambiguous={labels:['',''],location:'包装盒正面中心中部',uncertain:'所有星期栏目均看不清'};
+    const {batch:pass}=await run([ambiguous,complete,absent]);
+    assert.equal(pass.candidates[0].weeklyLabelCheck.issue,undefined);
+    assert.equal(pass.candidates[0].titlePunctuation,true);
+    assert.equal(pass.winner,2);
+    for(const unread of [
+      {...complete,labels:['周一','周二','','周四','周五','周六','周日'],uncertain:'第三格未核实'},
+      {...complete,labels:complete.labels.slice(0,6)},
+    ]) {
+      const {batch}=await run([absent,unread,absent]);
+      assert.equal(batch.candidates[1].blocked,true);
+      assert.ok(batch.candidates[1].weeklyLabelCheck.issue);
+      assert.equal(batch.sloganRepair.candidate,1);
+    }
+  });
+
+  await t.test('a weekday hint seen only in a specific blind read does not send the other originals',async()=>{
+    const {batch,calls}=await run([absent,duplicate,absent],{direction:'桌面分装'});
+    assert.deepEqual(calls.map(call=>call.actual),[[weeklyImages[1]]]);
+    assert.equal(batch.candidates[0].weeklyLabelCheck,undefined);
+    const noHint=await run([absent,absent,absent],{direction:'桌面分装',mentionsWeek:false});
+    assert.equal(noHint.calls.length,0);
+  });
 });
 
 test('every candidate must have exactly five judgments with evidence for each attached image',async()=>{
@@ -192,4 +377,23 @@ test('similar representatives hold the affected directions without promoting unc
     assert.equal(drafts[2].visual.reason,'单稿原票');
   }
   assert.equal(represented[2].draft.visual.recommended,true);
+});
+
+
+test('a loose-filled window never wins a box for individual bags, but printed food can remain',async()=>{
+  const productBrief='外盒内装七袋，每袋25克。请做正面包装与KV。';
+  const innerPackets=[
+    {form:'loose_in_outer_box',evidence:'窗内直接堆着未分装的散粒',location:'外盒正面开窗'},
+    {form:'printed_illustration',evidence:'草莓为盒面平整印刷图案',location:'外盒正面'},
+    {form:'not_shown',evidence:'盒面封闭，只见一袋在桌上',location:'画面正中'},
+  ];
+  const printed=images.map(()=>({status:'verified',printed:[{text:'盒内七袋',location:'外盒正面'}],reason:'规格正确'}));
+  const {batch,calls}=await review({posterTransfer:null,packaging:true,productBrief,printed,innerPackets});
+  assert.equal(batch.candidates[0].mean,5);
+  assert.equal(batch.candidates[0].blocked,true);
+  assert.equal(batch.winner,2);
+  assert.match(batch.candidates[0].reason,/外盒正面开窗可见散装内容/u);
+  assert.equal(batch.candidates[0].blind.innerPackets.form,'loose_in_outer_box');
+  assert.equal(batch.candidates[2].blocked,false);
+  assert.equal(calls.filter(entry=>entry.task.assignment==='独立读图者').length,3);
 });

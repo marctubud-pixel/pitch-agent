@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.95.0",
+  "baselineVersion": "1.151.0",
   "date": "2026-11-20",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -56,7 +56,7 @@
       "kind": "agent",
       "title": "策略负责人",
       "path": "docs/agents/strategy-owner.md",
-      "version": "1.7.1",
+      "version": "1.8.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"
@@ -231,7 +231,7 @@
       "kind": "page",
       "title": "策略",
       "path": "docs/pages/strategy.md",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "dependsOn": [
         "agent.strategy-owner",
@@ -389,10 +389,10 @@
     {
       "id": "method.research",
       "kind": "method",
-      "title": "调研负责人 Skill r29",
+      "title": "调研负责人 Skill r42",
       "path": "skills/design-research-lead/SKILL.md",
-      "version": "1.22.0",
-      "sourceVersion": "r29-20261117",
+      "version": "1.35.0",
+      "sourceVersion": "r42-20261121",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -401,8 +401,8 @@
       "kind": "method",
       "title": "包装与 KV 一页策略",
       "path": "skills/strategy-one-pager/SKILL.md",
-      "version": "1.9.1",
-      "sourceVersion": "v1.9.1-20261117",
+      "version": "1.13.0",
+      "sourceVersion": "v1.13.0-20261121",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -411,8 +411,8 @@
       "kind": "method",
       "title": "视觉开发负责人Skill",
       "path": "skills/visual-development-lead/SKILL.md",
-      "version": "1.9.0",
-      "sourceVersion": "1.9.0",
+      "version": "1.30.0",
+      "sourceVersion": "1.30.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -863,7 +863,7 @@
       "kind": "method",
       "title": "文案三方向创作与交付",
       "path": "docs/specs/copy-generation.md",
-      "version": "1.10.0",
+      "version": "1.14.0",
       "lifecycle": "current",
       "dependsOn": [
         "method.review",
@@ -885,7 +885,7 @@
       "title": "夜航运行合同",
       "kind": "contract",
       "path": "docs/specs/nightflight-runtime.md",
-      "version": "1.20.0",
+      "version": "1.75.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",
@@ -897,8 +897,8 @@
       "title": "夜航排版后三岗本地终审与直修",
       "kind": "contract",
       "path": "docs/specs/nightflight-final-reader.md",
-      "version": "1.2.0",
-      "sourceVersion": "用户提供的 v1_2_0.md",
+      "version": "1.2.3",
+      "sourceVersion": "用户提供的 v1_2_0.md 及同版原件核验",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff"

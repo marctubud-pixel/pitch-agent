@@ -4,10 +4,11 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { collectManuscriptMaterials, createManuscriptRunner, formatManuscriptInput } from './manuscript.mjs';
+import { jsonModelRequest } from './desktop-text.mjs';
+import { collectManuscriptMaterials, createManuscriptRunner, formatManuscriptInput, writeManuscript } from './manuscript.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
-const strategy = '# 核心策略\n先识别活动，再读预约。';
+const strategy = '# 策略一页纸\n\n## 核心策略\n\n先识别活动，再读预约。\n\n## 触点\n公众号横版封面。';
 const published = '# 本版文案\n进馆看虫';
 
 async function fixture(t) {
@@ -108,7 +109,7 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
   project.research.findings.push({chapter:'行业与市场',conclusion:'夜场增设馆内讲解',
     evidence:'馆方公布两场夜间导览',source:'夜场公告',url:'https://example.com/night'});
   project.research.sections=project.research.findings.map(({chapter},i)=>({chapter,evidenceIndices:[i]}));
-  const page=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',sourceIndices:[],internalNote:'',...fields});
+  const page=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',sourceIndices:[],visibleQuotes:[],internalNote:'',...fields});
   const executable=await nativeFixture(root,{
     cover:{title:'夜访昆虫',subtitle:'公众号封面提案',imageNote:''},
     chapters:[
@@ -116,8 +117,8 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
         page('trend','家长会先看时间',{points:['受访家长提到活动时间。'],sourceIndices:[1]}),
         page('trend','夜场增加导览',{points:['馆方公布两场夜间导览。'],sourceIndices:[2]}),
         page('peers','同类把活动名放在画面中央',{points:['海报中央写活动名。'],sourceIndices:[0]})]},
-      {title:'策略与版式',pages:[page('strategy','先识别活动，再读预约。'),page('execution','把预约放在活动名旁')]},
-      {title:'作品与决定',pages:[page('direction','天黑进馆',{figureId:'A2',points:['让围着展柜的孩子进入画面。']}),
+      {title:'策略与版式',pages:[page('strategy','不讲展柜，只讲预约'),page('execution','把预约放在活动名旁')]},
+      {title:'作品与决定',pages:[page('direction','天黑进馆',{figureId:'A2',points:['拟让围着展柜的孩子进入画面。'],visibleQuotes:['玻璃展柜']}),
         page('work','完整封面',{figureId:'A2',imageNote:'横幅全页展示',internalNote:'检查展柜边角的裁切。'}),
         page('decision','请确认预约入口')]},
     ],
@@ -131,13 +132,15 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
   assert.match(draft,/### P02 \| \[目录\][\s\S]*?- 课题与洞察\n  - 策略与版式\n  - 作品与决定\n/u);
   assert.match(draft,/### P04 \| \[趋势洞察\][\s\S]*?https:\/\/example\.com\/survey[\s\S]*?### P05 \| \[趋势洞察\][\s\S]*?https:\/\/example\.com\/night[\s\S]*?### P06 \| \[同类参考\][\s\S]*?https:\/\/example\.com\/kv/u);
   assert.match(draft,/### P07 \| \[核心策略\]\n- \*\*标题\/重点\*\*：先识别活动，再读预约。\n- \*\*解释内容\*\*：无/u);
-  assert.match(draft,/主标 · 进馆看虫\n  - 副标 · 须预约/u);
+  assert.match(draft,/主标 · 进馆看虫\n  - 副标 · 须预约\n  - 拟让围着展柜的孩子进入画面。\n  - 原图 · 玻璃展柜/u);
   assert.match(draft,/原图与文案左右分屏 ｜ `A2` · `adopted\.png`/u);
   assert.match(draft,/横幅全页展示 ｜ `A2` · `adopted\.png`\n- \*\*内部备注\*\*：检查展柜边角的裁切。/u);
   assert(!draft.includes('unused.png'));
   const planFile=result.artifacts.find(a=>a.name.endsWith('.plan.json'));
   const plan=JSON.parse(await readFile(join(root,planFile.name),'utf8'));
   assert.equal(plan.version,3);
+  assert.equal(plan.pages.find(p=>p.role==='strategy').title,'先识别活动，再读预约。');
+  assert(!draft.includes('不讲展柜'));
   assert.deepEqual(plan.pages.filter(p=>p.role==='direction'||p.role==='work').map(p=>p.figures),[['A2'],['A2']]);
   const request=JSON.parse(await readFile(join(root,result.artifacts.find(a=>a.name.startsWith('DeepSeek实际请求-')).name),'utf8'));
   assert.equal(request.model,'deepseek-test');
@@ -149,4 +152,236 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
     assert(prompt.includes(skill.trim()),'实际提示词包含完整 '+path);
   }
   assert.match(prompt,/左标题，右展柜/u);
+});
+
+test('包装逐页稿按采用图首读核实共同印字和实物陈列',async t=>{
+  const {root}=await fixture(t);
+  const brief='做七袋装外盒正面和电商首屏KV。每袋25克，盒内7袋，包含巴旦木、腰果、核桃和冻干草莓。';
+  const recipe='巴旦木、腰果、核桃、冻干草莓';
+  const approved='正面最先看到的是七袋独立分装，办公室下午加餐随手一袋。';
+  const outline=(role,title,fields={})=>({role,title,points:[],figureId:'',imageNote:'',sourceIndices:[],visibleQuotes:[],internalNote:'',...fields});
+  const directions=[
+    {id:'A2',name:'拆一袋的下午',slogan:'下午拆一袋，盒子合上'},
+    {id:'B1',name:'一点草莓红',slogan:'下午这袋坚果，有一点草莓红'},
+    {id:'C1',name:'七个下午',slogan:'抽屉里，备着七个下午'},
+  ];
+  const materials={
+    project:{title:'七袋混合坚果',carriers:['packaging','kv']},brief:{original:brief},
+    research:{findings:[]},strategy:[{body:'## 核心策略\n\n'+approved}],adoption:{},
+    copy:{directions:directions.map(({name,slogan})=>({name,main:slogan,displayed:true}))},
+    figures:directions.map(({id,name,slogan},i)=>({
+      id,direction:name,name:id+'.png',sha256:hash(id),reading:{completionId:id+'-first'},
+      observation:{composition:'桌面外盒旁有一只独立小袋。',
+        legibleText:[slogan,'混合坚果','25克×7袋',...(i<2?[recipe]:[])],
+        visibleDetails:['小包装袋印有'+recipe+'的图案。'],uncertain:[]},
+    })),
+  };
+  const observedExecution='三张采用图以盒身25克×7袋说明分装规格，画面展示单袋。';
+  const quoteDetails='小包装袋印有'+recipe+'的图案。';
+  const falseCompare='三案都保留25克×7袋与配料字样；区别在动作、颜色、收纳三个切入。';
+  const falseExecution='正面拟在中央摆放七袋小袋实物，露出坚果与冻干草莓。';
+  const falseDecision='请确认冻干草莓含量、四种坚果配比与口味测试是否补充，供包装和详情页文案使用。';
+  const draft={
+    cover:{title:'七袋混合坚果',subtitle:'外盒与首屏提案',imageNote:''},
+    chapters:[
+      {title:'需求与策略',pages:[outline('brief','七袋独立分装'),outline('strategy','模型写出的替代核心句'),
+        outline('execution','包装正面与首屏',{points:[observedExecution]})]},
+      {title:'三案呈现',pages:directions.flatMap(({id,name})=>[
+        outline('direction',name,{figureId:id}),outline('work',name,{figureId:id,imageNote:'原图整版展示'})])},
+      {title:'对比与决定',pages:[outline('compare','三案对比',{points:['适合讲分装','适合讲配料','适合讲一袋用量'],
+          visibleQuotes:['一只独立小袋',recipe,quoteDetails.slice(0,-1)],imageNote:'三案并列'}),
+        outline('decision','请确认配方',{points:['请确认配料配比。']})]},
+    ],
+    closing:'谢谢观看',
+  };
+  const setPoint=(spec,role,point)=>{spec.chapters.flatMap(chapter=>chapter.pages).find(page=>page.role===role).points=[point];};
+  const profile={base:'https://example.com',model:'deepseek-test'};
+  let index=0;
+  async function replay(input,first,correction=first) {
+    const sent=[];
+    const provider={profile,async execute({prompt,images,outputSchema}){
+      assert.deepEqual(images,[]);
+      sent.push(prompt);
+      return {parsedOutput:sent.length===1?first:correction,model:profile.model,threadId:'fixture-'+sent.length,
+        inputPacketHash:hash(JSON.stringify(jsonModelRequest(profile,prompt,outputSchema)))};
+    }};
+    const result=await writeManuscript(provider,{materials:input,checkpointDir:join(root,'replay-'+index++)});
+    return {result,sent};
+  }
+
+  await t.test('DeepSeek 看竞品包装的已核文字，材料包和本案采用图原字仍可完整核对',async()=>{
+    const withResearch=structuredClone(materials);
+    const pack={actualPackaging:true,sourceUrl:'https://example.com/pack.png',pageUrl:'https://example.com/pack',
+      sha256:hash('竞品原图'),observation:'盒正面印有净含量：1.565kg。',firstRead:{front:'右侧透窗可见6瓶装',raw:'竞品原始读图回执'}};
+    const nonPackaging={observation:'文化周海报',firstRead:{front:'海报原始读图'}};
+    withResearch.research.findings=[{images:[pack,nonPackaging]}];
+    const {result,sent}=await replay(withResearch,draft);
+    const fromPrompt=prompt=>JSON.parse(prompt.split('## 同版编稿材料').at(-1).split('```json\n')[1].split('\n```')[0]);
+    const actual=fromPrompt(sent[0]);
+    const {firstRead,...verified}=pack;
+    assert.deepEqual(actual.research.findings[0].images,[verified,nonPackaging]);
+    assert.deepEqual(actual.figures,withResearch.figures);
+    assert.deepEqual(result.plan.figures,withResearch.figures);
+    assert.equal(result.plan.researchSha256,hash(JSON.stringify(withResearch.research)));
+    const archive=fromPrompt(await formatManuscriptInput(withResearch));
+    assert.deepEqual(archive.research.findings[0].images,[pack,nonPackaging]);
+    assert.equal(firstRead.front,'右侧透窗可见6瓶装');
+  });
+
+  await t.test('退回原来的三个错误，保持首读原件和锁定策略',async()=>{
+    const wrong=structuredClone(draft);
+    setPoint(wrong,'execution',falseExecution);
+    setPoint(wrong,'compare',falseCompare);
+    setPoint(wrong,'decision',falseDecision);
+    const {result,sent}=await replay(materials,wrong,draft);
+    assert.equal(sent.length,2);
+    assert(sent[1].startsWith(sent[0]));
+    const correction=sent[1].slice(sent[0].length);
+    assert.match(correction,/C1 的首次读图原字/u);
+    assert.match(correction,/实物时，全数陈列/u);
+    assert.match(correction,/不要把水果算入坚果种数/u);
+    assert.equal(result.plan.pages.find(page=>page.role==='strategy').title,approved);
+    assert.deepEqual(result.plan.figures,materials.figures);
+    assert.ok(result.draft.includes(quoteDetails+'适合讲一袋用量'));
+    assert.doesNotMatch(result.draft,/四种坚果配比|摆放七袋小袋实物/u);
+  });
+
+  await t.test('后续可试的陈列和已确认的装量可以写',async()=>{
+    const proposed=structuredClone(draft);
+    setPoint(proposed,'execution','盒内7袋是规格。后续可另试在中央摆放七袋小袋实物。');
+    const {sent}=await replay(materials,proposed);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('原简报明确要求陈列全部时保留已委托的动作',async()=>{
+    const explicit=structuredClone(materials);
+    explicit.brief.original+='客户要求七袋全部可见、可数。';
+    const confirmed=structuredClone(draft);
+    setPoint(confirmed,'execution',falseExecution);
+    const {sent}=await replay(explicit,confirmed);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('采用图首读确实核到同数实物时可以描述实际陈列',async()=>{
+    const allVisible=structuredClone(materials);
+    for (const figure of allVisible.figures) figure.observation.visibleDetails.push('前景摆放七袋小袋实物。');
+    const seen=structuredClone(draft);
+    setPoint(seen,'execution','采用图在前景摆放七袋小袋实物。');
+    const {sent}=await replay(allVisible,seen);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('确实在三张图读到了配料的原字才能写共有印字',async()=>{
+    const allLabeled=structuredClone(materials);
+    allLabeled.figures[2].observation.legibleText.push(recipe);
+    const described=structuredClone(draft);
+    const compare=described.chapters[2].pages[0];
+    compare.visibleQuotes=materials.figures.map(()=>recipe);
+    compare.points=[];
+    const {result,sent}=await replay(allLabeled,described);
+    assert.deepEqual(result.plan.pages.find(page=>page.role==='compare').points,[recipe,recipe,recipe]);
+    assert.equal(sent.length,1);
+  });
+
+  await t.test('原图只拍到提起一袋，方向页可讲设想，并排页不把设想当成图上已见',async()=>{
+    const sameEdition=structuredClone(materials);
+    const adopted=sameEdition.figures[0];
+    adopted.visualIntent='本案把同一种小包装沿一条横向或环形路径等距重复排开。';
+    adopted.observation={composition:'画面中心是一只手正从桌面上的盒子中拿出一袋小包装的混合坚果。',
+      legibleText:['盒内7袋  每袋25克'],visibleDetails:['配料图片有巴旦木、腰果、核桃和冻干草莓。'],
+      uncertain:['未看到同一种小包装等距重复排开']};
+    const corrected=structuredClone(draft);
+    const a=corrected.chapters[1].pages[0];
+    const compare=corrected.chapters[2].pages[0];
+    const visible='一只手正从桌面上的盒子中拿出一袋小包装';
+    a.points=['拟用等距排列讲分装节奏。'];
+    a.visibleQuotes=[visible];
+    compare.visibleQuotes[0]=visible;
+    const unsupported=structuredClone(corrected);
+    unsupported.chapters[2].pages[0].visibleQuotes[0]='同一种小包装等距重复排开';
+    const {result,sent}=await replay(sameEdition,unsupported,corrected);
+    assert.equal(sent.length,2);
+    assert.match(sent[1].slice(sent[0].length),/A2、B1、C1 顺序/u);
+    assert.ok(result.draft.includes('拟用等距排列讲分装节奏。'));
+    assert.ok(result.draft.includes('原图 · '+visible));
+    assert.ok(result.draft.includes(visible+'。适合讲分装'));
+    assert.doesNotMatch(result.draft,/同一种小包装等距重复排开/u);
+    const figureBlock=JSON.parse(sent[0].split('## 同版编稿材料').at(-1).split('```json\n')[1].split('\n```')[0]).figures[0];
+    assert(Object.keys(figureBlock).indexOf('observation')<Object.keys(figureBlock).indexOf('visualIntent'));
+
+    const claimed=structuredClone(corrected);
+    claimed.chapters[1].pages[0].points=['等距重复说明七个下午。'];
+    const rejected=await replay(sameEdition,claimed,corrected);
+    assert.match(rejected.sent[1].slice(rejected.sent[0].length),/A2 方向页 points 只收/u);
+  });
+
+  await t.test('调序但逐字相同的两条观察沿用原图首读的顺序',async()=>{
+    const reordered=structuredClone(materials);
+    const observed='盒子立放在抽屉的右侧，袋子斜靠在抽屉左侧内壁';
+    reordered.figures[2].observation.composition=observed+'。';
+    const selected=structuredClone(draft);
+    selected.chapters[1].pages[4].visibleQuotes=['袋子斜靠在抽屉左侧内壁，盒子立放在抽屉的右侧'];
+    selected.chapters[2].pages[0].visibleQuotes[2]='袋子斜靠在抽屉左侧内壁，盒子立放在抽屉的右侧';
+    const {result,sent}=await replay(reordered,selected);
+    assert.equal(sent.length,1);
+    assert.ok(result.draft.includes('原图 · '+observed));
+    assert.ok(result.draft.includes(observed+'。适合讲一袋用量'));
+  });
+
+  await t.test('并排建议只去掉同一槽位的已绑定图号，保留逐图原字及位置校验',async()=>{
+    const labeled=structuredClone(draft);
+    const compare=labeled.chapters[2].pages[0];
+    compare.points=['A2 适合讲分装','B1：适合讲配料','C1 · 适合讲一袋用量'];
+    const raw=structuredClone(labeled);
+    const {result,sent}=await replay(materials,labeled);
+    assert.equal(sent.length,1);
+    assert.deepEqual(labeled,raw);
+    assert.deepEqual(result.plan.pages.find(page=>page.role==='compare').points,[
+      '一只独立小袋。适合讲分装',recipe+'。适合讲配料',quoteDetails+'适合讲一袋用量',
+    ]);
+    const badCases=[
+      {points:['B1 适合讲分装','A2 适合讲配料',compare.points[2]],hint:/并排页 points/u},
+      {points:['D1 适合讲分装',...compare.points.slice(1)],hint:/并排页 points/u},
+      {points:['A2 画面已经展示七袋实物',...compare.points.slice(1)],hint:/并排页 points/u},
+      {visibleQuotes:['',...compare.visibleQuotes.slice(1)],hint:/并排页 points/u},
+      {visibleQuotes:['下午这袋坚果，有一点草莓红',...compare.visibleQuotes.slice(1)],hint:/并排页 visibleQuotes/u},
+    ];
+    for (const {hint,...overrides} of badCases) {
+      const wrong=structuredClone(labeled);
+      Object.assign(wrong.chapters[2].pages[0],overrides);
+      const retry=await replay(materials,wrong,labeled);
+      assert.equal(retry.sent.length,2);
+      assert.match(retry.sent[1].slice(retry.sent[0].length),hint);
+    }
+  });
+
+  await t.test('保留 2019 调查 84% 的完整测量对象，也允许省略数值',async()=>{
+    const survey=structuredClone(materials);
+    survey.research.findings=[{chapter:'人群与接触情境',source:'2019 益普索包装问卷',
+      url:'https://www.ipsos.com/zh-cn/consumer',evidence:'84%的消费者希望透过包装看到产品或原材料。'}];
+    const correct=structuredClone(draft);
+    correct.chapters[0].pages.splice(1,0,outline('trend','包装可见内容值得测试',{
+      sourceIndices:[0],points:['2019益普索800多位样本：84%希望透过包装看到产品或原料。'],
+    }));
+    const drift=structuredClone(correct);
+    setPoint(drift,'trend','2019益普索800多位样本：84%希望透过包装看到原料。');
+    const {result,sent}=await replay(survey,drift,correct);
+    assert.equal(sent.length,2);
+    assert.match(sent[1].slice(sent[0].length),/看到产品或原材料/u);
+    assert.match(result.draft,/84%希望透过包装看到产品或原料/u);
+    setPoint(correct,'trend','受访者希望透过包装看到里边是什么。');
+    assert.equal((await replay(survey,correct)).sent.length,1);
+  });
+
+  await t.test('分行的主标和看不清的配料不能当配料印字',async()=>{
+    const noLabels=structuredClone(materials);
+    noLabels.copy.directions[2].main=recipe;
+    noLabels.figures[2].observation.legibleText=['巴旦木、腰果','核桃、冻干草莓','混合坚果','25克×7袋'];
+    noLabels.figures[2].observation.uncertain=['疑似配料：'+recipe];
+    const wrong=structuredClone(draft);
+    setPoint(wrong,'compare',falseCompare);
+    const {sent}=await replay(noLabels,wrong,draft);
+    assert.equal(sent.length,2);
+    assert.match(sent[1].slice(sent[0].length),/C1 的首次读图原字/u);
+  });
 });

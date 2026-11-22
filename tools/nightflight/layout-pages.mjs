@@ -353,6 +353,8 @@ export function applyManuscriptEdits(plan, edits) {
 
 export async function compileManuscript(plan, sources, {compile}, theme, edits=[]) {
   const slides=applyManuscriptEdits(plan,edits).pages;
+  const coverTitle=slides[0].title.trim();
+  const deckLabel=theme.brandName || (coverTitle.length<=22 && coverTitle) || '设计提案';
   const media=new Map(await Promise.all(sources.map(async source=>{
     const img=new Image();
     img.src=source.data;
@@ -377,7 +379,9 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
       case 'strategy': return {...draft,tone:'brand',template:{kind:'summary.statement',statement:page.title,sub:''}};
       case 'direction': {
         const copy=points.filter(point=>/^(?:主标|副标) · /u.test(point));
-        const explanation=points.slice(copy.length).map((d,i)=>({k:['创意思路','画面重点'][i],d}));
+        const explanation=points.slice(copy.length).map((d,i)=>({
+          k:i+copy.length===page.observedPointIndex?'画面重点':['创意思路','画面重点'][i],d,
+        }));
         const side=direction++%2===0?'左':'右';
         const kind=(page.imageSide || side)==='左'?'design.half':'design.halfR';
         return {...draft,template:{kind,image:images[0],intro:copy.join('\n'),points:explanation}};
@@ -396,10 +400,10 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
   });
   const visible=text=>text.replace(/\s/gu,'');
   let pages;
-  try { pages=compile(drafts,theme.brandName || plan.project.title,theme); }
+  try { pages=compile(drafts,deckLabel,theme); }
   catch(error) {
     const at=drafts.findIndex(draft=>{
-      try {compile([draft],theme.brandName || plan.project.title,theme);return false;} catch {return true;}
+      try {compile([draft],deckLabel,theme);return false;} catch {return true;}
     });
     throw Error((at>=0?'逐页稿 P'+String(at+1).padStart(2,'0')+'：':'')+error.message,{cause:error});
   }

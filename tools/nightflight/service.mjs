@@ -1,4 +1,4 @@
-import {automaticResearchGaps} from './research-sources.mjs';
+import {automaticResearchGaps,hasCategoryImage} from './research-sources.mjs';
 import {validBriefScope} from './brief-intake.mjs';
 import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
@@ -28,6 +28,7 @@ import { engineCopyHandoffReady, isEngineCopyProtocol, headlineMarkdown, headlin
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
 const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
+const nonCandidateVisualRoles = new Set(['comparison','reference','slogan-original','poster-original']);
 const safeId = /^[a-zA-Z0-9_-]{1,100}$/;
 const now = () => new Date().toISOString();
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -320,7 +321,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
           if (!entry.isDirectory() || !/^attempt-[a-zA-Z0-9]{6}$/.test(entry.name) || path===keep) continue;
           const receipts=join(root,id,'receipts',entry.name);
           for (const file of readdirSync(path,{withFileTypes:true})) {
-            if (!['.codex-runs','.image-api-runs','.research-evidence'].includes(file.name) && !/^(copy-review-attempt-|reference-admission-|visual-review-).*\.json$|\.receipt\.json$/.test(file.name)) continue;
+            if (!['.codex-runs','.image-api-runs','.research-evidence','.visual-search-evidence'].includes(file.name) && !/^(copy-review-attempt-|reference-admission-|visual-review-).*\.json$|\.receipt\.json$/.test(file.name)) continue;
             mkdirSync(receipts,{recursive:true,mode:0o700});
             renameSync(join(path,file.name),join(receipts,file.name));
           }
@@ -372,6 +373,23 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             }
           }
           if (p.stage === 'visual') {
+            const retained = new Set();
+            input.researchReferences = [];
+            for (const finding of p.research?.findings ?? []) {
+              if (finding.visualOnly) continue;
+              for (const ref of finding.images ?? []) {
+                if (!['packaging','kv'].includes(ref.carrier) || !hasCategoryImage([ref],ref.carrier) || retained.has(ref.sha256)) continue;
+                const original=historicalImage(p,ref);
+                if (!original) continue;
+                const {file,bytes}=original;
+                const path=join(dir,'research-visual-'+ref.sha256+extname(file.name));
+                writeFileSync(path,bytes,{flag:'wx',mode:0o600});
+                retained.add(ref.sha256);
+                input.researchReferences.push({path,name:file.name,sha256:ref.sha256,byteLength:bytes.length,
+                  mediaType:mime[extname(file.name).toLowerCase()],carrier:ref.carrier,title:ref.title,
+                  sourceUrl:ref.sourceUrl,pageUrl:ref.pageUrl,query:'同版研究原图'});
+              }
+            }
             const last = p.versions.at(-1);
             const previous = last?.artifacts.some(a=>a.visual?.candidate) ? last : undefined;
             input.previousReferences = (previous?.artifacts ?? []).filter(a => a.visual?.role === 'reference').map(a => {
@@ -400,7 +418,11 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             const source = type === 'attachments' && p.stage === 'layout'
               ? [...p.attachments, ...(p.visualAdoption?.materials ?? []), ...p.artifacts.filter(a =>
                 a.visual?.role === 'reference' && input.layoutCompetitorReferences.includes(a.name))] : p[type];
-            const records = p.researchDigestOnly ? [] : source.filter(a=>!(type==='artifacts' && a.visual?.role==='reference') && !(p.stage==='layout' && (a.visual?.candidate || a.visual?.role==='comparison') && !p.visualAdoption?.artifacts.includes(a.storageKey)));
+            const records = p.researchDigestOnly ? [] : source.filter(a=>{
+              const role=a.visual?.role;
+              if (type==='artifacts' && ['reference','poster-original','slogan-original'].includes(role)) return false;
+              return p.stage!=='layout' || !(a.visual?.candidate || role==='comparison') || p.visualAdoption?.artifacts.includes(a.storageKey);
+            });
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
@@ -501,7 +523,27 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
                 /^[a-f0-9]{64}$/.test(v.sha256) && [v.pageUrl,v.sourceUrl].every(url => URL.canParse(url) && new URL(url).protocol === 'https:') &&
                 typeof v.query === 'string' && v.query.trim() && !v.candidate && !v.recommended, '公开参考图来源或方向记录无效', 422);
             }
-            const images = result.artifacts.filter(a=>a.kind==='image' && !['comparison','reference'].includes(a.visual?.role));
+            const images = result.artifacts.filter(a=>a.kind==='image' && !nonCandidateVisualRoles.has(a.visual?.role));
+            for (const original of result.artifacts.filter(a=>a.visual?.role==='slogan-original')) {
+              const v=original.visual;
+              check(original.kind==='image' && /^[a-f0-9]{64}$/.test(v.sha256) && !v.candidate && !v.recommended &&
+                images.some(a=>a.visual?.direction===v.direction && a.visual.sloganRepair?.sourceName===original.name &&
+                  a.visual.sloganRepair.sourceSha256===v.sha256), '标题修订缺少同方向初稿或对应回执', 422);
+            }
+            const posterOriginals=result.artifacts.filter(a=>a.visual?.role==='poster-original');
+            const posterRevisions=images.filter(a=>a.visual?.artworkRevision);
+            check(posterRevisions.length===posterOriginals.length && posterRevisions.every(revised=>{
+              const proof=revised.visual.artworkRevision;
+              const originals=posterOriginals.filter(original=>original.name===proof.sourceName &&
+                original.visual.direction===revised.visual.direction && original.visual.sha256===proof.sourceSha256);
+              return originals.length===1;
+            }), '海报修订缺少同方向初稿或对应回执',422);
+            for (const original of posterOriginals) {
+              const v=original.visual;
+              check(original.kind==='image' && /^[a-f0-9]{64}$/.test(v.sha256) && expected.includes(v.direction) &&
+                !v.candidate && !v.recommended && posterRevisions.filter(a=>a.visual.artworkRevision.sourceName===original.name).length===1 &&
+                hash(readFileSync(join(dir,filename(original.name))))===v.sha256, '海报修订初稿原图或哈希不符',422);
+            }
             check(images.length===expected.length*3 && expected.every(direction=>{
               const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
               if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
@@ -827,7 +869,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
         check(selected.every(Boolean) && directions.every(d=>selected.filter(a=>a.visual.direction===d).length===1),'只能选择当前各方向的候选稿',409);
         check(selected.every(a=>a.visual.recommended) || reason?.trim(),'采用非推荐稿时请写明理由');
       } else {
-        selected=p.artifacts.filter(a=>a.stage==='visual' && a.kind==='image' && !['reference','comparison'].includes(a.visual?.role) && (!candidates.length || a.visual?.recommended));
+        selected=p.artifacts.filter(a=>a.stage==='visual' && a.kind==='image' && !nonCandidateVisualRoles.has(a.visual?.role) && (!candidates.length || a.visual?.recommended));
         check(!candidates.length || directions.every(d=>selected.some(a=>a.visual.direction===d)),'请为每个方向选择图稿并说明采用理由',409);
       }
       const chosen=selected.map(a=>a.storageKey);

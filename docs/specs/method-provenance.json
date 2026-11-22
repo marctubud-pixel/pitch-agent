@@ -1,9 +1,9 @@
 [
   {
-    "source": "包装竞品首页优先呈现直接回答客户关切的已核标注",
+    "source": "混合坚果真实包装原图和发布海报的同原件对照",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r29-20261117",
-    "sha256": "c5a91635f33c657b431dcabf5af76f6f9f0e631843ef18c1b35f86c8052d4435"
+    "sourceVersion": "r42-20261121",
+    "sha256": "01e52505cdbeddbe950e7d39eebaa75076e0219717749542b6c7938240cc3960"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
@@ -102,10 +102,10 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "夜航所有策略统一使用一页纸，未定载体按条件说明。",
+    "source": "夜航同版实际策略回执的装量、实物陈列与开启方式对照",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.9.1-20261117",
-    "sha256": "3e9e14ad9bd80f6085c49fdf20bec0603453f0a7c1752cd35752a22507554964"
+    "sourceVersion": "v1.13.0-20261121",
+    "sha256": "38d36aa5f9ca7a4f1a8e74cd02da6b0e1354a896f1ecc92fa132011f44452b3a"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",

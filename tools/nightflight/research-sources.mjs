@@ -41,12 +41,18 @@ export function reportSearchTerms(categories, previous = []) {
   const queries = [];
   for (const value of categories ?? []) {
     if (typeof value !== 'string') continue;
-    const category = value.trim().replace(/(?:行业)?(?:报告|白皮书)$/u,'');
+    const category = value.trim().replace(/(?:报告|白皮书)$/u,'').replace(/行业$/u,'');
     if (!/^[\p{L}\p{N}·-]{1,14}$/u.test(category) || /(?:20\d\d|增长率|销售额|同比|市场规模|渠道结构)/u.test(category)) continue;
     const query = ['报告','白皮书'].map(suffix=>category+suffix).find(q=>!previous.includes(q));
     if (query && !queries.includes(query)) queries.push(query);
   }
   return queries.slice(0,4);
+}
+
+export function reportAliasSearchTerms(categories, consumerCategories, previous) {
+  const common = categories.some(term=>/^(?:休闲食品|休闲零食|零食)$/u.test(term)) ? ['零食'] : [];
+  const shortConsumerNames = (consumerCategories ?? []).filter(term=>typeof term==='string' && /^[\p{Script=Han}]{2,3}$/u.test(term));
+  return reportSearchTerms([...common,...shortConsumerNames],previous).slice(0,2);
 }
 
 // Keep context around in-document matches even when the table is past the introductory pages.
@@ -87,7 +93,10 @@ export function reportExcerpts(text, terms) {
 export const minimumAudienceFacts=2;
 export const audiencePriorities=['人群','使用场景','选择因素'];
 export const audienceTopics=[...audiencePriorities,'使用频率','其他'];
-const questionKey=value=>(typeof value==='string' ? value : '').normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
+function questionKey(value) {
+  const key=(typeof value==='string' ? value : '').normalize('NFKC').replace(/[\s\p{P}]/gu,'').toLowerCase();
+  return /^(?:在哪[里儿]?|在哪个场景|哪个场景|在?什么场景)(?:饮用|使用|消费|喝|用|吃)?$/u.test(key) ? '在什么场景使用' : key;
+}
 
 // A survey question may have several answer options, several quotations and several publication URLs.
 export function selectAudienceRows(rows) {
@@ -96,7 +105,7 @@ export function selectAudienceRows(rows) {
     .sort((a,b)=>audienceTopics.indexOf(a.audienceTopic)-audienceTopics.indexOf(b.audienceTopic));
   for (const row of ordered) {
     const duplicate=selected.find(s=>questionKey(s.surveyQuestion)===questionKey(row.surveyQuestion) ||
-      (row.audienceTopic!=='其他' && s.audienceTopic===row.audienceTopic));
+      (row.evidenceIndices.length>0 && s.evidenceIndices[0]===row.evidenceIndices[0]));
     if (!duplicate) {
       selected.push({...row,evidenceIndices:[...row.evidenceIndices]});
       continue;
@@ -118,10 +127,36 @@ export function missingAudienceTopics(rows) {
     [researchGap('source','缺少关于'+descriptions[i]+'的可核依据。','人群与接触情境')]);
 }
 
+// An article announcing a film can also release a poster, but a film-only quote cannot establish that.
+export function supportsPoster(row,quote) {
+  if (row.assetType!=='宣传海报或主视觉' || !quote) return false;
+  const filmFrame=/视频(?:帧|截图|画面)|(?:广告片|影片|短片|宣传片)(?:中)?(?:的)?(?:截图|画面)|剧照|\b(?:film still|video frame)\b/iu;
+  const movingWork=/广告片|短片|宣传片|电影|影片|轻喜剧|电视剧|视频|\b(?:video|film|tvc|trailer)\b/iu;
+  const publishedPrint=/海报|平面广告|主视觉|宣传图|长图|\b(?:poster|key visual|print ad)\b/iu;
+  const report=/报告|白皮书|趋势|调研|研究|\b(?:report|white paper|survey)\b/iu;
+  const reportOnly=report.test(row.title) && report.test(quote);
+  return !filmFrame.test(row.title) && (!(movingWork.test(quote) || reportOnly) || publishedPrint.test(quote));
+}
+
 // Count only conclusions visible on this research page and the originals they actually cite.
 export function hasCategoryImage(images, type) {
   return images.some(i=>i.carrier===type && i.sameCategory && i.sha256 && i.pageUrl && i.sourceUrl &&
-    (type!=='kv' || i.publicationQuote));
+    (type==='packaging' ? i.actualPackaging===true && i.categoryMatch==='同类' && i.visibleProduct?.trim() : type!=='kv' || supportsPoster(i,i.publicationQuote) && ['article','attachment'].includes(i.publicationPlacement)));
+}
+
+// A mixed historical board may contain a verified original next to an obsolete image.
+// Keep only observations traceable to surviving images; the old group conclusion covers both.
+export function reusableResearchFindings(findings) {
+  return findings.flatMap(f=>{
+    if (!f.images?.length) return [f];
+    const kept=f.images.filter(i=>!['packaging','kv'].includes(i.carrier) || hasCategoryImage([i],i.carrier));
+    if (kept.length===f.images.length) return [f];
+    return kept.filter(i=>i.title && i.observation).map(i=>({
+      chapter:f.chapter,subject:'competitor',source:i.title,url:i.pageUrl,images:[i],visualOnly:false,
+      conclusion:i.title+'：'+i.observation,evidence:i.observation+(i.publicationQuote?'；'+i.publicationQuote:''),
+      implication:i.takeaway || '仅就该图可见的内容进行比较。',
+    }));
+  });
 }
 
 export function automaticResearchGaps(report, project) {
@@ -173,6 +208,34 @@ export function automaticResearchGaps(report, project) {
   return gaps;
 }
 
+// Rank cases within the publisher's results. Commerce is a preference, never an admission gate.
+export function campaignPages(results,{category,broadCategory,brands=[],commerce=false}) {
+  const names=[...new Set([category,broadCategory,...brands.map(b=>b.name)].filter(Boolean))];
+  const resultScore=title=>Number(commerce && /电商|旗舰店|天猫|京东|商城|大促|双11|618/iu.test(title))*3+
+    Number(brands.some(b=>b.name && title.includes(b.name)))*2+Number(/海报|平面|宣传图/iu.test(title));
+  return results.filter(r=>names.some(n=>r.title?.includes(n)))
+    .sort((a,b)=>resultScore(b.title)-resultScore(a.title));
+}
+
+export function broadVisualQueries(category,carriers,packagingTerm='包装') {
+  if (typeof category!=='string' || !/^[\p{L}\p{N} ·-]{1,32}$/u.test(category)) return [];
+  const form=['包装盒','包装袋','瓶装包装','罐装包装'].includes(packagingTerm)?packagingTerm:'包装';
+  return carriers.map(type=>category+' '+(type==='packaging'?form:'海报'));
+}
+
+export function visualLookupCategory(specific,planned,catalogTerms) {
+  const isTerm=term=>typeof term==='string' && /^[\p{L}\p{N} ·-]{1,32}$/u.test(term);
+  const topic=typeof planned==='string' ? planned.trim() : '';
+  if (!isTerm(specific)) return isTerm(topic) ? topic : undefined;
+  const isSuffix=term=>/\p{Script=Han}/u.test(term)
+    ? specific.endsWith(term) : specific.toLowerCase().endsWith(' '+term.toLowerCase());
+  const broader=(Array.isArray(catalogTerms) ? catalogTerms : []).filter(term=>isTerm(term) &&
+    term.length>=2 && term.length<specific.length && isSuffix(term));
+  if (isTerm(topic) && topic!==specific &&
+      (!broader.length || !specific.toLowerCase().includes(topic.toLowerCase()) || isSuffix(topic))) return topic;
+  return broader.sort((a,b)=>b.length-a.length)[0] || specific;
+}
+
 // Start from the category itself. The planner's project-specific searches follow these lookups.
 export function categoryLookups(category, carriers, types, brands, followup) {
   if (typeof category!=='string' || !/^[\p{L}\p{N} ·-]{1,32}$/u.test(category)) return [];
@@ -200,7 +263,7 @@ export function consumerSearchTopics(categories, followup=false) {
   const topics=[];
   for (const raw of categories ?? []) {
     if (typeof raw!=='string') continue;
-    const term=raw.trim().replace(/(?:消费者调查|消费报告|行业报告|白皮书|报告)$/u,'').replace(/(?:行业|消费)$/u,'');
+    const term=raw.trim().replace(/(?:消费者调查|消费报告|行业报告|白皮书|报告)$/u,'').replace(/消费者$/u,'').replace(/(?:行业|消费)$/u,'');
     if (!/^[\p{L}\p{N}·-]{1,12}$/u.test(term) || topics.some(t=>t.term===term)) continue;
     const suffixes=followup ? ['消费白皮书','行业报告'] : ['消费报告','消费者调查'];
     topics.push({term,queries:suffixes.map(s=>term+s)});

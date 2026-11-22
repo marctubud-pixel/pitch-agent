@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { validateStrategyAdvice, validateResearchDigest, reviewedFindings, missingResearchCoverage } from './research-digest.mjs';
-import { strategyCarrier, reviseFlaggedLines } from './strategy-one-pager.mjs';
+import { makeStrategyOnePager, strategyCarrier, reviseFlaggedLines } from './strategy-one-pager.mjs';
 import { createStageRunner } from './codex-runner.mjs';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC';
@@ -165,7 +165,7 @@ process.stdin.on('end',()=>{
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
      body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
-     if(action==='research-pack-lookup') Object.assign(body,{comparisonCategory:'茶饮',packagingBrands:[{name:'测试茶',officialDomain:'source.example.org'}]});
+     if(action==='research-pack-lookup') Object.assign(body,{visualCategory:'茶',packagingTerm:'包装盒',comparisonCategory:'茶饮',packagingBrands:[{name:'测试茶',officialDomain:'source.example.org'}]});
      if(action==='research-report-lookup') Object.assign(body,{queries:['即饮茶 市场 销量 销售额 价格带 报告','茶叶包装'],reportCategories:['即饮茶','茶饮','瓶装茶'],segmentTerms:['无糖茶']});
    }
    else if(schema.reads) {
@@ -194,10 +194,13 @@ process.stdin.on('end',()=>{
    } else if(schema.evidence) {
      body=action==='research-repair' ? {url:'https://source.example.org/report',evidence:'本次样本单列礼盒用途'} : {url:'',evidence:''};
    } else if(schema.front) {
-     if(!args.includes('--image') || input.includes('source.example.org') || !JSON.parse(input.split('实际项目输入（JSON）').at(-1)).brief)process.exit(56);
+     const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     if(!args.includes('--image') || input.includes('source.example.org') || !packet.questions?.length || packet.brief)process.exit(56);
      body={brand:'测试茶',front:'包装中央标有茶类',regions:['中央']};
    } else if(schema.verifiedFront) {
-     body={verifiedFront:'包装中央标有茶类',checks:[{question:'正面文字',location:'正面中央',marking:'茶类',status:'看清'}]};
+     const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
+     if(!packet.questions?.length || packet.brief || packet.firstObservation || packet.product)process.exit(56);
+     body={visibleProduct:'测试茶',actualPackaging:true,categoryMatch:'同类',verifiedFront:'包装中央标有茶类',checks:[{question:'正面文字',location:'正面中央',marking:'茶类',status:'看清'}]};
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
@@ -248,7 +251,11 @@ process.stdin.on('end',()=>{
      constraints:'价格与配料属于任务卡的模拟设定。',opportunity:derivation,decision:derivation,priority:derivation,intersection:'货架辨认和原味表达相交。'};
    if (packet.carrier==='general') outcome.touchpoints=[{kind:'contact',name:'若在门店首次接触',action:'查看品名'}];
    if (packet.carrier==='kv') outcome.touchpoints=[];
-   if (['kv','packaging+kv'].includes(packet.carrier)) outcome.touchpoints.push({kind:'kv',name:'门店海报',action:'用瓶身衔接货架。'});
+   if (action==='onepager-front-kv') {
+     if (packet.requiredFaces?.join()!=='front') process.exit(56);
+     outcome.touchpoints=outcome.touchpoints.slice(0,1);
+   }
+   if (['kv','packaging+kv'].includes(packet.carrier)) outcome.touchpoints.push({kind:'kv',name:action==='onepager-front-kv'?'电商详情页首屏':'门店海报',action:'用瓶身衔接货架。'});
    if(['onepager-compact','onepager-bad-edit'].includes(action)) outcome.coreStrategy='让顾客在经过货架时注意到这一盒茶。再仔细看清品名、口味和配方。';
    if(action==='onepager-wrong-touch') outcome.touchpoints.pop();
    if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
@@ -268,18 +275,18 @@ process.stdin.on('end',()=>{
  } else if(input.includes('公开参考包对抗')){
    body={issue:'',evidence:'核对瓶口和品牌色'};
  } else if(input.includes('公开参考包独立裁定')){
-   body={decisions:['visual','brand','user','spread'].map(role=>({role,accepted:false,reason:'已核原票'})),compatible:true,reason:'画面与用途互补'};
+   body={decisions:Object.fromEntries(['visual','brand','user','spread'].map(role=>[role,{status:'通过',reason:'已核原票'}])),compatible:true,reason:'画面与用途互补'};
  } else if(input.includes('视觉参考原图登记')){
    const rows=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    body={observations:rows.map(r=>({source:r.source,visible:'原图可见的画面特征'}))};
  } else if(input.includes('比稿负责人分配参考图')){
    const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
    fs.writeFileSync(path.join(home,'比稿负责人分配参考图.json'),JSON.stringify(packet));
-   body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:packet.directions.map((d,i)=>{
-     const refs=packet.sources.filter(s=>s.searchDirection===d.name || s.name.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
+   body={sharedBrand:packet.sources.filter(s=>s.name==='测试茶标志.png').map(s=>({source:s.source,borrow:'本案标志',apply:'保持标志一致'})),directions:Object.fromEntries(packet.directions.map(d=>{
+     const refs=packet.sources.filter(s=>s.searchDirection===d.name || s.name?.startsWith(d.name) || (d.name==='晨雾' && s.name==='同类包装.png'));
      const use=r=>({source:r.source,borrow:'参考图可见的局部',apply:'作为本案用色依据',why:'帮助说明产品特征',avoid:'不沿用对方的标志与瓶标图案'});
-     return {direction:d.name,main:refs.slice(0,1).map(use),auxiliary:refs.slice(1,3).map(use),gap:refs.length?'':'缺原图'};
-   })};
+     return [d.id,{main:refs.length?use(refs[0]):null,auxiliary:refs.slice(1,3).map(use),gap:refs.length?'':'缺原图'}];
+   }))};
  } else if(action==='image' && args.includes('--output-schema')){
    if(args[args.indexOf('image_generation')-1]!=='--disable')process.exit(9);
    const props=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1])).properties;
@@ -291,8 +298,10 @@ process.stdin.on('end',()=>{
      body={packaging:true,indices:count?[1]:[]};
    } else {
      if(count!==5 && count!==6)process.exit(9);
-     const fields=props.items.items.properties;
-     body={items:[1,2,3].map(n=>({candidate:n,reason:'可见依据',...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.onPackStatus?{onPackStatus:'verified'}:{}),...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}))};
+     const fields=props.candidate_1.properties;
+     body=Object.fromEntries([1,2,3].map(n=>['candidate_'+n,{reason:'可见依据',
+       ...(fields.score?{score:[4,5,3][n-1]}:{}),...(fields.onPackStatus?{onPackStatus:'verified'}:{}),
+       ...(fields.priority?{priority:n,blocked:false,edit:'放大水源说明',research:'核查产品资料'}:{})}]));
    }
  } else if(action==='image' || action==='other-thread'){
    if(args[args.indexOf('code_mode_host')-1]!=='--enable'||args[args.indexOf('image_generation')-1]!=='--enable')process.exit(9);
@@ -592,6 +601,48 @@ test('empty uploads automatically acquire public bytes and deliver their provena
   const inputs=(await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
   assert.deepEqual(inputs.map(i=>i.received),[[sha256],[sha256],[sha256]]);
 });
+test('art reference search receives the visual task and original observations, without production specifications',async()=>{
+  const {describeReferenceTasks,selectVisualReferences}=await import('./visual-references.mjs');
+  const brief='包装正面必须有7袋×25克，价格29.9元。';
+  const project={directions:['正面一眼看清','主打口感','办公时光'],brief,strategyText:'宣传时用四种配料和实物。'};
+  const active=['正面一眼看清'];
+  const focus='图文分组对应，先看分区再读信息';
+  const referenceTasks=await describeReferenceTasks({project,active,carriers:['packaging'],call:async(_prompt,images,_schema,task)=>{
+    assert.deepEqual(images,[]);
+    assert.equal(JSON.parse(task.context).brief,brief);
+    return {threadId:'art-task',parsedOutput:{directions:{A:{focus,translation:'把这种对应关系重新画到包装上'}}}};
+  }});
+  const image={imageId:'example',name:'原图.png',sha256:'a'.repeat(64)};
+  const plans=await selectVisualReferences({project,active,referenceTasks,images:[image],call:async(_prompt,images,_schema,task)=>{
+    const packet=JSON.parse(task.context);
+    assert.deepEqual(images,[image]);
+    assert.equal(packet.directions[0].focus,focus);
+    assert.doesNotMatch(task.context,/7袋|25克|29\.9元|四种配料/);
+    return {threadId:'picked',parsedOutput:{sharedBrand:[],directions:{A:{main:{source:image.imageId,
+      borrow:'两处分格里的标题先后出现',apply:'重新组织本案包装标识的先后'},auxiliary:[],gap:''}}}};
+  }});
+  assert.equal(plans.get(active[0]).handoff.referenceTask.threadId,'art-task');
+});
+
+test('reference replanning keeps accepted originals out of the remaining directions',async()=>{
+  const {selectVisualReferences}=await import('./visual-references.mjs');
+  const project={directions:['方向甲','方向乙','方向丙'],brief:'包装'};
+  const images=[1,2,3].map(n=>({imageId:'ref_'+n,sha256:String(n).repeat(64),name:'原图'+n+'.png'}));
+  const use=source=>({source,borrow:'正面布局',apply:'重排包装标识'});
+  const accepted=[{direction:'方向甲',references:[{role:'main',sha256:images[0].sha256}]}];
+  const plans=await selectVisualReferences({project,images,active:project.directions.slice(1),accepted,call:async(_instruction,attached,_schema,task)=>{
+    assert.deepEqual(attached,images.slice(1));
+    const input=JSON.parse(task.context);
+    assert.deepEqual(input.directions.map(d=>d.id),['B','C']);
+    assert.deepEqual(input.acceptedDirections,accepted);
+    return {threadId:'new-directions',parsedOutput:{sharedBrand:[],directions:{
+      B:{main:use('ref_2'),auxiliary:[],gap:''}, C:{main:use('ref_3'),auxiliary:[],gap:''},
+    }}};
+  }});
+  assert.deepEqual([...plans.keys()],project.directions.slice(1));
+  assert.deepEqual([...plans.values()].map(plan=>plan.handoff.references[0].sha256),images.slice(1).map(image=>image.sha256));
+});
+
 test('reference handoff rejects missing primary, duplicated originals and a reassigned private image before dispatch',async()=>{
   const {selectVisualReferences}=await import('./visual-references.mjs');
   const project={directions:['A','B','C'],brief:'包装'};
@@ -601,16 +652,45 @@ test('reference handoff rejects missing primary, duplicated originals and a reas
   async function plan(assignments,previousVisual){
     const call=async(instruction,images)=>{
       assert.deepEqual(images,[source]);
-      return {threadId:'selection',parsedOutput:{sharedBrand:[],directions:project.directions.map(direction=>({
-        direction,main:assignments.includes(direction)?[use]:[],auxiliary:[],gap:'缺主参考',
-      }))}};
+      return {threadId:'selection',parsedOutput:{sharedBrand:[],directions:Object.fromEntries(project.directions.map(direction=>[direction,{
+        main:assignments.includes(direction)?use:{source:null,borrow:'',apply:''},auxiliary:[],gap:'缺主参考',
+      }]))}};
     };
     return selectVisualReferences({call,project:{...project,previousVisual},images:[source,alias],active:['B']});
   }
-  await assert.rejects(plan([]),/B.*缺主参考/);
+  const unassigned=await plan([]);
+  assert.equal(unassigned.get('B').missing,true);
+  assert.equal(unassigned.get('B').gap,'缺主参考');
   await assert.rejects(plan(['A','B']),/专用参考图发生冲突/);
   await assert.rejects(plan(['B'],[{visual:{direction:'A',referenceHandoff:{references:[source]}}}]),/专用参考图发生冲突/);
   await assert.rejects(selectVisualReferences({project,images:[],active:['B']}),/对话区.*重试/);
+});
+
+test('reference adjudication can record a new grounded blocker without losing the four original decisions',async()=>{
+  const {reviewReferencePlan}=await import('./visual-references.mjs');
+  const roles=['visual','brand','user','spread'];
+  const reason='拟借法直接保留了参考图右上角的现有品牌标志。';
+  let id=0;
+  const report=await reviewReferencePlan({project:{brief:'试案',directions:['A','B','C']},direction:'A',
+    images:[{sha256:'a'.repeat(64)}],
+    handoff:{selectionThread:'chosen',references:[{role:'main',apply:'保留原图右上角的品牌标志'}]},
+    call:async(_instruction,_images,_schema,task)=>{
+      const threadId='role-'+(++id);
+      const input=JSON.parse(task.context);
+      let parsedOutput;
+      if(task.assignment==='公开参考包独立评分') {
+        parsedOutput={items:input.dimensions.map(dimension=>({dimension,score:4,evidence:'可见参考特征'})),hardReject:''};
+      } else if(task.assignment==='公开参考包对抗') {
+        parsedOutput={issue:'',evidence:'查看参考图'};
+      } else {
+        parsedOutput={decisions:Object.fromEntries(roles.map(role=>[role,role==='brand'
+          ? {status:'阻断',reason} : {status:'通过',reason:'无其他具体阻断'}])),compatible:true,reason:'核对拟借法'};
+      }
+      return {threadId,parsedOutput};
+    }});
+  assert.equal(report.passed,false);
+  assert.deepEqual(report.ruling.decisions.map(row=>row.role),roles);
+  assert.deepEqual(report.blockers,[reason]);
 });
 
 test('all nine visual calls use each direction’s main original and three different borrow and change plans',async t=>{
@@ -717,7 +797,8 @@ test('packaging retries a short brand query, publishes its reviewed original and
   const f=await fixture(t,'research-pack-lookup');
   const {research}=await f.run('research');
   const queries=research.searchScope.queries;
-  assert.deepEqual(queries.slice(0,3),['茶饮 品牌包装','茶饮 热门话题','茶饮 社交平台关键词报告']);
+  assert.ok(queries.indexOf('茶 包装盒')>=0 && queries.indexOf('茶饮 品牌包装')>queries.indexOf('茶 包装盒'));
+  assert.ok(queries.includes('茶饮 社交平台关键词报告'));
   assert.deepEqual(queries.filter(q=>q.startsWith('测试茶')),['测试茶 茶饮','测试茶','测试茶 包装']);
   const photo=research.findings.flatMap(f=>f.images ?? [])[0];
   assert.equal(photo.pageUrl,'https://source.example.org/sku');
@@ -729,7 +810,7 @@ test('packaging retries a short brand query, publishes its reviewed original and
 test('industry search switches short category terms and verifies segment data deep inside the report',async t=>{
   const f=await fixture(t,'research-report-lookup');
   const {research}=await f.run('research');
-  assert.deepEqual(research.searchScope.queries,['即饮茶报告','即饮茶','茶饮报告','茶饮','茶叶包装']);
+  assert.deepEqual(research.searchScope.attempts.filter(a=>a.source!=='SocialBeta 品牌发布案例').map(a=>a.query),['即饮茶报告','即饮茶','茶饮报告','茶饮','瓶装茶报告','瓶装茶','茶叶包装']);
   assert.equal(research.searchScope.attempts[1].source,'199IT 报告目录');
   assert.deepEqual(research.searchScope.reportReads,[{query:'茶饮报告',url:'https://source.example.org/report',title:'合成行业报告',kind:'original',segmentQuote:'无糖茶占20%'}]);
 });
@@ -846,18 +927,18 @@ test('visual batch ranks only eligible images, resolves ties and leaves an unsuc
       call: async (_prompt, _images, schema, task) => {
         if (schema.properties.first) return {parsedOutput:{first:'一瓶茶',action:'水入杯',words:'无糖',alternative:'不确定'}};
         if (schema.properties.indices) return {parsedOutput:{packaging,indices:_images.length?[1]:[]}};
-        const fields = schema.properties.items.items.properties;
+        const fields = schema.properties.candidate_1.properties;
         if (fields.onPackStatus) {
           assert.deepEqual(_images.slice(-brandReferences.length),brandReferences);
           assert.equal(task.comparison,true);
         }
-        const items = scores.map((score, i) => ({
-          candidate: i+1, reason: '测试依据',
+        const items = scores.map((score, i) => ['candidate_'+(i+1),{
+          reason: '测试依据',
           ...(fields.score && {score}),
           ...(fields.onPackStatus && {onPackStatus: onPack[i]}),
           ...(fields.priority && {priority: 3-i, blocked: blocked.includes(i+1), edit:'无', research:'无'}),
-        }));
-        return {threadId: 'test', parsedOutput: {items}};
+        }]);
+        return {threadId: 'test', parsedOutput: Object.fromEntries(items)};
       },
     });
   }
@@ -897,11 +978,12 @@ test('poster recommendation requires the selected slogan to be read from the act
             slogan:readings[Number(pictures[0].sha256)-1]}};
         }
         if(schema.properties.indices) return {parsedOutput:{packaging:false,indices:[]}};
-        const fields = schema.properties.items.items.properties;
-        return {parsedOutput:{items:[1,2,3].map(candidate=>({candidate,reason:'各岗均支持推荐',
+        const fields = schema.properties.candidate_1.properties;
+        const items=[1,2,3].map(candidate=>['candidate_'+candidate,{reason:'各岗均支持推荐',
           ...(fields.score && {score:[5,4,5][candidate-1]}),
           ...(fields.priority && {priority:candidate,blocked:false,edit:'无',research:'无'}),
-        }))}};
+        }]);
+        return {parsedOutput:Object.fromEntries(items)};
       },
     });
   }
@@ -913,7 +995,15 @@ test('poster recommendation requires the selected slogan to be read from the act
   assert.equal(some.blind[1].model,'gpt-6.2-sol');
   const none = await review([shortened,absent,unreadable]);
   assert.equal(none.winner,null);
+  assert.equal(none.sloganRepair,undefined);
   assert.match(none.candidates[1].reason,/缺少已选 slogan/);
+  const extraPeriod = {...correct,text:correct.text+'。'};
+  const punctuation = await review([extraPeriod,absent,unreadable]);
+  assert.equal(punctuation.winner,null);
+  assert.deepEqual(punctuation.sloganRepair,{candidate:1,observed:extraPeriod});
+  const alreadyReady = await review([extraPeriod,correct,unreadable]);
+  assert.equal(alreadyReady.winner,2);
+  assert.equal(alreadyReady.sloganRepair,undefined);
   const english = await review([{...correct,text:'JUSTDOIT'},{...correct,text:'JUST\nDO IT'},absent],'JUST DO IT');
   assert.equal(english.winner,2);
   const wrap = await review([absent,{...correct,text:'COOL,\nFRESH 20\n26!'},absent],'COOL,FRESH 2026!');
@@ -1037,15 +1127,19 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
 });
 
 
-for (const action of ['ok','kv','linked','general','reader','compact','bad-edit','return','wrong-ref','wrong-touch','scored','internal']) {
+for (const action of ['ok','kv','linked','front-kv','general','reader','compact','bad-edit','return','wrong-ref','wrong-touch','scored','internal']) {
   test('one-page packaging strategy from verified findings: '+action,async t=>{
     const f=await fixture(t,'onepager-'+action);
     if (action==='general') f.project.brief='为测试茶制作新品上市创意提案';
     if (action==='kv') f.project.brief='制作测试茶的春节KV';
     if (action==='linked') f.project.brief='设计测试茶包装与KV';
+    if (action==='front-kv') {
+      f.project.brief='测试茶包装做外盒正面，KV 用在电商详情页首屏。';
+      f.project.proposalKind='packaging+kv';
+    }
     const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
     f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
-    if (!['ok','kv','linked','general','reader','compact','bad-edit'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    if (!['ok','kv','linked','front-kv','general','reader','compact','bad-edit'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
     const result=await f.run('strategy');
     const md=result.artifacts[0].text,front=md.split('## 研究结论')[0];
     assert.deepEqual(result.strategy.findingNumbers,[2]);
@@ -1057,15 +1151,110 @@ for (const action of ['ok','kv','linked','general','reader','compact','bad-edit'
     if (action==='compact') assert.equal(result.strategy.focus,'让找原味的人一眼认出茶。');
     if (action==='bad-edit') assert.match(result.strategy.focus,/再仔细看清/);
     assert.match(md,/## 核心策略[\s\S]*## 衡量方式[\s\S]*## 研究结论[\s\S]*研究 2/);
-    assert.ok(md.includes(action==='general'?'## 视觉与传播触点':action==='kv'?'## 视觉与 KV 触点':action==='linked'?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
+    assert.ok(md.includes(action==='general'?'## 视觉与传播触点':action==='kv'?'## 视觉与 KV 触点':['linked','front-kv'].includes(action)?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
     assert.equal(md.includes('- 正面：'),!['kv','general'].includes(action));
-    assert.equal(md.includes('- 门店海报：'),action==='kv' || action==='linked');
+    assert.equal(md.includes('- 门店海报：'),['kv','linked'].includes(action));
+    assert.equal(md.includes('- 电商详情页首屏：'),action==='front-kv');
+    if (action==='front-kv') assert.doesNotMatch(md,/- (?:背面|侧面)：/u);
     assert.equal(front.match(/（待测）/g)?.length,3);
     assert.doesNotMatch(front,/模拟设定|待测：|发现2/);
     assert.doesNotMatch(result.strategy.focus,/发现2/);
     assert.match(md.split('## 推导依据')[1],/模拟设定/);
   });
 }
+
+test('strategy keeps a target-only price out of artwork unless the Brief explicitly asks for it',async t=>{
+  const target='电商目标价29.9元/盒。';
+  const brief='做混合坚果包装正面和电商KV。每袋25克，盒内七袋。';
+  const finding={conclusion:'受访者下午买零食',evidence:'下午会买零食加餐',source:'消费者调查',implication:'优先安排工位食用'};
+  const images=[{name:'实际参考.png'}];
+  const inputs={images,texts:[{name:'调研正文.md',text:finding.evidence}]};
+  const rationale={text:'按加餐情境确定阅读重点。',findingNumbers:[1]};
+  const base={
+    coreStrategy:'办公室下午加餐，先看清七袋分装。',insight:'一次想吃多少？',
+    brandRole:'让上班族随手取用一袋。',proposition:'一盒可分七次吃。',
+    actions:['正面居中放品类名。','左下标每袋25克。','首屏单袋在前、整盒在后。'],
+    touchpoints:[{kind:'front',name:'外盒正面',action:'缩略图能辨认分装规格。'},
+      {kind:'kv',name:'电商详情页首屏',action:'手机首屏先看到这一袋怎么取用。'}],
+    metrics:[{name:'规格识别',method:'展示正面三秒，记录复述袋数的人数。'},
+      {name:'取用动作理解',method:'观看首屏，记录说出怎么取用的人数。'},
+      {name:'配料辨识',method:'观察盒面后说出能记住的配料。'}],
+    constraints:target+'实际售价待定。',intersection:'包装负责辨认，首屏给出用法。',
+    opportunity:rationale,decision:rationale,priority:rationale,
+  };
+  const prices=appearance=>({...base,actions:[...base.actions.slice(0,2),'首屏右下角标「'+appearance+'」。'],
+    touchpoints:[base.touchpoints[0],{...base.touchpoints[1],action:'手机首屏在单袋旁读到'+appearance+'。'}]});
+  const bare=prices('29.9元/盒');
+  const qualified=prices('电商目标价29.9元/盒');
+  const run=(input,drafts,calls,sourceFinding=finding)=>makeStrategyOnePager({project:{brief:input,research:{findings:[sourceFinding]}},
+    carrier:'packaging+kv',inputs,rules:['同一份策略规则'],call:async(instruction,attachments,schema,task)=>{
+      calls.push({instruction,attachments,schema,task});
+      if (task.delegate) return {parsedOutput:{issues:[]}};
+      assert.equal(task.assignment,'依据本案简报和已核研究制定夜航一页策略。');
+      assert.deepEqual(attachments,images);
+      const index=calls.length-1;
+      assert.ok(index<drafts.length);
+      return {parsedOutput:{outcome:structuredClone(drafts[index])}};
+    }});
+  await t.test('only verified packaging observations reach the strategy author; archival readings and attachments stay intact',async()=>{
+    const pack={actualPackaging:true,sourceUrl:'https://example.com/front.jpg',pageUrl:'https://example.com/item',
+      sha256:createHash('sha256').update(competitorPng).digest('hex'),observation:'正面印有净含量：1.565kg。',
+      firstRead:{front:'右侧透窗可见6瓶装',raw:'未核初读'}};
+    const poster={actualPackaging:false,observation:'已发布海报中的陈列',firstRead:{front:'海报有独立首读'}};
+    const calls=[];
+    await run(brief+target,[base],calls,{...finding,images:[pack,poster]});
+    const [actualPack,actualPoster]=JSON.parse(calls[0].task.context).findings[0].images;
+    const {firstRead,...verified}=pack;
+    assert.deepEqual(actualPack,verified);
+    assert.equal(Object.hasOwn(actualPack,'firstRead'),false);
+    assert.deepEqual(actualPoster,poster);
+    assert.equal(pack.firstRead,firstRead);
+    assert.equal(firstRead.front,'右侧透窗可见6瓶装');
+    assert.equal(calls[0].attachments,images);
+  });
+
+  await t.test('retries only the unsafe draft with unchanged evidence and publishes the corrected wording',async()=>{
+    const calls=[];
+    const result=await run(brief+target,[bare,base],calls);
+    const [first,retry,reader]=calls;
+    assert.equal(calls.length,3);
+    assert.deepEqual(retry.task,first.task);
+    assert.deepEqual(retry.schema,first.schema);
+    assert.match(retry.instruction,/上次输出需修正：项目只给了目标价/u);
+    assert.equal(reader.task.delegate,true);
+    assert.doesNotMatch(reader.task.context,/29\.9元/u);
+    const [page,constraints]=result.body.split('## 推导依据');
+    assert.doesNotMatch(page,/29\.9元/u);
+    assert.match(page,/首屏单袋在前、整盒在后/u);
+    assert.match(constraints,/电商目标价29\.9元\/盒/u);
+  });
+  await t.test('keeps the qualified target price when explicitly asked to show it on the KV',async()=>{
+    const calls=[];
+    const {body}=await run(brief+target+'请在KV首屏标注目标价。',[qualified],calls);
+    assert.equal(calls.length,2);
+    assert.match(body.split('## 衡量方式')[0],/电商目标价29\.9元\/盒/u);
+  });
+  await t.test('permission for the KV leaves the separate packaging price unsigned',async()=>{
+    const calls=[];
+    const unapproved={...qualified,touchpoints:[{...base.touchpoints[0],action:'外盒正面标出电商目标价29.9元/盒。'},qualified.touchpoints[1]]};
+    const {body}=await run(brief+target+'请在KV首屏标注目标价。',[unapproved,qualified],calls);
+    assert.equal(calls.length,3);
+    assert.doesNotMatch(body,/外盒正面标出电商目标价/u);
+    assert.match(body,/首屏右下角标「电商目标价29\.9元\/盒」/u);
+  });
+  await t.test('preserves an ordinary confirmed price as supplied',async()=>{
+    const calls=[];
+    const {body}=await run(brief+'售价29.9元/盒。',[{...bare,constraints:'售价29.9元/盒。'}],calls);
+    assert.equal(calls.length,2);
+    assert.match(body.split('## 衡量方式')[0],/标「29\.9元\/盒」/u);
+  });
+  await t.test('a target label alone does not give permission to print the price',async()=>{
+    const calls=[];
+    await assert.rejects(run(brief+target,[qualified,qualified],calls),/项目只给了目标价/u);
+    assert.equal(calls.length,2);
+    assert.ok(calls.every(item=>!item.task.delegate));
+  });
+});
 
 test('strategy owner may remove an unclear clause without substituting a reader’s guess',async()=>{
   const text='学生先看清这瓶是什么茶、是不是真茶。';
@@ -1155,7 +1344,7 @@ test('DeepSeek writer chooses each headline and the director only recommends amo
     selections:['A候选2','B候选3','C候选1'].map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'创意证据'+phrase,sloganReady:true})),
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'每对读出了不同的本案连接'})),
   };
-  const writing={workbook,picks:{A:'A2',B:'B3',C:'C1'},authorCheck};
+  const writing={...workbook,picks:{A:'A2',B:'B3',C:'C1'},authorCheck};
   const recommendation={directionId:'B',reason:'具体呈现茶与包装的联系'};
   await writeFile(executable,`#!/usr/bin/env node
 const fs=require('node:fs');
@@ -1223,7 +1412,7 @@ test('copy does not send notice-only choices, overlapping ideas or invented titl
     strategyLink:'记住馆内活动',secondary:'每场45分钟，须预约。',
     candidates:[text,'今晚'+text,'周末'+text].map(candidate=>({text:candidate,use:'微信封面'})),
   }))};
-  const writing={workbook,picks:{A:'A1',B:'B1',C:'C1'}};
+  const writing={...workbook,picks:{A:'A1',B:'B1',C:'C1'}};
   const checked={
     selections:titles.map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'带孩子认识馆内的昆虫',sloganReady:true})),
     pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'读者记住的场景不同'})),
@@ -1247,6 +1436,69 @@ test('copy does not send notice-only choices, overlapping ideas or invented titl
       },
     }),scenario.error);
     assert.deepEqual(phases,['COPY_ENGINE_WRITE']);
+  });
+});
+
+test('packaged copy checks all author candidates against the Brief before the director recommends',async t=>{
+  const {runCopyReview,engineCopyHandoffReady}=await import('./copy-review.mjs');
+  const skill=await readFile(new URL('../../skills/slogan-engine/SKILL.md',import.meta.url),'utf8');
+  const recipe='包含巴旦木、腰果、核桃和冻干草莓。';
+  const brief='帮我做独立小袋混合坚果的包装及电商首屏。每袋25克，盒内7袋，'+recipe+'面向在办公室下午加餐的年轻上班族。';
+  const writing={
+    directions:[
+      {id:'A',name:'工位小歇',claim:'下午加餐随手取一袋',mechanism:'把敲键盘的间隙连到加餐',secondary:'独立小袋，撕开就吃。',
+        lines:['给键盘放个小假','下午的工位小歇','忙里拨两分钟']},
+      {id:'B',name:'七个下午',claim:'一盒七袋，分着吃',mechanism:'用盒内七袋写出每日加餐的节奏',secondary:'每袋25克，一盒7袋。',
+        lines:['这盒装着七个下午','和下午约好七次','一盒的下午计划']},
+      {id:'C',name:'酸的惊喜',claim:'三种坚果加冻干草莓',mechanism:'用冻干草莓带来颜色上的反差',secondary:'巴旦木、腰果、核桃和冻干草莓。',
+        lines:['坚果里，来点草莓','三种坚果遇见草莓','下午来点红']},
+    ].map(({lines,...direction})=>({...direction,basis:recipe,strategyLink:'回到办公室下午加餐',
+      candidates:lines.map(text=>({text,use:'包装提案页'}))})),
+    picks:{A:'A1',B:'B1',C:'C1'},
+  };
+  writing.authorCheck={
+    selections:writing.directions.map(d=>({directionId:d.id,phrase:d.candidates[0].text,takeaway:d.claim,sloganReady:true})),
+    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'从工位动作、七袋节奏、配料反差三处展开'})),
+  };
+  for (const scenario of [
+    {label:'rejects wrong ingredient classification in an unpicked candidate',d:2,line:'四种坚果里，藏着一颗酸的',candidate:true},
+    {label:'rejects invented fruit count in the subtitle',d:2,line:'巴旦木、腰果、核桃，加一颗冻干草莓。'},
+    {label:'rejects a one-hand opening claim in a candidate',d:0,line:'一只手撕开，另一只手还在键盘上',candidate:true},
+    {label:'keeps the three author picks with ordinary opening and the actual recipe'},
+    {label:'keeps exact opening and piece-count facts when the Brief confirms them',
+      approved:'小袋能单手撕开。每袋含一颗冻干草莓。'},
+  ]) await t.test(scenario.label,async()=>{
+    const fromWriter=structuredClone(writing);
+    const input=brief+(scenario.approved ?? '');
+    if (scenario.candidate) fromWriter.directions[scenario.d].candidates[2].text=scenario.line;
+    else if (scenario.line) fromWriter.directions[scenario.d].secondary=scenario.line;
+    if (scenario.approved) {
+      fromWriter.directions[0].candidates[2].text='一只手撕开，另一只手还在键盘上';
+      fromWriter.directions[2].secondary='每袋含一颗冻干草莓。';
+    }
+    const phases=[];
+    const review=runCopyReview({project:{brief:input,proposalKind:'packaging'},inputs:{texts:[]},rules:[skill],singleOwner:true,
+      call:async (instruction,_images,_schema,task)=>{
+        const phase=instruction.split('\n')[0];
+        phases.push(phase);
+        if (phase==='COPY_ENGINE_WRITE') assert.ok(task.rules.includes(skill));
+        else {
+          assert.equal(phase,'COPY_ENGINE_RECOMMEND');
+          assert.deepEqual(JSON.parse(task.context).directions,writing.directions.map(d=>({id:d.id,name:d.name,main:d.candidates[0].text})));
+        }
+        const parsedOutput=phase==='COPY_ENGINE_WRITE' ? fromWriter : {directionId:'B',reason:'与每天一次的加餐节奏相连'};
+        return {parsedOutput,runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'a'.repeat(64)};
+      }});
+    if (scenario.line) {
+      await assert.rejects(review,{code:'INVALID_STAGE_OUTPUT',message:/文案事实须与 Brief 一致/});
+      assert.deepEqual(phases,['COPY_ENGINE_WRITE']);
+    } else {
+      const {copyReview,body,directions}=await review;
+      assert.deepEqual(phases,['COPY_ENGINE_WRITE','COPY_ENGINE_RECOMMEND']);
+      assert.deepEqual(copyReview.workbook.directions,fromWriter.directions);
+      assert.equal(copyReview.recommendation.directionId,'B');
+      assert.equal(engineCopyHandoffReady(copyReview,directions,body),true);
+    }
   });
 });
 
@@ -1282,6 +1534,15 @@ test('director keeps approved A and B while repairing only C after blind reading
   assert.deepEqual(polished,[['A','B','C'],['C']]);
   checkSloganChoices({directions:['山风原稿主文','晨雾原稿主文','仅修订C'].map((main,i)=>({id:'ABC'[i],main}))},book);
   assert.equal(book.discarded.length,1);
+});
+
+test('consumer search strips a trailing consumer label and deduplicates the categories',async()=>{
+  const {consumerSearchTopics}=await import('./research-sources.mjs');
+  assert.deepEqual(consumerSearchTopics(['混合坚果','混合坚果消费者','休闲零食消费者','办公室零食消费者','休闲零食']),[
+    {term:'混合坚果',queries:['混合坚果消费报告','混合坚果消费者调查']},
+    {term:'休闲零食',queries:['休闲零食消费报告','休闲零食消费者调查']},
+    {term:'办公室零食',queries:['办公室零食消费报告','办公室零食消费者调查']},
+  ]);
 });
 
 test('consumer research broadens across categories and opens publisher reports after irrelevant results',async()=>{
@@ -1372,7 +1633,7 @@ test('a verified same-category poster resolves only the general image gap', asyn
   const {writeResearchPage}=await import('./codex-runner.mjs');
   const chapter='竞争与同类传播';
   const image={title:'海报',carrier:'kv',sameCategory:true,sha256:'hash',pageUrl:'https://source.example.org/p',
-    sourceUrl:'https://source.example.org/i',publicationQuote:'品牌发布了海报。'};
+    sourceUrl:'https://source.example.org/i',assetType:'宣传海报或主视觉',publicationPlacement:'article',publicationQuote:'品牌发布了海报。'};
   const finding={chapter,images:[image],source:'同类发布页',url:image.pageUrl,evidence:'画面突出机身。',conclusion:'海报突出机身。'};
   const gaps=[{chapter,message:'缺同类海报。',scope:'kv',blocksStrategy:true},
     {chapter,message:'未查到商场灯箱投放。',scope:'optionalSegment',blocksStrategy:false}];
@@ -1439,4 +1700,179 @@ test('a brief-linked visible marking leads the competitor homepage and keeps use
   assert.deepEqual(r.sections.map(row=>row.conclusion),[highlight.conclusion,rows[2].conclusion]);
   assert.deepEqual(r.sections[0].evidenceIndices,[0]);
   assert.equal(r.sections[0].explanation,'原图已核实，右上可见“PRESS TO CLOSE”。实际密封效果未核实。');
+});
+
+test('automatic research uses its evidence gate even if the writer reports that optional detail is missing',async()=>{
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const chapters=['行业与市场','竞争与同类传播','人群与接触情境','产品与品牌'];
+  const findings=['market','competitor','audience','audience','product'].map((subject,index)=>({
+    subject,source:'来源'+index,url:subject==='product'?'':'https://source.example.org/'+index,
+    evidence:'原文'+index,passage:'原文'+index,conclusion:'发现'+index,implication:'用于本案比较',
+  }));
+  const rows=[0,1,2,2,3].map((chapter,index)=>({
+    chapter:chapters[chapter],conclusion:'发现'+index,explanation:'依据'+index,evidenceIndices:index===4?[4,1]:[index],
+    audienceTopic:['','','使用场景','选择因素',''][index],surveyQuestion:['','','在哪里用','为什么买',''][index],
+  }));
+  const gap={chapter:chapters[0],scope:'optionalSegment',blocksStrategy:true,message:'尚无同规格、同渠道的价格对照。'};
+  async function outcome(suppliedRows,mode='auto') {
+    return writeResearchPage({project:{mode},carriers:[],anchorQuestions:[],findings,gaps:[],
+      call:async()=>({parsedOutput:{rows:suppliedRows,gaps:[gap],ready:false,next:gap.message}})});
+  }
+  const report=await outcome(rows);
+  assert.equal(report.ready,true);
+  assert.ok(report.gaps.some(g=>g.message===gap.message));
+  assert.match(report.next,/进入策略/u);
+  assert.equal((await outcome(rows.filter((_,i)=>i!==3))).ready,false);
+  assert.equal((await outcome(rows,'collab')).ready,false);
+});
+
+test('consumer research opens precise publisher results ahead of broader directory suggestions',async()=>{
+  const {researchConsumerReports}=await import('./codex-runner.mjs');
+  const resource='https://example.org/cat-survey';
+  const quote='受访者通常为室内成年猫购买猫粮。';
+  const seen=[];
+  const result=await researchConsumerReports({brief:'猫粮包装',topics:[{term:'猫粮',queries:[]}],discovered:[],
+    directory:async(_term,provider)=>provider==='reports' ? [{title:'猫粮购买调研报告',url:resource}] :
+      [0,1,2].map(i=>({title:'消费观察'+i,url:'https://example.org/'+provider+i})),
+    capture:async url=>{seen.push(url);return {url,source:'报告',text:url===resource?quote:'通用资料'};},
+    call:async()=>({parsedOutput:{observations:[{url:resource,title:'猫粮购买调研',scope:'该调查受访者',angle:'决策',quote,conclusion:'样本多为室内成年猫购买猫粮。'}]}}),
+  });
+  assert.equal(seen[0],resource);
+  assert.equal(result.findings[0].evidence,quote);
+});
+
+test('DeepSeek copy repairs a missing pick and a broken quotation without rewriting the original candidates',async()=>{
+  const {runCopyReview,engineCopyHandoffReady}=await import('./copy-review.mjs');
+  const skill=await readFile(new URL('../../skills/slogan-engine/SKILL.md',import.meta.url),'utf8');
+  const brief='制作燕麦饮包装。每瓶有燕麦和水。用于通勤早餐。';
+  const basis='用于通勤早餐';
+  const workbook={directions:['A','B','C'].map(id=>({
+    id,name:id+'方向',basis:id==='B'?'拼接的错误依据':basis,claim:id+'主张',mechanism:id+'机制',strategyLink:'承接通勤',
+    secondary:'燕麦饮',candidates:[1,2,3].map(n=>({text:id+'候选'+n,use:'提案页'})),
+  }))};
+  const picks={A:'A1',B:'B2',C:'C3'};
+  const authorCheck={
+    selections:['A候选1','B候选2','C候选3'].map((phrase,i)=>({directionId:'ABC'[i],phrase,takeaway:'创意证据'+phrase,sloganReady:true})),
+    pairs:['AB','AC','BC'].map(pair=>({pair,distinct:true,reason:'画面不同'})),
+  };
+  const replies={
+    COPY_ENGINE_WRITE:{...workbook,picks:{A:'A1',B:'B4',C:'C3'},authorCheck:{...authorCheck,pairs:authorCheck.pairs.slice(0,2)}},
+    COPY_ENGINE_GROUND:{citations:[{id:'B',basis,supported:true}]},
+    COPY_ENGINE_PICK:{picks,authorCheck},
+    COPY_ENGINE_RECOMMEND:{directionId:'C',reason:'承接通勤'},
+  };
+  const calls=[];
+  const {copyReview,body,directions}=await runCopyReview({project:{brief},inputs:{texts:[]},rules:[skill],singleOwner:true,
+    call:async (instruction,_images,_schema,task)=>{
+      const phase=instruction.split('\n')[0];
+      calls.push(phase);
+      const packet=JSON.parse(task.context);
+      if (phase.endsWith('GROUND')) assert.deepEqual(packet.listedDirections.map(d=>d.id),['B']);
+      if (phase.endsWith('PICK')) {
+        assert.deepEqual(packet.workbook.directions.map(d=>d.candidates),workbook.directions.map(d=>d.candidates));
+        assert.deepEqual(packet.fixedPicks,{A:'A1',C:'C3'});
+      }
+      return {parsedOutput:replies[phase],runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'b'.repeat(64)};
+    }});
+  assert.deepEqual(calls,Object.keys(replies));
+  assert.equal(workbook.directions[1].basis,'拼接的错误依据');
+  assert.equal(copyReview.workbook.directions[1].basis,basis);
+  assert.deepEqual(copyReview.repairs.map(r=>r.phase),['COPY_ENGINE_GROUND','COPY_ENGINE_PICK']);
+  assert.equal(engineCopyHandoffReady(copyReview,directions,body),true);
+  copyReview.repairs[0].threadId=copyReview.calls[0].threadId;
+  assert.equal(engineCopyHandoffReady(copyReview,directions,body),false);
+  const conflicting=structuredClone(workbook);
+  conflicting.directions[1].claim='每盒100克';
+  await assert.rejects(runCopyReview({project:{brief:brief+'每盒净含量为80克。'},inputs:{texts:[]},rules:[skill],singleOwner:true,
+    call:async instruction=>{
+      const phase=instruction.split('\n')[0];
+      const parsedOutput=phase==='COPY_ENGINE_WRITE' ? {...replies.COPY_ENGINE_WRITE,...conflicting} :
+        {citations:[{id:'B',supported:true,basis:'每盒净含量为80克'}]};
+      assert.ok(['COPY_ENGINE_WRITE','COPY_ENGINE_GROUND'].includes(phase));
+      return {parsedOutput,runId:phase+'-run',threadId:phase+'-thread',model:'deepseek-fixture',inputPacketHash:'b'.repeat(64)};
+    }}),/主张缺少与原件一致的依据/);
+});
+
+test('visual directory lookups can broaden a repeated category using the plan’s own catalog terms',async()=>{
+  const {visualLookupCategory}=await import('./research-sources.mjs');
+  assert.equal(visualLookupCategory('混合坚果','混合坚果',['每日坚果','坚果','小袋坚果','零食']),'坚果');
+  assert.equal(visualLookupCategory('混合坚果','坚果炒货',['坚果']),'坚果炒货');
+  assert.equal(visualLookupCategory('steam cleaner','steam cleaner',['team','cleaner']),'cleaner');
+  assert.equal(visualLookupCategory('猫粮','猫粮',['猫砂','宠物']),'猫粮');
+  assert.equal(visualLookupCategory('无糖汽水','无糖',['无糖','汽水']),'汽水');
+  assert.equal(visualLookupCategory('暖白光台灯','暖白光台灯',['暖白光','台灯']),'台灯');
+  assert.equal(visualLookupCategory('茶饮','茶',[]),'茶');
+});
+
+test('industry follow-up can use a short public synonym after detailed category searches',async()=>{
+  const {reportAliasSearchTerms,reportSearchTerms}=await import('./research-sources.mjs');
+  const first=reportSearchTerms(['混合坚果行业','坚果','坚果炒货','休闲食品']);
+  assert.deepEqual(first,['混合坚果报告','坚果报告','坚果炒货报告','休闲食品报告']);
+  assert.deepEqual(reportAliasSearchTerms(['休闲食品'],['坚果','休闲零食'],first),['零食报告','坚果白皮书']);
+  assert.equal(reportAliasSearchTerms(['咖啡'],['咖啡'],[])[0],'咖啡报告');
+});
+
+test('research charts are not released promotional posters even if a vision response gives them the same label',async()=>{
+  const {supportsPoster}=await import('./research-sources.mjs');
+  const assetType='宣传海报或主视觉';
+  assert.equal(supportsPoster({assetType,title:'食品饮料包装十大趋势'},'研究团队总结了包装趋势。'),false);
+  assert.equal(supportsPoster({assetType,title:'食饮趋势活动'},'品牌在本次包装趋势展发布系列海报。'),true);
+});
+
+test('research keeps the own mixed recipe distinct from verified external nut counts',async()=>{
+  const {hasWrongOwnNutGroup,ownRecipe,repairResearchRecipeMention}=await import('./product-recipe.mjs');
+  const {writeResearchPage}=await import('./codex-runner.mjs');
+  const brief='帮我做一款独立小袋混合坚果的新品包装和电商上新 KV。每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓。面向想在办公室下午加餐的年轻上班族，电商目标价 29.9 元/盒。包装做七袋装外盒正面，KV 用在电商详情页首屏。品牌名和正式标志还没定。';
+  const anchor='产品与品牌：客户给定的 25 克×7 袋、29.9 元/盒、四种坚果与独立小袋条件，哪些卖点已有证明、哪些待验证，与竞品相比如何？';
+  const missing='未提供冻干草莓含量/比例、四种坚果配比、口味测试、保鲜或锁鲜技术证明。';
+  const outside='竞品礼盒外盒标示四种坚果。';
+  const source='每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓';
+  const chapter='产品与品牌';
+  const recipe=ownRecipe(brief);
+  assert.deepEqual(recipe.ingredients,['巴旦木','腰果','核桃','冻干草莓']);
+  assert.equal(recipe.nutCount,3);
+  assert.equal(repairResearchRecipeMention(anchor,recipe,true),anchor.replace('四种坚果','四种配料'));
+  assert.equal(repairResearchRecipeMention(missing,recipe),missing.replace('四种坚果','四种配料'));
+  assert.equal(repairResearchRecipeMention(outside,recipe,true),outside);
+  assert.equal(repairResearchRecipeMention('未取得四种坚果的相关公开数据。',recipe),'未取得四种坚果的相关公开数据。');
+  assert.equal(repairResearchRecipeMention(missing,ownRecipe('新品含坚果和时令果干。'),true),missing);
+  assert.equal(hasWrongOwnNutGroup('请确认四种坚果配比。',recipe),true);
+  assert.equal(hasWrongOwnNutGroup('本品不是四种坚果，是三种坚果加冻干草莓。',recipe),false);
+  const products={chapter,subject:'product',source:'客户原始 Brief',url:'',evidence:source,passage:brief};
+  const competitor={chapter:'竞争与同类传播',subject:'competitor',source:'对照外盒',url:'https://example.org/real',
+    evidence:outside,passage:outside};
+  const report=await writeResearchPage({project:{brief,mode:'collab'},carriers:[],anchorQuestions:[anchor],
+    findings:[products,competitor],gaps:[],call:async()=>({parsedOutput:{ready:false,rows:[
+      {chapter,conclusion:'本品以四种坚果和独立小袋做识别。',explanation:'规格仍按原简报。',evidenceIndices:[0,1]},
+      {chapter:competitor.chapter,conclusion:outside,explanation:'该品牌外盒所写。',evidenceIndices:[1]},
+    ],gaps:[
+      {chapter,scope:'other',message:missing,blocksStrategy:false},
+      {chapter:competitor.chapter,scope:'other',message:outside,blocksStrategy:false},
+    ]}})});
+  assert.ok(report.sections.some(r=>r.conclusion==='本品以四种配料和独立小袋做识别。'));
+  assert.ok(report.sections.some(r=>r.conclusion===outside));
+  assert.ok(report.gaps.some(g=>g.message===missing.replace('四种坚果','四种配料')));
+  assert.ok(report.gaps.some(g=>g.message===outside));
+  assert.equal(report.findings[0].evidence,source);
+  assert.equal(report.findings[1].evidence,outside);
+});
+
+test('owned product research binds a misattributed contiguous quote to the original Brief only',async()=>{
+  const {locateOwnBriefEvidence}=await import('./codex-runner.mjs');
+  for (const [name,brief,quote] of [
+    ['brief-15c567a6.md','每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓。','每袋 25 克，盒内 7 袋，包含巴旦木、腰果、核桃和冻干草莓'],
+    ['brief-acbaff04.md','海报要露出杯装产品，正式标志尚未定。','海报要露出杯装产品，正式标志尚未定'],
+  ]) {
+    const project={brief,artifacts:[{name,stage:'brief',kind:'text'}],attachments:[{name:'其他上传材料.md'}]};
+    const finding={subject:'product',url:'',source:name,evidence:quote};
+    const match=locateOwnBriefEvidence(project,finding);
+    assert.equal(match.original.source,'客户原始 Brief');
+    assert.equal(match.original.url,undefined);
+    assert.equal(match.match.evidence,quote);
+    assert.deepEqual(locateOwnBriefEvidence(project,{...finding,source:'客户原始 Brief'}),match);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,source:'其他上传材料.md'}),null);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,subject:'competitor'}),null);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,url:'https://example.org/product'}),null);
+    assert.equal(locateOwnBriefEvidence(project,{...finding,evidence:quote+'且已有批准'}),null);
+  }
 });

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.95.0",
-  "registrySha256": "848513e092766116b65d2f6a4cb9512a2345cc10e7bf75a46661c0ecccfe7a48",
+  "baselineVersion": "1.151.0",
+  "registrySha256": "98ad666c81da9b58c51c073f5968cebb0db165a0c3bbb7ba1bc07ee3619a6968",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -25,10 +25,10 @@
       }
     },
     "agent.strategy-owner": {
-      "version": "1.7.1",
+      "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/strategy-owner.md": "0e794f477722a2c8f9bca16065b12ab763719e0532055fd0d0162a795a6124e9"
+        "docs/agents/strategy-owner.md": "b1e64096a8a7402680c572a9dc87936f247fd64080e130661b9263526e946103"
       }
     },
     "agent.copy-owner": {
@@ -109,10 +109,10 @@
       }
     },
     "page.strategy": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "b265d2b5be233aca157758a1639b8d403292e37ad61c9a0e23b73c0c03ec183d"
+        "docs/pages/strategy.md": "7e7ef945ccc0d3431dedefa898dc78d05a2494586326078ca5083a6ecb83512c"
       }
     },
     "page.themes": {
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.22.0",
+      "version": "1.35.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "c5a91635f33c657b431dcabf5af76f6f9f0e631843ef18c1b35f86c8052d4435",
+        "skills/design-research-lead/SKILL.md": "01e52505cdbeddbe950e7d39eebaa75076e0219717749542b6c7938240cc3960",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -203,21 +203,21 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.9.1",
+      "version": "1.13.0",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "3e9e14ad9bd80f6085c49fdf20bec0603453f0a7c1752cd35752a22507554964"
+        "skills/strategy-one-pager/SKILL.md": "38d36aa5f9ca7a4f1a8e74cd02da6b0e1354a896f1ecc92fa132011f44452b3a"
       }
     },
     "method.visual": {
-      "version": "1.9.0",
+      "version": "1.30.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "aa6f767dbe312574f813392b2685723f64d3fd626a3142792ae8d048971f7414",
-        "skills/visual-development-lead/references/kv.md": "ee1747604dc809f22fc949bacf9f99b0b0d59baa11a63f8437e781baddae1773",
-        "skills/visual-development-lead/references/packaging.md": "a7a60d80a2359bc665883a3303a7e423e8b444dfc6a287b5e9a2cf2e6964b6b9",
+        "skills/visual-development-lead/SKILL.md": "238b03e755b2e60be71027a2fd670cb884655e98bf041e39c412bae9ae8767ad",
+        "skills/visual-development-lead/references/kv.md": "43a3a19f62ef45cee868630e5e0b26a68619c0c7f3cc54375cc7600f0afc43a8",
+        "skills/visual-development-lead/references/packaging.md": "5fc42d40044503528b2a8e24c014595b1da76f87763954b7d43e8bf6cc5775d6",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
-        "skills/visual-development-lead/references/stage-review.md": "a1059333fc2da94e49b15b7be19ba24dacf19e036dc7f9ac2fcc7c48cae68295",
+        "skills/visual-development-lead/references/stage-review.md": "602ac5039e76e21bcf205337451e9f1b4a2bc7562bbf0a04731c4fbafd769899",
         "skills/visual-development-lead/scripts/check-stage.mjs": "73396ea1949f443b4437837a541a4f0f594bf6bae785b5a76ca1fa7c3c3eff75",
         "skills/visual-development-lead/tests/check-stage.test.mjs": "d3e8fa7e48ac35ddaf0d2c585681c224bd6e14230fc133bb32fefe9fdbd93adc"
       }
@@ -510,10 +510,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.10.0",
+      "version": "1.14.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "88364412c1e6cda5f24030c6064e6e2fd55bdab29686d2b421c3b42375449de8"
+        "docs/specs/copy-generation.md": "b0baeb3ef415e04aa045b3dc7ad43ab7cd31fed2c0dbefd6730f114464caffab"
       }
     },
     "method.slogan-engine": {
@@ -524,17 +524,17 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.20.0",
+      "version": "1.75.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "852ca32299dc128ebaae7c6d6f0710f6adfc8551f3a51c15d04194afe3b4a8ab"
+        "docs/specs/nightflight-runtime.md": "2570a66900947965cb40dde4b6f52407c150945d855d47e5173ec9c819ad4516"
       }
     },
     "contract.nightflight-final-reader": {
-      "version": "1.2.0",
+      "version": "1.2.3",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-final-reader.md": "eac1f36e1333f33f6aaedd489885b6f402f6737fb7f3e2ac08648734cd6ea5a9"
+        "docs/specs/nightflight-final-reader.md": "6372a40bf0d871e8ddd4a90989dfe1c3fc7d4635648b763f84d7742cbc715d8f"
       }
     }
   },
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "41408c1a35637520077705ff3cdf17edb6aef5e78bf952cd7090db0c14afedd2",
+    "docs/specs/README.md": "db9a677f24a9988a64a7bfd3725afd8b3281484bf1447562caa66a3243392a91",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

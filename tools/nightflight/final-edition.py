@@ -97,11 +97,32 @@ def contact(output, inputs):
     sheet.save(output, quality=88)
 
 
+def text_crop(output, name, left, top, width, height):
+    from PIL import Image
+
+    x, y, w, h = map(float, (left, top, width, height))
+    if w <= 0 or h <= 0:
+        raise ValueError("Invalid text crop size")
+    with Image.open(name) as image:
+        sx, sy = image.width / 1280, image.height / 720
+        box = (
+            max(0, int((x - 4) * sx)), max(0, int((y - 4) * sy)),
+            min(image.width, int((x + w + 4) * sx + 1)),
+            min(image.height, int((y + h + 4) * sy + 1)),
+        )
+        crop = image.crop(box)
+        scale = min(3, 1500 / max(crop.size))
+        enlarged = crop.resize(tuple(round(side * scale) for side in crop.size), Image.Resampling.LANCZOS)
+        enlarged.save(output, format="PNG")
+
+
 if __name__ == "__main__":
     action, file, *images = sys.argv[1:]
     if action == "inspect":
         print(json.dumps(inspect(Path(file)), ensure_ascii=False))
     elif action == "contact":
         contact(file, images)
+    elif action == "text-crop":
+        text_crop(file, *images)
     else:
         raise ValueError("Unsupported action")
