@@ -1,6 +1,6 @@
 # 提案工作台 · 规范基线
 
-基线版本 **1.153.0**，整理日期 **2026-11-22**。此处是后续开发和人工编排的规范入口，涵盖岗位、页面、固定 Skill、双团协议和排版后终审协议。
+基线版本 **1.154.0**，整理日期 **2026-11-22**。此处是后续开发和人工编排的规范入口，涵盖岗位、页面、固定 Skill、双团协议和排版后终审协议。
 
 先看[Agent组织与职责总览](../agents/README.md)，了解业务与开发两条统筹线、各岗位内部执行者和独立评审关系；再看[页面基线与责任索引](../pages/README.md)，按页面找责任、既有结构、实际路由和待定范围。
 
@@ -20,7 +20,7 @@
 | 研究 | [调研负责人](../agents/research-owner.md) | [研究](../pages/research.md) | [design-research-lead r42](../../skills/design-research-lead/SKILL.md) |
 | 策略 | [策略负责人](../agents/strategy-owner.md) | [策略](../pages/strategy.md) | [夜航一页策略](../../skills/strategy-one-pager/SKILL.md)，触点按委托载体选择 |
 | 文案 | [文案负责人](../agents/copy-owner.md) | [文案与主题](../pages/themes.md) | [自由三案创作、作者自选与负责人推荐](copy-generation.md) |
-| 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.32.0](../../skills/visual-development-lead/SKILL.md) |
+| 视觉 | [视觉负责人](../agents/visual-owner.md) | [视觉开发](../pages/visual.md) | [visual-development-lead 1.33.0](../../skills/visual-development-lead/SKILL.md) |
 | 排版 | [排版负责人](../agents/layout-owner.md) | [整案排版](../pages/layout.md) | [逐页对应 Deck Studio](../../skills/ppt-slide-script/references/deck-studio-bridge.md)。旧输入使用[既有排版交接](../plans/客户提案结构与排版交接_试行.md) |
 | 终审交付 | [终审负责人](../agents/final-review-owner.md) | [终审](../pages/delivery.md)、[交付中心](../pages/delivery_center.md) | 真实页面／产物核验与人类决定 |
 | 独立业务评审 | [独立评审者](../agents/independent-reviewer.md) | 对应当前阶段 | 按阶段协议，不能互换门槛 |

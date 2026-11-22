@@ -25,7 +25,7 @@ import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { cropReviewRegion, makeComparison, makeReviewPreviews, maskPosterReference } from './visual-comparison.mjs';
 import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, readPosterReferenceMask, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
-import { holdSimilarPosterDirections, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
+import { holdSimilarPosterDirections, posterBrandFacts, reviewPosterDirections, reviewVisualBatch, selectPosterRedraw } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -1467,14 +1467,14 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const researchComparators=packaging ? (project.researchReferences ?? [])
           .filter(ref=>ref.carrier==='packaging')
           .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
-        const compare = () => reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
+        const compare = async priorReview => reviewVisualBatch({call,direction,images,context,priorReview,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
           ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal),
             cropTitle:(image,box)=>cropReviewRegion(dir,image,box,signal)} : {}),
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer),
             sourcePolicy:{brandFacts:posterBrandFacts(project.brief),
               mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
-            paperAspect:posterPaper},
+            paperAspect:posterPaper,reviewProfile:await modelProfile(process.env.ONEPITCH_TEXT_EXECUTABLE,signal,'--vision-model')},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
             const [query]=publicVisualQueries(result,project);
@@ -1511,16 +1511,17 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             batch[index]=revised.record;
             images[index]=revised.image;
             await onEvent?.('「'+direction+'」已收到标题修订原图，重新独立评审这一案。');
-            review=await compare();
+            review=await compare(review);
           } else {
             await onEvent?.('「'+direction+'」标题修订未改变原图，保留原判。');
           }
         }
         if (checkPosterTransfer && project.mode==='auto' && !review.winner && !correction) {
-          const top=review.candidates.toSorted((a,b)=>b.mean-a.mean || a.priority-b.priority)[0];
+          const top=selectPosterRedraw(review.candidates);
           const index=top.candidate-1;
           const source=batch[index];
-          const revision={sourceName:source.name,sourceSha256:source.sha256,
+          const revision={sourceName:source.name,sourceSha256:source.sha256,repairDefects:top.repairDefects,
+            keepAxes:Object.entries(top.transferAudit?.checks ?? {}).filter(([,check])=>check.status==='matched').map(([axis])=>axis),
             reason:top.reason,edit:top.edit};
           if (posterReference.image.sourceUrl && top.posterArtworkCheck?.issues?.some(issue=>['foreign_identity','reference_asset'].includes(issue.kind))) {
             revision.referenceInput='observations';
@@ -1533,7 +1534,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             artifacts.push({name:source.name,kind:'image',visual:{role:'poster-original',direction,sha256:source.sha256}});
             batch[index]=revised.record;
             images[index]=revised.image;
-            review=await compare();
+            review=await compare(review);
           }
         }
         for (const ref of [...researchComparators,...comparatorPool]) {

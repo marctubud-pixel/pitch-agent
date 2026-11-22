@@ -7,14 +7,15 @@ import {promisify} from 'node:util';
 import {independentCalls,invalidOutput} from './call-checkpoints.mjs';
 import {applyManuscriptEdits} from './layout-pages.mjs';
 import {runLayout} from './layout.mjs';
+import {optionalFigureCounts} from './manuscript.mjs';
 import {pythonBinary} from './runtime-dependencies.mjs';
 
 export const finalProtocol='case-b-1.2.0';
-const finalRuleVersion='1.2.3';
+const finalRuleVersion='1.2.4';
 const roles={
   logic:'逻辑岗：审既定要求、客户立场、全册叙事衔接、事实和统计口径。图表不能共用不同分母、单位或时期。用本版可核对的原文定位。',
   copy:'措辞岗：把大屏上的长句和调研腔压成短句，保留限定、证据和已定策略及主副标。按现有材料纠正错误表述。',
-  craft:'美术岗：看实图的构图、领读、字号、断行、裁切、遮挡、展签、品牌和页脚。指出确实看得到的问题和具体位置。',
+  craft:'美术岗：看实图的构图、领读、字号、断行、裁切、遮挡、展签、品牌和页脚。指出确实看得到的问题和具体位置。逐张将实际页图中的画面重点、并排图注与对应作品核对。数包装实物和线描图标要分开，盒上印的装量是规格。图注有数量时抄出原句和图中可定位的依据，看不清写无法核实，不能拿标题或印字补数。客户明确要求的件数有证据表明确实不符才是 P0。可删的配料细数或装饰图标数用 P1，建议保留看得见的关系或场景。',
 };
 const roleNames={logic:'逻辑',copy:'措辞',craft:'美术',critical:'必改证据核实',productUse:'采用原图场景核实',survey:'实页调查数据核实',printText:'实页局部核读'};
 const choices=['text','gallery','comparison','reflow','rhythm','shadows','hold','note'];
@@ -114,10 +115,18 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
     const images=numbers.map(n=>edition.images[n-1]);
     const ownPrior=prior.filter(issue=>issue.role===role && numbers.includes(issue.page))
       .map(({page,role,problem,evidence,change,level})=>({page,role,problem,evidence,change,level}));
+    const figures=plan.figures.filter(figure=>figureIds.has(figure.id));
+    const craft=role==='craft';
     const context={
-      全册页序:sequence,Brief:plan.brief,策略:plan.strategy,已选文案:plan.copy,采用说明:plan.adoption,
-      采用图读图:plan.figures.filter(figure=>figureIds.has(figure.id)),本批逐页稿:pages,
-      本批PPT:numbers.map(n=>({页码:n,...edition.native[n-1],图片对象数量:edition.native[n-1].images.length})),
+      全册页序:sequence,Brief:plan.brief,策略:plan.strategy,已选文案:plan.copy,
+      ...(craft ? {
+        本批图号:figures.map(({id,name,sha256})=>({id,name,sha256})),
+        本批逐页稿:pages.map(({number,role,figures})=>({number,role,figures})),
+      } : {采用说明:plan.adoption,采用图读图:figures,本批逐页稿:pages}),
+      本批PPT:numbers.map(n=>{
+        const {notes,...visible}=edition.native[n-1];
+        return {页码:n,...visible,...(craft?{}:{notes}),图片对象数量:visible.images.length};
+      }),
       本批待复核:ownPrior,
     };
     const place='终审第 '+round+' 轮 · '+roleNames[role]+' · 第 '+numbers.join('、')+' 页';
@@ -160,6 +169,19 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
 const numbers=value=>norm(value).match(/\d+(?:[.,]\d+)?%?/gu) ?? [];
 const qualifications=[/待核|未核|未验证/u,/目标价/u,/拟铺/u,/不(?:上|印)瓶/u,/仅限|仅在|仅有/u,/示意|占位/u];
 
+function optionalCountsInEdit(plan,page,field,issue) {
+  if (issue.role!=='craft' || !field.includes(issue.from)) return [];
+  const position=page.points.indexOf(field);
+  const direction=page.role==='direction' && position>=0 && position===page.observedPointIndex;
+  const comparison=page.role==='compare' && position>=0 && position<page.figures.length;
+  if (!direction && !comparison) return [];
+  const figureId=page.figures[direction?0:position];
+  const caption=direction ? field : field.split('。适合')[0];
+  if (!caption.includes(issue.from)) return [];
+  const figure=plan.figures.find(item=>item.id===figureId);
+  return figure ? optionalFigureCounts(caption,figure,plan.brief.original) : [];
+}
+
 function authorizeText(plan,page,issue) {
   const fields=[page.title,...page.points,page.label];
   const field=fields.find(value=>issue.from && value.includes(issue.from));
@@ -178,7 +200,13 @@ function authorizeText(plan,page,issue) {
     throw Error('所引用的事实或限定无法在本版材料定位');
   if ((issue.level==='P0' && !quote) || numbers(issue.to).some(n=>!numbers(issue.from).includes(n) && (!quote || !numbers(quote).includes(n))))
     throw Error('改正事实或数据需要提供可核对的原文');
-  if (issue.level==='P1' && numbers(field).some(n=>!numbers(after).includes(n))) throw Error('措辞精简须保留本页已有数据');
+  if (issue.level==='P1' && numbers(field).some(n=>!numbers(after).includes(n))) {
+    const optional=optionalCountsInEdit(plan,page,field,issue);
+    const original=numbers(field);
+    const revised=numbers(after);
+    if (original.some(n=>!revised.includes(n) && optional.filter(value=>value===n).length!==original.filter(value=>value===n).length))
+      throw Error('措辞精简须保留本页已有数据');
+  }
   return applyManuscriptEdits(plan,[{page:issue.page,from:issue.from,to:issue.to}]);
 }
 

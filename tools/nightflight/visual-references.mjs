@@ -187,7 +187,7 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     'changes 只写两项重新设计的内容。每项给可落图的目标，要看得出与原图观察的差异。改布局时说清主标题、主要画面主体及留白的新位置关系。改景别时说清画面现在看见的范围。',
     '三项沿用内容由按轴整理的原图观察给出。这三项不在其他字段重新指定。配色含文字与背景的用色；布局只说区域位置与比例；字体只说字形和字重。硬性设计位置仅来自客户本轮简报和任务卡。',
     'lettering 只列需要印在画面中的简报信息或本案副标，逐条写实际文字。主标题已定稿。价格、型号或时段只在设计需要的位置出现一次。省略未确认字样，不新增产品标签上的原料、分类或功效。',
-    revision && 'revisionFix 把退回原因写成一条针对本稿、可直接画出的修正。明确怎样落实 revision.axes 指出的原图关系；只用本案主体和原定三借两改。审稿意见与核定借改冲突时，按借改和客户要求。不要照抄审稿和原参考的具体物件。',
+    revision && 'revisionFix 把退回原因写成一条针对本稿、可直接画出的修正。保留 revision.keepAxes 中已核符合的处理，修正 revision.axes 指出的原图关系和已定位硬伤；只用本案主体和原定三借两改。审稿意见与核定借改冲突时，按借改和客户要求。不要照抄审稿和原参考的具体物件。',
   ].filter(Boolean).join('\n'),[],schema,{
     assignment:'夜航海报生图提示词写作',rules:[],context:visualWriterContext({
       ...directionInput, ...(mainReferenceUse && {mainReferenceUse:{apply:abstractReference(withoutColor(mainReferenceUse.apply ?? '')),avoid:exclusions}}),

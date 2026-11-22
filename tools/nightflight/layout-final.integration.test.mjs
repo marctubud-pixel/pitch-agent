@@ -219,6 +219,17 @@ else {
    const roleId={'逻辑岗':'logic','措辞岗':'copy','美术岗':'craft'}[role];
    const initial=prompt.includes('结合全册页序读本批');
    const pageNumbers=pages.map(page=>page['页码']);
+   if(role==='美术岗' && ctx['本批逐页稿'].some(page=>page.figures.length)) {
+     if(Object.hasOwn(ctx,'采用图读图') || prompt.includes(${JSON.stringify(visualIntent)}) ||
+        prompt.includes('未看清人物动作') || prompt.includes('后续重画并替换品牌占位') || ctx['本批图号'][0]?.sha256!==${JSON.stringify(sha(image))})
+       throw Error('图注独立检查混入先前读图或失去采用图指纹');
+     if(!prompt.includes('实际页图中的画面重点、并排图注与对应作品核对') ||
+        !prompt.includes('数包装实物和线描图标要分开') || !prompt.includes('可删的配料细数或装饰图标数用 P1'))
+       throw Error('美术岗未独立核对实页图注与数量');
+   }
+   if(role==='逻辑岗' && ctx['本批逐页稿'].some(page=>page.figures.length) &&
+      JSON.stringify(ctx['采用图读图']?.[0]?.observation)!==JSON.stringify(${JSON.stringify(observation)}))
+     throw Error('逻辑岗缺少同版采用原图的首次观察');
    const images=last.filter(item=>item.type==='image_url').map(item=>createHash('sha256')
      .update(Buffer.from(item.image_url.url.split(',')[1],'base64')).digest('hex'));
    if(initial && role==='美术岗' && pageNumbers.join(',')==='1,2,3,4') {

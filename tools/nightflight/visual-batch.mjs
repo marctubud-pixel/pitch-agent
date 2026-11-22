@@ -1,6 +1,7 @@
 import {confirmsInnerPackets} from './packaging-quantity.mjs';
 import {independentCalls,invalidOutput} from './call-checkpoints.mjs';
 import {visualElements} from './visual-references.mjs';
+import {createHash} from 'node:crypto';
 const roles = ['视觉', '品牌', '用户', '传播'];
 const numeric = { type: 'integer' }, text = { type: 'string' };
 const onPackIssues = {
@@ -107,15 +108,26 @@ function locatedBlindBrands(blind, allowedBrands) {
   return marks;
 }
 
-async function auditPosterArtwork(call, image, reading, productBrief, sourcePolicy) {
+function confirmedPosterText(brief, title) {
+  const product=brief.match(/(?:请为|为|给)\s*[「“『]([^」”』]+)[」”』]\s*([^，。；\n]{1,32}?)(?:做|设计|制作)(?:一张|一幅|一个)?[^。；\n]{0,28}(?:海报|KV)/u);
+  const price=brief.match(/(?:^|[，。；\n])\s*(?:零售|正式)?售价\s*(?:为|是|[:：])?\s*([0-9]+(?:\.[0-9]+)?\s*元\s*(?:一[杯瓶盒袋]|\/[杯瓶盒袋])?)(?=\s*[,，。；\n]|$)/u)?.[1];
+  return [title,product && product[1]+product[2],price].filter(nonempty);
+}
+
+function posterLiteral(text) {
+  return text.normalize('NFKC').replace(/[\s"'「」『』“”‘’]/gu,'').replace(/[。!！]$/u,'');
+}
+
+async function auditPosterArtwork(call, image, reading, productBrief, sourcePolicy, title) {
   const facts=sourcePolicy.brandFacts ?? posterBrandFacts(productBrief);
+  const confirmed=confirmedPosterText(productBrief,title);
   const result=await call([
     '只检查这一张海报原图的合规事实，不打分。每项必须逐字抄录可辨原字，或写出可识别的专有图形特征，并标注可定位的位置。对匿名读图提供的品牌线索回原图核读。没有有据问题才填空数组。',
     'foreign_identity：可辨识的外来品牌名、商标或联名标识。reference_asset：照搬参考中可识别的专有角色、标志形状或独特物件组合。通用杯形、普通图形、配色及虚化背景的不可辨纹理均不算。',
     'unconfirmed_claim：与客户确认资料冲突或未获确认的属性、配料、口味、工艺、功效、商品印字，以及擅自加的品牌拼音、译名或装饰英文。已确认的文字、正常单位、客户确认的品牌文字、正式标志未定时的空白或纯色占位都可用。',
     '客户原始简报是事实授权依据；已确认品牌资料只列能从原话提取的名称，参考用途和排除项不授权任何第三方内容。',
   ].join('\n'),[image],object({artworkIssues:posterArtworkSchema}),{delegate:true,rules:[],assignment:'单图海报硬事实核验',
-    context:JSON.stringify({客户原始简报:productBrief,已确认品牌资料:facts,允许借用的画面关系:sourcePolicy.approvedReferenceUse,
+    context:JSON.stringify({客户原始简报:productBrief,已确认品牌资料:facts,已确认海报原文:confirmed,允许借用的画面关系:sourcePolicy.approvedReferenceUse,
       参考排除项:sourcePolicy.mainReferenceExclusions,原图匿名首读:reading.words})});
   const observed=result.parsedOutput?.artworkIssues;
   if (!Array.isArray(observed) || observed.length>posterArtworkSchema.maxItems ||
@@ -123,14 +135,23 @@ async function auditPosterArtwork(call, image, reading, productBrief, sourcePoli
     throw invalidOutput('海报合规须逐图记录实际看到的违规原字或可辨认图形及位置。');
   }
   const recalled=locatedBlindBrands(reading,facts.allowedBrands ?? []);
-  const issues=observed.concat(recalled.filter(issue=>!observed.some(other=>other.kind===issue.kind && other.observed.includes(issue.observed))));
-  return {sha256:image.sha256,...auditIdentity(result),issues,...(recalled.length ? {blindBrandIssues:recalled} : {})};
+  const allowed=new Set(confirmed.map(posterLiteral));
+  const confirmedFalseAlarms=observed.filter(issue=>issue.kind==='unconfirmed_claim' && allowed.has(posterLiteral(issue.observed)));
+  const issues=observed.filter(issue=>!confirmedFalseAlarms.includes(issue));
+  issues.push(...recalled.filter(issue=>!issues.some(other=>other.kind===issue.kind && other.observed.includes(issue.observed))));
+  return {sha256:image.sha256,...auditIdentity(result),issues,...(recalled.length ? {blindBrandIssues:recalled} : {}),
+    ...(confirmedFalseAlarms.length ? {confirmedFalseAlarms} : {})};
 }
 
 function reviewPreviewEvidence(originals,previews) {
   return originals.flatMap((frame,index)=>frame.sha256===previews[index].sha256 ? [] : [{
     originalSha256:frame.sha256,reviewSha256:previews[index].sha256,originalBytes:frame.byteLength,reviewBytes:previews[index].byteLength,
   }]);
+}
+
+export function selectPosterRedraw(candidates) {
+  return candidates.toSorted((a,b)=>Number(b.mean>=4)-Number(a.mean>=4) ||
+    a.repairDefects.length-b.repairDefects.length || b.mean-a.mean || a.priority-b.priority)[0];
 }
 
 async function reviewPosterTransfer(call, images, {reference,transfers}, makePreviews) {
@@ -296,12 +317,17 @@ async function readWeeklyPackagingLabels(call,image) {
     ...(result.inputPacketHash ? {inputPacketHash:result.inputPacketHash} : {}),...(issue ? {issue} : {})};
 }
 
-export async function reviewVisualBatch({call, direction, images, context, packagingExpected, theme, posterSlogan, posterTransfer, sources = [], verifiedComparators = [], brandReferences = [], findComparators, makeBoard, makePreviews, cropTitle, productBrief}) {
+export async function reviewVisualBatch({call, direction, images, context, packagingExpected, theme, posterSlogan, posterTransfer, sources = [], verifiedComparators = [], brandReferences = [], findComparators, makeBoard, makePreviews, cropTitle, productBrief, priorReview}) {
   if (images.length !== 3 || new Set(images.map(img => img.sha256)).size !== 3) throw invalidOutput('同方向需要三张不同的主视觉原图');
   const sourcePolicy=packagingExpected!==true && posterSlogan ? posterTransfer?.sourcePolicy : null;
   if (sourcePolicy && (!nonempty(productBrief) || typeof sourcePolicy.mainReferenceExclusions!=='string')) {
     throw Error('海报品牌事实核对需要客户原始简报和本方向参考排除项。');
   }
+  const readbackScope=sourcePolicy && posterTransfer.reviewProfile ?
+    createHash('sha256').update(JSON.stringify([direction,productBrief,posterSlogan,sourcePolicy,
+      posterTransfer.reference.image.sha256,posterTransfer.reference.threadId,posterTransfer.reviewProfile,Boolean(cropTitle)])).digest('hex') : null;
+  const prior=readbackScope && priorReview?.readbackScope===readbackScope
+    ? new Map(priorReview.candidates.map(candidate=>[candidate.blind.sha256,candidate])) : new Map();
   const checksInnerPackets=packagingExpected===true && productBrief && confirmsInnerPackets(productBrief);
   const blindFields = ['first','action','words','alternative'];
   const properties = Object.fromEntries(blindFields.map(k=>[k,text]));
@@ -310,6 +336,8 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   const blindInstruction = '只看这张原图。第一眼看到什么？画面里发生什么动作？哪些信息靠读字才知道？还有什么合理的读法？逐项用自己的话回答。';
   const transcribe = ' 另外单独填 slogan。按阅读顺序逐字抄写海报主标题，保留字词、数字、标点和实际换行，只抄实际看见的内容。把可见位置写入 location。区分海报主标题、画面里的包装印字、品牌标志和时间地点。标题行之外的独立装饰图标不抄进标题，确实代替标题里的文字或标点才抄入。能读完整填 readable；没有主标题填 missing，位置可以留空；有字看不清填 unreadable 并只抄看清的片段。';
   const blind = await independentCalls(images,async image=>{
+    const former=prior.get(image.sha256);
+    if (former?.posterArtworkCheck?.sha256===image.sha256) return former.blind;
     const quantity=image.visiblePackageUnits ? ' 单独核对图上实际可辨的同款独立包装，按从左到右逐个定位，把每件的位置分别写入 units.positions，盒上规格字和印出的图案不计为实物。仅当清楚看到完整内装或能看到从空位取出、对应的同款时，complete 填 true。看不清或有重叠遮挡就填 false。' : '';
     const blindSchema=object(quantity ? {...properties,units:object({positions:{type:'array',items:text},complete:{type:'boolean'}})} : properties);
     const result = await call(blindInstruction+(posterSlogan ? transcribe : '')+quantity+(checksInnerPackets ? ' '+innerPacketsRead : ''),
@@ -330,7 +358,10 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   });
   const posterChecks=sourcePolicy ? await independentCalls(images,async (image,index)=>{
     const reading=blind[index];
-    const artwork=await auditPosterArtwork(call,image,reading,productBrief,sourcePolicy);
+    const former=prior.get(image.sha256);
+    if (former?.posterArtworkCheck?.sha256===image.sha256)
+      return {artwork:former.posterArtworkCheck,title:former.posterTitleCheck,reused:true};
+    const artwork=await auditPosterArtwork(call,image,reading,productBrief,sourcePolicy,posterSlogan);
     const title=await confirmPosterTitle(call,image,reading.slogan,posterSlogan,cropTitle);
     return {artwork,title};
   }) : [];
@@ -485,7 +516,14 @@ export async function reviewVisualBatch({call, direction, images, context, packa
         edit = edit==='无' ? correction : edit+' '+correction;
       }
     }
-    return {...row,blocked:otherBlocker || !!posterIssue,...(punctuationOnly ? {titlePunctuation:true} : {}),
+    const repairDefects = sourcePolicy ? [
+      ...Object.entries(audit?.checks ?? {}).filter(([,check])=>check.status!=='matched').map(([axis])=>axis),
+      ...posterArtworkCheck.issues.map(issue=>issue.kind),
+      ...[posterIssue && 'title',paperIssue && 'paper'].filter(Boolean),
+    ] : undefined;
+    if (repairDefects && row.blocked && !repairDefects.length) repairDefects.push('independent-ruling');
+    return {...row,blocked:otherBlocker || !!posterIssue,...(repairDefects ? {repairDefects} : {}),
+      ...(punctuationOnly ? {titlePunctuation:true} : {}),
       reason,edit,...(audit ? {transferAudit:audit} : {}),...(posterArtworkCheck ? {posterArtworkCheck} : {}),
       ...(weeklyLabelCheck ? {weeklyLabelCheck} : {}),...(posterTitleCheck ? {posterTitleCheck} : {}),
       research:missing?'补充同类包装正面原图。'+(row.research==='无'?'':row.research):row.research,blind:reading,scores,mean:scores.reduce((sum,v)=>sum+v.score,0)/roles.length};
@@ -496,6 +534,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   return {direction,packaging,...(posterSlogan ? {posterSlogan} : {}),...(transferAudit ? {transferAudit} : {}),
     board:board?.name,references:references.map(ref=>({name:ref.name,sha256:ref.sha256})),...(reusedResearch.length ? {reusedResearch} : {}),
     ...(previewEvidence.length ? {previewEvidence} : {}),...(onPackAudits.size ? {onPackAudits:Object.fromEntries(onPackAudits)} : {}),
+    ...(readbackScope ? {readbackScope,reusedOriginalReads:images.filter((_,index)=>posterChecks[index]?.reused).map(image=>image.sha256)} : {}),
     selectionThread:selectionThreads[0],selectionThreads,blind,images:images.map(img=>img.sha256),votes,challenges,ruling,candidates,
     winner:winner?.candidate ?? null,...(repair ? {sloganRepair:{candidate:repair.candidate,observed:repair.blind.slogan}} : {})};
 }

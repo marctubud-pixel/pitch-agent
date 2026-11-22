@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.153.0",
+  "baselineVersion": "1.154.0",
   "date": "2026-11-20",
   "status": "默认采用夜航本机提案台，经典案例保留原入口。",
   "workflow": [
@@ -411,8 +411,8 @@
       "kind": "method",
       "title": "视觉开发负责人Skill",
       "path": "skills/visual-development-lead/SKILL.md",
-      "version": "1.32.0",
-      "sourceVersion": "1.32.0",
+      "version": "1.33.0",
+      "sourceVersion": "1.33.0",
       "lifecycle": "current",
       "dependsOn": []
     },
@@ -885,7 +885,7 @@
       "title": "夜航运行合同",
       "kind": "contract",
       "path": "docs/specs/nightflight-runtime.md",
-      "version": "1.77.0",
+      "version": "1.78.0",
       "lifecycle": "current",
       "dependsOn": [
         "contract.handoff",
@@ -897,7 +897,7 @@
       "title": "夜航排版后三岗本地终审与直修",
       "kind": "contract",
       "path": "docs/specs/nightflight-final-reader.md",
-      "version": "1.2.3",
+      "version": "1.2.4",
       "sourceVersion": "用户提供的 v1_2_0.md 及同版原件核验",
       "lifecycle": "current",
       "dependsOn": [

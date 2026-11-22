@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {holdSimilarPosterDirections,reviewPosterDirections,reviewVisualBatch} from './visual-batch.mjs';
+import {holdSimilarPosterDirections,reviewPosterDirections,reviewVisualBatch,selectPosterRedraw} from './visual-batch.mjs';
 import {imageManifest} from '../workbench/image-evidence.mjs';
 
 const image = n => ({imageId:'image-'+n,path:'/fixture/'+n+'.png',mediaType:'image/png',byteLength:4000,sha256:String(n).repeat(64)});
@@ -23,9 +23,10 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],slogans=[],cropTitle,cropObserved}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],slogans=[],cropTitle,cropObserved,candidateImages=images,priorReview}={}) {
+  const images=candidateImages;
   const calls = [];
-  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,cropTitle,
+  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,cropTitle,priorReview,
     sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
     call:async(instruction,actual,schema,task)=>{
       calls.push({instruction,actual,schema,task});
@@ -191,6 +192,43 @@ test('an artwork issue needs a located visible quote or identifiable asset',asyn
     await assert.rejects(review({...scoped,posterIssues:[[malformed],[],[]]}),
       {code:'INVALID_STAGE_OUTPUT',message:/违规原字或可辨认图形及位置/u});
   }
+});
+
+test('a located confirmed value is not a product invention, but a modified or pending price still needs review',async()=>{
+  const claim=observed=>({kind:'unconfirmed_claim',observed,location:'海报左下字样'});
+  const posterIssues=[[claim('5.9元一杯'),claim('午晴原味冷藏酸奶'),claim('5.8元一杯')],[claim(slogan)],[]];
+  const scope={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},posterIssues};
+  const brief='请为「午晴」原味冷藏酸奶做一张便利店冷柜旁的 A3 竖版海报。150 克杯装，售价 5.9 元一杯，正式标志尚未定。';
+  const {batch}=await review({...scope,productBrief:brief});
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck.issues,[claim('5.8元一杯')]);
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck.confirmedFalseAlarms,posterIssues[0].slice(0,2));
+  assert.equal(batch.candidates[1].blocked,false);
+  const {batch:pending}=await review({...scope,productBrief:brief.replace('售价','目标售价')});
+  assert.ok(pending.candidates[0].posterArtworkCheck.issues.some(issue=>issue.observed==='5.9元一杯'));
+});
+
+test('one redraw reuses only same-scope original reading facts and still reruns comparative judgments',async()=>{
+  const profile={base:'https://example.test',model:'actual-vision'};
+  const scope={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy,reviewProfile:profile},productBrief:yogurtBrief};
+  const {batch:priorReview}=await review(scope);
+  const candidateImages=[image(7),images[1],images[2]];
+  const {batch,calls}=await review({...scope,candidateImages,priorReview});
+  assert.deepEqual(batch.reusedOriginalReads,images.slice(1).map(frame=>frame.sha256));
+  for(const assignment of ['独立读图者','单图海报硬事实核验'])
+    assert.deepEqual(calls.filter(call=>call.task.assignment===assignment).map(call=>call.actual[0].sha256),[image(7).sha256]);
+  assert.equal(calls.filter(call=>call.task.assignment==='海报借改逐项核对').length,1);
+  assert.equal(calls.filter(call=>call.task.assignment==='视觉独立评分岗').length,1);
+  assert.deepEqual(batch.candidates[1].posterArtworkCheck,priorReview.candidates[1].posterArtworkCheck);
+  const changedProfile={...scope.posterTransfer,reviewProfile:{...profile,model:'other-vision'}};
+  const {batch:changed}=await review({...scope,posterTransfer:changedProfile,candidateImages,priorReview});
+  assert.deepEqual(changed.reusedOriginalReads,[]);
+});
+
+test('poster redraw picks the fewest concrete defects among score-eligible drafts',()=>{
+  const highest={mean:4.5,repairDefects:['布局','景别','笔法'],priority:1};
+  const close={mean:4,repairDefects:['布局'],priority:3};
+  const low={mean:3.75,repairDefects:[],priority:2};
+  assert.equal(selectPosterRedraw([highest,close,low]),close);
 });
 
 test('workbench-verified packaging goes into the comparison with its original signature',async()=>{
