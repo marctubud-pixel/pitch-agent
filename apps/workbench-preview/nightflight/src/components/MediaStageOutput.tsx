@@ -1,6 +1,6 @@
-import { VisualReview } from '../../../src/proposal/qingyu-visual/VisualReview';
+import { VisualReview, type CandidateReview } from '../../../src/proposal/qingyu-visual/VisualReview';
 import { useState } from 'react';
-import { isDeckPreview, safeURL, type Artifact, type Project } from '../live';
+import { isDeckPreview, safeURL, visualCandidateStatus, type Artifact, type Project } from '../live';
 import { RevisionStage, type Act } from './ChatPanel';
 import { VisualImageGallery, type GalleryDirection } from '../../../src/proposal/qingyu-visual/VisualImageGallery';
 import { DeckPreview } from './DeckPreview';
@@ -21,6 +21,15 @@ function visualDirection(p: Project, file: Artifact) {
 export function visualCaption(p: Project, file: Artifact) {
   const direction = visualDirection(p, file);
   return publishedSlogan(p, direction) || direction;
+}
+
+function candidateTitle(file: Artifact) {
+  const visual = file.visual;
+  if (!visual?.candidate) return file.name;
+  const title = '第 ' + visual.candidate + ' 稿';
+  const detail = visual.selectionPolicy === 'poster-evidence' ? visualCandidateStatus(visual) :
+    visual.mean === undefined ? undefined : visual.mean + '/5';
+  return detail ? title + ' · ' + detail : title;
 }
 
 function visualRecord(p: Project, image: Artifact) {
@@ -55,6 +64,13 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
     const group = reports.filter(item => item.title === title).sort((a,b)=>Number(!!b.file.visual?.recommended)-Number(!!a.file.visual?.recommended));
     const winner = group.find(item=>item.file.visual?.recommended)?.file.visual;
     const hasBatch = group.some(item=>item.file.visual?.candidate);
+    const evidenceSelection = group.some(item=>item.file.visual?.selectionPolicy === 'poster-evidence');
+    let pendingSummary = '本批暂无达标稿';
+    if (evidenceSelection) {
+      if (group.some(item=>item.file.visual?.selectionHold)) pendingSummary = '本批待并排核对';
+      else if (group.some(item=>item.file.visual?.hardIssues?.length)) pendingSummary = '本批图稿需要修改';
+      else pendingSummary = '本批尚未推荐';
+    }
     const assignedReferences = (referencesByDirection.get(title) ?? []).filter(ref => ref.role !== 'sharedBrand');
     const current = group.find(item => !item.file.visual || item.file.visual.role === 'main');
     const metadata = current?.file.visual ?? group.find(item => item.file.visual)?.file.visual;
@@ -64,11 +80,11 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
       return ordered
         .flatMap(({ file }) => {
           const src = safeURL(file.url);
-          return src ? [{ src, title: file.visual?.candidate ? '第 '+file.visual.candidate+' 稿 · '+file.visual.mean+'/5' : file.name, alt: title + ' · ' + file.name }] : [];
+          return src ? [{ src, title: candidateTitle(file), alt: title + ' · ' + file.name }] : [];
         });
     }
     return { id: title, name: publishedSlogan(p, title) || title,
-      batchSummary: hasBatch ? (winner ? '推荐第 '+winner.candidate+' 稿' : '本批暂无达标稿') : undefined,
+      batchSummary: hasBatch ? (winner ? '推荐第 '+winner.candidate+' 稿' : pendingSummary) : undefined,
       auxiliaryMissing: hasBatch && assignedReferences.length > 0 && !assignedReferences.some(ref => ref.role === 'auxiliary'),
       description: current?.record?.description?.split(/[。\n]/)[0], references: assignedReferences.map(ref => ({src: ref.src, title: ref.title, alt: ref.borrow})),
       format: metadata?.format, extensionLabel: metadata?.output === 'packaging' ? '包装延展' : metadata?.output === 'kv' ? 'KV 延展' : '延展图',
@@ -78,9 +94,17 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   const current = reports.find(item => item.title === active?.id);
   const board = p.artifacts.find(a=>a.visual?.role==='comparison' && a.visual.direction===active?.id);
   const admission = current?.file.visual?.referenceHandoff?.admission;
-  const candidates = reports.filter(item=>item.title===active?.id && item.file.visual?.candidate).map(({file})=>{
-    const v = file.visual!;
-    return {image:safeURL(file.url) || undefined,title:'第 '+v.candidate+' 稿 · '+v.mean+'/5',readings:v.blind?[v.blind]:[],scores:v.scores || [],reason:v.reason,edit:v.edit,research:v.research};
+  const candidates = reports.flatMap<CandidateReview>(({ file, title }) => {
+    const visual = file.visual;
+    if (title !== active?.id || !visual?.candidate) return [];
+    const hardIssues = visual.selectionPolicy === 'poster-evidence' ? visual.hardIssues ?? [] : undefined;
+    const reason = hardIssues?.reduce((summary, issue) => summary?.replace(issue, '').trim(), visual.reason) ?? visual.reason;
+    return [{
+      image: safeURL(file.url) || undefined, title: candidateTitle(file),
+      readings: visual.blind ? [visual.blind] : [], scores: visual.scores ?? [],
+      reason, edit: visual.edit, research: visual.research,
+      ...(hardIssues ? { hardIssues, selectionHold: visual.selectionHold } : {}),
+    }];
   });
   const selectedRefs = referencesByDirection.get(active?.id) ?? [];
   const assigned = new Set([...referencesByDirection.values()].flat().map(ref => ref.name));

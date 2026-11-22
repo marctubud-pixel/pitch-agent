@@ -529,6 +529,8 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
     edit:'参照原图的留白和中景。增加真实感，避免过于扁平。'};
   const redraw='标题保持上部居中，手和杯聚在下半部，保持环境范围，用醒目的手绘边缘重画。';
   const newDesign={配色:'乳白与浅蓝为底，使用冷柜白光。',字体:'改用利落的无衬线字、中等字重、深色字。',笔法:'改用油画厚涂和柔和边缘。'};
+  const hardConditions={配色:'乳白与浅蓝为底',布局:'标题区在上部中央',景别:'主体约占画面 三分之一',
+    笔法:'气氛高级',字体:'无衬线字、中等字重'};
   const safe=posterIdentityExclusions(avoid);
   assert.equal(safe,'不照搬自嘲熊、南瓜装、蝙蝠、满月、合作标识及“萃果狂欢”等原字；不保留多角色群像和底部弧形品牌条');
   assert.equal(posterIdentityExclusions('勿仿照品牌专属字体；不保留右下橙色品牌标识。'),'勿仿照品牌专属字体；不保留右下橙色品牌标识');
@@ -536,8 +538,9 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
     '不照搬黄色月亮和蝙蝠、橙色圆环品牌标识');
   async function run(transfer,repair,revisionFix=redraw,attachments=[image],previousTransferCriteria) {
     const writerPackets=[],dispatch=[];
-    const context={brief:'做便利店冷柜旁的 A3 竖版海报，品牌午晴。产品名「乳白小杯原味酸奶」。',transfer,hasBrandArtwork:false,
-      mainReferenceUse:{avoid,apply:'重画为手拿一杯，背景采用大面积低干扰冷色留白。'},
+    const context={brief:'做便利店冷柜旁的 A3 竖版海报，品牌午晴。产品名「乳白小杯原味酸奶」。',
+      taskCard:'必须用无衬线字、中等字重。可以主体约占画面 三分之一。气氛高级。',transfer,hasBrandArtwork:false,
+      mainReferenceUse:{avoid,apply:'重画为手拿一杯，背景采用大面积低干扰冷色留白。标题区在上部中央。'},
       referenceTask:{focus:'保留大面积冷色留白',translation:'画手拿唯一一杯，并用冷柜光照亮杯子。'},
       ...(repair ? {revision:repair} : {}),...(previousTransferCriteria ? {previousTransferCriteria} : {})};
     const raw=structuredClone({context,observations});
@@ -559,9 +562,11 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
         assert.equal(input.mainReference.observations.景别,'中景，主体约占画面 三分之一，环境简化');
         assert.equal(Boolean(schema.properties.revisionFix),Boolean(repair));
         assert.equal(Boolean(schema.properties.changes),!previousTransferCriteria);
+        assert.equal(Boolean(schema.properties.hardConditions),!previousTransferCriteria);
+        if (!previousTransferCriteria) assert.deepEqual(schema.properties.hardConditions.required,Object.keys(hardConditions));
         return {model:'deepseek-flash',threadId:'same-writer',parsedOutput:{format:'便利店冷柜旁海报',subject:'穿白衣服的人伸手拿橙色手套旁的午晴「乳白小杯原味酸奶」',
           background:'低干扰冷色留白与冷柜光',lettering:[posterSlogan,'午晴','乳白小杯原味酸奶'],
-          ...(!previousTransferCriteria ? {changes:Object.fromEntries(transfer.change.map(key=>[key,newDesign[key]]))} : {}),
+          ...(!previousTransferCriteria ? {changes:Object.fromEntries(transfer.change.map(key=>[key,newDesign[key]])),hardConditions} : {}),
           ...(repair ? {revisionFix} : {})}};
       }});
     assert.equal(writerPackets.length,1);
@@ -578,6 +583,11 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
     const {transferCriteria}=out.promptWriting;
     assert.equal(transferCriteria.referenceSha256,image.sha256);
     assert.equal(Object.keys(transferCriteria.axes).length,5);
+    assert.deepEqual(Object.fromEntries(Object.entries(transferCriteria.axes)
+      .flatMap(([axis,{hardCondition}])=>hardCondition ? [[axis,hardCondition]] : [])),{布局:hardConditions.布局,字体:hardConditions.字体});
+    assert.deepEqual(dispatch[0].split('\n').filter(line=>line.startsWith('必须落实的')),[
+      '必须落实的布局条件。标题区在上部中央','必须落实的字体条件。无衬线字、中等字重',
+    ]);
     for(const [axis,{reference,target}] of Object.entries(transferCriteria.axes)) {
       assert.equal(reference,writerPackets[0].mainReference.observations[axis]);
       const borrowed=transfer.borrow.includes(axis);

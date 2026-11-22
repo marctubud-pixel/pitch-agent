@@ -5,6 +5,7 @@ import {
   fileIssue,
   projectStatus,
   researchQuestion,
+  visualCandidateStatus,
   type Action,
   type Project,
   type Summary,
@@ -47,7 +48,10 @@ function AdoptVisual({p,act,busy}:{p:Project;act:Act;busy:boolean}) {
       return <label key={direction}>{label}
         <select aria-label={label+'的采用稿'} value={selected[i]?.url ?? ''} onChange={e=>setPicks({...picks,[direction]:e.target.value})}>
           <option disabled value="">选择采用稿</option>
-          {candidates.filter(a=>a.visual?.direction===direction).map(a=><option key={a.url} value={a.url}>第 {a.visual?.candidate} 稿{a.visual?.recommended ? ' · 评审推荐' : ''}</option>)}
+          {candidates.filter(a=>a.visual?.direction===direction).map(a=>{
+            const status = visualCandidateStatus(a.visual);
+            return <option key={a.url} value={a.url}>第 {a.visual?.candidate} 稿{status ? ' · ' + status : ''}</option>;
+          })}
         </select>
       </label>;
     })}

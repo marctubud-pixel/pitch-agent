@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {holdSimilarPosterDirections,reviewPosterDirections,reviewPosterTransfer,reviewVisualBatch} from './visual-batch.mjs';
+import {POSTER_EVIDENCE_POLICY,holdSimilarPosterDirections,reviewPosterDirections,reviewPosterTransfer,reviewVisualBatch} from './visual-batch.mjs';
 import {imageManifest} from '../workbench/image-evidence.mjs';
 
 const image = n => ({imageId:'image-'+n,path:'/fixture/'+n+'.png',mediaType:'image/png',byteLength:4000,sha256:String(n).repeat(64)});
@@ -23,7 +23,7 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],firstLooks=[],slogans=[],cropTitle,cropObserved,detailIssues,transferReadbacks=[],transferReadbackResponses=[]}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],firstLooks=[],slogans=[],cropTitle,cropObserved,detailIssues,transferReadbacks=[],transferReadbackResponses=[],roleScores={},directorBlocked=false}={}) {
   const calls = [];
   const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,cropTitle,
     sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
@@ -45,7 +45,7 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
         } : Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,row.checks]))};
       if (task.assignment==='海报借改疑点原图复核') {
         const index=images.indexOf(actual[1]);
-        const reread=transferReadbacks[index];
+        const reread=transferReadbacks[index] ?? {};
         return {...judgment,threadId:'original-pair-'+actual[1].sha256.slice(0,4),
           parsedOutput:transferReadbackResponses[index] ?? {
             reference:Object.fromEntries(Object.entries(reread).map(([axis,check])=>[axis,check.referenceEvidence])),
@@ -58,8 +58,9 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
           const index=Number(key.split('_').at(-1))-1;
           const checks=Object.fromEntries(Object.keys(criteria).map(axis=>{
             const reread=transferReadbacks[index]?.[axis];
-            const {relation,targetStatus,evidenceStatus}=reread?.candidateEvidence===candidate[axis] ? reread : rows[index].checks[axis];
-            return [axis,{relation,targetStatus,evidenceStatus,referenceEvidence:'编造的参考细节',candidateEvidence:'编造的成图细节'}];
+            const {relation,targetStatus,evidenceStatus,hardStatus,hardEvidence}=reread?.candidateEvidence===candidate[axis] ? reread : rows[index].checks[axis];
+            return [axis,{relation,targetStatus,evidenceStatus,referenceEvidence:'编造的参考细节',candidateEvidence:'编造的成图细节',
+              ...(criteria[axis].hardCondition ? {hardStatus,hardEvidence} : {})}];
           }));
           return [key,checks];
         }));
@@ -69,8 +70,8 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
       if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
       const fields = schema.properties.candidate_1.properties;
       const opinions=images.map((_,index)=>['candidate_'+(index+1),{reason:'原票认为主体清楚。',
-        ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
-        ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:false} : {})}]);
+        ...(fields.score ? {score:roleScores[task.assignment]?.[index] ?? 5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
+        ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:directorBlocked} : {})}]);
       return {parsedOutput:Object.fromEntries(opinions)};
     }});
   return {batch,calls};
@@ -640,6 +641,102 @@ test('similar representatives hold the affected directions without promoting unc
   assert.equal(represented[2].draft.visual.recommended,true);
 });
 
+
+test('poster recommendation uses role evidence instead of scores or a director veto',async()=>{
+  const rows=scopedAuditRows();
+  rows[0].checks.布局={relation:'unknown',targetStatus:'unknown',evidenceStatus:'uncertain',
+    referenceEvidence:'标题居中，建筑占底边',candidateEvidence:'顶部文字范围看不清'};
+  rows[0].checks.字体={...rows[0].checks.字体,relation:'same',targetStatus:'mismatch',candidateEvidence:'标题仍是粗黑体'};
+  const roleScores={
+    视觉独立评分岗:[4,5,5],品牌独立评分岗:[3,5,5],用户独立评分岗:[3,4,5],传播独立评分岗:[3,4,5],
+  };
+  const competitor={kind:'foreign_identity',observed:'MoreYogurt 茉酸奶',location:'杯身正中'};
+  const {batch,calls}=await review({rows,posterTransfer:{reference,transfers,criteria,sourcePolicy:posterPolicy,selectionPolicy:POSTER_EVIDENCE_POLICY},
+    productBrief:yogurtBrief,posterIssues:[[],[competitor],[]],roleScores,directorBlocked:true});
+
+  assert.equal(batch.winner,1);
+  assert.deepEqual(batch.candidates.map(c=>[c.mean,c.blocked,c.priority]),[[3.25,false,1],[4.5,true,2],[5,false,3]]);
+  assert.deepEqual(batch.candidates[0].hardIssues,[]);
+  assert.match(batch.candidates[0].reason,/借改意见，布局拟沿用，尚未核实/);
+  assert.match(batch.candidates[1].hardIssues[0],/杯身正中.*MoreYogurt 茉酸奶/u);
+  assert.ok(calls.every(call=>call.task.assignment!=='海报借改疑点原图复核'));
+  const director=calls.find(call=>call.task.assignment==='独立视觉总监');
+  assert.doesNotMatch(director.task.context,/"score"/u);
+  assert.equal(director.schema.properties.candidate_1.required.includes('blocked'),false);
+  assert.ok(calls.filter(call=>call.task.assignment.endsWith('对抗核查岗')).every(call=>!call.task.context.includes('"score"')));
+});
+
+test('a declared poster constraint only blocks when the blind evidence contains the cited conflict',async()=>{
+  const target=structuredClone(criteria);
+  target[0].axes.布局.hardCondition='标题居中';
+  target[1].axes.布局.hardCondition='标题在左';
+  const rows=scopedAuditRows();
+  rows[0].checks.布局={relation:'different',targetStatus:'mismatch',evidenceStatus:'clear',
+    referenceEvidence:'标题居中，建筑占底边',candidateEvidence:'标题在左上角，建筑占底边',
+    hardStatus:'mismatch',hardEvidence:'标题在左上角'};
+  rows[1].checks.布局={...rows[1].checks.布局,
+    hardStatus:'mismatch',hardEvidence:'模型编造的标题位置'};
+  const {batch,calls}=await review({rows,posterTransfer:{reference,transfers,criteria:target,sourcePolicy:posterPolicy,selectionPolicy:POSTER_EVIDENCE_POLICY},
+    productBrief:yogurtBrief,transferReadbackResponses:[undefined,{reference:{布局:'标题在顶端，未核实具体位置'},candidate:{布局:'未核实'}}]});
+
+  assert.equal(batch.winner,2);
+  assert.deepEqual(batch.candidates.map(c=>c.blocked),[true,false,false]);
+  assert.match(batch.candidates[0].hardIssues[0],/布局.*「标题居中」.*成图实见「标题在左上角」/u);
+  assert.equal(batch.candidates[1].transferAudit.checks.布局.hardStatus,'unknown');
+  assert.deepEqual(batch.candidates[1].hardIssues,[]);
+  const firstRead=calls.find(call=>call.task.assignment==='海报借改逐项核对');
+  assert.doesNotMatch(firstRead.instruction+firstRead.task.context,/标题居中|hardCondition/u);
+  const reread=calls.filter(call=>call.task.assignment==='海报借改疑点原图复核');
+  assert.equal(reread.length,1);
+  assert.deepEqual(reread[0].schema.properties.reference.required,['布局']);
+});
+
+test('poster redraw prefers fewer concrete defects over a higher prior opinion or score',async()=>{
+  const foreign={kind:'foreign_identity',observed:'MoreYogurt',location:'杯身正中'};
+  const feature={kind:'unconfirmed_claim',observed:'有机认证',location:'左上标题下方'};
+  const roleScores={视觉独立评分岗:[5,3,5],品牌独立评分岗:[5,3,5],用户独立评分岗:[5,3,5],传播独立评分岗:[5,4,5]};
+  const {batch}=await review({rows:scopedAuditRows(),posterTransfer:{reference,transfers,criteria,sourcePolicy:posterPolicy,selectionPolicy:POSTER_EVIDENCE_POLICY},
+    productBrief:yogurtBrief,posterIssues:[[foreign,feature],[foreign],[foreign,feature]],roleScores});
+
+  assert.equal(batch.winner,null);
+  assert.equal(batch.redrawCandidate,2);
+  assert.deepEqual(batch.candidates.map(c=>[c.mean,c.hardIssues.length]),[[5,2],[3.25,1],[5,2]]);
+});
+
+test('a lower-scored poster with punctuation as its sole hard issue keeps the title-only repair',async()=>{
+  const punctuation={status:'readable',text:'夜访昆虫。45分钟一场',location:'上方主标题'};
+  const missing={status:'missing',text:'',location:'上方只见场馆名'};
+  const roleScores={视觉独立评分岗:[3,5,5],品牌独立评分岗:[3,5,5],用户独立评分岗:[3,5,5],传播独立评分岗:[4,5,5]};
+  const {batch}=await review({rows:scopedAuditRows(),posterTransfer:{reference,transfers,criteria,sourcePolicy:posterPolicy,selectionPolicy:POSTER_EVIDENCE_POLICY},
+    productBrief:yogurtBrief,slogans:[punctuation,missing,missing],roleScores});
+
+  assert.equal(batch.winner,null);
+  assert.deepEqual(batch.sloganRepair,{candidate:1,observed:punctuation});
+  assert.equal(batch.redrawCandidate,undefined);
+});
+
+test('only a confirmed repeated poster composition holds untested alternates in the pair',()=>{
+  const represented=directions.map(direction=>{
+    const drafts=[3.25,4,5].map((mean,i)=>({visual:{selectionPolicy:POSTER_EVIDENCE_POLICY,
+      candidate:i+1,priority:i+1,hardIssues:[],mean,recommended:i===0,blocked:false,reason:'单稿原票',edit:'无'}}));
+    return {direction,draft:drafts[0],drafts};
+  });
+  holdSimilarPosterDirections({pairs:[
+    {directions:directions.slice(0,2),distinct:false,structure:'same',reason:'重心相同。',
+      firstEvidence:'标题居左，右侧是主要物件',secondEvidence:'文字在左、主要物件在右'},
+    {directions:[directions[0],directions[2]],distinct:false,structure:'unknown',reason:'证据不足。'},
+  ]},represented);
+
+  for (const {draft,drafts} of represented.slice(0,2)) {
+    assert.deepEqual(drafts.map(({visual})=>[visual.recommended,visual.blocked]),[[false,true],[false,false],[false,false]]);
+    assert.match(draft.visual.hardIssues[0],/^三方向并排.*标题居左.*主要物件在右/u);
+    assert.equal(draft.visual.hardIssues.length,1);
+    assert.match(drafts[1].visual.selectionHold,/本稿尚须与另两案核对/u);
+    assert.equal(drafts[1].visual.hardIssues.length,0);
+  }
+  assert.equal(represented[2].draft.visual.recommended,true);
+  assert.equal(represented[2].draft.visual.blocked,false);
+});
 
 test('a loose-filled window never wins a box for individual bags, but printed food can remain',async()=>{
   const productBrief='外盒内装七袋，每袋25克。请做正面包装与KV。';

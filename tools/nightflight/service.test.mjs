@@ -497,6 +497,41 @@ test('visual handoff takes intact, traceable originals from the current study', 
   assert.equal((await project.settled()).error,'只验证研究原图交接');
 });
 
+test('poster evidence recommendation survives publication and normal adoption below a four-point mean',async t=>{
+  const layoutInputs=[];
+  const caseProject=await legacyService(t,{stage:'visual',status:'failed',choice:'A',directions:['A','B','C'],briefScope:{types:['kv']}},
+    async({project,stage,dir})=>{
+      if (stage==='layout') {
+        layoutInputs.push(project.artifacts.filter(file=>file.stage==='visual' && file.kind==='image').map(file=>file.name));
+        throw Error('已核对实际采用对象');
+      }
+      assert.equal(stage,'visual');
+      const artifacts=[];
+      for (const candidate of [1,2,3]) {
+        const score=[3,5,4][candidate-1];
+        const name='海报-'+candidate+'.png';
+        const hardIssues=candidate===2 ? ['海报左上印有竞品 MoreYogurt'] : [];
+        await writeFile(join(dir,name),'poster '+candidate);
+        artifacts.push({name,kind:'image',visual:{
+          role:'main',direction:'A',candidate,mean:score,priority:candidate,recommended:candidate===1,
+          selectionPolicy:'poster-evidence',transferAudit:{criteria:{}},hardIssues,blocked:hardIssues.length>0,
+          blind:{first:'杯装',action:'取杯',words:'原味',alternative:'冷藏'},edit:'无',research:'无',reason:'本稿标题和产品关系清楚',
+          scores:['视觉','品牌','用户','传播'].map(role=>({role,score,reason:'保留可见主次关系'})),
+        }});
+      }
+      return {artifacts};
+    });
+  assert.equal((await caseProject.action({kind:'retry'})).status,200);
+  const ready=await caseProject.settled();
+  assert.equal(ready.status,'waiting',ready.error);
+  const candidates=ready.artifacts.filter(a=>a.visual?.candidate);
+  assert.deepEqual(candidates.map(a=>[a.visual.mean,a.visual.recommended,a.visual.blocked]),[[3,true,false],[5,false,true],[4,false,false]]);
+  assert.equal((await caseProject.action({kind:'adopt',expectedRevision:ready.revision})).status,200);
+  await caseProject.settled();
+  assert.deepEqual(layoutInputs,[['海报-1.png']]);
+});
+
+
 test('recovery ignores a reused PID, excludes another server and migrates legacy artifact text and events', async t=>{
   const {DatabaseSync}=await import('node:sqlite');
   const before={stage:'brief',at:'2025-01-01',text:'原来的事件'};
