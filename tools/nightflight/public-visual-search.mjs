@@ -1,3 +1,4 @@
+import {pythonBinary} from './runtime-dependencies.mjs';
 import {createHash} from 'node:crypto';
 import {readFile, link} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -62,7 +63,7 @@ export async function searchVisualImages({query,dir,signal,pages}, {
       if (!allowed.includes(record.mimeType) || found.has(record.raw.sha256)) return;
       const rawPath=join(root,record.raw.file), bytes=await readFile(rawPath);
       if (digest(bytes)!==record.raw.sha256) return;
-      const image=await inspectImage(bytes,{pythonBinary:process.env.NIGHTFLIGHT_PYTHON || 'python3'});
+      const image=await inspectImage(bytes,{pythonBinary:await pythonBinary()});
       if (image.mediaType!==record.mimeType) return;
       const name='public-ref-'+record.raw.sha256+'.'+(image.mediaType==='image/jpeg'?'jpg':'png');
       const path=join(dir,name);

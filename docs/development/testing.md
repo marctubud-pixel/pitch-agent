@@ -1,6 +1,6 @@
 # 验证范围与已知失败
 
-规范版本：1.15.0。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
+规范版本：1.15.1。默认验证目标是可检出的当前应用、规范和明示核心域边界。它不证明所有历史后端测试、原生渲染或业务流程均通过。
 
 | 命令 | 实际验证对象 |
 | --- | --- |
@@ -140,3 +140,9 @@ Mac实际运行opened-FD与受限原件恢复正例；非Darwin只核原生明�
 ## 大型成稿汇总
 
 `npm run test:visual-workflow` 包含 `final-visual-original.test.mjs`。该文件核对原包、回执、附件与历史读取，新用例构造超过 2 MiB 的完整汇总内容，验证同版摘要、错摘要、混合回执和旧版本请求。在仓库 CI 中使用合成内容即可复现。
+
+## 夜航与专项套件
+
+`npm run check` 包含 `test:nightflight` 和 `test:portal`，分别验证交付应用和私有网关。运行排版与 PDF 专项时设置 NIGHTFLIGHT_PYTHON、NIGHTFLIGHT_TEST_PDF=1 和 PLAYWRIGHT_CHROMIUM_EXECUTABLE。CI 使用隔离数据库、已安装的浏览器及锁定的 Python 环境。
+
+`npm run test:inventory` 打印每个已登记测试文件所属组。Nightflight、门户和应用共置测试按目录发现。合同后端的默认组按 package.json 列出的功能合同选择，其余后端测试为能力开发专项，常需本机原始记录或特定运行时；历史排版、自动排版和本地验收工具各自保留专项夹具。这些文件可逐项执行，专项结果仅覆盖相应实现。

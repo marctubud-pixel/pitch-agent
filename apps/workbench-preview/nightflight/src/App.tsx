@@ -20,6 +20,7 @@ import {
   type Project,
   type Summary,
 } from './live';
+import { STAGES } from './data/project';
 import type { Mode, StageId } from './types';
 
 const hash = () => location.hash.slice(1);
@@ -53,6 +54,7 @@ export function App() {
     [seen, mark] = useState(0),
     [notice, setNotice] = useState(false);
   const [routePath, query] = route.split('?');
+  const requestedLibrary = new URLSearchParams(query).get('view') === 'library';
   const stageParam = new URLSearchParams(query).get('stage');
   const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' || stageParam === 'layout' ? stageParam : undefined;
   const id = routePath.startsWith('/p/') ? routePath.slice(3) : '',
@@ -81,7 +83,7 @@ export function App() {
     error('');
     setConnection('');
     setLog(false);
-    setLibrary(false);
+    setLibrary(Boolean(id) && requestedLibrary);
     open(id && requestedStage ? { id: requestedStage } : undefined);
     setParty(false);
     setNotice(false);
@@ -113,7 +115,7 @@ export function App() {
       alive = false;
       clearTimeout(t);
     };
-  }, [id, reload, requestedStage]);
+  }, [id, reload, requestedStage, requestedLibrary]);
   useEffect(() => {
     if (!workspace || !p) return;
     if (p.status === 'waiting' && p.stage !== 'research' && lastStatus.current !== 'waiting') setChat(true);
@@ -167,7 +169,7 @@ export function App() {
       setBusy(false);
     }
   }
-  async function act(kind: Action, text: string, files?: File[]) {
+  async function act(kind: Action, text: string, files?: File[], options?: Parameters<import('./components/ChatPanel').Act>[3]) {
     if (lock.current || !workspace) return false;
     lock.current = true;
     setBusy(true);
@@ -179,8 +181,9 @@ export function App() {
         kind,
         text,
         attachments,
+        ...options,
         expectedRevision:
-          kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
+          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;
@@ -240,11 +243,14 @@ export function App() {
         onToggleChat={() => setChat(!chat)}
         onReset={newProject}
         onLibrary={() => {
+          if (!workspace) { navigate('/library'); return; }
           setLibrary(true);
           open(undefined);
         }}
         unread={!!p && p.events.length > seen}
       />
+      {routePath === '/library' && <Library projects={projects} close={() => navigate('/')}
+        create={newProject} open={project => navigate('/p/' + project.id)} />}
       {(err || connection) && (
         <div className="live-error" role="alert">
           {err || connection}{' '}
@@ -259,7 +265,22 @@ export function App() {
           </button>
         </div>
       )}
-      {!id && !start && !mode && (
+      {routePath !== '/library' && !id && !start && !mode && new URLSearchParams(location.search).has('personal') && (
+        <main className="sheet-doc">
+          <header className="sheet-head"><h1>我的提案项目</h1>
+            <button className="btn btn-dark" onClick={newProject}>新建提案</button>
+          </header>
+          {projects.length === 0 && <p>暂时没有项目。</p>}
+          {projects.map(project => (
+            <section className="block" key={project.id}>
+              <p className="mono-label">{STAGES.find(stage => stage.id === project.stage)?.name ?? project.stage} · {project.updatedAt && new Date(project.updatedAt).toLocaleDateString('zh-CN')}</p>
+              <h2><a href={'#/p/' + project.id}>{project.title}</a></h2>
+              <button className="btn" onClick={() => navigate('/p/' + project.id + '?view=library')}>查看项目资料</button>
+            </section>
+          ))}
+        </main>
+      )}
+      {routePath !== '/library' && !id && !start && !mode && !new URLSearchParams(location.search).has('personal') && (
         <Home
           hasProject={projects.length > 0}
           onStart={() => (projects[0] ? navigate('/p/' + projects[0].id) : newProject())}
@@ -318,6 +339,7 @@ export function App() {
             </div>
             {library && (
               <Library
+                initialId={p.id}
                 projects={projects}
                 close={() => setLibrary(false)}
                 open={(project) => {

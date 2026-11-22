@@ -23,7 +23,7 @@ export function strategyCarrier(project, inputs) {
   const body = inputs.texts.find(t=>t.name===report?.name)?.text ?? '';
   const recorded = body.match(/^## 检索前锚点\s+研究载体：(包装与KV|包装|KV|待明确)\s*$/mu)?.[1];
   const explicit = project.proposalKind;
-  if (recorded==='包装与KV' || explicit==='packaging+kv') return 'packaging+kv';
+  if (explicit==='packaging+kv') return explicit;
   if (explicit==='packaging' || explicit==='kv') return explicit;
   if (kinds[recorded]) return kinds[recorded];
   const brief = project.brief ?? '';

@@ -80,6 +80,11 @@ export function headlineReviewProtocol(review?: CopyReview) {
   if (review?.version === 2 && review.protocol === 'dual-panel-headline-v3') return 'v3';
 }
 export interface CopyReview {
+  sloganWorkbook?: {
+    plan: { directions: { id: string; candidates: { text: string; method: string }[] }[] };
+    polish: { directions: { id: string; original: string; killed: { text: string; reason: string }[]; versions: { text: string; use: string; tradeoff: string }[]; edits: string }[] };
+  };
+  sloganRevisions?: { changes: string[]; before: {id: string; main: string}[]; after: {id: string; main: string}[] }[];
   protocol?: 'dual-panel-v2' | 'dual-panel-headline-v3' | 'dual-panel-headline-v4';
   anonymousReads?: CopyFirstRead[];
   finalAnonymousReads?: CopyFirstRead[];
@@ -137,15 +142,18 @@ export interface ResearchImage {
   rationaleAttachment?: string;
   takeaway?: string;
 }
+export interface ResearchGap {kind:string;chapter:string;message:string;findingRef:string}
 export interface Project extends Summary {
+  finalReturn?:{returnStage:StageId;reason:string};
   revision: number;
   mode: Mode;
   brief: string;
   events: { stage: StageId; text: string; at: string }[];
   artifacts: Artifact[];
-  versions?: { at: string; stage: StageId; artifacts: Artifact[] }[];
+  versions?: { at: string; stage: StageId; artifacts: Artifact[]; research?: Project['research'] }[];
   researchFollowup?: boolean;
   research?: {
+    searchScope?: {replacements?:{from:string;to:string}[];attempts?:{query:string;source:string;count:number}[];unreadable?:{url:string;reason:string}[];queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};
     ready: boolean;
     question?: string;
     digestPending?: boolean;
@@ -156,8 +164,8 @@ export interface Project extends Summary {
       detail: string;
       findingIndex: number;
     }[];
-    findings: { conclusion: string; evidence: string; source: string; url: string; implication: string; images?: ResearchImage[] }[];
-    gaps: string[];
+    findings: { chapter?:string; conclusion: string; evidence: string; source: string; url: string; implication: string; images?: ResearchImage[] }[];
+    gaps: (string | ResearchGap)[];
     next: string;
   };
   copyReview?: CopyReview | null;
@@ -167,7 +175,7 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
+export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup'>>;
 export const researchQuestion = (p: ResearchStatus) =>

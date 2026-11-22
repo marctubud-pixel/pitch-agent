@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { PRODUCT_NAME } from '../data/project';
 import { Icon } from './Icon';
 
+declare global {
+  interface Window {
+    webkit?: { messageHandlers?: { openModelSettings?: { postMessage(value: null): void } } };
+  }
+}
+
 interface Props {
   projectTitle?: string;
   inWorkspace: boolean;
@@ -31,6 +37,8 @@ export function Logo({ onClick }: { onClick?: () => void }) {
 
 export function TopBar(p: Props) {
   const [open, setOpen] = useState(false);
+  const settings = window.webkit?.messageHandlers?.openModelSettings;
+  const personal = new URLSearchParams(window.location.search).get("personal") === "1";
   const wrap = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,9 +66,13 @@ export function TopBar(p: Props) {
         <Logo onClick={p.onHome} />
         {p.projectTitle && <span className="topbar-project">{p.projectTitle}</span>}
       </div>
-      {p.inWorkspace && (
+      {personal && (
+        <form method="post" action="/logout"><button className="btn" type="submit">退出登录</button></form>
+      )}
+      {(p.inWorkspace || settings || personal) && (
         <div className="topbar-right">
-          <span className="tag-demo">本地工作台</span>
+          {p.inWorkspace && <>
+          {!personal && <span className="tag-demo">本地工作台</span>}
           <button
             type="button"
             className={`btn ${p.chatOpen ? 'is-on' : ''}`}
@@ -70,6 +82,7 @@ export function TopBar(p: Props) {
             <Icon name="chat" />
             对话{p.unread && !p.chatOpen && <span className="dot dot-live btn-dot" />}
           </button>
+          </>}
           <div className="menu-wrap" ref={wrap}>
             <button
               type="button"
@@ -91,6 +104,15 @@ export function TopBar(p: Props) {
                   <Icon name="home" />
                   首页
                 </button>
+                {(settings || personal) && (
+                  <button type="button" role="menuitem" className="menu-item" onClick={run(() => {
+                    if (settings) settings.postMessage(null);
+                    else window.location.assign('/settings/models');
+                  })}>
+                    <Icon name="menu" />
+                    模型与 API…
+                  </button>
+                )}
                 <div className="menu-sep" />
                 <button type="button" role="menuitem" className="menu-item" onClick={run(p.onReset)}>
                   <Icon name="new" />

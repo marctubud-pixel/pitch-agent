@@ -1,3 +1,5 @@
+import {invalidOutput} from './call-checkpoints.mjs';
+import {blindSlogans,buildSloganWorkbook,checkSloganChoices,fullSloganHash} from './slogan-workbook.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -55,7 +57,7 @@ const adjudicateSchema = object({
 });
 const hash = text => createHash('sha256').update(text).digest('hex');
 const digest = object => hash(JSON.stringify(object));
-function requireThat(ok, message) { if (!ok) throw Error(message); }
+function requireThat(ok, message) { if (!ok) throw invalidOutput(message); }
 function nonempty(text) { return typeof text === 'string' && !!text.trim(); }
 function exactly(values, expected) {
   return values.length === expected.length && expected.every(value=>values.includes(value));
@@ -114,7 +116,7 @@ const anchors = {
   3:'部分成立，但仍有具体歧义或关键衔接待解决',4:'在本案给定条件下有明确证据支持成立',
   5:'除达到4外，还能指出相较本组可比写法的具体优势',
 };
-const scope = '当前简报、产品事实及三案范围。品牌联系区分字面提及、语义关联与真实感知；传播仅评估复述潜力，不推断实测效果。两案互换、换品牌、换节点均为诊断，不据此单独扣分。';
+const scope = '稳健延续按有据的品牌线索或品类惯例判断。以标题所承担的方向为准。当前简报、产品事实及三案范围。品牌联系区分字面提及、语义关联与真实感知；传播仅评估复述潜力，不推断实测效果。两案互换、换品牌、换节点均为诊断，不据此单独扣分。';
 const scoring = '先逐案后比较。criteriaByDirection 是每个方向可观察的范围，本岗只记录实际查到的项；一案可留零至四项，同项不重复。观察分1–5，关键未知填 null。不得为凑齐四项补分。evidence 仅逐字引用该案主标题里的短语。只评标题本身，不以附加文案或作者解释补足标题，reason说明本分与相邻锚点的区别；scope写明本维度就哪个对象、证据范围或哪组候选作比较。不得因缺促销CTA扣品牌主题分。分数、未知或岗位退修意见只作观察，由总监依单案四项证据裁定。推荐时再看记忆、复述与场景。四岗是独立模型会话，用户岗只模拟阅读。禁止计算平均分。';
 export function headlineMarkdown(draft) {
   return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main).join('\n\n');
@@ -125,8 +127,8 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
   const filename='copy-review-attempt-'+randomUUID()+'.json';
   const threads=new Set(), runs=new Set();
   const materials=[project.brief,...inputs.texts.map(t=>t.text)].filter(nonempty);
-  async function run(phase, instruction, schema, packet, author=false) {
-    const result=await call(phase+'\n'+instruction,author?inputs.images:[],schema,{
+  async function run(phase, instruction, schema, packet, author=false, outputSchema=schema) {
+    const result=await call(phase+'\n'+instruction,author?inputs.images:[],outputSchema,{
       rules:author?rules:[],assignment:'只完成当前职责。',context:JSON.stringify(packet),
     });
     const receipt={runId:result.runId,threadId:result.threadId,model:result.model,inputPacketHash:result.inputPacketHash};
@@ -175,6 +177,11 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       if (targets.has(d.id)) requireThat(d.main.trim()!==old.main.trim(),'作品问题尚未改稿：'+d.name);
       else requireThat(isDeepStrictEqual(d,old),'改稿改动了冻结方向：'+old.name);
     }
+    const edited=output.draft.directions.filter(d=>targets.has(d.id));
+    const reads=await blindSlogans(run,edited.map(d=>d.main));
+    (attempt.sloganRevisions??=[]).push({baseHash,changes:output.changes,
+      before:base.directions.filter(d=>targets.has(d.id)),after:edited,reads});
+    requireThat(reads.every(r=>r.output.items.every(i=>i.usable)),'改稿的主标题未通过复闸，原稿、修改和两份盲读已存入工作底稿');
     requireThat(output.changes.length,'改稿缺少修改对照');
     return output;
   }
@@ -185,9 +192,13 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     const panel={draftHash,draft,votes,anonymousReads:reads,criticReads:[],challenges:[]};
     attempt.panelHistory.push(panel);
     for (const role of roles) {
+      const quoteByDirection=draft.directions.map(d=>object({
+        ...criticSchema.properties.items.items.properties,
+        directionId:choice([d.id]),evidence:choice(['',d.main]),
+      }));
       const {output,receipt}=await run('COPY_CRITIC_BLIND',
         '独立找本岗可能遗漏的事实、表达或同组三案风险。先不看原票、不打分。逐案列出所有独立风险，一条对应一个风险；某案确无发现时仅写一条 risk 和 evidence 均为空的记录。提出风险必须引当前该案逐字证据。',
-        criticSchema,{role,...reviewPacket(draft)});
+        criticSchema,{role,...reviewPacket(draft)},false,object({items:list({anyOf:quoteByDirection})}));
       for (const id of ids) {
         const reads=output.items.filter(i=>i.directionId===id);
         requireThat(reads.length,'异议岗独立阅读未覆盖方向 '+id);
@@ -203,9 +214,14 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     }
     for (const vote of votes) {
       const blindRead=panel.criticReads.find(r=>r.role===vote.role);
+      const concerns=draft.directions.map(d=>object({
+        ...challengeSchema.properties.items.items.properties,
+        directionId:choice([d.id]),dimension:choice(criteria(d.duty)),evidence:choice([d.main]),
+      }));
       const {output,receipt}=await run('COPY_CHALLENGE',
         '保留本岗独立漏项阅读，核原票的具体肯定、证据是否已经覆盖。coverage逐条引用 blindRead.items 的 readId 与 directionId，每条恰好一次，包括无风险记录。指向该案四项内的相关维度并具体说明原票是否观察过这一项，以及漏项是否已处理、为何保留或质疑原判。items只列确有依据的异议，区分反证、缺证、偏好、已覆盖与阶段外；action说明影响和建议。个人偏好不阻断，未见新增漏项允许空列表。不得打分。',
-        challengeSchema,{role:vote.role,...reviewPacket(draft),blindRead,vote});
+        challengeSchema,{role:vote.role,...reviewPacket(draft),blindRead,vote},false,
+        object({...challengeSchema.properties,items:list({anyOf:concerns})}));
       const readsById=new Map(blindRead.items.map(i=>[i.readId,i]));
       requireThat(exactly(output.coverage.map(c=>c.readId),[...readsById.keys()]) &&
         output.coverage.every(c=>readsById.get(c.readId)?.directionId===c.directionId && criteria(draft.directions.find(d=>d.id===c.directionId).duty).includes(c.dimension)),
@@ -242,7 +258,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
     const references={initialDraft:headlines(draft),anonymousReads:reads,firstVotes:votes,
       criticReads:panel.criticReads,challenges:panel.challenges,issues};
     const plan=await run('COPY_PLAN',
-      '在创作者改稿前独立逐条裁定 issues；每个id必须决定采纳当前/后续、驳回或待核及理由。每条给 criterion，选该方向对应四项之一、“逐对差异”或“推荐观察”。problem 是这条具体问题的短描述；不同岗位或不同维度指出同一处实质缺陷时复用同一句 problem，彼此独立的问题用不同描述。保留各岗原句证据。只对单案四项中成立的作品缺陷要求改稿。逐对差异在整组裁定处理，推荐观察仅比较记忆、复述、适用场景，二者在此 action=none。低分、待核和岗位意见本身不阻断。作品确需修改时 action=revise，评分原判有误或证据需要复核时 action=recheck 且保持原稿，非阻断范围外事项可延后。不得代评分岗改分。没有问题可为空。',
+      '在创作者改稿前独立逐条裁定 issues；每个id必须决定采纳当前/后续、驳回或待核及理由。每条给 criterion，选该方向对应四项之一、“逐对差异”或“推荐观察”。problem 是这条具体问题的短描述；不同岗位或不同维度指出同一处实质缺陷时复用同一句 problem，彼此独立的问题用不同描述。保留各岗原句证据。只对单案四项中成立的作品缺陷要求改稿。逐对差异在整组裁定处理，推荐观察仅比较记忆、复述、适用场景，二者在此 action=none。低分、待核和岗位意见本身不阻断。作品确需修改时 action=revise，评分原判有误或证据需要复核时 action=recheck 且保持原稿，非阻断范围外事项可延后。逐项检查动作与状态成对：待核 pending 或延后 accepted_later 的 action 必须是 none；revise 必须 accepted_now。已采纳的单案四项问题必须明确 revise 或 recheck。不得代评分岗改分。没有问题可为空。',
       planSchema,{...reviewPacket(draft),...references});
     const decisionPlan={...plan.output,...plan.receipt,draftHash};
     panel.decisionPlan=decisionPlan;
@@ -270,9 +286,14 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
   try {
     const source={brief:project.brief,materials:inputs.texts,feedback:project.feedback || []};
     await onEvent?.('文案负责人正在创作三个方向');
-    const generated=await run('COPY_CREATE',craft+' 使用本次加载的 slogan-engine 创作步骤展开、淘汰和打磨主标题。',draftSchema,source,true);
+    const skill=rules.find(rule=>rule.includes('name: slogan-engine'));
+    requireThat(skill,'缺少完整版 slogan-engine');
+    const workbook=await buildSloganWorkbook(run,source);
+    attempt.sloganWorkbook={...workbook,skillHash:fullSloganHash(skill)};
+    const generated=await run('COPY_CREATE',craft+' 从本案版本族中选经两位独立读者均判断 usable 的一句作为各案 main，逐字保留，保持职责及连接。仅归档工作稿另附。',draftSchema,{...source,workbook},true);
     const first=generated.output;
     validateDraft(first,materials);
+    checkSloganChoices(first,workbook);
     attempt.initialDraft=first;
     await onEvent?.('四岗分别首读文案初稿');
     attempt.anonymousReads=await anonymousReads(first);
@@ -374,7 +395,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
       }
 
       const reasons=failures.map(f=>f.reason).join('；');
-      requireThat(round<maxFollowups,'文案达到本次打磨上限：'+reasons);
+      if (round>=maxFollowups) throw Error('文案达到本次打磨上限：'+reasons);
       const baseHash=digest(draft);
       const priorVotes=attempt.finalVotes;
       const history={round:round+1,baseHash,draft,anonymousReads:attempt.finalAnonymousReads,votes:priorVotes,
@@ -394,7 +415,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
         const d=draft.directions.find(d=>d.id===action.directionId);
         requireThat(failure.eligible.includes(d.id) && d.main.includes(action.evidence),
           '打磨裁定与退回方向或原文不符');
-        requireThat(action.action!=='pause',failure.reason+'；暂停打磨：'+action.reason);
+        if (action.action==='pause') throw Error(failure.reason+'；暂停打磨：'+action.reason);
         requireThat(!failure.requiredAction || action.action===failure.requiredAction,'打磨动作与本版独立裁定不符：'+failure.reason);
         if (action.action==='recheck' && failure.challengeId) completedRechecks.add(failure.challengeId);
         if (action.action==='revise') targets.add(d.id);

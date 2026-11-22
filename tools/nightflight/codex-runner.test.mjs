@@ -13,7 +13,7 @@ const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAA
 const competitorPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAKAAAADwCAAAAACiKjAGAAAAPElEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPBpbwAAHEOZGbAAAAAElFTkSuQmCC','base64');
 // Used only by the test CLI, which gets a new thread and private request for each call.
 function copyFixture(input, action) {
-  const step = input.match(/COPY_([A-Z_]+)/)?.[1];
+  const step = input.match(/(?:COPY|SLOGAN)_([A-Z_]+)/)?.[1];
   const packet = JSON.parse(input.split('实际项目输入（JSON）').at(-1));
   const source = '制作测试茶的包装概念稿';
   const directions = ['山风', '晨雾', '旧街'].map((name, i) => ({
@@ -21,6 +21,9 @@ function copyFixture(input, action) {
     name, basis: source, claim: name + '的主张', mechanism: name + '的创意方法', strategyLink: name + '承接策略',
     main: name + '原稿主文', risk: name + '的风险',
   }));
+  if (step==='EXPLORE') return {directions:directions.map(d=>({id:d.id,coordinates:'坐标',motive:'动机',connection:'连接',methods:'方法',candidates:[0,1,2].map(i=>({text:i?d.main+i:d.main,method:'短句'}))}))};
+  if (['READING','APPEAL'].includes(step)) return {items:packet.lines.map(text=>({text,observation:'独立阅读',usable:true}))};
+  if (step==='POLISH') return {directions:packet.plan.directions.map(d=>({id:d.id,original:d.candidates[0].text,killed:d.candidates.slice(1).map(c=>({text:c.text,reason:'不同的选择'})),versions:['','短','顺'].map(s=>({text:d.candidates[0].text+s,use:'包装',tradeoff:'取舍'})),sound:'节奏',backup:'备选',edits:'记录',extensions:'延展',risks:'风险'}))};
   if (!['CREATE','REVISE'].includes(step) && (input.includes('的创意方法') || input.includes('承接策略'))) throw Error('评审泄露作者创作说明');
   if (step === 'CREATE') {
     if (action === 'badcopy') directions[2].duty = directions[0].duty;
@@ -119,6 +122,7 @@ function copyFixture(input, action) {
 const fake = `#!${process.execPath}
 const fs = require('node:fs'); const path = require('node:path');
 const args = process.argv.slice(2);
+if (args.join(' ')==='--version') { console.log('codex-cli 0.167.0'); process.exit(0); }
 if (args.join(' ')==='login status') {
  const auth=fs.readFileSync(path.join(process.env.CODEX_HOME,'action'),'utf8');
  console.error(auth==='api-key'?'Logged in using an API key':'Logged in using ChatGPT');process.exit(0);
@@ -131,23 +135,38 @@ let input=''; process.stdin.setEncoding('utf8');
 process.stdin.on('data',x=>input+=x);
 process.stdin.on('end',()=>{
  console.log(JSON.stringify({type:'thread.started',thread_id:id}));
+ const stop=path.join(home,'stop-at');
+ if(fs.existsSync(stop) && input.includes(fs.readFileSync(stop,'utf8'))){
+   fs.unlinkSync(stop);process.exit(78);
+ }
  if(action==='failed'){console.log('{"type":"turn.failed"}'); process.exitCode=1;return;}
- if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('独立研究编辑') && !input.includes('测试茶')) process.exit(4);
+ if(!action.startsWith('copy') && action!=='badcopy' && !(action==='image' && (input.includes('独立读图者') || input.includes('视觉参考原图登记'))) && !input.includes('从所附原文重新摘录') && !input.includes('独立研究编辑') && !input.includes('测试茶')) process.exit(4);
  if(action==='pdf' && !input.includes('NIGHTFLIGHT PDF TEST')) process.exit(8);
  if(action==='final' && (!input.includes('ppt/slides/slide140.xml') || !input.includes('实际页面证据') || input.includes('大块预览输入'))) process.exit(6);
  if(action==='attachment' && (!input.includes('只有附件才有的词') || !args.includes('--image'))) process.exit(7);
  let body = {body:'按材料制订测试茶任务卡'};
+ if(action==='final-return'){
+   if(input.includes('逐张检查页面')){
+     if(!args.includes('--image')) process.exit(14);
+     body={body:'第 1 页包装说明超出版心。'};
+   } else if(input.includes('根据实际页面审读')){
+     if(!input.includes('第 1 页包装说明超出版心')) process.exit(15);
+     body={outcome:'return',returnStage:'layout',reason:'第 1 页包装说明超出版心，缩短标题后重排。'};
+   }
+ }
  if(action.startsWith('research-')){
    const schema=JSON.parse(fs.readFileSync(args[args.indexOf('--output-schema')+1],'utf8')).properties;
    if(action==='research-followup' && !input.includes('用户暂不确定渠道'))process.exit(10);
    if(schema.queries) {
      if(!args.includes('web_search="disabled"')) process.exit(30);
-     body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
+     body={queries:['公开茶类年报'],carrier:action==='research-combined'?'packaging+kv':input.includes('包装概念稿')?'packaging':'unspecified',anchorQuestions:action==='research-repair'?['仅一问？']:['渠道与货架？','竞品压力？','用户如何选择？','无传播节点。']};
    }
+   else if(schema.anchorQuestions) { body={anchorQuestions:['渠道？','竞品？','人群？','节点？']}; }
    else if(schema.findings) {
      if (action==='research-combined' && !(input.includes('Step 2.5 包装') && input.includes('Step 3.5 KV'))) process.exit(31);
      console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'search',queries:['测试公开品类']}}}));
      body={findings:[{chapter:'行业与市场',conclusion:'茶礼场景更强调赠礼用途',source:'合成行业报告',url:'https://source.example.org/report',evidence:action==='research-fiction'?'这是虚构引文':'本次样本单列礼盒用途',implication:'策略需比较礼赠与日常使用情境'}],gaps:['渠道尚未选定'],next:'比较可核实的渠道样本'};
+     if(action==='research-repair') Object.assign(body.findings[0],{url:'https://source.example.org/blocked',source:'未能打开的报告',evidence:'改写过的、不见于网页的引文'});
      if(action==='research-brief-only') Object.assign(body.findings[0],{
        chapter:'产品与品牌',conclusion:'演练产品条件',source:'brief-test.md',url:'',evidence:'配料为水和燕麦',implication:'以配方为条件比较表达'
      });
@@ -157,6 +176,8 @@ process.stdin.on('end',()=>{
      }
      if(action.startsWith('research-board')) body.competitorPages=[{url:'https://source.example.org/product',title:'测试茶包装',imageUrl:''}];
      if(action==='research-followup')body.findings=[];
+   } else if(schema.evidence) {
+     body=action==='research-repair' ? {url:'https://source.example.org/report',evidence:'本次样本单列礼盒用途'} : {url:'',evidence:''};
    } else if(schema.samples) {
      const packet=JSON.parse(input.split('实际项目输入（JSON）').at(-1));
      if (!args.includes('--image') || packet.sources.length!==1) process.exit(25);
@@ -177,6 +198,7 @@ process.stdin.on('end',()=>{
          body.labels.push({findingIndex:index,chapter:'竞争与同类传播',angle:'画面与信息层级'});
        }
      }
+     if(action==='research-thin') body.next='';
      if(action==='research-thin') body.labels=[{findingIndex:0,chapter:'人群与接触情境',angle:'使用场景与时机'}];
      if(action==='research-ok') {
        const labels=[['行业与市场','品类创新与变化'],['行业与市场','供给与竞争格局'],['竞争与同类传播','规格与商品组合'],['竞争与同类传播','画面与信息层级'],['人群与接触情境','购买行为与渠道'],['人群与接触情境','选择偏好与顾虑']];
@@ -254,6 +276,10 @@ process.stdin.on('end',()=>{
    const output=Buffer.concat([Buffer.from('89504e470d0a1a0a','hex'),chunk('IHDR',header),chunk('IDAT',z.deflateSync(Buffer.from([0,count,78,90]))),chunk('IEND',Buffer.alloc(0))]);
    fs.writeFileSync(path.join(folder,'exec-'+id+'.png'),output);
  }
+ const invalidOnce=path.join(home,'invalid-once');
+ if(fs.existsSync(invalidOnce) && input.includes(fs.readFileSync(invalidOnce,'utf8'))){
+   fs.unlinkSync(invalidOnce);body={items:[]};
+ }
  fs.writeFileSync(args[args.indexOf('-o')+1],args.includes('--output-schema')?JSON.stringify(body):'茶园晨雾概念稿');
  console.log('{"type":"turn.completed"}');
 });`;
@@ -269,6 +295,7 @@ async function fixture(t, action, options={}) {
     lookup:async()=>[{address:'93.184.216.34',family:4}],
     transport:async ({url})=>{
       requests.push(url.href);
+      if (url.pathname==='/blocked') return {status:403,headers:{'content-type':'text/html'},body:Buffer.from('拒绝访问')};
       if (url.href==='https://source.example.org/product') return {status:200,headers:{'content-type':'text/html'},body:Buffer.from('<title>测试茶包装</title><p>设计方把茶类名放在中央。</p><img src="/product.png">')};
       if (url.href==='https://source.example.org/product.png') return {status:200,headers:{'content-type':'image/png'},body:competitorPng};
       if(url.hostname==='lite.duckduckgo.com') throw Error('fixture discovery unavailable');
@@ -437,6 +464,43 @@ for (const [action,error] of [['copy-frozen',/冻结方向/],['copy-stale',/冻�
     assert.equal(log.status,'blocked');
   });
 }
+test('copy corrects a missing blind read once without repaying its sibling or restarting the draft',async t=>{
+  const f=await fixture(t,'copy-clean'),events=[];
+  await writeFile(join(f.home,'invalid-once'),'SLOGAN_APPEAL');
+  const result=await f.run('copy',{onEvent:event=>events.push(event)});
+  assert.equal(result.copyReview.status,'ready');
+  assert.equal(events.filter(event=>event.includes('只重问该项')).length,1);
+  assert.equal((await readdir(join(f.dir,'.codex-runs'))).length,result.copyReview.calls.length+1);
+});
+
+for (const [stage,action,stopAt] of [['copy','copy','COPY_ANONYMOUS'],['visual','image','独立读图者']]) {
+  test(stage+' resumes completed calls after the provider stops mid-stage',async t=>{
+    const f=await fixture(t,action);
+    const retryDir=join(f.home,'new-attempt'),checkpointDir=join(f.home,'stable-checkpoint');
+    await mkdir(retryDir);
+    if(stage==='visual') {
+      f.project.attachments.push({name:'同类包装.png'});
+      for(const dir of [retryDir,f.dir]) await writeFile(join(dir,'同类包装.png'),Buffer.from(png,'base64'));
+    }
+    await writeFile(join(f.home,'stop-at'),stopAt);
+    await assert.rejects(f.run(stage,{checkpointDir}),/调用失败/);
+    async function runIds(dir) {
+      const runs=join(dir,'.codex-runs');
+      return Promise.all((await readdir(runs)).map(async name=>JSON.parse(await readFile(join(runs,name,'receipt.json'),'utf8')).runId));
+    }
+    const first=await runIds(f.dir);
+    const result=await f.run(stage,{dir:retryDir,checkpointDir});
+    assert.ok(result.artifacts.length);
+    if(stage==='copy') {
+      const originalRun=result.copyReview.calls[0].runId;
+      assert.ok(first.includes(originalRun));
+      assert.ok(!(await runIds(retryDir)).includes(originalRun));
+    } else {
+      assert.equal((await readFile(join(f.home,'generation-inputs.jsonl'),'utf8')).trim().split('\n').length,3);
+    }
+  });
+}
+
 test('collaboration generates the chosen direction using the current thread PNG bytes',async t=>{
   const f=await fixture(t,'image');
   await writeFile(join(f.dir,'同类包装.png'),Buffer.from(png,'base64'));
@@ -566,7 +630,7 @@ test('reads attachment bytes and gives real image paths to Codex',async t=>{
 });
 for (const [action, ready, count] of [
   ['research-ok', true, 6],
-  ['research-thin', false, 1],
+  ['research-thin', true, 1],
   ['research-blocked', false, 1],
   ['research-fiction', false, 0],
 ]) {
@@ -588,14 +652,14 @@ for (const [action, ready, count] of [
         assert.deepEqual(f.requests,before);
       }
       assert.equal(research.question,'');
-      if (action==='research-thin') assert.match(research.next,/行业与市场还需补查/);
+      if (action==='research-thin') assert.ok(research.next);
       assert.ok(artifacts[0].text.includes('调研方法版本：' + research.methodVersion));
       assert.equal(research.findings.length, count);
       assert.ok(f.requests.some((url) => url.startsWith('https://cn.bing.com/search?')));
       assert.ok(f.requests.includes('https://source.example.org/report'));
       assert.match(artifacts[0].text, /测试公开品类/);
       if (count) assert.match(artifacts[0].text, /本次样本单列礼盒用途|礼盒上架/);
-      else assert.match(research.gaps.join(' '), /未从.*核对/);
+      else assert.match(research.gaps.map(g=>g.message).join(' '), /未从.*核对/);
     },
   );
 }
@@ -627,7 +691,7 @@ test('collaboration can ask its first decision after a follow-up obtains usable 
   assert.equal(research.question,'优先门店还是线上？');
 });
 
-test('follow-up rechecks earlier evidence, considers user feedback and does not repeat a question', async (t) => {
+test('follow-up preserves earlier verified evidence, considers user feedback and does not repeat a question', async (t) => {
   const f = await fixture(t, 'research-followup');
   const earlier = {chapter:'行业与市场', conclusion:'礼赠是此次样本中的一个场景', source:'上轮报告', url:'https://source.example.org/older', evidence:'本次样本单列礼盒用途', implication:'礼赠和日常用途可分别比较'};
   f.project.previousResearch = {question:'优先门店还是线上？',findings:[earlier]};
@@ -635,7 +699,7 @@ test('follow-up rechecks earlier evidence, considers user feedback and does not 
   f.project.researchQuestionAnswered = true;
   f.project.feedback = [{stage:'research',text:'用户暂不确定渠道'}];
   const {research} = await f.run('research');
-  assert.ok(f.requests.includes(earlier.url));
+  assert.ok(!f.requests.includes(earlier.url));
   assert.deepEqual(research.findings,[earlier]);
   assert.equal(research.question,'');
   assert.equal(research.ready,false);
@@ -657,6 +721,21 @@ test('final reads native slide XML, excludes bulky deck JSON and records missing
   f.project.artifacts=[{stage:'layout',name:'排版.pptx',kind:'pptx'},{stage:'layout',name:'排版.deck.json',kind:'text'}];
   const result=await f.run('final');
   assert.match(result.artifacts[0].text,/页级视觉审查待完成/);
+});
+
+test('final reads the matching rendered pages and returns the responsible stage',async t=>{
+  const f=await fixture(t,'final-return');
+  const requireApp=createRequire(new URL('../../apps/workbench-preview/package.json',import.meta.url));
+  const {zipSync,strToU8}=requireApp('fflate');
+  const slide=strToU8('<p:sld xmlns:p="urn:slide" xmlns:a="urn:text"><a:p><a:r><a:t>实际页面证据</a:t></a:r></a:p></p:sld>');
+  await writeFile(join(f.dir,'提案-test.pptx'),zipSync({'ppt/slides/slide1.xml':slide}));
+  await writeFile(join(f.dir,'page-0001-test.jpg'),Buffer.from(png,'base64'));
+  f.project.artifacts=[{stage:'layout',kind:'pptx',name:'提案-test.pptx'},{stage:'layout',kind:'image',name:'page-0001-test.jpg'}];
+  const result=await f.run('final');
+  assert.equal(result.finalReview.returnStage,'layout');
+  assert.equal(result.finalReview.outcome,'return');
+  assert.deepEqual(result.finalReview.pages,[1]);
+  assert.match(result.artifacts[0].text,/第 1 页包装说明超出/);
 });
 
 test('rejects excessive image count and unsupported attachment type before starting Codex',async t=>{
@@ -767,9 +846,10 @@ test('independent observation labels correct consumer-reported channels and coun
   assert.equal(accepted[0].chapter,'人群与接触情境');
   assert.equal(accepted[0].evidence,record.evidence);
   assert.ok(missingResearchCoverage(accepted).some(g=>g.startsWith('人群与接触情境还需补查 1')));
-  assert.throws(()=>reviewedFindings([{...record,url:'',chapter:'产品与品牌'}],[0],[labels[0]]),/产品条件/);
-  assert.throws(()=>reviewedFindings([{...record,images:[{}]}],[0],[labels[0]]),/只能支持/);
-  assert.throws(()=>reviewedFindings(findings,[],[labels[0]]),/有效发现/);
+  assert.equal(reviewedFindings([{...record,url:'',chapter:'产品与品牌'}],[0],[labels[0]])[0].editorialAngle,undefined);
+  assert.equal(reviewedFindings([{...record,images:[{}]}],[0],[labels[0]])[0].editorialAngle,undefined);
+  assert.deepEqual(reviewedFindings(findings,[],[labels[0]]),[]);
+
 });
 
 
@@ -781,7 +861,7 @@ test('after the targeted search nonblocking coverage gaps can accompany a ground
   assert.equal(research.ready,true);
   assert.equal(research.findings.length,1);
   assert.equal(research.findings[0].chapter,'人群与接触情境');
-  assert.match(research.gaps.join(' '),/行业与市场还需补查/);
+  assert.match(research.gaps.map(g=>g.message).join(' '),/行业与市场还需补查/);
   Object.assign(f.project,{research,researchDigestOnly:true});
   const edited=await f.run('research');
   assert.equal(edited.researchDigest.length,1);
@@ -804,7 +884,7 @@ for (const decision of ['accept','reject']) {
       return;
     }
     assert.equal(board.editorialAngle,'画面与信息层级');
-    assert.match(research.gaps.join(' '),/1 种同品类创作策略/);
+    assert.match(research.gaps.map(g=>g.message).join(' '),/1 种同品类创作策略/);
     const [ref]=board.images;
     assert.equal(ref.sha256,createHash('sha256').update(competitorPng).digest('hex'));
     assert.equal(ref.pageUrl,'https://source.example.org/product');
@@ -822,8 +902,8 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
   const {research,artifacts}=await f.run('research');
   assert.equal(research.anchorQuestions.length,4);
   assert.match(artifacts[0].text,/研究载体：包装与KV/);
-  assert.match(research.gaps.join(' '),/包装仅核实 0 种同品类创作策略/);
-  assert.match(research.gaps.join(' '),/KV 缺少实际发布的主画面/);
+  assert.match(research.gaps.map(g=>g.message).join(' '),/包装仅核实 0 种同品类创作策略/);
+  assert.match(research.gaps.map(g=>g.message).join(' '),/KV 缺少实际发布的主画面/);
 });
 
 
@@ -861,4 +941,57 @@ test('strategy carrier handles excluded and linked outputs while preserving othe
   assert.equal(detect('制作包装与KV'),'packaging+kv');
   assert.equal(detect('做包装，另需设计海报'),'packaging+kv');
   assert.equal(detect('只需要制作TVC，参考包装与KV'),null);
+});
+
+test('packaging follow-up changes source families and rejects off-site results',async()=>{
+  const {followupSources,matchesDomain}=await import('./research-sources.mjs');
+  const plan=[{domain:'maker.org',query:'品类 产品与规格'}];
+  assert.deepEqual(followupSources({brief:'精酿啤酒包装',targets:plan}),plan);
+  assert.deepEqual(followupSources({brief:'精酿啤酒包装'}),[]);
+  assert.equal(matchesDomain('https://item.jd.com/123','jd.com'),true);
+  assert.equal(matchesDomain('https://jd.com.example.org/123','jd.com'),false);
+});
+
+test('source quote tolerates typography, preserves the actual source text and rejects altered quantities',async()=>{
+  const {locateQuote}=await import('./research-sources.mjs');
+  const text='访谈显示，“日常”——约１，２００人。';
+  assert.equal(locateQuote(text,'"日常"-约1200人').evidence,'“日常”——约１，２００人');
+  assert.equal(locateQuote(text,'"日常"-约1300人'),null);
+  const findings=[{chapter:'行业与市场',evidence:'约三成受访者参与。'}];
+  const row=detail=>[{findingIndex:0,chapter:'行业与市场',title:'参与者约占三成',detail}];
+  assert.doesNotThrow(()=>validateResearchDigest(row('图1中约30%参与。'),findings));
+  assert.throws(()=>validateResearchDigest(row('约33%参与。'),findings),/数值/);
+});
+
+test('research repairs anchors and recovers a blocked citation only from an independently captured page',async t=>{
+  const f=await fixture(t,'research-repair');
+  f.project.brief='测试茶';
+  const {research}=await f.run('research');
+  assert.equal(research.anchorQuestions.length,4);
+  assert.equal(research.findings[0].url,'https://source.example.org/report');
+  assert.equal(research.findings[0].source,'合成行业报告');
+  assert.ok(research.findings[0].passage.includes(research.findings[0].evidence));
+  assert.ok(research.searchScope.attempts.some(a=>a.count===1));
+  assert.equal(research.searchScope.unreadable.find(s=>s.url.endsWith('/blocked')).reason,'原站返回 HTTP 403');
+  assert.deepEqual(research.searchScope.replacements,[{from:'https://source.example.org/blocked',to:'https://source.example.org/report'}]);
+});
+
+test('operator-provided RSS search preserves query and bypasses default providers',async t=>{
+  const {discoverPublicPages}=await import('./codex-runner.mjs');
+  const root=await mkdtemp(join(tmpdir(),'nightflight-rss-'));
+  t.after(()=>rm(root,{recursive:true,force:true}));
+  const calls=[];
+  const result=await discoverPublicPages('茶礼盒',root,{
+    searchRss:'https://search.example.org/rss?locale=zh',
+    lookup:async()=>[{address:'93.184.216.34',family:4}],
+    transport:async ({url})=>{
+      calls.push(url);
+      return {status:200,headers:{'content-type':'application/rss+xml'},
+        body:Buffer.from('<rss><channel><item><title>测试原稿</title><link>https://brand.example.org/original</link></item></channel></rss>')};
+    },
+  });
+  assert.equal(calls.length,1);assert.equal(calls[0].hostname,'search.example.org');
+  assert.equal(calls[0].searchParams.get('q'),'茶礼盒');
+  assert.equal(calls[0].searchParams.get('locale'),'zh');
+  assert.equal(result.results[0].url,'https://brand.example.org/original');
 });

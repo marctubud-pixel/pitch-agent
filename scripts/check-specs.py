@@ -111,6 +111,28 @@ def snapshot(registry, freezing=False):
             'screenshots': {x['path']: x['sha256'] for x in images}}
 
 
+def verify_checkout_links():
+    """Check live documentation and archives, preserving byte-locked source exhibits."""
+    manifest = ROOT / 'scripts/repository-files.json'
+    if not manifest.exists():
+        return  # Specification-only checkouts validate their own selected links above.
+    from urllib.parse import unquote
+    pattern = re.compile(r'\]\((<[^>\n]*>|[^()\s]+)\)')
+    files = set(load('scripts/repository-files.json')['files'])
+    for name in sorted(files):
+        if not name.endswith('.md') or '/test-fixtures/provenance/originals/' in name:
+            continue
+        path = local(name)
+        body = re.sub(r'```.*?```', '', path.read_text(), flags=re.S)
+        for match in pattern.finditer(body):
+            target = unquote(match[1].strip('<>').split('#', 1)[0])
+            if not target or re.match(r'^[a-zA-Z][\w+.-]*:', target):
+                continue
+            destination = (path.parent / target).resolve()
+            if not destination.is_relative_to(ROOT) or not destination.exists():
+                raise ValueError(f'Broken documentation link: {name}: {target}')
+
+
 def compare_base(current, base):
     if not re.fullmatch(r'[0-9a-fA-F]{7,40}', base):
         raise ValueError('--base must be a commit SHA')
@@ -150,6 +172,7 @@ def main():
     if '## ' + registry['baselineVersion'] + ' ·' not in (ROOT / 'docs/specs/CHANGELOG.md').read_text():
         raise ValueError('Missing current baseline CHANGELOG entry')
     current = snapshot(registry, freezing=args.freeze)
+    verify_checkout_links()
     base_mode = compare_base(current, args.base) if args.base else None
     if args.freeze:
         (ROOT / LOCK).write_text(json.dumps(current, ensure_ascii=False, indent=2) + '\n')

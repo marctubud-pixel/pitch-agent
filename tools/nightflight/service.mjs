@@ -1,3 +1,4 @@
+import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
@@ -6,6 +7,9 @@ import {
   createReadStream,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
+  renameSync,
+  rmSync,
   openSync,
   closeSync,
   fstatSync,
@@ -49,6 +53,8 @@ function archiveVersion(p) {
     research: p.research ?? null,
     directions: p.directions,
     copyReview: p.copyReview ?? null,
+    ...(p.copyHandoff ? {copyHandoff:p.copyHandoff} : {}),
+    ...(p.finalReview ? {finalReview:p.finalReview} : {}),
     choice: p.choice,
     visualAdoption: p.visualAdoption ?? null,
   });
@@ -82,11 +88,12 @@ function researchHandoff(report, project) {
   const findings = Array.isArray(report?.findings)
     ? report.findings.filter((f) => f && [f.conclusion, f.evidence, f.source, f.implication].every(text))
     : [];
-  const gaps = Array.isArray(report?.gaps) ? report.gaps.filter(text) : [];
+  const gaps = Array.isArray(report?.gaps) ? report.gaps.filter(g=>text(g) || (g && text(g.message) && text(g.kind))) : [];
   const ready = report?.ready === true && findings.length > 0 && findings.length === report.findings.length;
   if (!ready && !gaps.length) gaps.push('当前材料尚未提供可供策略使用的研究判断。');
   return {
     ready,
+    ...(report?.searchScope ? {searchScope:report.searchScope} : {}),
     ...(text(report?.methodVersion) ? { methodVersion: report.methodVersion } : {}),
     findings,
     ...(Array.isArray(report?.anchorQuestions) ? {anchorQuestions:report.anchorQuestions} : {}),
@@ -107,13 +114,13 @@ function researchHandoff(report, project) {
 
 // A round can schedule one evidence follow-up. Persist the flag before dispatch so a restart or retry
 // cannot run another automatic round or repeat a question the customer has already answered.
-function continueResearch(p) {
+function continueResearch(p, archived = false) {
   if (p.research.question || p.researchFollowup) {
     p.status = 'waiting';
     note(p, p.research.question || '定向补查后仍缺关键依据：' + p.research.next);
     return;
   }
-  archiveVersion(p);
+  if (!archived) archiveVersion(p);
   p.artifacts = p.artifacts.filter((a) => a.stage === 'brief');
   p.researchFollowup = true;
   p.status = 'running';
@@ -121,7 +128,7 @@ function continueResearch(p) {
 }
 
 function publicView(p) {
-  const { owner, claim, inputHash, commands, ...visible } = p;
+  const { owner, claim, attemptKey, inputHash, commands, ...visible } = p;
   const unstore = ({ storageKey, ...record }) => record;
   return {
     ...visible,
@@ -159,13 +166,60 @@ const mime = {
 export function createNightflight({ root, runStage, runLayout }) {
   root = resolve(root);
   mkdirSync(root, { recursive: true, mode: 0o700 });
+  // SQLite releases this exclusive writer reservation when the process dies.
+  const lease = new DatabaseSync(join(root,'nightflight-owner.sqlite'));
+  try { lease.exec('BEGIN IMMEDIATE'); }
+  catch (error) { lease.close(); throw Error('该资料目录已有运行中的夜航服务',{cause:error}); }
+  const instanceId = randomUUID();
   const db = new DatabaseSync(join(root, 'nightflight.sqlite'));
   db.exec(
     'PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS projects(id TEXT PRIMARY KEY, revision INTEGER NOT NULL, state TEXT NOT NULL)',
   );
+  db.exec(`CREATE TABLE IF NOT EXISTS project_events(project_id TEXT NOT NULL,entry TEXT NOT NULL);
+    CREATE INDEX IF NOT EXISTS events_by_project ON project_events(project_id);
+    CREATE TABLE IF NOT EXISTS artifact_texts(hash TEXT PRIMARY KEY,text TEXT NOT NULL)`);
+  const eventOffset = Symbol('loaded events');
+  function hydrate(raw) {
+    const project=JSON.parse(raw);
+    const events=db.prepare('SELECT entry FROM project_events WHERE project_id=? ORDER BY rowid').all(project.id);
+    project.events=[...(project.events || []),...events.map(row=>JSON.parse(row.entry))];
+    project[eventOffset]=events.length;
+    for (const group of [project,...project.versions]) for (const file of group.artifacts) {
+      if (!file.textHash) continue;
+      const row=db.prepare('SELECT text FROM artifact_texts WHERE hash=?').get(file.textHash);
+      check(row,'已保存的正文缺失',500);
+      file.text=row.text;
+      delete file.textHash;
+    }
+    return project;
+  }
+  function persist(project, write) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      const append = db.prepare('INSERT INTO project_events VALUES(?,?)');
+      for (const event of project.events.slice(project[eventOffset] || 0)) append.run(project.id,JSON.stringify(event));
+      const insert=db.prepare('INSERT OR IGNORE INTO artifact_texts VALUES(?,?)');
+      function externalize(group) {
+        return {...group,artifacts:group.artifacts.map(file=>{
+          if (typeof file.text!=='string') return file;
+          const {text,...fields}=file;
+          const textHash=hash(text);
+          insert.run(textHash,text);
+          return {...fields,textHash};
+        })};
+      }
+      write(JSON.stringify({...externalize(project),events:[],versions:project.versions.map(externalize)}));
+      db.exec('COMMIT');
+      project[eventOffset]=project.events.length;
+    } catch(error) { db.exec('ROLLBACK'); throw error; }
+  }
+  // Migrate old inline payloads before accepting progress events, so their ordering stays intact.
+  for (const {id,state} of db.prepare("SELECT id,state FROM projects WHERE json_array_length(state,'$.events')>0 OR EXISTS (SELECT 1 FROM json_each(state,'$.artifacts') WHERE json_type(value,'$.text')='text')").all()) {
+    persist(hydrate(state),raw=>db.prepare('UPDATE projects SET state=? WHERE id=?').run(raw,id));
+  }
   const get = (id) => {
     const row = db.prepare('SELECT state FROM projects WHERE id=?').get(id);
-    return row && JSON.parse(row.state);
+    return row && hydrate(row.state);
   };
   const list = () =>
     db
@@ -179,16 +233,25 @@ export function createNightflight({ root, runStage, runLayout }) {
     const old = p.revision;
     p.revision++;
     p.updatedAt = now();
-    check(
+    persist(p,raw=>check(
       db
         .prepare('UPDATE projects SET revision=?,state=? WHERE id=? AND revision=?')
-        .run(p.revision, JSON.stringify(p), p.id, old).changes === 1,
+        .run(p.revision, raw, p.id, old).changes === 1,
       '项目已更新，请刷新后再试',
       409,
-    );
+    ));
   }
   function disk(p, key) {
     return join(root, p.id, 'files', key);
+  }
+  function historicalImage(project,ref) {
+    for (const group of [project,...project.versions.toReversed()]) {
+      for (const file of group.artifacts) {
+        if (file.stage!=='research' || file.kind!=='image' || file.name!==ref.name) continue;
+        const bytes=readFileSync(disk(project,file.storageKey));
+        if (hash(bytes)===ref.sha256) return {file,bytes};
+      }
+    }
   }
   function storeFile(p, name, source, kind) {
     const storageKey = randomUUID() + extname(name);
@@ -211,18 +274,35 @@ export function createNightflight({ root, runStage, runLayout }) {
     const abort = new AbortController();
     jobs.set(id, abort);
     setImmediate(async () => {
-      let claim;
+      let claim, dir;
+      const unpublished=new Set();
+      function prune(keep) {
+        for (const entry of readdirSync(join(root,id),{withFileTypes:true})) {
+          const path=join(root,id,entry.name);
+          if (!entry.isDirectory() || !/^attempt-[a-zA-Z0-9]{6}$/.test(entry.name) || path===keep) continue;
+          const receipts=join(root,id,'receipts',entry.name);
+          for (const file of readdirSync(path,{withFileTypes:true})) {
+            if (!['.codex-runs','.image-api-runs','.research-evidence'].includes(file.name) && !/^(copy-review-attempt-|reference-admission-|visual-review-).*\.json$|\.receipt\.json$/.test(file.name)) continue;
+            mkdirSync(receipts,{recursive:true,mode:0o700});
+            renameSync(join(path,file.name),join(receipts,file.name));
+          }
+          rmSync(path,{recursive:true,force:true});
+        }
+      }
       try {
         while (!closing) {
           const p = get(id);
           if (!p || p.status !== 'running' || p.claim) break;
           claim = randomUUID();
           p.claim = claim;
-          p.owner = process.pid;
+          p.owner = instanceId;
+          if (!/^[0-9a-f-]{36}$/.test(p.attemptKey ?? '')) p.attemptKey=randomUUID();
           note(p, '开始' + labels[stages.indexOf(p.stage)]);
           save(p);
-          const dir = mkdtempSync(join(root, id, 'attempt-'));
+          dir = mkdtempSync(join(root, id, 'attempt-'));
           const input = publicView(p);
+          input.feedback=p.feedback.filter(f=>f.stage===p.stage && f.version===(p.stageVersions?.[p.stage] || 0));
+          if (p.stage==='layout') input.previousLayoutChanges=p.layoutChanges || [];
           if (p.stage === 'research' && !p.researchDigestOnly) {
             const previous = p.versions.findLast(
               (v) => v.research || v.artifacts.some((a) => a.stage === 'research'),
@@ -238,11 +318,10 @@ export function createNightflight({ root, runStage, runLayout }) {
               const refs = previous.research.findings?.flatMap(f=>f.images ?? []) ?? [];
               const copied = new Set();
               input.previousResearchImages = refs.map(ref=>{
-                const file = previous.artifacts.find(a=>a.stage==='research' && a.kind==='image' && a.name===ref.name);
-                check(file,'上一版竞品研究图片缺失',422);
-                const bytes = readFileSync(disk(p,file.storageKey));
-                check(hash(bytes)===ref.sha256,'上一版竞品研究图片发生变化',422);
-                const path = join(dir,'previous-'+filename(file.name));
+                const original=historicalImage(p,ref);
+                check(original,'历史竞品研究原图与哈希无法核对',422);
+                const {file,bytes}=original;
+                const path = join(dir,'previous-'+ref.sha256+'-'+filename(file.name));
                 if (!copied.has(path)) {
                   writeFileSync(path,bytes,{flag:'wx',mode:0o600});
                   copied.add(path);
@@ -253,7 +332,7 @@ export function createNightflight({ root, runStage, runLayout }) {
           }
           if (p.stage === 'visual') {
             const last = p.versions.at(-1);
-            const previous = last?.stage === 'visual' ? last : undefined;
+            const previous = last?.artifacts.some(a=>a.visual?.candidate) ? last : undefined;
             input.previousReferences = (previous?.artifacts ?? []).filter(a => a.visual?.role === 'reference').map(a => {
               const path = join(dir, 'previous-'+filename(a.name));
               copyFileSync(disk(p,a.storageKey), path, constants.COPYFILE_EXCL);
@@ -284,14 +363,26 @@ export function createNightflight({ root, runStage, runLayout }) {
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
               copyFileSync(disk(p, record.storageKey), path, constants.COPYFILE_EXCL);
-              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, visualOnly:record.visualOnly, path };
+              return { name: record.name, kind: record.kind, stage: record.stage, text: record.text, visual:record.visual, visualOnly:record.visualOnly, renderPage:record.renderPage, ...(record.strategyHash ? {strategyHash:record.strategyHash} : {}), path };
+            });
+          }
+          if (p.stage==='copy') {
+            const sources=input.artifacts.filter(file=>file.stage==='strategy' && file.kind==='text');
+            check(sources.length,'未找到本项目当前策略稿，无法交给文案',422);
+            input.strategyHandoff=sources.map(file=>{
+              const bytes=readFileSync(file.path);
+              const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+              const sha256=hash(bytes);
+              check(text.trim() && (!file.strategyHash || file.strategyHash===sha256) &&
+                (file.text===undefined || text===file.text || text===file.text+'\n'),
+                '策略副本与本项目存档不一致或正文为空，请先核对策略稿',422);
+              return {name:file.name,sha256};
             });
           }
           const onEvent = (text) => {
-            const live = get(id);
-            if (live?.claim === claim && typeof text === 'string' && text.trim()) {
-              note(live, text.slice(0, 500));
-              save(live);
+            if (typeof text==='string' && text.trim()) {
+              const event=JSON.stringify({stage:p.stage,at:now(),text:text.slice(0,500)});
+              db.prepare("INSERT INTO project_events(project_id,entry) SELECT id,? FROM projects WHERE id=? AND json_extract(state,'$.claim')=?").run(event,id,claim);
             }
           };
           const result = await (p.stage === 'layout' ? runLayout : runStage)({
@@ -299,6 +390,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             project: input,
             dir,
             onEvent,
+            checkpointDir: join(root,id,'.call-checkpoints',p.attemptKey),
             signal: abort.signal,
           });
           const live = get(id);
@@ -316,7 +408,9 @@ export function createNightflight({ root, runStage, runLayout }) {
             live.claim = null;
             live.owner = null;
             note(live,'已从本版核实发现编辑研究摘要');
+            delete live.attemptKey;
             save(live);
+            prune();
             claim = null;
             continue;
           }
@@ -330,6 +424,7 @@ export function createNightflight({ root, runStage, runLayout }) {
             check(copyHandoffReady(review, names, text), '本版文案尚无完整的双团记录、单案或整组裁定，不能交接', 422);
             live.directions = names;
             live.copyReview = review;
+            live.copyHandoff={projectId:live.id,strategy:input.strategyHandoff};
           }
           if (p.stage === 'visual') {
             const expected = p.mode==='collab' ? [p.choice] : p.directions;
@@ -361,9 +456,13 @@ export function createNightflight({ root, runStage, runLayout }) {
             check(!occupied.has(key), '产物文件名重复：' + name, 422);
             occupied.add(key);
             check(['image', 'pptx', 'text'].includes(a.kind), '产物类型无效', 422);
+            const stored=storeFile(live,name,join(dir,name),a.kind);
+            unpublished.add(disk(live,stored.storageKey));
+            const strategyHash=p.stage==='strategy' && a.kind==='text' ? hash(readFileSync(disk(live,stored.storageKey))) : null;
             return {
-              ...storeFile(live, name, join(dir, name), a.kind),
+              ...stored, ...(strategyHash ? {strategyHash} : {}),
               stage: p.stage,
+              ...(p.stage==='layout' && Number.isInteger(a.renderPage) ? {renderPage:a.renderPage} : {}),
               ...(p.stage === 'visual' && a.visual ? {visual:a.visual} : {}),
               ...(typeof a.text === 'string' ? { text: a.text } : {}),
             };
@@ -373,13 +472,18 @@ export function createNightflight({ root, runStage, runLayout }) {
           }
           if (p.stage === 'research') {
             for (const ref of result.research?.findings?.flatMap(f=>f.images ?? []) ?? []) {
-              const file = outputs.find(a=>a.kind==='image' && a.name===ref.name);
+              let file = outputs.find(a=>a.kind==='image' && a.name===ref.name);
+              if (!file) {
+                file=historicalImage(live,ref)?.file;
+                if (file && !live.artifacts.some(a=>a.storageKey===file.storageKey)) outputs.push(file);
+              }
               check(file && [ref.sourceUrl,ref.pageUrl].every(url=>URL.canParse(url) && new URL(url).protocol==='https:') &&
                 ref.observation?.trim() && ref.title?.trim() && hash(readFileSync(disk(live,file.storageKey)))===ref.sha256,
                 '竞品观察需要本轮原图、来源和匹配的图片哈希',422);
             }
           }
           live.artifacts.push(...outputs);
+          if (p.stage==='layout' && Array.isArray(result.layoutChanges)) live.layoutChanges=result.layoutChanges;
           live.claim = null;
           live.owner = null;
           note(live, '已保存' + outputs.length + '份' + labels[stages.indexOf(p.stage)] + '产物');
@@ -410,7 +514,10 @@ export function createNightflight({ root, runStage, runLayout }) {
               next: result.researchReturn,
             };
             note(live, '策略退回研究：' + result.researchReturn);
-            continueResearch(live);
+            continueResearch(live,true);
+          } else if (p.stage === 'brief' && p.mode==='collab') {
+            live.status='waiting';
+            note(live,'请确认任务卡后开始研究');
           } else if (p.stage === 'copy' && p.mode === 'collab') {
             live.status = 'waiting';
             note(live, '等待你选择创意方向');
@@ -418,13 +525,33 @@ export function createNightflight({ root, runStage, runLayout }) {
             live.status = 'waiting';
             note(live, outputs.some(a=>a.visual?.candidate && !outputs.some(w=>w.visual?.direction===a.visual.direction && w.visual.recommended)) ? '有方向尚无达标主视觉，请查看原因并修改' : '每方向已推荐同批达标最高稿，等待采用');
           } else if (p.stage === 'final') {
-            live.status = 'done';
-            note(live, '本地试跑完成，可查看核对记录与 PPTX');
+            const review=result.finalReview;
+            check(review && ['pass','return'].includes(review.outcome) && typeof review.reason==='string' && review.reason.trim() && Array.isArray(review.pages),'终审未交回有效裁定',422);
+            live.finalReview=review;
+            const pages=live.artifacts.filter(a=>a.stage==='layout' && Number.isInteger(a.renderPage)).map(a=>a.renderPage).sort((a,b)=>a-b);
+            check(new Set(review.pages).size===review.pages.length && review.pages.every(n=>pages.includes(n)),'终审页码与排版实图不符',422);
+            if (review.outcome==='pass') check(pages.length && pages.every((n,i)=>n===i+1 && review.pages.includes(n)),'终审通过前须覆盖每一页排版实图',422);
+            if (review.outcome==='return') {
+              check(stages.includes(review.returnStage) && review.returnStage!=='final','终审退回阶段无效',422);
+              revise(live,review.returnStage,review.reason,'final');
+              live.finalReturn=review;
+              live.status='waiting';
+              note(live,'终审退回'+labels[stages.indexOf(review.returnStage)]+'：'+review.reason);
+            } else {
+              live.status = 'done';
+              note(live, '终审演练完成，可查看核对记录与 PPTX');
+            }
           } else live.stage = stages[stages.indexOf(p.stage) + 1];
+          const completedKey=p.attemptKey;
+          delete live.attemptKey;
           save(live);
+          unpublished.clear();
+          prune();
+          rmSync(join(root,id,'.call-checkpoints',completedKey),{recursive:true,force:true});
           claim = null;
         }
       } catch (error) {
+        for (const path of unpublished) rmSync(path,{force:true});
         const p = get(id);
         if (p && p.claim === claim) {
           if (p.researchDigestOnly && !p.research?.digest) p.research.digestPending = true;
@@ -435,11 +562,12 @@ export function createNightflight({ root, runStage, runLayout }) {
           p.error = String(error.message).slice(0, 1800);
           note(p, p.error);
           save(p);
+          if (dir) prune(dir);
         }
       } finally {
         jobs.delete(id);
         if (closing) {
-          if (!jobs.size) db.close();
+          if (!jobs.size) { db.close(); lease.close(); }
         } else {
           const p = get(id);
           if (p?.status === 'running' && !p.claim) schedule(id);
@@ -451,14 +579,7 @@ export function createNightflight({ root, runStage, runLayout }) {
   for (const { id, status } of list())
     if (status === 'running') {
       const p = get(id);
-      let alive = false;
-      if (p.owner && p.owner !== process.pid) {
-        try {
-          process.kill(p.owner, 0);
-          alive = true;
-        } catch {}
-      }
-      if (!alive) {
+      {
         p.claim = null;
         p.owner = null;
         if (p.researchDigestOnly && !p.research?.digest) p.research.digestPending = true;
@@ -545,17 +666,37 @@ export function createNightflight({ root, runStage, runLayout }) {
     };
     mkdirSync(join(root, id, 'files'), { recursive: true, mode: 0o700 });
     p.attachments = files.map((f) => storeFile(p, f.name, f.bytes, 'attachment'));
-    note(p, '已收到需求，开始本地 Codex 试跑');
-    db.prepare('INSERT INTO projects VALUES(?,?,?)').run(id, p.revision, JSON.stringify(p));
+    note(p, '已收到需求，开始简报阶段');
+    persist(p,raw=>db.prepare('INSERT INTO projects VALUES(?,?,?)').run(id,p.revision,raw));
     schedule(id);
     return p;
   }
+  function bumpVersion(p,stage) {
+    p.stageVersions ||= {};
+    p.stageVersions[stage]=(p.stageVersions[stage] || 0)+1;
+    delete p.attemptKey;
+  }
+  function revise(p,target,text,source='user') {
+    archiveVersion(p);
+    const start=stages.indexOf(target);
+    for (const stage of stages.slice(start)) bumpVersion(p,stage);
+    p.artifacts=p.artifacts.filter(a=>stages.indexOf(a.stage)<start);
+    if (start<=1) { p.research=null; p.researchOnly=false; p.researchFollowup=false; p.researchQuestionAnswered=false; delete p.researchDigestOnly; }
+    if (start<=3) { delete p.copyHandoff; p.copyReview=null; p.directions=[]; p.choice=null; }
+    if (start<=4) {p.visualAdoption=null; p.layoutChanges=[];}
+    if (start<4) p.visualRevisions=0;
+    p.stage=target; p.error=null;
+    delete p.finalReturn;
+    delete p.finalReview;
+    p.feedback.push({stage:target,version:p.stageVersions[target],at:now(),text,source});
+  }
   function action(p, input) {
-    const { kind, opId } = input,
-      text = (input.text ?? '').trim();
+    const { kind, opId } = input;
+    check(input.text===undefined || typeof input.text==='string','消息必须是文字');
+    const text=(input.text || '').trim();
     check(typeof text === 'string' && text.length <= 64000, '消息过长');
     const attachments = input.attachments ?? [];
-    const commandHash = hash(JSON.stringify([kind, text, attachments, input.expectedRevision, ...(input.researchOnly === true ? [true] : [])]));
+    const commandHash = hash(JSON.stringify([kind, text, attachments, input.expectedRevision, ...(input.researchOnly === true ? [true] : []), ...['targetStage','candidateIds','overrideReason'].filter(k=>input[k]!==undefined).map(k=>[k,input[k]])]));
     if (opId) {
       check(safeId.test(opId) && !Object.hasOwn(Object.prototype, opId), '动作编号无效');
       if (Object.hasOwn(p.commands, opId)) {
@@ -563,11 +704,14 @@ export function createNightflight({ root, runStage, runLayout }) {
         return p;
       }
     }
-    if (kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue')
+    if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue')
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
-    if (kind === 'choice') {
+    if (kind==='confirm_brief') {
+      check(p.mode==='collab' && p.stage==='brief' && p.status==='waiting' && !p.finalReturn,'当前没有待确认任务卡',409);
+      p.stage='research'; p.status='running'; note(p,'用户已确认任务卡');
+    } else if (kind === 'choice') {
       check(
-        p.status === 'waiting' && p.stage === 'copy' && p.directions.includes(text),
+        p.status === 'waiting' && !p.finalReturn && p.stage === 'copy' && p.directions.includes(text),
         '当前方向不可选',
         409,
       );
@@ -576,15 +720,26 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.stage = 'visual';
       p.status = 'running';
     } else if (kind === 'adopt') {
-      check(p.status === 'waiting' && p.stage === 'visual', '当前没有待采用的图稿', 409);
+      check(p.status === 'waiting' && !p.finalReturn && p.stage === 'visual', '当前没有待采用的图稿', 409);
       const candidates = p.artifacts.filter(a=>a.visual?.candidate);
-      if (candidates.length) check((p.mode==='collab' ? [p.choice] : p.directions).every(d=>candidates.some(a=>a.visual.direction===d && a.visual.recommended)), '本批有方向尚无达标主视觉，请修改后再采用',409);
-      const chosen = p.artifacts
-        .filter((a) => a.stage === 'visual' && a.kind === 'image' && !['reference','comparison'].includes(a.visual?.role) && (!candidates.length || a.visual?.recommended))
-        .map((a) => a.storageKey);
+      const directions=p.mode==='collab' ? [p.choice] : p.directions;
+      const selections=input.candidateIds;
+      const reason=input.overrideReason;
+      check(reason===undefined || (typeof reason==='string' && reason.length<=4000),'采用说明无效');
+      let selected;
+      if (selections!==undefined) {
+        check(Array.isArray(selections) && selections.length===directions.length && selections.every(id=>typeof id==='string'),'每个方向各选一张主视觉');
+        selected=selections.map(id=>candidates.find(a=>a.storageKey===id));
+        check(selected.every(Boolean) && directions.every(d=>selected.filter(a=>a.visual.direction===d).length===1),'只能选择当前各方向的候选稿',409);
+        check(selected.every(a=>a.visual.recommended) || reason?.trim(),'采用非推荐稿时请写明理由');
+      } else {
+        selected=p.artifacts.filter(a=>a.stage==='visual' && a.kind==='image' && !['reference','comparison'].includes(a.visual?.role) && (!candidates.length || a.visual?.recommended));
+        check(!candidates.length || directions.every(d=>selected.some(a=>a.visual.direction===d)),'请为每个方向选择图稿并说明采用理由',409);
+      }
+      const chosen=selected.map(a=>a.storageKey);
       check(chosen.length, '没有图稿可采用', 409);
       const files = parseAttachments(attachments, [...p.attachments, ...p.artifacts], 'layout');
-      p.visualAdoption = { at: now(), artifacts: chosen,
+      p.visualAdoption = { at: now(), artifacts: chosen, ...(reason?.trim() ? {overrideReason:reason.trim()} : {}),
         materials: files.map(f => storeFile(p, f.name, f.bytes, 'attachment')) };
       note(p, '用户采用本版视觉稿，继续本地排版');
       p.stage = 'layout';
@@ -622,12 +777,15 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
       p.error = null;
       p.research = null;
-      p.copyReview = null;
+      p.copyReview = null; delete p.copyHandoff;
+      p.layoutChanges=[]; p.visualRevisions=0; delete p.finalReturn; delete p.finalReview;
       p.directions = [];
       p.choice = null;
       p.visualAdoption = null;
+      for (const stage of stages.slice(1)) bumpVersion(p,stage);
       if (text)
         p.feedback.push({
+          version:p.stageVersions.research,
           at: now(),
           stage: 'research',
           text,
@@ -635,36 +793,30 @@ export function createNightflight({ root, runStage, runLayout }) {
         });
       note(p, '已保存前版，沿用原简报重新研究' + (text ? '：' + text.slice(0, 180) : ''));
     } else if (kind === 'retry') {
-      check(p.status === 'failed', '当前阶段无需重试', 409);
+      check(p.status === 'failed' || (p.status==='waiting' && p.finalReturn), '当前阶段无需重试', 409);
+      if (p.finalReturn && p.stage==='visual') {
+        check((p.visualRevisions || 0)<3,'视觉修改已达三次',409);
+        p.visualRevisions=(p.visualRevisions || 0)+1;
+      }
+      delete p.finalReturn;
       p.status = 'running';
       p.error = null;
       note(p, '用户重试当前阶段');
     } else if (kind === 'message') {
-      const visual = p.stage === 'visual';
-      check(!visual || p.attachments.length + attachments.length <= 32, '视觉资料累计最多 32 个附件');
-      const files = parseAttachments(attachments, [...p.artifacts, ...p.attachments], visual ? 'visual' : 'project');
-      check(text || files.length, '请输入意见或添加文件');
-      p.attachments.push(...files.map(f => ({...storeFile(p, f.name, f.bytes, 'attachment'),
+      check(p.status!=='running','当前阶段运行中，请在完成后发送修改意见',409);
+      const target=p.status==='done' ? input.targetStage ?? 'layout' : p.stage;
+      check(stages.includes(target) && (!input.targetStage || input.targetStage===target),'返工阶段无效');
+      const visual=target==='visual';
+      check(!visual || (p.visualRevisions || 0)<3,'视觉修改已达三次，请先确认现有稿件',409);
+      check(!visual || p.attachments.length + attachments.length <= 32,'视觉资料累计最多 32 个附件');
+      const files=parseAttachments(attachments,[...p.artifacts,...p.attachments],visual ? 'visual' : 'project');
+      check(text || files.length,'请输入意见或添加文件');
+      p.attachments.push(...files.map(f=>({...storeFile(p,f.name,f.bytes,'attachment'),
         ...(visual && /\.(png|jpe?g)$/i.test(f.name) ? {visualOnly:true} : {})})));
-      p.feedback.push({ at: now(), stage: p.stage, text });
-      note(p, '收到你的意见：' + text.slice(0, 180));
-      if ((p.status === 'waiting' && p.stage === 'visual') || p.status === 'done') {
-        const restart = p.status === 'done' ? 'brief' : 'visual';
-        archiveVersion(p);
-        p.artifacts = p.artifacts.filter((a) => stages.indexOf(a.stage) < stages.indexOf(restart));
-        p.stage = restart;
-        p.status = 'running';
-        p.visualAdoption = null;
-        if (restart === 'brief') {
-          p.researchFollowup = false;
-          p.researchQuestionAnswered = false;
-          p.research = null;
-          p.copyReview = null;
-          p.directions = [];
-          p.choice = null;
-        }
-        note(p, '已保存前版，按修改意见生成新版');
-      }
+      revise(p,target,text);
+      if (visual) p.visualRevisions=(p.visualRevisions || 0)+1;
+      p.status='running';
+      note(p,'已保存前版，按意见修改'+labels[stages.indexOf(target)]);
     } else check(false, '未知操作');
     if (opId) p.commands[opId] = commandHash;
     save(p);
@@ -691,6 +843,10 @@ export function createNightflight({ root, runStage, runLayout }) {
       if (req.method === 'POST')
         check(req.headers.origin === 'http://' + host, '请求必须来自当前工作台', 403);
       const parts = new URL(req.url, 'http://' + host).pathname.split('/').filter(Boolean);
+      if (parts[0] === 'api' && parts[1] === 'library') {
+        await libraryRequest({db,req,res,parts,send,body,filename,check,randomUUID});
+        return;
+      }
       check(parts[0] === 'api' && parts[1] === 'projects', '接口不存在', 404);
       if (parts.length === 2 && req.method === 'GET') {
         send(200, { projects: list() });
@@ -744,7 +900,7 @@ export function createNightflight({ root, runStage, runLayout }) {
     close() {
       closing = true;
       for (const abort of jobs.values()) abort.abort();
-      if (!jobs.size) db.close();
+      if (!jobs.size) { db.close(); lease.close(); }
     },
   };
 }

@@ -4,7 +4,9 @@
 
 在仓库根目录使用 Node 24.13.0，首次执行 `npm run setup:frontend`、`npm run setup:workbench`，以后从 `npm run dev` 启动。打开[夜航提案台](http://127.0.0.1:4420/)。服务需要保持运行。历史七阶段页面可以从[经典工作台](http://127.0.0.1:4420/?classic)和[青屿终审](http://127.0.0.1:4420/#/p/qingyu/proposal/delivery)进入。
 
-准备本机已登录的 Codex CLI，并在 Codex 设置中选定支持本次任务的模型。视觉阶段需要当前账户可用的图像生成能力；研究使用允许的网络检索。请求会使用本机 Codex 的登录身份与额度，提交前请确认简报及附件适合交给所选模型。排版使用 Chrome 或已安装的 Playwright Chromium。开发机可用 `PLAYWRIGHT_CHROMIUM_EXECUTABLE` 指定浏览器。
+普通开发服务准备已登录的 Codex CLI 0.167.0，并在 Codex 设置中选定支持本次任务的模型。视觉阶段需要当前账户可用的图像生成能力；研究使用允许的网络检索。请求会使用本机 Codex 的登录身份与额度，提交前请确认简报及附件适合交给所选模型。排版使用 Chrome 或已安装的 Playwright Chromium。开发机可用 `PLAYWRIGHT_CHROMIUM_EXECUTABLE` 指定浏览器。
+
+桌面应用从「菜单 → 模型与 API」选择模型。完成仓库依赖安装和 build 后，运行 `desktop/nightflight/build.sh "$PWD" /新的目录/夜航提案台.app` 构建。第三个参数 `review` 创建独立数据目录的体验版，使用 Application Support/OnePitch/Review/projects。设置构建环境变量 NIGHTFLIGHT_PYTHON 可指定这台 Mac 已安装依赖的 Python。
 
 ## 亲自跑一次
 

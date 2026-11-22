@@ -1,4 +1,5 @@
-import { constants, existsSync } from 'node:fs';
+import {chromiumPath} from './runtime-dependencies.mjs';
+import { constants } from 'node:fs';
 import { open, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
@@ -15,17 +16,21 @@ async function buildRenderer() {
   const { build } = await import(pathToFileURL(requireApp.resolve('vite')).href);
   const id = 'nightflight-deck-entry';
   const result = await build({
-    root: app, configFile: false, logLevel: 'error', publicDir: false,
+    root: app, define: {'process.env.NODE_ENV':JSON.stringify('production')}, esbuild: {jsx: 'automatic'}, configFile: false, logLevel: 'error', publicDir: false,
     plugins: [{
       name: id,
       resolveId(source) { if (source === id || source === join(app, id)) return '\0' + id; },
       load(source) {
         if (source !== '\0' + id) return;
         return [
+          "import {createElement} from 'react'",
+          "import {renderToStaticMarkup} from 'react-dom/server.browser'",
+          "import {DeckStudioPage} from '/src/proposal/deck-studio/Viewer.tsx'",
+          "export const pageMarkup = page => renderToStaticMarkup(createElement(DeckStudioPage,{page}))",
           "export { compile } from '/src/proposal/deck-studio/engine.ts'",
           "export { exportDeckStudio } from '/src/proposal/deck-studio/export.ts'",
           "export { paginateText } from '/src/proposal/generic-deck/pagination.ts'",
-          'export { compileOutline, legacyPages } from ' + JSON.stringify(fileURLToPath(new URL('./layout-pages.mjs', import.meta.url))),
+          'export { compileOutline, legacyPages, applyPageEdits } from ' + JSON.stringify(fileURLToPath(new URL('./layout-pages.mjs', import.meta.url))),
         ].join(';');
       },
     }],
@@ -89,12 +94,13 @@ async function readSources(project, dir) {
   return sections;
 }
 
-async function render({ title, sections, outline, images }) {
+async function render({ title, sections, outline, images, edits }) {
   const renderer = globalThis.NightflightDeck;
   const theme = { primary: '#143F9B', accent: '#08746D', style: 'business', mode: 'light' };
   const result = outline ? await renderer.compileOutline(outline, images, renderer, theme)
     : await renderer.legacyPages(sections, renderer, theme);
   const deck = { title, pages: result.pages, status: result.status };
+  renderer.applyPageEdits(deck.pages,edits);
   const blob = await renderer.exportDeckStudio(deck, new AbortController().signal);
   const data = await new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -105,9 +111,25 @@ async function render({ title, sections, outline, images }) {
   return { data, deck, outline: result.outline };
 }
 
+export function layoutEdits(project) {
+  const edits=[...(project.previousLayoutChanges ?? [])];
+  for(const item of (project.feedback ?? []).filter(f=>f.stage==='layout' && f.source!=='final')) {
+    for(const line of item.text.trim().split(/\r?\n/u)) {
+      const match=line.trim().match(/^第\s*(\d+)\s*页[，,：:\s]*(?:把|将)?\s*[「『“"](.+?)[」』”"]\s*(?:改成|改为|替换为|换成)\s*[「『“"](.+?)[」』”"][。.!！]?$/u);
+      if(!match || !Number.isSafeInteger(Number(match[1])) || Number(match[1])<1)
+        throw Error('请按「第 2 页，把『原文』改为『新文』」指定每条排版修改，其他版式调整需人工处理。');
+      edits.push({page:Number(match[1]),from:match[2],to:match[3]});
+    }
+  }
+  if(project.feedback?.some(f=>f.source==='final' && f.stage==='layout') && !project.feedback.some(f=>f.stage==='layout' && f.source!=='final'))
+    throw Error('请按终审记录补充具体页码与改字，或先在相应阶段修改内容后重排。');
+  return edits;
+}
+
 export async function runLayout({ project, dir, onEvent = () => {}, signal = new AbortController().signal }) {
   signal.throwIfAborted();
   const root = await realpath(dir);
+  const edits=layoutEdits(project);
   const outline = await buildProposalOutline(project, root);
   const sections = outline ? [] : await readSources(project, root);
   const images = outline ? await readOutlineImages(outline, project, root) : [];
@@ -115,8 +137,7 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
   const code = await buildRenderer();
   signal.throwIfAborted();
   const { chromium } = requireApp('playwright');
-  const chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || (existsSync(chrome) ? chrome : undefined);
+  const executablePath = chromiumPath();
   const browser = await chromium.launch({ headless: true, executablePath });
   const abort = () => { void browser.close().catch(() => {}); };
   signal.addEventListener('abort', abort, { once: true });
@@ -129,9 +150,9 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
   const created = [];
   try {
     signal.throwIfAborted();
-    const page = await browser.newPage({ offline: true });
+    const page = await browser.newPage({ offline: true, viewport:{width:1280,height:720} });
     await page.addScriptTag({ content: code });
-    const { data, deck, outline: fitted } = await page.evaluate(render, { title: project.title, sections, outline, images });
+    const { data, deck, outline: fitted } = await page.evaluate(render, { title: project.title, sections, outline, images, edits });
     signal.throwIfAborted();
     await writeFile(tmp, Buffer.from(data, 'base64'), { flag: 'wx', signal });
     signal.throwIfAborted();
@@ -144,8 +165,25 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
     await writeFile(join(root, preview), JSON.stringify(deck), { flag: 'wx', signal });
     created.push(preview);
     signal.throwIfAborted();
+    // Render the very same page object and component used by the Deck preview.
+    await page.evaluate(()=>{document.body.style.margin='0'});
+    for (const [index, slide] of deck.pages.entries()) {
+      signal.throwIfAborted();
+      await page.evaluate(async slide=>{
+        document.body.innerHTML=globalThis.NightflightDeck.pageMarkup(slide);
+        await document.fonts.ready;
+        await Promise.all([...document.querySelectorAll('svg image')].map(node=>{
+          const image=new Image(); image.src=node.getAttribute('href'); return image.decode();
+        }));
+      },slide);
+      const file='page-'+String(index+1).padStart(4,'0')+'-'+id+'.jpg';
+      const bytes=await page.locator('svg.deck-studio-page').screenshot({type:'jpeg',quality:86});
+      await writeFile(join(root,file),bytes,{flag:'wx',signal});
+      created.push(file);
+      artifacts.push({kind:'image',name:file,renderPage:index+1});
+    }
     await rename(tmp, join(root, name));
-    return { artifacts, pages: deck.pages.length };
+    return { artifacts, pages: deck.pages.length, layoutChanges:edits };
   } catch (error) {
     await Promise.all(created.map(filename => rm(join(root, filename), { force: true })));
     throw error;

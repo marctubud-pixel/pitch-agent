@@ -19,6 +19,6 @@ Run `npm run build`, `npm run preview -- --host 127.0.0.1`, and `npm run test:ex
 
 The files below are viewport captures, with reduced motion. They show synthetic demo content, not real research or customer approval.
 
-- [Desktop visual](screenshots-experience/desktop-visual.png) · [process](screenshots-experience/desktop-process.png) · [comparison](screenshots-experience/desktop-compare.png)
-- [Home](screenshots-experience/desktop-home.png) · [overview](screenshots-experience/desktop-overview.png)
-- [390px visual](screenshots-experience/phone-390-visual.png) · [375px visual](screenshots-experience/phone-375-visual.png) · [390px overview](screenshots-experience/phone-390-overview.png)
+- Desktop visual（归档路径 `screenshots-experience/desktop-visual.png`） · process（归档路径 `screenshots-experience/desktop-process.png`） · comparison（归档路径 `screenshots-experience/desktop-compare.png`）
+- Home（归档路径 `screenshots-experience/desktop-home.png`） · overview（归档路径 `screenshots-experience/desktop-overview.png`）
+- 390px visual（归档路径 `screenshots-experience/phone-390-visual.png`） · 375px visual（归档路径 `screenshots-experience/phone-375-visual.png`） · 390px overview（归档路径 `screenshots-experience/phone-390-overview.png`）

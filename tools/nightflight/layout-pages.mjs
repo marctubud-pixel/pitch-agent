@@ -206,3 +206,33 @@ export async function legacyPages(sections, { compile, paginateText }, theme) {
   }
   return { pages: compile(drafts, footerBrand, theme), status: '本地试运行' };
 }
+
+// Apply a user's precise correction to the same native text objects that feed both
+// the SVG preview and the editable PowerPoint. Ambiguous or overflowing edits pause.
+export function applyPageEdits(pages, edits) {
+  const measure=document.createElement('canvas').getContext('2d');
+  for(const {page:number,from,to} of edits) {
+    const page=pages[number-1];
+    if(!page) throw Error('找不到需要改字的第 '+number+' 页');
+    const matches=[];
+    for(const node of page.nodes.filter(n=>n.kind==='text')) {
+      const strings=node.runs.length ? node.runs.map(r=>r.text) : node.lines;
+      strings.forEach((text,index)=>{
+        if(text.includes(from)) matches.push({node,index,text});
+      });
+    }
+    if(matches.length!==1 || matches[0].text.split(from).length!==2)
+      throw Error('第 '+number+' 页需提供唯一、在同一行内的原文：'+from);
+    const {node,index,text}=matches[0];
+    const updated=text.replace(from,()=>to);
+    const width=(text,font)=>{
+      measure.font=font.weight+' '+font.size+'px "'+font.face+'"';
+      return measure.measureText(text).width+Math.max(0,[...text].length-1)*node.ls;
+    };
+    const usedWidth=node.runs.length ? node.runs.reduce((sum,r,i)=>sum+width(i===index?updated:r.text,r),0) : width(updated,node);
+    if(usedWidth>node.w+1) throw Error('第 '+number+' 页替换文字放不下，请缩短新文后重试');
+    if(node.runs.length) node.runs[index].text=updated;
+    else node.lines[index]=updated;
+    if(page.title===from) page.title=to;
+  }
+}

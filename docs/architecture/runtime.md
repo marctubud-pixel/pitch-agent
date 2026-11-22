@@ -1,6 +1,12 @@
+# 交付应用与历史工程
+
+夜航的七阶段、用户决策和持久化合同见[产品运行规范](../specs/nightflight-runtime.md)。React 入口在 `apps/workbench-preview/nightflight`，HTTP 与 SQLite 在 `tools/nightflight`。默认端口 4420。桌面模型桥使用钥匙串，个人网页使用登录网关和服务端模型桥。
+
+经典页面 `?classic` 属于独立演示，默认读取样例。运行 `npm run dev:http` 时，经典页面使用 4421，连接 4182 的合同后端。该后端保存自己的数据。较早的 `apps/proposal-workbench`、`tools/auto-layout` 和 `tools/local-acceptance` 保留为历史实现、验证工具或夹具。
+
 # 应用与Agent运行架构
 
-规范版本：1.12.0。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
+规范版本：1.12.1。本文件描述当前模块与边界；历史实现和回执索引仍保留在[原架构记录](overview.md)。岗位责任以[Agent组织](../agents/README.md)为准。旧实现与当前接线分别见[六线对账](../development/capability-reconciliation-20261111.md)，未接页面不等于底层模块未实现。
 
 ## 夜航本机运行
 

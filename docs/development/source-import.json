@@ -2243,36 +2243,36 @@
       "reason": " 本轮新增排版前专用只读记录/历史展示，不授B生产或正式批准资格；原导入SHA仍保留。"
     },
     "apps/workbench-preview/vite.config.ts": {
-      "sha256": "bef898e23d935180b174f46049c64650d1d12b52264d01337d3228bbfa6139bb",
-      "reason": "增加夜航构建入口，保留经典页面与原有单文件构建"
+      "sha256": "a638a8fa8e1287c1f02ab266154c418d562c7aa636a6b4650be8ac5218b0d3ec",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/index.html": {
       "sha256": "8cf2212ba00afe55a3e9a6f56873e33492f2085ed17a6e465fd2e4356cd926eb",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "14487a1c0ecff8355400e5015cf5067b7dac191e539bea7bcb44b822e73f7f0e",
-      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
+      "sha256": "8ffe3eb42f835767000094418506ce839f7f078329641e72635dad00733858e5",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "726d54f303679635ccc22ab4bf5560883505c4082e80b920571726656d17c559",
-      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
+      "sha256": "d2d7a953d4240b0887388275ea142ea5cc1aede8416603af99fd33ddb5182b31",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "46b86d93f8fd7fff4940a2ace9cf8cdef9a0d0edbd2ac8731562259895768cde",
-      "reason": "研究底稿的竞品图关联当前项目上传的说明原件，可下载核对。"
+      "sha256": "6d2a7b8e8b39ddfcf46260192de6bf9f3fb655c8232bd7a8e43a3c83fd8a323d",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
       "reason": "夜航研究页及入口按项目模式展示首轮取证、定向补查与协作决定。"
     },
     "apps/workbench-preview/nightflight/src/components/Library.tsx": {
-      "sha256": "3489826272cdc7ad3208c9c92bfdc0e78b106d598cd025abbd4111748c6ca177",
-      "reason": "适配夜航研究结果、策略交接状态及从研究补查的操作"
+      "sha256": "6e33a3e89ce3cebe1d3d76a4329dffabc3bc5f43160bdf588fa4d53f4aaed0af",
+      "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/LogBar.tsx": {
       "sha256": "03275b5753a4013a0d907530633f8331d5781cdfc6576d38b5147be6cd2c9bfb",
@@ -2283,8 +2283,8 @@
       "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
     },
     "apps/workbench-preview/nightflight/src/components/TopBar.tsx": {
-      "sha256": "249fd9c4d3237a88ebccb19bec259a4f8a3b8e17f2c354d5d4bd9a7bf7d563d8",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "c0a8d676b60a1d7a383428317eeede0e1f2f271b71b262fa8452c4e4a039c7ba",
+      "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
       "sha256": "f540951ea3d81d05d01a72a5cfc0782cbe58cf1d493af1aafe793410e64e6a9a",
@@ -2295,8 +2295,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/workspace.css": {
-      "sha256": "a48cdbd74688b579c9c097bc4b21e0ed4425cafcd8df14971fcf6dd4296d5549",
-      "reason": "调整文案标题与单案裁定的桌面展示，协作选案沿用已登记方向。"
+      "sha256": "fda2f0bc10984aea84546f475ef3503686796a9f58dec202eb6d6f09ffcfcdf8",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/types.ts": {
       "sha256": "46b83195c3f4545fedfbee1c939a6bf7def283bc8349988eee55bebc67a7b861",
@@ -2329,6 +2329,30 @@
     "apps/workbench-preview/src/proposal/deck-studio/templates.ts": {
       "sha256": "078554412abcb7139f63d1071ebe898fcf7e535d07148419d475d976d8e23053",
       "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+    },
+    "apps/workbench-preview/docs/DESIGN-SPEC.md": {
+      "sha256": "02fd3d37d0660b1722fa8bbc804bae94a6f9b1aaa37a7edef3546000661bf097",
+      "reason": "归档本机资料路径，避免在独立检出中生成不可用链接。"
+    },
+    "apps/workbench-preview/docs/EXPERIENCE-20261108.md": {
+      "sha256": "def22bf5145d6051832f019b38e95ca9d529dbb5968f1490ad979e4f898b37c1",
+      "reason": "归档本机资料路径，避免在独立检出中生成不可用链接。"
+    },
+    "apps/workbench-preview/docs/SCREENSHOTS.md": {
+      "sha256": "9f8594dbcb492eab4e1db00bffd575dbd64818579445769bdcbac758a26102ab",
+      "reason": "归档本机资料路径，避免在独立检出中生成不可用链接。"
+    },
+    "apps/workbench-preview/docs/fixes/F01-F04.md": {
+      "sha256": "c8bf58cad14ce06d639f9d68144d9ed04e2f92d778177a3690bd58427afff206",
+      "reason": "归档本机资料路径，避免在独立检出中生成不可用链接。"
+    },
+    "apps/workbench-preview/docs/fixes/F05-F07.md": {
+      "sha256": "eb75eb443015b86568516e89a15a53cdcdd3cd9c06181f0be4f997948493235c",
+      "reason": "归档本机资料路径，避免在独立检出中生成不可用链接。"
+    },
+    "apps/workbench-preview/docs/fixes/F05AB-F06A.md": {
+      "sha256": "b3983d7434aa32f8298902aa40bed04ec6cb7c6c2222d3368df60af0532d556b",
+      "reason": "归档本机资料路径，避免在独立检出中生成不可用链接。"
     }
   },
   "nightflightArchive": {

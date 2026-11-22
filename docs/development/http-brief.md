@@ -1,6 +1,6 @@
 # 本地简报HTTP合同与联调
 
-规范版本：1.6.0。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
+规范版本：1.6.1。当前七阶段前端复用较早正式前端的DTO与Brief封装思路，完成项目读取、新建、任务卡保存和确认。本轮追加范围见[七阶段研究接续](seven-stage-research.md)；保留已认可的页面和默认浏览器演示。
 
 ## 启动与数据
 
@@ -11,7 +11,7 @@ npm run dev:brief
 npm run dev:http
 ```
 
-浏览器打开`http://127.0.0.1:4420/`。前者创建独立的`.data/brief-workbench.sqlite`，只绑定127.0.0.1:4182，并显式允许4420来源；后者启动当前应用并设置完整API根`http://127.0.0.1:4182/api/v1`。与默认`npm run dev`使用同一前端端口，切换前先停止自己启动的4420进程。旧4417及原scratch保持。
+浏览器打开`http://127.0.0.1:4421/`。前者创建独立的`.data/brief-workbench.sqlite`，只绑定127.0.0.1:4182，并显式允许4421来源；后者启动当前应用并设置完整API根`http://127.0.0.1:4182/api/v1`。默认夜航使用 4420，可同时运行。旧4417及原scratch保持。
 
 需要隔离数据库或端口时，直接执行`node tools/workbench/brief-server.mjs --db PATH --port PORT --origin http://127.0.0.1:FRONTEND_PORT`，并为前端设置对应`VITE_WORKBENCH_API_URL`。数据库及SQLite旁文件属于本地运行数据，Git不备份。重启时使用同一数据库恢复，不复制或重开旧业务run。
 

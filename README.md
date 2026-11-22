@@ -1,6 +1,6 @@
 # 提案工作台 · Pitch Agent
 
-中文桌面提案应用，从简报、研究、策略、文案与主题、视觉开发到版式和终审交付。默认打开夜航提案台，通过本机已登录的 Codex 运行文字与生图任务，Deck Studio 生成可编辑 PPTX。
+中文桌面提案应用，从简报、研究、策略、文案与主题、视觉开发到版式和终审交付。交付产品是夜航提案台，桌面和个人网页版使用菜单里设置的模型，本机开发也支持登录 Codex CLI 0.167.0，Deck Studio 生成可编辑 PPTX。
 
 ## 快速开始
 
@@ -11,10 +11,14 @@ git clone git@github.com:marctubud-pixel/pitch-agent.git
 cd pitch-agent
 npm run setup:frontend
 npm run setup:workbench
+npm run setup:python
+npm run setup:browser
 npm run dev
 ```
 
 打开[夜航提案台](http://127.0.0.1:4420/)，由你提交 Brief 后开始运行。[夜航本机使用说明](docs/development/nightflight-local.md)涵盖模型、文件和人工采用。经典入口与青屿案例见[使用说明](docs/usage/README.md)。
+
+个人网页版的登录、历史项目迁移、模型设置和部署见[在线测试部署说明](deploy/onepitch/README.md)。
 
 本地简报真实读写已接通：按[HTTP启动与范围](docs/development/http-brief.md)运行`npm run dev:brief`和`npm run dev:http`，使用独立SQLite。来源登记、研究原件读取及[品牌PDF原件保存](docs/development/brief-originals.md)亦已接入；[指定PDF本地解析](docs/development/brief-extraction.md)需显式配置，默认不执行模型；显式受限研究及后续边界见[研究接续](docs/development/seven-stage-research.md)。
 

@@ -4,7 +4,7 @@
 
 [现行工作流](../workflows/提案工作流_现行规则.md)区分人类比稿负责人、比稿 Agent、板块负责人和独立裁判。比稿 Agent 对应下表原“提案总监及调度”职责，逐阶段审核衔接，并在排版前检查新增矛盾、错版或缺件。前台七阶段，独立内容审阅页面及岗位退役，排版后终审保留。
 
-这是已确认的业务分工。[比稿岗位方法](../agents/proposal-director.md)与[排版岗位方法](../agents/layout-owner.md)供后续调用。[青屿23页排版](../../output/qingyu-layout-20261111/README.md)已实际组装、导出及UI复验；旧审读原件留作历史，不伪造通过。通用业务自动编排仍未重接。每轮页面使用 `ui-review` 核验实际界面，并沿用整套工作台的视觉体系。以下表格保留实际工程入口，不能据此视为自动流程已完成。
+这是已确认的业务分工。[比稿岗位方法](../agents/proposal-director.md)与[排版岗位方法](../agents/layout-owner.md)供后续调用。青屿23页排版（归档路径 `../../output/qingyu-layout-20261111/README.md`）已实际组装、导出及UI复验；旧审读原件留作历史，不伪造通过。通用业务自动编排仍未重接。每轮页面使用 `ui-review` 核验实际界面，并沿用整套工作台的视觉体系。以下表格保留实际工程入口，不能据此视为自动流程已完成。
 
 ## 当前视觉岗位 · 2026-11-10
 
@@ -21,8 +21,8 @@
 | 策略负责人 | 研究结论、产品特质与目标用户 → 交叉点与清楚的发力方向 | 当前[基础岗位要求](../agents/strategy-owner.md)；既有工程接口为[strategy contract](../../tools/workbench/strategy-contract.mjs)、[owner-edge](../../tools/workbench/owner-edge.mjs) | 三个简短板块；据实保留依据与版本，缺口标明；原策略Skill不再强制调用 |
 | 文案总监及执行者 | 策略、品牌与人群 → 主张、主题、主副文、创意说明与整稿润色 | [copy driver](../../tools/workbench/local-acceptance-copy-driver.mjs)、[creative panel](../../tools/workbench/creative-panel.mjs) | 创作与评分角色分开；改稿保留原文，文案通过才成为视觉输入 |
 | 视觉总监及执行者 | 主题、搜索卡、参考 → 候选、草图、视觉、应用 mockup | [reference dossier](../../tools/workbench/reference-dossier.mjs)、[sketch](../../tools/workbench/sketch-runtime.mjs)、[final visual](../../tools/workbench/final-visual-runtime.mjs) | 原图与借鉴用途一起传递；新素材不得伪装为已核验事实；失败退参考、结构或精修负责人 |
-| 旧流程内容审阅（历史） | 原审读、问题与处理原件只读保留 | [退役说明](../agents/content-review-owner.md)与[原审读记录](../../output/qingyu-content-review-20261110/README.md) | 不再作为前台环节或独立岗位；当前检查由比稿Agent承担 |
-| 排版负责人 | 有效上游内容、页目的、图片、图表及比稿检查结果 → 页面模型和可编辑导出 | 当前[岗位方法](../agents/layout-owner.md)与[版式工坊接入](../../output/deck-studio-integration-20261109/README.md)；既有[layout runtime](../../tools/workbench/layout-runtime.mjs) | 修改事实或主张退回所属负责人；预览/导出同Deck，排版后终审另验；原编排工具未因前台修改自动迁移 |
+| 旧流程内容审阅（历史） | 原审读、问题与处理原件只读保留 | [退役说明](../agents/content-review-owner.md)与原审读记录（归档路径 `../../output/qingyu-content-review-20261110/README.md`） | 不再作为前台环节或独立岗位；当前检查由比稿Agent承担 |
+| 排版负责人 | 有效上游内容、页目的、图片、图表及比稿检查结果 → 页面模型和可编辑导出 | 当前[岗位方法](../agents/layout-owner.md)与版式工坊接入（归档路径 `../../output/deck-studio-integration-20261109/README.md`）；既有[layout runtime](../../tools/workbench/layout-runtime.mjs) | 修改事实或主张退回所属负责人；预览/导出同Deck，排版后终审另验；原编排工具未因前台修改自动迁移 |
 | 评分组、对应对抗及独立总监 | 规定范围的实际稿件 → 原票、具体问题及有据裁定 | [reference review](../../tools/workbench/reference-review.mjs)、[creative panel](../../tools/workbench/creative-panel.mjs)、[最终审核](../../tools/workbench/final-review-runtime.mjs) | 各阶段 packet 控制读取；首读不带作者推荐或其他裁判意见；不得自创自审 |
 | 人工参与者 | 已勾选节点、观点或素材 → 确认、退回或带异议的指定采用 | [contribution plan](../../tools/workbench/local-contribution-plan.mjs)、[reference input](../../tools/workbench/local-reference-input.mjs) | 人工偏好不是事实证据；超时不等于同意；完整参考输入界面和采用仍待接通 |
 

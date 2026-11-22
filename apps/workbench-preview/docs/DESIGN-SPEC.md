@@ -143,64 +143,64 @@ Breakpoints are at 1180, 1100, 640 px and narrower. At phone width (390px refere
 Paths are relative to `docs/screenshots/desktop-light/` (dark: `../desktop-dark/`, phone: `../phone-light/`; same file names).
 
 ### 7.1 Home: the cabinet
-![Home](screenshots/desktop-light/01-home-cabinet.png)
+Home（归档路径 `screenshots/desktop-light/01-home-cabinet.png`）
 - Eyebrow date, then the display headline with the **orange** phrase "3 need you" (text only, no pill). Single primary button **New proposal** at top right (only one on the page).
 - Left: the open folder for the proposal that needs attention most. Klein back with a tab "NORTHLINE OUTDOOR CO. (FICTIONAL)". Three sheets lean inside: **Next** (near-black card with the next decision and an orange "Go to it" button), **Latest deck** (poster at its true ratio on a mat), **Directions** (A/B/C marks, "Recommended: C"). Below, a white front panel: "2 items need you · 5 days ago" (orange), the project title at h1 size, one-line description, the 8-segment progress bar (the last segment hatched = waiting), meta line, and a black **Open project** button.
 - Right: the Archive drawer: count, filter chips (All / Needs you / KV-poster / Packaging), search field, then the other folders stacked with tinted blues, each with client tab, title, a status chip with a dot, and "5/8 · Next: …".
 - No dashed "empty folder" placeholder is shown once a folder is open.
-- Pulling a folder: ![Pulled](screenshots/desktop-light/02-home-folder-pulled.png)
+- Pulling a folder: Pulled（归档路径 `screenshots/desktop-light/02-home-folder-pulled.png`）
 
 ### 7.2 New proposal (intake)
-![New](screenshots/desktop-light/03-new-proposal.png)
+New（归档路径 `screenshots/desktop-light/03-new-proposal.png`）
 Three-step header (Add the brief → Check the task card → Create as a draft). Four input modes as tiles (Upload a file / Paste text / Describe it / Try a sample); the selected tile has a thick dark outline. A dashed Klein drop zone on pale blue. A note states honestly that, in the demo, text is read locally and mapping is simulated.
 
 ### 7.3 Overview (the reading order is fixed)
-![Overview](screenshots/desktop-light/10-overview-northline.png)
+Overview（归档路径 `screenshots/desktop-light/10-overview-northline.png`）
 Order, top to bottom, and it must not change:
 1. **What this proposal solves**: one h1-size statement, three hairline-separated facts (intended output, use occasion, scope), a "Task card" link, and the hero poster on a mat on the right.
 2. **Progress**: the blue band (see components). Stages appear here once only.
 3. **Still needs your confirmation**: orange count, the decisions waiting, unknown facts, and the Next action.
 4. **Produced so far**: text pieces in a row (research summary, strategic conclusion, directions) then an art row of pieces at true ratios (three visuals + the deck).
 5. **Your ideas · Work in progress · Your recent decisions**: three columns.
-Other states: [plumtide waiting](screenshots/desktop-light/11-overview-plumtide.png), [luma blocked](screenshots/desktop-light/12-overview-luma-blocked.png). Dark: [dark](screenshots/desktop-dark/10-overview-northline.png). Phone: [phone](screenshots/phone-light/10-overview-northline.png).
+Other states: plumtide waiting（归档路径 `screenshots/desktop-light/11-overview-plumtide.png`）, luma blocked（归档路径 `screenshots/desktop-light/12-overview-luma-blocked.png`）. Dark: dark（归档路径 `screenshots/desktop-dark/10-overview-northline.png`）. Phone: phone（归档路径 `screenshots/phone-light/10-overview-northline.png`）.
 
 ### 7.4 Stage 1: Brief & task
-![Brief](screenshots/desktop-light/20-stage-brief.png)
+Brief（归档路径 `screenshots/desktop-light/20-stage-brief.png`）
 Stage header + rail; "The assignment" as a mosaic (title, reference poster, a blue "Intended output" tile, "Use occasion", a tall dark scope tile with an image); four columns (Brand/product, Target audience, Constraints, Open questions) each with an Accepted tag; a big orange **3** "Not known, so not assumed" with the three unknown facts; "Material supplied" cards; "How the work runs" (Automatic vs Assisted radio cards and the checkpoint checkboxes, the chosen checkpoints in orange tint); "Full task card" disclosure.
 
 ### 7.5 Stage 2: Research
-![Research](screenshots/desktop-light/21-stage-research.png)
-A release strip ("Checked and released to strategy" with passed-check chips and "Open reviews & checks"), a big Klein finding statement beside an illustration card, four topic chips, then per-topic sections: finding rows with tags (Supported / Background / Unverified), art cards for cases (dark cards with a corner arrow), and small charts (lead tile in Klein, others pale). Checks drawer: [luma](screenshots/desktop-light/31-research-checks-drawer-luma.png). Blocked state: [luma blocked](screenshots/desktop-light/32-research-blocked-luma.png).
+Research（归档路径 `screenshots/desktop-light/21-stage-research.png`）
+A release strip ("Checked and released to strategy" with passed-check chips and "Open reviews & checks"), a big Klein finding statement beside an illustration card, four topic chips, then per-topic sections: finding rows with tags (Supported / Background / Unverified), art cards for cases (dark cards with a corner arrow), and small charts (lead tile in Klein, others pale). Checks drawer: luma（归档路径 `screenshots/desktop-light/31-research-checks-drawer-luma.png`）. Blocked state: luma blocked（归档路径 `screenshots/desktop-light/32-research-blocked-luma.png`）.
 
 ### 7.6 Stage 3: Strategy
-![Strategy](screenshots/desktop-light/22-stage-strategy.png)
+Strategy（归档路径 `screenshots/desktop-light/22-stage-strategy.png`）
 The question the proposal answers (h1-size, three art cards with a Category/Brand/Audience chip); the intersection diagram (three circles, the centre labelled "The intersection" with the statement in Klein blue); "How we got there" numbered cards with source chips; a near-black Conclusion block with an "Answer to the question" line; three opportunity cards with a coloured top edge and "Leads to …" direction chips.
 
 ### 7.7 Stage 4: Copy & themes
-![Themes](screenshots/desktop-light/23-stage-themes.png)
+Themes（归档路径 `screenshots/desktop-light/23-stage-themes.png`）
 Copy-direction line; three direction cards (A pale blue-grey, B ochre, C deep navy, with the recommended one outlined and tagged); "We recommend C · Out before dark" with three reason tiles and the director note; a side-by-side comparison table; evaluation score cards per direction; the idea box with a used idea. A "kept despite review" tag is neutral, not orange.
 
 ### 7.8 Stage 5: Visual development
-![Visual](screenshots/desktop-light/24-stage-visual.png)
-Direction switcher (three cards), four-step strip, then: reference search chips, candidate references fanned as cards (Kept / Not kept), composition sketches with score bars, the refined visual (poster at true ratio) beside its evaluation, the **Mockups** fold (closed by default; [open](screenshots/desktop-light/27-stage-visual-mockups-open.png)), and "Are the directions different enough?" with the three visuals and pairwise comparison rows (⇄ between compared pairs).
+Visual（归档路径 `screenshots/desktop-light/24-stage-visual.png`）
+Direction switcher (three cards), four-step strip, then: reference search chips, candidate references fanned as cards (Kept / Not kept), composition sketches with score bars, the refined visual (poster at true ratio) beside its evaluation, the **Mockups** fold (closed by default; open（归档路径 `screenshots/desktop-light/27-stage-visual-mockups-open.png`）), and "Are the directions different enough?" with the three visuals and pairwise comparison rows (⇄ between compared pairs).
 
 ### 7.9 Stage 6: Content review
-![Content review](screenshots/desktop-light/25-stage-content-review.png)
+Content review（归档路径 `screenshots/desktop-light/25-stage-content-review.png`）
 Seven pass/revised/open questions with tiles (PASS pale blue, REVISED, OPEN), a list of review rows with check/revise icons, then "The narrative": numbered passages in the serif reading face, with struck-through "WAS:" text and an "Edit wording" action.
 
 ### 7.10 Stage 7: Layout
-![Layout](screenshots/desktop-light/26-stage-layout.png)
+Layout（归档路径 `screenshots/desktop-light/26-stage-layout.png`）
 Three presentation styles (Editorial, Cobalt & lime, Studio) as large selectable cards with a main sample, two small samples and notes; the chosen one is outlined. Below, the deck viewer (arrow keys, thumbnails, full screen) and a "What stays editable in PowerPoint" panel.
 
 ### 7.11 Stage 8: Final review & delivery
-![Delivery stage](screenshots/desktop-light/28-stage-delivery.png)
+Delivery stage（归档路径 `screenshots/desktop-light/28-stage-delivery.png`）
 When waiting: the orange checkpoint card; a solid Klein call-to-action strip "Preview the deck and download the editable PowerPoint"; final review tiles and rows; the directions side-by-side table; the recommendation sentence in Klein; "Remaining limitations".
 
 ### 7.12 Other areas
-[Delivery area](screenshots/desktop-light/40-delivery-area.png) · [Library](screenshots/desktop-light/41-library.png) · [Process & history](screenshots/desktop-light/42-process.png) · [Brief area](screenshots/desktop-light/43-brief-area.png) · [Dev-only area](screenshots/desktop-light/60-dev-area.png)
+Delivery area（归档路径 `screenshots/desktop-light/40-delivery-area.png`） · Library（归档路径 `screenshots/desktop-light/41-library.png`） · Process & history（归档路径 `screenshots/desktop-light/42-process.png`） · Brief area（归档路径 `screenshots/desktop-light/43-brief-area.png`） · Dev-only area（归档路径 `screenshots/desktop-light/60-dev-area.png`）
 
 ### 7.13 WorkBot open
-![WorkBot](screenshots/desktop-light/50-workbot-open.png)
+WorkBot（归档路径 `screenshots/desktop-light/50-workbot-open.png`）
 A right-hand panel: Klein header with the character, "WorkBot", a SIMULATED label, reset and close buttons; scope switch (this project / General); a notice when the scope changed; a welcome card; question suggestions as pale chips; a rounded input with a send button; a footer line saying it explains and links but cannot change data or approve work.
 
 ## 8. States you must keep

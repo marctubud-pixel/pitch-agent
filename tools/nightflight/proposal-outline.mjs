@@ -1,9 +1,10 @@
+import {pythonBinary} from './runtime-dependencies.mjs';
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { realpath } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
-import { headlineFromSections, rowOf, sectionsOf } from '../../apps/workbench-preview/nightflight/src/components/stageText.ts';
+import { headlineFromSections, rowOf, sectionsOf } from '../../shared/stage-text.mts';
 import library from '../../skills/proposal-structure-pilot/references/page-library.json' with { type: 'json' };
 import { materialSheetName, readAttemptText, readPageMaterials } from './outline-materials.mjs';
 
@@ -222,7 +223,7 @@ export async function buildProposalOutline(project, dir) {
   const args = ['-I', '-B', compiler, '--kind', kind, '--directions', ...names, '--format', 'json'];
   if (options.include.length) args.push('--include', ...options.include);
   if (options.singleTouchpoint) args.push('--single-touchpoint');
-  const { stdout } = await execute('python3', args, { maxBuffer: 2 * 1024 * 1024, timeout: 15000 });
+  const { stdout } = await execute(await pythonBinary(), args, { maxBuffer: 2 * 1024 * 1024, timeout: 15000 });
   const skeleton = JSON.parse(stdout);
   const slots = skeleton.pages.filter(p => !p.direction || visible.includes(p.direction));
   const [strategy, copy] = await Promise.all(['strategy', 'copy'].map(stage => stageText(root, artifacts, stage)));
@@ -272,7 +273,7 @@ export async function buildProposalOutline(project, dir) {
         '」用于视觉开发。' : '请比较本次展示的方向，确认进入下一步深化的方案。',
         pending.length && '进入正式制作前待补：', pending,
         sourceMaterials.issues.length && '部分补充材料与本次作品未能对应，需核对材料表。',
-        ...(project.research?.gaps ?? [])), [briefRef, ...sourceMaterials.issues]);
+        ...(project.research?.gaps ?? []).map(gap => typeof gap === "string" ? gap : gap.message)), [briefRef, ...sourceMaterials.issues]);
       if (gaps.length || sourceMaterials.issues.length || project.research?.gaps?.length) page.status = '待补';
     } else page = clientPage(slot, input);
     if (!page) {
