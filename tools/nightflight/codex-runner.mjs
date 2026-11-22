@@ -35,7 +35,7 @@ const stages = {
     '其余追溯与交接信息放入「## 原稿记录」及后续独立章节，保存必要的版本、附件读取情况、确认状态和执行限制。',
   ].join('')],
   research: ['研究', 'research-owner', '根据实际取得的来源列出出处、观察、推论和缺口。网络检索只用无保密内容的品类词；不把模型常识当作已核来源。'],
-  strategy: ['策略', 'strategy-owner', '只写研究结论、方向交叉点、策略发力点三个板块，指出互相支撑的实际依据。'],
+  strategy: ['策略', 'strategy-owner', '先交一句核心策略，再写人群洞察、品牌角色、核心主张与触点。研究依据保留在底稿。'],
   copy: ['文案与主题', 'copy-owner', '依据研究与策略创作三案，组织匿名首读和对应对抗。总监按证据裁定改稿或同稿复核，分别记录单案、整组差异和推荐。'],
   visual: ['视觉开发', 'visual-owner', '按指定文案方向和真实简报直接制作同方向的三张不同主视觉候选。'],
   final: ['终审与交付', 'final-review-owner', '逐页核对实际PPTX提取的文案、次序、图片数量与上游。给出页码、问题、证据、责任和需复核项。只记录本次本地审读，未经检查的维度明示待审。'],
@@ -88,7 +88,6 @@ const verdictSchema = (indices) => objectSchema({
   gaps: stringList,
   next: stringField,
 });
-const strategySchema = objectSchema({ conclusions: stringField, intersection: stringField, focus: stringField });
 const strings = (values) =>
   Array.isArray(values)
     ? [...new Set(values.filter((v) => typeof v === 'string' && v.trim()).map((v) => v.trim()))]
@@ -891,21 +890,11 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
       return {artifacts:[...artifacts,...imageArtifacts],research:{...research,methodVersion}};
     }
     if (stage === 'strategy') {
-      const carrier = strategyCarrier(project,inputs);
-      if (carrier) {
-        const skill=await readFile(join(repo,'skills/strategy-one-pager/SKILL.md'),'utf8');
-        const {body,...handoff}=await makeStrategyOnePager({call,project,inputs,carrier,rules:[...rules,skill]});
-        await addText(body);
-        return {artifacts,...handoff};
-      }
-      const research = project.research;
-      const packet = {brief:project.brief,feedback:project.feedback,materials:inputs.texts,
-        findings:research?.findings ?? [],scope:research?.next,gaps:research?.gaps ?? [],strategyAdvice:research?.strategyAdvice ?? []};
-      const result=await call('依据本轮研究直接撰写三个板块。把资料缺口和未确定的渠道、卖点写为适用范围或假设，提出本轮证据能支持的优先方向。',inputs.images,strategySchema,{context:JSON.stringify(packet)});
-      const {conclusions,intersection,focus}=result.parsedOutput ?? {};
-      if (![conclusions,intersection,focus].every(v=>typeof v==='string' && v.trim())) throw Error('策略输出缺少正文，请重试策略');
-      await addText(['# 策略','## 研究结论',conclusions,'## 方向交叉点',intersection,'## 策略发力点',focus].join('\n\n'));
-      return {artifacts};
+      const carrier = strategyCarrier(project,inputs) ?? 'general';
+      const skill=await readFile(join(repo,'skills/strategy-one-pager/SKILL.md'),'utf8');
+      const {body,...handoff}=await makeStrategyOnePager({call,project,inputs,carrier,rules:[...rules,skill]});
+      await addText(body);
+      return {artifacts,...handoff};
     }
     if (stage === 'copy') {
       const {body,directions,copyReview} = await runCopyReview({call,project,inputs,rules,dir,onEvent});

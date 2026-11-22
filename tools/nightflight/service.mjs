@@ -821,7 +821,8 @@ export function createNightflight({ root, runStage, runLayout }) {
       note(p, '用户重试当前阶段');
     } else if (kind === 'message') {
       check(p.status!=='running','当前阶段运行中，请在完成后发送修改意见',409);
-      const target=p.status==='done' ? input.targetStage ?? 'layout' : p.stage;
+      const reviseStrategy=input.targetStage==='strategy' && stages.indexOf(p.stage)>stages.indexOf('strategy') && p.artifacts.some(a=>a.stage==='strategy');
+      const target=p.status==='done' || reviseStrategy ? input.targetStage ?? 'layout' : p.stage;
       check(stages.includes(target) && (!input.targetStage || input.targetStage===target),'返工阶段无效');
       const visual=target==='visual';
       check(!visual || (p.visualRevisions || 0)<3,'视觉修改已达三次，请先确认现有稿件',409);

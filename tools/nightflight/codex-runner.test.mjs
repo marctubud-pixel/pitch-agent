@@ -216,14 +216,15 @@ process.stdin.on('end',()=>{
      touchpoints:[{kind:'front',name:'正面',action:'展示品类。'},{kind:'side',name:'侧面',action:'解释配料。'},{kind:'back',name:'背面',action:'放产品说明。'}],
      metrics:[{name:'待测：品类识别率',method:'货架盲看记录正确人数占比（待测）'},{name:'口味复述准确率',method:'看图后口述并计数'},{name:'配料查找时间',method:'计时查找配料用时'}],
      constraints:'价格与配料属于任务卡的模拟设定。',opportunity:derivation,decision:derivation,priority:derivation,intersection:'货架辨认和原味表达相交。'};
+   if (packet.carrier==='general') outcome.touchpoints=[{kind:'contact',name:'若在门店首次接触',action:'查看品名'}];
    if (packet.carrier==='kv') outcome.touchpoints=[];
-   if (packet.carrier!=='packaging') outcome.touchpoints.push({kind:'kv',name:'门店海报',action:'用瓶身衔接货架。'});
+   if (['kv','packaging+kv'].includes(packet.carrier)) outcome.touchpoints.push({kind:'kv',name:'门店海报',action:'用瓶身衔接货架。'});
    if(action==='onepager-wrong-touch') outcome.touchpoints.pop();
    if(action==='onepager-scored') outcome.metrics[0].method='实测显示已提升40%';
    if(action==='onepager-internal') outcome.insight='模拟设定的测试茶。';
    body={outcome:action==='onepager-return'?{researchReturn:'请补查本地渠道的实际接触场景'}:outcome};
  }
- if(action==='strategy-direct')body={conclusions:'新品密集',intersection:'让人认出新品',focus:'优先识别，渠道待定'};
+
  if(action.startsWith('copy') || action==='badcopy') body=(${copyFixture.toString()})(input,action);
  if(action==='disabled-host') console.log(JSON.stringify({type:'item.completed',item:{type:'error',message:'code-mode host is disabled'}}));
  if(input.includes('视觉参考检索词')){
@@ -705,11 +706,6 @@ test('follow-up preserves earlier verified evidence, considers user feedback and
   assert.equal(research.ready,false);
 });
 
-test('strategy writes three sections with limits from existing research', async (t) => {
-  const f = await fixture(t, 'strategy-direct');
-  f.project.brief='为测试茶制作一条 TVC';
-  assert.match((await f.run('strategy')).artifacts[0].text,/## 策略发力点\n\n优先识别，渠道待定/);
-});
 test('final reads native slide XML, excludes bulky deck JSON and records missing rendered pages',async t=>{
   const f=await fixture(t,'final');
   const requireApp=createRequire(new URL('../../apps/workbench-preview/package.json',import.meta.url));
@@ -907,20 +903,21 @@ test('a packaging and KV brief collects and reviews both carrier-specific gaps a
 });
 
 
-for (const action of ['ok','kv','linked','return','wrong-ref','wrong-touch','scored','internal']) {
+for (const action of ['ok','kv','linked','general','return','wrong-ref','wrong-touch','scored','internal']) {
   test('one-page packaging strategy from verified findings: '+action,async t=>{
     const f=await fixture(t,'onepager-'+action);
+    if (action==='general') f.project.brief='为测试茶制作新品上市创意提案';
     if (action==='kv') f.project.brief='制作测试茶的春节KV';
     if (action==='linked') f.project.brief='设计测试茶包装与KV';
     const finding={conclusion:'受访顾客关注原味',evidence:'访谈样本提及原味',source:'研究访谈',implication:'标明口味'};
     f.project.research={ready:true,findings:[{...finding,visualOnly:true},finding],strategyAdvice:[{recommendation:'正面写品类',findingIndices:[1]}]};
-    if (!['ok','kv','linked'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
+    if (!['ok','kv','linked','general'].includes(action)) { await assert.rejects(f.run('strategy')); return; }
     const result=await f.run('strategy');
     const md=result.artifacts[0].text,front=md.split('## 研究结论')[0];
     assert.deepEqual(result.strategy.findingNumbers,[2]);
     assert.match(md,/## 核心策略[\s\S]*## 衡量方式[\s\S]*## 研究结论[\s\S]*研究 2/);
-    assert.ok(md.includes(action==='kv'?'## 视觉与 KV 触点':action==='linked'?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
-    assert.equal(md.includes('- 正面：'),action!=='kv');
+    assert.ok(md.includes(action==='general'?'## 视觉与传播触点':action==='kv'?'## 视觉与 KV 触点':action==='linked'?'## 视觉与包装／KV 触点':'## 视觉与包装触点'));
+    assert.equal(md.includes('- 正面：'),!['kv','general'].includes(action));
     assert.equal(md.includes('- 门店海报：'),action==='kv' || action==='linked');
     assert.equal(front.match(/（待测）/g)?.length,3);
     assert.doesNotMatch(front,/模拟设定|待测：|发现2/);

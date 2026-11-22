@@ -1,9 +1,9 @@
 [
   {
-    "source": "项目内修订：夜航研究证据保留与交接条件",
+    "source": "统一夜航研究至策略的直接交接，移除旧策略退回指令。",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r14-20261116",
-    "sha256": "670ca91cffe5b0e6747af8fcca00b340d05e57400fe1ce3e523ebd7499dcf5e7"
+    "sourceVersion": "r15-20261116",
+    "sha256": "d752baa4bb39be3490b5c4ab1b5fe256b72251bad9cbd7484200cd1ef34917be"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
@@ -102,10 +102,10 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "用户确认研究直接交策略成稿，撤销策略退回研究。",
+    "source": "夜航所有策略统一使用一页纸，未定载体按条件说明。",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.6-20261116",
-    "sha256": "393d32997fa3293b6e9026fea74a224c6e0f2dd2cae21160ecf77dc376f031d6"
+    "sourceVersion": "v1.7-20261116",
+    "sha256": "9b7b551955e1426524e27d536dee3328dfb6d890605ddf26c0a1256327d8bfad"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",
