@@ -193,9 +193,17 @@ async function confirmPosterArtworkDetail(call, image, reading, brief, policy, t
   const box=[0,550,1000,1000];
   const crop=await cropOriginal(image,box);
   const detail=await auditPosterArtwork(call,crop,reading,brief,policy,title,true);
-  const issues=artwork.issues.concat(detail.issues.filter(issue=>!artwork.issues.some(original=>
-    original.kind===issue.kind && posterLiteral(original.observed)===posterLiteral(issue.observed))));
-  return {...artwork,issues,detail:{...detail,box}};
+  const confirmed=posterAuthorityClauses(brief).filter(clause=>!/未确认|未定|不要|禁止|不(?:可|得|用|写|印)/u.test(clause));
+  const processTerms=/(?:低温|高温|常温|冷藏|自然)(?:发酵|杀菌|熟成)|(?:无|零|0)添加|生牛乳\s*(?:含量)?\s*(?:≥|>=|大于|不少于)\s*\d+(?:\.\d+)?\s*[%％]/gu;
+  const transcribed=reading.words.split(/[。；\n]/u).filter(line=>!/未见|没有|看不清|疑似|无法|未读出|可能/u.test(line));
+  const claims=[...new Set(transcribed.flatMap(line=>line.match(processTerms) ?? []))].filter(term=>
+    !confirmed.some(clause=>posterLiteral(clause).includes(posterLiteral(term)))).map(observed=>
+    ({kind:'unconfirmed_claim',observed,location:'匿名首读注明的下部图标或小字区域'}));
+  const issues=[...artwork.issues];
+  for (const issue of [...detail.issues,...claims]) {
+    if (!issues.some(original=>original.kind===issue.kind && posterLiteral(original.observed)===posterLiteral(issue.observed))) issues.push(issue);
+  }
+  return {...artwork,issues,detail:{...detail,box},...(claims.length ? {blindProductClaims:claims} : {})};
 }
 
 function reviewPreviewEvidence(originals,previews) {

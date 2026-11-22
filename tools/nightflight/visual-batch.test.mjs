@@ -272,6 +272,16 @@ test('a first read that sees small footer labels triggers one verified crop audi
   assert.equal(batch.winner,2);
 });
 
+test('located and transcribed footer process claims remain actionable if the crop judge leaves an empty list',async()=>{
+  const scope={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},
+    firstLooks:['中下方有五个图标配说明'],blindWords:['冷藏保存 低温发酵 丝滑顺口'],detailIssues:[],cropTitle:async()=>image(8)};
+  const {batch}=await review({...scope,productBrief:yogurtBrief});
+  assert.equal(batch.candidates[0].posterArtworkCheck.issues[0].observed,'低温发酵');
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck.detail.issues,[]);
+  const {batch:confirmed}=await review({...scope,productBrief:yogurtBrief+'本案明确使用低温发酵。'});
+  assert.equal(confirmed.candidates[0].blocked,false);
+});
+
 test('one redraw reuses only same-scope original reading facts and still reruns comparative judgments',async()=>{
   const profile={base:'https://example.test',model:'actual-vision',host:'example.test'};
   const scope={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy,reviewProfile:profile},productBrief:yogurtBrief};
