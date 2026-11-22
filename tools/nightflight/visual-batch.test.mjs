@@ -160,6 +160,18 @@ test('located first-read competitor text survives an empty single-image audit wi
   ]);
 });
 
+test('a bare own brand authorizes only the exact wordmark and leaves reference names and mixed aliases blocked',async()=>{
+  const brief='做一张 A3 海报。本案品牌名：午晴。不要使用参考品牌名：「茉酸奶」。竞品比较，品牌名：「MoreYogurt」。';
+  const {batch,calls}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:brief,
+    blindWords:['品牌「午晴」位于左上角。','品牌「午晴联名茉酸奶」位于杯身中央。','品牌「午晴」及其别名「茉酸奶」位于杯身上。']});
+  const facts=JSON.parse(calls.find(call=>call.task.assignment==='单图海报硬事实核验').task.context).已确认品牌资料;
+  assert.deepEqual(facts.allowedBrands,['午晴']);
+  assert.deepEqual(batch.candidates.map(candidate=>candidate.blocked),[false,true,true]);
+  assert.deepEqual(batch.candidates[1].posterArtworkCheck.issues,[{kind:'foreign_identity',observed:'午晴联名茉酸奶',location:'杯身中央'}]);
+  assert.deepEqual(batch.candidates[2].posterArtworkCheck.issues,[{kind:'foreign_identity',observed:'茉酸奶',location:'杯身上'}]);
+  assert.equal(batch.winner,1);
+});
+
 test('a crop can confirm the chosen title without editing the preserved first read',async()=>{
   const wrong={status:'readable',text:'夜访昆虫，40分钟一场',location:'画面上半部'};
   const exact={...wrong,text:slogan};
@@ -176,6 +188,11 @@ test('a crop can confirm the chosen title without editing the preserved first re
   const cropReads=calls.filter(call=>call.task.assignment==='海报标题原图裁片复读');
   assert.deepEqual(cropReads.map(call=>call.actual.map(frame=>frame.sha256)),[[image(8).sha256]]);
   assert.ok(!JSON.stringify(cropReads).includes(slogan));
+  const director=calls.find(call=>call.task.assignment==='独立视觉总监');
+  assert.ok(!director.task.context.includes(wrong.text));
+  assert.ok(director.task.context.includes(slogan));
+  assert.match(director.task.context,/主标题原图裁片复核.*cropSha256/u);
+  assert.match(director.instruction,/以裁片实见为准/u);
   const {batch:actuallyWrong}=await review({...scope,cropObserved:wrong});
   assert.equal(actuallyWrong.winner,2);
   assert.equal(actuallyWrong.candidates[0].posterTitleCheck.confirmed,false);
@@ -205,6 +222,31 @@ test('a located confirmed value is not a product invention, but a modified or pe
   assert.equal(batch.candidates[1].blocked,false);
   const {batch:pending}=await review({...scope,productBrief:brief.replace('售价','目标售价')});
   assert.ok(pending.candidates[0].posterArtworkCheck.issues.some(issue=>issue.observed==='5.9元一杯'));
+});
+
+test('comparison and pending prices cannot silence a located product claim',async()=>{
+  const scope={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy}};
+  const placed={kind:'unconfirmed_claim',observed:'5.9元一杯',location:'海报左下价签'};
+  for (const context of ['竞品信息，售价 5.9 元一杯。', '目标价，售价 5.9 元一杯。', '售价 5.9 元一杯，售价尚未确认。']) {
+    const {batch}=await review({...scope,productBrief:'请为「午晴」原味冷藏酸奶做 A3 海报。'+context,posterIssues:[[placed],[],[]]});
+    assert.deepEqual(batch.candidates[0].posterArtworkCheck.issues,[placed],context);
+    assert.equal(batch.candidates[0].blocked,true,context);
+    assert.equal(batch.winner,2,context);
+  }
+});
+
+test('an explicit no-violation observation cannot disqualify a clean poster',async()=>{
+  const absences=[
+    {kind:'foreign_identity',observed:'无品牌名、商标或联名标识，杯身为纯白色无字样',location:'中央杯装产品'},
+    {kind:'reference_asset',observed:'无照搬参考素材中的柿子，背景为虚化冷柜线条',location:'整体画面'},
+    {kind:'unconfirmed_claim',observed:'无与客户确认资料冲突内容，所有文字均与已确认海报原文相符',location:'海报底部'},
+  ];
+  const violation={kind:'unconfirmed_claim',observed:'无糖、高钙',location:'杯身正面'};
+  const {batch}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
+    posterIssues:[absences,[violation],[]]});
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck.dismissedAsNoIssue,absences);
+  assert.equal(batch.winner,1);
+  assert.deepEqual(batch.candidates[1].posterArtworkCheck.issues,[violation]);
 });
 
 test('one redraw reuses only same-scope original reading facts and still reruns comparative judgments',async()=>{

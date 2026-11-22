@@ -88,41 +88,79 @@ async function confirmPosterTitle(call, image, first, expected, cropTitle) {
   return {...auditIdentity(result),sha256:image.sha256,cropSha256:crop.sha256,box,observation,confirmed:!sloganIssue(expected,observation)};
 }
 
+const ownFactPrefix=/^(?:本案|本品|本轮|我方|自有)(?:的)?\s*/u;
+const nonOwnFactPrefix=/^(?:竞品|其他品牌|友商|同类(?:品牌|产品)|参考|参照|对标|示例|例如|假设|目标价|目标售价|拟售价)/u;
+const nonFactQualifier=/^(?:(?:仅供参考|仅作参考|只供参考|仅作对比|只作对比|这是竞品|属于竞品|不是本案)|(?:该项|此项|价格|售价|品牌名)?(?:待确认|尚未确认|尚未确定|未定|暂定)$)/u;
+const ownedPosterRequest=/^(?:请\s*)?(?:帮我\s*)?(?:为|给)\s*[「“『"']([^」”』"'\n]{1,32})[」”』"']\s*([^，。；\n]{0,32}?)(?:做|设计|制作)[^。；\n]{0,45}(?:海报|KV|包装)/iu;
+
+function posterAuthorityClauses(brief) {
+  return brief.split(/[。；;！？\r\n]/u).flatMap(sentence=>{
+    const clauses=sentence.split(/[，,]/u).map(part=>part.trim());
+    let otherScope=false;
+    return clauses.flatMap((clause,index)=>{
+      if (ownFactPrefix.test(clause)) otherScope=false;
+      const statement=clause.replace(ownFactPrefix,'');
+      if (nonOwnFactPrefix.test(statement)) otherScope=true;
+      return otherScope || nonFactQualifier.test(clauses[index+1] ?? '') ? [] : [statement];
+    });
+  });
+}
+
 export function posterBrandFacts(brief) {
-  const names=[...brief.matchAll(/(?:品牌(?:名称|名)?\s*(?:为|是|[:：])\s*[「“『]|(?:请为|为|给)\s*[「“『])([^」”』\n]{1,32})[」”』](?=[^\n]{0,45}(?:海报|KV|包装)|[、，。]|$)/gu)]
-    .map(match=>match[1].trim()).filter(Boolean);
-  return {allowedBrands:[...new Set(names)],logoPending:/(?:标志|标识|logo)[^。；，]{0,10}(?:待定|未定|尚未确认|未确定)/iu.test(brief)};
+  const clauses=posterAuthorityClauses(brief);
+  const names=clauses.flatMap(clause=>{
+    const explicit=clause.match(/^品牌(?:名称|名)?\s*(?:为|是|叫|[:：])\s*(.+)$/u)?.[1];
+    const name=(explicit?.replace(/^[「“『"']|[」”』"']$/gu,'') ?? clause.match(ownedPosterRequest)?.[1])?.trim();
+    return name && /^[\p{L}\p{M}\p{N} &·._+-]{1,32}$/u.test(name) && !/待定|未定|待确认|未确认|另定/u.test(name) ? [name] : [];
+  });
+  return {allowedBrands:[...new Set(names)],logoPending:clauses.some(clause=>/^(?:正式)?(?:标志|标识|logo)\s*(?:为|仍|尚)?\s*(?:待定|未定|待确认|未确认|未确定)$/iu.test(clause))};
 }
 
 function locatedBlindBrands(blind, allowedBrands) {
   const marks=[];
-  const allowed=allowedBrands.map(s=>s.normalize('NFKC').toLowerCase().replace(/\s+/gu,''));
-  if (!allowed.length) return marks;
+  const brandKey=value=>value.normalize('NFKC').toLowerCase().replace(/\s+/gu,'');
+  const allowed=new Set(allowedBrands.map(brandKey));
+  if (!allowed.size) return marks;
   for (const sentence of blind.words.split(/[。；\n]/u)) {
-    const brand=sentence.match(/(?:品牌|商标)(?:名|名称|字样)?\s*[「『“‘"']([^」』”’"']{2,32})[」』”’"'](?:\s*及其中文名\s*[「『“‘"']([^」』”’"']{2,32})[」』”’"'])?\s*(?:位于|出现在|印在|写在)([^，,。；;]{2,25})/u);
+    const brand=sentence.match(/(?:品牌|商标)(?:名|名称|字样)?\s*[「『“‘"']([^」』”’"']{1,32})[」』”’"'](?:\s*及其(?:中文名|英文名|别名)\s*[「『“‘"']([^」』”’"']{1,32})[」』”’"'])?\s*(?:位于|出现在|印在|写在)([^，,。；;]{2,25})/u);
     if (!brand || /未见|看不清|疑似|像是|可能|模糊|不像/u.test(sentence)) continue;
     const [,name,alias,location]=brand;
-    if ([name,alias].filter(Boolean).some(mark=>allowed.some(s=>mark.normalize('NFKC').toLowerCase().replace(/\s+/gu,'').startsWith(s)))) continue;
-    marks.push({kind:'foreign_identity',observed:[name,alias].filter(Boolean).join(' '),location:location.trim()});
+    const foreign=[name,alias].filter(mark=>mark && !allowed.has(brandKey(mark)));
+    if (foreign.length) marks.push({kind:'foreign_identity',observed:foreign.join(' '),location:location.trim()});
   }
   return marks;
 }
 
 function confirmedPosterText(brief, title) {
-  const product=brief.match(/(?:请为|为|给)\s*[「“『]([^」”』]+)[」”』]\s*([^，。；\n]{1,32}?)(?:做|设计|制作)(?:一张|一幅|一个)?[^。；\n]{0,28}(?:海报|KV)/u);
-  const price=brief.match(/(?:^|[，。；\n])\s*(?:零售|正式)?售价\s*(?:为|是|[:：])?\s*([0-9]+(?:\.[0-9]+)?\s*元\s*(?:一[杯瓶盒袋]|\/[杯瓶盒袋])?)(?=\s*[,，。；\n]|$)/u)?.[1];
-  return [title,product && product[1]+product[2],price].filter(nonempty);
+  const clauses=posterAuthorityClauses(brief);
+  const descriptions=clauses.flatMap(clause=>{
+    const product=clause.match(ownedPosterRequest);
+    return product?.[2].trim() ? [product[1]+product[2].trim()] : [];
+  });
+  const prices=[...new Set(clauses.flatMap(clause=>{
+    const price=clause.match(/^(?:已确认|已定|最终)?\s*(?:零售|正式)?售价\s*(?:为|是|[:：])?\s*([0-9]+(?:\.[0-9]+)?\s*元\s*(?:一[杯瓶盒袋]|\/[杯瓶盒袋])?)$/u)?.[1];
+    return price ? [price] : [];
+  }))];
+  return [title,...descriptions,...(prices.length===1 ? prices : [])].filter(nonempty);
 }
 
 function posterLiteral(text) {
   return text.normalize('NFKC').replace(/[\s"'「」『』“”‘’]/gu,'').replace(/[。!！]$/u,'');
 }
 
+function saysThereIsNoArtworkIssue({observed}) {
+  const text=observed.trim();
+  if (/但|却|然而|反而|仍(?:有|显示|出现)/u.test(text)) return false;
+  if (/^(?:不存在|未发现|未见|没有|无)(?:任何)?(?:外来|第三方|未经授权的)?(?:品牌名[、和与或]|竞品字样|商标[、和与或]|照搬|复制|与客户.{0,12}冲突|违规|不一致)/u.test(text)) return true;
+  return /(?:与(?:本案|客户)?简报(?:要求)?(?:相符|一致)|符合(?:原始|客户|本案)?简报)(?:[。；，][^但未不缺错]*)?$/u.test(text) &&
+    !/不符|冲突|未经|未确认|缺失|不一致/u.test(text);
+}
+
 async function auditPosterArtwork(call, image, reading, productBrief, sourcePolicy, title) {
   const facts=sourcePolicy.brandFacts ?? posterBrandFacts(productBrief);
   const confirmed=confirmedPosterText(productBrief,title);
   const result=await call([
-    '只检查这一张海报原图的合规事实，不打分。每项必须逐字抄录可辨原字，或写出可识别的专有图形特征，并标注可定位的位置。对匿名读图提供的品牌线索回原图核读。没有有据问题才填空数组。',
+    '只检查这一张海报原图的合规事实，不打分。每项必须逐字抄录可辨原字，或写出可识别的专有图形特征，并标注可定位的位置。对匿名读图提供的品牌线索回原图核读。artworkIssues 数组只写确实存在的违规。没有违规时直接交空数组，不把干净位置或合规说明填成问题。',
     'foreign_identity：可辨识的外来品牌名、商标或联名标识。reference_asset：照搬参考中可识别的专有角色、标志形状或独特物件组合。通用杯形、普通图形、配色及虚化背景的不可辨纹理均不算。',
     'unconfirmed_claim：与客户确认资料冲突或未获确认的属性、配料、口味、工艺、功效、商品印字，以及擅自加的品牌拼音、译名或装饰英文。已确认的文字、正常单位、客户确认的品牌文字、正式标志未定时的空白或纯色占位都可用。',
     '客户原始简报是事实授权依据；已确认品牌资料只列能从原话提取的名称，参考用途和排除项不授权任何第三方内容。',
@@ -137,10 +175,12 @@ async function auditPosterArtwork(call, image, reading, productBrief, sourcePoli
   const recalled=locatedBlindBrands(reading,facts.allowedBrands ?? []);
   const allowed=new Set(confirmed.map(posterLiteral));
   const confirmedFalseAlarms=observed.filter(issue=>issue.kind==='unconfirmed_claim' && allowed.has(posterLiteral(issue.observed)));
-  const issues=observed.filter(issue=>!confirmedFalseAlarms.includes(issue));
+  const dismissedAsNoIssue=observed.filter(saysThereIsNoArtworkIssue);
+  const issues=observed.filter(issue=>!confirmedFalseAlarms.includes(issue) && !dismissedAsNoIssue.includes(issue));
   issues.push(...recalled.filter(issue=>!issues.some(other=>other.kind===issue.kind && other.observed.includes(issue.observed))));
   return {sha256:image.sha256,...auditIdentity(result),issues,...(recalled.length ? {blindBrandIssues:recalled} : {}),
-    ...(confirmedFalseAlarms.length ? {confirmedFalseAlarms} : {})};
+    ...(confirmedFalseAlarms.length ? {confirmedFalseAlarms} : {}),
+    ...(dismissedAsNoIssue.length ? {dismissedAsNoIssue} : {})};
 }
 
 function reviewPreviewEvidence(originals,previews) {
@@ -365,6 +405,11 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const title=await confirmPosterTitle(call,image,reading.slogan,posterSlogan,cropTitle);
     return {artwork,title};
   }) : [];
+  const verifiedTitles=posterChecks.flatMap(({title},index)=>title?.confirmed ? [{candidate:index+1,...title}] : []);
+  const effectiveBlind=verifiedTitles.length ? blind.map((reading,index)=>{
+    const title=posterChecks[index]?.title;
+    return title?.confirmed ? {...reading,slogan:title.observation} : reading;
+  }) : blind;
   const transferAudit = posterTransfer ? await reviewPosterTransfer(call,images,posterTransfer,makePreviews) : null;
   const references = [], selectionThreads = [];
   let packaging = packagingExpected ?? (posterSlogan ? false : undefined);
@@ -431,7 +476,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const checksPackagingText = packaging && role === '品牌';
     const placement = checksPackagingText ? '。onPackStatus：可核实且符合简报及产品资料填 verified，印上方向名或主题句填 theme_printed，存在其他字样错误或把价签等触点文字误印在本体填 text_mismatch，盒身文字或位置看不清填 unverified。reason 要写可见字样及位置' : '';
     const fields = {score:numeric,...(checksPackagingText ? {onPackStatus:{...text,enum:onPackStatuses}} : {})};
-    const reviewInput = checksPackagingText ? JSON.stringify({本案主题仅用于设计:theme}) : role==='用户' ? JSON.stringify(blind) : '';
+    const reviewInput = checksPackagingText ? JSON.stringify({本案主题仅用于设计:theme}) : role==='用户' ? JSON.stringify(effectiveBlind) : '';
     const report = await read(role+'独立评分岗', '给前三张候选分别填 1–5 整数整体分，按本岗责任：'+duties[role]+placement+'。同分也要说明差异，写可定位的依据。',
       fields,reviewInput);
     if (!report.items.every(row => Number.isInteger(row.score) && row.score >= 1 && row.score <= 5)) throw invalidOutput('主视觉原票分数无效');
@@ -464,8 +509,10 @@ export async function reviewVisualBatch({call, direction, images, context, packa
         ...(role==='品牌' && onPackAudits.size ? {包装本体原图复核:Object.fromEntries(onPackAudits)} : {})}));
     return {role,independent,...checked};
   });
-  const ruling = await read('独立视觉总监', '逐图裁定原票及对抗意见。仍有成立硬伤或关键未知时 blocked 为 true；reason 写取舍理由、保留处和具体修改建议。为三张图给互不重复的优先次序 priority（1 最优），只用于合格同分时决胜。不得改分。edit 写具体部位与改法；research 写需补的实景、来源或产品资料。没有待办填无。素材不足须说明。'+packagingEvidenceRule,
-    {blocked:{type:'boolean'},priority:numeric,edit:text,research:text}, JSON.stringify({votes:effectiveVotes,challenges,blind,
+  const titleEvidenceRule=verifiedTitles.length ? '已用同稿原图裁片逐字核实的标题，以裁片实见为准；其他意见若只根据首读漏字或不清误判，不能据此拦截。' : '';
+  const ruling = await read('独立视觉总监', '逐图裁定原票及对抗意见。仍有成立硬伤或关键未知时 blocked 为 true；reason 写取舍理由、保留处和具体修改建议。为三张图给互不重复的优先次序 priority（1 最优），只用于合格同分时决胜。不得改分。edit 写具体部位与改法；research 写需补的实景、来源或产品资料。没有待办填无。素材不足须说明。'+packagingEvidenceRule+titleEvidenceRule,
+    {blocked:{type:'boolean'},priority:numeric,edit:text,research:text}, JSON.stringify({votes:effectiveVotes,challenges,blind:effectiveBlind,
+      ...(verifiedTitles.length ? {主标题原图裁片复核:verifiedTitles} : {}),
       ...(weeklyLabelChecks.size ? {包装日序实读:Object.fromEntries(weeklyLabelChecks)} : {}),
       ...(onPackAudits.size ? {包装本体印字以逐张原图核对为准:Object.fromEntries(onPackAudits)} : {})}));
   if (!ruling.items.every(row=>typeof row.blocked==='boolean' && row.edit?.trim() && row.research?.trim()) || ![1,2,3].every(n=>ruling.items.some(row=>row.priority===n))) throw invalidOutput('主视觉总监裁定不完整');

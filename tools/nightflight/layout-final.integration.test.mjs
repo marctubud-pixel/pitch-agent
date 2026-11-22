@@ -149,6 +149,8 @@ test('Case B refines native slides, rechecks the actual edition and waits for ex
   await writeFile(executable,`#!/usr/bin/env node
 import {createHash,randomUUID} from 'node:crypto';
 import {appendFileSync,existsSync} from 'node:fs';
+process.on('uncaughtExceptionMonitor',error=>
+  appendFileSync(${JSON.stringify(log)},JSON.stringify({fixtureError:error.message})+'\\n'));
 const [mode,action]=process.argv.slice(2);
 const model=mode==='--vision-model'?'test-vision':'deepseek-fixture';
 if(action==='profile') console.log(JSON.stringify({model,base:'https://fixture.invalid',host:'fixture.invalid'}));
@@ -220,8 +222,9 @@ else {
    const initial=prompt.includes('结合全册页序读本批');
    const pageNumbers=pages.map(page=>page['页码']);
    if(role==='美术岗' && ctx['本批逐页稿'].some(page=>page.figures.length)) {
-     if(Object.hasOwn(ctx,'采用图读图') || prompt.includes(${JSON.stringify(visualIntent)}) ||
-        prompt.includes('未看清人物动作') || prompt.includes('后续重画并替换品牌占位') || ctx['本批图号'][0]?.sha256!==${JSON.stringify(sha(image))})
+     if(Object.hasOwn(ctx,'采用图读图') || pages.some(page=>Object.hasOwn(page,'notes')) ||
+        prompt.includes(${JSON.stringify(visualIntent)}) || prompt.includes('未看清人物动作') ||
+        prompt.includes('后续重画并替换品牌占位') || ctx['本批图号'][0]?.sha256!==${JSON.stringify(sha(image))})
        throw Error('图注独立检查混入先前读图或失去采用图指纹');
      if(!prompt.includes('实际页图中的画面重点、并排图注与对应作品核对') ||
         !prompt.includes('数包装实物和线描图标要分开') || !prompt.includes('可删的配料细数或装饰图标数用 P1'))
@@ -285,7 +288,7 @@ else {
    if (role==='美术岗' && pages.some(p=>p['页码']===7))
      issues.push({...issue,page:7,level:'P1',operation:'visual',target:'visual',
        problem:'可重绘原图光影',evidence:'领读主体背光',change:'留给视觉阶段提案人决定'});
-   if (role==='美术岗' && pages.some(p=>p['页码']===7 && p.notes.join('').includes('排版前请核对展签') && !p.text.includes('A1 · 采用原图')))
+   if (role==='美术岗' && pages.some(p=>p['页码']===7 && p.images.some(image=>image.sha256===${JSON.stringify(sha(image))}) && !p.text.includes('A1 · 采用原图')))
      issues.push({...issue,page:7,level:'P1',problem:'单图无展签',evidence:'全开图页的左右留空',change:'用双线画框和展签。',
        operation:'gallery',from:'',to:'',quote:''});
    if (role==='措辞岗' && pages.some(p=>p['页码']===7 && p.text.includes('成品展示')))
@@ -333,7 +336,11 @@ else {
     for(let i=0;i<600 && state.status==='running';i++) {
       await new Promise(resolve=>setTimeout(resolve,100));state=await request();
     }
-    assert.notEqual(state.status,'failed',state.error);
+    if (state.status==='failed') {
+      const calls=await readFile(log,'utf8').catch(()=>'');
+      const errors=calls.trim().split('\n').filter(Boolean).map(line=>JSON.parse(line).fixtureError).filter(Boolean);
+      assert.fail([state.error,...errors].filter(Boolean).join(' | '));
+    }
     return state;
   }
   let state=await wait(await request({kind:'adopt',draftOnly:true,expectedRevision:1}));
