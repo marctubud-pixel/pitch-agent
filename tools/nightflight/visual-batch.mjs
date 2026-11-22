@@ -289,8 +289,10 @@ function posterTransferCheck({value,axis,candidate,image,reference,required,crit
   const uncertain = relation==='unknown' || (criterion &&
     (value.targetStatus==='unknown' || value.evidenceStatus==='uncertain' || contradictory));
   const matched = relation===expected && (!criterion || targetMatched);
+  const hardCondition=criterion?.hardCondition;
   const hardEvidence=typeof value.hardEvidence==='string' ? value.hardEvidence.trim() : '';
-  const confirmedHardMismatch=value.hardStatus==='mismatch' && value.evidenceStatus==='clear' && !unread && nonempty(hardEvidence) &&
+  const confirmedHardMismatch=hardCondition && value.hardStatus==='mismatch' && value.evidenceStatus==='clear' && !unread && !targetMatched &&
+    nonempty(hardEvidence) && posterLiteral(hardEvidence)!==posterLiteral(hardCondition) &&
     value.candidateEvidence.includes(hardEvidence) && !/未核实|看不清|无法|疑似|可能/u.test(hardEvidence);
   const hardStatus=confirmedHardMismatch ? 'mismatch' : value.hardStatus==='matched' && value.evidenceStatus==='clear' && !unread ? 'matched' : 'unknown';
   return {required,relation,status:uncertain ? 'unknown' : matched ? 'matched' : 'mismatch',

@@ -691,6 +691,31 @@ test('a declared poster constraint only blocks when the blind evidence contains 
   assert.deepEqual(reread[0].schema.properties.reference.required,['布局']);
 });
 
+test('poster constraints that contradict their own evidence get reread before blocking',async()=>{
+  const target=structuredClone(criteria);
+  target[0].axes.布局.hardCondition='标题居中';
+  target[1].axes.布局.hardCondition='标题在左';
+  target[2].axes.布局.hardCondition='标题居中';
+  const rows=scopedAuditRows();
+  rows[0].checks.布局={...rows[0].checks.布局,relation:'different',targetStatus:'mismatch',
+    candidateEvidence:'“标题居中”。',hardStatus:'mismatch',hardEvidence:'“标题居中”。'};
+  rows[1].checks.布局={...rows[1].checks.布局,relation:'same',
+    hardStatus:'mismatch',hardEvidence:'人物和标本柜在右'};
+  rows[2].checks.布局={...rows[2].checks.布局,relation:'different',targetStatus:'mismatch',
+    candidateEvidence:'标题在右侧',hardStatus:'mismatch',hardEvidence:'标题在右侧'};
+  const {batch,calls}=await review({rows,posterTransfer:{reference,transfers,criteria:target,sourcePolicy:posterPolicy,selectionPolicy:POSTER_EVIDENCE_POLICY},
+    productBrief:yogurtBrief});
+
+  assert.equal(batch.winner,1);
+  assert.deepEqual(batch.candidates.map(c=>c.blocked),[false,false,true]);
+  assert.deepEqual(batch.candidates.map(c=>c.transferAudit.checks.布局.hardStatus),['unknown','unknown','mismatch']);
+  assert.deepEqual(batch.candidates[0].hardIssues,[]);
+  assert.deepEqual(batch.candidates[1].hardIssues,[]);
+  assert.match(batch.candidates[2].hardIssues[0],/布局.*「标题居中」.*成图实见「标题在右侧」/u);
+  const rereads=calls.filter(call=>call.task.assignment==='海报借改疑点原图复核');
+  assert.deepEqual(rereads.map(call=>call.actual[1].sha256),[images[0].sha256,images[1].sha256]);
+});
+
 test('poster redraw prefers fewer concrete defects over a higher prior opinion or score',async()=>{
   const foreign={kind:'foreign_identity',observed:'MoreYogurt',location:'杯身正中'};
   const feature={kind:'unconfirmed_claim',observed:'有机认证',location:'左上标题下方'};
