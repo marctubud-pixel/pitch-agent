@@ -271,6 +271,49 @@ test('包装逐页稿按采用图首读核实共同印字和实物陈列',async 
     assert.equal(sent.length,1);
   });
 
+  await t.test('O/77 图注保留同版印刷规格和画面关系，装饰物件数不从首读抄进页面',async()=>{
+    const recorded=structuredClone(materials);
+    const looseIngredients='散放的配料包括1颗核桃、1颗巴旦木、1颗腰果和3片冻干草莓';
+    const packageIcons='七个小包装的示意图从文字延伸到独立包装小袋附近，形成视觉连贯性';
+    recorded.figures[1].id='B2';
+    recorded.figures[1].observation.visibleDetails.push(looseIngredients);
+    recorded.figures[2].observation.visibleDetails.push(packageIcons);
+    const safe=structuredClone(draft);
+    const compare=safe.chapters[2].pages[0];
+    const boxes=safe.chapters[1].pages;
+    boxes[2].figureId=boxes[3].figureId='B2';
+    compare.visibleQuotes[1]='散放的配料';
+    compare.visibleQuotes[2]='小包装的示意图从文字延伸到独立包装小袋附近';
+    boxes[2].visibleQuotes=['25克×7袋'];
+    boxes[4].visibleQuotes=[compare.visibleQuotes[2]];
+    const b2=structuredClone(safe);
+    b2.chapters[1].pages[2].visibleQuotes=[looseIngredients];
+    const c1=structuredClone(safe);
+    c1.chapters[2].pages[0].visibleQuotes[2]=packageIcons;
+
+    for (const [attempt,message] of [[b2,/B2 方向页图注/u],[c1,/并排页图注/u]]) {
+      const {result,sent}=await replay(recorded,attempt,safe);
+      assert.equal(sent.length,2);
+      assert.match(sent[1].slice(sent[0].length),message);
+      assert.deepEqual(result.plan.figures,recorded.figures);
+      assert.match(result.draft,/25克×7袋/u);
+      assert.match(result.draft,/小包装的示意图从文字延伸到独立包装小袋附近/u);
+      assert.doesNotMatch(result.draft,/3片冻干草莓|七个小包装的示意图/u);
+    }
+  });
+
+  await t.test('客户要求画面实物可数时，可回报有原图依据的件数',async()=>{
+    const reviewed=structuredClone(materials);
+    reviewed.brief.original+='客户要求七袋全部可见、可数。';
+    const visible='前景摆放六袋小袋实物';
+    reviewed.figures[0].observation.visibleDetails.push(visible);
+    const compared=structuredClone(draft);
+    compared.chapters[1].pages[0].visibleQuotes=[visible];
+    const {result,sent}=await replay(reviewed,compared);
+    assert.equal(sent.length,1);
+    assert.match(result.draft,/前景摆放六袋小袋实物/u);
+  });
+
   await t.test('确实在三张图读到了配料的原字才能写共有印字',async()=>{
     const allLabeled=structuredClone(materials);
     allLabeled.figures[2].observation.legibleText.push(recipe);

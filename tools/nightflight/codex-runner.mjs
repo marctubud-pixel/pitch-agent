@@ -1458,7 +1458,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal),
             cropTitle:(image,box)=>cropReviewRegion(dir,image,box,signal)} : {}),
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer),
-            sourcePolicy:{brandFacts:posterBrandFacts(project.brief),
+            sourcePolicy:{brandFacts:posterBrandFacts(project.brief),hasBrandArtwork:generationContext.hasBrandArtwork,
               mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
             paperAspect:posterPaper},
           findComparators:async()=>{
