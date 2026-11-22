@@ -89,6 +89,7 @@ async function confirmPosterTitle(call, image, first, expected, cropTitle) {
 }
 
 const ownFactPrefix=/^(?:本案|本品|本轮|我方|自有)(?:的)?\s*/u;
+const posterProductSurface=/(?:杯|瓶|罐|盒|袋)(?:身|盖|面|体|装产品)|包装(?:本体|正面)|产品本体/u;
 const nonOwnFactPrefix=/^(?:竞品|其他品牌|友商|同类(?:品牌|产品)|参考|参照|对标|示例|例如|假设|目标价|目标售价|拟售价)/u;
 const nonFactQualifier=/^(?:(?:仅供参考|仅作参考|只供参考|仅作对比|只作对比|这是竞品|属于竞品|不是本案)|(?:该项|此项|价格|售价|品牌名)?(?:待确认|尚未确认|尚未确定|未定|暂定)$)/u;
 const ownedPosterRequest=/^(?:请\s*)?(?:帮我\s*)?(?:为|给)\s*[「“『"']([^」”』"'\n]{1,32})[」”』"']\s*([^，。；\n]{0,32}?)(?:做|设计|制作)[^。；\n]{0,45}(?:海报|KV|包装)/iu;
@@ -156,31 +157,45 @@ function saysThereIsNoArtworkIssue({observed}) {
     !/不符|冲突|未经|未确认|缺失|不一致/u.test(text);
 }
 
-async function auditPosterArtwork(call, image, reading, productBrief, sourcePolicy, title) {
+async function auditPosterArtwork(call, image, reading, productBrief, sourcePolicy, title, detail=false) {
   const facts=sourcePolicy.brandFacts ?? posterBrandFacts(productBrief);
   const confirmed=confirmedPosterText(productBrief,title);
   const result=await call([
-    '只检查这一张海报原图的合规事实，不打分。每项必须逐字抄录可辨原字，或写出可识别的专有图形特征，并标注可定位的位置。对匿名读图提供的品牌线索回原图核读。artworkIssues 数组只写确实存在的违规。没有违规时直接交空数组，不把干净位置或合规说明填成问题。',
+    detail ? '只看实际海报下部的无损裁片。逐个抄读小字和图标说明，核对配料、工艺、功效、装饰英文和品牌拼音有没有本案依据。要注明实际字样和裁片内位置。' : '只检查这一张海报原图的合规事实，不打分。每项必须逐字抄录可辨原字，或写出可识别的专有图形特征，并标注可定位的位置。对匿名读图提供的品牌线索回原图核读。',
+    'artworkIssues 数组只写确实存在的违规。没有违规时直接交空数组，不把干净位置或合规说明填成问题。',
     'foreign_identity：可辨识的外来品牌名、商标或联名标识。reference_asset：照搬参考中可识别的专有角色、标志形状或独特物件组合。通用杯形、普通图形、配色及虚化背景的不可辨纹理均不算。',
-    'unconfirmed_claim：与客户确认资料冲突或未获确认的属性、配料、口味、工艺、功效、商品印字，以及擅自加的品牌拼音、译名或装饰英文。已确认的文字、正常单位、客户确认的品牌文字、正式标志未定时的空白或纯色占位都可用。',
+    'unconfirmed_claim：与客户确认资料冲突或未获确认的属性、配料、口味、工艺、功效、商品印字，以及擅自加的品牌拼音、译名或装饰英文。已确认的文字、正常单位、客户确认的品牌文字、正式标志未定时的空白或纯色占位都可用。画面文字区与商品本体分开核对，未采用品牌原件时，商品本体只按简报明确要求印出的原字来核。',
     '客户原始简报是事实授权依据；已确认品牌资料只列能从原话提取的名称，参考用途和排除项不授权任何第三方内容。',
-  ].join('\n'),[image],object({artworkIssues:posterArtworkSchema}),{delegate:true,rules:[],assignment:'单图海报硬事实核验',
-    context:JSON.stringify({客户原始简报:productBrief,已确认品牌资料:facts,已确认海报原文:confirmed,允许借用的画面关系:sourcePolicy.approvedReferenceUse,
+  ].join('\n'),[image],object({artworkIssues:posterArtworkSchema}),{delegate:true,rules:[],assignment:detail ? '海报下部商品小字裁片核验' : '单图海报硬事实核验',
+    context:JSON.stringify({客户原始简报:productBrief,已确认品牌资料:facts,已确认海报原文:confirmed,
+      已采用品牌原件:sourcePolicy.hasBrandArtwork===true,允许借用的画面关系:sourcePolicy.approvedReferenceUse,
       参考排除项:sourcePolicy.mainReferenceExclusions,原图匿名首读:reading.words})});
   const observed=result.parsedOutput?.artworkIssues;
   if (!Array.isArray(observed) || observed.length>posterArtworkSchema.maxItems ||
       observed.some(issue=>!issue || !Object.hasOwn(posterArtworkIssues,issue.kind) || !nonempty(issue.observed) || !nonempty(issue.location))) {
     throw invalidOutput('海报合规须逐图记录实际看到的违规原字或可辨认图形及位置。');
   }
-  const recalled=locatedBlindBrands(reading,facts.allowedBrands ?? []);
+  const recalled=detail ? [] : locatedBlindBrands(reading,facts.allowedBrands ?? []);
   const allowed=new Set(confirmed.map(posterLiteral));
-  const confirmedFalseAlarms=observed.filter(issue=>issue.kind==='unconfirmed_claim' && allowed.has(posterLiteral(issue.observed)));
+  const confirmedFalseAlarms=observed.filter(issue=>issue.kind==='unconfirmed_claim' &&
+    allowed.has(posterLiteral(issue.observed)) && !posterProductSurface.test(issue.location));
   const dismissedAsNoIssue=observed.filter(saysThereIsNoArtworkIssue);
   const issues=observed.filter(issue=>!confirmedFalseAlarms.includes(issue) && !dismissedAsNoIssue.includes(issue));
   issues.push(...recalled.filter(issue=>!issues.some(other=>other.kind===issue.kind && other.observed.includes(issue.observed))));
   return {sha256:image.sha256,...auditIdentity(result),issues,...(recalled.length ? {blindBrandIssues:recalled} : {}),
     ...(confirmedFalseAlarms.length ? {confirmedFalseAlarms} : {}),
     ...(dismissedAsNoIssue.length ? {dismissedAsNoIssue} : {})};
+}
+
+async function confirmPosterArtworkDetail(call, image, reading, brief, policy, title, cropOriginal, artwork) {
+  const notice=[reading.first,reading.words].join('。');
+  if (!cropOriginal || !/(?:中下|下方|下部|底部)[^。；]{0,22}(?:图标|小字|卖点|说明|品牌|标志)/u.test(notice)) return artwork;
+  const box=[0,550,1000,1000];
+  const crop=await cropOriginal(image,box);
+  const detail=await auditPosterArtwork(call,crop,reading,brief,policy,title,true);
+  const issues=artwork.issues.concat(detail.issues.filter(issue=>!artwork.issues.some(original=>
+    original.kind===issue.kind && posterLiteral(original.observed)===posterLiteral(issue.observed))));
+  return {...artwork,issues,detail:{...detail,box}};
 }
 
 function reviewPreviewEvidence(originals,previews) {
@@ -363,9 +378,10 @@ export async function reviewVisualBatch({call, direction, images, context, packa
   if (sourcePolicy && (!nonempty(productBrief) || typeof sourcePolicy.mainReferenceExclusions!=='string')) {
     throw Error('海报品牌事实核对需要客户原始简报和本方向参考排除项。');
   }
-  const readbackScope=sourcePolicy && posterTransfer.reviewProfile ?
+  const profile=posterTransfer?.reviewProfile;
+  const readbackScope=sourcePolicy && profile?.base && profile?.model ?
     createHash('sha256').update(JSON.stringify([direction,productBrief,posterSlogan,sourcePolicy,
-      posterTransfer.reference.image.sha256,posterTransfer.reference.threadId,posterTransfer.reviewProfile,Boolean(cropTitle)])).digest('hex') : null;
+      posterTransfer.reference.image.sha256,posterTransfer.reference.threadId,[profile.base,profile.model],Boolean(cropTitle)])).digest('hex') : null;
   const prior=readbackScope && priorReview?.readbackScope===readbackScope
     ? new Map(priorReview.candidates.map(candidate=>[candidate.blind.sha256,candidate])) : new Map();
   const checksInnerPackets=packagingExpected===true && productBrief && confirmsInnerPackets(productBrief);
@@ -401,7 +417,8 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     const former=prior.get(image.sha256);
     if (former?.posterArtworkCheck?.sha256===image.sha256)
       return {artwork:former.posterArtworkCheck,title:former.posterTitleCheck,reused:true};
-    const artwork=await auditPosterArtwork(call,image,reading,productBrief,sourcePolicy,posterSlogan);
+    const baseArtwork=await auditPosterArtwork(call,image,reading,productBrief,sourcePolicy,posterSlogan);
+    const artwork=await confirmPosterArtworkDetail(call,image,reading,productBrief,sourcePolicy,posterSlogan,cropTitle,baseArtwork);
     const title=await confirmPosterTitle(call,image,reading.slogan,posterSlogan,cropTitle);
     return {artwork,title};
   }) : [];

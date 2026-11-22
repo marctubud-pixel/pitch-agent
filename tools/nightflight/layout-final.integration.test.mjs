@@ -226,6 +226,8 @@ else {
         prompt.includes(${JSON.stringify(visualIntent)}) || prompt.includes('未看清人物动作') ||
         prompt.includes('后续重画并替换品牌占位') || ctx['本批图号'][0]?.sha256!==${JSON.stringify(sha(image))})
        throw Error('图注独立检查混入先前读图或失去采用图指纹');
+     if(!Array.isArray(ctx['图注件数核对']) || ctx['图注件数核对'].length)
+       throw Error('实页没有精确的图注件数，不应生成核对项');
      if(!prompt.includes('实际页图中的画面重点、并排图注与对应作品核对') ||
         !prompt.includes('数包装实物和线描图标要分开') || !prompt.includes('可删的配料细数或装饰图标数用 P1'))
        throw Error('美术岗未独立核对实页图注与数量');

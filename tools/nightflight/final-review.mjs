@@ -11,7 +11,7 @@ import {optionalFigureCounts} from './manuscript.mjs';
 import {pythonBinary} from './runtime-dependencies.mjs';
 
 export const finalProtocol='case-b-1.2.0';
-const finalRuleVersion='1.2.4';
+const finalRuleVersion='1.2.5';
 const roles={
   logic:'逻辑岗：审既定要求、客户立场、全册叙事衔接、事实和统计口径。图表不能共用不同分母、单位或时期。用本版可核对的原文定位。',
   copy:'措辞岗：把大屏上的长句和调研腔压成短句，保留限定、证据和已定策略及主副标。按现有材料纠正错误表述。',
@@ -104,6 +104,7 @@ function routeIssue(issue,role) {
 }
 
 const policy='以 Brief 的本轮交付为准。影响本轮提案的标 impact=proposal。P0 只用于已证实的事实或数据错写、违反已确认要求、关键图文缺失或不可辨认。逐项定位出错的原字、数据或被挡住的位置。P1 用于可读的长句、换行、留白、美术和局部表达；建议改美观或加快阅读时填 P1。已注明品牌待定、客户待选等正常提案事项按实情保留。只影响后续制版、印刷或发布的待核资料标 impact=production、P1。';
+const captionAudit='逐项核验图注件数核对里的每个页码、图号和图注原文。图注在版面上的实物、印刷和线描须分别对照对应作品，只能引用本页实际可定位的证据。图注上的非必要精确件数如果对不上画面或无法核实，用 P1 提议删去件数，保留可见关系。不得删改客户要求或已确认规格。并排页不同图号分别给出意见，图注件数项不受单页一条 P1 的限制。';
 const operations='每项填页码、严重程度、问题、实际证据、改法和责任。operation=text 时给能在本页 title、眉标 label 或单条 points 找到的唯一原文 from、短的替换 to 和本版原材料逐字引用 quote。同义精简的 quote 可空。保持数据、限定和方向，已核事实写准，待核说明写清。图表口径混排时，在同页将有直接依据的数据分别写清各自对象和时期。gallery 对单张作品图加展框和极简展签。comparison 等比优化并排图。reflow 调中文断行。rhythm 调页脚对比和节奏。shadows 清理默认投影。凡需变更已定策略、主副标、补商品事实或重绘原图，用 hold 且给实际责任阶段。眉标或说明不准确可由版式改字。无法用上述改法完成的版式意见填 note。直修和 note 的 target 填 layout。非 text 项的 from、to、quote 填空。同一项在本批只报一次，P1 每页合并为最值得做的一条。';
 
 async function audit({call,plan,edition,round,selected,prior=[],verify=false,receipts,onEvent}) {
@@ -121,6 +122,16 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
       全册页序:sequence,Brief:plan.brief,策略:plan.strategy,已选文案:plan.copy,
       ...(craft ? {
         本批图号:figures.map(({id,name,sha256})=>({id,name,sha256})),
+        图注件数核对:pages.flatMap(page=>{
+          const rendered=norm(edition.native[page.number-1].text.join(''));
+          return page.points.flatMap((_,index)=>{
+            const entry=figureCaption(page,index);
+            const figure=entry && figures.find(item=>item.id===entry.figureId);
+            return figure && rendered.includes(norm(entry.caption)) &&
+              optionalFigureCounts(entry.caption,figure,plan.brief.original).length
+              ? [{页码:page.number,图号:entry.figureId,图注原文:entry.caption}] : [];
+          });
+        }),
         本批逐页稿:pages.map(({number,role,figures})=>({number,role,figures})),
       } : {采用说明:plan.adoption,采用图读图:figures,本批逐页稿:pages}),
       本批PPT:numbers.map(n=>{
@@ -136,7 +147,8 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
       response=await call([roles[role],
         '按附件顺序审页 '+numbers.join('、')+'。只判断自己的审稿职责。',
         verify || round>1?'逐项对照本批实际修后图、正文和旧意见，只交回新版仍存在的问题。':'结合全册页序读本批，逐页给证据。',
-        policy,operations].join('\n'),images,issueSchema(numbers),{delegate:true,context:JSON.stringify(context)});
+        policy,operations,...(craft && context.图注件数核对.length?[captionAudit]:[])].join('\n'),
+      images,issueSchema(numbers),{delegate:true,context:JSON.stringify(context)});
     } catch(error) {
       if(error.code!=='MODEL_OUTPUT_LENGTH') throw error;
       const {model,threadId:completionId,inputPacketHash:inputSha256}=error.receipt;
@@ -169,17 +181,21 @@ async function audit({call,plan,edition,round,selected,prior=[],verify=false,rec
 const numbers=value=>norm(value).match(/\d+(?:[.,]\d+)?%?/gu) ?? [];
 const qualifications=[/待核|未核|未验证/u,/目标价/u,/拟铺/u,/不(?:上|印)瓶/u,/仅限|仅在|仅有/u,/示意|占位/u];
 
+function figureCaption(page,index) {
+  if (index<0) return null;
+  if (page.role==='direction' && index===page.observedPointIndex)
+    return {figureId:page.figures[0],caption:page.points[index]};
+  if (page.role==='compare' && index<page.figures.length)
+    return {figureId:page.figures[index],caption:page.points[index].split('。适合')[0]};
+  return null;
+}
+
 function optionalCountsInEdit(plan,page,field,issue) {
-  if (issue.role!=='craft' || !field.includes(issue.from)) return [];
-  const position=page.points.indexOf(field);
-  const direction=page.role==='direction' && position>=0 && position===page.observedPointIndex;
-  const comparison=page.role==='compare' && position>=0 && position<page.figures.length;
-  if (!direction && !comparison) return [];
-  const figureId=page.figures[direction?0:position];
-  const caption=direction ? field : field.split('。适合')[0];
-  if (!caption.includes(issue.from)) return [];
-  const figure=plan.figures.find(item=>item.id===figureId);
-  return figure ? optionalFigureCounts(caption,figure,plan.brief.original) : [];
+  if (issue.role!=='craft') return [];
+  const entry=figureCaption(page,page.points.indexOf(field));
+  if (!entry?.caption.includes(issue.from)) return [];
+  const figure=plan.figures.find(item=>item.id===entry.figureId);
+  return figure ? optionalFigureCounts(entry.caption,figure,plan.brief.original) : [];
 }
 
 function authorizeText(plan,page,issue) {

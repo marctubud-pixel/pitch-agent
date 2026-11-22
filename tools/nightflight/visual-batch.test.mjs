@@ -23,7 +23,7 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],slogans=[],cropTitle,cropObserved,candidateImages=images,priorReview}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],firstLooks=[],slogans=[],cropTitle,cropObserved,detailIssues,candidateImages=images,priorReview}={}) {
   const images=candidateImages;
   const calls = [];
   const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,cropTitle,priorReview,
@@ -31,12 +31,13 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
     call:async(instruction,actual,schema,task)=>{
       calls.push({instruction,actual,schema,task});
       const candidate=images.findIndex(frame=>frame.sha256===actual[0]?.sha256);
-      if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:blindWords[candidate] ?? '预约',alternative:'展览',
+      if (task.assignment==='独立读图者') return {parsedOutput:{first:firstLooks[candidate] ?? '展柜',action:'讲解',words:blindWords[candidate] ?? '预约',alternative:'展览',
         slogan:slogans[candidate] ?? (missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'}),
         ...(innerPackets ? {innerPackets:innerPackets[candidate]} : {})}};
       if (task.assignment==='单图海报硬事实核验') return {...judgment,threadId:'single-original-'+candidate,
         parsedOutput:{artworkIssues:posterIssues?.[candidate] ?? []}};
       if (task.assignment==='海报标题原图裁片复读') return {...judgment,parsedOutput:cropObserved};
+      if (task.assignment==='海报下部商品小字裁片核验') return {...judgment,parsedOutput:{artworkIssues:detailIssues}};
       if (task.assignment==='海报借改逐项核对') return {...identity,
         parsedOutput:Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,row.checks]))};
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
@@ -249,12 +250,35 @@ test('an explicit no-violation observation cannot disqualify a clean poster',asy
   assert.deepEqual(batch.candidates[1].posterArtworkCheck.issues,[violation]);
 });
 
+test('an exact confirmed price does not clear an issue located on the package',async()=>{
+  const onPack={kind:'unconfirmed_claim',observed:'5.9元一杯',location:'酸奶杯身正面'};
+  const {batch}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
+    posterIssues:[[onPack],[],[]]});
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck.issues,[onPack]);
+  assert.equal(batch.winner,2);
+});
+
+test('a first read that sees small footer labels triggers one verified crop audit',async()=>{
+  const processClaim={kind:'unconfirmed_claim',observed:'低温发酵',location:'第二个温度计图标下方'};
+  const {batch,calls}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
+    firstLooks:['中下方有五个图标配说明'],detailIssues:[processClaim],cropTitle:async(original,box)=>{
+      assert.equal(original,images[0]);
+      assert.deepEqual(box,[0,550,1000,1000]);
+      return image(8);
+    }});
+  assert.deepEqual(calls.filter(call=>call.task.assignment==='海报下部商品小字裁片核验').map(call=>call.actual),[[image(8)]]);
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck.issues,[processClaim]);
+  assert.equal(batch.candidates[0].posterArtworkCheck.detail.sha256,image(8).sha256);
+  assert.equal(batch.winner,2);
+});
+
 test('one redraw reuses only same-scope original reading facts and still reruns comparative judgments',async()=>{
-  const profile={base:'https://example.test',model:'actual-vision'};
+  const profile={base:'https://example.test',model:'actual-vision',host:'example.test'};
   const scope={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy,reviewProfile:profile},productBrief:yogurtBrief};
   const {batch:priorReview}=await review(scope);
   const candidateImages=[image(7),images[1],images[2]];
-  const {batch,calls}=await review({...scope,candidateImages,priorReview});
+  const reorderedProfile={model:profile.model,host:profile.host,base:profile.base};
+  const {batch,calls}=await review({...scope,posterTransfer:{...scope.posterTransfer,reviewProfile:reorderedProfile},candidateImages,priorReview});
   assert.deepEqual(batch.reusedOriginalReads,images.slice(1).map(frame=>frame.sha256));
   for(const assignment of ['独立读图者','单图海报硬事实核验'])
     assert.deepEqual(calls.filter(call=>call.task.assignment===assignment).map(call=>call.actual[0].sha256),[image(7).sha256]);
