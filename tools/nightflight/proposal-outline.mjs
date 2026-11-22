@@ -108,6 +108,42 @@ async function stageText(root, artifacts, stage) {
   return item ? { name: item.name, body: await readAttemptText(root, item.name) } : { name: '', body: '' };
 }
 
+// Only chart figures paired in the same source, metric and unit. Preserve the
+// cited sentence on the slide as well, including qualifications outside the numbers.
+function pageFacts(type,input) {
+  const rows=chapter=>input.byChapter.get(chapter) ?? [];
+  if (type==='category') {
+    for (const f of rows('行业与市场')) {
+      const series=[];
+      const pairs=/((?:19|20)\d{2})年[：:\s]*(?:为)?\s*(\d+(?:\.\d+)?)\s*(亿元|万元|万件|万瓶|万吨|%|％)/gu;
+      const observations=[...f.evidence.matchAll(pairs)];
+      if (observations.length<2 || observations.length>10) continue;
+      const unit=observations[0][3].replace('％','%');
+      const between=observations.slice(1).every((m,i)=>/^[，,、；;\s和与至到]*$/u.test(
+        f.evidence.slice(observations[i].index+observations[i][0].length,m.index)));
+      if (!between || observations.some(m=>m[3].replace('％','%')!==unit) || new Set(observations.map(m=>m[1])).size!==observations.length) continue;
+      for (const [,year,value] of observations) series.push({label:year+'年',value});
+      const first=observations[0],last=observations.at(-1);
+      const scope=[f.evidence.slice(0, first.index),f.evidence.slice(last.index+last[0].length)]
+        .map(text=>text.replace(/^[，、。；：:\s]+|[，、。；：:\s]+$/gu,'')).filter(Boolean).join('。');
+      return {series,unit,scope,source:f.source,implication:f.implication};
+    }
+  }
+  if (type==='competitors') {
+    const findings=rows('竞争与同类传播');
+    const cases=findings.flatMap(f=>(f.images ?? []).filter(img=>img.title && img.observation).map(img=>({name:img.title,values:[img.observation]})));
+    return {rows:cases.length ? cases : findings.map(f=>({name:f.source,values:[f.conclusion]}))};
+  }
+  if (type==='audience') {
+    const finding=rows('人群与接触情境')[0];
+    const audience=input.fields.find(f=>/^(目标人群|核心人群|目标用户)$/u.test(f.label));
+    const declared=audience?.value || /^\s*(?:目标人群|核心人群|目标用户)\s*[：:]\s*(.+)$/mu.exec(input.project.brief || '')?.[1]?.trim();
+    return finding && {name:declared ? '简报人群 · '+declared : '接触情境',profile:finding.evidence,implication:finding.implication};
+  }
+  if (type==='directions') return {points:input.visible.map(k=>({k,d:input.drafts.get(k)?.claim || input.drafts.get(k)?.main || ''}))};
+  if (type==='product') return {specs:input.fields.filter(f=>/产品名称|产品与品类|产品品类|^产品$|^品类$|卖点|配料|规格|工艺/u.test(f.label)).map(f=>({k:f.label,v:f.value}))};
+}
+
 function clientPage(slot, input) {
   const { type_id: type, direction } = slot;
   const { project, assigned, drafts, mains, byChapter, strategy, copyRef, researchRef,
@@ -240,7 +276,7 @@ export async function buildProposalOutline(project, dir) {
   }
   const mains = new Map();
   for (const a of artifacts.filter(a => a.stage === 'visual' && a.kind === 'image' && a.visual?.role === 'main')) {
-    if (!visible.includes(a.visual.direction) || (a.visual.candidate && !a.visual.recommended)) continue;
+    if (!visible.includes(a.visual.direction) || (a.visual.candidate && !a.visual.recommended && !a.adoptedForLayout)) continue;
     if (mains.has(a.visual.direction)) throw Error('同一方向出现多份采用主稿，请核对当前视觉版本');
     mains.set(a.visual.direction, a);
   }
@@ -281,10 +317,11 @@ export async function buildProposalOutline(project, dir) {
         type_id: slot.type_id, chapter: slot.chapter, direction: slot.direction, reason: missing[slot.type_id] || slot.title });
       continue;
     }
-    const { instance_id, type_id, chapter, direction } = slot;
+    const { instance_id, type_id, chapter, direction, template } = slot;
     const { gapReason, ...client } = page;
     if (gapReason) gaps.push({ instance_id, type_id, chapter, direction, reason: gapReason });
-    pages.push({ instance_id, type_id, chapter, direction, ...client });
+    const semantic=pageFacts(type_id,input);
+    pages.push({ instance_id, type_id, chapter, direction, template, ...(semantic ? {semantic} : {}), ...client });
   }
   const starts = new Map();
   for (const [index, page] of pages.entries()) if (!starts.has(page.chapter)) starts.set(page.chapter, index + 1);

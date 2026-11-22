@@ -116,3 +116,63 @@ describe('shared measured Deck Studio plans', () => {
     }
   }, 90000);
 });
+
+describe('nightflight production page-template adapters', () => {
+  const media={...image,data:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC'};
+  const points=[{k:'原料',d:'燕麦'},{k:'触点',d:'便利店'}];
+  const templates: Draft['template'][]=[
+    {kind:'section.left',no:'02',desc:'阶段判断'},
+    {kind:'market.bars',series:[{label:'甲',value:42},{label:'乙',value:48}],sub:'渠道变化',source:'样本报告',unit:'%',chartTitle:'单位：%'},
+    {kind:'competitor.table',headers:['图形'],rows:[{name:'甲',values:['蓝岩']},{name:'乙',values:['水流']}],sub:'瓶身对照'},
+    {kind:'persona.single',name:'通勤者',profile:'在冰柜前选择早餐',needs:['看懂配料']},
+    {kind:'selling.spec',usp:'四项原料',specs:[{k:'容量',v:'250ml'}]},
+    {kind:'summary.pillars',points},
+    {kind:'design.half',image:media,intro:'正面方案',points},
+    {kind:'mood.split',image:media,slogan:'山间来水',sub:'场景'},
+    {kind:'series.row',items:[{name:'海报一',image:media},{name:'海报二',image:{...media,id:'two'}}],sub:'触点'},
+  ];
+  it('exports native text and verified pictures for every requested template', async()=>{
+    const pages=templates.map((t,i)=>({...run(t),id:'template-'+i}));
+    const files=await artifact({pages,status:'试排',style:'business',title:'模板核验',fileName:'模板.pptx'});
+    const chartKey=Object.keys(files).find(key=>/^ppt\/charts\/chart\d+\.xml$/.test(key))!;
+    const nativeChart=strFromU8(files[chartKey]);
+    expect(nativeChart).toContain('<c:barDir val="col"/>');
+    expect(nativeChart).toContain('<c:v>42</c:v>');
+    expect(nativeChart).toContain('<c:v>48</c:v>');
+    expect(nativeChart).toContain('测试图版（%）');
+    const workbook=unzipSync(files[Object.keys(files).find(key=>key.startsWith('ppt/embeddings/') && key.endsWith('.xlsx'))!]);
+    const sheet=strFromU8(workbook['xl/worksheets/sheet1.xml']);
+    expect(sheet).toContain('<v>42</v>');
+    expect(sheet).toContain('<v>48</v>');
+    expect(strFromU8(workbook['xl/sharedStrings.xml'])).toContain('测试图版（%）');
+    const personaText=pages[3].nodes.filter(n=>n.kind==='text').flatMap(n=>n.lines);
+    expect(personaText).not.toContain('痛点');
+    expect(pages[3].nodes.some(n=>n.kind==='text' && n.lines.includes('通勤者') && n.x===80)).toBe(true);
+    const samples=['阶段判断','渠道变化','蓝岩','通勤者','四项原料','燕麦','正面方案','山间来水','海报一'];
+    for (const [i,page] of pages.entries()) {
+      expect(page.template).toBe(templates[i].kind);
+      const xml=strFromU8(files['ppt/slides/slide'+(i+1)+'.xml']);
+      expect(xml).toContain(samples[i]);
+      if(i>=6) expect(xml).toContain('<p:pic>');
+    }
+  });
+
+  it.each(['gradient','vertical','highlight','rotate','font'] as const)('preserves %s in editable PPTX and SVG',async style=>{
+    const raw=style==='gradient'
+      ? {k:'rect',x:1,y:2,w:200,h:80,fill:'#884422',grad:{from:'#884422',to:'#551177',ang:45}}
+      : {k:'text',x:20,y:25,w:300,h:200,fk:'serif',fw:700,size:32,lh:1.3,ls:0,color:'#000000',align:'left',valign:'top',fitOk:true,
+        lines:['泉水泡茶'],vertical:style==='vertical',rotate:style==='rotate'?23:0,...(style==='highlight'?{hl:'泉水',hlColor:'#123456'}:{})};
+    const page={...run({kind:'summary.statement',statement:'模板',sub:''}),
+      ...checkedNodes({els:[raw],bg:'#FFFFFF',th:{text:'#000000'}},new Map(),'#000000')};
+    const files=await artifact({pages:[page],status:'试排',style:'business',title:'样式核验',fileName:'样式.pptx'});
+    const xml=strFromU8(files['ppt/slides/slide1.xml']);
+    const {renderToStaticMarkup}=await import('react-dom/server');
+    const {createElement}=await import('react');
+    const {DeckStudioPage}=await import('./Viewer');
+    const svg=renderToStaticMarkup(createElement(DeckStudioPage,{page}));
+    const markers={gradient:['<a:gradFill','<linearGradient'],vertical:['vert="eaVert"','writing-mode="vertical-rl"'],
+      highlight:['val="123456"','fill="#123456"'],rotate:['rot="1380000"','rotate(23 '],font:['typeface="Noto Serif SC"','Noto Serif SC']};
+    expect(xml).toContain(markers[style][0]);
+    expect(svg).toContain(markers[style][1]);
+  });
+});

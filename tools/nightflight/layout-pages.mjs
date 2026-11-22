@@ -29,6 +29,10 @@ export async function compileOutline(outline, sources, { compile, paginateText }
   // Some engine layouts store a field in metadata without showing it. Check the actual
   // text shapes as well as engine fit so the downloadable slide contains every fragment.
   const normalized = text => text.replace(/\s/gu, '');
+  function visibleText(page) {
+    const nodes=page.nodes.flatMap(n=>n.kind==='chart' ? [...n.plot.labels,...n.plot.valueLabels] : [n]);
+    return nodes.filter(n=>n.kind==='text').map(n=>normalized(n.runs.length ? n.runs.map(r=>r.text).join('') : n.lines.join('')));
+  }
   function fits(candidate, words) {
     let page;
     try { [page] = compile([candidate], footer, theme); }
@@ -36,9 +40,8 @@ export async function compileOutline(outline, sources, { compile, paginateText }
       if (String(error.message).includes('版式文字超出容量')) return false;
       throw error;
     }
-    const visible = page.nodes.filter(n => n.kind === 'text').map(n =>
-      normalized(n.runs.length ? n.runs.map(r => r.text).join('') : n.lines.join('')));
-    return words.filter(Boolean).every(s => visible.includes(normalized(s)));
+    const visible=visibleText(page);
+    return words.filter(Boolean).every(word=>(Array.isArray(word) ? word : [word]).some(s=>visible.includes(normalized(s))));
   }
 
   function textPages(page, content) {
@@ -54,9 +57,17 @@ export async function compileOutline(outline, sources, { compile, paginateText }
     return paginateText(content, wordsFit).map(fragment => make(fragment.raw.trim()));
   }
 
-  function contentPages(page) {
+  function fallbackPages(page) {
     const title = label(page.client_title, 28);
     let body = page.content.trim();
+    if (page.type_id==='back-cover' && body && body.length<=16) {
+      // Deck Studio's closing title is a large acknowledgement. The project
+      // name belongs in its subtitle and stays readable even when it is longer.
+      const closing={...draft(page,{kind:'closing.type',sub:page.client_title,meta:''}),title:body};
+      if (fits(closing,[body,page.client_title])) return [closing];
+      closing.template.sub='';
+      if (fits(closing,[body])) return [...textPages(page,page.client_title),closing];
+    }
     if (page.type_id === 'cover' || page.type_id === 'back-cover') {
       const cover = draft(page, {
         kind: page.type_id === 'cover' ? 'cover.type' : 'closing.type',
@@ -101,6 +112,114 @@ export async function compileOutline(outline, sources, { compile, paginateText }
     }
     if (remaining) result.push(...textPages(page, remaining));
     return result;
+  }
+
+  // Match the client's page purpose before considering the number of images.
+  // A semantic page may be followed by its unabridged evidence and source images.
+  const choices=new Map();
+  const continuations=new Map();
+  function contentPages(page) {
+    const requested=page.template && [page.template.type,page.template.variant].join('.');
+    function fallback(reason) {
+      choices.set(page.instance_id,reason);
+      return fallbackPages(page);
+    }
+    if (!requested) return fallback('历史逐页稿未指定模板');
+    if (['cover.type','closing.type','summary.statement'].includes(requested)) {
+      const drafts=fallbackPages(page);
+      if (!drafts.some(d=>d.template.kind===requested)) choices.set(page.instance_id,page.images.length ?
+        '本页另含需完整呈现的原图，使用图文模板' : '实际标题或正文超出指定模板容量');
+      else if (drafts.length>1) continuations.set(page.instance_id,'原页的全文分至后续页');
+      return drafts;
+    }
+    const images=page.images.map(name=>{
+      const image=media.get(name);
+      if (!image) throw Error('逐页稿引用的图片缺失：'+name);
+      return image;
+    });
+    const title=label(page.client_title,28);
+    const body=page.content.trim();
+    const first=body.match(/^[^。！？\n]+[。！？]?/u)?.[0] || '';
+    const facts=page.semantic || {};
+    let template, required=[], used=0;
+    const shortWords=points=>points.flatMap(p=>[p.k,p.d]);
+    switch(requested) {
+      case 'section.left':
+        template={kind:requested,desc:first.length<=55 ? first : '',no:''};
+        required=[template.desc];
+        break;
+      case 'market.bars':
+        if (!facts.series) return fallback('缺少同一来源、同一指标和单位的两期以上数值');
+        template={kind:requested,series:facts.series,unit:facts.unit,chartTitle:'单位：'+facts.unit,
+          sub:facts.scope || '',source:facts.source,findings:[{k:'对设计的启示',d:facts.implication}]};
+        required=[facts.scope,facts.implication,...facts.series.flatMap(s=>[s.label,[s.value,s.value+facts.unit]])];
+        break;
+      case 'competitor.table':
+        if (!(facts.rows?.length>=2 && facts.rows.length<=6)) return fallback('对比表需要二至六项可追溯的观察');
+        template={kind:requested,headers:['可见特征'],rows:facts.rows,sub:''};
+        required=facts.rows.flatMap(row=>[row.name,...row.values]);
+        break;
+      case 'persona.single':
+        if (!facts.profile) return fallback('缺少有依据的购买或使用场景');
+        template={kind:requested,name:facts.name,profile:facts.profile,implication:facts.implication,image:images[0],quote:'',tags:'',needs:[],pains:[]};
+        required=[facts.name,facts.profile,facts.implication]; used=images.length ? 1 : 0;
+        break;
+      case 'selling.spec':
+        if (!facts.specs?.length || facts.specs.length>6) return fallback('缺少一至六项明确的产品属性及其取值');
+        template={kind:requested,usp:title,specs:facts.specs,image:images[0]}; required=facts.specs.flatMap(s=>[s.k,s.v]);used=images.length ? 1 : 0;
+        break;
+      case 'summary.pillars':
+      case 'summary.list': {
+        const points=facts.points || body.split('\n').map(line=>/^([^：:]{1,16})[：:]\s*(.+)$/u.exec(line)).filter(Boolean).map(m=>({k:m[1],d:m[2]}));
+        if (points.length<2 || points.length>(requested==='summary.pillars' ? 4 : 6))
+          return fallback('缺少可并列展示的短标题及对应说明，或项目数超出模板容量');
+        template={kind:requested,points};required=shortWords(points);break;
+      }
+      case 'design.half':
+      case 'design.stage':
+      case 'mood.split':
+        if (!images.length) return fallback('缺少本页绑定的原图');
+        template=requested==='mood.split' ? {kind:requested,slogan:title,sub:first.length<=55 ? first : '',image:images[0],en:''}
+          : {kind:requested,intro:first.length<=55 ? first : '',points:[],image:images[0]};
+        used=1; required=[template.intro || template.sub];break;
+      case 'series.row':
+        if (images.length<2 || images.length>6) return fallback('系列横排需要二至六张已绑定原图');
+        template={kind:requested,items:images.map(image=>({name:label(image.alt,16),image})),sub:''};used=images.length;break;
+      case 'combo.grid':
+        if (!images.length || images.length>8) return fallback('图组需要一至八张已绑定原图');
+        template={kind:requested,items:images.map(item=>({item,cap:label(item.alt,16)}))};used=images.length;break;
+      case 'compare.lineup':
+        if (images.length<2 || images.length>6) return fallback('并排比较需要二至六张同版作品');
+        template={kind:requested,items:images.map(image=>({image,name:label(image.alt,16),desc:''})),sub:''};used=images.length;break;
+      default: return fallback('旧稿模板尚未适配：'+requested);
+    }
+    const candidate=draft(page,template);
+    if (!fits(candidate,required)) return fallback('指定模板的内容未全部显示，或字号与可用空间无法容纳实际文案');
+    const rendered=compile([candidate],footer,theme)[0];
+    const visible=visibleText(rendered);
+    // Compare only the editor's two known labels with their matching, actually
+    // rendered slots. Dates, numbers, qualifiers and questions remain significant.
+    const statement=text=>normalized(text).replace(/[。．.]$/u,'');
+    const shown=new Set(visible.map(statement));
+    const labelledSlots={
+      '依据':requested==='market.bars' ? facts.scope : requested==='persona.single' ? facts.profile : '',
+      '对策略的用处':facts.implication,
+    };
+    function alreadyShown(line) {
+      if (shown.has(statement(line))) return true;
+      const match=/^(依据|对策略的用处)[：:]\s*(.+)$/u.exec(line.trim());
+      if (!match) return false;
+      const slot=labelledSlots[match[1]];
+      return Boolean(slot && statement(slot)===statement(match[2]) && shown.has(statement(slot)));
+    }
+    const unshown=[page.client_title,...body.split('\n')].filter(s=>s.trim() && !alreadyShown(s));
+    const continuation=unshown.join('\n');
+    const remaining=page.images.slice(used);
+    if (continuation || remaining.length) continuations.set(page.instance_id,[
+      continuation && '原页部分标题、正文或依据未在首张模板完整显示',
+      remaining.length && ('另有 '+remaining.length+' 张原图需完整展示'),
+    ].filter(Boolean).join('；'));
+    return [candidate,...(continuation || remaining.length ? fallbackPages({...page,type_id:'continuation',content:continuation,images:remaining}) : [])];
   }
 
   const chapters = [...new Set(outline.pages.map(p => p.chapter))];
@@ -159,6 +278,9 @@ export async function compileOutline(outline, sources, { compile, paginateText }
     }
     return {
       ...page, display_title: group[0].title, first_page, last_page: drafts.length,
+      applied_templates:group.map(d=>d.template.kind),
+      ...(continuations.has(page.instance_id) ? {continuation_reason:continuations.get(page.instance_id)} : {}),
+      ...(choices.has(page.instance_id) ? {fallback_reason:choices.get(page.instance_id)} : {}),
       ...(page.type_id === 'toc' ? { content: contents.map(c => c.display_title + '　P' + String(c.start_page).padStart(2, '0')).join('\n') } : {}),
     };
   });

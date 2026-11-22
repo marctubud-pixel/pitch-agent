@@ -2323,12 +2323,12 @@
       "reason": " 接入按方向查看的视觉图册。 视觉图稿按画幅与产物用途展示。 接入视觉草图选择、版本或相应方法身份。"
     },
     "apps/workbench-preview/src/proposal/deck-studio/model.ts": {
-      "sha256": "a48ea7d18c0f07e3cf41e043ca8f599f89f6d507213c1d1186b53e4b052a4e0b",
-      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+      "sha256": "f02b9c03a17a5ca4f129fef052a170bd97a02266bd97714cc6af318c9ba457e8",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/src/proposal/deck-studio/templates.ts": {
-      "sha256": "078554412abcb7139f63d1071ebe898fcf7e535d07148419d475d976d8e23053",
-      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+      "sha256": "d93f9c220c148f09d3b4ea7bf6b16f631e226526fd430da1867c7f93bf5ad10a",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/docs/DESIGN-SPEC.md": {
       "sha256": "02fd3d37d0660b1722fa8bbc804bae94a6f9b1aaa37a7edef3546000661bf097",
@@ -2353,6 +2353,22 @@
     "apps/workbench-preview/docs/fixes/F05AB-F06A.md": {
       "sha256": "b3983d7434aa32f8298902aa40bed04ec6cb7c6c2222d3368df60af0532d556b",
       "reason": "归档本机资料路径，避免在独立检出中生成不可用链接。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/Viewer.tsx": {
+      "sha256": "20cef5e3ab9eaaeb73fece4be40db7d29f2d0b6832681a9af4876a7e06e2dc41",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/deck.test.ts": {
+      "sha256": "857c774f1f8782e5d29bb86ba01a208d62fa4d69935759677bb2933ec52d1a30",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/engine.ts": {
+      "sha256": "609e8cb69b23fcf38413f24273e9bdbdeb3ab186669a870012be22b88da3f256",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+    },
+    "apps/workbench-preview/src/proposal/deck-studio/export.ts": {
+      "sha256": "9e257154a01312c8f61dfcd1d050d94f1a08276ed98a4179a4010bab087ce322",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     }
   },
   "nightflightArchive": {
