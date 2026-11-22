@@ -1,6 +1,36 @@
 """Keep the full original framing and a common height for comparative reading."""
+import hashlib
+import io
+import json
 import sys
+import tempfile
+from pathlib import Path
+
 from PIL import Image, ImageDraw, ImageOps
+
+
+if sys.argv[1] == "--crop-box":
+    source, destination, expected_hash = sys.argv[2:5]
+    left, top, right, bottom = map(int, sys.argv[5:])
+    if not (0 <= left < right <= 1000 and 0 <= top < bottom <= 1000):
+        raise ValueError("Invalid normalized crop bounds")
+    original_bytes = Path(source).read_bytes()
+    if hashlib.sha256(original_bytes).hexdigest() != expected_hash:
+        raise ValueError("Original image hash does not match crop input")
+    with Image.open(io.BytesIO(original_bytes)) as original:
+        image = ImageOps.exif_transpose(original)
+        width, height = image.size
+        crop = image.crop((width * left // 1000, height * top // 1000,
+                           (width * right + 999) // 1000, (height * bottom + 999) // 1000))
+        with tempfile.NamedTemporaryFile(dir=Path(destination).parent, delete=False) as target:
+            temporary = Path(target.name)
+        try:
+            crop.save(temporary, format="PNG")
+            temporary.replace(destination)
+        finally:
+            temporary.unlink(missing_ok=True)
+    print(json.dumps(crop.size))
+    raise SystemExit(0)
 
 if sys.argv[1] == "--review-previews":
     paths = sys.argv[2:]

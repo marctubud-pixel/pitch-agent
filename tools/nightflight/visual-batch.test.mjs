@@ -23,26 +23,28 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],slogans=[],cropTitle,cropObserved}={}) {
   const calls = [];
-  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,
+  const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,cropTitle,
     sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
     call:async(instruction,actual,schema,task)=>{
       calls.push({instruction,actual,schema,task});
-      if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:'预约',alternative:'展览',
-        slogan:missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'},
-        ...(innerPackets ? {innerPackets:innerPackets[images.findIndex(frame=>frame.sha256===actual[0].sha256)]} : {})}};
+      const candidate=images.findIndex(frame=>frame.sha256===actual[0]?.sha256);
+      if (task.assignment==='独立读图者') return {parsedOutput:{first:'展柜',action:'讲解',words:blindWords[candidate] ?? '预约',alternative:'展览',
+        slogan:slogans[candidate] ?? (missingSlogan ? {status:'missing',text:'',location:'主标题区只见馆名'} : {status:'readable',text:slogan,location:'画面上半部'}),
+        ...(innerPackets ? {innerPackets:innerPackets[candidate]} : {})}};
+      if (task.assignment==='单图海报硬事实核验') return {...judgment,threadId:'single-original-'+candidate,
+        parsedOutput:{artworkIssues:posterIssues?.[candidate] ?? []}};
+      if (task.assignment==='海报标题原图裁片复读') return {...judgment,parsedOutput:cropObserved};
       if (task.assignment==='海报借改逐项核对') return {...identity,
         parsedOutput:Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,row.checks]))};
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
       if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
       const fields = schema.properties.candidate_1.properties;
       const opinions=images.map((_,index)=>['candidate_'+(index+1),{reason:'原票认为主体清楚。',
-        ...(fields.score ? {score:fields.artworkIssues ? 4 : 5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
-        ...(fields.artworkIssues ? {artworkIssues:posterIssues?.[index]} : {}),
+        ...(fields.score ? {score:5} : {}),...(fields.onPackStatus ? {onPackStatus:'theme_printed'} : {}),
         ...(fields.priority ? {priority:index+1,edit:'原裁定建议放大副标。',research:'无',blocked:false} : {})}]);
-      return {...(fields.artworkIssues ? {threadId:'brand-originals-read',model:judgment.model,inputPacketHash:judgment.inputPacketHash} : {}),
-        parsedOutput:Object.fromEntries(opinions)};
+      return {parsedOutput:Object.fromEntries(opinions)};
     }});
   return {batch,calls};
 }
@@ -129,21 +131,54 @@ test('poster facts block copied brands, reference characters and invented claims
   ];
   const {batch,calls}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
     posterIssues,makePreviews});
-  assert.deepEqual(calls.map(call=>call.task.assignment),oldCalls.map(call=>call.task.assignment));
+  const hardReads=calls.filter(call=>call.task.assignment==='单图海报硬事实核验');
+  assert.deepEqual(calls.filter(call=>!hardReads.includes(call)).map(call=>call.task.assignment),oldCalls.map(call=>call.task.assignment));
+  assert.deepEqual(hardReads.map(call=>call.actual),images.map(original=>[original]));
+  assert.deepEqual(JSON.parse(hardReads[0].task.context).已确认品牌资料,{allowedBrands:['午晴'],logoPending:true});
   const brandCall=calls.find(call=>call.task.assignment==='品牌独立评分岗');
-  assert.deepEqual(brandCall.actual,images);
-  assert.deepEqual(JSON.parse(brandCall.task.context),{客户原始简报:yogurtBrief,本案方向:'时长',
-    允许借用的画面关系:posterPolicy.approvedReferenceUse,参考排除项:posterPolicy.mainReferenceExclusions});
-  assert.match(brandCall.instruction,/参考信息用来排除，不提供本案品牌或产品授权/u);
+  assert.equal(brandCall.actual[0].sha256,'6'.repeat(64));
+  assert.ok(!Object.hasOwn(brandCall.schema.properties.candidate_1.properties,'artworkIssues'));
+  assert.match(hardReads[0].instruction,/排除项不授权任何第三方内容/u);
   assert.equal(calls.find(call=>call.task.assignment==='视觉独立评分岗').actual[0].sha256,'6'.repeat(64));
   assert.deepEqual(batch.ruling.items.map(c=>c.blocked),[false,false,false]);
-  assert.deepEqual(batch.candidates.map(c=>[c.mean,c.blocked]),[[4.75,true],[4.75,true],[4.75,false]]);
+  assert.deepEqual(batch.candidates.map(c=>[c.mean,c.blocked]),[[5,true],[5,true],[5,false]]);
   assert.equal(batch.winner,3);
   assert.match(batch.candidates[0].reason,/左上联名字和冷柜顶可见「MoreYogurt 茉酸奶 × Joke Bear」/u);
   assert.match(batch.candidates[0].reason,/画面底部可见「带牛角和南瓜帽的三个自嘲熊联名角色」/u);
   assert.match(batch.candidates[1].reason,/画面右下功能字栏可见「优质生牛乳／冷藏发酵／清洁配方」/u);
-  assert.deepEqual(batch.candidates[0].posterArtworkCheck,{sha256:images[0].sha256,threadId:'brand-originals-read',
+  assert.deepEqual(batch.candidates[0].posterArtworkCheck,{sha256:images[0].sha256,threadId:'single-original-0',
     model:judgment.model,inputPacketHash:judgment.inputPacketHash,issues:posterIssues[0]});
+});
+
+test('located first-read competitor text survives an empty single-image audit without blocking the authorized wordmark',async()=>{
+  const {batch}=await review({posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
+    blindWords:['品牌‘午晴’位于左上角。','品牌‘MoreYogurt’及其中文名‘茉酸奶’位于照片左上角。','品牌疑似‘茉酸奶’，远处字样看不清。']});
+  assert.deepEqual(batch.candidates.map(c=>c.blocked),[false,true,false]);
+  assert.deepEqual(batch.candidates[1].posterArtworkCheck.issues,[
+    {kind:'foreign_identity',observed:'MoreYogurt 茉酸奶',location:'照片左上角'},
+  ]);
+});
+
+test('a crop can confirm the chosen title without editing the preserved first read',async()=>{
+  const wrong={status:'readable',text:'夜访昆虫，40分钟一场',location:'画面上半部'};
+  const exact={...wrong,text:slogan};
+  const scope={posterTransfer:{reference,transfers,sourcePolicy:posterPolicy},productBrief:yogurtBrief,
+    slogans:[wrong],cropTitle:async (original,box)=>{
+      assert.equal(original,images[0]);
+      assert.deepEqual(box,[0,0,1000,580]);
+      return image(8);
+    }};
+  const {batch,calls}=await review({...scope,cropObserved:exact});
+  assert.equal(batch.winner,1);
+  assert.deepEqual(batch.blind[0].slogan,wrong);
+  assert.deepEqual(batch.candidates[0].posterTitleCheck.observation,exact);
+  const cropReads=calls.filter(call=>call.task.assignment==='海报标题原图裁片复读');
+  assert.deepEqual(cropReads.map(call=>call.actual.map(frame=>frame.sha256)),[[image(8).sha256]]);
+  assert.ok(!JSON.stringify(cropReads).includes(slogan));
+  const {batch:actuallyWrong}=await review({...scope,cropObserved:wrong});
+  assert.equal(actuallyWrong.winner,2);
+  assert.equal(actuallyWrong.candidates[0].posterTitleCheck.confirmed,false);
+  assert.match(actuallyWrong.candidates[0].reason,/40分钟/);
 });
 
 test('an artwork issue needs a located visible quote or identifiable asset',async()=>{
