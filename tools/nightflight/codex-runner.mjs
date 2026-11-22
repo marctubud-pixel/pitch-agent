@@ -23,9 +23,9 @@ import { promisify } from 'node:util';
 import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
-import { makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
+import { cropReviewRegion, makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
 import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
-import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
+import { holdSimilarPosterDirections, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -1455,9 +1455,11 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
         const compare = () => reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
-          ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal)} : {}),
+          ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal),
+            cropTitle:(image,box)=>cropReviewRegion(dir,image,box,signal)} : {}),
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer),
-            sourcePolicy:{mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
+            sourcePolicy:{brandFacts:posterBrandFacts(project.brief),
+              mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
             paperAspect:posterPaper},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
@@ -1529,6 +1531,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
             ...(verdict.posterArtworkCheck ? {posterArtworkCheck:verdict.posterArtworkCheck} : {}),
+            ...(verdict.posterTitleCheck ? {posterTitleCheck:verdict.posterTitleCheck} : {}),
             ...(verdict.weeklyLabelCheck ? {weeklyLabelCheck:verdict.weeklyLabelCheck} : {}),
             ...(record.sloganRepair ? {sloganRepair:record.sloganRepair} : {}),
             ...(record.artworkRevision ? {artworkRevision:record.artworkRevision} : {}),

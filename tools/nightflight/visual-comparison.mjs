@@ -38,3 +38,21 @@ export async function makeReviewPreviews(dir,images,signal) {
     return images;
   }
 }
+
+export async function cropReviewRegion(dir,image,box,signal) {
+  if (!image?.path || !/^[a-f0-9]{64}$/u.test(image.sha256 ?? '')) {
+    throw Error('原图裁片需要原件路径和 SHA-256。');
+  }
+  if (!Array.isArray(box) || box.length!==4 || [...box].some(value=>!Number.isInteger(value) || value<0 || value>1000) ||
+      box[0]>=box[2] || box[1]>=box[3]) {
+    throw Error('原图裁片需要 0 到 1000 的有效矩形坐标。');
+  }
+  const id=createHash('sha256').update(JSON.stringify([image.sha256,box])).digest('hex');
+  const name='review-crop-'+id+'.png';
+  const path=join(dir,name);
+  const {stdout}=await run(await pythonBinary(),[script,'--crop-box',image.path,path,image.sha256,...box.map(String)],{signal,timeout:30000});
+  const [width,height]=JSON.parse(stdout);
+  const bytes=await readFile(path);
+  return {name,path,imageId:'crop_'+id,mediaType:'image/png',byteLength:bytes.length,width,height,
+    sha256:createHash('sha256').update(bytes).digest('hex')};
+}
