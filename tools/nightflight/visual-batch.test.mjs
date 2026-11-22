@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {holdSimilarPosterDirections,reviewPosterDirections,reviewVisualBatch} from './visual-batch.mjs';
+import {holdSimilarPosterDirections,reviewPosterDirections,reviewPosterTransfer,reviewVisualBatch} from './visual-batch.mjs';
 import {imageManifest} from '../workbench/image-evidence.mjs';
 
 const image = n => ({imageId:'image-'+n,path:'/fixture/'+n+'.png',mediaType:'image/png',byteLength:4000,sha256:String(n).repeat(64)});
@@ -23,7 +23,7 @@ function auditRows() {
   }))}));
 }
 
-async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],firstLooks=[],slogans=[],cropTitle,cropObserved,detailIssues}={}) {
+async function review({rows=auditRows(),posterTransfer={reference,transfers},missingSlogan=false,packaging=false,identity=judgment,verifiedComparators=[],productBrief,printed,makePreviews,posterIssues,innerPackets,blindWords=[],firstLooks=[],slogans=[],cropTitle,cropObserved,detailIssues,transferReadbacks=[],transferReadbackResponses=[]}={}) {
   const calls = [];
   const batch = await reviewVisualBatch({direction:'时长',images,context:'简报',posterSlogan:slogan,posterTransfer,packagingExpected:packaging,theme:slogan,productBrief,makePreviews,cropTitle,
     sources:packaging ? [image(4)] : [],verifiedComparators,makeBoard:async()=>({name:'包装同品类并排图'}),
@@ -38,7 +38,33 @@ async function review({rows=auditRows(),posterTransfer={reference,transfers},mis
       if (task.assignment==='海报标题原图裁片复读') return {...judgment,parsedOutput:cropObserved};
       if (task.assignment==='海报下部商品小字裁片核验') return {...judgment,parsedOutput:{artworkIssues:detailIssues}};
       if (task.assignment==='海报借改逐项核对') return {...identity,
-        parsedOutput:Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,row.checks]))};
+        parsedOutput:Object.hasOwn(schema.properties,'reference') ? {
+          reference:reference.observations,
+          ...Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,
+            Object.fromEntries(Object.entries(row.checks).map(([axis,check])=>[axis,check.candidateEvidence]))])),
+        } : Object.fromEntries(rows.map(row=>['candidate_'+row.candidate,row.checks]))};
+      if (task.assignment==='海报借改疑点原图复核') {
+        const index=images.indexOf(actual[1]);
+        const reread=transferReadbacks[index];
+        return {...judgment,threadId:'original-pair-'+actual[1].sha256.slice(0,4),
+          parsedOutput:transferReadbackResponses[index] ?? {
+            reference:Object.fromEntries(Object.entries(reread).map(([axis,check])=>[axis,check.referenceEvidence])),
+            candidate:Object.fromEntries(Object.entries(reread).map(([axis,check])=>[axis,check.candidateEvidence])),
+          }};
+      }
+      if (task.assignment==='海报按开画条件核对') {
+        const {candidates}=JSON.parse(task.context);
+        const parsedOutput=Object.fromEntries(Object.entries(candidates).map(([key,{criteria,candidate}])=>{
+          const index=Number(key.split('_').at(-1))-1;
+          const checks=Object.fromEntries(Object.keys(criteria).map(axis=>{
+            const reread=transferReadbacks[index]?.[axis];
+            const {relation,targetStatus,evidenceStatus}=reread?.candidateEvidence===candidate[axis] ? reread : rows[index].checks[axis];
+            return [axis,{relation,targetStatus,evidenceStatus,referenceEvidence:'编造的参考细节',candidateEvidence:'编造的成图细节'}];
+          }));
+          return [key,checks];
+        }));
+        return {...judgment,threadId:'text-check-'+calls.length,parsedOutput};
+      }
       if (task.assignment==='核对同类参考') return {parsedOutput:{packaging,indices:[1]}};
       if (task.assignment==='独立核对包装本体原图') return {...identity,parsedOutput:printed[images.indexOf(actual[0])]};
       const fields = schema.properties.candidate_1.properties;
@@ -104,6 +130,99 @@ test('unverified original features and unreadable results do not support a recom
   assert.equal(unchecked.candidates[0].transferAudit.checks.布局.relation,'unknown');
   assert.equal(unchecked.candidates[1].transferAudit.checks.布局.status,'unknown');
   assert.equal(unchecked.winner,3);
+});
+
+const criteria = transfers.map(plan=>({referenceSha256:reference.image.sha256,
+  axes:Object.fromEntries(Object.entries(reference.observations).map(([axis,original])=>
+    [axis,{reference:original,target:plan.borrow.includes(axis) ? original : changed[axis]}]))}));
+
+function scopedAuditRows() {
+  return auditRows().map(row=>({...row,checks:Object.fromEntries(Object.entries(row.checks).map(([axis,proof])=>
+    [axis,{...proof,targetStatus:'matched',evidenceStatus:'clear'}]))}));
+}
+
+test('one pair reread resolves a disputed layout without reopening clear category failures',async()=>{
+  const rows=scopedAuditRows();
+  const retainedLayout=rows[0].checks.布局;
+  const retainedScale=rows[0].checks.景别;
+  rows[0].checks.布局={...retainedLayout,relation:'different',candidateEvidence:'标题仍居中，主体仍占底边，添了一个边框'};
+  rows[0].checks.景别={...retainedScale,evidenceStatus:'uncertain',candidateEvidence:'预览未看清两侧动物是否完整'};
+  rows[1].checks.笔法={...rows[1].checks.笔法,relation:'different',targetStatus:'mismatch',candidateEvidence:'边缘改成平涂硬边'};
+  rows[2].checks.字体={...rows[2].checks.字体,targetStatus:'mismatch',candidateEvidence:'用了粗黑体的变体，未见细宋体'};
+  const makePreviews=async items=>items.map((item,i)=>({...item,sha256:String(i+6).repeat(64)}));
+  const {batch,calls}=await review({rows,posterTransfer:{reference,transfers,criteria},makePreviews,
+    transferReadbacks:[{布局:{...retainedLayout,candidateEvidence:'上方标题居中，下方主体贴底边'},
+      景别:{...retainedScale,candidateEvidence:'两侧动物及整座建筑都完整可见'}}]});
+
+  assert.equal(batch.winner,1);
+  assert.deepEqual(batch.candidates.map(draft=>draft.blocked),[false,true,true]);
+  const comparison=calls.find(call=>call.task.assignment==='海报借改逐项核对');
+  assert.deepEqual(comparison.schema.required,['reference','candidate_1','candidate_2','candidate_3']);
+  assert.doesNotMatch(comparison.task.context+comparison.instruction,/标题居中，建筑占底边|criteria/u);
+  assert.deepEqual(comparison.actual.map(image=>image.sha256[0]),['6','7','8','9']);
+  const classifiers=calls.filter(call=>call.task.assignment==='海报按开画条件核对');
+  assert.equal(classifiers.length,2);
+  assert.ok(classifiers.every(call=>call.actual.length===0));
+  const firstContext=JSON.parse(classifiers[0].task.context);
+  assert.deepEqual(firstContext.candidates.candidate_1.criteria.布局,{...criteria[0].axes.布局,required:'borrow'});
+  assert.deepEqual(firstContext.reference,reference.observations);
+  assert.ok(Object.values(firstContext.candidates).every(candidate=>!Object.hasOwn(candidate,'reference')));
+  assert.equal(firstContext.candidates.candidate_1.candidate.布局,'标题仍居中，主体仍占底边，添了一个边框');
+  assert.deepEqual(classifiers[1].schema.required,['candidate_1']);
+  const rereads=calls.filter(call=>call.task.assignment==='海报借改疑点原图复核');
+  assert.equal(rereads.length,1);
+  assert.deepEqual(rereads[0].actual,[reference.image,images[0]]);
+  assert.deepEqual(rereads[0].schema.required,['reference','candidate']);
+  assert.deepEqual(rereads[0].schema.properties.reference.required,['布局','景别']);
+  assert.doesNotMatch(rereads[0].task.context+rereads[0].instruction,/标题居中，建筑占底边|添了一个边框|criteria/u);
+  const checked=batch.candidates[0].transferAudit;
+  assert.equal(checked.checks.布局.status,'matched');
+  assert.equal(checked.checks.布局.candidateEvidence,'上方标题居中，下方主体贴底边');
+  assert.equal(checked.checks.布局.firstRead.candidateEvidence,'标题仍居中，主体仍占底边，添了一个边框');
+  assert.equal(checked.recheck.threadId,'original-pair-1111');
+  assert.equal(batch.candidates[2].transferAudit.checks.字体.status,'mismatch');
+  assert.match(batch.candidates[2].edit,/字体目标「标题为细宋体」/);
+});
+
+test('uncertainty marked by the model remains a blocker after the single pair reread',async()=>{
+  const rows=scopedAuditRows();
+  rows[0].checks.景别={...rows[0].checks.景别,evidenceStatus:'uncertain',candidateEvidence:'主体太暗，环境范围难以判定'};
+  rows[1].checks.字体={...rows[1].checks.字体,relation:'different',targetStatus:'mismatch',candidateEvidence:'上方标题是细宋体'};
+  rows[2].checks.字体={...rows[2].checks.字体,relation:'same',targetStatus:'mismatch',candidateEvidence:'正中标题是粗黑体'};
+  const {batch,calls}=await review({rows,posterTransfer:{reference,transfers,criteria},
+    transferReadbacks:[{景别:{...rows[0].checks.景别,relation:'unknown',targetStatus:'unknown',candidateEvidence:'原图环境范围依然看不清'}}]});
+
+  assert.equal(batch.winner,null);
+  assert.equal(calls.filter(call=>call.task.assignment==='海报借改疑点原图复核').length,1);
+  assert.equal(batch.candidates[0].transferAudit.checks.景别.status,'unknown');
+  assert.equal(batch.candidates[0].transferAudit.checks.景别.firstRead.candidateEvidence,'主体太暗，环境范围难以判定');
+  assert.match(batch.candidates[0].reason,/景别应沿用，尚未核实/);
+});
+
+test('malformed optional color reread retains first uncertainty and does not stop other candidates',async()=>{
+  const rows=scopedAuditRows();
+  rows[0].checks.配色={...rows[0].checks.配色,evidenceStatus:'uncertain',candidateEvidence:'颜色位置尚未核实'};
+  const directReply={
+    reference:{配色:{大背景:'黄色底+浅黄色波点',主体:'橙色&白色酸奶浆+橙色果肉',标题字:'蓝色'},布局:'标题居上'},
+    candidate:{配色:{大背景:'淡蓝灰色',主体:'白色杯及蓝色字样',标题字:'暗红色'},布局:'标题置于画面顶部中心'},
+  };
+  const {batch,calls}=await review({rows,posterTransfer:{reference,transfers,criteria},transferReadbackResponses:[directReply]});
+
+  const compared=batch.candidates[0].transferAudit;
+  assert.equal(compared.checks.配色.status,'unknown');
+  assert.equal(compared.checks.配色.candidateEvidence,'颜色位置尚未核实');
+  assert.equal(compared.checks.布局.status,'matched');
+  assert.deepEqual(compared.recheck.unverifiedAxes,['配色']);
+  assert.equal(compared.recheck.threadId,'original-pair-1111');
+  assert.equal(calls.filter(call=>call.task.assignment==='海报按开画条件核对').length,1);
+  assert.equal(batch.winner,2);
+});
+
+test('scoped comparison rejects plans from a different original before a model call',async()=>{
+  const wrongCriteria=[{...criteria[0],referenceSha256:images[0].sha256},...criteria.slice(1)];
+  const call=()=>assert.fail('no review of criteria bound to another original');
+  await assert.rejects(reviewPosterTransfer(call,images,{reference,transfers,criteria:wrongCriteria}),/借改条件.*原图/);
+  await assert.rejects(reviewPosterTransfer(call,images,{reference,transfers,criteria:[criteria[0]]}),/借改条件.*原图/);
 });
 
 test('the transfer assessment retains independent title, on-pack and visual failures together',async()=>{

@@ -534,12 +534,12 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
   assert.equal(posterIdentityExclusions('勿仿照品牌专属字体；不保留右下橙色品牌标识。'),'勿仿照品牌专属字体；不保留右下橙色品牌标识');
   assert.equal(posterIdentityExclusions('不照搬黄色月亮和蝙蝠以及橙紫万圣节配色、橙色圆环品牌标识。'),
     '不照搬黄色月亮和蝙蝠、橙色圆环品牌标识');
-  async function run(transfer,repair,revisionFix=redraw,attachments=[image]) {
+  async function run(transfer,repair,revisionFix=redraw,attachments=[image],previousTransferCriteria) {
     const writerPackets=[],dispatch=[];
     const context={brief:'做便利店冷柜旁的 A3 竖版海报，品牌午晴。产品名「乳白小杯原味酸奶」。',transfer,hasBrandArtwork:false,
       mainReferenceUse:{avoid,apply:'重画为手拿一杯，背景采用大面积低干扰冷色留白。'},
       referenceTask:{focus:'保留大面积冷色留白',translation:'画手拿唯一一杯，并用冷柜光照亮杯子。'},
-      ...(repair ? {revision:repair} : {})};
+      ...(repair ? {revision:repair} : {}),...(previousTransferCriteria ? {previousTransferCriteria} : {})};
     const raw=structuredClone({context,observations});
     const out=await generateVisualWithDesktopModels({images:attachments,context,posterSlogan,posterReference:{image,observations},
       call:async(instruction,images,schema,task)=>{
@@ -558,8 +558,10 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
         assert.doesNotMatch(input.mainReference.observations.配色,/月亮|蝙蝠/u);
         assert.equal(input.mainReference.observations.景别,'中景，主体约占画面 三分之一，环境简化');
         assert.equal(Boolean(schema.properties.revisionFix),Boolean(repair));
+        assert.equal(Boolean(schema.properties.changes),!previousTransferCriteria);
         return {model:'deepseek-flash',threadId:'same-writer',parsedOutput:{format:'便利店冷柜旁海报',subject:'穿白衣服的人伸手拿橙色手套旁的午晴「乳白小杯原味酸奶」',
-          background:'低干扰冷色留白与冷柜光',lettering:[posterSlogan,'午晴','乳白小杯原味酸奶'],changes:Object.fromEntries(transfer.change.map(key=>[key,newDesign[key]])),
+          background:'低干扰冷色留白与冷柜光',lettering:[posterSlogan,'午晴','乳白小杯原味酸奶'],
+          ...(!previousTransferCriteria ? {changes:Object.fromEntries(transfer.change.map(key=>[key,newDesign[key]]))} : {}),
           ...(repair ? {revisionFix} : {})}};
       }});
     assert.equal(writerPackets.length,1);
@@ -573,7 +575,17 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
     assert.match(dispatch[0],/不保留多角色群像和底部弧形品牌条/u);
     assert.doesNotMatch(dispatch[0],/背景大面积橙色|橙紫万圣节配色/u);
     assert.match(dispatch[0],/画面主体和动作。穿衣服的人伸手拿手套旁的午晴「乳白小杯原味酸奶」/u);
-    return {prompt:dispatch[0],input:writerPackets[0],plan:out.promptWriting.plan};
+    const {transferCriteria}=out.promptWriting;
+    assert.equal(transferCriteria.referenceSha256,image.sha256);
+    assert.equal(Object.keys(transferCriteria.axes).length,5);
+    for(const [axis,{reference,target}] of Object.entries(transferCriteria.axes)) {
+      assert.equal(reference,writerPackets[0].mainReference.observations[axis]);
+      const borrowed=transfer.borrow.includes(axis);
+      assert.equal(reference===target,borrowed);
+      const line=borrowed ? '沿用主参考的'+axis+'。' : '重新设计'+axis+'。本张改为 ';
+      assert.ok(dispatch[0].split('\n').includes(line+target),axis+' must use the saved target');
+    }
+    return {prompt:dispatch[0],input:writerPackets[0],plan:out.promptWriting.plan,transferCriteria};
   }
   const keepPalette=await run({borrow:['配色','布局','景别'],change:['笔法','字体']});
   assert.match(keepPalette.prompt,/沿用主参考的配色。橙色、紫色（主色）；黄色（对比）；黑色（点缀）/u);
@@ -600,12 +612,18 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
   const noOriginal={...revision,referenceInput:'observations'};
   const official={name:'客户品牌资料.png',sha256:'a'.repeat(64)};
   const transfer={borrow:['布局','景别','笔法'],change:['配色','字体']};
-  const described=await run(transfer,noOriginal,redraw,[official]);
+  const described=await run(transfer,noOriginal,redraw,[official],revised.transferCriteria);
+  assert.deepEqual(described.transferCriteria,revised.transferCriteria);
+  assert.deepEqual(described.input.previousTransferCriteria,revised.transferCriteria);
+  assert.equal(described.plan.changes,undefined);
   assert.equal(described.input.mainReference.descriptionOnly,true);
   assert.equal(described.input.mainReference.imageNumber,undefined);
   assert.match(described.prompt,/参照信息来自同一原图观察/u);
   assert.doesNotMatch(described.prompt,/张附件是本方向主参考/u);
   await assert.rejects(run(transfer,noOriginal),/实际附件.*不一致/u);
+  await assert.rejects(run(transfer,noOriginal,redraw,[official],
+    {...revised.transferCriteria,referenceSha256:'0'.repeat(64)}),/同一主参考.*五项借改条件/u);
+  await assert.rejects(run(transfer,noOriginal,redraw,[official],keepPalette.transferCriteria),/锁定的五项借改条件/u);
 });
 
 test('brief displays the client view separately and keeps its longer source in the manuscript',async()=>{

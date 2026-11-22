@@ -218,9 +218,80 @@ function reviewPreviewEvidence(originals,previews) {
   }]);
 }
 
-async function reviewPosterTransfer(call, images, {reference,transfers}, makePreviews) {
-  if (!hasHash(reference?.image) || !images.every(hasHash) || !nonempty(reference.threadId) || !nonempty(reference.model) ||
-      !hasAxes(reference.observations) || !visualElements.every(axis=>nonempty(reference.observations[axis]))) {
+const transferComparisonFields = {relation:{...text,enum:relations},referenceEvidence:text,candidateEvidence:text};
+const transferTargetStatuses = ['matched','mismatch','unknown'];
+const transferEvidenceStatuses = ['clear','uncertain'];
+const transferDecision = object({relation:{...text,enum:relations},
+  targetStatus:{...text,enum:transferTargetStatuses},evidenceStatus:{...text,enum:transferEvidenceStatuses}});
+const transferObservationDetails = {
+  配色:'写大背景、主体、标题字各自的颜色。',
+  布局:'写标题和主要主体的横纵位置、相互前后、留白和可见层级。',
+  景别:'写主体约占画面高度的比例、主体顶底在图中的位置、看见的环境范围。逐图单独核实主体底部是完整可见并与画面底边分离、接触底边，还是确实被底边裁去。主体占画面大不代表接触或越过底边。',
+  笔法:'写实际边缘、线条和质感。',
+  字体:'写实际字形和字重，不按字色判断。',
+};
+const transferObservationInstruction = axes=>[
+  '只逐张记录实图事实。每张图独立观察，不从同批其他图迁移元素，不进行比较、建议或判定。',
+  ...axes.map(axis=>axis+'：'+transferObservationDetails[axis]),
+  '每个指定项目只交一个简短字符串，看不清写「未核实」。不要填其他项目，不要返回对象或列表。',
+].join(' ');
+
+const transferRows = (keys,makeSchema)=>object(Object.fromEntries(keys.map(key=>[key,makeSchema(key)])));
+const exactly = (value,keys)=>value && Object.keys(value).length===keys.length && keys.every(key=>Object.hasOwn(value,key));
+
+function validateTransferObservations(rows, roles, axes) {
+  if (!exactly(rows,roles) || !roles.every(role=>exactly(rows[role],axes) && axes.every(axis=>nonempty(rows[role][axis])))) {
+    throw invalidOutput('海报借改读图须逐张记录指定项目的实见细节。');
+  }
+}
+
+async function classifyPosterTransfer(call,candidates,sharedReference) {
+  const roles=Object.keys(candidates);
+  const schema=transferRows(roles,role=>transferRows(Object.keys(candidates[role].criteria),()=>transferDecision));
+  // The first read observes the same reference once for all three candidates.
+  const context=sharedReference ? {reference:sharedReference,candidates:Object.fromEntries(Object.entries(candidates)
+    .map(([role,{criteria,candidate}])=>[role,{criteria,candidate}]))} : {candidates};
+  const result=await call([
+    '根据固定实图描述核对开画条件。顶层 reference 供全批共用，否则取稿件各自的 reference。reference 和 candidate 是实见，不补写、改写或猜测画面细节。',
+    'criteria.reference 是锁定的原图特征，criteria.target 是本稿目标。只判断该条件实际要求的特征和关系。目标只借标题和主体的位置时，新增边框、装饰或替换主体内容均不计为布局变化。景别按约定的主体占比、边界和环境核对，不依赖远近景名称。',
+    'relation 写两图按指定特征沿用 same、变化 different、依据不足 unknown。targetStatus 表示成图目标落实 matched、未落实 mismatch 或无法核对 unknown。清楚看到有变化但没落到目标，填 different 加 mismatch。',
+    '只有实见支持才填 evidenceStatus=clear。缺关键信息、记录冲突或仅凭目标才能推断时填 uncertain。只返回指定的 JSON 枚举值。',
+  ].join(' '),[],schema,{delegate:true,rules:[],assignment:'海报按开画条件核对',context:JSON.stringify(context)});
+  const identity=auditIdentity(result);
+  const rows=result.parsedOutput;
+  if (!exactly(rows,roles) || !roles.every(role=>exactly(rows[role],Object.keys(candidates[role].criteria)))) {
+    throw invalidOutput('海报借改判定须逐张交回指定的全部项目。');
+  }
+  return {identity,rows};
+}
+
+function posterTransferCheck({value,axis,candidate,image,reference,required,criterion}) {
+  if (!relations.includes(value?.relation) || !nonempty(value.referenceEvidence) || !nonempty(value.candidateEvidence) ||
+      (criterion && (!transferTargetStatuses.includes(value.targetStatus) || !transferEvidenceStatuses.includes(value.evidenceStatus)))) {
+    throw invalidOutput('海报候选 '+candidate+' 的'+axis+'缺少判断或原图、成图的可见依据。');
+  }
+  let relation = value.relation;
+  const sameFile = image.sha256===reference.image.sha256;
+  const unread = [reference.observations[axis],value.referenceEvidence,value.candidateEvidence].some(evidence=>evidence.trim()==='未核实');
+  if (unread || (relation==='different' && value.referenceEvidence.trim()===value.candidateEvidence.trim())) relation='unknown';
+  else if (relation!=='unknown' && sameFile) relation='same';
+  const expected = required==='borrow' ? 'same' : 'different';
+  const targetMatched = value.targetStatus==='matched';
+  const contradictory = criterion && !sameFile &&
+    ((targetMatched && relation!==expected) ||
+      (required==='borrow' && relation===expected && value.targetStatus==='mismatch'));
+  const uncertain = relation==='unknown' || (criterion &&
+    (value.targetStatus==='unknown' || value.evidenceStatus==='uncertain' || contradictory));
+  const matched = relation===expected && (!criterion || targetMatched);
+  return {required,relation,status:uncertain ? 'unknown' : matched ? 'matched' : 'mismatch',
+    referenceEvidence:value.referenceEvidence,candidateEvidence:value.candidateEvidence,
+    ...(criterion ? {targetStatus:value.targetStatus,evidenceStatus:value.evidenceStatus} : {})};
+}
+
+export async function reviewPosterTransfer(call, images, {reference,transfers,criteria}, makePreviews) {
+  if (!hasHash(reference?.image) || !Array.isArray(images) || images.length!==3 || !images.every(hasHash) ||
+      !nonempty(reference.threadId) || !nonempty(reference.model) || !hasAxes(reference.observations) ||
+      !visualElements.every(axis=>nonempty(reference.observations[axis]))) {
     throw Error('海报借改核对需要本方向主参考原图、五项观察及其模型回执。');
   }
   if (!Array.isArray(transfers) || transfers.length!==3 || !transfers.every(plan=>{
@@ -228,45 +299,86 @@ async function reviewPosterTransfer(call, images, {reference,transfers}, makePre
     const axes = new Set([...plan.borrow,...plan.change]);
     return visualElements.every(axis=>axes.has(axis));
   })) throw Error('海报每张稿的借三改二项目须完整对应五项。');
+  const scoped=criteria!==undefined;
+  if (scoped && (!Array.isArray(criteria) || criteria.length!==images.length || !criteria.every(plan=>
+    plan?.referenceSha256===reference.image.sha256 && hasAxes(plan.axes) &&
+    visualElements.every(axis=>nonempty(plan.axes[axis]?.reference) && nonempty(plan.axes[axis]?.target))))) {
+    throw Error('海报每张稿的五项借改条件须齐全并绑定同一主参考原图。');
+  }
 
-  const comparison = object({relation:{...text,enum:relations},referenceEvidence:text,candidateEvidence:text});
-  const checks = object(Object.fromEntries(visualElements.map(axis=>[axis,comparison])));
-  const output = object(Object.fromEntries(candidateKeys.map(key=>[key,checks])));
+  const observationRoles=['reference',...candidateKeys];
+  const initialSchema=scoped ? transferRows(observationRoles,()=>transferRows(visualElements,()=>text)) :
+    transferRows(candidateKeys,()=>transferRows(visualElements,()=>object(transferComparisonFields)));
   const originals=[reference.image,...images];
   const frames=makePreviews ? await makePreviews(originals) : originals;
   const previewEvidence=reviewPreviewEvidence(originals,frames);
-  const result = await call(
-    '图1是主参考，图2、3、4依次填入固定对象 candidate_1、candidate_2、candidate_3，三个对象全部要填。每张候选都单独与图1对照配色、布局、景别、笔法、字体。每项填三个字段：referenceEvidence 只写图1实见的特征与位置，candidateEvidence 只写这一候选实见的特征与位置，relation 写两者的关系。三栏都要填写。每项只比较自己的特征：配色看主色、辅助色及对比；布局看标题、留白和各层主体的相对位置；景别看主体占画面的大小及环境范围；笔法看边缘、线条与材质；字体看字形和字重。字色变化在配色里判断，人物或物件替换本身不改变布局或景别。画面特征可见沿用填 same，出现清楚变化填 different，看不清或无法比对填 unknown，并在对应证据写明位置和原因。按画面独立作答。',
-    frames,output,{delegate:true,rules:[],assignment:'海报借改逐项核对',context:'仅依据四张实际图件，包含原图或其完整阅览版。'});
+  const result = await call(scoped
+    ? '图1是主参考，记录在 reference。图2、3、4依次记录在 candidate_1、candidate_2、candidate_3。'+transferObservationInstruction(visualElements)
+    : '图1是主参考，图2、3、4依次填入固定对象 candidate_1、candidate_2、candidate_3，三个对象全部要填。每张候选都单独与图1对照配色、布局、景别、笔法、字体。每项填三个字段：referenceEvidence 只写图1实见的特征与位置，candidateEvidence 只写这一候选实见的特征与位置，relation 写两者的关系。三栏都要填写。每项只比较自己的特征：配色看主色、辅助色及对比；布局看标题、留白和各层主体的相对位置；景别看主体占画面的大小及环境范围；笔法看边缘、线条与材质；字体看字形和字重。字色变化在配色里判断，人物或物件替换本身不改变布局或景别。画面特征可见沿用填 same，出现清楚变化填 different，看不清或无法比对填 unknown，并在对应证据写明位置和原因。按画面独立作答。',
+    frames,initialSchema,{delegate:true,rules:[],assignment:'海报借改逐项核对',context:'仅依据四张实际图件，包含原图或其完整阅览版。'});
   const identity = auditIdentity(result);
-  const rows = result.parsedOutput;
-  if (!rows || Object.keys(rows).length!==3 || !candidateKeys.every(key=>Object.hasOwn(rows,key))) {
-    throw invalidOutput('海报借改核对须逐一覆盖三个候选。');
-  }
-  const items = images.map((image,index)=>{
+  const observations = result.parsedOutput;
+  if (scoped) validateTransferObservations(observations,observationRoles,visualElements);
+  else if (!exactly(observations,candidateKeys)) throw invalidOutput('海报借改核对须逐一覆盖三个候选。');
+
+  const requiredFor = (index,axis)=>transfers[index].borrow.includes(axis) ? 'borrow' : 'change';
+  const candidateFacts = (index,axes,reference,candidate)=>({
+    criteria:Object.fromEntries(axes.map(axis=>[axis,{...criteria[index].axes[axis],required:requiredFor(index,axis)}])),
+    reference,candidate,
+  });
+  const initialFacts=scoped ? Object.fromEntries(candidateKeys.map((key,index)=>
+    [key,candidateFacts(index,visualElements,observations.reference,observations[key])])) : null;
+  const initialDecision=scoped ? await classifyPosterTransfer(call,initialFacts,observations.reference) : null;
+  const check = (index,axis,value,facts)=>posterTransferCheck({
+    value:facts ? {...value,referenceEvidence:facts.reference[axis],candidateEvidence:facts.candidate[axis]} : value,
+    axis,candidate:index+1,image:images[index],reference,required:requiredFor(index,axis),criterion:criteria?.[index].axes[axis],
+  });
+  const initial = images.map((image,index)=>{
     const candidate = index+1;
-    const values = rows[candidateKeys[index]];
+    const key=candidateKeys[index];
+    const values = initialDecision ? initialDecision.rows[key] : observations[key];
     if (!hasAxes(values)) throw invalidOutput('海报借改核对缺少候选 '+candidate+' 对应的五项记录。');
-    const checks = {};
-    for (const axis of visualElements) {
-      const value = values[axis];
-      if (!relations.includes(value?.relation) || !nonempty(value.referenceEvidence) || !nonempty(value.candidateEvidence)) {
-        throw invalidOutput('海报候选 '+candidate+' 的'+axis+'缺少判断或原图、成图的可见依据。');
-      }
-      const required = transfers[index].borrow.includes(axis) ? 'borrow' : 'change';
-      let relation = value.relation;
-      const unknown = [reference.observations[axis],value.referenceEvidence,value.candidateEvidence].some(evidence=>evidence.trim()==='未核实');
-      if (unknown || (relation==='different' && value.referenceEvidence.trim()===value.candidateEvidence.trim())) relation='unknown';
-      else if (relation!=='unknown' && image.sha256===reference.image.sha256) relation='same';
-      const expected = required==='borrow' ? 'same' : 'different';
-      checks[axis] = {required,relation,status:relation==='unknown' ? 'unknown' : relation===expected ? 'matched' : 'mismatch',
-        referenceEvidence:value.referenceEvidence,candidateEvidence:value.candidateEvidence};
-    }
+    const checks = Object.fromEntries(visualElements.map(axis=>[axis,check(index,axis,values[axis],initialFacts?.[key])]));
     return {candidate,sha256:image.sha256,referenceSha256:reference.image.sha256,...identity,checks,
-      passed:visualElements.every(axis=>checks[axis].status==='matched')};
+      ...(scoped ? {criteria:criteria[index].axes} : {})};
+  });
+  const rereads = scoped ? await independentCalls(initial,async (item,index)=>{
+    const axes = visualElements.filter(axis=>item.checks[axis].status==='unknown' && reference.observations[axis].trim()!=='未核实');
+    if (!axes.length) return null;
+    const roles=['reference','candidate'];
+    const pairSchema=transferRows(roles,()=>transferRows(axes,()=>text));
+    const result = await call(
+      '图1是主参考原图，图2是单张候选原图。顶层只能有 reference 和 candidate，分别对应这两张图。两组都只填写「'+axes.join('、')+'」。'+transferObservationInstruction(axes),
+      [reference.image,images[index]],pairSchema,{delegate:true,rules:[],assignment:'海报借改疑点原图复核',
+        context:'仅两张原图和指定的待核项目。'});
+    const identity = auditIdentity(result);
+    const rows = result.parsedOutput;
+    const usableAxes=exactly(rows,roles) ? axes.filter(axis=>roles.every(role=>{
+      const observation=rows[role]?.[axis];
+      return nonempty(observation) && observation.trim()!=='未核实';
+    })) : [];
+    const unverifiedAxes=axes.filter(axis=>!usableAxes.includes(axis));
+    if (!usableAxes.length) return {axes,identity,unverifiedAxes,facts:null};
+    const observed=(role)=>Object.fromEntries(usableAxes.map(axis=>[axis,rows[role][axis]]));
+    return {axes,identity,unverifiedAxes,facts:candidateFacts(index,usableAxes,observed('reference'),observed('candidate'))};
+  }) : [];
+  const rereadFacts=Object.fromEntries(rereads.flatMap((reread,index)=>reread?.facts ? [[candidateKeys[index],reread.facts]] : []));
+  const rereadDecision=Object.keys(rereadFacts).length ? await classifyPosterTransfer(call,rereadFacts) : null;
+  const items = initial.map((item,index)=>{
+    const reread=rereads[index];
+    const checks={...item.checks};
+    for (const axis of Object.keys(reread?.facts?.criteria ?? {})) {
+      checks[axis]={...check(index,axis,rereadDecision.rows[candidateKeys[index]][axis],reread.facts),firstRead:checks[axis]};
+    }
+    return {...item,checks,passed:visualElements.every(axis=>checks[axis].status==='matched'),
+      ...(reread ? {recheck:{...reread.identity,axes:reread.axes,
+        ...(reread.unverifiedAxes.length ? {unverifiedAxes:reread.unverifiedAxes} : {})}} : {})};
   });
   return {...identity,referenceSha256:reference.image.sha256,referenceThreadId:reference.threadId,
-    referenceModel:reference.model,observations:reference.observations,items,...(previewEvidence.length ? {previewEvidence} : {})};
+    referenceModel:reference.model,observations:reference.observations,items,
+    ...(initialDecision ? {classification:initialDecision.identity} : {}),
+    ...(rereadDecision ? {recheckClassification:rereadDecision.identity} : {}),
+    ...(previewEvidence.length ? {previewEvidence} : {})};
 }
 
 export async function reviewPosterDirections({call, entries}) {
@@ -574,7 +686,10 @@ export async function reviewVisualBatch({call, direction, images, context, packa
         if (check.status==='matched') continue;
         const action = check.required==='borrow' ? '沿用' : '改变';
         reason += ' '+axis+'应'+action+(check.status==='unknown' ? '，尚未核实。' : '，实图与要求不符。')+'主参考可见「'+check.referenceEvidence+'」，成图可见「'+check.candidateEvidence+'」。';
-        const correction = check.status==='unknown' ? '并排复核'+axis+'的可见依据。' : '参照原图的「'+check.referenceEvidence+'」，在成图中'+action+'这项'+axis+'特征。';
+        const target=audit.criteria?.[axis].target;
+        const correction = check.status==='unknown' ? '并排复核'+axis+'的可见依据。' :
+          target ? '按开画前核定的'+axis+'目标「'+target+'」调整成图。' :
+            '参照原图的「'+check.referenceEvidence+'」，在成图中'+action+'这项'+axis+'特征。';
         edit = edit==='无' ? correction : edit+' '+correction;
       }
     }
