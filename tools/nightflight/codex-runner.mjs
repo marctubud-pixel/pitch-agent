@@ -23,8 +23,8 @@ import { promisify } from 'node:util';
 import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
-import { cropReviewRegion, makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
-import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { cropReviewRegion, makeComparison, makeReviewPreviews, maskPosterReference } from './visual-comparison.mjs';
+import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, readPosterReferenceMask, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
 import { holdSimilarPosterDirections, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
@@ -1382,6 +1382,14 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           if (!image) throw Error('本方向缺少可核读的海报主参考原图。');
           await onEvent?.('正在核对「'+direction+'」主参考原图的五项特征');
           posterReference = await readPosterReference({call,image});
+          if (image.sourceUrl) {
+            const mask=await readPosterReferenceMask({call,image});
+            posterReference.maskReading=mask;
+            if (mask.boxes.length) {
+              posterReference.maskedImage=await maskPosterReference(dir,image,mask.boxes,signal);
+              if (!posterReference.maskedImage) posterReference.attachmentMode='observations';
+            }
+          }
         }
         const creative = poster || packaging ? selected.get(direction) : project.copyReview?.draft?.directions?.find(d=>d.name===direction);
         const posterSlogan = poster ? creative.main : undefined;
@@ -1411,7 +1419,11 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const name = 'visual-'+(all.indexOf(direction)+1)+'-'+digest.slice(0,12)+'.png';
           const path = join(dir,name);
           await writeFile(path,original.bytes,{flag:'wx',mode:0o600});
-          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId};
+          const referenceObservation = posterReference && {sha256:posterReference.image.sha256,observations:posterReference.observations,model:posterReference.model,threadId:posterReference.threadId,
+            ...(posterReference.maskReading ? {maskReading:posterReference.maskReading} : {}),
+            ...(posterReference.maskedImage ? {maskedImage:{name:posterReference.maskedImage.name,sha256:posterReference.maskedImage.sha256,
+              coveredPixels:posterReference.maskedImage.coveredPixels}} : {}),
+            ...(posterReference.attachmentMode ? {attachmentMode:posterReference.attachmentMode} : {})};
           const record = {direction,name,referenceHandoff:handoff,transfer,inputImages:attached.map(i=>i.sha256),sha256:digest,thread:result.threadId,
             ...(sloganRepair ? {sloganRepair} : {}),...(artworkRevision ? {artworkRevision} : {}),...(promptWriting ? {promptWriting} : {}),...(referenceObservation ? {referenceObservation} : {}),
             ...(result.original ? {requestId:result.requestId,requestedModel:result.requestedModel} : {}),originalName:original.originalName,...original.inspection,description:result.responseText.trim()};
@@ -1435,8 +1447,10 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
           const input = {...generationContext,transfer,...(revision ? {revision} : {})};
-          const attached=revision?.referenceInput==='observations'
-            ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256) : sourceImages;
+          const descriptionOnly=revision?.referenceInput==='observations' || posterReference?.attachmentMode==='observations';
+          const attached=descriptionOnly ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256)
+            : posterReference?.maskedImage ? sourceImages.map(image=>image.sha256===posterReference.image.sha256 ? posterReference.maskedImage : image)
+            : sourceImages;
           const attempt = desktop
             ? await generateVisualWithDesktopModels({call,images:attached,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
             : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};

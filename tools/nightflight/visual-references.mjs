@@ -24,7 +24,7 @@ export function posterStrategyPurpose(strategy) {
 export async function readPosterReference({call, image}) {
   const result = await call(
     '只描述这一张主参考原图实际可见的五项。布局写标题、留白、主体与支撑背景分区的相对位置和大致占比；有明显分区时说清上、中、下层和留白从哪里开始。景别写主体占画幅的大小和可见环境范围。笔法写线条、切边或摄影质感，字体写字形和字重，配色写主要色和对比。' +
-    '逐项用简短一句话记录可借的抽象关系。用主体、标题区、前景物件等通称，不转录原画的品牌名、标志、联名角色、画面原字或原产品印花。景别只写比例与环境范围，笔法只写画法。本次不评价本案，不把后续改法写成原图特征。看不清的一项填「未核实」，原图确实没有文字也照实写。',
+    '逐项用简短一句话记录可借的抽象关系。布局用主体区、标题区、物件区等通称，只保留区域比例、排列和间距；人物职业、身份、商品类别、原物件个数不写进布局。其他项也不转录原画的品牌名、标志、联名角色、画面原字或原产品印花。景别只写比例与环境范围，笔法只写媒介、边缘和质感。本次不评价本案，不把后续改法写成原图特征。看不清的一项填「未核实」，原图确实没有文字也照实写。',
     [image], object(Object.fromEntries(visualElements.map(element=>[element,string]))),
     {delegate:true,rules:[],assignment:'海报主参考原图核读',context:'附件只有本方向主参考原图。'},
   );
@@ -34,6 +34,26 @@ export async function readPosterReference({call, image}) {
     throw invalidOutput('海报主参考缺少实际原图的五项观察或读图回执。');
   }
   return {image,observations,model:result.model,threadId:result.threadId};
+}
+
+const maskCoordinate={type:'integer',minimum:0,maximum:1000};
+const maskKeys=['left','top','right','bottom'];
+const maskSchema=object({boxes:{...list(object(Object.fromEntries(maskKeys.map(key=>[key,maskCoordinate])))),maxItems:32}});
+
+export async function readPosterReferenceMask({call,image}) {
+  if (!/^[a-f0-9]{64}$/u.test(image?.sha256 ?? '')) throw Error('主参考遮标定位需要原图指纹。');
+  const result=await call([
+    '只看附件这张主参考原图，定位需要从生图附件遮掉的原画字样和专有素材。划出原画标题及促销字、品牌名、标志、包装印字、联名角色和可识别专有图形的可见区域。检查角落、字区和产品本体。',
+    '每个对象填一个紧贴可见区域的矩形。画面左上为 (0,0)，右下为 (1000,1000)，以原图完整画幅为准填整数 left、top、right、bottom。字与标志重叠可用同一框。通用道具、色块和留白保留。原图没有需遮内容才填空数组。',
+  ].join('\n'),[image],maskSchema,{delegate:true,rules:[],assignment:'海报主参考遮标定位',context:'附件只有该方向未修改的主参考原图。'});
+  const boxes=result.parsedOutput?.boxes;
+  if (!Array.isArray(boxes) || boxes.length>maskSchema.properties.boxes.maxItems || boxes.some(box=>
+    !box || Object.keys(box).length!==maskKeys.length || maskKeys.some(key=>!Number.isInteger(box[key]) || box[key]<0 || box[key]>1000) ||
+    box.left>=box.right || box.top>=box.bottom) || !nonempty(result.model) || !nonempty(result.threadId)) {
+    throw invalidOutput('海报主参考遮标定位须交回原图内的有效框与读图回执。');
+  }
+  return {imageSha256:image.sha256,boxes,model:result.model,threadId:result.threadId,
+    ...(nonempty(result.inputPacketHash) ? {inputPacketHash:result.inputPacketHash} : {})};
 }
 
 // A placement such as a refrigerator belongs to the delivery brief; framing carries only scale and viewing range.
@@ -61,7 +81,7 @@ export function oppositePosterOrientation(image, paper) {
   return Boolean(paper && image?.width>0 && image.height>0 && (image.width-image.height)*(paper.width-paper.height)<0);
 }
 
-const colors=/(?:[深浅淡亮暗暖冷]?[红橙橘黄绿青蓝紫粉褐棕灰黑白金银米]{1,3}色|蓝紫|橙紫|黑白|蓝白|红白|冷色|暖色|[深浅淡亮暗][红橙黄绿青蓝紫粉灰黑白]|乳白|米白|米黄|[红橙黄绿蓝紫白黑灰](?=衣服|上衣|外套|手套|背景|底色)|\b(?:navy|red|orange|yellow|green|blue|purple|pink|black|white|gr[ae]y|teal)\b)/giu;
+const colors=/(?:[深浅淡亮暗暖冷]?[红橙橘黄绿青蓝紫粉褐棕灰黑白金银米]{1,3}色|蓝紫|橙紫|黑白|蓝白|红白|冷色|暖色|[深浅淡亮暗][红橙黄绿青蓝紫粉灰黑白]|乳白|米白|米黄|(?<![留空])[红橙橘黄绿青蓝紫粉褐棕白黑灰](?=衣服|上衣|外套|手套|背景|底|字|文字|标题)|\b(?:navy|red|orange|yellow|green|blue|purple|pink|black|white|gr[ae]y|teal)\b)/giu;
 function withoutColor(value,preserve=[]) {
   return value.replace(colors,(hue,index)=>preserve.some(literal=>{
     const start=value.lastIndexOf(literal,index);
@@ -69,11 +89,13 @@ function withoutColor(value,preserve=[]) {
   })?hue:'');
 }
 
+const referenceExclusionCommand=/^(?:不照搬|不保留|不采用|不使用|不要使用|禁用|不得使用|禁止使用|勿仿照)[：:]?/u;
+
 export function posterIdentityExclusions(value='') {
   const aesthetics=/(?:配色|色调|色彩|撞色|色板|字体|字形|字重|笔法|景别)(?:组合|搭配|风格)?[”」"]?$/u;
   const identity=/品牌|字标|商标|logo|专属|标识|角色|道具|标题原字|图形|独特/u;
   return value.split(/[。；;]/u).map(clause=>{
-    const command=clause.trim().match(/^(?:不照搬|不保留|不采用|不使用|不要使用|禁用|不得使用|禁止使用)[：:]?/u)?.[0] ?? '';
+    const command=clause.trim().match(referenceExclusionCommand)?.[0] ?? '';
     const items=clause.trim().slice(command.length).split(/[、，,]/u).map(item=>{
       const pieces=item.split(/(以及|及|和|与)/u);
       const kept=[];
@@ -88,34 +110,70 @@ export function posterIdentityExclusions(value='') {
   }).filter(Boolean).join('；');
 }
 
+function referenceEntityPattern(exclusions) {
+  const terms=exclusions.split('；').filter(clause=>referenceExclusionCommand.test(clause)).flatMap(clause=>{
+    const objects=clause.replace(referenceExclusionCommand,'');
+    const quoted=[...objects.matchAll(/[“「"‘]([^”」"’]+)[”」"’]/gu)].map(([,name])=>name);
+    const phrases=objects.replace(/[“「"‘][^”」"’]+[”」"’]/gu,'、').split(/以及|[、，,及和与]/u).map(part=>part.trim());
+    return [...quoted,...phrases.flatMap(part=>[part,part
+      .replace(/^[一二三四五六七八九十两\d]+(?:位|名|个|只|款|瓶|杯|袋)/u,'')
+      .replace(/(?:的)?(?:品牌字样|品牌名|品牌字|联名角色|卡通角色|吉祥物|联名标志|产品图|商品图|字标|角色|瓶身|杯身|包装)$/u,'')])];
+  });
+  const names=[...new Set(terms)].filter(term=>/^[\p{L}\p{N} &·._-]{2,70}$/u.test(term)).sort((a,b)=>b.length-a.length);
+  return names.length ? new RegExp('(?:'+names.map(term=>{
+    const literal=RegExp.escape(term);
+    return /[\p{Script=Han}]/u.test(term)?literal:'(?<![a-z0-9])'+literal+'(?![a-z0-9])';
+  }).join('|')+')(?:头像|肖像|群像|产品图|商品图|品牌字样|品牌字|名)?','giu') : null;
+}
+
 function paletteAxes(value) {
   const roles=/主色|底色|对比|点缀|辅助色|背景色/u;
   return value.split(/[，,。；;\n]/u).flatMap(clause=>{
-    const hues=[...new Set(clause.match(colors) ?? [])];
+    const hues=[...new Set([...clause.matchAll(colors)].map(({0:hue,index})=>{
+      const context=clause.slice(index+hue.length);
+      if (/^(?:为)?(?:底|背景)/u.test(context)) return hue+'（背景）';
+      if (/^(?:的)?(?:字|文字|标题)/u.test(context)) return hue+'（文字）';
+      return hue;
+    }))];
     const role=clause.match(roles)?.[0];
     return hues.length ? [hues.join('、')+(role?'（'+role+'）':'')] : [];
   }).join('；') || '以主参考的主色、对比色和点缀比例为准。';
 }
 
-function posterAxisObservations(observations) {
-  const keepGeometry=withoutColor(observations.布局).replace(/背景大面积(?=[，,。；;]|$)/gu,'背景的大面积区域');
-  return {配色:paletteAxes(observations.配色),布局:keepGeometry,景别:posterFraming(observations.景别),
-    笔法:withoutColor(observations.笔法),字体:withoutColor(observations.字体).split(/[，,。；;]/u)
+function posterAxisObservations(observations,abstractReference) {
+  const layout=abstractReference(withoutColor(observations.布局))
+    .replace(/头像|肖像|人像|群像/gu,'主体区')
+    .replace(/(?:产品|商品)(?:实物图|图像|图)/gu,'物件区')
+    .replace(/背景大面积(?=[，,。；;]|$)/gu,'背景的大面积区域');
+  return {配色:paletteAxes(observations.配色),布局:layout,景别:posterFraming(observations.景别),
+    笔法:abstractReference(withoutColor(observations.笔法)),字体:abstractReference(withoutColor(observations.字体)).split(/[，,。；;]/u)
       .filter(part=>!/^填充|^与背景|^文字颜色/u.test(part)).join('，') || '只沿用字形和字重。'};
 }
 
 async function writePosterPrompt({call, images, context, posterReference, posterSlogan}) {
   const {transfer,revision,mainReferenceUse,referenceTask,hasBrandArtwork, ...directionInput} = context;
-  const {image,observations} = posterReference;
-  const usableObservations=posterAxisObservations(observations);
+  const {image,observations,maskedImage}=posterReference;
   const exclusions=posterIdentityExclusions(mainReferenceUse?.avoid);
+  const entities=referenceEntityPattern(exclusions);
+  const abstractReference=value=>entities ? value.replace(entities,term=>{
+    if (/(?:名|品牌字样|品牌字|标识|字标)$/u.test(term)) return '辅助字区';
+    if (/(?:产品图|商品图|瓶身|杯身|包装)$/u.test(term)) return '物件区';
+    return '主体区';
+  }) : value;
+  const usableObservations=posterAxisObservations(observations,abstractReference);
   const revisionAxes=revision ? visualElements.filter(axis=>['应沿用','应变化','应改'].some(change=>revision.reason?.includes(axis+change)) ||
     revision.edit?.includes('沿用这项'+axis)) : [];
   const brief=directionInput.brief ?? '';
   const paper=paperAspect(brief);
   const briefQuotes=[...brief.matchAll(/[“「"]([^”」"]+)[”」"]/gu)].map(match=>match[1]);
-  const at = images.findIndex(input=>input.sha256===image.sha256);
-  const descriptionOnly=revision?.referenceInput==='observations';
+  const rawAt=images.findIndex(input=>input.sha256===image.sha256);
+  const maskedAt=maskedImage ? images.findIndex(input=>input.sha256===maskedImage.sha256) : -1;
+  if (maskedImage && (maskedImage.originalSha256!==image.sha256 || !/^[a-f0-9]{64}$/u.test(maskedImage.sha256 ?? '') ||
+      maskedImage.sha256===image.sha256 || (rawAt>=0 && maskedAt>=0))) {
+    throw Error('海报遮标附件须绑定同一主参考，且不可与原图同时发送。');
+  }
+  const at=maskedAt>=0 ? maskedAt : rawAt;
+  const descriptionOnly=revision?.referenceInput==='observations' || posterReference.attachmentMode==='observations';
   if (descriptionOnly ? at>=0 : at<0) throw Error('本张海报实际附件与核定的主参考借法不一致。');
   const schema = object({
     format:string, subject:string, background:string, lettering:list(string),
@@ -132,10 +190,10 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     revision && 'revisionFix 把退回原因写成一条针对本稿、可直接画出的修正。明确怎样落实 revision.axes 指出的原图关系；只用本案主体和原定三借两改。审稿意见与核定借改冲突时，按借改和客户要求。不要照抄审稿和原参考的具体物件。',
   ].filter(Boolean).join('\n'),[],schema,{
     assignment:'夜航海报生图提示词写作',rules:[],context:visualWriterContext({
-      ...directionInput, ...(mainReferenceUse && {mainReferenceUse:{apply:withoutColor(mainReferenceUse.apply ?? ''),avoid:exclusions}}),
-      ...(referenceTask && {referenceTask:{...referenceTask,focus:withoutColor(referenceTask.focus ?? ''),translation:withoutColor(referenceTask.translation ?? '')}}),
+      ...directionInput, ...(mainReferenceUse && {mainReferenceUse:{apply:abstractReference(withoutColor(mainReferenceUse.apply ?? '')),avoid:exclusions}}),
+      ...(referenceTask && {referenceTask:{...referenceTask,focus:abstractReference(withoutColor(referenceTask.focus ?? '')),translation:abstractReference(withoutColor(referenceTask.translation ?? ''))}}),
       ...(revision && {revision:{...revision,axes:revisionAxes}}),
-      posterSlogan,mainReference:{...(descriptionOnly ? {descriptionOnly:true} : {imageNumber:at+1}),observations:usableObservations},transfer,
+      posterSlogan,mainReference:{...(descriptionOnly ? {descriptionOnly:true} : {imageNumber:at+1,...(maskedAt>=0 ? {masked:true} : {})}),observations:usableObservations},transfer,
       ...(typeof hasBrandArtwork==='boolean' ? {hasBrandArtwork} : {}),
     },posterSlogan),
   });
@@ -169,6 +227,7 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     '生成一张完整海报／KV。' + plan.format,
     paper ? '成图画布使用 '+paper.name+'，宽高比 '+paper.width+':'+paper.height+'。保留完整标题与画面。' : '',
     descriptionOnly ? '参照信息来自同一原图观察，下方保留五项借改。请从空白画布重画本案。'
+      : maskedAt>=0 ? '实际第 '+(at+1)+' 张附件是本方向主参考的遮标版。忽略遮挡区，只借核定的画面关系或美术特征。'
       : '实际第 '+(at+1)+' 张附件是本方向主参考原图，只借核定的画面关系或美术特征。',
     flatIllustration ? '整张海报画成二维平涂插画。商品、人物、手、道具和背景都用统一的手绘轮廓与色块，商品杯型和文字仍须清楚可辨。避免实拍皮肤、摄影反光或混入三维商品样机。' : '',
     repair,

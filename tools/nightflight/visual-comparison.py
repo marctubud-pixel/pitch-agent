@@ -6,7 +6,24 @@ import sys
 import tempfile
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageOps, ImageStat
+
+
+def open_verified(source, expected_hash):
+    original_bytes = Path(source).read_bytes()
+    if hashlib.sha256(original_bytes).hexdigest() != expected_hash:
+        raise ValueError("Original image hash does not match input")
+    return Image.open(io.BytesIO(original_bytes))
+
+
+def write_png(image, destination):
+    with tempfile.NamedTemporaryFile(dir=Path(destination).parent, delete=False) as target:
+        temporary = Path(target.name)
+    try:
+        image.save(temporary, format="PNG")
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 if sys.argv[1] == "--crop-box":
@@ -14,22 +31,46 @@ if sys.argv[1] == "--crop-box":
     left, top, right, bottom = map(int, sys.argv[5:])
     if not (0 <= left < right <= 1000 and 0 <= top < bottom <= 1000):
         raise ValueError("Invalid normalized crop bounds")
-    original_bytes = Path(source).read_bytes()
-    if hashlib.sha256(original_bytes).hexdigest() != expected_hash:
-        raise ValueError("Original image hash does not match crop input")
-    with Image.open(io.BytesIO(original_bytes)) as original:
+    with open_verified(source, expected_hash) as original:
         image = ImageOps.exif_transpose(original)
         width, height = image.size
         crop = image.crop((width * left // 1000, height * top // 1000,
                            (width * right + 999) // 1000, (height * bottom + 999) // 1000))
-        with tempfile.NamedTemporaryFile(dir=Path(destination).parent, delete=False) as target:
-            temporary = Path(target.name)
-        try:
-            crop.save(temporary, format="PNG")
-            temporary.replace(destination)
-        finally:
-            temporary.unlink(missing_ok=True)
+        write_png(crop, destination)
     print(json.dumps(crop.size))
+    raise SystemExit(0)
+
+if sys.argv[1] == "--mask-boxes":
+    source, destination, expected_hash, data = sys.argv[2:]
+    with open_verified(source, expected_hash) as original:
+        image = ImageOps.exif_transpose(original).convert("RGB")
+    width, height = image.size
+    coverage = Image.new("L", image.size)
+    draw = ImageDraw.Draw(coverage)
+    boxes = []
+    for left, top, right, bottom in json.loads(data):
+        if not (0 <= left < right <= 1000 and 0 <= top < bottom <= 1000):
+            raise ValueError("Invalid normalized mask bounds")
+        box = (max(0, width * left // 1000 - 4), max(0, height * top // 1000 - 4),
+               min(width, (width * right + 999) // 1000 + 4), min(height, (height * bottom + 999) // 1000 + 4))
+        boxes.append(box)
+        draw.rectangle((box[0], box[1], box[2]-1, box[3]-1), fill=255)
+    covered = coverage.histogram()[255]
+    if not boxes or covered > width * height * 0.45:
+        print("null")
+        raise SystemExit(0)
+    clear = ImageOps.invert(coverage)
+    masked = image.copy()
+    for left, top, right, bottom in boxes:
+        nearby = (max(0, left - 8), max(0, top - 8), min(width, right + 8), min(height, bottom + 8))
+        sample = clear.crop(nearby)
+        if sample.getbbox() is None:
+            print("null")
+            raise SystemExit(0)
+        fill = tuple(ImageStat.Stat(image.crop(nearby), sample).median)
+        masked.paste(fill, (left, top, right, bottom))
+    write_png(masked, destination)
+    print(json.dumps([width, height, covered]))
     raise SystemExit(0)
 
 if sys.argv[1] == "--review-previews":

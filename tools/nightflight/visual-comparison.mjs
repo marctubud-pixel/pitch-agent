@@ -56,3 +56,22 @@ export async function cropReviewRegion(dir,image,box,signal) {
   return {name,path,imageId:'crop_'+id,mediaType:'image/png',byteLength:bytes.length,width,height,
     sha256:createHash('sha256').update(bytes).digest('hex')};
 }
+
+export async function maskPosterReference(dir,image,boxes,signal) {
+  if (!image?.path || !/^[a-f0-9]{64}$/u.test(image.sha256 ?? '')) throw Error('海报遮标需要原图及其指纹。');
+  const bounds=boxes.map(({left,top,right,bottom})=>[left,top,right,bottom]);
+  if (bounds.some(box=>box.some(n=>!Number.isInteger(n) || n<0 || n>1000) || box[0]>=box[2] || box[1]>=box[3])) {
+    throw Error('海报遮标需要有效的归一化矩形。');
+  }
+  const id=createHash('sha256').update(JSON.stringify([image.sha256,bounds])).digest('hex');
+  const name='reference-mask-'+id+'.png';
+  const path=join(dir,name);
+  const {stdout}=await run(await pythonBinary(),[script,'--mask-boxes',image.path,path,image.sha256,JSON.stringify(bounds)],{signal,timeout:30000});
+  const dimensions=JSON.parse(stdout);
+  if (!dimensions) return null;
+  const [width,height,coveredPixels]=dimensions;
+  const bytes=await readFile(path);
+  const sha256=createHash('sha256').update(bytes).digest('hex');
+  if (bytes.length>8*1024*1024 || sha256===image.sha256) return null;
+  return {name,path,imageId:'mask_'+id,mediaType:'image/png',byteLength:bytes.length,sha256,width,height,coveredPixels,originalSha256:image.sha256};
+}
