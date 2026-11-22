@@ -4,6 +4,7 @@ import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
 import {isManuscriptSupport, manuscriptArtifact} from './manuscript.mjs';
 import {finalProtocol} from './final-review.mjs';
+import {POSTER_EVIDENCE_POLICY} from './visual-batch.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
 import {
@@ -551,8 +552,20 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
                 typeof a.edit==='string' && a.edit.trim() && typeof a.research==='string' && a.research.trim() &&
                 ['视觉','品牌','用户','传播'].every(role=>a.scores?.some(v=>v.role===role && Number.isInteger(v.score) && v.score>=1 && v.score<=5)) &&
                 a.scores.length===4 && a.mean===a.scores.reduce((sum,v)=>sum+v.score,0)/4 && typeof a.blocked==='boolean' && a.reason?.trim())) return false;
-              const eligible = batch.filter(a=>!a.blocked && a.mean>=4);
               const winners = batch.filter(a=>a.recommended);
+              if (batch.some(a=>a.selectionPolicy===POSTER_EVIDENCE_POLICY)) {
+                if (!batch.every(a=>a.selectionPolicy===POSTER_EVIDENCE_POLICY && a.output!=='packaging' &&
+                  a.transferAudit?.criteria && Array.isArray(a.hardIssues) &&
+                  a.hardIssues.every(issue=>typeof issue==='string' && issue.trim()) && a.blocked===Boolean(a.hardIssues.length) &&
+                  (a.selectionHold===undefined || !a.blocked && typeof a.selectionHold==='string' && a.selectionHold.trim())) ||
+                  ![1,2,3].every(priority=>batch.some(a=>a.priority===priority))) return false;
+                const held = batch.some(a=>a.selectionHold);
+                if (held && !batch.some(a=>a.hardIssues.some(issue=>issue.startsWith('三方向并排')))) return false;
+                const eligible = batch.filter(a=>!a.blocked && !a.selectionHold);
+                return eligible.length ? winners.length===1 && eligible.includes(winners[0]) &&
+                  winners[0].priority===Math.min(...eligible.map(a=>a.priority)) : !winners.length;
+              }
+              const eligible = batch.filter(a=>!a.blocked && a.mean>=4);
               return eligible.length ? winners.length===1 && eligible.includes(winners[0]) && winners[0].mean===Math.max(...eligible.map(a=>a.mean)) : !winners.length;
             }), '视觉阶段需要每方向三张同版主视觉及完整复核推荐', 422);
           }
@@ -643,7 +656,12 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             note(live, '等待你选择创意方向');
           } else if (p.stage === 'visual') {
             live.status = 'waiting';
-            note(live, outputs.some(a=>a.visual?.candidate && !outputs.some(w=>w.visual?.direction===a.visual.direction && w.visual.recommended)) ? '有方向尚无达标主视觉，请查看原因并修改' : '每方向已推荐同批达标最高稿，等待采用');
+            const noWinner=outputs.some(a=>a.visual?.candidate &&
+              !outputs.some(w=>w.visual?.direction===a.visual.direction && w.visual.recommended));
+            const evidenceSelection=outputs.some(a=>a.visual?.selectionPolicy===POSTER_EVIDENCE_POLICY);
+            note(live,noWinner ? (evidenceSelection ? '有方向尚无可推荐的主视觉，请查看原因' :
+              '有方向尚无达标主视觉，请查看原因并修改') :
+              evidenceSelection ? '各方向已按评审意见推荐图稿，等待采用' : '每方向已推荐同批达标最高稿，等待采用');
           } else if (p.stage === 'layout' && p.layoutDraftOnly) {
             live.status = 'waiting';
             note(live, p.layoutMaterialsOnly ? '本版编稿材料和读图回执已保存，可以在版式下载' :

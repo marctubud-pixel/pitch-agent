@@ -23,8 +23,8 @@ export function posterStrategyPurpose(strategy) {
 
 export async function readPosterReference({call, image}) {
   const result = await call(
-    '只描述这一张主参考原图实际可见的五项。布局写标题、留白、主体与支撑背景分区的相对位置和大致占比；有明显分区时说清上、中、下层和留白从哪里开始。景别写主体占画幅的大小和可见环境范围。笔法写线条、切边或摄影质感，字体写字形和字重，配色写主要色和对比。' +
-    '逐项用简短一句话记录可借的抽象关系。用主体、标题区、前景物件等通称，不转录原画的品牌名、标志、联名角色、画面原字或原产品印花。景别只写比例与环境范围，笔法只写画法。本次不评价本案，不把后续改法写成原图特征。看不清的一项填「未核实」，原图确实没有文字也照实写。',
+    '只描述这一张主参考原图实际可见的五项。布局写标题、留白、主体与支撑背景分区的相对位置和大致占比；有明显分区时说清上、中、下层和留白从哪里开始。布局只记主要的空间关系，省去局部边框、图标和背景物件本身。景别写主体占画幅的大小和可见环境范围，主体触到画面边缘或出画时注明哪一边。笔法写线条、切边或摄影质感，字体写字形和字重，配色写主要色和对比。' +
+    '逐项用简短一句话记录可借的抽象关系。用主体、标题区、前景物件等通称，不转录原画的品牌名、标志、联名角色、画面原字或原产品印花。景别只写主体占比、出画边缘和环境范围；景别术语不能替代实图关系。笔法只写画法。本次不评价本案，不把后续改法写成原图特征。看不清的一项填「未核实」，原图确实没有文字也照实写。',
     [image], object(Object.fromEntries(visualElements.map(element=>[element,string]))),
     {delegate:true,rules:[],assignment:'海报主参考原图核读',context:'附件只有本方向主参考原图。'},
   );
@@ -38,12 +38,14 @@ export async function readPosterReference({call, image}) {
 
 // A placement such as a refrigerator belongs to the delivery brief; framing carries only scale and viewing range.
 export function posterFraming(value) {
-  const shot=value.match(/大特写|特写|中近景|中远景|近景|中景|远景|全景/u)?.[0];
-  const subject=value.match(/(?:主体|人物|角色|商品|物件)[^，。；]{0,16}?(?:占(?:画面|全景)?(?:比例)?|约)\s*(?:约|为)?\s*(\d{1,3}\s*%|[一二三四五六七八九十]+分之[一二三四五六七八九十]+)/u)?.[1];
+  const shot=value.match(/大特写|中近景|中远景|近景|中景|远景|全景|特写/u)?.[0];
+  const subject=value.match(/(?:主体|人物|角色|商品|物件)[^，。；]{0,16}?(?:占(?:画面|画幅|全景)?(?:比例)?|约)\s*(?:约|为)?\s*(\d{1,3}\s*%|[一二三四五六七八九十]+分之[一二三四五六七八九十]+)/u)?.[1];
+  const edge=value.match(/(?:主体(?:的)?|杯)(底部?|顶部?|左侧|右侧)(?:出画|被(?:画面|画幅)?(?:[上下左右]边缘?)?(?:截断|裁切))/u)?.[1];
   const environment=value.match(/(?:环境|背景)(?:所占|的)?(?:范围|占比|比例)?(?:为|是)?(?:较|很|偏)?([大小宽窄])/u)?.[1] ??
     value.match(/(大|小|宽|窄)(?:的)?环境(?:范围|比例|占比)/u)?.[1];
-  return [shot,subject && '主体约占画面 '+subject.replace(/\s/gu,''),environment?'环境范围'+environment:
-    /(?:背景|环境)(?:简化|简洁)/u.test(value)?'环境简化':''].filter(Boolean).join('，') ||
+  return [shot,subject && '主体约占画面 '+subject.replace(/\s/gu,''),edge && '主体'+({'底':'底部','顶':'顶部'}[edge] ?? edge)+'出画',
+    environment ? '环境范围'+environment :
+      /(?:背景|环境)[^，。；]{0,24}(?:简化|简洁)/u.test(value) ? '环境简化' : ''].filter(Boolean).join('，') ||
     '沿用原图中主体占画面的大小和环境范围。用本案内容重画。';
 }
 
@@ -99,15 +101,47 @@ function paletteAxes(value) {
 
 function posterAxisObservations(observations) {
   const keepGeometry=withoutColor(observations.布局).replace(/背景大面积(?=[，,。；;]|$)/gu,'背景的大面积区域');
-  return {配色:paletteAxes(observations.配色),布局:keepGeometry,景别:posterFraming(observations.景别),
+  const usable={配色:paletteAxes(observations.配色),布局:keepGeometry,景别:posterFraming(observations.景别),
     笔法:withoutColor(observations.笔法),字体:withoutColor(observations.字体).split(/[，,。；;]/u)
       .filter(part=>!/^填充|^与背景|^文字颜色/u.test(part)).join('，') || '只沿用字形和字重。'};
+  return Object.fromEntries(visualElements.map(axis=>[axis,
+    observations[axis].trim()==='未核实' ? '未核实' : usable[axis].trim() || '未核实']));
+}
+
+function posterHardCondition(proposed,target,sources) {
+  const condition = proposed?.trim();
+  if (!condition || !target.includes(condition)) return '';
+  const optional = /可选|可以|建议|例如|如需/u;
+  const aesthetic = /高级|好看|精美|精致|大气|有质感|有氛围|吸引人/u;
+  const placement = /居中|中央|[上下左右][部方侧角边]|[顶底]边|画面内|出画|裁切|留白|完整可见/u;
+  const proportion = /\d+(?:\.\d+)?\s*[%％]|[一二三四五六七八九十]+分之[一二三四五六七八九十]+/u;
+  const appearance = /(?:主|底|背景|辅助|点缀)色|[红橙黄绿青蓝紫粉褐灰黑白金银]色|手绘|线描|实拍|摄影|平涂|剪纸|字重|字形|宋体|黑体|衬线/u;
+  if (optional.test(condition) || aesthetic.test(condition) ||
+      ![placement,proportion,appearance].some(pattern=>pattern.test(condition))) return '';
+
+  const negated = /不要|不必|不需|不用|不要求|不保留|无须|无需|不得|禁止|避免|也可|不一定/u;
+  const grounded = sources.some(source => typeof source==='string' &&
+    source.split(/[。；;！？!?\r\n]/u).some(clause=>{
+      const at = clause.indexOf(condition);
+      if (at<0) return false;
+      const prefix = clause.slice(0,at).split(/[，,、]/u).at(-1);
+      return !optional.test(prefix) && !negated.test(prefix);
+    }));
+  return grounded ? condition : '';
 }
 
 async function writePosterPrompt({call, images, context, posterReference, posterSlogan}) {
-  const {transfer,revision,mainReferenceUse,referenceTask,hasBrandArtwork, ...directionInput} = context;
+  const {transfer,revision,previousTransferCriteria,mainReferenceUse,referenceTask,hasBrandArtwork, ...directionInput} = context;
   const {image,observations} = posterReference;
-  const usableObservations=posterAxisObservations(observations);
+  const usableObservations = posterAxisObservations(observations);
+  if (previousTransferCriteria && (!revision || previousTransferCriteria.referenceSha256!==image.sha256 ||
+      Object.keys(previousTransferCriteria.axes ?? {}).length!==visualElements.length ||
+      !visualElements.every(axis=>{
+        const existing = previousTransferCriteria.axes[axis];
+        return existing?.reference===usableObservations[axis] && nonempty(existing.target) &&
+          (existing.reference===existing.target)===transfer.borrow.includes(axis) &&
+          (existing.hardCondition===undefined || (nonempty(existing.hardCondition) && existing.target.includes(existing.hardCondition)));
+      }))) throw invalidOutput('海报返修须沿用同一主参考和此稿锁定的五项借改条件。');
   const exclusions=posterIdentityExclusions(mainReferenceUse?.avoid);
   const revisionAxes=revision ? visualElements.filter(axis=>['应沿用','应变化','应改'].some(change=>revision.reason?.includes(axis+change)) ||
     revision.edit?.includes('沿用这项'+axis)) : [];
@@ -119,15 +153,21 @@ async function writePosterPrompt({call, images, context, posterReference, poster
   if (descriptionOnly ? at>=0 : at<0) throw Error('本张海报实际附件与核定的主参考借法不一致。');
   const schema = object({
     format:string, subject:string, background:string, lettering:list(string),
-    changes:object(Object.fromEntries(transfer.change.map(element=>[element,string]))),
+    ...(!previousTransferCriteria ? {
+      changes:object(Object.fromEntries(transfer.change.map(element=>[element,string]))),
+      hardConditions:object(Object.fromEntries(visualElements.map(axis=>[axis,string]))),
+    } : {}),
     ...(revision ? {revisionFix:string} : {}),
   });
   const result = await call([
     '为这个海报方向写制图内容。用 referenceTask 和 mainReferenceUse 里已经准入的本案画面关系来写，保留本案重点和动作取舍。参考图的主体、标识、联名角色、包装、装饰、配料和字样均不能当作本案元素。只有客户原 Brief 确认的品牌和产品信息可印。遵守 mainReferenceUse.avoid 和辅助参考各自的禁用内容。',
     'format 写简报给定的载体、横竖、硬性尺寸和投放场所。subject 写本案画面主体和动作。background 写本案画面实际需要的背景。投放位置在冷柜、柜台或门店旁，不自动成为画面背景或动作。当前创意要求画它时再画。保留本方向的差异，看到场地相同也不用让三案画同一个购买过程。',
     '主体和背景字段只写本案内容，不重新指定配色、构图、景别、笔法和字体。保持客户明确指定的画面和物料。',
-    'changes 只写两项重新设计的内容。每项给可落图的目标，要看得出与原图观察的差异。改布局时说清主标题、主要画面主体及留白的新位置关系。改景别时说清画面现在看见的范围。',
-    '三项沿用内容由按轴整理的原图观察给出。这三项不在其他字段重新指定。配色含文字与背景的用色；布局只说区域位置与比例；字体只说字形和字重。硬性设计位置仅来自客户本轮简报和任务卡。',
+    previousTransferCriteria
+      ? '本次返修沿用原稿锁定的五项实图条件。主体、背景和 revisionFix 遵守这些条件。'
+      : 'changes 只写两项重新设计的内容。每项给可直接拿成图核对的目标，要看得出与原图观察的差异。改布局时说清主标题、主要画面主体及留白的新位置关系。改景别时说清主体可见占比、出画边缘和环境范围。',
+    !previousTransferCriteria && 'hardConditions 按五项分别给一个必须落实的原文短语或空字符串。仅在原始 Brief、已确认任务卡或本方向已准入的画面关系明确要求且成图上可直接指出证据时填写，比如「大杯居中」或「杯身完整可见」。使用本项原图观察或实际改法中已经写明的相同字样。仅为画法参考、审美倾向、可选建议或原图独有内容均填空字符串。',
+    '三项沿用内容由按轴整理的原图观察给出。这三项不在其他字段重新指定。配色含文字与背景的用色；布局只说区域位置与比例；字体只说字形和字重。',
     'lettering 只列需要印在画面中的简报信息或本案副标，逐条写实际文字。主标题已定稿。价格、型号或时段只在设计需要的位置出现一次。省略未确认字样，不新增产品标签上的原料、分类或功效。',
     revision && 'revisionFix 把退回原因写成一条针对本稿、可直接画出的修正。明确怎样落实 revision.axes 指出的原图关系；只用本案主体和原定三借两改。审稿意见与核定借改冲突时，按借改和客户要求。不要照抄审稿和原参考的具体物件。',
   ].filter(Boolean).join('\n'),[],schema,{
@@ -136,6 +176,7 @@ async function writePosterPrompt({call, images, context, posterReference, poster
       ...(referenceTask && {referenceTask:{...referenceTask,focus:withoutColor(referenceTask.focus ?? ''),translation:withoutColor(referenceTask.translation ?? '')}}),
       ...(revision && {revision:{...revision,axes:revisionAxes}}),
       posterSlogan,mainReference:{...(descriptionOnly ? {descriptionOnly:true} : {imageNumber:at+1}),observations:usableObservations},transfer,
+      ...(previousTransferCriteria ? {previousTransferCriteria} : {}),
       ...(typeof hasBrandArtwork==='boolean' ? {hasBrandArtwork} : {}),
     },posterSlogan),
   });
@@ -146,19 +187,30 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     const value=plan.changes[element];
     return [element,element!=='配色' && typeof value==='string'?withoutColor(value).trim():value];
   }));
+  const proposedHard = plan?.hardConditions;
   if (!plan || !['format','subject','background'].every(field=>nonempty(plan[field]) && plan[field].length<=600) ||
       !Array.isArray(plan.lettering) || plan.lettering.length>8 ||
       !plan.lettering.every(value=>nonempty(value) && value.length<=120) ||
-      !plan.changes || Object.keys(plan.changes).length!==transfer.change.length ||
-      !transfer.change.every(element=>nonempty(plan.changes[element]) && plan.changes[element].length<=450 &&
-        nonempty(changes[element]) &&
-        normalize(plan.changes[element])!==normalize(observations[element]) &&
-        normalize(changes[element])!==normalize(usableObservations[element])) ||
+      !previousTransferCriteria && (!plan.changes || Object.keys(plan.changes).length!==transfer.change.length ||
+        !transfer.change.every(element=>nonempty(plan.changes[element]) && plan.changes[element].length<=450 &&
+          nonempty(changes[element]) &&
+          normalize(plan.changes[element])!==normalize(observations[element]) &&
+          normalize(changes[element])!==normalize(usableObservations[element]))) ||
+      !previousTransferCriteria && proposedHard!==undefined && (!proposedHard ||
+        Object.keys(proposedHard).length!==visualElements.length || !visualElements.every(axis=>typeof proposedHard[axis]==='string')) ||
       revision && (!nonempty(plan.revisionFix) || plan.revisionFix.length>600) ||
       !nonempty(result.model) || !nonempty(result.threadId)) {
     throw invalidOutput('海报生图文字须按借改项目写出两项明确的新画法和本方向的画面内容。');
   }
-  const technique=transfer.borrow.includes('笔法') ? usableObservations.笔法 : changes.笔法;
+  const hardSources = [brief,directionInput.taskCard,mainReferenceUse?.apply,referenceTask?.focus,referenceTask?.translation];
+  const transferCriteria = previousTransferCriteria ?? {referenceSha256:image.sha256,
+    axes:Object.fromEntries(visualElements.map(axis=>{
+      const reference = usableObservations[axis];
+      const target = transfer.borrow.includes(axis) ? reference : changes[axis];
+      const hardCondition = posterHardCondition(proposedHard?.[axis],target,hardSources);
+      return [axis,{reference,target,...(hardCondition ? {hardCondition} : {})}];
+    }))};
+  const technique = transferCriteria.axes.笔法.target;
   const flatIllustration=/扁平(?:卡通|插画|风格)|平涂|平面卡通|矢量插画/u.test(technique) &&
     !/融合|混合|拼贴|结合|摄影|实拍|三维|3D/iu.test(technique);
   const repair=revision && (revisionAxes.length
@@ -172,8 +224,12 @@ async function writePosterPrompt({call, images, context, posterReference, poster
       : '实际第 '+(at+1)+' 张附件是本方向主参考原图，只借核定的画面关系或美术特征。',
     flatIllustration ? '整张海报画成二维平涂插画。商品、人物、手、道具和背景都用统一的手绘轮廓与色块，商品杯型和文字仍须清楚可辨。避免实拍皮肤、摄影反光或混入三维商品样机。' : '',
     repair,
-    ...transfer.borrow.map(element=>'沿用主参考的'+element+'。'+usableObservations[element]),
-    ...transfer.change.map(element=>'重新设计'+element+'。本张改为 '+changes[element]),
+    ...transfer.borrow.map(axis=>'沿用主参考的'+axis+'。'+transferCriteria.axes[axis].target),
+    ...transfer.change.map(axis=>'重新设计'+axis+'。本张改为 '+transferCriteria.axes[axis].target),
+    ...visualElements.flatMap(axis=>{
+      const hardCondition = transferCriteria.axes[axis].hardCondition;
+      return hardCondition ? ['必须落实的'+axis+'条件。'+hardCondition] : [];
+    }),
     paper && transfer.borrow.includes('布局') ? '按本案纸幅重排空白，保留上述标题区、画面各层的位置关系和主体比例。重新绘制整幅画面，保留完整构图。' : '',
     '所有人物、商品包装、道具、背景、标志、图形与字样用本案内容重画。无品牌原件时只用本案确认的品牌原字。禁止使用参考品牌、联名标识或角色，也不要添加未确认的配方、功效和宣传声称。',
     exclusions ? '原图内容的禁用项。'+exclusions : '',
@@ -186,7 +242,7 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     lettering.length ? '其它需印在画面的文字。'+lettering.map(line=>'「'+line+'」').join('、') : '',
     '保持文字清晰可读。避免副标、价格等重复排印。主标题外的装饰不能代替标点。未定正式标志时可用已确认的文字品牌名，省略标志图案。',
   ].filter(Boolean).join('\n');
-  return {model:result.model,threadId:result.threadId,prompt,plan};
+  return {model:result.model,threadId:result.threadId,prompt,plan,transferCriteria};
 }
 
 function includesPosterSlogan(prompt, slogan) {

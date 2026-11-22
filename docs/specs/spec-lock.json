@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.151.0",
-  "registrySha256": "98ad666c81da9b58c51c073f5968cebb0db165a0c3bbb7ba1bc07ee3619a6968",
+  "baselineVersion": "1.158.0",
+  "registrySha256": "ba5551623a873f89f122c824d02d73fb0cb8f2dac399b653dbd949bcc209e455",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -123,10 +123,10 @@
       }
     },
     "page.visual": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "fbc8ebafc844aa0a48d9d13f430eaf48045f7c75d6ce656ab23e2d735d9552d1"
+        "docs/pages/visual.md": "1292564e7cb0b6bd0ebe4a35e19ae8d75d51b87ae19cc5564154f55cc6f8ffd0"
       }
     },
     "page.layout": {
@@ -210,14 +210,14 @@
       }
     },
     "method.visual": {
-      "version": "1.30.0",
+      "version": "1.37.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "238b03e755b2e60be71027a2fd670cb884655e98bf041e39c412bae9ae8767ad",
-        "skills/visual-development-lead/references/kv.md": "43a3a19f62ef45cee868630e5e0b26a68619c0c7f3cc54375cc7600f0afc43a8",
+        "skills/visual-development-lead/SKILL.md": "089abe2202029c4218966d28a993c902bb45bdca2ed7b5f9c0ab0219a325ff39",
+        "skills/visual-development-lead/references/kv.md": "c2cde9ea5cb6e05c0568da4c2ed7dd3ed85cfd95c8c3873dcc4f47488e0dd994",
         "skills/visual-development-lead/references/packaging.md": "5fc42d40044503528b2a8e24c014595b1da76f87763954b7d43e8bf6cc5775d6",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
-        "skills/visual-development-lead/references/stage-review.md": "602ac5039e76e21bcf205337451e9f1b4a2bc7562bbf0a04731c4fbafd769899",
+        "skills/visual-development-lead/references/stage-review.md": "c430df10aa1fbf2f22a0152627ce2001ea2e8e3d613b46098f44de7e5777621c",
         "skills/visual-development-lead/scripts/check-stage.mjs": "73396ea1949f443b4437837a541a4f0f594bf6bae785b5a76ca1fa7c3c3eff75",
         "skills/visual-development-lead/tests/check-stage.test.mjs": "d3e8fa7e48ac35ddaf0d2c585681c224bd6e14230fc133bb32fefe9fdbd93adc"
       }
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.75.0",
+      "version": "1.82.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "2570a66900947965cb40dde4b6f52407c150945d855d47e5173ec9c819ad4516"
+        "docs/specs/nightflight-runtime.md": "45ab046c6caf47edcea27283a0c5905f6d05be352cf4be985a318da32d6a747a"
       }
     },
     "contract.nightflight-final-reader": {
@@ -545,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "db9a677f24a9988a64a7bfd3725afd8b3281484bf1447562caa66a3243392a91",
+    "docs/specs/README.md": "8f024abc2a035aa26210a44ea0f794b0c20a5fab889f660019f4cbbedc205ab0",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

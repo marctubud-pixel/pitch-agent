@@ -145,7 +145,7 @@ const MODES: { id: Mode; en: string; name: string; lead: string; points: string[
     points: [
       '关键依据不足时自动定向补查一轮',
       '补查后仍缺关键依据，项目留在研究',
-      '三个方向各出三张主视觉，各推荐一张达标最高稿',
+      '三个方向各出三张主视觉，各推荐一张通过检查的图稿',
       '视觉稿由你确认后进入排版',
     ],
     cta: '全自动开始',

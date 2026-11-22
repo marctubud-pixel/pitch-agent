@@ -19,6 +19,7 @@ export interface Artifact extends Asset {
   visual?: {
     direction: string;
     candidate?: number; mean?: number; recommended?: boolean; blocked?: boolean; reason?: string;
+    selectionPolicy?: 'poster-evidence'; hardIssues?: string[]; selectionHold?: string;
     scores?: {role:string; score:number; reason:string}[];
     blind?: BlindReading; edit?: string; research?: string; references?: string[];
     sha256?: string; pageUrl?: string; sourceUrl?: string; title?: string;
@@ -273,6 +274,13 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
     throw new Error(typeof data.error === 'string' ? data.error : '请求失败（' + r.status + '）');
   return data;
 }
+export function visualCandidateStatus(visual?: Artifact['visual']) {
+  if (visual?.recommended) return '评审推荐';
+  if (visual?.selectionPolicy !== 'poster-evidence') return;
+  if (visual.selectionHold) return '待并排核对';
+  if (typeof visual.blocked === 'boolean') return visual.blocked ? '需修改' : '可选';
+}
+
 export function safeURL(raw: string) {
   try {
     const u = new URL(raw, location.origin);

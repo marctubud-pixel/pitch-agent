@@ -9,6 +9,13 @@ test('the borrowed framing of a real public poster retains geometry without copy
   assert.match(posterFraming('不具名的背景图形'),/主体占画面的大小/u);
 });
 
+test('the actual O/82 reference phrase retains measurable framing when it uses 画幅',()=>{
+  const actual='主体占画幅60%，主体为中景特写，背景为单一色调和简化点状纹理环境。';
+  assert.equal(posterFraming(actual),'中景，主体约占画面 60%，环境简化');
+  const withEdge='主体占画幅约60%，主体底部出画，环境范围小。';
+  assert.equal(posterFraming(withEdge),'主体约占画面 60%，主体底部出画，环境范围小');
+});
+
 test('paper aspect is bound only to a known client paper format and explicit orientation',()=>{
   assert.deepEqual(paperAspect('便利店冷柜旁的 A3 竖版海报'),{name:'A3竖版',width:297,height:420});
   assert.deepEqual(paperAspect('A4 横幅'),{name:'A4横版',width:297,height:210});

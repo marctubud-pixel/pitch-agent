@@ -14,6 +14,8 @@ export interface CandidateReview {
   readings: BlindReading[];
   scores: {role: string; score: number; reason: string}[];
   reason?: string;
+  hardIssues?: string[];
+  selectionHold?: string;
   edit?: string;
   research?: string;
 }
@@ -41,8 +43,12 @@ export function VisualReview({board, order, candidates}: {
           </>}
         </div>)}
       </details>}
-      {!!c.scores.length && <details><summary>四岗原分与理由</summary>
-        {c.scores.map(v=><p key={v.role}><strong>{v.role} · {v.score}/5</strong>　{v.reason}</p>)}
+      {c.selectionHold && <p><strong>待并排核对</strong>　{c.selectionHold}</p>}
+      {!!c.hardIssues?.length && <ul className="plain-list" aria-label="待修正事项">
+        {c.hardIssues.map(issue => <li key={issue}>{issue}</li>)}
+      </ul>}
+      {!!c.scores.length && <details><summary>{c.hardIssues ? '四岗意见' : '四岗原分与理由'}</summary>
+        {c.scores.map(v=><p key={v.role}><strong>{v.role}{!c.hardIssues && ' · ' + v.score + '/5'}</strong>　{v.reason}</p>)}
       </details>}
       {c.reason && <p>{c.reason}</p>}
       {c.edit && c.edit!=='无' && <p><strong>改图</strong>　{c.edit}</p>}

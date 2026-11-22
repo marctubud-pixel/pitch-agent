@@ -2259,8 +2259,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "b97bc7a4622bb29d44d6b77058325c932405687d025d355c884ef34179485068",
-      "reason": "三岗终审等待人工处理时显示终审提示。"
+      "sha256": "788bd24742308639484e8de00fe4daecb6ba5774b03603a2b89e2db5a8c4e078",
+      "reason": "三岗终审等待人工处理时显示终审提示。显示独立海报选稿状态、硬伤及待并排核对，保留人工采用记录。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "9e9bb555bbae30a3fcf326912c0726c98b5d61986f91ebf61e6245021e0664fd",
@@ -2279,8 +2279,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/StartScreen.tsx": {
-      "sha256": "b39bce45b9c386bea7a43ee3e4cc5870b8c8c6ae4765ebf52a4cf7274dea6e83",
-      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。"
+      "sha256": "8618ad9fccac68b2916c65f6e3b2ff4b6912a04f5fddeb7088efed962d81feac",
+      "reason": "支持同版逐页稿、材料交接与客户页序的排版及查看。全自动说明按载体核验推荐图稿，兼容独立海报的文字排序规则。"
     },
     "apps/workbench-preview/nightflight/src/components/TopBar.tsx": {
       "sha256": "c0a8d676b60a1d7a383428317eeede0e1f2f271b71b262fa8452c4e4a039c7ba",

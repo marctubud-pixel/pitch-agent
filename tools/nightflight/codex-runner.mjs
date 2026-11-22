@@ -23,9 +23,9 @@ import { promisify } from 'node:util';
 import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
-import { makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
+import { cropReviewRegion, makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
 import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
-import { holdSimilarPosterDirections, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
+import { holdSimilarPosterDirections, POSTER_EVIDENCE_POLICY, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -1362,7 +1362,10 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       for (const direction of directions) {
         const batch = [], images = [];
         const previous = project.previousVisual?.filter(item => item.visual?.direction === direction) ?? [];
-        const best = previous.sort((a,b)=>Number(Boolean(b.adopted))-Number(Boolean(a.adopted)) || Number(b.visual.recommended)-Number(a.visual.recommended) || b.visual.mean-a.visual.mean)[0];
+        const best = previous.sort((a,b)=>Number(Boolean(b.adopted))-Number(Boolean(a.adopted)) || Number(b.visual.recommended)-Number(a.visual.recommended) ||
+          (a.visual.selectionPolicy===POSTER_EVIDENCE_POLICY && b.visual.selectionPolicy===POSTER_EVIDENCE_POLICY
+            ? a.visual.hardIssues.length-b.visual.hardIssues.length || a.visual.priority-b.visual.priority
+            : b.visual.mean-a.visual.mean))[0];
         const {images:references,handoff} = plans.get(direction);
         const publicImages = references.filter(ref=>ref.sourceUrl);
         async function publishReference(ref) {
@@ -1404,6 +1407,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           referenceHandoff:{direction,references:generationReferences.map((ref,index)=>({...ref,imageNumber:index+1+Number(Boolean(best))}))},
           auxiliaryNotes};
         async function saveVisual({result,promptWriting},index,transfer,attached,sloganRepair,artworkRevision) {
+          if (posterReference && !promptWriting?.transferCriteria) throw invalidOutput('海报成图缺少与实发提示词绑定的五项借改条件。');
           const original = result.original ?? await ownGeneratedImage(result,await realpath(codexHome));
           const digest = hash(original.bytes);
           if (seen.has(digest)) throw invalidOutput('主视觉候选返回了重复图片，请重试视觉阶段');
@@ -1420,7 +1424,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             width:original.inspection.width,height:original.inspection.height,
             ...(promptWriting?.visiblePackageUnits ? {visiblePackageUnits:promptWriting.visiblePackageUnits} : {})}};
         }
-        async function drawCandidate(borrow,index,revision) {
+        async function drawCandidate(borrow,index,revision,previousTransferCriteria) {
           const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
           await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/3');
           const instruction = [
@@ -1434,7 +1438,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             best ? '第一张输入图为上一批原稿。保留成立处，结合用户意见和前版问题改稿。'+best.visual.reason : '',
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
-          const input = {...generationContext,transfer,...(revision ? {revision} : {})};
+          const input = {...generationContext,transfer,...(revision ? {revision,previousTransferCriteria} : {})};
           const attached=revision?.referenceInput==='observations'
             ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256) : sourceImages;
           const attempt = desktop
@@ -1455,9 +1459,12 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
         const compare = () => reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
-          ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal)} : {}),
+          ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal),
+            cropTitle:(image,box)=>cropReviewRegion(dir,image,box,signal)} : {}),
           posterTransfer:posterReference && {reference:posterReference,transfers:batch.map(item=>item.transfer),
-            sourcePolicy:{mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
+            selectionPolicy:POSTER_EVIDENCE_POLICY,criteria:batch.map(item=>item.promptWriting.transferCriteria),
+            sourcePolicy:{brandFacts:posterBrandFacts(project.brief),hasBrandArtwork:generationContext.hasBrandArtwork,
+              mainReferenceExclusions:posterIdentityExclusions(mainReference.avoid),approvedReferenceUse:mainReference.apply},
             paperAspect:posterPaper},
           findComparators:async()=>{
             const result=await call('为本案包装返回一条查询同类商品正面实拍的通用品类短词，不含本案品牌、客户、方向名称或简报原话。',[],querySchema,{assignment:'寻找同类包装对照',context:JSON.stringify({brief:project.brief})});
@@ -1489,6 +1496,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           if (!seen.has(hash(attempt.result.original.bytes))) {
             const proof={sourceName:source.name,sourceSha256:source.sha256,expected:posterSlogan,observed:correction.observed};
             if (source.promptWriting?.visiblePackageUnits) attempt.promptWriting.visiblePackageUnits=source.promptWriting.visiblePackageUnits;
+            if (posterReference) attempt.promptWriting.transferCriteria=source.promptWriting.transferCriteria;
             const revised=await saveVisual(attempt,index,source.transfer,[image],proof);
             await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'-before-title.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
             artifacts.push({name:source.name,kind:'image',visual:{role:'slogan-original',direction,sha256:source.sha256}});
@@ -1500,18 +1508,18 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             await onEvent?.('「'+direction+'」标题修订未改变原图，保留原判。');
           }
         }
-        if (checkPosterTransfer && project.mode==='auto' && !review.winner && !correction) {
-          const top=review.candidates.toSorted((a,b)=>b.mean-a.mean || a.priority-b.priority)[0];
+        if (checkPosterTransfer && project.mode==='auto' && !correction && review.redrawCandidate) {
+          const top=review.candidates.find(item=>item.candidate===review.redrawCandidate);
           const index=top.candidate-1;
           const source=batch[index];
           const revision={sourceName:source.name,sourceSha256:source.sha256,
-            reason:top.reason,edit:top.edit};
+            reason:top.hardIssues.join(' '),edit:'只修正已核实的硬伤。保留同一主参考和本稿明确的五项条件。'};
           if (posterReference.image.sourceUrl && top.posterArtworkCheck?.issues?.some(issue=>['foreign_identity','reference_asset'].includes(issue.kind))) {
             revision.referenceInput='observations';
           }
-          await onEvent?.('「'+direction+'」未有达标海报。保留同一主参考，只重做第 '+top.candidate+' 稿并重审。');
+          await onEvent?.('「'+direction+'」当前候选均有硬伤。优先重做硬伤较少的第 '+top.candidate+' 稿并重审。');
           if (revision.referenceInput==='observations') await onEvent?.('原稿出现未经授权的标识或图案。本次重画使用同一主参考的实读特征。');
-          const revised=await drawCandidate(source.transfer.borrow,index,revision);
+          const revised=await drawCandidate(source.transfer.borrow,index,revision,source.promptWriting.transferCriteria);
           if(revised) {
             await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'-before-artwork.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
             artifacts.push({name:source.name,kind:'image',visual:{role:'poster-original',direction,sha256:source.sha256}});
@@ -1528,7 +1536,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           const verdict = review.candidates.find(row=>row.candidate===i+1);
           return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
+            ...(verdict.selectionPolicy ? {selectionPolicy:verdict.selectionPolicy,priority:verdict.priority,hardIssues:verdict.hardIssues} : {}),
             ...(verdict.posterArtworkCheck ? {posterArtworkCheck:verdict.posterArtworkCheck} : {}),
+            ...(verdict.posterTitleCheck ? {posterTitleCheck:verdict.posterTitleCheck} : {}),
             ...(verdict.weeklyLabelCheck ? {weeklyLabelCheck:verdict.weeklyLabelCheck} : {}),
             ...(record.sloganRepair ? {sloganRepair:record.sloganRepair} : {}),
             ...(record.artworkRevision ? {artworkRevision:record.artworkRevision} : {}),
@@ -1542,7 +1552,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         await onEvent?.('正在并排核对三个海报方向的实际成图');
         const representatives = directionBatches.map(({direction,images,drafts})=>{
           const draft = drafts.find(item=>item.visual.recommended) ??
-            drafts.reduce((best,item)=>item.visual.mean>best.visual.mean ? item : best);
+            drafts.reduce((best,item)=>item.visual.priority<best.visual.priority ? item : best);
           return {direction,image:images[draft.visual.candidate-1],draft,drafts};
         });
         const comparison = await reviewPosterDirections({call,entries:representatives.map(({direction,image})=>({direction,image}))});
@@ -1551,8 +1561,10 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       }
       await addText('# 主视觉推荐\n\n'+directionBatches.map(({direction,drafts})=>{
         const winner = drafts.find(item=>item.visual.recommended)?.visual;
-        return '## '+direction+'\n'+(winner ? '推荐第 '+winner.candidate+' 稿，四岗均分 '+winner.mean+'/5。'+winner.reason :
-          '本批尚无达标主视觉。'+drafts.map(item=>item.visual.reason).join('；'));
+        const selection = winner
+          ? '推荐第 '+winner.candidate+' 稿。'+(winner.selectionPolicy===POSTER_EVIDENCE_POLICY ? '' : '四岗均分 '+winner.mean+'/5。')+winner.reason
+          : '本批尚无达标主视觉。'+drafts.map(item=>item.visual.reason).join('；');
+        return '## '+direction+'\n'+selection;
       }).join('\n\n'));
       return {artifacts};
     }
