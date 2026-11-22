@@ -151,11 +151,14 @@ export interface Project extends Summary {
   events: { stage: StageId; text: string; at: string }[];
   artifacts: Artifact[];
   versions?: { at: string; stage: StageId; artifacts: Artifact[]; research?: Project['research'] }[];
+  canRequestStrategy?: boolean;
+  autoStrategyResume?: boolean;
   researchFollowup?: boolean;
   research?: {
     searchScope?: {replacements?:{from:string;to:string}[];attempts?:{query:string;source:string;count:number}[];unreadable?:{url:string;reason:string}[];queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};
     ready: boolean;
     question?: string;
+    conditional?: boolean;
     digestPending?: boolean;
     strategyAdvice?: { recommendation: string; findingIndices: number[] }[];
     digest?: {
@@ -177,7 +180,7 @@ export interface Project extends Summary {
 }
 export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
-type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup'>>;
+type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup' | 'canRequestStrategy'>>;
 export const researchQuestion = (p: ResearchStatus) =>
   p.stage === 'research' &&
   p.status === 'waiting' &&
@@ -193,7 +196,7 @@ export const projectStatus = (p: ResearchStatus) => {
   if (p.stage === 'research' && p.status === 'waiting') {
     if (!p.research) return '查看研究';
     if (p.research.digestPending) return '摘要待编辑';
-    return p.research.ready ? '可进入策略' : '待补查';
+    return p.research.ready ? '可进入策略' : p.canRequestStrategy ? '可进入策略' : '待补查';
   }
   return statusName[p.status];
 };

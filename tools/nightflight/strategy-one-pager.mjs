@@ -7,15 +7,12 @@ const exactlyThree = {minItems:3,maxItems:3};
 const numbered = {type:'integer'};
 const basis = object({text:string,findingNumbers:list(numbered)});
 const touchpointSchema = object({kind:{type:'string',enum:['front','side','back','kv']},name:string,action:string});
-const schema = object({outcome:{anyOf:[
-  object({researchReturn:string}),
-  object({
+const schema = object({outcome:object({
     coreStrategy:string,insight:string,brandRole:string,proposition:string,
     actions:list(string,exactlyThree),touchpoints:list(touchpointSchema),
     metrics:list(object({name:string,method:string}),exactlyThree),
     constraints:string,opportunity:basis,decision:basis,priority:basis,intersection:string,
-  }),
-]}});
+  })});
 
 export function strategyCarrier(project, inputs) {
   const kinds={'包装':'packaging','KV':'kv','包装与KV':'packaging+kv'};
@@ -58,10 +55,6 @@ function measurementText(value) {
 }
 
 function renderStrategy(out, findings, eligible, carrier) {
-  if (Object.hasOwn(out,'researchReturn')) {
-    if (!singleLine(out.researchReturn)) throw Error('退回研究时需写明具体补查问题');
-    return {body:'# 策略待补\n\n'+out.researchReturn,researchReturn:out.researchReturn};
-  }
   if (![out.coreStrategy,out.insight,out.brandRole,out.proposition,out.constraints,out.intersection].every(singleLine))
     throw Error('策略正文或事实边界不完整');
   if (!Array.isArray(out.actions) || out.actions.length!==3 || !out.actions.every(singleLine) || !distinct(out.actions))
@@ -93,7 +86,7 @@ function renderStrategy(out, findings, eligible, carrier) {
     '## 方向交叉点',out.intersection,'## 推导依据','- 产品与任务约束：'+out.constraints+'\n'+
       groups.map((g,i)=>'- '+['竞品资源与空隙','人群与决策链','触点优先级与取舍'][i]+'：'+g.text+'（研究 '+g.findingNumbers.join('、')+'）').join('\n'),
   ];
-  return {body:sections.join('\n\n'),researchReturn:'',strategy:{findingNumbers,intersection:out.intersection,focus:customerText(out.coreStrategy)}};
+  return {body:sections.join('\n\n'),strategy:{findingNumbers,intersection:out.intersection,focus:customerText(out.coreStrategy)}};
 }
 
 export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) {
@@ -101,18 +94,15 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules}) 
   const rows=findings.flatMap((f,i)=>f && !f.visualOnly && [f.conclusion,f.source,f.evidence,f.implication].every(v=>typeof v==='string' && v.trim())
     ? [{...f,findingNumber:i+1}] : []);
   const eligible=new Set(rows.map(f=>f.findingNumber));
-  if (project.research?.ready!==true || !rows.length) {
-    const gap=project.research?.next || '请补查目标人群在实际接触场景中的选择依据，交回一条能与产品条件对应的已核发现。';
-    return {body:'# 策略待补\n\n'+gap,researchReturn:gap};
-  }
-  const instruction='按本次载体完成一页策略及后台依据。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。只在没有依据作核心取舍时返回 researchReturn，其中说明影响取舍的窄问题。对客做减法：每个模块一到两句，核心策略优先一句；每个动作、触点和指标尽量一句一行，一项只讲一次。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
+  if (!rows.length) throw Error('当前策略输入缺少可引用的研究记录');
+  const instruction='按本次载体完成一页策略及后台依据。约束回到简报和任务卡，明确价格、渠道、配料或功能、禁用与待核声称。机会、用户决策及触点优先级各引用对应研究的一基 findingNumber。给出一个有条件可验证的机会、替代解释/推翻条件和优先级取舍。以本案语言写具体的人、地点、动作、顾虑、真实品牌利益。洞察可描述选购时要解决的问题；未测的动机、关注顺序、是否看配料只作为设计要回答的问题，避免断言该人群已有某一行为。各触点分别承担辨认、确认用法或核对资料等不同任务，同一套信息仅在需要时重复。直接从本案简报、已核研究、产品事实和人群场景推导一句核心策略，说清优先放大什么、对用户有什么用。自由成句。每项视觉动作写元素、位置和阅读任务。包装用 front/side/back 三项，KV 每一项用 kv 并以真实媒介命名，联动同时覆盖且说明延续关系。三项指标逐项写测量场景、方法和计量口径。指标均待测，不生成测试成绩、实际因果、虚构阈值或客户批准。仅有依据证明的产品属性可作真实卖点，资料估计、品牌自述、推论与待测假设各自说明身份。禁止从无创作者原文的图倒推品牌意图。先检验本轮研究提出的条件性方向；渠道、执行细节和待测数据缺失，写入约束。直接提出本轮研究可以支撑的策略发力点。对客做减法：每个模块一到两句，核心策略优先一句；每个动作、触点和指标尽量一句一行，一项只讲一次。客户栏只呈现事实和设计取舍，不写内部编号、脚注、模拟设定、材料身份复述或待测前后缀。把产品假设和声称边界集中写在 constraints，未经核实的利益不得转写成事实。指标直接命名并说明测量口径；程序统一在每项标注一次待测。一页策略各字段只写单行内容，标题由程序生成。';
   const advice=(project.research.strategyAdvice ?? []).flatMap(a=>{
     if (!Array.isArray(a.findingIndices) || !a.findingIndices.length) return [];
     const findingNumbers=a.findingIndices.map(i=>i+1);
     return findingNumbers.every(n=>eligible.has(n)) ? [{recommendation:a.recommendation,findingNumbers}] : [];
   });
   const context=JSON.stringify({carrier,brief:project.brief,materials:inputs.texts,findings:rows,
-    researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
+    handoffScope:project.research?.conditional ? project.research.next : undefined,researchAdvice:advice,gaps:project.research?.gaps ?? [],feedback:project.feedback ?? []});
   let correction='';
   for (let attempt=0;attempt<2;attempt++) {
     const response=await call(instruction+correction,inputs.images,schema,{rules,context,assignment:'依据同版已核研究制定本案包装或 KV 的一页策略。'});

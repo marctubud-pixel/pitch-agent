@@ -2251,7 +2251,7 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "8ffe3eb42f835767000094418506ce839f7f078329641e72635dad00733858e5",
+      "sha256": "a7c1e6e5bb276136bd1e490d21926d1fb3b4a596bfc7dcad12c0eac1a6b18637",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
@@ -2259,11 +2259,11 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "d2d7a953d4240b0887388275ea142ea5cc1aede8416603af99fd33ddb5182b31",
+      "sha256": "f5565c20167a230aeb05bd8c6efdc8eccee5672f8d61e70957f5318fd2f0c5a9",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "6d2a7b8e8b39ddfcf46260192de6bf9f3fb655c8232bd7a8e43a3c83fd8a323d",
+      "sha256": "db21e95ad640df0c796873b1e4c197065d59671014fa9f7e8236e47213edbddd",
       "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
@@ -2287,8 +2287,8 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "f540951ea3d81d05d01a72a5cfc0782cbe58cf1d493af1aafe793410e64e6a9a",
-      "reason": "研究精选按行业、竞品、用户展示，支持单独编辑摘要并查看原图及底稿。"
+      "sha256": "3ddd250e82a20fb348d3a0ff13cb3d8fce07d148414f9008b209f3618e5443a8",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",
@@ -2303,8 +2303,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "4df9cf019b2c8a34c77efbf9ee296df3118881ec2c56aac5687118a0f9145f88",
-      "reason": "研究图片证据按逐图观察、创作者说明和本案启发分层，策略建议可就地核对依据。 策略一页纸四个小标题使用随项目提供的夜航粗宋字形。"
+      "sha256": "029d11a1e848b211ba1c6348a4e475057b429d035452569c2714a181b3ec5ab5",
+      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {
       "sha256": "5a52a2343c4c95ac3e08e4098a16e8ce005e5e537b3ad69a7c0868ff75299e42",

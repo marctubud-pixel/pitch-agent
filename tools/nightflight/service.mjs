@@ -127,11 +127,26 @@ function continueResearch(p, archived = false) {
   note(p, '按研究缺口开始定向补查：' + p.research.next);
 }
 
+function hasStrategyEvidence(r) {
+  return Array.isArray(r?.findings) && r.findings.some(f => f && !f.visualOnly && /^https?:\/\//i.test(f.url) &&
+    [f.passage, f.source, f.evidence, f.conclusion, f.implication].every(v => typeof v === 'string' && v.trim()));
+}
+
+function canRequestStrategy(p) {
+  const r = p.research;
+  return p.stage === 'research' && p.status === 'waiting' && !p.claim && r && !r.ready &&
+    !r.digestPending &&
+    hasStrategyEvidence(r);
+}
+
 function publicView(p) {
   const { owner, claim, attemptKey, inputHash, commands, ...visible } = p;
   const unstore = ({ storageKey, ...record }) => record;
   return {
     ...visible,
+    canRequestStrategy: Boolean(canRequestStrategy(p)),
+    autoStrategyResume: Boolean(p.mode === 'auto' && !p.researchOnly && p.stage === 'research' && p.status === 'waiting' &&
+      !p.claim && canRequestStrategy(p)),
     artifacts: p.artifacts.map(unstore),
     attachments: p.attachments.map(unstore),
     versions: p.versions.map((v) => ({ ...v, artifacts: v.artifacts.map(unstore) })),
@@ -317,6 +332,9 @@ export function createNightflight({ root, runStage, runLayout }) {
             if (previous?.research) {
               const refs = previous.research.findings?.flatMap(f=>f.images ?? []) ?? [];
               const copied = new Set();
+              if (p.research?.strategyReturned && input.previousResearch) {
+                input.previousResearch = {...input.previousResearch, next:p.research.next};
+              }
               input.previousResearchImages = refs.map(ref=>{
                 const original=historicalImage(p,ref);
                 check(original,'历史竞品研究原图与哈希无法核对',422);
@@ -500,21 +518,13 @@ export function createNightflight({ root, runStage, runLayout }) {
                 note(live, '研究已形成有依据的判断，交给策略');
                 live.stage = 'strategy';
               }
+            } else if (live.mode === 'auto' && !live.researchOnly && hasStrategyEvidence(live.research)) {
+              live.research.conditional = true;
+              live.stage = 'strategy';
+              note(live,'自动交给策略撰写，已传入已核结论、用途及未决问题');
             } else {
               continueResearch(live);
             }
-          } else if (p.stage === 'strategy' && result.researchReturn) {
-            archiveVersion(live);
-            live.artifacts = live.artifacts.filter((a) => a.stage !== 'strategy');
-            live.stage = 'research';
-            live.research = {
-              ...researchHandoff(live.research, live),
-              ready: false,
-              question: '',
-              next: result.researchReturn,
-            };
-            note(live, '策略退回研究：' + result.researchReturn);
-            continueResearch(live,true);
           } else if (p.stage === 'brief' && p.mode==='collab') {
             live.status='waiting';
             note(live,'请确认任务卡后开始研究');
@@ -750,12 +760,19 @@ export function createNightflight({ root, runStage, runLayout }) {
       p.status = 'running';
       note(p,'开始从当前已核研究发现重新编辑摘要');
     } else if (kind === 'research_continue') {
-      check(p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly,
+      const conditional = canRequestStrategy(p);
+      check(!p.claim && (conditional || (p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly)),
         '没有等待交接的研究成果', 409);
+      if (conditional && p.research.strategyReturned) {
+        const previous=p.versions.findLast(v=>v.stage==='strategy' && v.research)?.research;
+        archiveVersion(p);
+        p.research={...p.research,strategyReturned:false,next:previous?.next || ''};
+      }
+      if (conditional) p.research.conditional = true;
       p.researchOnly = false;
       p.stage = 'strategy';
       p.status = 'running';
-      note(p, '已确认查看研究结果，继续策略');
+      note(p, conditional ? '带已核发现和未决问题进入策略，开始撰写策略' : '已确认查看研究结果，继续策略');
     } else if (kind === 'research_again') {
       check(
         !p.claim &&

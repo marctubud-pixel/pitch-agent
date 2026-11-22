@@ -102,10 +102,10 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "2026-11-16 用户确认策略阶段定稿为直接盲推。",
+    "source": "用户确认研究直接交策略成稿，撤销策略退回研究。",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.5-20261116",
-    "sha256": "56867ceb84569672f303128d4521941d3e02180399ab771f38a838c4bc7f791a"
+    "sourceVersion": "v1.6-20261116",
+    "sha256": "393d32997fa3293b6e9026fea74a224c6e0f2dd2cae21160ecf77dc376f031d6"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",

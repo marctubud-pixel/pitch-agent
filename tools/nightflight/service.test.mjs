@@ -65,7 +65,6 @@ test('a personal run waits for direction and current image adoption, saves user 
             next: '比较渠道',
             question: '优先哪个渠道？',
           };
-    const researchReturn = stage === 'strategy' && round === 2 ? '请补查第二种渠道的实际案例' : undefined;
     assert.equal(await readFile(join(dir, 'brief.md'), 'utf8'), 'brief attachment');
     if (stage === 'layout') {
       assert.equal(await readFile(join(dir, 'update.md'), 'utf8'), 'update');
@@ -105,7 +104,6 @@ test('a personal run waits for direction and current image adoption, saves user 
     await writeFile(join(dir, name), body);
     return {
       research,
-      researchReturn,
       artifacts: [{ kind, name, ...(stage === 'copy' ? { text: body } : {}) }, ...(stage==='layout' ? [{kind:'image',name:'page-0001.jpg',renderPage:1}] : [])],
       copyReview: stage === 'copy' ? {
         version: 3, protocol: 'dual-panel-headline-v4', status: 'ready',
@@ -165,16 +163,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   };
   assert.equal((await action({ ...supplement, expectedRevision: pending.revision - 1 })).status, 409);
   await action(supplement);
-  const returned = await wait('waiting');
-  assert.equal(returned.stage, 'research');
-  assert.equal(returned.research.ready, false);
-  assert.match(returned.research.next, /第二种渠道/);
-  assert.equal(
-    returned.artifacts.some((a) => a.stage === 'strategy'),
-    false,
-  );
-  assert.equal((await action(supplement)).status, 200);
-  await action({ kind: 'research_again', expectedRevision: returned.revision });
+  assert.equal((await action(supplement)).status,200);
   const copy = await wait('waiting');
   assert.equal(copy.stage, 'copy');
   assert.equal(copy.copyReview.status, 'ready');
@@ -187,7 +176,7 @@ test('a personal run waits for direction and current image adoption, saves user 
   assert.equal(visual.stage, 'visual');
   await action({ kind: 'message', text: 'change', attachments: [file('update.md', 'update'), ...Array.from({length:5},(_,i)=>file('补图'+i+'.jpg','reference'+i))] });
   const revised = await wait('waiting');
-  assert.equal(revised.versions.length, 4);
+  assert.equal(revised.versions.length, 2);
   assert.equal(revised.attachments.filter(a=>a.visualOnly).length,5);
   assert.equal((await action({ kind: 'adopt', expectedRevision: visual.revision })).status, 409);
   const adoption = { kind: 'adopt', expectedRevision: revised.revision, opId: 'my-choice', attachments: [file('逐页材料.md', '指定版次')] };
@@ -446,22 +435,6 @@ test('final review returns to the named stage and waits for a person; completed 
   assert.ok(!(await readdir(join(project.root,'example'))).some(s=>s.startsWith('attempt-')));
 });
 
-test('one strategy return archives one edition and keeps structured research gaps',async t=>{
-  const gap={kind:'coverage',chapter:'人群与接触情境',message:'缺人群公开材料',findingRef:''};
-  const p=await legacyService(t,{status:'failed',stage:'strategy',research:{ready:false,findings:[],gaps:[gap]}},async ({stage,dir,project})=>{
-    if (stage==='research') {
-      assert.deepEqual(project.previousResearch.gaps,[gap]);
-      throw Error('检查定向补查已收到');
-    }
-    await writeFile(join(dir,'待补依据.md'),'请补用户资料');
-    return {researchReturn:'请补用户资料',artifacts:[{kind:'text',name:'待补依据.md',text:'请补用户资料'}]};
-  });
-  await p.action({kind:'retry'});
-  const state=await p.settled();
-  assert.equal(state.versions.length,1);
-  assert.equal(state.error,'检查定向补查已收到');
-});
-
 test('legacy one-page strategy reaches copy with the exact source file hash; changed or missing files block before model calls',async t=>{
   const seen=[];
   const p=await legacyService(t,{status:'failed',stage:'copy'},async ({project})=>{
@@ -478,3 +451,26 @@ test('legacy one-page strategy reaches copy with the exact source file hash; cha
   await missing.action({kind:'retry'});
   assert.match((await missing.settled()).error,/未找到本项目当前策略稿/);
 });
+
+for (const mode of ['auto','collab']) {
+  test(mode+' passes research gaps through strategy to copy without reopening research',async t=>{
+    const stages=[];
+    const f={conclusion:'新品密集',source:'报告',url:'https://example.org/report',evidence:'原文',passage:'原文',implication:'优先识别'};
+    const research={ready:false,findings:[f],gaps:['渠道未知'],next:'可先解决新品识别'};
+    const p=await legacyService(t,{stage:'research',status:mode==='auto'?'failed':'waiting',mode,research},async({stage,project,dir})=>{
+      stages.push(stage);
+      if(stage==='copy') throw Error('文案已收到策略稿');
+      await writeFile(join(dir,stage+'.md'),stage);
+      if(stage==='strategy') {
+        assert.deepEqual(project.research.gaps,['渠道未知']);
+        assert.deepEqual(project.research.findings,[f]);
+      }
+      return {artifacts:[{kind:'text',name:stage+'.md',text:stage}],research};
+    });
+    await p.action(mode==='auto'?{kind:'retry'}:{kind:'research_continue',expectedRevision:1});
+    const result=await p.settled();
+    assert.equal(result.stage,'copy');
+    assert.equal(result.error,'文案已收到策略稿');
+    assert.deepEqual(stages,mode==='auto'?['research','strategy','copy']:['strategy','copy']);
+  });
+}

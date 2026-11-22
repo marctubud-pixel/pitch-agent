@@ -50,6 +50,7 @@ export function App() {
     [party, setParty] = useState(false);
   const [reload, refresh] = useState(0),
     generation = useRef(0),
+    autoResume = useRef(''),
     lastStatus = useRef(''),
     [seen, mark] = useState(0),
     [notice, setNotice] = useState(false);
@@ -118,6 +119,11 @@ export function App() {
   }, [id, reload, requestedStage, requestedLibrary]);
   useEffect(() => {
     if (!workspace || !p) return;
+    const edition = p.id + '/' + p.revision;
+    if (p.autoStrategyResume && !lock.current && autoResume.current !== edition) {
+      autoResume.current = edition;
+      void act('research_continue', '');
+    }
     if (p.status === 'waiting' && p.stage !== 'research' && lastStatus.current !== 'waiting') setChat(true);
     if (p.status === 'done' && lastStatus.current && lastStatus.current !== 'done') {
       setParty(true);

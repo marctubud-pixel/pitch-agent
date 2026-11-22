@@ -88,7 +88,7 @@ const verdictSchema = (indices) => objectSchema({
   gaps: stringList,
   next: stringField,
 });
-const strategySchema = objectSchema({ body: stringField, researchReturn: stringField });
+const strategySchema = objectSchema({ conclusions: stringField, intersection: stringField, focus: stringField });
 const strings = (values) =>
   Array.isArray(values)
     ? [...new Set(values.filter((v) => typeof v === 'string' && v.trim()).map((v) => v.trim()))]
@@ -354,7 +354,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       : 'question 填空字符串。根据已知条件及反馈复核；未确定的分支分别说明适用条件。';
     const indexedFindings = findings.map((finding, findingIndex) => ({ ...finding, findingIndex }));
     const review = await call(
-      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。visualOnly 纯图只可保留为图例，不得用作创作者意图或结论依据，不给它分配角度。请将有可核创作者引文的每张图与案例名称和图文逐一对应，检查引文来自创作者且明确表述该作品的意图；归错作品、机构导航文案、相邻案例以及推测一律退回。纯观察不能证明消费者反应或销量。'+researchTask+'本包每条正文引用都有执行器实际取回的原文片段，组图附本地实际原图。以这些已核原件为准。gaps 只列复核后仍存在、与具体策略取舍有关的缺口。next 只解释下一步取舍；已定位和已看图的来源无需再次索取。草稿的过程说明和旧状态留在执行记录。关键依据不足时，无论哪个模式都保留待补状态。' + coverageInstruction +
+      '你在独立会话中执行比稿 Agent 的研究交接核查。只审以下已定位来源的 findings。带 images 的竞品发现请逐张核对附件和观察，再判断图组支持的比较范围、结论和策略用途。逐条检查原文能否支持结论，结论的对象、场景、范围以及对策略决策的用途。accepted 填保留条目的零起始索引，ready 表示这些条目足以支撑本案下一步策略；真正影响方向的证据缺失时填 false。按设计前案头研究收束：四线已展开，有外部材料可说明品类、竞品或人群，足以比较下一步取舍时可以有条件交接。仅有简报自述不足以通过。测试动机、视线、记忆及购买效果用于后续验证。品牌提供的模拟产品条件按其身份使用。非关键资料仍待确认时可交付有依据的条件性结论。visualOnly 纯图只可保留为图例，不得用作创作者意图或结论依据，不给它分配角度。请将有可核创作者引文的每张图与案例名称和图文逐一对应，检查引文来自创作者且明确表述该作品的意图；归错作品、机构导航文案、相邻案例以及推测一律退回。纯观察不能证明消费者反应或销量。'+researchTask+'本包每条正文引用都有执行器实际取回的原文片段，组图附本地实际原图。以这些已核原件为准。gaps 只列复核后仍存在、与具体策略取舍有关的缺口。next 只解释下一步取舍；已定位和已看图的来源无需再次索取。草稿的过程说明和旧状态留在执行记录。若已能提出有证据的条件性发力点，ready 为 true，并在 next 写明适用范围；未定品牌名、渠道细节或后续视觉执行不能单独否决这一步。只有连一个条件性策略取舍都无法支持时，ready 才为 false。' + coverageInstruction +
       '按观察对象重新核对分类。labels 为适合展示的 accepted 发现逐条填写 findingIndex、纠正后的 chapter、该观察最相关的一个 angle。保留与本案相关且独立有据的观察，多个角度需来自不同发现，不能用多种角度名称掩盖同一观察。可保留其他已核材料作交接底稿并不列入 labels。项目条件、泛行业和相邻品类的无关调查不能凑入。剩余缺口不妨碍具体策略取舍时，允许按真实已有角度交接，gaps保留缺口和影响。若某个缺口确实让关键策略选择无依据才判待补。' + questionInstruction,
       [...new Map(boards.flatMap(b=>b.images).map(i=>[i.sha256,i])).values()],
       verdictSchema(indexedFindings.map(f => f.findingIndex)),
@@ -898,10 +898,14 @@ export function createStageRunner({binary, model, researchDependencies = {}, vis
         await addText(body);
         return {artifacts,...handoff};
       }
-      const result=await call('依据本轮有效研究输出三个板块。确实无法形成有依据的策略判断时，把具体应退回研究补查的问题写入 researchReturn；可以根据明确条件推进时填空字符串。',inputs.images,strategySchema);
-      if (typeof result.parsedOutput?.researchReturn!=='string') throw Error('策略未明确研究交接判断，请重试');
-      await addText(textOutput(result));
-      return {artifacts,researchReturn:result.parsedOutput.researchReturn.trim()};
+      const research = project.research;
+      const packet = {brief:project.brief,feedback:project.feedback,materials:inputs.texts,
+        findings:research?.findings ?? [],scope:research?.next,gaps:research?.gaps ?? [],strategyAdvice:research?.strategyAdvice ?? []};
+      const result=await call('依据本轮研究直接撰写三个板块。把资料缺口和未确定的渠道、卖点写为适用范围或假设，提出本轮证据能支持的优先方向。',inputs.images,strategySchema,{context:JSON.stringify(packet)});
+      const {conclusions,intersection,focus}=result.parsedOutput ?? {};
+      if (![conclusions,intersection,focus].every(v=>typeof v==='string' && v.trim())) throw Error('策略输出缺少正文，请重试策略');
+      await addText(['# 策略','## 研究结论',conclusions,'## 方向交叉点',intersection,'## 策略发力点',focus].join('\n\n'));
+      return {artifacts};
     }
     if (stage === 'copy') {
       const {body,directions,copyReview} = await runCopyReview({call,project,inputs,rules,dir,onEvent});

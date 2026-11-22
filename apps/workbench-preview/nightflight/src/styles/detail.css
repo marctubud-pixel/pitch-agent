@@ -42,6 +42,7 @@
 .plain-list li::before { content: ">"; position: absolute; left: 0; font-family: var(--mono); color: var(--mute); }
 
 .findings > li { display: grid; grid-template-columns: 40px 1fr; gap: 8px; padding: 16px 0 18px; border-bottom: 1px solid var(--line-soft); }
+.findings.research-gaps > li { display: block; overflow-wrap: anywhere; }
 .findings > li:first-child { padding-top: 0; }
 .finding-no { font-family: var(--display); font-size: 34px; line-height: 1; color: var(--mute); }
 .findings h3 { font-size: 18.5px; margin-bottom: 4px; }
