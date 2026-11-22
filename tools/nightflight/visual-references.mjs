@@ -235,7 +235,7 @@ async function writePosterPrompt({call, images, context, posterReference, poster
     exclusions ? '原图内容的禁用项。'+exclusions : '',
     '构图和景别遵照以上逐项借改安排。以下是本方向的新画面，按主体和背景重画。',
     '画面主体和动作。'+withoutColor(plan.subject,preserve),
-    hasBrandArtwork===false ? '本案没有采用的品牌实物图。改画真实产品形状；包装或容器做纯色占位，杯盖、盒身及侧面留白。品牌、品名、规格和售价按下面文字在海报文字区排版。若客户明确要求哪几个字印在产品上，仅按指定原字排。' : '',
+    hasBrandArtwork===false ? '本案没有采用的品牌实物图。画出真实商业产品形态与干净简约酒标/包装正面：若简报已确认品牌名或核心标识字样（如品牌名、度数/净含量），须在产品正面酒标清晰简洁印出，严禁出现无标裸瓶或空白包装；若品牌名待定，才留克制纯色占位。严禁在酒标底部或角落生成装饰性英文/中文乱码微字、伪篆刻红章或虚构成分表。' : '',
     '背景。'+withoutColor(plan.background,preserve),
     directionInput.auxiliaryNotes?.length ? '辅助参考的文字线索。'+directionInput.auxiliaryNotes.map(note=>[note.apply,note.avoid && '禁用：'+note.avoid].filter(Boolean).join(' ')).join(' ') : '',
     '完整主标题「'+posterSlogan+'」须逐字排进画面。允许合理换行，保留原句和标点。',
@@ -543,4 +543,44 @@ export async function reviewReferencePlan({call, project, direction, images, han
   const threads=[handoff.selectionThread,...votes.map(v=>v.threadId),...challenges.flatMap(c=>[c.independent.threadId,c.threadId]),result.threadId];
   if(threads.some(t=>!nonempty(t)) || new Set(threads).size!==threads.length) throw invalidOutput('公开参考包复核会话未独立。');
   return {scope:'direction',direction,references:handoff.references,hashes:images.map(i=>i.sha256),votes,challenges,ruling:{threadId:result.threadId,...ruling,decisions},passed:!blockers.length,blockers};
+}
+
+const fastRefSchema = object({
+  passed: { type: 'boolean' },
+  reason: string,
+  borrowNote: string,
+  avoidNote: string,
+});
+
+/**
+ * Single-pass reference gate for auto mode (1 vision call per direction instead of 13).
+ * Checks: legible non-collage quality, aesthetic fit for the assigned quadrant, and clear borrow/avoid boundary.
+ */
+export async function fastReviewReferencePlan({call, project, direction, images, handoff, quadrant}) {
+  const references = handoff.references.map((ref, index) => ({...ref, imageNumber: index + 1}));
+  const packet = {
+    direction,
+    quadrant,
+    references,
+    brief: project.brief,
+  };
+  const result = await call(
+    '单轮快速核验本方向视觉参考包（只查 3 项硬标准）：1) 主参考画质清晰、非多图拼接缩略图；2) 视觉美学气质匹配本方向指定象限（quadrant）；3) 借用位置（borrow）与禁止照搬的第三方品牌/人物/标识（avoid）表述清楚。无明显硬伤即 passed=true，并在 reason 给一句简洁确认，borrowNote/avoidNote 概括核心借改边界。',
+    images,
+    fastRefSchema,
+    { delegate: true, rules: [], assignment: '公开参考包单轮快速把关', context: JSON.stringify(packet) },
+  );
+  const out = result.parsedOutput;
+  const passed = out?.passed !== false;
+  const blockers = passed ? [] : [out?.reason?.trim() || '参考图画质或风格与当前方向不符'];
+  return {
+    scope: 'direction',
+    mode: 'fast-auto',
+    direction,
+    references: handoff.references,
+    hashes: images.map(i => i.sha256),
+    ruling: { threadId: result.threadId, compatible: passed, reason: out?.reason?.trim() || '通过单轮快速参考把关', borrowNote: out?.borrowNote || '', avoidNote: out?.avoidNote || '' },
+    passed,
+    blockers,
+  };
 }

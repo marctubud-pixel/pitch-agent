@@ -597,7 +597,7 @@ for (const mode of ['auto','collab']) {
       if(stage==='copy') throw Error('文案已收到策略稿');
       await writeFile(join(dir,stage+'.md'),stage);
       if(stage==='strategy') {
-        assert.deepEqual(project.research.gaps,['渠道未知']);
+        assert.ok(project.research.gaps.includes('渠道未知'));
         assert.deepEqual(project.research.findings,[f]);
       }
       return {artifacts:[{kind:'text',name:stage+'.md',text:stage}],research};
@@ -605,11 +605,11 @@ for (const mode of ['auto','collab']) {
     await p.action(mode==='auto'?{kind:'retry'}:{kind:'research_continue',expectedRevision:1});
     const result=await p.settled();
     if (mode==='auto') {
-      assert.equal(result.stage,'research');
-      assert.equal(result.status,'waiting');
-      assert.equal(result.canRequestStrategy,false);
-      assert.deepEqual(stages,['research','research']);
-      assert.equal((await p.action({kind:'research_continue',expectedRevision:result.revision})).status,409);
+      // After one automatic follow-up, auto mode degrades gracefully into strategy with conditional=true instead of dead-stopping.
+      assert.equal(result.stage,'copy');
+      assert.equal(result.error,'文案已收到策略稿');
+      assert.equal(result.research.conditional,true);
+      assert.deepEqual(stages,['research','research','strategy','copy']);
       return;
     }
     assert.equal(result.stage,'copy');

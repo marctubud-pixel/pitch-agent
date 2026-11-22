@@ -224,7 +224,15 @@ function checkPackagedDraft(pages, materials) {
       issues.add('执行页只写已核的包装画面和已确认的规格。采用图未核到全部实物时，全数陈列应注明是后续可试的选项，或改写已核到的单件和盒身装量字样');
     }
   }
-  if (issues.size) throw invalidOutput([...issues].join('；')+'。');
+  if (issues.size) {
+    if (materials.project.mode==='auto') {
+      const noteText='【自动模式待核提醒】'+[...issues].join('；')+'。';
+      const target=pages.find(p=>p.role==='decision') ?? pages.at(-1);
+      if (target) target.internalNote=[target.internalNote,noteText].filter(Boolean).join('\n');
+      return;
+    }
+    throw invalidOutput([...issues].join('；')+'。');
+  }
 }
 
 function observedQuote(figure, quote) {

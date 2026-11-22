@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.158.0",
-  "registrySha256": "ba5551623a873f89f122c824d02d73fb0cb8f2dac399b653dbd949bcc209e455",
+  "baselineVersion": "1.159.0",
+  "registrySha256": "370ca19ceb83ed83793749f5555b3245751fca3e33e0640523d00a98a2ef557c",
   "entries": {
     "agent.proposal-director": {
       "version": "2.0.0",
@@ -524,10 +524,10 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.82.0",
+      "version": "1.83.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "45ab046c6caf47edcea27283a0c5905f6d05be352cf4be985a318da32d6a747a"
+        "docs/specs/nightflight-runtime.md": "541a70c5de04c3434436209d97091c4240280a5a489174643798f2d6708fe941"
       }
     },
     "contract.nightflight-final-reader": {

@@ -1,3 +1,4 @@
+import {coreSloganSkill,matchesSourceBasis} from './auto-pipeline.mjs';
 import {unsupportedOpeningClaims} from './packaging-quantity.mjs';
 import {invalidOutput} from './call-checkpoints.mjs';
 import {hasWrongOwnNutGroup,ownRecipe,recipeCount} from './product-recipe.mjs';
@@ -182,7 +183,7 @@ function validateEngineDraft(draft, materials) {
     requireThat(d.candidates.length>=3 && d.candidates.length<=4 &&
       new Set(d.candidates.map(c=>normalize(c.text))).size===d.candidates.length &&
       d.candidates.every(c=>normalize(c.text)), '每个方向需要三到四条不同的原候选');
-    requireThat(!materials || materials.some(text=>text.includes(d.basis)),'方向 '+d.id+' 的依据无法定位到当前上游原文');
+    requireThat(!materials || matchesSourceBasis(materials,d.basis),'方向 '+d.id+' 的依据无法定位到当前上游原文');
   }
 }
 
@@ -249,13 +250,20 @@ function repairableQuantityClaims(direction, brief, basis) {
   return visible.every(text=>quantities(text).every(value=>sourced.has(value)));
 }
 
+const engineBlindPickSchema = object({
+  picks: enginePicks,
+  lineNotes: object({ A: str, B: str, C: str }),
+});
+
 export function engineCopyHandoffReady(review, names, text) {
   try {
     if (!isEngineCopyProtocol(review?.protocol) || review.version!==1 || review.status!=='ready' ||
         !/^[a-f0-9]{64}$/.test(review.skillHash ?? '') || !nonempty(text) || review.bodyHash!==hash(text) ||
-        review.calls?.length!==2 || !engineReceipt(review.calls[0],enginePhases[0]) ||
-        !engineReceipt(review.calls[1],review.protocol===engineCopyProtocol ? enginePhases[1] : 'COPY_ENGINE_SELECT') ||
-        review.calls[0].runId===review.calls[1].runId || review.calls[0].threadId===review.calls[1].threadId) return false;
+        ![2,3].includes(review.calls?.length) || !engineReceipt(review.calls[0],enginePhases[0]) ||
+        !engineReceipt(review.calls.at(-1),review.protocol===engineCopyProtocol ? enginePhases[1] : 'COPY_ENGINE_SELECT') ||
+        (review.calls.length===3 && !engineReceipt(review.calls[1],'COPY_ENGINE_BLIND_PICK')) ||
+        new Set(review.calls.map(c=>c.runId)).size!==review.calls.length ||
+        new Set(review.calls.map(c=>c.threadId)).size!==review.calls.length) return false;
     if (review.repairs!==undefined) {
       if (!Array.isArray(review.repairs) || !review.repairs.every(r=>engineRepairPhases.includes(r?.phase) && engineReceipt(r,r.phase)) ||
           new Set(review.repairs.map(r=>r.phase)).size!==review.repairs.length) return false;
@@ -295,17 +303,20 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
     return {receipt,output:result.parsedOutput};
   }
 
-  await onEvent?.('DeepSeek 写作 Agent 正在起稿并从每案自选一句');
+  const leanSkill = project.mode==='auto' ? coreSloganSkill(skill) : skill;
+  await onEvent?.('DeepSeek 写作 Agent 正在按三差异轴起稿');
   const {output:writing,receipt:written}=await run(enginePhases[0],
     [
-      '你是本次写作 Agent。沿用当前 Brief、研究与策略，使用原版 slogan-engine 定位物料和受众。从本案有依据的事实与读者此刻的动作、关系、情境或感受之间，找到三个不同的创意连接，自拟各案名称和角度。每案的主标要用具体措辞让这个连接成立。把三个方向当作三个可展开的创意主题。',
-      '主标给读者一个能记住、能转述的动作、画面或意思。直接列品牌型号、价格、场次、时段、预约或试穿条件，只完成了告知。把这类事实放在副标、信息栏或简报指定位置。事实参与创意连接时，允许按本案需要写入主标。事实性表述须有本案材料依据，遵守简报的品类与触点限制。',
-      '依据 basis 从当前材料逐字摘取一处简短的连续原文，保留原来的字、空格和标点。claim 写本案主张，mechanism 写哪两个具体事物怎样相连，strategyLink 写如何承接策略。按 A、B、C 返回 directions。每案保留围绕同一连接的三到四条不同候选和各自用法，另写同案通用的简洁支撑副标 secondary。使用原件对场合、长短、声律的判断。候选按 A1、A2 等编号。作为创作者从每案原候选自选一句，把编号填入 picks。整组推荐交给负责人。',
-      '仍由你在本次交稿前核对三条自选句。authorCheck.selections 按案逐字摘出承载创意连接的主标措辞 phrase，takeaway 写读者单看这句能记住什么或看到什么画面。只有标题本身表达了本案连接且超出直接告知时才填 sloganReady=true。authorCheck.pairs 对 AB、AC、BC 逐对写 reason，说清两句唤起的连接怎么不同。只换价格、时段、行动信息、语气或信息顺序时填 distinct=false。只看标题就分不出创意时，回到连接重新构思再自选。文案字段逐项、单行填写，略过独立盲读和回写。',
+      '你是本次写作 Agent。沿用当前 Brief、研究与策略，严格执行原版 slogan-engine 01–05 步定位物料和受众。从本案有依据的事实与读者此刻的动作、关系、情境或感受之间，按三条彻底拉开的差异轴创作三个独立创意主题：',
+      '- 方向 A（产品实证轴）：死磕一个可验证的具体产品事实/物理特征，让事实本身成为记忆钩子；',
+      '- 方向 B（场景动作轴）：锁死一个具体的日常动作、时刻或使用场景，让读者一看就有画面；',
+      '- 方向 C（情绪关系轴）：击中目标人群的真实心理落差或社交关系，优先用短动词强对仗打出金句张力（包装已露品名或情绪轴时，可用“52度/酒局/脆/7天”等强品类特征词替代完整长SKU名，把字数省给动作反差）。',
+      '三案中至少一条显性承接 Brief 的核心规格或秩序资产（如容量、度数、分装数量）。主标优先控制在 10–14 字以内（方便海报与包装大字排版），口语自然好念，换三个无关品类绝对套不上。直接列品牌型号、价格、场次、时段、预约或试穿条件只完成了告知，放进副标 secondary。',
+      '依据 basis 从当前材料摘取一处简短连续原文。claim 写本案主张，mechanism 写哪两个具体事物怎样相连，strategyLink 写如何承接策略。按 A、B、C 返回 directions。每案保留围绕同一连接的三到四条不同候选（A1、A2 等编号）和各自用法，另写同案通用的简洁支撑副标 secondary。作为创作者从每案原候选初选一句填入 picks 并填写 authorCheck，整组推荐交给负责人。',
       engineFactInstruction,
       '按系统给出的 JSON Schema 交稿。顶层的三个字段 directions、picks、authorCheck 并列。三案各填规定字段。authorCheck 中只有 selections 和 pairs。',
     ].join('\n'),
-    engineWriterSchema,source,[skill,'包装方向的 slogan 用于命名和呈现提案主题。候选用途写提案页或明确委托的其他传播触点。包装本体的印字以简报确认的产品信息为准。']);
+    engineWriterSchema,source,[leanSkill,'包装方向的 slogan 用于命名和呈现提案主题。候选用途写提案页或明确委托的其他传播触点。包装本体的印字以简报确认的产品信息为准。']);
   requireThat(writing && Object.keys(writing).every(key=>Object.hasOwn(engineWriterSchema.properties,key)),'写作 Agent 交稿包含意外字段');
   validateEngineDraft({directions:writing.directions});
   if (project.briefScope?.types?.includes('packaging') || /包装|外盒|小袋|瓶标|手撕/u.test(project.brief)) {
@@ -313,7 +324,7 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
   }
   const workbook={directions:writing.directions.map(direction=>({...direction}))};
   const originals=[project.brief,...materials.map(item=>item.text)].filter(nonempty);
-  const unsupported=workbook.directions.filter(d=>!originals.some(text=>text.includes(d.basis)));
+  const unsupported=workbook.directions.filter(d=>!matchesSourceBasis(originals,d.basis));
   const repairs=[];
   if (unsupported.length) {
     await onEvent?.('原作者正在核对无法定位的文案依据，保留本版候选');
@@ -355,19 +366,55 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
     ({picks,authorCheck}=output);
     repairs.push(receipt);
   }
+  let blindPickReceipt;
+  let blindNotes;
+  if (project.mode==='auto' || project.blindCopyPick===true) {
+    try {
+      await onEvent?.('独立空白盲读正在只看纯句子优选每案主标');
+      const pureGroups = Object.fromEntries(workbook.directions.map(d=>[
+        d.id,
+        d.candidates.map((c,i)=>({code:d.id+(i+1),text:c.text})),
+      ]));
+      const {output:blindOut,receipt:blindRec}=await run('COPY_ENGINE_BLIND_PICK',
+        '你是独立空白盲读读者（不看任何 Brief、品牌背景或策略，只看这三组纯中文句子）。按 slogan-engine 七道闸逐组挑出唯一最佳的一句编号（A/B/C 各选 1 个 code）：1) 零背景 2 秒能懂且像人话；2) 换三个无关品类绝对套不上；3) 有具体动作、画面或心理张力且字数适合大字排版。lineNotes 用一句简短口语写每条入选句的真实路人读感。',
+        engineBlindPickSchema,{groups:pureGroups});
+      const validBlind = ids.every(id=>{
+        const dirObj=workbook.directions.find(d=>d.id===id);
+        const code=blindOut?.picks?.[id];
+        return dirObj?.candidates.some((_,i)=>code===id+(i+1));
+      });
+      if (validBlind) {
+        picks=blindOut.picks;
+        blindNotes=blindOut.lineNotes;
+        blindPickReceipt=blindRec;
+        // Align authorCheck selections with blind-picked lines if changed
+        for (const id of ids) {
+          const dirObj=workbook.directions.find(d=>d.id===id);
+          const idx=Number(picks[id].slice(1))-1;
+          const chosenLine=dirObj.candidates[idx].text;
+          const sel=authorCheck?.selections?.find(s=>s.directionId===id);
+          if (sel && !chosenLine.includes(sel.phrase)) sel.phrase=chosenLine;
+        }
+      }
+    } catch (error) {
+      await onEvent?.('空白盲读跳过，沿用作者自选：'+String(error.message).slice(0,120));
+    }
+  }
   const draft=resolveEnginePicks(workbook,picks);
   validateEngineAuthorCheck(authorCheck,draft);
 
-  await onEvent?.('比稿负责人正在从作者自选的三句中推荐一案');
+  await onEvent?.('比稿负责人正在从三句定稿中推荐一案');
   const directions=draft.directions.map(({id,name,main})=>({id,name,main}));
   const {output:recommendation,receipt:recommended}=await run(enginePhases[1],
-    '你是比稿负责人。三个方向的主标题已经由作者选定，请仅从这三句推荐一案，返回对应 directionId 和一句具体推荐理由。对照 Brief 与策略判断哪句最值得记住。保持三句原文，选择理由聚焦这句的作用，避免批评和修改意见。',
-    engineRecommendation,{...source,directions});
+    '你是比稿负责人。三个方向的主标题已经选定，请仅从这三句推荐一案，返回对应 directionId 和一句具体推荐理由。对照 Brief 与策略（及盲读反馈）判断哪句最值得记住、最有停步穿透力。保持三句原文，选择理由聚焦这句的作用，避免批评和修改意见。',
+    engineRecommendation,{...source,directions,...(blindNotes ? {blindNotes} : {})});
   validate(recommendation,engineRecommendation,'负责人推荐');
   requireThat(written.runId!==recommended.runId && written.threadId!==recommended.threadId,'写作与推荐需要分别记录实际调用');
   const body=engineCopyMarkdown(draft);
+  const calls=blindPickReceipt ? [written,blindPickReceipt,recommended] : [written,recommended];
   const copyReview={protocol:engineCopyProtocol,version:1,status:'ready',bodyHash:hash(body),
-    draft,workbook,skillHash:fullSloganHash(skill),picks,authorCheck,recommendation,calls:[written,recommended],
+    draft,workbook,skillHash:fullSloganHash(skill),picks,authorCheck,recommendation,calls,
+    ...(blindNotes ? {blindNotes} : {}),
     ...(repairs.length ? {repairs} : {})};
   await onEvent?.('已保存作者自选的三句及负责人推荐');
   return {body,directions:draft.directions.map(d=>d.name),copyReview};

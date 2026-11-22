@@ -214,7 +214,7 @@ function campaignBodyImages(bytes, base) {
   return {urls:[...urls],text:paragraphs.join('\n').slice(0,16000)};
 }
 
-export async function searchVisualImages({query,dir,signal,pages,creativeFallback=false}, {
+export async function searchVisualImages({query,dir,signal,pages,creativeFallback=false,allowStockFallback=true}, {
   capture=capturePublicSource, search=searchPublicReferences,
 }={}) {
   if (typeof query !== 'string' || !query.trim() || query.length>180 || /[\x00-\x1f]/.test(query)) throw Error('参考检索词为空、过长或含控制字符');
@@ -318,7 +318,7 @@ export async function searchVisualImages({query,dir,signal,pages,creativeFallbac
       } catch { signal?.throwIfAborted(); }
     }
   } catch { signal?.throwIfAborted(); }
-  if (pages || found.size>=3) return [...found.values()];
+  if (pages || found.size>=3 || !allowStockFallback) return [...found.values()];
   if (creativeFallback) {
     const index=new URL('https://api.openverse.org/v1/images/');
     index.search=new URLSearchParams({q:query,page_size:'5'});

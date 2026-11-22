@@ -694,6 +694,62 @@ async function saveRecord(dir,body) {
   return {name,kind:'text',text:body};
 }
 
+async function fastAutoReviewDeck({project,plan,original,allPages,dir,call,onEvent,signal}) {
+  const receipts=[];
+  const applied=[];
+  const sequence=plan.pages.map(({number,role,title})=>({number,role,title}));
+  const batches=[];
+  for (let i=0;i<allPages.length;i+=6) batches.push(allPages.slice(i,i+6));
+  const auditBatch=async (numbers,round,verify=false,prior=[])=>{
+    const pages=numbers.map(n=>plan.pages[n-1]);
+    const figureIds=new Set(pages.flatMap(page=>page.figures));
+    const images=numbers.map(n=>original.images[n-1]);
+    const context={
+      全册页序:sequence,Brief:plan.brief,策略:plan.strategy,已选文案:plan.copy,采用说明:plan.adoption,
+      采用图读图:plan.figures.filter(figure=>figureIds.has(figure.id)),本批逐页稿:pages,
+      本批PPT:numbers.map(n=>({页码:n,...original.native[n-1],图片对象数量:original.native[n-1].images.length})),
+      ...(prior.length ? {本批待复核:prior} : {}),
+    };
+    await onEvent?.('自动模式快速终审 · 第 '+numbers.join('、')+' 页'+(verify?'复检':''));
+    const response=await call([
+      '你是提案终审主审。按附件顺序一次通审第 '+numbers.join('、')+' 页的事实、文字清晰度、版面可读性与图片匹配。',
+      verify ? '仅核对已修改页面，只保留仍未解决的明显问题。' : '只报真正影响提案交付的明显问题，轻微主观偏好跳过。',
+      policy,operations,
+    ].join('\n'),images,issueSchema(numbers),{delegate:true,context:JSON.stringify(context)});
+    const issues=response.parsedOutput?.issues;
+    if (!Array.isArray(issues)) return [];
+    receipts.push({round,role:'craft',pages:numbers,verify,model:response.model,completionId:response.threadId,inputSha256:response.inputPacketHash});
+    return issues.filter(issue=>numbers.includes(issue?.page) && ['P0','P1'].includes(issue.level) &&
+      ['proposal','production'].includes(issue.impact) && [issue.problem,issue.evidence,issue.change].every(meaningful))
+      .map(issue=>routeIssue(issue,'craft'));
+  };
+  const firstIssues=(await independentCalls(batches,numbers=>auditBatch(numbers,1,false))).flat();
+  let current={plan,edition:original};
+  current=await refine({current,issues:firstIssues,project,dir,signal,onEvent,force:true});
+  applied.push(...current.applied);
+  const changedPages=[...new Set(current.applied.map(issue=>issue.page))].sort((a,b)=>a-b);
+  let pending=mergeIssues(current.remaining);
+  if (changedPages.length) {
+    const verifyBatches=[];
+    for (let i=0;i<changedPages.length;i+=6) verifyBatches.push(changedPages.slice(i,i+6));
+    const rechecked=(await independentCalls(verifyBatches,numbers=>auditBatch(numbers,2,true,current.applied.filter(issue=>numbers.includes(issue.page))))).flat();
+    pending=mergeIssues([...pending,...rechecked]);
+  }
+  const blocking=pending.filter(issue=>issue.level==='P0');
+  const reason=blocking.length
+    ? '自动模式快速终审已完成并直修 '+applied.length+' 项，另有 '+blocking.length+' 条待确认提示已写入终审记录，可直接下载本版 PPTX。'
+    : '自动模式快速终审已完成，直修 '+applied.length+' 项，已输出可下载 PPTX。';
+  const record=await saveRecord(dir,makeRecord({rounds:changedPages.length?2:1,original,current,receipts,applied,pending,reason}));
+  const reviewPlan='终审逐页稿-'+current.edition.batch+'.plan.json';
+  await writeFile(join(dir,reviewPlan),JSON.stringify(current.plan)+'\n',{flag:'wx',mode:0o600});
+  return {artifacts:[...current.artifacts.map(item=>({...item,finalLayout:true})),
+    {name:reviewPlan,kind:'text',finalLayout:true},{name:current.contact.name,kind:'image'},record],
+    finalReview:{protocol:finalProtocol,mode:'fast-auto',outcome:'ready',pages:allPages,reason,rounds:changedPages.length?2:1,changed:applied.length,
+      originalPptx:original.file,pptx:current.edition.file,sha256:current.edition.sha256,
+      contact:current.contact.name,report:record.name,
+      ...(blocking.length?{blockingPages:[...new Set(blocking.map(issue=>issue.page))],advisoryNotes:blocking.map(issue=>`P${issue.page}: ${issue.problem}`)}:{})}};
+}
+
 export async function reviewFinalDeck({project,manuscript,dir,call,onEvent,signal}) {
   const plan=applyManuscriptEdits(manuscript,project.layoutChanges ?? []);
   const originals=project.artifacts.filter(item=>item.stage==='layout');
@@ -707,6 +763,9 @@ export async function reviewFinalDeck({project,manuscript,dir,call,onEvent,signa
     return {artifacts:[record],finalReview:{protocol:finalProtocol,outcome:'return',returnStage:'layout',pages:[],reason}};
   }
   const allPages=plan.pages.map(page=>page.number);
+  if (project.mode==='auto' && !project.deepFinalReview) {
+    return fastAutoReviewDeck({project,plan,original,allPages,dir,call,onEvent,signal});
+  }
   const receipts=[];
   const applied=[];
   let current={plan,edition:original};

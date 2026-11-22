@@ -1,3 +1,4 @@
+import {macroResearchGaps,pickAutoVisualAdoption} from './auto-pipeline.mjs';
 import {automaticResearchGaps,hasCategoryImage} from './research-sources.mjs';
 import {validBriefScope} from './brief-intake.mjs';
 import {libraryRequest} from './library.mjs';
@@ -106,7 +107,7 @@ function researchHandoff(report, project) {
     ? report.findings.filter((f) => f && [f.conclusion, f.evidence, f.source, f.implication].every(text))
     : [];
   const gaps = Array.isArray(report?.gaps) ? report.gaps.filter(g=>text(g) || (g && text(g.message) && text(g.kind))) : [];
-  const missing = project.mode==='auto' ? automaticResearchGaps(report,project) : [];
+  const missing = project.mode==='auto' ? macroResearchGaps(report,project) : [];
   for (const gap of missing) if (!gaps.some(g=>g.message===gap.message)) gaps.push(gap);
   const ready = !missing.length && report?.ready === true && findings.length > 0 && findings.length === report.findings.length;
   if (!ready && !gaps.length) gaps.push('当前材料尚未提供可供策略使用的研究判断。');
@@ -137,6 +138,13 @@ function researchHandoff(report, project) {
 // cannot run another automatic round or repeat a question the customer has already answered.
 function continueResearch(p, archived = false) {
   if (p.research.question || p.researchFollowup) {
+    if (p.mode==='auto' && !p.researchOnly && p.research?.findings?.length) {
+      p.research.conditional = true;
+      p.stage = 'strategy';
+      p.status = 'running';
+      note(p, '定向补查后自动降级进入策略，未补齐项已记为限制条件：' + p.research.next);
+      return;
+    }
     p.status = 'waiting';
     note(p, p.research.question || '定向补查后仍缺关键依据：' + p.research.next);
     return;
@@ -483,7 +491,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             live.research = {...live.research,digest,strategyAdvice};
             delete live.researchDigestOnly;
             delete live.research.digestPending;
-            if (live.mode==='auto' && automaticResearchGaps(live.research,live).length) {
+            if (live.mode==='auto' && macroResearchGaps(live.research,live).length) {
               live.research=researchHandoff(live.research,live);
               continueResearch(live,true);
             } else if (p.researchOnly) live.status = 'waiting';
@@ -545,7 +553,15 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
                 !v.candidate && !v.recommended && posterRevisions.filter(a=>a.visual.artworkRevision.sourceName===original.name).length===1 &&
                 hash(readFileSync(join(dir,filename(original.name))))===v.sha256, '海报修订初稿原图或哈希不符',422);
             }
-            check(images.length===expected.length*3 && expected.every(direction=>{
+            const isFastAutoVisual = p.mode==='auto' && images.length>0 && images.every(a=>a.visual?.fastAuto===true);
+            if (isFastAutoVisual) {
+              check(images.length===expected.length*2 && expected.every(direction=>{
+                const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
+                return [1,2].every(i=>batch.some(a=>a.candidate===i)) &&
+                  batch.every(a=>a.role==='main' && Array.isArray(a.hardIssues) && typeof a.reason==='string' && a.reason.trim()) &&
+                  batch.filter(a=>a.recommended).length<=1;
+              }), '自动模式视觉阶段需要每方向两张同版主视觉及快速选优记录', 422);
+            } else check(images.length===expected.length*3 && expected.every(direction=>{
               const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
               if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
                 ['first','action','words','alternative'].every(k=>typeof a.blind?.[k]==='string' && a.blind[k].trim()) &&
@@ -583,7 +599,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
               files.filter(a=>a.name==='终审逐页稿-'+batch+'.plan.json').length===1 &&
               result.artifacts.some(a=>a.name===final.contact && a.kind==='image' && !a.finalLayout) &&
               result.artifacts.some(a=>a.name===final.report && a.kind==='text' && !a.finalLayout) &&
-              [2,3].includes(final.rounds),'精修版与原版、全览或终审回执无法核对',422);
+              [1,2,3].includes(final.rounds),'精修版与原版、全览或终审回执无法核对',422);
             archiveVersion(live);
             live.artifacts=live.artifacts.filter(a=>a.stage!=='layout' || isManuscriptSupport(a.name));
             live.layoutChanges=[];
@@ -655,13 +671,25 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             live.status = 'waiting';
             note(live, '等待你选择创意方向');
           } else if (p.stage === 'visual') {
-            live.status = 'waiting';
-            const noWinner=outputs.some(a=>a.visual?.candidate &&
-              !outputs.some(w=>w.visual?.direction===a.visual.direction && w.visual.recommended));
-            const evidenceSelection=outputs.some(a=>a.visual?.selectionPolicy===POSTER_EVIDENCE_POLICY);
-            note(live,noWinner ? (evidenceSelection ? '有方向尚无可推荐的主视觉，请查看原因' :
-              '有方向尚无达标主视觉，请查看原因并修改') :
-              evidenceSelection ? '各方向已按评审意见推荐图稿，等待采用' : '每方向已推荐同批达标最高稿，等待采用');
+            const autoAdopted = live.mode==='auto' && outputs.some(a=>a.visual?.fastAuto===true) ? pickAutoVisualAdoption(live) : null;
+            if (autoAdopted) {
+              live.visualAdoption = { at: now(), ...autoAdopted, materials: [] };
+              if (typeof runManuscript === 'function') live.layoutFromManuscript = true;
+              delete live.layoutDraftOnly;
+              delete live.layoutMaterialsOnly;
+              live.stage = 'layout';
+              note(live, autoAdopted.autoFallbackNotes?.length
+                ? '自动模式已为三方向采用最优图稿（含兜底说明），进入排版：' + autoAdopted.autoFallbackNotes.join('；')
+                : '自动模式已为三方向采用推荐主视觉，自动进入排版');
+            } else {
+              live.status = 'waiting';
+              const noWinner=outputs.some(a=>a.visual?.candidate &&
+                !outputs.some(w=>w.visual?.direction===a.visual.direction && w.visual.recommended));
+              const evidenceSelection=outputs.some(a=>a.visual?.selectionPolicy===POSTER_EVIDENCE_POLICY);
+              note(live,noWinner ? (evidenceSelection ? '有方向尚无可推荐的主视觉，请查看原因' :
+                '有方向尚无达标主视觉，请查看原因并修改') :
+                evidenceSelection ? '各方向已按评审意见推荐图稿，等待采用' : '每方向已推荐同批达标最高稿，等待采用');
+            }
           } else if (p.stage === 'layout' && p.layoutDraftOnly) {
             live.status = 'waiting';
             note(live, p.layoutMaterialsOnly ? '本版编稿材料和读图回执已保存，可以在版式下载' :
@@ -679,12 +707,12 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
               live.finalReturn=review;
               live.status='waiting';
               note(live,'终审退回'+labels[stages.indexOf(review.returnStage)]+'：'+review.reason);
-            } else if (refined) {
+            } else if (refined && live.mode!=='auto') {
               live.status='waiting';
               note(live,review.reason);
             } else {
               live.status = 'done';
-              note(live, '终审演练完成，可查看核对记录与 PPTX');
+              note(live, refined ? review.reason : '终审演练完成，可查看核对记录与 PPTX');
             }
           } else live.stage = stages[stages.indexOf(p.stage) + 1];
           const completedKey=p.attemptKey;
@@ -919,7 +947,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
       p.status = 'running';
       note(p,'开始从当前已核研究发现重新编辑摘要');
     } else if (kind === 'research_continue') {
-      check(p.mode!=='auto' || !automaticResearchGaps(p.research,p).length,'研究依据未齐，须先补查',409);
+      check(p.mode!=='auto' || !macroResearchGaps(p.research,p).length,'研究依据未齐，须先补查',409);
       const conditional = canRequestStrategy(p);
       check(!p.claim && (conditional || (p.stage === 'research' && p.status === 'waiting' && p.research?.ready && !p.research.digestPending && p.researchOnly)),
         '没有等待交接的研究成果', 409);

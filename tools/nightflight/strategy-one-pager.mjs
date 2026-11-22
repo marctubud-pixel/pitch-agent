@@ -229,6 +229,11 @@ export async function makeStrategyOnePager({call,project,inputs,carrier,rules,on
     }
   }
   out=await compactStrategy(out,{call,project,carrier,render,onEvent,signal});
+  // In auto mode, skip the extra blind-read + rewrite round trips (cuts 4 serial calls -> 1-2 calls).
+  if (project.mode==='auto') {
+    await onEvent?.('自动模式已完成策略一页纸精简定稿');
+    return render(out);
+  }
   return readStrategyPage(out,{call,render,onEvent,signal,brief:project.brief});
 }
 

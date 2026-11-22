@@ -705,6 +705,7 @@ test('all nine visual calls use each direction’s main original and three diffe
     f.project.attachments.push({name,visualOnly:i===4});
   }
   f.project.mode='auto';
+  f.project.visualQualityMode='deep';
   const result=await f.run('visual'),main=result.artifacts.filter(a=>a.visual?.role==='main');
   assert.equal(main.length,9);
   const runs=join(f.dir,'.codex-runs');
@@ -1722,7 +1723,8 @@ test('automatic research uses its evidence gate even if the writer reports that 
   assert.equal(report.ready,true);
   assert.ok(report.gaps.some(g=>g.message===gap.message));
   assert.match(report.next,/进入策略/u);
-  assert.equal((await outcome(rows.filter((_,i)=>i!==3))).ready,false);
+  assert.equal((await outcome(rows.filter((_,i)=>i!==3))).ready,true);
+  assert.equal((await outcome(rows.filter((_,i)=>i!==2 && i!==3))).ready,false);
   assert.equal((await outcome(rows,'collab')).ready,false);
 });
 

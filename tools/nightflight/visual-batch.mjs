@@ -784,3 +784,89 @@ export async function reviewVisualBatch({call, direction, images, context, packa
     winner:winner?.candidate ?? null,...(repair ? {sloganRepair:{candidate:repair.candidate,observed:repair.blind.slogan}} : {}),
     ...(redrawCandidate ? {redrawCandidate} : {})};
 }
+
+/**
+ * Fast 2-step parallel visual batch selection for auto mode (Plan Z winner):
+ * Step 1: Parallel single-image objective read with zero-extra-cost 4-item defect check
+ *         (bare unbranded product, garbled text/microcopy/fake seal, physical glitch, quadrant drift).
+ * Step 2: Single side-by-side comparison pick returning ranked candidates & winner.
+ */
+export async function fastReviewVisualBatch({call, direction, images, context, posterSlogan, quadrant}) {
+  const mkObj = (properties) => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
+  const readSchema = mkObj({
+    visibleText: text,
+    headlineAccurate: { type: 'boolean' },
+    bareProduct: { type: 'boolean' },
+    garbledOrFakeSeal: { type: 'boolean' },
+    physicalGlitch: { type: 'boolean' },
+    quadrantAligned: { type: 'boolean' },
+    hardIssues: { type: 'array', items: text },
+    summary: text,
+  });
+  const reads = await independentCalls(images, async (image, index) => {
+    const result = await call([
+      '客观核读这张主视觉候选图（零主观夸赞），逐项检查 4 条比稿硬伤清单：',
+      '1) bareProduct：主体商品是否完全无品牌标识/裸瓶/空白酒标（简报明确品牌待定除外）；',
+      '2) garbledOrFakeSeal：主副标、瓶标微字是否出现错别字、AI 乱码英文或不可读伪红印章；',
+      '3) physicalGlitch：是否存在手部畸形、瓶口带盖倒酒、液流悬浮、透视断裂等物理穿帮；',
+      '4) quadrantAligned：画面风格是否清晰符合指定美学象限（' + (quadrant?.quadrant || '本方向既定风格') + '）。',
+      posterSlogan ? '同时逐字核对主标题是否完整清晰呈现「' + posterSlogan + '」（headlineAccurate）。' : '',
+      '将实际可见的硬伤逐条写入 hardIssues（无硬伤留空数组），visibleText 抄录画面主要文字，summary 一句话概述画面。',
+    ].filter(Boolean).join('\n'), [image], readSchema, {
+      delegate: true, rules: [], assignment: '单图快速客观读图与四项硬伤检查',
+      context: JSON.stringify({ direction, candidate: index + 1, posterSlogan: posterSlogan || '', quadrant }),
+    });
+    return { candidate: index + 1, sha256: image.sha256, threadId: result.threadId, ...(result.parsedOutput || {}) };
+  });
+
+  const pickSchema = mkObj({
+    winner: { type: 'integer', enum: images.map((_, i) => i + 1) },
+    ranking: { type: 'array', items: { type: 'integer', enum: images.map((_, i) => i + 1) } },
+    reason: text,
+    edit: text,
+  });
+  const pickResult = await call([
+    '横向并排比较本方向「' + direction + '」的 ' + images.length + ' 张主视觉候选图及各自客观读图报告。',
+    '优先选出零硬伤（无裸瓶、无乱码/伪印章、无物理穿帮、符合象限「' + (quadrant?.quadrant || '') + '」）且商业审美、主标题可读性最高的一张作为 winner。',
+    '若两张均有轻度瑕疵，选硬伤更少、最接近可进比稿 PPT 的一张作为 winner，并在 edit 写明后续微调建议。',
+  ].join('\n'), images, pickSchema, {
+    delegate: true, rules: [], assignment: '同方向主视觉快速并排选优',
+    context: JSON.stringify({ direction, posterSlogan: posterSlogan || '', quadrant, reads, brief: typeof context === 'string' ? context.slice(0, 1200) : '' }),
+  });
+
+  const pick = pickResult.parsedOutput || {};
+  const winnerIdx = Number.isInteger(pick.winner) && pick.winner >= 1 && pick.winner <= images.length ? pick.winner : 1;
+  const candidates = reads.map((r) => {
+    const issues = [...(Array.isArray(r.hardIssues) ? r.hardIssues.filter(Boolean) : [])];
+    if (r.bareProduct && !issues.some(s => /裸瓶|无标|品牌/.test(s))) issues.push('主体商品缺少清晰品牌标识（裸瓶/空白标）');
+    if (r.garbledOrFakeSeal && !issues.some(s => /乱码|错字|印章/.test(s))) issues.push('画面存在文字乱码或伪印章');
+    if (r.physicalGlitch && !issues.some(s => /穿帮|畸形|物理/.test(s))) issues.push('画面存在物理结构穿帮');
+    if (posterSlogan && r.headlineAccurate === false && !issues.some(s => /主标/.test(s))) issues.push('主标题未完整清晰呈现');
+    const isWinner = r.candidate === winnerIdx;
+    return {
+      candidate: r.candidate,
+      priority: isWinner ? 1 : 2,
+      fastAuto: true,
+      blocked: issues.length > 0 && !isWinner,
+      selectionPolicy: POSTER_EVIDENCE_POLICY,
+      hardIssues: issues,
+      reason: isWinner ? (pick.reason || r.summary || '综合审美与清晰度最优') : (r.summary || '备选方案'),
+      edit: isWinner ? (pick.edit || (issues.length ? issues.join('；') : '无')) : '无',
+      blind: { sha256: r.sha256, words: r.visibleText || '', slogan: r.visibleText || '', summary: r.summary || '' },
+      scores: [],
+      mean: issues.length === 0 ? 4.5 : Math.max(2.5, 4.0 - issues.length * 0.5),
+    };
+  });
+  return {
+    direction,
+    mode: 'fast-auto',
+    quadrant,
+    ...(posterSlogan ? { posterSlogan } : {}),
+    selectionThread: pickResult.threadId,
+    blind: reads,
+    images: images.map(img => img.sha256),
+    candidates,
+    winner: winnerIdx,
+    ruling: { threadId: pickResult.threadId, reason: pick.reason || '' },
+  };
+}

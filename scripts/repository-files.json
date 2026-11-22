@@ -1511,6 +1511,8 @@
     "tools/local-acceptance/server.test.mjs",
     "tools/local-acceptance/synthetic-image-server.mjs",
     "tools/local-acceptance/synthetic-image-server.test.mjs",
+    "tools/nightflight/auto-pipeline.mjs",
+    "tools/nightflight/auto-pipeline.test.mjs",
     "tools/nightflight/brief-intake.mjs",
     "tools/nightflight/call-checkpoints.mjs",
     "tools/nightflight/call-checkpoints.test.mjs",

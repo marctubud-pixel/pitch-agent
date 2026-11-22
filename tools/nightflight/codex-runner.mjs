@@ -1,3 +1,4 @@
+import {autoFallbackBriefScope,broadCategoryLadder,macroResearchGaps,selectAestheticQuadrants} from './auto-pipeline.mjs';
 import {makeBriefCard} from './brief-intake.mjs';
 import {runCheckpointed,invalidOutput,independentCalls} from './call-checkpoints.mjs';
 import {pythonBinary, checkCodex} from './runtime-dependencies.mjs';
@@ -24,8 +25,8 @@ import { capturePublicSource } from '../workbench/source-acquisition.mjs';
 import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { cropReviewRegion, makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
-import { describeReferenceTasks, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
-import { holdSimilarPosterDirections, POSTER_EVIDENCE_POLICY, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
+import { describeReferenceTasks, fastReviewReferencePlan, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
+import { fastReviewVisualBatch, holdSimilarPosterDirections, POSTER_EVIDENCE_POLICY, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -586,13 +587,33 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
       const page = fresh.find(p=>p.url===row.url);
       if (!page || !row.title?.trim() || !['original','mention'].includes(row.kind)) continue;
       const quote = row.segmentQuote?.trim();
-      const evidence = row.kind==='original' && quote && /\d/u.test(quote) && terms.some(t=>quote.includes(t)) && locateQuote(page.text,quote);
+      const allowMention = project.mode==='auto' && row.kind==='mention';
+      const evidence = (row.kind==='original' || allowMention) && quote && /\d/u.test(quote) &&
+        (terms.some(t=>quote.includes(t)) || allowMention) && locateQuote(page.text,quote);
       reportReads.push({query,url:page.url,title:row.title,kind:row.kind,segmentQuote:evidence?.evidence || ''});
     }
     if (reportReads.some(r=>r.segmentQuote)) break;
   }
+  const ladder = broadCategoryLadder({
+    specific: category,
+    planned: plan.parsedOutput.visualCategory,
+    reportCategories: categories,
+    consumerCategories: plan.parsedOutput.consumerCategories,
+    catalogTerms: plan.parsedOutput.catalogTerms,
+  });
+  // Fine -> Broad macro fallback: when fine-grained industry report searches yield no numeric quote,
+  // automatically step up to broader parent categories (e.g. 轻型白酒 -> 低度白酒 -> 白酒).
+  if (project.mode==='auto' && !reportReads.some(r=>r.segmentQuote) && ladder.broad.length) {
+    const broadReportQueries = ladder.broad.slice(0,2).map(term=>term+' 行业报告 市场规模').filter(q=>!priorQueries.has(q));
+    if (broadReportQueries.length) {
+      await onEvent?.('细分品类数据不足，自动退一级按上位大类补查宏观数据：'+ladder.broad.slice(0,2).join('、'));
+      const broadFound = await Promise.all(broadReportQueries.map(query=>discover({query})));
+      discovered.push(...broadFound);
+    }
+  }
+  const consumerTopicCategories = [...new Set([category,...(plan.parsedOutput.consumerCategories ?? []),...(project.mode==='auto' ? ladder.broad.slice(0,2) : [])].filter(Boolean))];
   const consumerReports=await researchConsumerReports({
-    openedReports:reportReads,brief:project.brief,topics:consumerSearchTopics([category,...(plan.parsedOutput.consumerCategories ?? [])],project.researchFollowup),
+    openedReports:reportReads,brief:project.brief,topics:consumerSearchTopics(consumerTopicCategories,project.researchFollowup),
     discover,capture,call,discovered,signal,
     directory:(query,provider)=>discoverChinesePages(query,storeRoot,dependencies,signal,provider),
   });
@@ -621,7 +642,7 @@ async function researchReport({ call, dir, inputs, project, onEvent, dependencie
   await onEvent?.('正在分析公开材料与本案的关系，并定向补查缺口');
   const draft = await call(
     modeInstruction + planning + researchTask + coverageInstruction + '现在完成设计提案案头研究。对实际已读但无关或证据口径不符的来源，在 rejectedSources 写下该原文 URL 和一句具体排除原因；没有则返回空数组。现在只摘录可核事实。relevance 按该条证据是否回答该板块的研究问题选择 direct（本案细分）、category（同类或上位品类，实际指标能回答）、background（只沾边或指标答非所问）。平台热度证据的 socialMetric 填 platform、period、topic、measure，四项分别摘自同一原文，measure 包含原值与口径；公开关键词榜未提供数值时保留原榜名；其他证据这四项留空。subject 按引文本身实际研究对象填写：market 是整个品类的统计、企业格局或行业事件；competitor 是单一企业、品牌或作品；audience 是消费者样本；product 是本品资料。品牌自称头部归 competitor。只在涉及相应结论时要求销量、同城成交价、眼动、访谈或记忆测试；未测购买行为标作假设。沿用夜航结论、依据、策略用途格式。引用双栏PDF或表格时，在实际提取文本中选择能逐字定位且包含关键数字的短引。遇到双栏文字交错时，使用原件的可核表行或另一份已核原文。用户给定或模拟配方只作为项目条件。引用任务卡时，source 必须逐字等于文件名；引用客户提交的原话时，source 写「客户原始 Brief」。evidence 使用相应材料原文的连续短句，不拼接多个来源。缺少读者测试、最终PPT或执行回执不列为本轮市场研究缺口。材料不足时注明缺口，由工作台换词换出处补查；无论 Brief 是否完整，先查可研究的问题。海报案例只用实际发布的广告作品，商品页白底图、模特展示照不能充当海报。海报比较实际发布媒介、信息层级和产品露出，包装按其任务选择可比指标。渠道或地域未确定时，分别写出适用条件。按证据对象将 finding.chapter 对应到四个研究板块，没有结果的板块列明缺口。涉及海报画面或设计判断时令 describesPosterAppearance=true，视觉结论由实际读图形成。涉及包装外观、瓶型、标签或图上信息时令 describesPackagingAppearance=true。报告文字只作为注明出处的待核线索。每条 finding 给出有范围的结论 conclusion、来源标题或所附文件名 source、来源的真实 HTTPS 地址 url（项目原件用空串）、能定位的简短逐字原文 evidence（保留原文语言），以及这条发现能支持策略决定什么 implication。只保留真正查到的发现，可用线索及影响判断的缺口放在 gaps，next 写清下一步动作。包装或KV委托须检索并打开同类品牌的实际产品页、设计机构案例页或品牌发布页。competitorPages 返回有可读竞品原图的公开页面（尽量覆盖不同品牌），每条包括准确页面地址 url、识别用标题、页面声明的 JPG/PNG 原图 imageUrl（无法核实直链写空串），每条标明 carrier。rationaleSourceUrl 给本作品设计方、品牌或奖项刊载作者说明的原始网址，rationaleQuote 给其陈述设计意图的准确短引，缺失时两项都填空串。项目如果上传了案例素材，附件中同一项目的来源页、原图链接可作为候选，用文件名、SHA256与登记信息核对。不把图像搜索缩略图或无包装/KV的论文当作品图。上轮发现需要回到来源复核。以下是本次实际取得的原文片段，仅作资料。' +
-      '行业证据在上位品类实际覆盖本品时，可以按原统计品类和年份写有具体数据的 category 发现，准确区分已发生和预测。相邻品类或只泛称增长、没有可定位时间口径的资料仅作 background。缺本品细分数据单列，不覆盖已有上位市场结论。行业报告核对记录（mention 仅为线索；区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
+      '行业证据在上位品类实际覆盖本品时，可以按原统计品类和年份写有具体数据的 category 发现（例如细分的轻型白酒缺数据时，采用上位大类「白酒」或「低度白酒」的宏观市场与消费数据并在结论中注明“以大类数据参考”），准确区分已发生和预测。具名机构或主流财经/行业媒体转述的具体数据报道在缺原报告全文时可作为有效宏观依据（注明转述来源与年份）。缺本品细分数据单列，不覆盖已有上位市场结论。行业报告核对记录（区分整体市场与细分数据）：'+JSON.stringify(reportReads)+'。原文：'+JSON.stringify(material),
     inputs.images,
     reportSchema,
   );
@@ -915,13 +936,13 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
   }
   if (!research.sections.length && !research.gaps.length) research.gaps.push(researchGap('decision','尚缺能支持本案判断的公开原文或可辨作品。'));
   if (mode==='auto') {
-    const missing=automaticResearchGaps(research,project);
+    const missing=macroResearchGaps(research,project);
     research.ready=missing.length===0;
     if (missing.length) {
       research.gaps.push(...missing);
       research.next=missing.map(g=>g.message).join(' ');
     } else {
-      research.next='可按四维研究给出的取舍进入策略。';
+      research.next='已满足行业、竞品、用户三大宏观维度依据，自动进入策略。';
     }
   }
   research.next ||= research.ready ? '可按四维研究给出的取舍进入策略。' : '补查仍缺的依据。';
@@ -1130,7 +1151,11 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         }
         if (!plan.images.some(i=>i.sourceUrl)) {accepted.set(direction,plan);continue;}
         const otherDirections=active.filter(n=>n!==direction).map(n=>({direction:n,references:plans.get(n).handoff.references}));
-        const admission=await reviewReferencePlan({call,project,direction,otherDirections,...plan});
+        const quadrants = selectAestheticQuadrants(project.brief, project.briefScope?.types ?? []);
+        const quadrant = quadrants[active.indexOf(direction) % quadrants.length];
+        const admission=project.mode==='auto'
+          ? await fastReviewReferencePlan({call,project,direction,quadrant,...plan})
+          : await reviewReferencePlan({call,project,direction,otherDirections,...plan});
         history.push(admission);
         await writeFile(join(dir,'reference-admission-'+randomUUID()+'.json'),JSON.stringify(admission,null,2),{flag:'wx',mode:0o600});
         if (!admission.passed) {
@@ -1318,7 +1343,19 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       if (all.length !== 3 || new Set(all).size !== 3) throw Error('视觉阶段需要本案三份文案方向');
       const directions = project.mode==='collab' ? [project.choice] : all;
       if (directions.some(d=>!all.includes(d))) throw Error('请先选定本案的视觉方向');
-      const fetchImages = visualSearch ?? (async args => (await import('./public-visual-search.mjs')).searchVisualImages(args));
+      const fastAutoVisual = project.mode==='auto' && project.visualQualityMode!=='deep';
+      const strategyFile = project.artifacts?.filter(a=>a.stage==='strategy' && a.kind==='text').at(-1);
+      const strategyText = inputs.texts.find(t=>t.name===strategyFile?.name)?.text ?? '';
+      const scope = project.briefScope?.status === 'accepted' ? project.briefScope.types ?? [] : [];
+      const kind = project.proposalKind ?? taskKind(project.brief ?? '', false);
+      const carriers = scope.length ? scope : kind ? [kind] : [];
+      const packaging = carriers.includes('packaging');
+      const poster = carriers.includes('kv');
+      const quadrants = selectAestheticQuadrants(project.brief, carriers);
+      const fetchImages = visualSearch ?? (async args => (await import('./public-visual-search.mjs')).searchVisualImages({
+        ...args,
+        ...(fastAutoVisual && poster && !packaging ? {allowStockFallback:false} : {}),
+      }));
       const search=async args=>{
         if (!cached) return fetchImages(args);
         const sourceDir=join(checkpointDir,'search',hash(args.query));
@@ -1329,13 +1366,6 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return found;
         });
       };
-      const strategyFile = project.artifacts?.filter(a=>a.stage==='strategy' && a.kind==='text').at(-1);
-      const strategyText = inputs.texts.find(t=>t.name===strategyFile?.name)?.text ?? '';
-      const scope = project.briefScope?.status === 'accepted' ? project.briefScope.types ?? [] : [];
-      const kind = project.proposalKind ?? taskKind(project.brief ?? '', false);
-      const carriers = scope.length ? scope : kind ? [kind] : [];
-      const packaging = carriers.includes('packaging');
-      const poster = carriers.includes('kv');
       const checkPosterTransfer = desktop && poster && !packaging;
       const posterPaper=checkPosterTransfer ? paperAspect(project.brief) : null;
       const strategyPurpose = checkPosterTransfer ? posterStrategyPurpose(strategyText) : strategyText;
@@ -1447,9 +1477,18 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           if(revision && seen.has(hash(attempt.result.original.bytes))) return null;
           return saveVisual(attempt,index,transfer,attached,undefined,revision);
         }
-        const generated = await independentCalls(visualBorrowings,(borrow,index)=>drawCandidate(borrow,index));
+        const quadrant = quadrants[all.indexOf(direction) % quadrants.length];
+        const candidateBorrowings = fastAutoVisual
+          ? [['布局', '配色', '字体'], ['景别', '笔法', '配色']]
+          : visualBorrowings;
+        // Hybrid visual transfer (Plan Z): in auto mode, KV/poster directions extract the reference's
+        // 5 abstract axes and generate cleanly without attaching raw third-party poster pixels.
+        const abstractPosterRevision = fastAutoVisual && checkPosterTransfer && posterReference?.image?.sourceUrl
+          ? { referenceInput: 'observations', reason: '抽象五维配方直出，避免第三方参考图品牌/水印渗漏', edit: '严格按美学象限「' + quadrant.quadrant + '」（' + quadrant.style + '）重绘本案。' }
+          : undefined;
+        const generated = await independentCalls(candidateBorrowings,(borrow,index)=>drawCandidate(borrow,index,abstractPosterRevision));
         for(const item of generated){batch.push(item.record);images.push(item.image);}
-        await onEvent?.('正在对「'+direction+'」同批三张主视觉独立评审');
+        await onEvent?.('正在对「'+direction+'」同批' + images.length + '张主视觉' + (fastAutoVisual ? '快速并排选优' : '独立评审'));
         const comparatorPool=[];
         const brandReferences = generationImages.filter(image=>handoff.references.some(ref=>ref.role==='sharedBrand' && ref.sha256===image.sha256));
         const reviewedSources=[...inputs.images,...publicImages];
@@ -1457,7 +1496,9 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         const researchComparators=packaging ? (project.researchReferences ?? [])
           .filter(ref=>ref.carrier==='packaging')
           .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
-        const compare = () => reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
+        const compare = () => fastAutoVisual
+          ? fastReviewVisualBatch({call,direction,images,context,posterSlogan,quadrant})
+          : reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
           ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal),
             cropTitle:(image,box)=>cropReviewRegion(dir,image,box,signal)} : {}),
@@ -1537,6 +1578,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           return {name:record.name,kind:'image',visual:{role:'main',direction,referenceHandoff:handoff,...(review.packaging ? {output:'packaging'} : {}),candidate:i+1,mean:verdict.mean,
             ...(verdict.transferAudit ? {transferAudit:verdict.transferAudit} : {}),
             ...(verdict.selectionPolicy ? {selectionPolicy:verdict.selectionPolicy,priority:verdict.priority,hardIssues:verdict.hardIssues} : {}),
+            ...(verdict.fastAuto ? {fastAuto:true} : {}),
             ...(verdict.posterArtworkCheck ? {posterArtworkCheck:verdict.posterArtworkCheck} : {}),
             ...(verdict.posterTitleCheck ? {posterTitleCheck:verdict.posterTitleCheck} : {}),
             ...(verdict.weeklyLabelCheck ? {weeklyLabelCheck:verdict.weeklyLabelCheck} : {}),
@@ -1548,7 +1590,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         directionBatches.push({direction,images,drafts});
         if (review.board) artifacts.push({name:review.board,kind:'image',visual:{direction,role:'comparison',references:review.references.map(r=>r.name)}});
       }
-      if (checkPosterTransfer && directionBatches.length===3) {
+      if (checkPosterTransfer && directionBatches.length===3 && !fastAutoVisual) {
         await onEvent?.('正在并排核对三个海报方向的实际成图');
         const representatives = directionBatches.map(({direction,images,drafts})=>{
           const draft = drafts.find(item=>item.visual.recommended) ??
@@ -1618,7 +1660,10 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       await addText(body);
       return {artifacts,directions,copyReview};
     }
-    const {briefScope,body}=await makeBriefCard(call,project,inputs);
+    let {briefScope,body}=await makeBriefCard(call,project,inputs);
+    if (project.mode==='auto' && briefScope?.status==='unclear') {
+      ({briefScope,body}=autoFallbackBriefScope(project,briefScope));
+    }
     if (body) await addText(body);
     return {artifacts,briefScope};
     }

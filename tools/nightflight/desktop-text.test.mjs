@@ -575,7 +575,7 @@ test('A3 pure-poster transfer keeps per-axis color and redraw guidance independe
     assert.equal(out.promptWriting.prompt,dispatch[0]);
     assert.match(dispatch[0],/A3竖版，宽高比 297:420/u);
     assert.match(dispatch[0],/完整主标题「下班这杯，原味就好」/u);
-    assert.match(dispatch[0],/杯盖、盒身及侧面留白/u);
+    assert.match(dispatch[0],/严禁出现无标裸瓶或空白包装.*伪篆刻红章/u);
     assert.equal(dispatch[0].split(posterSlogan).length,2);
     assert.match(dispatch[0],/不保留多角色群像和底部弧形品牌条/u);
     assert.doesNotMatch(dispatch[0],/背景大面积橙色|橙紫万圣节配色/u);
