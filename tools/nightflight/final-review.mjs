@@ -700,14 +700,14 @@ async function fastAutoReviewDeck({project,plan,original,allPages,dir,call,onEve
   const sequence=plan.pages.map(({number,role,title})=>({number,role,title}));
   const batches=[];
   for (let i=0;i<allPages.length;i+=6) batches.push(allPages.slice(i,i+6));
-  const auditBatch=async (numbers,round,verify=false,prior=[])=>{
-    const pages=numbers.map(n=>plan.pages[n-1]);
+  const auditBatch=async (numbers,round,verify=false,prior=[],activePlan=plan,edition=original)=>{
+    const pages=numbers.map(n=>activePlan.pages[n-1]);
     const figureIds=new Set(pages.flatMap(page=>page.figures));
-    const images=numbers.map(n=>original.images[n-1]);
+    const images=numbers.map(n=>edition.images[n-1]);
     const context={
-      全册页序:sequence,Brief:plan.brief,策略:plan.strategy,已选文案:plan.copy,采用说明:plan.adoption,
-      采用图读图:plan.figures.filter(figure=>figureIds.has(figure.id)),本批逐页稿:pages,
-      本批PPT:numbers.map(n=>({页码:n,...original.native[n-1],图片对象数量:original.native[n-1].images.length})),
+      全册页序:sequence,Brief:activePlan.brief,策略:activePlan.strategy,已选文案:activePlan.copy,采用说明:activePlan.adoption,
+      采用图读图:activePlan.figures.filter(figure=>figureIds.has(figure.id)),本批逐页稿:pages,
+      本批PPT:numbers.map(n=>({页码:n,...edition.native[n-1],图片对象数量:edition.native[n-1].images.length})),
       ...(prior.length ? {本批待复核:prior} : {}),
     };
     await onEvent?.('自动模式快速终审 · 第 '+numbers.join('、')+' 页'+(verify?'复检':''));
@@ -732,7 +732,7 @@ async function fastAutoReviewDeck({project,plan,original,allPages,dir,call,onEve
   if (changedPages.length) {
     const verifyBatches=[];
     for (let i=0;i<changedPages.length;i+=6) verifyBatches.push(changedPages.slice(i,i+6));
-    const rechecked=(await independentCalls(verifyBatches,numbers=>auditBatch(numbers,2,true,current.applied.filter(issue=>numbers.includes(issue.page))))).flat();
+    const rechecked=(await independentCalls(verifyBatches,numbers=>auditBatch(numbers,2,true,current.applied.filter(issue=>numbers.includes(issue.page)),current.plan,current.edition))).flat();
     pending=mergeIssues([...pending,...rechecked]);
   }
   const blocking=pending.filter(issue=>issue.level==='P0');

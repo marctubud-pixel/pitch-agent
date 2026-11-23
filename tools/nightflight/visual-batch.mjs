@@ -791,7 +791,7 @@ export async function reviewVisualBatch({call, direction, images, context, packa
  *         (bare unbranded product, garbled text/microcopy/fake seal, physical glitch, quadrant drift).
  * Step 2: Single side-by-side comparison pick returning ranked candidates & winner.
  */
-export async function fastReviewVisualBatch({call, direction, images, context, posterSlogan, quadrant}) {
+export async function fastReviewVisualBatch({call, direction, images, context, posterSlogan, quadrant, packaging = false}) {
   const mkObj = (properties) => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
   const readSchema = mkObj({
     visibleText: text,
@@ -852,6 +852,7 @@ export async function fastReviewVisualBatch({call, direction, images, context, p
       hardIssues: issues,
       reason: isWinner ? (pick.reason || r.summary || '综合审美与清晰度最优') : (r.summary || '备选方案'),
       edit: isWinner ? (pick.edit || (issues.length ? issues.join('；') : '无')) : '无',
+      research: '无',
       blind: { sha256: r.sha256, words: r.visibleText || '', slogan: r.visibleText || '', summary: r.summary || '' },
       scores: [],
       mean: issues.length === 0 ? 4.5 : Math.max(2.5, 4.0 - issues.length * 0.5),
@@ -859,6 +860,8 @@ export async function fastReviewVisualBatch({call, direction, images, context, p
   });
   return {
     direction,
+    packaging,
+    references: [],
     mode: 'fast-auto',
     quadrant,
     ...(posterSlogan ? { posterSlogan } : {}),

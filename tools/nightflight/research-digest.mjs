@@ -164,7 +164,7 @@ function keepsSceneComparison(original, edit) {
   return before.size<2 || [...before].every(value=>after.has(value));
 }
 
-export async function compactResearchPage(call, sections, findings, onEvent, signal) {
+export async function compactResearchPage(call, sections, findings, onEvent, signal, { maxAttempts = 2 } = {}) {
   const pending = sections.map((row,index)=>({row,index})).filter(({row})=>crowdedResearchCopy(row));
   if (!pending.length) return sections;
   const packet = pending.map(({row,index})=>({...row,index,
@@ -179,7 +179,7 @@ export async function compactResearchPage(call, sections, findings, onEvent, sig
   let remaining = packet;
   const instruction = '发布前精简自己的文案。每条标题只说一个判断，副文只说一个例子、数字或比较理由。同题场景合并时，副文用一句话并列保留原有的场景和各自的比例，两项合起来就是一个比较。标题用对象和动词限定范围，比如“受访者更愿意……”已交代这是受访者的意愿。“样本仅限……，不能外推……”等说明移到 sourceDetail。避免在标题和副文加上同一个限制尾句。每个 index 只写一次，保留时期、关键条件和原意。仅返回 edits。';
   try {
-    for (let attempt=0;remaining.length && attempt<2;attempt++) {
+    for (let attempt=0;remaining.length && attempt<maxAttempts;attempt++) {
       const retry = attempt ? '上一版仍有长句、多个判断或缺项。只处理这次给出的条目，删掉重复解释。' : '';
       const response = await call(instruction+retry,[],responseSchema,
         {editorial:true,context:JSON.stringify(remaining)});

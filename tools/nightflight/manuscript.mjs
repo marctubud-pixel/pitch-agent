@@ -86,7 +86,7 @@ export async function collectManuscriptMaterials(project, dir) {
   if (originals.length !== selected.length) throw Error('采用图中包含未展示的方向');
   const {body: _copyBody, ...copyIdentity} = copy;
   const materials = {
-    project:{title:project.title, id:project.id, revision:project.revision,
+    project:{title:project.title, id:project.id, mode:project.mode, revision:project.revision,
       stageVersions:Object.fromEntries(upstream.map(stage=>[stage,project.stageVersions?.[stage] ?? 0])),
       carriers:project.briefScope?.types ?? research.carriers ?? []},
     brief:{original:project.brief,task},
@@ -336,7 +336,93 @@ function checkMeasuredOptions(page, findings) {
   }
 }
 
+function fallbackObservedQuote(figure, brief) {
+  if (!figure?.reading?.completionId) return '';
+  const { visibleDetails = [], composition = '' } = figure.observation ?? {};
+  for (const source of [...visibleDetails, composition].filter(nonempty)) {
+    for (const raw of source.split(/[。；;\n]/u)) {
+      const clause = raw.trim();
+      if ([...clause].length < 4 || [...clause].length > 48) continue;
+      if (observedQuote(figure, clause) && !optionalFigureCounts(clause, figure, brief).length) return clause;
+    }
+  }
+  return '';
+}
+
+function normalizeAutoDraft(draft, materials) {
+  if (materials.project?.mode !== 'auto' || !Array.isArray(draft?.chapters)) return;
+  const { figures, brief } = materials;
+  const cleanLine = (s) => (typeof s === 'string' ? s.replace(/[\r\n]+/gu, ' ').trim() : '');
+  const safeNote = (note, fallback) => {
+    const cleaned = cleanLine(note);
+    if (!cleaned || figures.some((f) => cleaned.includes(f.name))) return fallback;
+    return cleaned;
+  };
+  for (const chapter of draft.chapters) {
+    if (!Array.isArray(chapter?.pages)) continue;
+    for (const p of chapter.pages) {
+      if (!p || typeof p !== 'object') continue;
+      p.title = cleanLine(p.title);
+      if (typeof p.imageNote !== 'string') p.imageNote = '';
+      if (typeof p.internalNote !== 'string') p.internalNote = '';
+      if (typeof p.figureId !== 'string') p.figureId = '';
+      if (!Array.isArray(p.sourceIndices)) p.sourceIndices = [];
+      if (!Array.isArray(p.points)) p.points = [];
+      p.points = p.points.map(cleanLine).filter((pt) => p.role === 'compare' || nonempty(pt)).slice(0, 4);
+      if (p.role === 'strategy') {
+        p.points = [];
+        p.visibleQuotes = [];
+      } else if (p.role === 'work') {
+        p.points = [];
+        p.visibleQuotes = [];
+        p.imageNote = safeNote(p.imageNote, '整图居中展示');
+      } else if (p.role === 'direction') {
+        p.imageNote = '';
+        const figure = figures.find((f) => f.id === p.figureId);
+        const rawQuotes = Array.isArray(p.visibleQuotes) ? p.visibleQuotes.map(cleanLine).filter(nonempty) : [];
+        const valid = figure
+          ? rawQuotes.filter((q) => observedQuote(figure, q) && !optionalFigureCounts(q, figure, brief.original).length).slice(0, 1)
+          : [];
+        if (!valid.length && figure) {
+          const fallback = fallbackObservedQuote(figure, brief.original);
+          if (fallback) valid.push(fallback);
+        }
+        p.visibleQuotes = valid;
+        const firstPoint = (p.points ?? []).find(nonempty);
+        p.points = firstPoint
+          ? [/^(?:拟|可(?:试|尝试|考虑|在|用|保留|采用))/u.test(firstPoint) ? firstPoint : '可试：' + firstPoint]
+          : [];
+      } else if (p.role === 'compare') {
+        p.imageNote = safeNote(p.imageNote, '三案采用图横向并排对照');
+        const rawQuotes = Array.isArray(p.visibleQuotes) ? p.visibleQuotes.map(cleanLine) : [];
+        p.visibleQuotes = figures.map((fig, i) => {
+          const q = rawQuotes[i] ?? '';
+          if (q && observedQuote(fig, q) && !optionalFigureCounts(q, fig, brief.original).length) return q;
+          return fallbackObservedQuote(fig, brief.original);
+        });
+        if (Array.isArray(p.points) && p.points.length) {
+          p.points = figures.map((fig, i) => {
+            const pt = cleanLine(p.points[i] ?? '');
+            if (!pt || !p.visibleQuotes[i]) return '';
+            const norm = compareSuggestion(pt, fig.id);
+            return /^适合/u.test(norm) ? norm : '适合：' + norm;
+          });
+          if (p.points.every((pt) => !pt)) p.points = [];
+        }
+      } else {
+        p.visibleQuotes = [];
+      }
+      if (p.role !== 'decision') {
+        const neutral = (s) => s.replace(/(?:建议采用|推荐|主推|首选)(?=[\s《「]*(?:方向\s*[ABC甲乙丙]|[ABC甲乙丙][1-3案]))/gu, '关注');
+        p.title = neutral(p.title);
+        if (Array.isArray(p.points)) p.points = p.points.map(neutral);
+      }
+    }
+  }
+}
+
 function checkDraft(draft, materials) {
+  normalizeAutoDraft(draft, materials);
   const {figures,research}=materials;
   const require = (ok, message)=>{if(!ok) throw invalidOutput(message);};
   const line = value=>nonempty(value) && !/[\r\n]/u.test(value);

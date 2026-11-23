@@ -909,7 +909,7 @@ export async function writeResearchPage({call,project,findings,gaps,carriers,anc
     }
     const audience=selectAudienceRows(research.sections.filter(r=>r.chapter===researchChapters[2]));
     research.sections=researchChapters.flatMap(chapter=>chapter===researchChapters[2] ? audience : research.sections.filter(r=>r.chapter===chapter));
-    research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal);
+    research.sections = await compactResearchPage(call,research.sections,findings,onEvent,signal,{maxAttempts:mode==='auto'?1:2});
     research.sections=prioritizePackagingRows(research.sections,output.packagingHighlights,marks,project.brief);
     for (const row of research.sections) {
       if (row.chapter!=='产品与品牌' || !row.evidenceIndices.some(i=>findings[i]?.subject==='product')) continue;
@@ -1456,7 +1456,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         }
         async function drawCandidate(borrow,index,revision,previousTransferCriteria) {
           const transfer = {borrow,change:visualElements.filter(element=>!borrow.includes(element))};
-          await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/3');
+          await onEvent?.('正在为「'+direction+'」'+(desktop?'撰写生图提示词 ':'生成主视觉 ')+(index+1)+'/'+candidateBorrowings.length);
           const instruction = [
             desktop ? '生成一张完整主视觉。' : '只用内置 image_generation 工具生成一张完整主视觉。',
             '围绕文案方向的核心主张，承接主参考的整体美术风格。五项中只借主参考的'+borrow.join('、')+'。'+transfer.change.join('、')+'为本案重新设计，两处变化应清楚可见。',
@@ -1497,7 +1497,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           .filter(ref=>ref.carrier==='packaging')
           .map(ref=>published.get(ref.sha256) ?? publicVisualCandidate(ref,direction,'compare_'+ref.sha256.slice(0,24))) : [];
         const compare = () => fastAutoVisual
-          ? fastReviewVisualBatch({call,direction,images,context,posterSlogan,quadrant})
+          ? fastReviewVisualBatch({call,direction,images,context,posterSlogan,quadrant,packaging})
           : reviewVisualBatch({call,direction,images,context,packagingExpected:carriers.length ? packaging : undefined,
           theme:creative?.main,posterSlogan,brandReferences,sources:reviewedSources,verifiedComparators:researchComparators,
           ...(desktop ? {productBrief:project.brief,makePreviews:frames=>makeReviewPreviews(dir,frames,signal),
@@ -1570,7 +1570,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           }
         }
         for (const ref of [...researchComparators,...comparatorPool]) {
-          if (!published.has(ref.sha256) && review.references.some(r=>r.name===ref.name)) await publishReference(ref);
+          if (!published.has(ref.sha256) && (review.references ?? []).some(r=>r.name===ref.name)) await publishReference(ref);
         }
         await writeFile(join(dir,'visual-review-'+(all.indexOf(direction)+1)+'.json'),JSON.stringify(review,null,2),{flag:'wx',mode:0o600});
         const drafts = batch.map((record,i)=>{

@@ -197,6 +197,7 @@ test('Plan Z visual fast gate & 2-step batch selection use 1+3 calls and catch b
     direction: '透明纯粮',
     quadrant: quadrants[0],
     posterSlogan: '28度纯粮酿，瓶子敢透明',
+    packaging: true,
     context: '清酌28度白酒',
     images: [
       { sha256: 'a'.repeat(64), path: '/tmp/1.png' },
@@ -205,6 +206,9 @@ test('Plan Z visual fast gate & 2-step batch selection use 1+3 calls and catch b
   });
   assert.equal(batchCalls, 3); // 2 parallel reads + 1 side-by-side pick
   assert.equal(review.winner, 2);
+  assert.equal(review.packaging, true);
+  assert.deepEqual(review.references, []);
+  assert.ok(review.candidates.every((c) => c.research === '无'));
   assert.ok(review.candidates[0].hardIssues.some((s) => s.includes('裸瓶')));
   assert.equal(review.candidates[1].hardIssues.length, 0);
 });
@@ -367,4 +371,102 @@ test('pickAutoVisualAdoption prefers recommended and falls back to fewest hardIs
   assert.deepEqual(res.artifacts, ['k-a1', 'k-b2']);
   assert.equal(res.autoFallbackNotes.length, 1);
   assert.match(res.autoFallbackNotes[0], /b2\.png/);
+});
+
+test('writeManuscript in auto mode normalizes prefix/count nitpicks and preserves compare quotes', async (t) => {
+  const { writeManuscript } = await import('./manuscript.mjs');
+  const { jsonModelRequest } = await import('./desktop-text.mjs');
+  const { createHash } = await import('node:crypto');
+  const cpDir = await mkdtemp(join(tmpdir(), 'nightflight-ms-auto-'));
+  t.after(() => rm(cpDir, { recursive: true, force: true }));
+  const profile = { provider: 'deepseek', host: 'api.deepseek.com', base: 'https://api.deepseek.com', model: 'deepseek-chat' };
+  const makeFigure = (id, direction, detailWithCount, cleanDetail) => ({
+    id, direction, name: id.toLowerCase() + '.png', sha256: '1'.repeat(64),
+    reading: { model: 'gpt-4.1-mini', completionId: 'cmpl-' + id },
+    observation: {
+      composition: cleanDetail,
+      visibleDetails: [detailWithCount, cleanDetail],
+      legibleText: ['清酌', '28度'],
+      uncertain: [],
+    },
+  });
+  const materials = {
+    project: { title: '清酌28度轻型白酒', id: 'p-ms-auto', mode: 'auto', carriers: ['packaging', 'kv'], stageVersions: {} },
+    brief: { original: '清酌28度轻型浓香白酒，330ml透明玻璃小瓶，包装与KV提案。', task: { name: 'brief.md', sha256: '2'.repeat(64), body: '简报' } },
+    research: {
+      method: 'r42',
+      findings: [
+        { chapter: '行业与市场', conclusion: '白酒大类稳定', evidence: '2025年中期报告', source: '199IT', url: 'https://example.org/a' },
+        { chapter: '竞争与同类传播', conclusion: '竞品多用瓷瓶', evidence: '京东页样本', source: 'JD', url: 'https://example.org/b' },
+      ],
+      sections: [
+        { chapter: '行业与市场', conclusion: '白酒大类稳定', explanation: '2025年中期报告', evidenceIndices: [0] },
+        { chapter: '竞争与同类传播', conclusion: '竞品多用瓷瓶', explanation: '京东页样本', evidenceIndices: [1] },
+      ],
+      gaps: [],
+    },
+    strategy: [{ name: 's.md', sha256: '3'.repeat(64), body: '# 策略\n\n## 核心策略\n\n把28度白酒放回晚餐桌。' }],
+    copy: {
+      name: 'c.md', sha256: '4'.repeat(64),
+      directions: [
+        { name: '透明物证', main: '330ml透明瓶，28度不藏', secondary: '副标A', basis: '透明瓶', displayed: true },
+        { name: '把酒局换回晚饭', main: '酒不必敬谁，饭要好好吃', secondary: '副标C', basis: '晚饭桌', displayed: true },
+      ],
+    },
+    adoption: { at: '2026-11-23T00:00:00Z', explanation: '' },
+    figures: [
+      makeFigure('A1', '透明物证', '桌上有两只玻璃杯', '瓶身布满水珠显示冷藏状态'),
+      makeFigure('B1', '把酒局换回晚饭', '左侧三只手举杯敬酒', '瓶身居中分隔左右冷暖场景'),
+    ],
+    feedback: [],
+  };
+  const provider = {
+    profile,
+    async execute({ prompt, outputSchema }) {
+      const parsedOutput = {
+        cover: { title: '清酌提案', subtitle: '包装与KV', imageNote: '' },
+        closing: '谢谢观看',
+        chapters: [
+          {
+            title: '需求与研究',
+            pages: [
+              { role: 'brief', title: '需求回顾', points: ['330ml透明瓶'], imageNote: '', internalNote: '', figureId: '', sourceIndices: [], visibleQuotes: [] },
+              { role: 'trend', title: '行业趋势', points: ['白酒大类稳定'], imageNote: '', internalNote: '', figureId: '', sourceIndices: [0], visibleQuotes: [] },
+              { role: 'peers', title: '竞品观察', points: ['竞品多用瓷瓶'], imageNote: '', internalNote: '', figureId: '', sourceIndices: [1], visibleQuotes: [] },
+            ],
+          },
+          {
+            title: '策略与方案',
+            pages: [
+              { role: 'strategy', title: '把28度白酒放回晚餐桌。', points: ['多余的要点应自动清空'], imageNote: '', internalNote: '', figureId: '', sourceIndices: [], visibleQuotes: [] },
+              // Direction A: point does NOT start with 拟/可试, quote has count "两只" -> must auto-normalize instead of crashing!
+              { role: 'direction', title: '透明物证', points: ['用透光瓶身建立第一信任'], imageNote: '不该有值', internalNote: '', figureId: 'A1', sourceIndices: [], visibleQuotes: ['桌上有两只玻璃杯'] },
+              { role: 'work', title: '透明物证成品', points: ['不应有要点'], imageNote: '', internalNote: '', figureId: 'A1', sourceIndices: [], visibleQuotes: [] },
+              { role: 'direction', title: '把酒局换回晚饭', points: ['对比应酬与晚饭'], imageNote: '', internalNote: '', figureId: 'B1', sourceIndices: [], visibleQuotes: ['左侧三只手举杯敬酒'] },
+              { role: 'work', title: '把酒局换回晚饭成品', points: [], imageNote: '', internalNote: '', figureId: 'B1', sourceIndices: [], visibleQuotes: [] },
+            ],
+          },
+          {
+            title: '对比与决定',
+            pages: [
+              { role: 'compare', title: '并排对比', points: ['讲透明物证', '讲情绪松弛'], imageNote: '', internalNote: '', figureId: '', sourceIndices: [], visibleQuotes: ['桌上有两只玻璃杯', '左侧三只手举杯敬酒'] },
+              { role: 'decision', title: '请确认方向', points: ['选定主推方向'], imageNote: '', internalNote: '', figureId: '', sourceIndices: [], visibleQuotes: [] },
+            ],
+          },
+        ],
+      };
+      const req = jsonModelRequest(profile, prompt, outputSchema);
+      return {
+        model: profile.model,
+        threadId: 'ms-auto-1',
+        inputPacketHash: createHash('sha256').update(JSON.stringify(req)).digest('hex'),
+        parsedOutput,
+      };
+    },
+  };
+  const { plan } = await writeManuscript(provider, { materials, checkpointDir: cpDir });
+  const comparePage = plan.pages.find((p) => p.role === 'compare');
+  assert.equal(comparePage.points.length, 2);
+  assert.match(comparePage.points[0], /瓶身布满水珠显示冷藏状态.*适合/);
+  assert.match(comparePage.points[1], /瓶身居中分隔左右冷暖场景.*适合/);
 });
