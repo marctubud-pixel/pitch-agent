@@ -26,10 +26,12 @@ export const VISUAL_TRACKS = Object.freeze({
   packaging: {
     id: 'packaging',
     name: '包装（Packaging）',
+    aspect: [0.55, 1.35],
     goal: '寻找高审美的当代单帧包装/容器实拍参考图（重点看瓶型/盒型比例、材质肌理、标签留白排版与自然商业光影）。',
-    humanRule: '严禁搜老派土味礼盒或电商白底抠图！花瓣/堆糖用设计圈词（如「光瓶酒 包装设计」「极简 瓶贴 工艺」），国际站跨品类借清酒/烈酒/香水/极简容器的包装骨架。必须单帧实拍，淘汰纯Logo卡、多图拼版、PPT示意图。',
+    humanRule: '严禁搜老派土味礼盒、电商白底抠图或本案新品牌名！花瓣每组词必须锁死「核心品类或强关联相近品类锚点」（如酒类只搜光瓶酒/清酒/烈酒/香水瓶，绝不搜孤立的「玻璃 细长瓶」以免漂移到保鲜盒或洗护瓶）。必须单帧实拍，淘汰纯Logo卡、多图拼版、PPT示意图与同款雷同重复图。',
     sources: [
-      {adapter: 'huaban', lang: 'zh', hint: '2个中文设计圈词，如 光瓶酒 包装设计 / 极简 玻璃瓶 包装'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文【本品类高审美设计词】，如 光瓶酒 包装 / 白酒 瓶贴'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文【强相近品类跨界词】，如 清酒 极简 / 烈酒 包装'},
       {adapter: 'duitang', lang: 'zh', hint: '2个中文美学词，如 极简 酒瓶 包装'},
       {adapter: 'bpando', lang: 'en', hint: '2-3个英文词，如 minimal bottle packaging / spirits bottle label'},
       {adapter: 'openverse', lang: 'en', hint: '2-3个英文纯光影静物词，如 glass bottle studio'},
@@ -38,10 +40,12 @@ export const VISUAL_TRACKS = Object.freeze({
   poster: {
     id: 'poster',
     name: '海报（Poster / KV）',
+    aspect: [0.50, 1.45],
     goal: '寻找当代高审美的单帧商业海报或情绪KV参考图（重点看字图留白、主体景别、色调对比与光线氛围）。',
-    humanRule: '按视觉语法与情绪搜，不死绑单一品类。严禁促销模板、PPT策略分析页、概念示意图、三栏文字图、长图文截图、表情条、多图拼版。中文站用1-2个中文设计短词，英文站用2-3个英文词。',
+    humanRule: '按视觉语法与情绪搜，但保留饮品/生活情绪锚点，绝不写本案品牌名。严禁促销模板、PPT策略分析页、概念示意图、三栏文字图、长图文截图、表情条、多图拼版与雷同重复图。中文站用1-2个中文设计短词，英文站用2-3个英文词。',
     sources: [
-      {adapter: 'huaban', lang: 'zh', hint: '2个中文设计词，如 微醺 海报设计 / 极简 排版 海报'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文设计词，如 微醺 海报设计 / 饮品 视觉海报'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文版式情绪词，如 极简 排版 海报 / 静物 海报'},
       {adapter: 'digitaling', lang: 'zh', hint: '1个中文高频短词，如 微醺 / 海报'},
       {adapter: 'duitang', lang: 'zh', hint: '2个中文氛围词，如 电影感 饮品 摄影'},
       {adapter: 'bpando', lang: 'en', hint: '2-3个英文词，如 campaign poster / editorial photography'},
@@ -50,10 +54,12 @@ export const VISUAL_TRACKS = Object.freeze({
   event: {
     id: 'event',
     name: '活动（Event / 快闪与空间装置）',
+    aspect: [0.65, 1.85],
     goal: '寻找有真实三维空间尺度、快闪立面/装置母题与人群打卡氛围的线下活动或快闪空间实拍参考图。',
-    humanRule: '必须呈现真实三维空间、快闪建筑立面、大玻璃橱窗/光影装置或人群互动比例！坚决淘汰纯平面活动预告海报、纯单品静物、PPT分析图。',
+    humanRule: '必须呈现真实三维空间、快闪建筑立面、大玻璃橱窗/光影装置或人群互动比例！花瓣每组词必须锁死「饮品/酒馆/咖啡馆/茶空间」等强相关场景锚点（绝不搜孤立的「建筑展台」或本案品牌名，严禁漂移到家电展台、潮玩摊位或纯单杯特写）。坚决淘汰纯平面活动预告海报、PPT分析图与同一展台多张雷同重复图。',
     sources: [
-      {adapter: 'huaban', lang: 'zh', hint: '2个中文空间词，如 极简 快闪店 空间 / 艺术装置 展陈'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文【本场景空间词】，如 酒吧 快闪 / 酒馆 空间设计'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文【强相近饮品空间词】，如 极简 咖啡馆 玻璃 / 茶饮 快闪店'},
       {adapter: 'digitaling', lang: 'zh', hint: '1-2个中文短词，如 快闪 空间'},
       {adapter: 'gooood', lang: 'zh', hint: '1个中文空间词，如 快闪 / 酒吧 / 展陈'},
       {adapter: 'yellowtrace', lang: 'en', hint: '2个英文词，如 retail bar / pop-up interior'},
@@ -497,14 +503,15 @@ export async function searchXApiImages(query, {token = process.env.X_BEARER_TOKE
 const HUABAN_PROMO_NOISE = /促销|淘宝|详情页|手机海报|主图|模板|优惠券|双11|双十一|618|包邮|素材|PSD|样机下载/u;
 const HUABAN_CURATED_SOURCES = /xiaohongshu\.com|behance\.net|pinterest\.com|dribbble\.com|zcool\.com\.cn|pushthink\.com|instagram\.com/i;
 
-export function rankHuabanPins(pins = []) {
-  return (Array.isArray(pins) ? pins : [])
+export function rankHuabanPins(pins = [], {aspect = null} = {}) {
+  const scored = (Array.isArray(pins) ? pins : [])
     .filter(p => {
       if (!p?.file?.key) return false;
       if (p.extra?.material_id) return false; // 100% strip watermarked Huaban paid stock ads
       if ((p.file.width || 0) < 480 || (p.file.height || 0) < 360) return false;
       const ratio = (p.file.width || 1) / (p.file.height || 1);
       if (ratio > 2.6 || ratio < 0.38) return false;
+      if (aspect && (ratio < aspect[0] || ratio > aspect[1])) return false;
       if (HUABAN_PROMO_NOISE.test(p.raw_text || '')) return false;
       return true;
     })
@@ -515,19 +522,34 @@ export function rankHuabanPins(pins = []) {
       const hdBonus = (p.file.width || 0) >= 900 ? 30 : 0;
       return {pin: p, score: repin + like * 4 + sourceBonus + hdBonus};
     })
-    .sort((a, b) => b.score - a.score)
-    .map(x => x.pin);
+    .sort((a, b) => b.score - a.score);
+
+  // Deduplicate near-identical repins of the same commercial project/booth (same board_id or normalized title stem)
+  const seenKeys = new Set();
+  const seenStems = new Set();
+  const deduped = [];
+  for (const {pin} of scored) {
+    const fileKey = String(pin.file?.key || '');
+    if (seenKeys.has(fileKey)) continue;
+    const stem = String(pin.raw_text || '').replace(/[\s\p{P}]/gu, '').toLowerCase().slice(0, 10);
+    if (stem.length >= 6 && seenStems.has(stem)) continue;
+    seenKeys.add(fileKey);
+    if (stem.length >= 6) seenStems.add(stem);
+    deduped.push(pin);
+  }
+  return deduped;
 }
 
-export async function searchHuaban(query, {limit = 5, signal, fetcher = fetchWithTimeout} = {}) {
+export async function searchHuaban(query, {limit = 5, aspect = null, signal, fetcher = fetchWithTimeout} = {}) {
   const clean = sanitizeTrackQuery('huaban', query);
   if (!clean) return [];
   try {
-    const u = `https://api.huaban.com/search/file?text=${encodeURIComponent(clean)}&sort=all&limit=20&page=1&position=search_pin`;
+    // Blind-test proven: always use server-side sort=repin_count + limit=30 + aspect filtering + deduplication
+    const u = `https://api.huaban.com/search/file?text=${encodeURIComponent(clean)}&sort=repin_count&limit=30&page=1&position=search_pin`;
     const r = await fetcher(u, {signal, headers: {Accept: 'application/json', Referer: 'https://huaban.com/'}});
     if (!r.ok) return [];
     const data = await r.json();
-    const ranked = rankHuabanPins(data.pins || []).slice(0, limit);
+    const ranked = rankHuabanPins(data.pins || [], {aspect}).slice(0, limit);
     return ranked.map(p => {
       const imgUrl = `https://gd-hbimg.huaban.com/${p.file.key}_fw1200webp`;
       return {
@@ -713,7 +735,7 @@ export async function humanBrowseVisualReferences({
   const workDir = join(dir, 'human-visual-search', `${trackId}-${sha256(direction || brief).slice(0, 8)}`);
   await mkdir(workDir, {recursive: true, mode: 0o700});
 
-  const searchAdapter = deps.searchAdapter || ((adapter, query) => runAdapter(adapter, query, {signal, fetcher: deps.fetcher}));
+  const searchAdapter = deps.searchAdapter || ((adapter, query) => runAdapter(adapter, query, {aspect: track.aspect, signal, fetcher: deps.fetcher}));
   const fetchDetail = deps.fetchDigitalingDetail || (url => fetchDigitalingDetailImages(url, {signal, fetcher: deps.fetcher}));
   const download = deps.download || ((url, destBase, referer) => downloadAndNormalize(url, destBase, {referer, python: deps.python, signal, fetcher: deps.fetcher}));
   const buildGrid = deps.makeContactSheet || ((items, outPath) => makeContactSheet(items, outPath, {python: deps.python, signal}));
@@ -879,6 +901,7 @@ ${coverItems.map(c => `#${c.index}: [${c.project.source}] ${c.project.title}`).j
   1. **PPT 策略分析页 / 概念示意图 / 原理图 / 三栏文字拆解图 / 手绘图表 / 信息表** —— 一律淘汰！
   2. **多图拼版 / 左右分屏 / 三联拼图（collage/trio）** —— 一律淘汰，只要干净单帧！
   3. **纯 Logo 字标卡 / 微信表情条 / 纯平面活动预告（对活动类）** —— 一律淘汰！
+  4. **同款雷同重复图**：同一套空间或同一款产品若出现多张雷同视角，只留构图最好的一张，其余必须淘汰！
 - **编号自检**：输出的 top1Index 整数必须与 whyTop1 中提到的图号完全一致！
 - 只有当整桌图全踩上述硬红线时，才设 fallbackToArtDirection=true、top1Index=0。`,
     [{path: finalGridPath, mediaType: 'image/jpeg'}],

@@ -206,13 +206,15 @@ test('humanBrowseVisualReferences gracefully returns empty array on fallbackToAr
   assert.deepEqual(results, []);
 });
 
-test('rankHuabanPins strips watermarked material_id stock and promo noise, ranks by repin_count + curated sources', () => {
+test('rankHuabanPins strips watermarked material_id stock, promo noise, duplicates, and out-of-aspect frames', () => {
   const ranked = rankHuabanPins([
     {pin_id: 1, extra: {material_id: 99}, repin_count: 999, file: {key: 'k1', width: 1000, height: 1000}, raw_text: '带水印正版素材'},
     {pin_id: 2, extra: null, repin_count: 500, file: {key: 'k2', width: 1000, height: 1400}, raw_text: '奶茶新品促销手机海报模板'},
     {pin_id: 3, extra: null, repin_count: 60, like_count: 5, source: 'random.site', file: {key: 'k3', width: 800, height: 1000}, raw_text: '普通玻璃瓶'},
-    {pin_id: 4, extra: null, repin_count: 220, like_count: 12, source: 'xiaohongshu.com', file: {key: 'k4', width: 1080, height: 1440}, raw_text: '光瓶酒极简包装设计'},
-  ]);
+    {pin_id: 4, extra: null, repin_count: 220, like_count: 12, source: 'xiaohongshu.com', file: {key: 'k4', width: 1080, height: 1440}, raw_text: '光瓶酒极简包装设计全案实拍'},
+    {pin_id: 5, extra: null, repin_count: 180, like_count: 8, source: 'xiaohongshu.com', file: {key: 'k5', width: 1080, height: 1440}, raw_text: '光瓶酒极简包装设计全案实拍-视角2'},
+    {pin_id: 6, extra: null, repin_count: 300, like_count: 10, source: 'xiaohongshu.com', file: {key: 'k6', width: 2000, height: 800}, raw_text: '超宽横幅不符合竖图画幅'},
+  ], {aspect: [0.55, 1.35]});
   assert.deepEqual(ranked.map(p => p.pin_id), [4, 3]);
 });
 
