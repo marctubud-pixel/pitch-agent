@@ -1193,18 +1193,24 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         const humanPending = error.missing.filter(direction => !humanSearched.has(direction));
         if (humanPending.length) {
           const known = pool.length;
-          for (const direction of humanPending) {
-            humanSearched.add(direction);
+          const quadrants = selectAestheticQuadrants(project.brief, carriers);
+          for (const direction of humanPending) humanSearched.add(direction);
+          await onEvent?.(`正在为 ${humanPending.length} 个方向并行执行类人看图搜图：${humanPending.join('、')}`);
+          const results = await independentCalls(humanPending, async direction => {
             signal?.throwIfAborted();
             const creative = project.copyReview?.draft?.directions?.find(d => d.name === direction) ?? null;
+            const quadrant = quadrants[active.indexOf(direction) % quadrants.length] ?? null;
             try {
-              const found = await humanSearch({brief: project.brief, direction, creative, carriers});
-              if (found?.length) addCandidates(found, direction);
-              diagnostics.push(`${direction} / 类人看图搜图，新增 ${found?.length ?? 0} 张`);
+              const found = await humanSearch({brief: project.brief, direction, creative, quadrant, carriers});
+              return {direction, found: found ?? [], message: `${direction} / 类人看图搜图，新增 ${found?.length ?? 0} 张`};
             } catch (err) {
               signal?.throwIfAborted();
-              diagnostics.push(`${direction} / 类人看图搜图跳过：${String(err.message).slice(0, 120)}`);
+              return {direction, found: [], message: `${direction} / 类人看图搜图跳过：${String(err.message).slice(0, 120)}`};
             }
+          });
+          for (const {direction, found, message} of results) {
+            if (found.length) addCandidates(found, direction);
+            diagnostics.push(message);
           }
           if (pool.length > known) continue;
         }

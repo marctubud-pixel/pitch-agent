@@ -77,8 +77,13 @@ export function detectVisualTrack(brief = '', carriers = [], direction = '') {
   return 'poster';
 }
 
+export function normalizeAdapterName(adapter) {
+  return String(adapter || '').replace(/\([^)]*\)/g, '').trim().toLowerCase();
+}
+
 export function sanitizeTrackQuery(adapter, raw) {
-  const lang = ADAPTER_LANGUAGES[adapter] || 'en';
+  const key = normalizeAdapterName(adapter);
+  const lang = ADAPTER_LANGUAGES[key] || 'en';
   let q = String(raw || '').replace(/["“”'‘’`]/g, ' ').trim();
   if (!q) return '';
   if (lang === 'en') {
@@ -89,6 +94,28 @@ export function sanitizeTrackQuery(adapter, raw) {
   let joined = parts.join(' ');
   if (joined.replace(/\s+/g, '').length > 8) joined = parts[0].slice(0, 6);
   return joined.trim();
+}
+
+export function interleaveBySource(batches = [], maxItems = 9, seenKeys = new Set()) {
+  const queues = batches.map(batch => (Array.isArray(batch) ? [...batch] : []));
+  const out = [];
+  let progressed = true;
+  while (out.length < maxItems && progressed) {
+    progressed = false;
+    for (const q of queues) {
+      while (q.length) {
+        const item = q.shift();
+        const key = item?.projectUrl || item?.coverUrl;
+        if (!key || seenKeys.has(key)) continue;
+        seenKeys.add(key);
+        out.push(item);
+        progressed = true;
+        break;
+      }
+      if (out.length >= maxItems) break;
+    }
+  }
+  return out;
 }
 
 async function fetchWithTimeout(url, {ms = 10000, headers = {}, signal} = {}) {
@@ -592,7 +619,7 @@ export async function searchGooood(query, {limit = 4, signal, fetcher = fetchWit
 }
 
 async function runAdapter(adapter, query, opts) {
-  switch (adapter) {
+  switch (normalizeAdapterName(adapter)) {
     case 'huaban': return searchHuaban(query, opts);
     case 'duitang': return searchDuitang(query, opts);
     case 'yellowtrace': return searchYellowtrace(query, opts);
@@ -672,6 +699,7 @@ export async function humanBrowseVisualReferences({
   brief = '',
   direction = '',
   creative = null,
+  quadrant = null,
   carriers = [],
   dir,
   signal,
@@ -705,7 +733,7 @@ export async function humanBrowseVisualReferences({
   const planResp = await call(
     `你是资深广告美术指导，正在为以下 Brief 的【${track.name}】方向找视觉参考图。
 Brief 摘要：${String(brief).slice(0, 420)}
-当前创意方向：${direction || '主方向'}${creative?.main ? `（主张：${creative.main}）` : ''}
+当前创意方向：${direction || '主方向'}${creative?.main ? `（主张：${creative.main}）` : ''}${quadrant?.name ? `\n本方向专属美学象限：${quadrant.name}（${quadrant.visualNote || quadrant.style || ''}）——请往这个专属视觉象限拆词，与其他方向拉开差异。` : ''}
 本方向目标：${track.goal}
 找图规则：${track.humanRule}
 安全要求：只用通用品类和公开视觉词，不泄漏客户/品牌名、项目名、联系人或未公开配方。
@@ -736,16 +764,12 @@ ${track.sources.map((s, i) => `${i + 1}. adapter="${s.adapter}" (${s.lang}): ${s
 
   for (let round = 1; round <= 2; round++) {
     signal?.throwIfAborted();
-    const batches = await Promise.all(currentQueries.map(q => searchAdapter(q.adapter, sanitizeTrackQuery(q.adapter, q.query))));
-    const projects = [];
-    for (const batch of batches) {
-      for (const p of batch || []) {
-        const key = p.projectUrl || p.coverUrl;
-        if (!key || seenProjects.has(key)) continue;
-        seenProjects.add(key);
-        projects.push(p);
-      }
-    }
+    const batches = await Promise.all(currentQueries.map(q => {
+      const adapterKey = normalizeAdapterName(q.adapter);
+      return searchAdapter(adapterKey, sanitizeTrackQuery(adapterKey, q.query));
+    }));
+    // Round-robin interleave across all sources so no single source hogs all 9 Contact Sheet slots.
+    const projects = interleaveBySource(batches, 12, seenProjects);
 
     const coverItems = [];
     for (let i = 0; i < Math.min(9, projects.length); i++) {
@@ -765,7 +789,8 @@ ${track.sources.map((s, i) => `${i + 1}. adapter="${s.adapter}" (${s.lang}): ${s
 
     const gridPath = join(workDir, `round${round}_grid.jpg`);
     await buildGrid(coverItems.map(c => ({index: c.index, label: c.label, path: c.path})), gridPath);
-    const allowedAdapters = [...new Set(track.sources.map(s => `${s.adapter}(${s.lang})`))].join(', ');
+    const allowedAdapters = [...new Set(track.sources.map(s => s.adapter))].join(', ');
+    const allowedAdapterHints = [...new Set(track.sources.map(s => `${s.adapter}(${s.lang === 'zh' ? '中文1-2短词' : '英文2-3词'})`))].join(' / ');
 
     await onEvent?.(`「${direction || track.name}」第 ${round} 轮九宫格扫图（${coverItems.length} 个项目）`);
     const scanResp = await call(
@@ -784,7 +809,7 @@ ${coverItems.map(c => `#${c.index}: [${c.project.source}] ${c.project.title}`).j
 1. eyeImpression：一句话评这屏图的视觉骨架上限与可借鉴度。
 2. openIndices：挑出 2–3 个最值得「点进项目详情页翻大图」的编号。
 3. rejectReasons：简述刷掉其他编号的原因。
-4. needRound2：如果是第 1 轮且想补搜另一角度，设为 true，并在 round2Queries 给 2 组【极短】新词（可用 adapter：${allowedAdapters}；英文源仅 2-3 个英文词绝不写中文，中文源 digitaling 仅 1 个中文短词）。`,
+4. needRound2：如果是第 1 轮且想补搜另一角度，设为 true，并在 round2Queries 给 2 组【极短】新词：adapter 字段必须只填纯英文名（${allowedAdapters}，不要带括号！）；语种规则：${allowedAdapterHints}。`,
       [{path: gridPath, mediaType: 'image/jpeg'}],
       SCAN_SCHEMA,
       {delegate: true, assignment: `视觉扫图第${round}轮(${trackId})`, context: ''},

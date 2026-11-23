@@ -6,6 +6,8 @@ import {join} from 'node:path';
 import {
   detectVisualTrack,
   humanBrowseVisualReferences,
+  interleaveBySource,
+  normalizeAdapterName,
   rankHuabanPins,
   sanitizeTrackQuery,
   searchDuitang,
@@ -262,4 +264,15 @@ test('searchHuaban, searchDuitang, searchYellowtrace, and searchGooood parse ver
   });
   assert.equal(gd.length, 1);
   assert.equal(gd[0].coverUrl, 'https://oss.gooood.cn/uploads/2026/10/popup-space.jpg');
+});
+
+test('normalizeAdapterName strips language suffix and interleaveBySource balances all sources', () => {
+  assert.equal(normalizeAdapterName('huaban(zh)'), 'huaban');
+  assert.equal(normalizeAdapterName('BPANDO(en)'), 'bpando');
+  const mixed = interleaveBySource([
+    [{projectUrl: 'h1'}, {projectUrl: 'h2'}, {projectUrl: 'h3'}],
+    [{projectUrl: 'd1'}, {projectUrl: 'd2'}],
+    [{projectUrl: 'b1'}, {projectUrl: 'b2'}],
+  ], 6);
+  assert.deepEqual(mixed.map(x => x.projectUrl), ['h1', 'd1', 'b1', 'h2', 'd2', 'b2']);
 });
