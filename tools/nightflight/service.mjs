@@ -555,12 +555,13 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             }
             const isFastAutoVisual = p.mode==='auto' && images.length>0 && images.every(a=>a.visual?.fastAuto===true);
             if (isFastAutoVisual) {
-              check(images.length===expected.length*2 && expected.every(direction=>{
+              const perDirection = expected.length ? images.length / expected.length : 0;
+              check((perDirection === 3 || perDirection === 2) && expected.every(direction=>{
                 const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
-                return [1,2].every(i=>batch.some(a=>a.candidate===i)) &&
+                return Array.from({length: perDirection}, (_, k) => k + 1).every(i=>batch.some(a=>a.candidate===i)) &&
                   batch.every(a=>a.role==='main' && Array.isArray(a.hardIssues) && typeof a.reason==='string' && a.reason.trim()) &&
                   batch.filter(a=>a.recommended).length<=1;
-              }), '自动模式视觉阶段需要每方向两张同版主视觉及快速选优记录', 422);
+              }), '自动模式视觉阶段需要每方向两至三张同版主视觉及快速选优记录', 422);
             } else check(images.length===expected.length*3 && expected.every(direction=>{
               const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
               if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
