@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {
   classifyDirectionMode,
+  classifySourceChannel,
   defaultAuxiliarySlots,
   detectVisualTrack,
   extractResearchAestheticCues,
@@ -291,6 +292,10 @@ test('classifyDirectionMode, extractResearchAestheticCues, and defaultAuxiliaryS
   assert.equal(classifyDirectionMode('方向A', 0), 'steady');
   assert.equal(classifyDirectionMode('方向B', 1), 'feature');
   assert.equal(classifyDirectionMode('方向C', 2), 'emotion');
+  assert.equal(classifySourceChannel('数英网'), 'pro');
+  assert.equal(classifySourceChannel('BP&O'), 'pro');
+  assert.equal(classifySourceChannel('花瓣网'), 'gen');
+  assert.equal(classifySourceChannel('花瓣·小红书'), 'gen');
 
   const youthCues = extractResearchAestheticCues({brief: '面向Z世代，偏好治愈系、东方美学和自然主义'});
   assert.equal(youthCues.source, 'research-grounded');

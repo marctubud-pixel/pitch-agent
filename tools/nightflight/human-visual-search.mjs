@@ -68,6 +68,10 @@ export const VISUAL_TRACKS = Object.freeze({
   },
 });
 
+export function classifySourceChannel(source = '') {
+  return /数英|BP&O|Yellowtrace|谷德|Designboom|Colossal/iu.test(String(source || '')) ? 'pro' : 'gen';
+}
+
 export function classifyDirectionMode(direction = '', index = 0) {
   const text = String(direction || '');
   if (/稳健|延续|品类|经典|标杆/u.test(text)) return 'steady';
@@ -799,10 +803,10 @@ export async function humanBrowseVisualReferences({
   const dirMode = classifyDirectionMode(direction, directionIndex);
   const cues = aestheticCues || extractResearchAestheticCues({brief});
   const modeGuidance = dirMode === 'feature'
-    ? '【本方向为「放大产品/品牌特征」】严禁死锁本品类常规图！请先在 thinking 中做一步「卖点 → 视觉构成语法/视觉锤转译」（例如：微分子→水滴点阵粒子构成、100%真茶真奶→超级数字+波普网点、透明不藏→玻璃折射/透视显影），再刻意跨行业去搜这种视觉手法的高审美大师参考！'
+    ? '【本方向为「卖点 · 美术跳脱（先推理产品关联非写实美术，再找跨行业商业海报）」】严禁普通写实产品棚拍，也严禁随便抓无关联画风！请先在 thinking 中结合产品特质、社交属性与品牌/节气色调，推导出 3 条有逻辑关联且彼此媒介迥异的非写实商业美术路径（如：① 平面图形/点阵构成商业海报、② 东方/手绘插画商业海报、③ 超现实光影/微距视觉合成商业海报），再跨向新式茶饮、气泡水、精酿、香水、数码、节气联名等成熟商业海报检索！'
     : dirMode === 'emotion'
-      ? `【本方向为「用户氛围 / 情绪共鸣」】重点锁住目标人群的真实使用场景、松弛人物动作或文化意境；可参考研究审美线索：${cues.guidance}`
-      : `【本方向为「稳健延续 / 同品类成熟标杆」】必须优先搜**本品类（或强相关同赛道品类）的成熟高审美商业做法**！若 Brief 带有节日/节令（如端午、中秋、春节），必须把「同品类 + 节令/主题」绑在一起搜（例如：白酒 端午 海报、酒 端午 视觉、白酒 节气 海报），绝对不要漂移到无关行业或纯艺术抽象图！可参考研究审美线索：${cues.guidance}`;
+      ? `【本方向为「用户 · 人物、场景与感受（跨品类同场景商业海报）」】必须紧扣上游 Brief/用户研究里的具体使用场景（单人独酌/朋友小聚/露营/用餐）与品类使用常识红线（如轻型白酒必须用透明玻璃杯/小杯加冰轻酌或调饮，严禁拿酒瓶对嘴吹）。搜跨品类同样表达该场景与氛围的**成熟商业海报**（饮料/茶饮/火锅/露营户外/出行品牌的朋友小聚、露营、轻盈意象海报），严禁小红书生活随手拍与自拍！研究审美线索：${cues.guidance}`
+      : `【本方向为「稳健 · 美术延续（由细到粗分层搜 + 东亚同类商业海报）」】若品牌无既有视觉资产，必须按「由细到粗」分层检索：先搜精准细品类（如轻型白酒/低度酒）及国内/日/韩/台同类品牌（如清酒、梅酒、低度烧酒）的**成熟商业海报**，搜不够再逐层泛化到上位大类（如白酒端午/节气海报）；严禁选纯包装盒效果图充当海报！可参考研究审美线索：${cues.guidance}`;
   const workDir = join(dir, 'human-visual-search', `${trackId}-${sha256(direction || brief).slice(0, 8)}`);
   await mkdir(workDir, {recursive: true, mode: 0o700});
 
@@ -821,22 +825,29 @@ export async function humanBrowseVisualReferences({
     signal,
   });
 
-  // Step 1: Associative query planning tailored to the 3 native business directions (+ social keyword packs)
+  // Step 1: Dual-channel query planning (Pro sources: Digitaling/BP&O/Colossal + General sources: Huaban)
   const effectiveSources = dirMode === 'feature'
     ? [
-        {adapter: 'huaban', lang: 'zh', hint: '2个中文【非写实插画/点阵构成海报词】，严禁写普通棚拍/静物词！例如：微分子→「点阵 插画 海报」或「水滴 构成 海报」、透明→「矢量 折射 海报」、100%真茶奶→「波普 插画 海报」'},
-        {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【平面图形/创意视觉锤海报词】，如「粒子 平面 海报」「创意 插画 海报」「图形 构成 海报」，坚决拉开与写实产品棚拍的媒介差距'},
-        {adapter: 'bpando', lang: 'en', hint: '2-3个英文【平面构成/插画海报词】，如 graphic poster illustration / dot matrix poster / typography poster'},
-        {adapter: 'colossal', lang: 'en', hint: '2个英文【艺术插画/图形视觉词】，如 geometric illustration / droplet art'},
+        {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1个中文短词搜跨行业高审美创意商业海报战役（如 气泡水 / 茶饮 / 节气 / 创意海报）'},
+        {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【平面构成/插画商业海报词】，如 graphic poster illustration / beverage poster'},
+        {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【产品特质转译的非写实插画/点阵构成商业海报词】，如「点阵 插画 海报」「平面 构成 海报」，严禁普通棚拍'},
+        {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【另一媒介的跨行业商业海报词】，如「水彩 节气 海报」「光影 视觉 海报」，与上一组拉开美术媒介差距'},
       ]
     : dirMode === 'steady' && trackId === 'poster'
       ? [
-          {adapter: 'huaban', lang: 'zh', hint: '2个中文【同品类+节令/主题海报词】，必须锁死本品类！例如白酒端午→「白酒 端午 海报」或「酒 端午 海报」；茶饮夏季→「茶饮 夏日 海报」'},
-          {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【同品类成熟商业KV词】，如「白酒 节气 海报」「酒类 视觉海报」「光瓶酒 海报」'},
-          {adapter: 'digitaling', lang: 'zh', hint: '1-2个中文【同品类品牌战役短词】，如「白酒 端午」或「白酒 海报」'},
-          {adapter: 'bpando', lang: 'en', hint: '2-3个英文【同品类标杆海报词】，如 spirits campaign poster / liquor bottle poster'},
+          {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文【细品类或同品类商业战役短词】，如「低度酒」或「白酒 端午」'},
+          {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【同品类/东亚酒水标杆海报词】，如 sake poster / spirits campaign poster'},
+          {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【精准细品类或东亚同类商业海报词】，如「低度酒 海报」「梅酒 海报」「清酒 海报」'},
+          {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【上位同品类+节令商业海报词】，如「白酒 端午 海报」「白酒 节气 海报」'},
         ]
-      : track.sources;
+      : dirMode === 'emotion' && trackId === 'poster'
+        ? [
+            {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文【跨品类同场景商业战役短词】，如「露营 海报」「朋友 小聚」「微醺」'},
+            {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【生活方式/氛围商业海报词】，如 lifestyle campaign poster / summer drink poster'},
+            {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【跨品类同场景商业海报词】，如「朋友 聚会 海报」「露营 商业 海报」'},
+            {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【轻盈/情绪氛围商业海报词】，如「夏日 饮品 海报」「轻盈 氛围 海报」'},
+          ]
+        : track.sources;
 
   const avoidNote = Array.isArray(avoidVisualModes) && avoidVisualModes.length
     ? `\n【跨方向防撞车硬要求】其他方向已占用以下视觉手法/媒介：${avoidVisualModes.join('、')}。本方向必须主动切换到完全不同的美术媒介或视觉转译手法，严禁与已占用方向撞风格！`
@@ -986,32 +997,36 @@ ${scanPrinciple}
   const finalGridPath = join(workDir, 'final_grid.jpg');
   await buildGrid(finalPool.map((c, i) => ({
     index: i + 1,
-    label: `${c.source} | ${String(c.title || '').slice(0, 20)}`,
+    label: `${classifySourceChannel(c.source) === 'pro' ? '专业' : '综合'}·${c.source} | ${String(c.title || '').slice(0, 14)}`,
     path: c.path,
   })), finalGridPath);
 
   const pickPrinciple = dirMode === 'steady'
-    ? '- 本方向是【稳健延续 / 同品类标杆】，**必须优先挑同品类（或强相关同赛道品类）的成熟高审美商业海报/KV 单帧**（若带节令如端午，优先选同品类节令商业海报），看产品主位构图、节令融合度与高级商业质感！无关行业图只有在整桌没有合格同品类图时才可退而求其次。'
-    : '- 挑的是**视觉骨架/表现手法最高级、拿来改掉品牌/颜色/产品就能出大片**的那 1 张单帧！原图品类/颜色/品牌名不同完全没关系，只要构图、光影、构成语法、空间尺度或版式比例够高级，就可以选！';
+    ? '- 本方向是【稳健延续 / 同品类及东亚标杆】，**必须优先挑细品类/东亚同类或同品类成熟商业海报单帧**；做海报任务时**严禁选纯包装盒样机或白底商品图**！'
+    : dirMode === 'feature'
+      ? '- 本方向是【卖点跳脱 / 非写实美术形式】，**严禁选普通写实产品棚拍图与无商业感的业余涂鸦/表情包漫画**！挑出 3 张彼此美术表现形式明显不同、且能服务于本案卖点与色调的商业海报单帧。'
+      : '- 本方向是【用户场景与感受】，**严禁选小红书生活随手拍、游客自拍与违背品类常识的动作（如白酒对瓶吹）**！优先挑成熟商业海报单帧，覆盖真实场景、合规人物情绪动作与轻盈氛围意象。';
 
   const pickResp = await call(
     `你是 4A 资深美术指导。两轮扫图+进详情页后，桌面上摊开了这 ${finalPool.length} 张单帧大图（编号 #1 到 #${finalPool.length}）。
 任务：【${track.name}】—— ${track.goal}
 方向心法：${modeGuidance}
 方向规则：${track.humanRule}
+候选渠道清单：
+${finalPool.map((c, i) => `#${i + 1} [${classifySourceChannel(c.source) === 'pro' ? '专业源' : '综合源'}:${c.source}] ${c.title}`).join('\n')}
 
 ⚠️ 「借三改二」终选原则：
 ${pickPrinciple}
-- **绝对硬红线（一票否决，严禁选中！）**：
+- **绝对硬红线（像素级一票否决，严禁选中！）**：
   1. **PPT 策略分析页 / 概念示意图 / 原理图 / 三栏文字拆解图 / 手绘图表 / 信息表** —— 一律淘汰！
-  2. **多图拼版 / 左右分屏 / 三联拼图（collage/trio）** —— 一律淘汰，只要干净单帧！
-  3. **纯 Logo 字标卡 / 微信表情条 / 带明显第三方素材网水印（如酷图/千图/摄图/稿定模板 YOUR LOGO）** —— 一律淘汰！
-  4. **同款雷同重复图**：同一套空间或同一款产品若出现多张雷同视角，只留构图最好的一张，其余必须淘汰！
+  2. **多图拼版 / 左右分屏 / 三联拼图 / 多张小海报竖排叠成一张长图（collage/trio）** —— 一律淘汰，只要干净单帧！
+  3. **图面直接印有 YOUR LOGO / GAODING / 稿定 / 酷图 / 千图 / 摄图 等模板或水印字样**（哪怕标题没写模板） —— 一律淘汰！
+  4. **载体不符或非商业图**：做海报时选包装盒样机、或选无版式无打光的生活随手拍 —— 一律淘汰！
+  5. **同款雷同重复图**：同一套空间或同一款产品若出现多张雷同视角，只留构图最好的一张，其余必须淘汰！
 - **编号自检**：输出的 top1Index 整数必须与 whyTop1 中提到的图号完全一致！
-- **3 张独立主参考挑选原则（宁缺毋滥！）**：
-  - 本方向将最多取 **3 张互相不雷同的高审美主参考**（top1Index、top2Index、top3Index），分别做 3 组「借三改二」出图；
-  - top2Index 和 top3Index 必须都是真正过关的 4A 级高审美单帧，且彼此在构图/色调/美术表现手法上明显拉开差异；
-  - **严禁为了凑够 3 张而放进水印图、模板图、低质图或雷同图！**如果整桌只有 1–2 张合格高审美图，不够的槽位必须填 0。
+- **双渠道 3 主参考配比（宁缺毋滥！）**：
+  - 本方向将最多取 **3 张互相不雷同的高审美主参考**（top1Index、top2Index、top3Index），**优先按「1 张专业源 + 2 张综合源」配比组合**，兼顾专业广告水准与多样性；
+  - **严禁为了凑够 3 张或凑渠道而放进水印图、模板图、拼版长图、随手拍或雷同图！**如果合格图不足 3 张，不够的槽位必须填 0。
 - 只有当整桌图全踩上述硬红线时，才设 fallbackToArtDirection=true、top1Index=0。`,
     [{path: finalGridPath, mediaType: 'image/jpeg'}],
     PICK_SCHEMA,
@@ -1038,6 +1053,7 @@ ${pickPrinciple}
       width: item.width,
       height: item.height,
       source: item.source || '公开来源',
+      channel: classifySourceChannel(item.source),
       title: item.title,
       pageUrl: item.pageUrl,
       sourceUrl: item.sourceUrl,
