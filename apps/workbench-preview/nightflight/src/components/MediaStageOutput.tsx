@@ -121,9 +121,9 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
               {ref.pageUrl?.startsWith('https://') && <a href={ref.pageUrl} target="_blank" rel="noopener noreferrer">查看来源页</a>}
             </li>)}</ul></section>}
           {admission && <details><summary>查看参考图准入原票</summary>
-            <p>{admission.ruling.reason}</p>
-            {admission.votes.map(vote => <section key={vote.role}><h4>{reviewLabels[vote.role] ?? vote.role}</h4>
-              <ul>{vote.items.map(item => <li key={item.dimension}>{reviewLabels[item.dimension] ?? item.dimension} · {item.score === null ? '待核' : item.score+'/5'}　{item.evidence}</li>)}</ul>
+            {admission.ruling?.reason && <p>{admission.ruling.reason}</p>}
+            {(admission.votes ?? []).map(vote => <section key={vote.role}><h4>{reviewLabels[vote.role] ?? vote.role}</h4>
+              <ul>{(vote.items ?? []).map(item => <li key={item.dimension}>{reviewLabels[item.dimension] ?? item.dimension} · {item.score === null ? '待核' : item.score+'/5'}　{item.evidence}</li>)}</ul>
             </section>)}
           </details>}
           {candidates.length ? <VisualReview board={board && safeURL(board.url) || undefined}
