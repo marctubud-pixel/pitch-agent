@@ -559,7 +559,7 @@ export async function searchXApiImages(query, {token = process.env.X_BEARER_TOKE
   }
 }
 
-const HUABAN_PROMO_NOISE = /促销|淘宝|详情页|手机海报|主图|模板|优惠券|双11|双十一|618|包邮|素材|PSD|样机下载/u;
+const HUABAN_PROMO_NOISE = /促销|淘宝|详情页|手机海报|主图|模板|优惠券|双11|双十一|618|包邮|素材|PSD|样机下载|稿定|酷图|源文件|千图|包图|摄图|昵图|可商用|免抠|YOUR LOGO/iu;
 const HUABAN_CURATED_SOURCES = /xiaohongshu\.com|behance\.net|pinterest\.com|dribbble\.com|zcool\.com\.cn|pushthink\.com|instagram\.com/i;
 
 export function rankHuabanPins(pins = [], {aspect = null} = {}) {
@@ -765,13 +765,14 @@ const PICK_SCHEMA = {
     fallbackToArtDirection: {type: 'boolean'},
     top1Index: {type: 'integer'},
     top2Index: {type: 'integer'},
+    top3Index: {type: 'integer'},
     whyTop1: {type: 'string'},
     toneMatchNote: {type: 'string'},
     borrow3: {type: 'array', items: {type: 'string'}},
     avoid2: {type: 'array', items: {type: 'string'}},
     disqualifiedNotes: {type: 'string'},
   },
-  required: ['fallbackToArtDirection', 'top1Index', 'top2Index', 'whyTop1', 'toneMatchNote', 'borrow3', 'avoid2', 'disqualifiedNotes'],
+  required: ['fallbackToArtDirection', 'top1Index', 'top2Index', 'top3Index', 'whyTop1', 'toneMatchNote', 'borrow3', 'avoid2', 'disqualifiedNotes'],
   additionalProperties: false,
 };
 
@@ -823,10 +824,10 @@ export async function humanBrowseVisualReferences({
   // Step 1: Associative query planning tailored to the 3 native business directions (+ social keyword packs)
   const effectiveSources = dirMode === 'feature'
     ? [
-        {adapter: 'huaban', lang: 'zh', hint: '2个中文【跨界平面/插画视觉构成手法词】，严禁写普通品类词！例如：微分子→「点阵 粒子 海报」或「水滴 插画 海报」、透明→「玻璃 折射 海报」、100%真茶奶→「波普 网点 海报」'},
-        {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【不同美术媒介的视觉隐喻海报词】，如「微粒 平面 构成」「水滴 点阵 艺术」「流体 字体 海报」，严禁搜地毯/纯暗黑装置'},
-        {adapter: 'bpando', lang: 'en', hint: '2-3个英文【视觉手法海报词】，如 dot matrix poster / particle graphic / minimal typography'},
-        {adapter: 'openverse', lang: 'en', hint: '2-3个英文【清透微距/粒子构成视觉词】，如 water droplets minimal / optical refraction'},
+        {adapter: 'huaban', lang: 'zh', hint: '2个中文【非写实插画/点阵构成海报词】，严禁写普通棚拍/静物词！例如：微分子→「点阵 插画 海报」或「水滴 构成 海报」、透明→「矢量 折射 海报」、100%真茶奶→「波普 插画 海报」'},
+        {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【平面图形/创意视觉锤海报词】，如「粒子 平面 海报」「创意 插画 海报」「图形 构成 海报」，坚决拉开与写实产品棚拍的媒介差距'},
+        {adapter: 'bpando', lang: 'en', hint: '2-3个英文【平面构成/插画海报词】，如 graphic poster illustration / dot matrix poster / typography poster'},
+        {adapter: 'colossal', lang: 'en', hint: '2个英文【艺术插画/图形视觉词】，如 geometric illustration / droplet art'},
       ]
     : dirMode === 'steady' && trackId === 'poster'
       ? [
@@ -1004,19 +1005,26 @@ ${pickPrinciple}
 - **绝对硬红线（一票否决，严禁选中！）**：
   1. **PPT 策略分析页 / 概念示意图 / 原理图 / 三栏文字拆解图 / 手绘图表 / 信息表** —— 一律淘汰！
   2. **多图拼版 / 左右分屏 / 三联拼图（collage/trio）** —— 一律淘汰，只要干净单帧！
-  3. **纯 Logo 字标卡 / 微信表情条 / 纯平面活动预告（对活动类）** —— 一律淘汰！
+  3. **纯 Logo 字标卡 / 微信表情条 / 带明显第三方素材网水印（如酷图/千图/摄图/稿定模板 YOUR LOGO）** —— 一律淘汰！
   4. **同款雷同重复图**：同一套空间或同一款产品若出现多张雷同视角，只留构图最好的一张，其余必须淘汰！
 - **编号自检**：输出的 top1Index 整数必须与 whyTop1 中提到的图号完全一致！
-- **半发散备选要求**：top2Index（同方向第 3 稿「半发散」备选主参考）**必须与 top1Index 在美术表现手法或媒介上有明显区分**（例如 top1 是实拍/摄影，top2 优先选插画/平面构成/强排版；或 top1 是点阵构成，top2 选光学折射/微距流体），绝不选和 top1 同画风的雷同图！
+- **3 张独立主参考挑选原则（宁缺毋滥！）**：
+  - 本方向将最多取 **3 张互相不雷同的高审美主参考**（top1Index、top2Index、top3Index），分别做 3 组「借三改二」出图；
+  - top2Index 和 top3Index 必须都是真正过关的 4A 级高审美单帧，且彼此在构图/色调/美术表现手法上明显拉开差异；
+  - **严禁为了凑够 3 张而放进水印图、模板图、低质图或雷同图！**如果整桌只有 1–2 张合格高审美图，不够的槽位必须填 0。
 - 只有当整桌图全踩上述硬红线时，才设 fallbackToArtDirection=true、top1Index=0。`,
     [{path: finalGridPath, mediaType: 'image/jpeg'}],
     PICK_SCHEMA,
     {delegate: true, assignment: `视觉摊桌面终选(${trackId})`, context: ''},
   );
-  const pick = pickResp.parsedOutput || {fallbackToArtDirection: true, top1Index: 0, top2Index: 0};
+  const pick = pickResp.parsedOutput || {fallbackToArtDirection: true, top1Index: 0, top2Index: 0, top3Index: 0};
   if (pick.fallbackToArtDirection || !pick.top1Index) return [];
 
-  const chosen = [finalPool[pick.top1Index - 1], finalPool[pick.top2Index - 1]].filter(Boolean);
+  const chosen = [
+    finalPool[pick.top1Index - 1],
+    finalPool[pick.top2Index - 1],
+    finalPool[pick.top3Index - 1],
+  ].filter(Boolean);
   const dedup = [];
   const seenSha = new Set();
   for (const item of chosen) {
@@ -1036,7 +1044,8 @@ ${pickPrinciple}
       query: item.query,
       track: trackId,
       directionMode: dirMode,
-      roleHint: dedup.length === 0 ? 'main' : 'backup',
+      roleHint: 'main',
+      mainSlot: dedup.length + 1,
       borrow3: pick.borrow3 || [],
       avoid2: pick.avoid2 || [],
       whyTop1: pick.whyTop1 || '',
