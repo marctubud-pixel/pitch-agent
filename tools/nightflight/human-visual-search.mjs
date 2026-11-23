@@ -47,8 +47,8 @@ export const VISUAL_TRACKS = Object.freeze({
       {adapter: 'huaban', lang: 'zh', hint: '2个中文设计词，如 微醺 海报设计 / 饮品 视觉海报'},
       {adapter: 'huaban', lang: 'zh', hint: '2个中文版式情绪词，如 极简 排版 海报 / 静物 海报'},
       {adapter: 'digitaling', lang: 'zh', hint: '1个中文高频短词，如 微醺 / 海报'},
-      {adapter: 'duitang', lang: 'zh', hint: '2个中文氛围词，如 电影感 饮品 摄影'},
       {adapter: 'bpando', lang: 'en', hint: '2-3个英文词，如 campaign poster / editorial photography'},
+      {adapter: 'openverse', lang: 'en', hint: '2-3个英文纯光影词，如 minimalist glass light'},
     ],
   },
   event: {
@@ -820,6 +820,15 @@ export async function humanBrowseVisualReferences({
   });
 
   // Step 1: Associative cross-category query planning (+ social keyword packs)
+  const effectiveSources = dirMode === 'feature'
+    ? [
+        {adapter: 'huaban', lang: 'zh', hint: '2个中文【跨界视觉构成手法词】，严禁写普通品类词！例如：微分子→「点阵 粒子 海报」或「水滴 构成 视觉」、透明→「玻璃 折射 海报」、100%真茶奶→「波普 网点 海报」'},
+        {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【不同角度的视觉隐喻/图形手法词】，例如「微粒 艺术 海报」「流体 字体 创意」「几何 构成 海报」'},
+        {adapter: 'bpando', lang: 'en', hint: '2-3个英文【视觉手法词】，如 dot matrix poster / particle graphic / minimal typography'},
+        {adapter: 'colossal', lang: 'en', hint: '2个英文【艺术构成手法词】，如 droplet installation / optical art'},
+      ]
+    : track.sources;
+
   await onEvent?.(`「${direction || track.name}」按【${track.name}】模式联想拆词搜图`);
   const planResp = await call(
     `你是资深广告美术指导，正在为以下 Brief 的【${track.name}】方向找视觉参考图。
@@ -832,7 +841,7 @@ Brief 摘要：${String(brief).slice(0, 420)}
 
 请输出：
 1. queries：为下列每个公开图源各给 1 组严格限长的搜索词（英文站 2-3 个纯英文词，中文站 1-2 个中文短词且总字数≤6）：
-${track.sources.map((s, i) => `${i + 1}. adapter="${s.adapter}" (${s.lang}): ${s.hint}`).join('\n')}
+${effectiveSources.map((s, i) => `${i + 1}. adapter="${s.adapter}" (${s.lang}): ${s.hint}`).join('\n')}
 2. xhsKeywords：给 3 组最适合在【小红书】直接搜出高审美实拍参考的中文关键词。
 3. xKeywords：给 3 组最适合在【X / Twitter】直接搜出国际高审美设计参考的英文关键词。`,
     [],
@@ -1045,38 +1054,92 @@ ${auxSlots.map((s, i) => `${i + 1}. slot="${s.slot}" (${s.label}): ${s.focus}`).
         {delegate: true, assignment: `视觉3辅参考拆词(${trackId})`, context: ''},
       );
       const plannedSlots = (auxPlanResp.parsedOutput?.slots || []).slice(0, 3);
+      const auxCandidates = [];
       for (const s of plannedSlots) {
         signal?.throwIfAborted();
         const adapterKey = normalizeAdapterName(s.adapter || 'huaban');
         const q = sanitizeTrackQuery(adapterKey, s.query);
         if (!q) continue;
         const hits = await searchAdapter(adapterKey, q);
-        for (const h of (hits || []).slice(0, 3)) {
+        let slotGrabbed = 0;
+        for (const h of (hits || []).slice(0, 5)) {
+          if (slotGrabbed >= 3 || auxCandidates.length >= 9) break;
           if (!h?.coverUrl || seenImageUrls.has(h.coverUrl)) continue;
           seenImageUrls.add(h.coverUrl);
-          const dl = await download(h.coverUrl, join(workDir, `aux_${s.slot}`), h.projectUrl);
+          const dl = await download(h.coverUrl, join(workDir, `aux_${s.slot}_${slotGrabbed + 1}`), h.projectUrl);
           if (dl && !seenSha.has(dl.sha256)) {
-            seenSha.add(dl.sha256);
-            dedup.push({
-              path: dl.path,
-              sha256: dl.sha256,
-              byteLength: dl.byteLength,
-              mediaType: dl.mediaType,
-              width: dl.width,
-              height: dl.height,
-              title: `[辅·${s.label}] ${h.title || q}`,
-              pageUrl: h.projectUrl || h.coverUrl,
-              sourceUrl: dl.sourceUrl,
+            auxCandidates.push({
+              index: auxCandidates.length + 1,
+              slot: s.slot,
+              label: s.label,
+              focus: s.focus,
               query: q,
-              track: trackId,
-              directionMode: dirMode,
-              roleHint: 'auxiliary',
-              auxSlot: s.slot,
-              auxLabel: s.label,
-              auxFocus: s.focus,
+              hitTitle: h.title || q,
+              pageUrl: h.projectUrl || h.coverUrl,
+              dl,
             });
-            break;
+            slotGrabbed++;
           }
+        }
+      }
+
+      // 1-call batch Contact Sheet vision screening gate for all 3 auxiliary slots (prevents off-topic hits!)
+      if (auxCandidates.length) {
+        const auxGridPath = join(workDir, 'aux_grid.jpg');
+        await buildGrid(auxCandidates.map(c => ({
+          index: c.index,
+          label: `${c.label.slice(0, 8)} | ${c.hitTitle.slice(0, 14)}`,
+          path: c.dl.path,
+        })), auxGridPath);
+        const auxScreenSchema = {
+          type: 'object',
+          properties: {
+            picks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {slot: {type: 'string'}, chosenIndex: {type: 'integer'}, why: {type: 'string'}},
+                required: ['slot', 'chosenIndex', 'why'],
+                additionalProperties: false,
+              },
+            },
+          },
+          required: ['picks'],
+          additionalProperties: false,
+        };
+        const screenResp = await call(
+          `你是 4A 美术指导，正在审核 3 个辅助参考槽位的候选图（编号 #1 到 #${auxCandidates.length}）。
+候选清单：
+${auxCandidates.map(c => `#${c.index} [槽位:${c.slot} / ${c.label}] ${c.hitTitle}（需要：${c.focus}）`).join('\n')}
+严苛筛选原则：
+- 为每个槽位只挑 1 张真正贴题、高审美、干净单帧的编号；
+- 凡是跑题（如搜端午却出护手霜、搜微醺却出无关人物照）、低清糊图、多图拼版、PPT示意图的，一律拒绝！如果某个槽位没有一张合格，chosenIndex 必须填 0（宁缺毋滥）！`,
+          [{path: auxGridPath, mediaType: 'image/jpeg'}],
+          auxScreenSchema,
+          {delegate: true, assignment: `视觉3辅九宫格筛图(${trackId})`, context: ''},
+        );
+        for (const p of screenResp.parsedOutput?.picks || []) {
+          const pickedAux = auxCandidates.find(c => c.index === p.chosenIndex);
+          if (!pickedAux || seenSha.has(pickedAux.dl.sha256)) continue;
+          seenSha.add(pickedAux.dl.sha256);
+          dedup.push({
+            path: pickedAux.dl.path,
+            sha256: pickedAux.dl.sha256,
+            byteLength: pickedAux.dl.byteLength,
+            mediaType: pickedAux.dl.mediaType,
+            width: pickedAux.dl.width,
+            height: pickedAux.dl.height,
+            title: `[辅·${pickedAux.label}] ${pickedAux.hitTitle}`,
+            pageUrl: pickedAux.pageUrl,
+            sourceUrl: pickedAux.dl.sourceUrl,
+            query: pickedAux.query,
+            track: trackId,
+            directionMode: dirMode,
+            roleHint: 'auxiliary',
+            auxSlot: pickedAux.slot,
+            auxLabel: pickedAux.label,
+            auxFocus: pickedAux.focus,
+          });
         }
       }
     } catch {
