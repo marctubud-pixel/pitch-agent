@@ -6,9 +6,14 @@ import {join} from 'node:path';
 import {
   detectVisualTrack,
   humanBrowseVisualReferences,
+  rankHuabanPins,
   sanitizeTrackQuery,
+  searchDuitang,
+  searchGooood,
+  searchHuaban,
   searchLocalReferenceLibrary,
   searchXApiImages,
+  searchYellowtrace,
 } from './human-visual-search.mjs';
 
 const sampleJpg = Buffer.alloc(16000, 0xff);
@@ -197,4 +202,64 @@ test('humanBrowseVisualReferences gracefully returns empty array on fallbackToAr
     },
   });
   assert.deepEqual(results, []);
+});
+
+test('rankHuabanPins strips watermarked material_id stock and promo noise, ranks by repin_count + curated sources', () => {
+  const ranked = rankHuabanPins([
+    {pin_id: 1, extra: {material_id: 99}, repin_count: 999, file: {key: 'k1', width: 1000, height: 1000}, raw_text: '带水印正版素材'},
+    {pin_id: 2, extra: null, repin_count: 500, file: {key: 'k2', width: 1000, height: 1400}, raw_text: '奶茶新品促销手机海报模板'},
+    {pin_id: 3, extra: null, repin_count: 60, like_count: 5, source: 'random.site', file: {key: 'k3', width: 800, height: 1000}, raw_text: '普通玻璃瓶'},
+    {pin_id: 4, extra: null, repin_count: 220, like_count: 12, source: 'xiaohongshu.com', file: {key: 'k4', width: 1080, height: 1440}, raw_text: '光瓶酒极简包装设计'},
+  ]);
+  assert.deepEqual(ranked.map(p => p.pin_id), [4, 3]);
+});
+
+test('searchHuaban, searchDuitang, searchYellowtrace, and searchGooood parse verified structures cleanly', async () => {
+  const hb = await searchHuaban('光瓶酒 包装设计', {
+    fetcher: async () => ({
+      ok: true,
+      json: async () => ({
+        pins: [
+          {pin_id: 10, extra: {material_id: 1}, file: {key: 'skip', width: 1000, height: 1000}},
+          {pin_id: 11, extra: null, repin_count: 300, like_count: 10, source: 'xiaohongshu.com', raw_text: '极简白州酒瓶', file: {key: 'goodkey', width: 1080, height: 1440}},
+        ],
+      }),
+    }),
+  });
+  assert.equal(hb.length, 1);
+  assert.equal(hb[0].source, '花瓣·小红书');
+  assert.equal(hb[0].coverUrl, 'https://gd-hbimg.huaban.com/goodkey_fw1200webp');
+
+  const dt = await searchDuitang('极简 酒瓶', {
+    fetcher: async () => ({
+      ok: true,
+      json: async () => ({
+        data: {object_list: [{id: 1, favorite_count: 50, msg: '极简玻璃瓶', photo: {path: 'https://dt.example/bottle.jpg', width: 900, height: 700}}]},
+      }),
+    }),
+  });
+  assert.equal(dt.length, 1);
+  assert.equal(dt[0].source, '堆糖');
+
+  const yt = await searchYellowtrace('retail bar', {
+    fetcher: async () => ({
+      ok: true,
+      json: async () => ([{
+        link: 'https://www.yellowtrace.com.au/monc/',
+        title: {rendered: 'Monc Retail'},
+        content: {rendered: '<img src="https://assets.yellowtrace.com.au/wp-content/uploads/2026/09/monc.jpg">'},
+      }]),
+    }),
+  });
+  assert.equal(yt.length, 1);
+  assert.equal(yt[0].source, 'Yellowtrace');
+
+  const gd = await searchGooood('快闪', {
+    fetcher: async () => ({
+      ok: true,
+      text: async () => '<img src="https://oss.gooood.cn/uploads/2026/10/1-fwx.jpg"><img src="https://oss.gooood.cn/uploads/2026/10/popup-space.jpg">',
+    }),
+  });
+  assert.equal(gd.length, 1);
+  assert.equal(gd[0].coverUrl, 'https://oss.gooood.cn/uploads/2026/10/popup-space.jpg');
 });

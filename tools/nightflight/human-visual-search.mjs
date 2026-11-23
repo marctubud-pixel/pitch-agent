@@ -12,9 +12,13 @@ const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 export const ADAPTER_LANGUAGES = Object.freeze({
   bpando: 'en',
   designboom: 'en',
+  yellowtrace: 'en',
   openverse: 'en',
   colossal: 'en',
   digitaling: 'zh',
+  huaban: 'zh',
+  duitang: 'zh',
+  gooood: 'zh',
   x_api: 'en',
 });
 
@@ -23,10 +27,11 @@ export const VISUAL_TRACKS = Object.freeze({
     id: 'packaging',
     name: '包装（Packaging）',
     goal: '寻找高审美的当代单帧包装/容器实拍参考图（重点看瓶型/盒型比例、材质肌理、标签留白排版与自然商业光影）。',
-    humanRule: '严禁搜老派土味礼盒或电商白底抠图！跨品类借清酒/烈酒/香水/极简容器的包装骨架、留白标签与商业棚拍光影。必须单帧实拍，淘汰纯Logo卡、多图拼版、PPT示意图。',
+    humanRule: '严禁搜老派土味礼盒或电商白底抠图！花瓣/堆糖用设计圈词（如「光瓶酒 包装设计」「极简 瓶贴 工艺」），国际站跨品类借清酒/烈酒/香水/极简容器的包装骨架。必须单帧实拍，淘汰纯Logo卡、多图拼版、PPT示意图。',
     sources: [
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文设计圈词，如 光瓶酒 包装设计 / 极简 玻璃瓶 包装'},
+      {adapter: 'duitang', lang: 'zh', hint: '2个中文美学词，如 极简 酒瓶 包装'},
       {adapter: 'bpando', lang: 'en', hint: '2-3个英文词，如 minimal bottle packaging / spirits bottle label'},
-      {adapter: 'bpando', lang: 'en', hint: '第二组2-3个英文跨品类词，如 perfume bottle minimal / beverage packaging'},
       {adapter: 'openverse', lang: 'en', hint: '2-3个英文纯光影静物词，如 glass bottle studio'},
     ],
   },
@@ -34,12 +39,12 @@ export const VISUAL_TRACKS = Object.freeze({
     id: 'poster',
     name: '海报（Poster / KV）',
     goal: '寻找当代高审美的单帧商业海报或情绪KV参考图（重点看字图留白、主体景别、色调对比与光线氛围）。',
-    humanRule: '按视觉语法与情绪搜，不死绑单一品类。严禁PPT策略分析页、概念示意图、三栏文字图、长图文截图、表情条、多图拼版。数英网用1-2个中文短词，英文站用2-3个英文词。',
+    humanRule: '按视觉语法与情绪搜，不死绑单一品类。严禁促销模板、PPT策略分析页、概念示意图、三栏文字图、长图文截图、表情条、多图拼版。中文站用1-2个中文设计短词，英文站用2-3个英文词。',
     sources: [
-      {adapter: 'digitaling', lang: 'zh', hint: '1个中文高频短词，如 微醺 / 海报 / 品牌'},
-      {adapter: 'digitaling', lang: 'zh', hint: '1-2个中文短词，贴近核心场景或情绪'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文设计词，如 微醺 海报设计 / 极简 排版 海报'},
+      {adapter: 'digitaling', lang: 'zh', hint: '1个中文高频短词，如 微醺 / 海报'},
+      {adapter: 'duitang', lang: 'zh', hint: '2个中文氛围词，如 电影感 饮品 摄影'},
       {adapter: 'bpando', lang: 'en', hint: '2-3个英文词，如 campaign poster / editorial photography'},
-      {adapter: 'openverse', lang: 'en', hint: '2-3个英文词，如 minimalist still life'},
     ],
   },
   event: {
@@ -48,10 +53,11 @@ export const VISUAL_TRACKS = Object.freeze({
     goal: '寻找有真实三维空间尺度、快闪立面/装置母题与人群打卡氛围的线下活动或快闪空间实拍参考图。',
     humanRule: '必须呈现真实三维空间、快闪建筑立面、大玻璃橱窗/光影装置或人群互动比例！坚决淘汰纯平面活动预告海报、纯单品静物、PPT分析图。',
     sources: [
-      {adapter: 'digitaling', lang: 'zh', hint: '1-2个中文短词，如 快闪 空间 / 快闪店'},
+      {adapter: 'huaban', lang: 'zh', hint: '2个中文空间词，如 极简 快闪店 空间 / 艺术装置 展陈'},
+      {adapter: 'digitaling', lang: 'zh', hint: '1-2个中文短词，如 快闪 空间'},
+      {adapter: 'gooood', lang: 'zh', hint: '1个中文空间词，如 快闪 / 酒吧 / 展陈'},
+      {adapter: 'yellowtrace', lang: 'en', hint: '2个英文词，如 retail bar / pop-up interior'},
       {adapter: 'designboom', lang: 'en', hint: '2个英文词，如 glass pavilion / pop-up installation'},
-      {adapter: 'bpando', lang: 'en', hint: '2-3个英文词，如 retail pop-up / bar interior'},
-      {adapter: 'colossal', lang: 'en', hint: '2个英文词，如 light installation'},
     ],
   },
 });
@@ -461,8 +467,136 @@ export async function searchXApiImages(query, {token = process.env.X_BEARER_TOKE
   }
 }
 
+const HUABAN_PROMO_NOISE = /促销|淘宝|详情页|手机海报|主图|模板|优惠券|双11|双十一|618|包邮|素材|PSD|样机下载/u;
+const HUABAN_CURATED_SOURCES = /xiaohongshu\.com|behance\.net|pinterest\.com|dribbble\.com|zcool\.com\.cn|pushthink\.com|instagram\.com/i;
+
+export function rankHuabanPins(pins = []) {
+  return (Array.isArray(pins) ? pins : [])
+    .filter(p => {
+      if (!p?.file?.key) return false;
+      if (p.extra?.material_id) return false; // 100% strip watermarked Huaban paid stock ads
+      if ((p.file.width || 0) < 480 || (p.file.height || 0) < 360) return false;
+      const ratio = (p.file.width || 1) / (p.file.height || 1);
+      if (ratio > 2.6 || ratio < 0.38) return false;
+      if (HUABAN_PROMO_NOISE.test(p.raw_text || '')) return false;
+      return true;
+    })
+    .map(p => {
+      const repin = Number(p.repin_count || 0);
+      const like = Number(p.like_count || 0);
+      const sourceBonus = HUABAN_CURATED_SOURCES.test(p.source || '') ? 80 : 0;
+      const hdBonus = (p.file.width || 0) >= 900 ? 30 : 0;
+      return {pin: p, score: repin + like * 4 + sourceBonus + hdBonus};
+    })
+    .sort((a, b) => b.score - a.score)
+    .map(x => x.pin);
+}
+
+export async function searchHuaban(query, {limit = 5, signal, fetcher = fetchWithTimeout} = {}) {
+  const clean = sanitizeTrackQuery('huaban', query);
+  if (!clean) return [];
+  try {
+    const u = `https://api.huaban.com/search/file?text=${encodeURIComponent(clean)}&sort=all&limit=20&page=1&position=search_pin`;
+    const r = await fetcher(u, {signal, headers: {Accept: 'application/json', Referer: 'https://huaban.com/'}});
+    if (!r.ok) return [];
+    const data = await r.json();
+    const ranked = rankHuabanPins(data.pins || []).slice(0, limit);
+    return ranked.map(p => {
+      const imgUrl = `https://gd-hbimg.huaban.com/${p.file.key}_fw1200webp`;
+      return {
+        source: p.source && /xiaohongshu/i.test(p.source) ? '花瓣·小红书' : '花瓣网',
+        title: (p.raw_text || `花瓣(${clean})`).replace(/\s+/g, ' ').trim().slice(0, 42),
+        projectUrl: `https://huaban.com/pins/${p.pin_id}`,
+        coverUrl: imgUrl,
+        detailImageUrls: [imgUrl],
+      };
+    });
+  } catch {
+    signal?.throwIfAborted();
+    return [];
+  }
+}
+
+export async function searchDuitang(query, {limit = 4, signal, fetcher = fetchWithTimeout} = {}) {
+  const clean = sanitizeTrackQuery('duitang', query);
+  if (!clean) return [];
+  try {
+    const u = `https://www.duitang.com/napi/blogv2/list/by_search/?kw=${encodeURIComponent(clean)}&limit=16`;
+    const r = await fetcher(u, {signal, headers: {Accept: 'application/json', Referer: 'https://www.duitang.com/'}});
+    if (!r.ok) return [];
+    const data = await r.json();
+    const items = (data.data?.object_list || [])
+      .filter(x => x?.photo?.path && (x.photo.width || 0) >= 480 && (x.photo.height || 0) >= 360 && !HUABAN_PROMO_NOISE.test(x.msg || ''))
+      .sort((a, b) => Number(b.favorite_count || 0) - Number(a.favorite_count || 0))
+      .slice(0, limit);
+    return items.map((x, i) => ({
+      source: '堆糖',
+      title: (x.msg || `堆糖(${clean}) #${i + 1}`).replace(/\s+/g, ' ').trim().slice(0, 40),
+      projectUrl: x.id ? `https://www.duitang.com/blog/?id=${x.id}` : 'https://www.duitang.com/',
+      coverUrl: x.photo.path,
+      detailImageUrls: [x.photo.path],
+    }));
+  } catch {
+    signal?.throwIfAborted();
+    return [];
+  }
+}
+
+export async function searchYellowtrace(query, {limit = 4, signal, fetcher = fetchWithTimeout} = {}) {
+  const clean = sanitizeTrackQuery('yellowtrace', query);
+  if (!clean) return [];
+  try {
+    const r = await fetcher(`https://www.yellowtrace.com.au/wp-json/wp/v2/posts?search=${encodeURIComponent(clean)}&per_page=${limit}`, {signal});
+    if (!r.ok) return [];
+    const posts = await r.json();
+    return (Array.isArray(posts) ? posts : []).map(p => {
+      const content = p.content?.rendered || '';
+      const imgs = [...new Set([...content.matchAll(/https:\/\/assets\.yellowtrace\.com\.au\/wp-content\/uploads\/[^"'\s>]+\.(?:jpg|jpeg|png|webp)/gi)]
+        .map(m => m[0])
+        .filter(u => !/-\d+x\d+\./.test(u)))];
+      return {
+        source: 'Yellowtrace',
+        title: (p.title?.rendered || '').replace(/<[^>]+>|&#\d+;/g, ' ').trim(),
+        projectUrl: p.link || '',
+        coverUrl: imgs[0],
+        detailImageUrls: imgs.slice(0, 6),
+      };
+    }).filter(x => x.coverUrl);
+  } catch {
+    signal?.throwIfAborted();
+    return [];
+  }
+}
+
+export async function searchGooood(query, {limit = 4, signal, fetcher = fetchWithTimeout} = {}) {
+  const clean = sanitizeTrackQuery('gooood', query);
+  if (!clean) return [];
+  try {
+    const r = await fetcher(`https://www.gooood.cn/?s=${encodeURIComponent(clean)}`, {signal});
+    if (!r.ok) return [];
+    const html = await r.text();
+    const imgs = [...new Set([...html.matchAll(/https:\/\/oss\.gooood\.cn\/uploads\/[^"'\s)]+\.(?:jpg|jpeg|png|webp)/gi)]
+      .map(m => m[0])
+      .filter(u => !/fwx|avatar|logo|banner|ad-/i.test(u)))];
+    return imgs.slice(0, limit).map((u, i) => ({
+      source: '谷德设计网',
+      title: `谷德(${clean}) #${i + 1}`,
+      projectUrl: `https://www.gooood.cn/?s=${encodeURIComponent(clean)}`,
+      coverUrl: u,
+      detailImageUrls: [u],
+    }));
+  } catch {
+    signal?.throwIfAborted();
+    return [];
+  }
+}
+
 async function runAdapter(adapter, query, opts) {
   switch (adapter) {
+    case 'huaban': return searchHuaban(query, opts);
+    case 'duitang': return searchDuitang(query, opts);
+    case 'yellowtrace': return searchYellowtrace(query, opts);
+    case 'gooood': return searchGooood(query, opts);
     case 'bpando': return searchBPAndO(query, opts);
     case 'designboom': return searchDesignboom(query, opts);
     case 'digitaling': return searchDigitaling(query, opts);

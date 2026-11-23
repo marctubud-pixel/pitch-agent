@@ -1,5 +1,9 @@
 # 规范变更记录
 
+## 1.162.0 · 2026-11-23
+
+- 视觉参考图模块扩充 4 个实测高审美真搜索源并接入三载体路由：`花瓣网`（`extra.material_id` 100% 剔除付费水印素材 + 剔除电商促销模板词 + 按设计师转采量 `repin_count` 与小红书/Behance/Pinterest 来源加权精选）、`堆糖`、`Yellowtrace`（国际零售快闪空间）、`谷德设计网`（国内建筑与空间装置）。
+
 ## 1.161.0 · 2026-11-23
 
 - 视觉参考图模块落地 `human-visual-search.mjs` 并接入主线 `codex-runner.mjs`：彻底将竞品调研图（`researchReferences`）与视觉美术参考池解耦；按**包装 / 海报 / 活动**三载体分流公开设计源（`BP&O`、`数英网`、`Designboom`、`Openverse`、`Colossal`，排除 `TVC` 与假搜索源），实现「联想拆词 → 九宫格 Contact Sheet 借三改二扫图 → 点进详情页翻单帧 → 短词二次调词 → 摊桌面终选并严踢 PPT 示意图与拼版」四步类人看图闭环，并预留第一顺位本地精选图库（`NIGHTFLIGHT_REFERENCE_LIBRARY`）、可选官方 X API v2（`X_BEARER_TOKEN`）及小红书/推特关键词词包接口。
