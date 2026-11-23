@@ -2251,16 +2251,16 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "6475362192852fa157834d12f511f2d2c01f51a17c94ddf39ffc1a8eafda5e00",
-      "reason": "绑定同版人工验收，并避免窄窗口对话遮挡终审操作。"
+      "sha256": "ceff08be4a8b038c4af3c9d59b3cee4f9ea1732d04c9a557f62c35b4c2eb66a3",
+      "reason": "接入人话业务执行流、动态主理人状态与里程碑汇报对话，默认折叠底层 API 明细并统一正式 Slogan。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/components/ChatPanel.tsx": {
-      "sha256": "788bd24742308639484e8de00fe4daecb6ba5774b03603a2b89e2db5a8c4e078",
-      "reason": "三岗终审等待人工处理时显示终审提示。显示独立海报选稿状态、硬伤及待并排核对，保留人工采用记录。"
+      "sha256": "5d1faced2b0359c8d17691447209d5f8964527fe663b1a585d1534d7998d7ed6",
+      "reason": "将右侧对话收口为主理人阶段里程碑汇报、可点击跳转交付链接与富方向决策卡，不再逐条刷底层事件。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
       "sha256": "9e9bb555bbae30a3fcf326912c0726c98b5d61986f91ebf61e6245021e0664fd",
@@ -2275,8 +2275,8 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/LogBar.tsx": {
-      "sha256": "03275b5753a4013a0d907530633f8331d5781cdfc6576d38b5147be6cd2c9bfb",
-      "reason": "接入夜航本机项目服务、页面状态或本机素材"
+      "sha256": "8a9a79637a45c16ac9da46e83b95d2b8621a853570ee05c14de9894bbe709d95",
+      "reason": "顶部黑屏默认仅显示带语义符号的业务进度，展开后支持一键切换含 API 明细视图。"
     },
     "apps/workbench-preview/nightflight/src/components/StartScreen.tsx": {
       "sha256": "8618ad9fccac68b2916c65f6e3b2ff4b6912a04f5fddeb7088efed962d81feac",
@@ -2287,16 +2287,16 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "2ddd093c3d5e9f29b332fb575b28b093ee3cbfd0de80df6d7be3ec58fac8aa45",
-      "reason": "根据逐页稿或材料包状态引导打开版式。"
+      "sha256": "01688d0ef5468230f3c29b4ceb52ca8d6b3ece24f325770f20f4d0a5d7198ef3",
+      "reason": "四栏工作区升级为 10 项细分任务卡、分组阶段交付物、去重可读文档与三栏视觉缩略图画廊，并统一完成/等待/中断态。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/workspace.css": {
-      "sha256": "fda2f0bc10984aea84546f475ef3503686796a9f58dec202eb6d6f09ffcfcdf8",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "3ff87b46827766c3f2a43d7010f8cb565e3a6ef000ec2add7e01939005a4b0b6",
+      "reason": "补充参考图 4:3 与主视觉 3:4 缩略图及决策卡配图裁切样式，保持四栏版式整洁。"
     },
     "apps/workbench-preview/nightflight/src/types.ts": {
       "sha256": "46b83195c3f4545fedfbee1c939a6bf7def283bc8349988eee55bebc67a7b861",

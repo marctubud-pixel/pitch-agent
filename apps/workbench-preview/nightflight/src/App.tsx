@@ -12,15 +12,14 @@ import { Celebration } from './components/Celebration';
 import { Icon } from './components/Icon';
 import {
   api,
-  clock,
   encodeFile,
   endpoint,
-  projectStatus,
   type Action,
   type Project,
   type Summary,
 } from './live';
 import { STAGES } from './data/project';
+import { buildExecutionStreams, deriveBotStatus, deriveChatMessages } from './components/stageText';
 import type { Mode, StageId } from './types';
 
 const hash = () => location.hash.slice(1);
@@ -126,7 +125,7 @@ export function App() {
       setNotice(true);
     }
     lastStatus.current = p.status;
-    if (chat) mark(p.events.length);
+    if (chat) mark(deriveChatMessages(p).length);
   }, [workspace, p, chat]);
   useEffect(() => {
     if (detail?.id!=='final') return;
@@ -213,15 +212,9 @@ export function App() {
     open({ id: s, name });
     if (window.innerWidth <= 1000) setChat(false);
   };
-  const events = (workspace ? p.events : []).map((e, i) => ({
-    id: String(i),
-    seq: i,
-    at: clock(e.at),
-    text: e.text,
-    stageId: e.stage,
-    kind: 'info' as const,
-    simulated: false,
-  }));
+  const streams = workspace ? buildExecutionStreams(p) : { primary: [], all: [] };
+  const botStatus = workspace ? deriveBotStatus(p, streams.primary) : undefined;
+  const chatMessages = workspace ? deriveChatMessages(p) : [];
   if (routePath === '/reference/qingyu/visual') return (
     <Suspense fallback={<p className="pending">正在读取青屿视觉稿…</p>}>
       <QingyuVisualReading directionId={new URLSearchParams(query).get('dir')} />
@@ -236,13 +229,14 @@ export function App() {
   return (
     <div className={'app phase-' + (workspace ? 'workspace' : start ? 'start' : mode ? 'mode' : 'home')}>
       <LogBar
-        events={events}
+        events={streams.primary}
+        allEvents={streams.all}
         expanded={log && workspace}
         onToggle={() => setLog(!log)}
         mode={workspace ? p.mode : null}
         live={workspace && p.status === 'running'}
         idleText="就绪。把 Brief 交给我。"
-        status={workspace ? projectStatus(p) : undefined}
+        status={botStatus ? `${botStatus.label} · ${botStatus.detail}` : undefined}
       />
       <TopBar
         projectTitle={workspace ? p.title : undefined}
@@ -256,7 +250,7 @@ export function App() {
           setLibrary(true);
           open(undefined);
         }}
-        unread={!!p && p.events.length > seen}
+        unread={!!p && chatMessages.length > seen}
       />
       {routePath === '/library' && <Library projects={projects} close={() => navigate('/')}
         create={newProject} open={project => navigate('/p/' + project.id)} />}
@@ -336,6 +330,7 @@ export function App() {
             <div className="ws-scroll">
               <Workspace
                 p={p}
+                primaryEvents={streams.primary}
                 open={openDetail}
                 log={() => setLog(true)}
                 chat={() => setChat(true)}
@@ -394,6 +389,7 @@ export function App() {
             <ChatPanel
               composerRef={composerRef}
               openResearch={() => openDetail('research')}
+              openStage={openDetail}
               p={p}
               projects={projects}
               close={() => setChat(false)}
@@ -403,6 +399,7 @@ export function App() {
           ) : (
             <button className="chat-fab" onClick={() => setChat(true)} aria-label="打开与主理人的对话">
               <Icon name="chat" size={26} />
+              {chatMessages.length > seen && <span className="dot dot-live" />}
             </button>
           )}
         </div>
