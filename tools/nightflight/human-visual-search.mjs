@@ -68,6 +68,65 @@ export const VISUAL_TRACKS = Object.freeze({
   },
 });
 
+export function classifyDirectionMode(direction = '', index = 0) {
+  const text = String(direction || '');
+  if (/稳健|延续|品类|经典|标杆/u.test(text)) return 'steady';
+  if (/特征|产品|卖点|工艺|科技|微分子|透明|功能|成分/u.test(text)) return 'feature';
+  if (/情绪|氛围|场景|人群|生活|共鸣|意境|文化/u.test(text)) return 'emotion';
+  return ['steady', 'feature', 'emotion'][index % 3];
+}
+
+export function extractResearchAestheticCues({brief = '', strategyText = '', research = null} = {}) {
+  const combined = `${brief}\n${strategyText}\n${JSON.stringify(research || {})}`;
+  const trendKeywords = [
+    '治愈系', '小清新', '东方美学', '新中式', '无性别', '自然主义', '氛围感',
+    '极简', '克制', '复古', '多巴胺', '松弛感', '山系', '工业风', '波普', '国潮',
+  ];
+  const matched = trendKeywords.filter(k => combined.includes(k));
+  if (matched.length) {
+    return {
+      source: 'research-grounded',
+      tags: matched.slice(0, 5),
+      guidance: `研究与策略中已体现的目标人群审美偏好：${matched.slice(0, 5).join('、')}（可作为稳健与氛围方向的参考锚点，不锁死产品特征破圈创意）。`,
+    };
+  }
+  if (/中老年|银发|长辈|父母|老人/u.test(combined)) {
+    return {
+      source: 'audience-fallback',
+      tags: ['高对比易读大字', '温暖真实原料信任感', '端庄清晰层级'],
+      guidance: '该人群无现成潮流审美报告，不硬编趋势数据，自动降级为该人群高频信任视觉语境：清晰高对比大字、真实原料质感、端庄舒展不花哨的版式层级。',
+    };
+  }
+  return {
+    source: 'audience-fallback',
+    tags: [],
+    guidance: '未检测到特定潮流审美报告，按目标人群日常高频接触的标杆品牌视觉语言与 Brief 明确约束自然推导，不强套固定画风。',
+  };
+}
+
+export function defaultAuxiliarySlots(trackId = 'poster', brief = '') {
+  const hasFestivalOrTheme = /端午|中秋|春节|新年|圣诞|情人节|儿童节|夏季|冬季|联名|周年/u.test(brief);
+  if (trackId === 'packaging') {
+    return [
+      {slot: 'aux1_material', label: '材质与工艺肌理', focus: '瓶身/盒身材质、纸张肌理、凹凸烫印或光影折射细节'},
+      {slot: 'aux2_typography', label: '瓶贴与信息层级', focus: '包装正面字体气质、主副信息层级与留白排版细节'},
+      {slot: 'aux3_context', label: hasFestivalOrTheme ? '主题物象与氛围' : '陈列与使用细节', focus: hasFestivalOrTheme ? '贴合本案节日/主题的高审美视觉物象与氛围点缀' : '手持比例、开启方式或桌面陈列氛围道具'},
+    ];
+  }
+  if (trackId === 'event') {
+    return [
+      {slot: 'aux1_material', label: '空间材质与灯光', focus: '玻璃砖、微水泥、半透材质与空间灯光氛围肌理'},
+      {slot: 'aux2_interaction', label: '打卡与体验装置', focus: '核心线下互动装置、自助吧台或标志性打卡点结构'},
+      {slot: 'aux3_signage', label: '导视字形与人群', focus: '门头招牌/导视字形气质与真实人群在场互动尺度'},
+    ];
+  }
+  return [
+    {slot: 'aux1_theme_scene', label: hasFestivalOrTheme ? '主题场景与物象' : '质感与核心视觉元素', focus: hasFestivalOrTheme ? '贴合本案节日/核心场景的高审美物象与构图参考（避免老土俗套）' : '核心产品材质、透明折射、水珠或关键视觉道具细节'},
+    {slot: 'aux2_emotion_action', label: '动作情绪与色彩氛围', focus: '目标人群松弛微动作/互动情绪瞬间，或本案专属色彩光影氛围'},
+    {slot: 'aux3_typography', label: '字形与版式节奏', focus: '高审美中文字体气质、标题留白与现代商业海报版式节奏'},
+  ];
+}
+
 export function detectVisualTrack(brief = '', carriers = [], direction = '') {
   const list = Array.isArray(carriers) ? carriers.map(c => String(c).toLowerCase()) : [];
   const text = `${brief} ${direction}`.toLowerCase();
@@ -720,9 +779,12 @@ export async function humanBrowseVisualReferences({
   call,
   brief = '',
   direction = '',
+  directionIndex = 0,
   creative = null,
   quadrant = null,
+  aestheticCues = null,
   carriers = [],
+  includeAuxiliary = false,
   dir,
   signal,
   onEvent,
@@ -732,6 +794,13 @@ export async function humanBrowseVisualReferences({
   const trackId = detectVisualTrack(brief, carriers, direction);
   if (!trackId) return [];
   const track = VISUAL_TRACKS[trackId];
+  const dirMode = classifyDirectionMode(direction, directionIndex);
+  const cues = aestheticCues || extractResearchAestheticCues({brief});
+  const modeGuidance = dirMode === 'feature'
+    ? '【本方向为「放大产品/品牌特征」】严禁死锁本品类常规图！请先在 thinking 中做一步「卖点 → 视觉构成语法/视觉锤转译」（例如：微分子→水滴点阵粒子构成、100%真茶真奶→超级数字+波普网点、透明不藏→玻璃折射/透视显影），再刻意跨行业去搜这种视觉手法的高审美大师参考！'
+    : dirMode === 'emotion'
+      ? `【本方向为「用户氛围 / 情绪共鸣」】重点锁住目标人群的真实使用场景、松弛人物动作或文化意境；可参考研究审美线索：${cues.guidance}`
+      : `【本方向为「稳健延续 / 品类标杆」】重点锁住本品类/节令的高水准成熟标杆表达，安全、高级、易过稿；可参考研究审美线索：${cues.guidance}`;
   const workDir = join(dir, 'human-visual-search', `${trackId}-${sha256(direction || brief).slice(0, 8)}`);
   await mkdir(workDir, {recursive: true, mode: 0o700});
 
@@ -755,7 +824,8 @@ export async function humanBrowseVisualReferences({
   const planResp = await call(
     `你是资深广告美术指导，正在为以下 Brief 的【${track.name}】方向找视觉参考图。
 Brief 摘要：${String(brief).slice(0, 420)}
-当前创意方向：${direction || '主方向'}${creative?.main ? `（主张：${creative.main}）` : ''}${quadrant?.name ? `\n本方向专属美学象限：${quadrant.name}（${quadrant.visualNote || quadrant.style || ''}）——请往这个专属视觉象限拆词，与其他方向拉开差异。` : ''}
+当前创意方向：${direction || '主方向'}${creative?.main ? `（主张：${creative.main}）` : ''}
+方向搜图心法：${modeGuidance}${quadrant?.quadrant ? `\n防撞车参考提示：请与其他方向拉开视觉表现差异（可参考切角：${quadrant.quadrant}；若 Brief 已指定画风则以 Brief 为准，不硬套固定画风）。` : ''}
 本方向目标：${track.goal}
 找图规则：${track.humanRule}
 安全要求：只用通用品类和公开视觉词，不泄漏客户/品牌名、项目名、联系人或未公开配方。
@@ -929,11 +999,90 @@ ${coverItems.map(c => `#${c.index}: [${c.project.source}] ${c.project.title}`).j
       sourceUrl: item.sourceUrl,
       query: item.query,
       track: trackId,
+      directionMode: dirMode,
+      roleHint: dedup.length === 0 ? 'main' : 'backup',
       borrow3: pick.borrow3 || [],
       avoid2: pick.avoid2 || [],
       whyTop1: pick.whyTop1 || '',
       socialKeywords,
     });
   }
+
+  // Optional 3 dynamic auxiliary reference slots ("what the main reference lacks") for 1 Main + 3 Aux generation
+  if (includeAuxiliary && dedup.length) {
+    const auxSlots = defaultAuxiliarySlots(trackId, brief);
+    const auxPlanSchema = {
+      type: 'object',
+      properties: {
+        slots: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              slot: {type: 'string'},
+              label: {type: 'string'},
+              focus: {type: 'string'},
+              adapter: {type: 'string'},
+              query: {type: 'string'},
+            },
+            required: ['slot', 'label', 'focus', 'adapter', 'query'],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ['slots'],
+      additionalProperties: false,
+    };
+    try {
+      const auxPlanResp = await call(
+        `本方向已选定主参考（理由：${pick.whyTop1 || ''}）。现在按「主参考缺什么、本案最难靠文字画高级的是什么，就补什么」原则，为 3 张细分辅助参考各给 1 组极短公开搜图词（英文站 2-3 英文词，中文站 huaban/digitaling 1-2 中文短词≤6字，严禁带入本案新品牌名）。
+Brief：${String(brief).slice(0, 320)}
+默认 3 个辅助槽位（可按本案需要微调 focus，但保留 3 个槽位）：
+${auxSlots.map((s, i) => `${i + 1}. slot="${s.slot}" (${s.label}): ${s.focus}`).join('\n')}
+可用 adapter：huaban, bpando, openverse, digitaling`,
+        [],
+        auxPlanSchema,
+        {delegate: true, assignment: `视觉3辅参考拆词(${trackId})`, context: ''},
+      );
+      const plannedSlots = (auxPlanResp.parsedOutput?.slots || []).slice(0, 3);
+      for (const s of plannedSlots) {
+        signal?.throwIfAborted();
+        const adapterKey = normalizeAdapterName(s.adapter || 'huaban');
+        const q = sanitizeTrackQuery(adapterKey, s.query);
+        if (!q) continue;
+        const hits = await searchAdapter(adapterKey, q);
+        for (const h of (hits || []).slice(0, 3)) {
+          if (!h?.coverUrl || seenImageUrls.has(h.coverUrl)) continue;
+          seenImageUrls.add(h.coverUrl);
+          const dl = await download(h.coverUrl, join(workDir, `aux_${s.slot}`), h.projectUrl);
+          if (dl && !seenSha.has(dl.sha256)) {
+            seenSha.add(dl.sha256);
+            dedup.push({
+              path: dl.path,
+              sha256: dl.sha256,
+              byteLength: dl.byteLength,
+              mediaType: dl.mediaType,
+              width: dl.width,
+              height: dl.height,
+              title: `[辅·${s.label}] ${h.title || q}`,
+              pageUrl: h.projectUrl || h.coverUrl,
+              sourceUrl: dl.sourceUrl,
+              query: q,
+              track: trackId,
+              directionMode: dirMode,
+              roleHint: 'auxiliary',
+              auxSlot: s.slot,
+              auxLabel: s.label,
+              auxFocus: s.focus,
+            });
+            break;
+          }
+        }
+      }
+    } catch {
+      signal?.throwIfAborted();
+    }
+  }
+
   return dedup;
 }

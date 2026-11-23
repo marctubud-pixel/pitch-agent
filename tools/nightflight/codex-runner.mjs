@@ -11,7 +11,7 @@ import {readManuscriptPlan} from './manuscript.mjs';
 import {reviewFinalDeck} from './final-review.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
 import {searchVisualImages} from './public-visual-search.mjs';
-import {humanBrowseVisualReferences} from './human-visual-search.mjs';
+import {extractResearchAestheticCues, humanBrowseVisualReferences} from './human-visual-search.mjs';
 import {locatedPackagingMarks,prioritizePackagingRows} from './research-packaging.mjs';
 import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
@@ -1194,14 +1194,25 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         if (humanPending.length) {
           const known = pool.length;
           const quadrants = selectAestheticQuadrants(project.brief, carriers);
+          const aestheticCues = extractResearchAestheticCues({brief: project.brief, strategyText: project.strategyText, research: project.research});
           for (const direction of humanPending) humanSearched.add(direction);
           await onEvent?.(`正在为 ${humanPending.length} 个方向并行执行类人看图搜图：${humanPending.join('、')}`);
           const results = await independentCalls(humanPending, async direction => {
             signal?.throwIfAborted();
+            const directionIndex = Math.max(0, active.indexOf(direction));
             const creative = project.copyReview?.draft?.directions?.find(d => d.name === direction) ?? null;
-            const quadrant = quadrants[active.indexOf(direction) % quadrants.length] ?? null;
+            const quadrant = quadrants[directionIndex % quadrants.length] ?? null;
             try {
-              const found = await humanSearch({brief: project.brief, direction, creative, quadrant, carriers});
+              const found = await humanSearch({
+                brief: project.brief,
+                direction,
+                directionIndex,
+                creative,
+                quadrant,
+                aestheticCues,
+                carriers,
+                includeAuxiliary: true,
+              });
               return {direction, found: found ?? [], message: `${direction} / 类人看图搜图，新增 ${found?.length ?? 0} 张`};
             } catch (err) {
               signal?.throwIfAborted();
@@ -1435,6 +1446,10 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           artifacts.push({kind:'image',name:ref.name,visual:{role:'reference',direction,title:ref.title ?? ref.name,sha256:ref.sha256,pageUrl:ref.pageUrl,sourceUrl:ref.sourceUrl,query:ref.query}});
         }
         for (const ref of publicImages) await publishReference(ref);
+        const auxiliaryReferences = handoff.references.filter(ref => ref.role === 'auxiliary');
+        const auxiliaryImages = auxiliaryReferences
+          .map(ref => references.find(image => image.sha256 === ref.sha256))
+          .filter(Boolean);
         const generationReferences = handoff.references.filter(ref=>ref.role==='main'||ref.role==='sharedBrand');
         const generationImages = references.filter(image=>generationReferences.some(ref=>ref.sha256===image.sha256));
         const sourceImages = best ? [best.image, ...generationImages] : generationImages;
@@ -1499,24 +1514,23 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
           const input = {...generationContext,transfer,...(revision ? {revision,previousTransferCriteria} : {})};
-          const attached=revision?.referenceInput==='observations'
-            ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256) : sourceImages;
+          const slotAux = desktop && !posterReference && auxiliaryImages[index] ? [auxiliaryImages[index]] : [];
+          const baseAttached = revision?.referenceInput==='observations'
+            ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256)
+            : sourceImages;
+          const attached = [...baseAttached, ...slotAux.filter(aux => !baseAttached.some(img => img.sha256 === aux.sha256))];
           const attempt = desktop
             ? await generateVisualWithDesktopModels({call,images:attached,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
-            : {result:await call(instruction,sourceImages,null,{delegate:true,context:JSON.stringify(input)})};
+            : {result:await call(instruction,attached,null,{delegate:true,context:JSON.stringify(input)})};
           if(revision && seen.has(hash(attempt.result.original.bytes))) return null;
           return saveVisual(attempt,index,transfer,attached,undefined,revision);
         }
         const quadrant = quadrants[all.indexOf(direction) % quadrants.length];
-        const candidateBorrowings = fastAutoVisual
-          ? [['布局', '配色', '字体'], ['景别', '笔法', '配色']]
-          : visualBorrowings;
-        // Hybrid visual transfer (Plan Z): in auto mode, KV/poster directions extract the reference's
-        // 5 abstract axes and generate cleanly without attaching raw third-party poster pixels.
-        const abstractPosterRevision = fastAutoVisual && checkPosterTransfer && posterReference?.image?.sourceUrl
-          ? { referenceInput: 'observations', reason: '抽象五维配方直出，避免第三方参考图品牌/水印渗漏', edit: '严格按美学象限「' + quadrant.quadrant + '」（' + quadrant.style + '）重绘本案。' }
-          : undefined;
-        const generated = await independentCalls(candidateBorrowings,(borrow,index)=>drawCandidate(borrow,index,abstractPosterRevision));
+        // Both auto and collaborative modes generate 3 candidates per direction (3 x 3 = 9 total),
+        // pairing 1 Main Reference with 1 dedicated Auxiliary Reference per draft ("主借三、辅改二").
+        const candidateBorrowings = visualBorrowings;
+        // High-aesthetic sourced reference pixels are fed directly to gpt-image-2 (blind-test 2:0 winner).
+        const generated = await independentCalls(candidateBorrowings,(borrow,index)=>drawCandidate(borrow,index));
         for(const item of generated){batch.push(item.record);images.push(item.image);}
         await onEvent?.('正在对「'+direction+'」同批' + images.length + '张主视觉' + (fastAutoVisual ? '快速并排选优' : '独立评审'));
         const comparatorPool=[];

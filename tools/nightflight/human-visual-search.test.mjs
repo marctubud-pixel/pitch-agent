@@ -4,7 +4,10 @@ import {mkdir, mkdtemp, rm, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {
+  classifyDirectionMode,
+  defaultAuxiliarySlots,
   detectVisualTrack,
+  extractResearchAestheticCues,
   humanBrowseVisualReferences,
   interleaveBySource,
   normalizeAdapterName,
@@ -277,4 +280,25 @@ test('normalizeAdapterName strips language suffix and interleaveBySource balance
     [{projectUrl: 'b1'}, {projectUrl: 'b2'}],
   ], 6);
   assert.deepEqual(mixed.map(x => x.projectUrl), ['h1', 'd1', 'b1', 'h2', 'd2', 'b2']);
+});
+
+test('classifyDirectionMode, extractResearchAestheticCues, and defaultAuxiliarySlots support 3 business modes and festival themes', () => {
+  assert.equal(classifyDirectionMode('稳健延续方向', 2), 'steady');
+  assert.equal(classifyDirectionMode('放大微分子产品特征', 0), 'feature');
+  assert.equal(classifyDirectionMode('都市情绪氛围共鸣', 0), 'emotion');
+  assert.equal(classifyDirectionMode('方向A', 0), 'steady');
+  assert.equal(classifyDirectionMode('方向B', 1), 'feature');
+  assert.equal(classifyDirectionMode('方向C', 2), 'emotion');
+
+  const youthCues = extractResearchAestheticCues({brief: '面向Z世代，偏好治愈系、东方美学和自然主义'});
+  assert.equal(youthCues.source, 'research-grounded');
+  assert.ok(youthCues.tags.includes('东方美学'));
+
+  const seniorCues = extractResearchAestheticCues({brief: '面向中老年人的高钙营养奶'});
+  assert.equal(seniorCues.source, 'audience-fallback');
+  assert.ok(seniorCues.tags.includes('高对比易读大字'));
+
+  const dragonBoatSlots = defaultAuxiliarySlots('poster', '洋河微分子轻型白酒端午海报');
+  assert.equal(dragonBoatSlots.length, 3);
+  assert.equal(dragonBoatSlots[0].label, '主题场景与物象');
 });
