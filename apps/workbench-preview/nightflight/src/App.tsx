@@ -43,6 +43,7 @@ export function App() {
     [outline, setOutline] = useState<OutlineSelection>(defaultOutline),
     draft = useRef(crypto.randomUUID()),
     lock = useRef(false);
+  const composerRef = useRef<HTMLInputElement>(null);
   const [chat, setChat] = useState(false),
     [log, setLog] = useState(false),
     [library, setLibrary] = useState(false),
@@ -50,14 +51,13 @@ export function App() {
     [party, setParty] = useState(false);
   const [reload, refresh] = useState(0),
     generation = useRef(0),
-    autoResume = useRef(''),
     lastStatus = useRef(''),
     [seen, mark] = useState(0),
     [notice, setNotice] = useState(false);
   const [routePath, query] = route.split('?');
   const requestedLibrary = new URLSearchParams(query).get('view') === 'library';
   const stageParam = new URLSearchParams(query).get('stage');
-  const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' || stageParam === 'layout' ? stageParam : undefined;
+  const requestedStage = stageParam === 'research' || stageParam === 'brief' || stageParam === 'strategy' || stageParam === 'copy' || stageParam === 'layout' ? stageParam : undefined;
   const id = routePath.startsWith('/p/') ? routePath.slice(3) : '',
     workspace = !!id && p?.id === id,
     start = route === '/new',
@@ -119,12 +119,8 @@ export function App() {
   }, [id, reload, requestedStage, requestedLibrary]);
   useEffect(() => {
     if (!workspace || !p) return;
-    const edition = p.id + '/' + p.revision;
-    if (p.autoStrategyResume && !lock.current && autoResume.current !== edition) {
-      autoResume.current = edition;
-      void act('research_continue', '');
-    }
-    if (p.status === 'waiting' && p.stage !== 'research' && lastStatus.current !== 'waiting') setChat(true);
+    const finalDecision = p.stage==='final' && ['ready','blocked'].some(outcome=>p.finalReview?.outcome===outcome);
+    if (p.status === 'waiting' && p.stage !== 'research' && !finalDecision && lastStatus.current !== 'waiting') setChat(true);
     if (p.status === 'done' && lastStatus.current && lastStatus.current !== 'done') {
       setParty(true);
       setNotice(true);
@@ -132,6 +128,13 @@ export function App() {
     lastStatus.current = p.status;
     if (chat) mark(p.events.length);
   }, [workspace, p, chat]);
+  useEffect(() => {
+    if (detail?.id!=='final') return;
+    const viewport=window.matchMedia('(max-width: 1000px)');
+    const closeOverlay=()=>{if (viewport.matches) setChat(false);};
+    viewport.addEventListener('change',closeOverlay);
+    return () => viewport.removeEventListener('change',closeOverlay);
+  }, [detail?.id]);
   useEffect(() => {
     const esc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -189,7 +192,7 @@ export function App() {
         attachments,
         ...options,
         expectedRevision:
-          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' ? p.revision : undefined,
+          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' || kind === 'accept_final' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;
@@ -360,6 +363,10 @@ export function App() {
                 id={detail.id}
                 name={detail.name}
                 nav={openDetail}
+                correct={() => {
+                  setChat(true);
+                  requestAnimationFrame(() => composerRef.current?.focus());
+                }}
                 close={() => open(undefined)}
                 act={act}
                 busy={busy}
@@ -385,6 +392,7 @@ export function App() {
           </div>
           {chat ? (
             <ChatPanel
+              composerRef={composerRef}
               openResearch={() => openDetail('research')}
               p={p}
               projects={projects}

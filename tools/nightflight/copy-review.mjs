@@ -1,11 +1,17 @@
+import {coreSloganSkill,matchesSourceBasis} from './auto-pipeline.mjs';
+import {unsupportedOpeningClaims} from './packaging-quantity.mjs';
 import {invalidOutput} from './call-checkpoints.mjs';
+import {hasWrongOwnNutGroup,ownRecipe,recipeCount} from './product-recipe.mjs';
 import {blindSlogans,buildSloganWorkbook,checkSloganChoices,fullSloganHash} from './slogan-workbook.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
+import { headlineFromSections, sectionsOf } from '../../shared/stage-text.mts';
 
 export const headlineProtocol = 'dual-panel-headline-v4';
+export const engineCopyProtocol = 'director-engine-selection-v2';
+export const isEngineCopyProtocol = protocol=>protocol===engineCopyProtocol || protocol==='director-engine-selection-v1';
 const roles = ['copy','brand','user','comms'];
 const ids = ['A','B','C'];
 const duties = {continuity:'稳健延续',feature:'品牌或产品特征放大',emotion:'用户氛围或情绪放大'};
@@ -57,6 +63,24 @@ const adjudicateSchema = object({
 });
 const hash = text => createHash('sha256').update(text).digest('hex');
 const digest = object => hash(JSON.stringify(object));
+
+export function readPublishedCopy(project, body) {
+  const review = project.copyReview;
+  if (review) {
+    // On disk the published markdown can end in a newline added by addText.
+    const linked = review.status === 'ready' && body &&
+      [body, body.replace(/\r?\n$/u, '')].some(text => hash(text) === review.bodyHash);
+    const directions = linked ? review.draft?.directions ?? [] : [];
+    return {drafts:new Map(directions.map(direction=>[direction.name, direction])), recommendation:linked ? review.recommendation : null};
+  }
+  const sections = sectionsOf(body);
+  const drafts = new Map();
+  for (const [index, name] of (project.directions ?? []).entries()) {
+    const main = headlineFromSections(sections, name, index);
+    if (main) drafts.set(name, {name, main});
+  }
+  return {drafts, recommendation:null};
+}
 function requireThat(ok, message) { if (!ok) throw invalidOutput(message); }
 function nonempty(text) { return typeof text === 'string' && !!text.trim(); }
 function exactly(values, expected) {
@@ -65,8 +89,12 @@ function exactly(values, expected) {
 // The Codex CLI adapter supplies parsed JSON but does not validate it against the requested schema.
 function validate(value, schema, path) {
   if (schema.type === 'object') {
-    requireThat(value && typeof value === 'object' && !Array.isArray(value) &&
-      exactly(Object.keys(value),schema.required),path+' 字段不完整或包含额外字段');
+    requireThat(value && typeof value === 'object' && !Array.isArray(value),path+' 须为对象');
+    const missing = schema.required.filter(field=>!Object.hasOwn(value,field));
+    const extra = Object.keys(value).filter(field=>!Object.hasOwn(schema.properties,field));
+    requireThat(!missing.length && !extra.length,path+' 字段不完整或包含额外字段'+
+      (missing.length ? '。缺少 '+missing.join('、') : '')+
+      (extra.length ? '。只允许 '+schema.required.join('、') : ''));
     for (const [field,child] of Object.entries(schema.properties)) validate(value[field],child,path+'.'+field);
   } else if (schema.type === 'array') {
     requireThat(Array.isArray(value),path+' 须为列表');
@@ -122,14 +150,285 @@ export function headlineMarkdown(draft) {
   return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main).join('\n\n');
 }
 
-export async function runCopyReview({call, project, inputs, rules, dir, onEvent}) {
+const enginePhases = ['COPY_ENGINE_WRITE', 'COPY_ENGINE_RECOMMEND'];
+const engineRepairPhases = ['COPY_ENGINE_GROUND', 'COPY_ENGINE_PICK'];
+const engineDirections = list(object({
+  id:choice(ids), name:str, basis:str, claim:str, mechanism:str, strategyLink:str, secondary:str,
+  candidates:list(object({text:str, use:str})),
+}));
+const engineDraftSchema = object({directions:engineDirections});
+const enginePicks = object(Object.fromEntries(ids.map(id=>[id,choice([1,2,3,4].map(n=>id+n))])));
+const enginePairs = ['AB','AC','BC'];
+const engineAuthorCheck = object({
+  selections:list(object({directionId:choice(ids),phrase:str,takeaway:str,sloganReady:{type:'boolean'}})),
+  pairs:list(object({pair:choice(enginePairs),distinct:{type:'boolean'},reason:str})),
+});
+const engineWriterSchema = object({directions:engineDirections,picks:enginePicks,authorCheck:engineAuthorCheck});
+const engineRecommendation = object({directionId:choice(ids),reason:str});
+const engineFactInstruction='作者交稿前核对每一条候选、每案副标和用于选句的事实。已确认组成、归类、规格、计量单位与适用对象以本版原始 Brief 为准；品类名称不代表每项配料都属于该品类，说明种数时按对应类别计算。确认含某配料不等于确认每袋或每次的颗数、配比和口感强度；这些未给时只写已知组成，避开定量承诺。未确认包装结构、开启方式或使用性能时，场景可以帮助想象，勿把具体开启能力写成产品保证。逐字依据存在也要逐句核对主张是否由它支持。按原版 slogan-engine 保留三个独立创意方向、每案原候选与作者自选。';
+
+function validateEngineDraft(draft, materials) {
+  validate(draft,engineDraftSchema,'创作底稿');
+  const directions = draft.directions;
+  requireThat(exactly(directions.map(d=>d.id),ids),'需要 A、B、C 三个方向');
+  const normalize = text=>text.normalize('NFKC').replace(/[\p{P}\s]/gu,'').toLowerCase();
+  for (const field of ['name','claim','mechanism']) {
+    const values = directions.map(d=>normalize(d[field]));
+    requireThat(values.every(Boolean) && new Set(values).size===3,'三案的名称、主张和创意机制必须各自不同');
+  }
+  for (const d of directions) {
+    requireThat(d.name===d.name.trim() && d.name.length<=100 &&
+      [d.name,d.claim,d.mechanism,d.strategyLink,d.secondary,...d.candidates.map(c=>c.text)].every(text=>!/[\r\n]/.test(text)),
+      '方向名、文案和文案说明须分别为单行');
+    requireThat(d.candidates.length>=3 && d.candidates.length<=4 &&
+      new Set(d.candidates.map(c=>normalize(c.text))).size===d.candidates.length &&
+      d.candidates.every(c=>normalize(c.text)), '每个方向需要三到四条不同的原候选');
+    requireThat(!materials || matchesSourceBasis(materials,d.basis),'方向 '+d.id+' 的依据无法定位到当前上游原文');
+  }
+}
+
+function validatePackagedCopyFacts(directions, source) {
+  const recipe=ownRecipe(source);
+  const {brief,fruitIngredients}=recipe;
+  const quantityPattern=fruitIngredients.length ? new RegExp('(?:每袋(?:仅有|只有|有|含有?|装有?)?|加(?:了)?|含有?|内有)(?<count>[一二两三四五六七八九十]|\\d+)(?<unit>颗|粒|片|块)(?<item>'+fruitIngredients.map(RegExp.escape).join('|')+')','gu') : null;
+  const knownQuantity=quantityPattern ? [...brief.matchAll(quantityPattern)].map(({groups})=>[recipeCount(groups.count),groups.unit,groups.item].join('|')) : [];
+  const findings=[];
+  for (const direction of directions) {
+    const lines=[direction.name,direction.claim,direction.mechanism,direction.strategyLink,direction.secondary,...direction.candidates.map(candidate=>candidate.text)];
+    for (const line of new Set(lines)) {
+      const compact=line.normalize('NFKC').replace(/\s/gu,'');
+      const wrongGroup=hasWrongOwnNutGroup(line,recipe);
+      const inventedAmount=quantityPattern && [...compact.matchAll(quantityPattern)].some(({groups})=>
+        !knownQuantity.includes([recipeCount(groups.count),groups.unit,groups.item].join('|')));
+      const promisedOpening=unsupportedOpeningClaims(line,brief);
+      if (wrongGroup || inventedAmount || promisedOpening) findings.push(direction.id+'案「'+line.slice(0,58)+'」');
+    }
+  }
+  requireThat(!findings.length,'文案事实须与 Brief 一致，核对配料类别、单袋颗数与开启能力：'+findings.slice(0,5).join('；')+'。请原作者保留各案创意连接，只纠正无依据的事实。');
+}
+
+function resolveEnginePicks(workbook, picks) {
+  validate(picks,enginePicks,'案内选句');
+  const directions = workbook.directions.map(({candidates,...direction})=>{
+    const code = picks[direction.id];
+    const picked = candidates[Number(code.slice(1))-1];
+    requireThat(picked,'只能从该方向已写出的候选中选句：'+code);
+    return {...direction,main:picked.text};
+  });
+  const titles = directions.map(d=>d.main.normalize('NFKC').replace(/[\p{P}\s]/gu,'').toLowerCase());
+  requireThat(new Set(titles).size===3,'三案主标题必须不同');
+  return {directions};
+}
+
+function validateEngineAuthorCheck({selections,pairs}, draft) {
+  requireThat(exactly(selections.map(check=>check.directionId),ids),'案内自检需要 A、B、C 各一项');
+  requireThat(exactly(pairs.map(check=>check.pair),enginePairs),'需要 AB、AC、BC 各一项创意差异自检');
+  for (const {directionId,phrase,sloganReady} of selections) {
+    const {main}=draft.directions.find(d=>d.id===directionId);
+    requireThat(sloganReady,'方向 '+directionId+' 的自选句只传达公告信息或读不出创意连接，重写该案');
+    requireThat(/[\p{L}\p{N}]/u.test(phrase) && main.includes(phrase),'方向 '+directionId+' 的创意措辞须逐字引用自选主标题原文');
+  }
+  for (const {pair,distinct} of pairs) {
+    requireThat(distinct,'方向 '+pair+' 的自选句未体现创意差异，重新寻找不同的连接');
+  }
+}
+
+function engineCopyMarkdown(draft) {
+  return draft.directions.map(d=>'## '+d.name+'\n主标题：'+d.main+'\n副标：'+d.secondary).join('\n\n');
+}
+
+function engineReceipt(receipt, phase) {
+  return receipt?.phase===phase && nonempty(receipt.runId) && nonempty(receipt.threadId) &&
+    /^deepseek(?:[-_/]|$)/i.test(receipt.model ?? '') && /^[a-f0-9]{64}$/.test(receipt.inputPacketHash ?? '');
+}
+
+function repairableQuantityClaims(direction, brief, basis) {
+  const quantities=text=>(text ?? '').normalize('NFKC').replace(/\s/gu,'').toLowerCase()
+    .match(/\d+(?:\.\d+)?(?:千克|毫克|公斤|克|毫升|分钟|小时|元|%|kg|ml|g\b)/giu) ?? [];
+  const sourced=new Set([...quantities(brief),...quantities(basis)]);
+  const visible=[direction.claim,direction.secondary,...direction.candidates.map(c=>c.text)];
+  return visible.every(text=>quantities(text).every(value=>sourced.has(value)));
+}
+
+const engineBlindPickSchema = object({
+  picks: enginePicks,
+  lineNotes: object({ A: str, B: str, C: str }),
+});
+
+export function engineCopyHandoffReady(review, names, text) {
+  try {
+    if (!isEngineCopyProtocol(review?.protocol) || review.version!==1 || review.status!=='ready' ||
+        !/^[a-f0-9]{64}$/.test(review.skillHash ?? '') || !nonempty(text) || review.bodyHash!==hash(text) ||
+        ![2,3].includes(review.calls?.length) || !engineReceipt(review.calls[0],enginePhases[0]) ||
+        !engineReceipt(review.calls.at(-1),review.protocol===engineCopyProtocol ? enginePhases[1] : 'COPY_ENGINE_SELECT') ||
+        (review.calls.length===3 && !engineReceipt(review.calls[1],'COPY_ENGINE_BLIND_PICK')) ||
+        new Set(review.calls.map(c=>c.runId)).size!==review.calls.length ||
+        new Set(review.calls.map(c=>c.threadId)).size!==review.calls.length) return false;
+    if (review.repairs!==undefined) {
+      if (!Array.isArray(review.repairs) || !review.repairs.every(r=>engineRepairPhases.includes(r?.phase) && engineReceipt(r,r.phase)) ||
+          new Set(review.repairs.map(r=>r.phase)).size!==review.repairs.length) return false;
+      const receipts=[...review.calls,...review.repairs];
+      if (new Set(receipts.map(r=>r.threadId)).size!==receipts.length) return false;
+    }
+    validateEngineDraft(review.workbook);
+    validate(review.recommendation,engineRecommendation,'负责人推荐');
+    const draft=resolveEnginePicks(review.workbook,review.picks);
+    if (review.authorCheck!==undefined) {
+      validate(review.authorCheck,engineAuthorCheck,'作者自检');
+      validateEngineAuthorCheck(review.authorCheck,draft);
+    }
+    return isDeepStrictEqual(review.draft,draft) && isDeepStrictEqual(names,draft.directions.map(d=>d.name)) &&
+      text===engineCopyMarkdown(draft);
+  } catch(error) {
+    if (error.code==='INVALID_STAGE_OUTPUT') return false;
+    throw error;
+  }
+}
+
+async function runEngineCopy({call, project, inputs, rules, onEvent}) {
+  const skill=rules.find(rule=>/^name: slogan-engine$/m.test(rule));
+  requireThat(skill,'缺少原版 slogan-engine');
+  const materials=inputs.texts.filter(item=>nonempty(item.text));
+  const source={
+    brief:project.brief, proposalKind:project.proposalKind, materials,
+    strategy:project.strategyHandoff, feedback:(project.feedback ?? []).filter(entry=>entry.stage==='copy'),
+  };
+  async function run(phase, instruction, schema, packet, promptRules=[]) {
+    const result=await call(phase+'\n'+instruction,[],schema,{
+      rules:promptRules, assignment:'只完成本次文案任务。', context:JSON.stringify(packet),
+    });
+    const {runId,threadId,model,inputPacketHash}=result;
+    const receipt={phase,runId,threadId,model,inputPacketHash};
+    requireThat(engineReceipt(receipt,phase),'文案缺少本次 DeepSeek 调用回执');
+    return {receipt,output:result.parsedOutput};
+  }
+
+  const leanSkill = project.mode==='auto' ? coreSloganSkill(skill) : skill;
+  await onEvent?.('DeepSeek 写作 Agent 正在按三差异轴起稿');
+  const {output:writing,receipt:written}=await run(enginePhases[0],
+    [
+      '你是本次写作 Agent。沿用当前 Brief、研究与策略，严格执行原版 slogan-engine 01–05 步定位物料和受众。从本案有依据的事实与读者此刻的动作、关系、情境或感受之间，按三条彻底拉开的差异轴创作三个独立创意主题：',
+      '- 方向 A（产品实证轴）：死磕一个可验证的具体产品事实/物理特征，让事实本身成为记忆钩子；',
+      '- 方向 B（场景动作轴）：锁死一个具体的日常动作、时刻或使用场景，让读者一看就有画面；',
+      '- 方向 C（情绪关系轴）：击中目标人群的真实心理落差或社交关系，优先用短动词强对仗打出金句张力（包装已露品名或情绪轴时，可用“52度/酒局/脆/7天”等强品类特征词替代完整长SKU名，把字数省给动作反差）。',
+      '三案中至少一条显性承接 Brief 的核心规格或秩序资产（如容量、度数、分装数量）。主标优先控制在 10–14 字以内（方便海报与包装大字排版），口语自然好念，换三个无关品类绝对套不上。直接列品牌型号、价格、场次、时段、预约或试穿条件只完成了告知，放进副标 secondary。',
+      '依据 basis 从当前材料摘取一处简短连续原文。claim 写本案主张，mechanism 写哪两个具体事物怎样相连，strategyLink 写如何承接策略。按 A、B、C 返回 directions。每案保留围绕同一连接的三到四条不同候选（A1、A2 等编号）和各自用法，另写同案通用的简洁支撑副标 secondary。作为创作者从每案原候选初选一句填入 picks 并填写 authorCheck，整组推荐交给负责人。',
+      engineFactInstruction,
+      '按系统给出的 JSON Schema 交稿。顶层的三个字段 directions、picks、authorCheck 并列。三案各填规定字段。authorCheck 中只有 selections 和 pairs。',
+    ].join('\n'),
+    engineWriterSchema,source,[leanSkill,'包装方向的 slogan 用于命名和呈现提案主题。候选用途写提案页或明确委托的其他传播触点。包装本体的印字以简报确认的产品信息为准。']);
+  requireThat(writing && Object.keys(writing).every(key=>Object.hasOwn(engineWriterSchema.properties,key)),'写作 Agent 交稿包含意外字段');
+  validateEngineDraft({directions:writing.directions});
+  if (project.briefScope?.types?.includes('packaging') || /包装|外盒|小袋|瓶标|手撕/u.test(project.brief)) {
+    validatePackagedCopyFacts(writing.directions,[project.brief,...source.feedback.map(entry=>entry.text)].filter(nonempty).join('\n'));
+  }
+  const workbook={directions:writing.directions.map(direction=>({...direction}))};
+  const originals=[project.brief,...materials.map(item=>item.text)].filter(nonempty);
+  const unsupported=workbook.directions.filter(d=>!matchesSourceBasis(originals,d.basis));
+  const repairs=[];
+  if (unsupported.length) {
+    await onEvent?.('原作者正在核对无法定位的文案依据，保留本版候选');
+    const required=unsupported.map(d=>d.id);
+    const schema=object({citations:list(object({id:choice(required),supported:{type:'boolean'},basis:optionalText}))});
+    const {output,receipt}=await run(engineRepairPhases[0],
+      '核对 listedDirections 的主张、候选和副标。只为原件确实支持的一案找连续短引，逐字复制，填 supported=true。材料与卖点、规格、数字或答案不相符时填 supported=false，basis 留空。保留原作者候选和自选。',
+      schema,{listedDirections:unsupported,sourceText:originals});
+    validate(output,schema,'文案依据核对');
+    requireThat(exactly(output.citations.map(c=>c.id),required),'文案依据需要覆盖每个待核方向');
+    for (const {id,basis,supported} of output.citations) {
+      const direction=workbook.directions.find(d=>d.id===id);
+      requireThat(supported && basis.trim() && repairableQuantityClaims(direction,project.brief,basis),
+        '方向 '+id+' 的文案主张缺少与原件一致的依据');
+      direction.basis=basis;
+    }
+    repairs.push(receipt);
+  }
+  validateEngineDraft(workbook,originals);
+  let {picks,authorCheck}=writing;
+  const selectionSchema=object({picks:enginePicks,authorCheck:engineAuthorCheck});
+  const fixedPicks=Object.fromEntries(workbook.directions.flatMap(d=>{
+    const code=picks?.[d.id];
+    return d.candidates.some((_,index)=>code===d.id+(index+1)) ? [[d.id,code]] : [];
+  }));
+  try {
+    validate({picks,authorCheck},selectionSchema,'作者选句');
+    requireThat(Object.keys(fixedPicks).length===ids.length && exactly(authorCheck.pairs.map(p=>p.pair),enginePairs) &&
+      exactly(authorCheck.selections.map(s=>s.directionId),ids),'作者选句缺少有效编号或必要自检');
+  }
+  catch(error) {
+    if (error.code!=='INVALID_STAGE_OUTPUT') throw error;
+    await onEvent?.('原作者按本版已写候选补齐选句编号和自检');
+    const {output,receipt}=await run(engineRepairPhases[1],
+      '你是写出本案三组原候选的作者。保持 fixedPicks 中已有效的编号。只给缺少有效编号的方向补选。返回 A、B、C 对应的完整 picks 和 authorCheck。三案候选原文保持一致。selections 引用选句中承载创意的原字，pairs 写清各案想起的画面区别。',
+      selectionSchema,{workbook,brief:project.brief,fixedPicks,existingAuthorCheck:authorCheck},[skill]);
+    validate(output,selectionSchema,'作者选句');
+    requireThat(Object.entries(fixedPicks).every(([id,code])=>output.picks[id]===code),'已有效的作者选句需要保留');
+    ({picks,authorCheck}=output);
+    repairs.push(receipt);
+  }
+  let blindPickReceipt;
+  let blindNotes;
+  if (project.mode==='auto' || project.blindCopyPick===true) {
+    try {
+      await onEvent?.('独立空白盲读正在只看纯句子优选每案主标');
+      const pureGroups = Object.fromEntries(workbook.directions.map(d=>[
+        d.id,
+        d.candidates.map((c,i)=>({code:d.id+(i+1),text:c.text})),
+      ]));
+      const {output:blindOut,receipt:blindRec}=await run('COPY_ENGINE_BLIND_PICK',
+        '你是独立空白盲读读者（不看任何 Brief、品牌背景或策略，只看这三组纯中文句子）。按 slogan-engine 七道闸逐组挑出唯一最佳的一句编号（A/B/C 各选 1 个 code）：1) 零背景 2 秒能懂且像人话；2) 换三个无关品类绝对套不上；3) 有具体动作、画面或心理张力且字数适合大字排版。lineNotes 用一句简短口语写每条入选句的真实路人读感。',
+        engineBlindPickSchema,{groups:pureGroups});
+      const validBlind = ids.every(id=>{
+        const dirObj=workbook.directions.find(d=>d.id===id);
+        const code=blindOut?.picks?.[id];
+        return dirObj?.candidates.some((_,i)=>code===id+(i+1));
+      });
+      if (validBlind) {
+        picks=blindOut.picks;
+        blindNotes=blindOut.lineNotes;
+        blindPickReceipt=blindRec;
+        // Align authorCheck selections with blind-picked lines if changed
+        for (const id of ids) {
+          const dirObj=workbook.directions.find(d=>d.id===id);
+          const idx=Number(picks[id].slice(1))-1;
+          const chosenLine=dirObj.candidates[idx].text;
+          const sel=authorCheck?.selections?.find(s=>s.directionId===id);
+          if (sel && !chosenLine.includes(sel.phrase)) sel.phrase=chosenLine;
+        }
+      }
+    } catch (error) {
+      await onEvent?.('空白盲读跳过，沿用作者自选：'+String(error.message).slice(0,120));
+    }
+  }
+  const draft=resolveEnginePicks(workbook,picks);
+  validateEngineAuthorCheck(authorCheck,draft);
+
+  await onEvent?.('比稿负责人正在从三句定稿中推荐一案');
+  const directions=draft.directions.map(({id,name,main})=>({id,name,main}));
+  const {output:recommendation,receipt:recommended}=await run(enginePhases[1],
+    '你是比稿负责人。三个方向的主标题已经选定，请仅从这三句推荐一案，返回对应 directionId 和一句具体推荐理由。对照 Brief 与策略（及盲读反馈）判断哪句最值得记住、最有停步穿透力。保持三句原文，选择理由聚焦这句的作用，避免批评和修改意见。',
+    engineRecommendation,{...source,directions,...(blindNotes ? {blindNotes} : {})});
+  validate(recommendation,engineRecommendation,'负责人推荐');
+  requireThat(written.runId!==recommended.runId && written.threadId!==recommended.threadId,'写作与推荐需要分别记录实际调用');
+  const body=engineCopyMarkdown(draft);
+  const calls=blindPickReceipt ? [written,blindPickReceipt,recommended] : [written,recommended];
+  const copyReview={protocol:engineCopyProtocol,version:1,status:'ready',bodyHash:hash(body),
+    draft,workbook,skillHash:fullSloganHash(skill),picks,authorCheck,recommendation,calls,
+    ...(blindNotes ? {blindNotes} : {}),
+    ...(repairs.length ? {repairs} : {})};
+  await onEvent?.('已保存作者自选的三句及负责人推荐');
+  return {body,directions:draft.directions.map(d=>d.name),copyReview};
+}
+
+export async function runCopyReview({call, project, inputs, rules, dir, onEvent, singleOwner=false}) {
+  if (singleOwner) return runEngineCopy({call,project,inputs,rules,onEvent});
   const attempt = {version:3,protocol:headlineProtocol,status:'working',calls:[],anonymousReads:[],firstVotes:[],criticReads:[],challenges:[],finalVotes:[]};
   const filename='copy-review-attempt-'+randomUUID()+'.json';
   const threads=new Set(), runs=new Set();
   const materials=[project.brief,...inputs.texts.map(t=>t.text)].filter(nonempty);
   async function run(phase, instruction, schema, packet, author=false, outputSchema=schema) {
     const result=await call(phase+'\n'+instruction,author?inputs.images:[],outputSchema,{
-      rules:author?rules:[],assignment:'只完成当前职责。',context:JSON.stringify(packet),
+      delegate:!author,rules:author?rules:[],assignment:'只完成当前职责。',context:JSON.stringify(packet),
     });
     const receipt={runId:result.runId,threadId:result.threadId,model:result.model,inputPacketHash:result.inputPacketHash};
     requireThat(nonempty(receipt.runId) && nonempty(receipt.threadId) && !threads.has(receipt.threadId) && !runs.has(receipt.runId),
@@ -285,7 +584,7 @@ export async function runCopyReview({call, project, inputs, rules, dir, onEvent}
   }
   try {
     const source={brief:project.brief,materials:inputs.texts,feedback:project.feedback || []};
-    await onEvent?.('文案负责人正在创作三个方向');
+    await onEvent?.('比稿负责人正在创作三个方向');
     const skill=rules.find(rule=>rule.includes('name: slogan-engine'));
     requireThat(skill,'缺少完整版 slogan-engine');
     const workbook=await buildSloganWorkbook(run,source);

@@ -104,6 +104,7 @@ test('a personal run waits for direction and current image adoption, saves user 
     await writeFile(join(dir, name), body);
     return {
       research,
+      ...(stage==='brief' ? {briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'}} : {}),
       artifacts: [{ kind, name, ...(stage === 'copy' ? { text: body } : {}) }, ...(stage==='layout' ? [{kind:'image',name:'page-0001.jpg',renderPage:1}] : [])],
       copyReview: stage === 'copy' ? {
         version: 3, protocol: 'dual-panel-headline-v4', status: 'ready',
@@ -232,6 +233,7 @@ for (const mode of ['auto', 'collab']) {
         const name = stage + '.md';
         await writeFile(join(dir, name), stage);
         return {
+          ...(stage==='brief' ? {briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'}} : {}),
           artifacts: [{ name, kind: 'text' }],
           research: {
             ready: false,
@@ -285,7 +287,7 @@ test('editor failure retains accepted research and retry resumes strategy from t
     const name=stage+'.md';
     await writeFile(join(dir,name),stage);
     const artifacts=[{kind:'text',name}];
-    if (stage==='brief') return {artifacts};
+    if (stage==='brief') return {artifacts,briefScope:{status:'accepted',types:['packaging'],reason:'客户委托包装设计'}};
     searches++;
     return {artifacts,research:{ready:true,digestPending:true,findings:[finding],gaps:[]}};
   }});
@@ -299,7 +301,9 @@ test('editor failure retains accepted research and retry resumes strategy from t
     }
     throw Error('未到检查点');
   }
-  await localRequest(service,'/api/projects',{id:'edit-retry',brief:'测试包装',mode:'auto'});
+  await localRequest(service,'/api/projects',{id:'edit-retry',brief:'测试包装',mode:'collab'});
+  const card=await settled();
+  await localRequest(service,path+'/action',{kind:'confirm_brief',expectedRevision:card.revision});
   const waiting=await settled();
   assert.equal(waiting.status,'waiting');
   assert.equal(waiting.research.digestPending,true);
@@ -397,6 +401,137 @@ test('human adopts a non-recommended candidate with an explicit reason, or revis
   await project.settled();
 });
 
+test('visual handoff preserves a revised poster original without making it a candidate',async t=>{
+  const directions=['A','B','C'];
+  const sourceName='visual-1-before.png';
+  const sourceBytes=Buffer.from('original poster bytes');
+  const sourceSha256=createHash('sha256').update(sourceBytes).digest('hex');
+  const wrongSha256='0'.repeat(64);
+  const revision={sourceName,sourceSha256,reason:'旧稿品牌露出不对',edit:'重做同一方向'};
+  async function runCase(t,change=(original,proof)=>({original,proof}),layoutInputs=[]) {
+    return legacyService(t,{stage:'visual',status:'failed',mode:'auto',directions,briefScope:{types:['kv']}},async({project,stage,dir})=>{
+      if (stage==='layout') {
+        layoutInputs.push(project.artifacts.map(a=>a.name));
+        throw Error('只验证采用对象');
+      }
+      assert.equal(stage,'visual');
+      const {original,proof}=change({role:'poster-original',direction:'A',sha256:sourceSha256},{...revision});
+      await writeFile(join(dir,sourceName),sourceBytes);
+      const artifacts=[{name:sourceName,kind:'image',visual:original}];
+      for(const direction of directions) for(const candidate of [1,2,3]) {
+        const name=direction+candidate+'.png';
+        const score=candidate===1?5:4;
+        await writeFile(join(dir,name),'current poster '+name);
+        artifacts.push({name,kind:'image',visual:{role:'main',direction,candidate,mean:score,recommended:candidate===1,
+          blind:{first:'新品',action:'开盖',words:'原味',alternative:'杯装'},edit:'无',research:'无',blocked:false,
+          reason:'同版独立核对',scores:['视觉','品牌','用户','传播'].map(role=>({role,score})),
+          ...(direction==='A' && candidate===1 ? {artworkRevision:proof} : {}),
+        }});
+      }
+      return {artifacts};
+    });
+  }
+
+  await t.test('publishes nine candidates and retains the original only for traceability',async t=>{
+    const layoutInputs=[];
+    const p=await runCase(t,undefined,layoutInputs);
+    assert.equal((await p.action({kind:'retry'})).status,200);
+    const ready=await p.settled();
+    assert.equal(ready.status,'waiting',ready.error);
+    const archived=ready.artifacts.find(a=>a.visual?.role==='poster-original');
+    assert.equal(archived.name,sourceName);
+    assert.equal(archived.visual.sha256,sourceSha256);
+    assert.equal(archived.visual.candidate,undefined);
+    const key=a=>a.url.split('/').at(-1);
+    assert.deepEqual(await readFile(join(p.root,'example','files',key(archived))),sourceBytes);
+    const candidates=ready.artifacts.filter(a=>a.visual?.candidate);
+    assert.equal(candidates.length,9);
+    const winners=candidates.filter(a=>a.visual.recommended);
+    assert.deepEqual(winners.map(a=>a.name),['A1.png','B1.png','C1.png']);
+    assert.deepEqual(winners[0].visual.artworkRevision,revision);
+    assert.equal((await p.action({kind:'adopt',expectedRevision:ready.revision,
+      candidateIds:[key(archived),...winners.slice(1).map(key)]})).status,409);
+    const adopted=await p.action({kind:'adopt',expectedRevision:ready.revision});
+    assert.equal(adopted.status,200);
+    assert.deepEqual(adopted.data.project.visualAdoption.artifacts,winners.map(key));
+    await p.settled();
+    assert.deepEqual(layoutInputs,[winners.map(a=>a.name)]);
+  });
+
+  for(const [name,change] of [
+    ['rejects a revision record without a source hash',(original,{sourceSha256,...proof})=>({original,proof})],
+    ['rejects an original from another direction',(original,proof)=>({original:{...original,direction:'B'},proof})],
+    ['rejects mismatched source hashes',(original,proof)=>({original,proof:{...proof,sourceSha256:wrongSha256}})],
+    ['rejects a matching declared hash for different original bytes',(original,proof)=>({
+      original:{...original,sha256:wrongSha256},proof:{...proof,sourceSha256:wrongSha256},
+    })],
+  ]) await t.test(name,async t=>{
+    const p=await runCase(t,change);
+    assert.equal((await p.action({kind:'retry'})).status,200);
+    const stopped=await p.settled();
+    assert.equal(stopped.status,'failed');
+    assert.match(stopped.error,/修订|原图|初稿|哈希/u);
+    assert.equal(stopped.artifacts.some(a=>a.stage==='visual'),false);
+  });
+});
+
+test('visual handoff takes intact, traceable originals from the current study', async t=>{
+  const bytes=Buffer.from('fixture-original');
+  const sha256=createHash('sha256').update(bytes).digest('hex');
+  const ref={name:'真实包装.jpg',sha256,carrier:'packaging',sameCategory:true,categoryMatch:'同类',
+    actualPackaging:true,visibleProduct:'独立小袋和外盒',pageUrl:'https://example.org/item',sourceUrl:'https://example.org/item.jpg'};
+  const project=await legacyService(t,{stage:'visual',status:'failed',
+    artifacts:[{stage:'research',kind:'image',name:ref.name,storageKey:'box.jpg'}],
+    research:{findings:[{images:[{...ref,sha256:'0'.repeat(64)},ref,ref]}]}},
+  async ({project:input})=>{
+    assert.equal(input.researchReferences.length,1);
+    const [original]=input.researchReferences;
+    assert.equal(original.pageUrl,ref.pageUrl);
+    assert.equal(original.sourceUrl,ref.sourceUrl);
+    assert.equal(original.sha256,sha256);
+    assert.deepEqual(await readFile(original.path),bytes);
+    throw Error('只验证研究原图交接');
+  });
+  await writeFile(join(project.root,'example','files','box.jpg'),bytes);
+  assert.equal((await project.action({kind:'retry'})).status,200);
+  assert.equal((await project.settled()).error,'只验证研究原图交接');
+});
+
+test('poster evidence recommendation survives publication and normal adoption below a four-point mean',async t=>{
+  const layoutInputs=[];
+  const caseProject=await legacyService(t,{stage:'visual',status:'failed',choice:'A',directions:['A','B','C'],briefScope:{types:['kv']}},
+    async({project,stage,dir})=>{
+      if (stage==='layout') {
+        layoutInputs.push(project.artifacts.filter(file=>file.stage==='visual' && file.kind==='image').map(file=>file.name));
+        throw Error('已核对实际采用对象');
+      }
+      assert.equal(stage,'visual');
+      const artifacts=[];
+      for (const candidate of [1,2,3]) {
+        const score=[3,5,4][candidate-1];
+        const name='海报-'+candidate+'.png';
+        const hardIssues=candidate===2 ? ['海报左上印有竞品 MoreYogurt'] : [];
+        await writeFile(join(dir,name),'poster '+candidate);
+        artifacts.push({name,kind:'image',visual:{
+          role:'main',direction:'A',candidate,mean:score,priority:candidate,recommended:candidate===1,
+          selectionPolicy:'poster-evidence',transferAudit:{criteria:{}},hardIssues,blocked:hardIssues.length>0,
+          blind:{first:'杯装',action:'取杯',words:'原味',alternative:'冷藏'},edit:'无',research:'无',reason:'本稿标题和产品关系清楚',
+          scores:['视觉','品牌','用户','传播'].map(role=>({role,score,reason:'保留可见主次关系'})),
+        }});
+      }
+      return {artifacts};
+    });
+  assert.equal((await caseProject.action({kind:'retry'})).status,200);
+  const ready=await caseProject.settled();
+  assert.equal(ready.status,'waiting',ready.error);
+  const candidates=ready.artifacts.filter(a=>a.visual?.candidate);
+  assert.deepEqual(candidates.map(a=>[a.visual.mean,a.visual.recommended,a.visual.blocked]),[[3,true,false],[5,false,true],[4,false,false]]);
+  assert.equal((await caseProject.action({kind:'adopt',expectedRevision:ready.revision})).status,200);
+  await caseProject.settled();
+  assert.deepEqual(layoutInputs,[['海报-1.png']]);
+});
+
+
 test('recovery ignores a reused PID, excludes another server and migrates legacy artifact text and events', async t=>{
   const {DatabaseSync}=await import('node:sqlite');
   const before={stage:'brief',at:'2025-01-01',text:'原来的事件'};
@@ -453,7 +588,7 @@ test('legacy one-page strategy reaches copy with the exact source file hash; cha
 });
 
 for (const mode of ['auto','collab']) {
-  test(mode+' passes research gaps through strategy to copy without reopening research',async t=>{
+  test(mode+' applies its research handoff rule with a single source',async t=>{
     const stages=[];
     const f={conclusion:'新品密集',source:'报告',url:'https://example.org/report',evidence:'原文',passage:'原文',implication:'优先识别'};
     const research={ready:false,findings:[f],gaps:['渠道未知'],next:'可先解决新品识别'};
@@ -462,15 +597,244 @@ for (const mode of ['auto','collab']) {
       if(stage==='copy') throw Error('文案已收到策略稿');
       await writeFile(join(dir,stage+'.md'),stage);
       if(stage==='strategy') {
-        assert.deepEqual(project.research.gaps,['渠道未知']);
+        assert.ok(project.research.gaps.includes('渠道未知'));
         assert.deepEqual(project.research.findings,[f]);
       }
       return {artifacts:[{kind:'text',name:stage+'.md',text:stage}],research};
     });
     await p.action(mode==='auto'?{kind:'retry'}:{kind:'research_continue',expectedRevision:1});
     const result=await p.settled();
+    if (mode==='auto') {
+      // After one automatic follow-up, auto mode degrades gracefully into strategy with conditional=true instead of dead-stopping.
+      assert.equal(result.stage,'copy');
+      assert.equal(result.error,'文案已收到策略稿');
+      assert.equal(result.research.conditional,true);
+      assert.deepEqual(stages,['research','research','strategy','copy']);
+      return;
+    }
     assert.equal(result.stage,'copy');
     assert.equal(result.error,'文案已收到策略稿');
-    assert.deepEqual(stages,mode==='auto'?['research','strategy','copy']:['strategy','copy']);
+    assert.deepEqual(stages,['strategy','copy']);
   });
 }
+
+for (const [mode,status] of [['auto','unsupported'],['collab','unclear']]) {
+  test(mode+' waits for a rephrased commission before research',async t=>{
+    const root=await mkdtemp(join(tmpdir(),'brief-scope-'));
+    const path='/api/projects/scope-test';
+    const calls=[];
+    const service=createNightflight({root,async runStage({stage,project,dir}){
+      calls.push(stage);
+      if(stage==='research') throw Error('研究已启动');
+      if(!project.feedback.length) return {briefScope:{status,types:[],reason:'请说明提案的交付形式'},artifacts:[]};
+      assert.equal(project.feedback.at(-1).text,'请设计包装和海报');
+      await writeFile(join(dir,'任务卡.md'),'请设计包装和海报');
+      return {briefScope:{status:'accepted',types:['packaging','kv'],reason:'包装和海报'},artifacts:[{name:'任务卡.md',kind:'text'}]};
+    }});
+    t.after(async()=>{service.close();await rm(root,{recursive:true,force:true});});
+    async function settled() {
+      for(let i=0;i<200;i++) {
+        const p=(await localRequest(service,path)).data.project;
+        if(p.status!=='running') return p;
+        await new Promise(resolve=>setTimeout(resolve,5));
+      }
+      assert.fail('未到达检查点');
+    }
+    const action=data=>localRequest(service,path+'/action',data);
+    await localRequest(service,'/api/projects',{id:'scope-test',mode,brief:'请帮我'});
+    const p=await settled();
+    assert.equal(p.stage,'brief');
+    assert.equal(p.status,'waiting');
+    assert.deepEqual(p.artifacts,[]);
+    assert.equal(p.briefScope.status,status);
+    for(const kind of ['confirm_brief','retry']) assert.equal((await action({kind,expectedRevision:p.revision})).status,409);
+    assert.deepEqual(calls,['brief']);
+    assert.equal((await action({kind:'message',text:'请设计包装和海报',expectedRevision:p.revision})).status,200);
+    const revised=await settled();
+    assert.deepEqual(revised.briefScope.types,['packaging','kv']);
+    if(mode==='collab') {
+      assert.equal(revised.status,'waiting');
+      assert.equal(revised.stage,'brief');
+      await action({kind:'confirm_brief',expectedRevision:revised.revision});
+      await settled();
+    }
+    assert.deepEqual(calls,['brief','brief','research']);
+  });
+}
+
+test('automatic handoff counts independent consumer evidence and published poster originals', async t=>{
+  const {automaticResearchGaps}=await import('./research-sources.mjs');
+  const chapters=['行业与市场','竞争与同类传播','人群与接触情境','产品与品牌'];
+  const project={briefScope:{types:['kv']}};
+  const findings=['market','competitor','audience','audience','audience','product'].map((subject,i)=>({
+    subject,source:'来源'+i,url:subject==='product'?'':'https://example.org/survey',evidence:'引文'+i,
+    passage:'原文'+i,implication:'策略用途',conclusion:'判断'+i,
+  }));
+  const sections=findings.map((f,i)=>({chapter:chapters[[0,1,2,2,2,3][i]],conclusion:f.conclusion,explanation:'解释',
+    evidenceIndices:i===5?[5,1]:[i]}));
+  Object.assign(sections[2],{audienceTopic:'人群',surveyQuestion:'谁使用'});
+  Object.assign(sections[3],{audienceTopic:'使用场景',surveyQuestion:'在哪里使用'});
+  Object.assign(sections[4],{audienceTopic:'选择因素',surveyQuestion:'如何选择'});
+  const image={carrier:'kv',sameCategory:true,sha256:'a'.repeat(64),sourceUrl:'https://example.org/image',pageUrl:'https://example.org/poster'};
+  findings[1].images=[image];
+  const report={ready:true,findings,sections,gaps:['非关键的细分渠道未知']};
+  const missing=()=>automaticResearchGaps(report,project).map(g=>g.message).join(' ');
+  assert.match(missing(),/海报原图/);
+  image.publicationQuote='品牌发布本次宣传海报';
+  assert.match(missing(),/海报原图/);
+  image.publicationPlacement='article';
+  assert.match(missing(),/海报原图/);
+  image.assetType='宣传海报或主视觉';
+  assert.equal(missing(),'');
+  const oldPackage={...image,carrier:'packaging'};
+  project.briefScope.types.push('packaging');
+  findings[1].images.push(oldPackage);
+  assert.match(missing(),/包装原图/);
+  Object.assign(oldPackage,{visibleProduct:'混合坚果',actualPackaging:true,categoryMatch:'同类'});
+  assert.equal(missing(),'');
+  findings[4].evidence=findings[3].evidence;
+  assert.equal(missing(),'');
+  findings[3].evidence=findings[2].evidence;
+  findings[4].evidence=findings[2].evidence;
+  assert.match(missing(),/1\/2/);
+  findings[3].evidence='另一道调查题的答案';
+  sections[5].evidenceIndices=[5];
+  assert.match(missing(),/外部资料/);
+  sections[5].evidenceIndices=[5,1];
+  sections.splice(4,1); // Hand off with exactly two independent audience conclusions.
+  // Use a nonvisual activity here; service-level image receipt validation is tested separately.
+  delete findings[1].images;
+  const p=await legacyService(t,{stage:'research',status:'failed',mode:'auto',briefScope:{types:['activity']}},async({stage,dir})=>{
+    if(stage==='strategy') throw Error('策略收到了完整研究');
+    await writeFile(join(dir,'研究.md'),'结论');
+    return {artifacts:[{kind:'text',name:'研究.md'}],research:report};
+  });
+  await p.action({kind:'retry'});
+  const state=await p.settled();
+  assert.equal(state.stage,'strategy');
+  assert.equal(state.error,'策略收到了完整研究');
+});
+
+test('a product image and an untraceable poster quote cannot become a published KV example', async()=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const url='https://example.org/campaign', page={url,title:'品牌发布页'};
+  const image={width:800,height:600,sha256:'a'.repeat(64),imageId:'ref-a',name:'ad.png',title:'作品',articleText:'品牌在地铁发布本季主题海报。',pageUrl:url,sourceUrl:url+'/ad.png'};
+  const quote='品牌在地铁发布本季主题海报。';
+  async function observe(publishedPoster,publicationQuote,sameCategory=true) {
+    return researchCompetitors({project:{brief:'一张海报'},carrier:'kv',pages:[page],
+      acquiredByPage:new Map([[page,[image]]]),readSource:async()=>({text:quote}),
+      call:async(_prompt,_images,_schema,task)=>({parsedOutput:task.assignment==='海报原图内容核读'?{observation:'中央为标题'}:{conclusion:'看过的案例',implication:'画面比较',
+        samples:[{source:'ref-a',title:'已看图',observation:'中央为标题',sameCategory,assetType:'宣传海报或主视觉',publishedPoster,publicationQuote}]}})});
+  }
+  assert.equal(await observe(false,quote),null);
+  assert.equal(await observe(true,'另一个项目的说明'),null);
+  assert.equal(await observe(true,quote,false),null);
+  assert.equal((await observe(true,quote)).finding.images[0].publicationQuote,quote);
+});
+
+test('two options of the same audience question form one row and cannot unlock strategy',async()=>{
+  const {selectAudienceRows,missingAudienceTopics,automaticResearchGaps}=await import('./research-sources.mjs');
+  const chapter='人群与接触情境';
+  const findings=['工作','出行','年轻群体'].map((evidence,i)=>({subject:'audience',evidence,passage:evidence,source:'样本',url:'https://example.org/'+i}));
+  const sections=findings.map((f,i)=>({chapter,conclusion:f.evidence,explanation:'调查原文为'+f.evidence,
+    audienceTopic:i===2?'人群':'使用场景',surveyQuestion:['在哪喝','哪个场景饮用','谁在喝'][i],evidenceIndices:[i]}));
+  const selected=selectAudienceRows(sections);
+  assert.deepEqual(selected.map(r=>r.audienceTopic),['人群','使用场景']);
+  assert.deepEqual(selected[1].evidenceIndices,[0,1]);
+  assert.match(selected[1].explanation,/工作.*出行/);
+  assert.deepEqual(missingAudienceTopics(selected).map(g=>g.message),['缺少关于选择时看重的因素的可核依据。']);
+  assert.ok(!automaticResearchGaps({sections,findings},{}).some(g=>g.chapter===chapter));
+  assert.ok(automaticResearchGaps({sections:sections.slice(0,2),findings},{}).some(g=>g.message.includes('1/2')));
+  const mislabeled={...sections[1],audienceTopic:'选择因素',surveyQuestion:sections[0].surveyQuestion};
+  assert.equal(selectAudienceRows([sections[0],mislabeled]).length,1);
+});
+
+test('different selection questions in the same consumer report retain two sourced rows',async()=>{
+  const {selectAudienceRows,automaticResearchGaps}=await import('./research-sources.mjs');
+  const chapter='人群与接触情境';
+  const url='https://www.iimedia.cn/c400/108605.html';
+  const facts=[
+    {question:'不同社交场景下对休闲食品的需求差异是什么？',
+      quote:'最突出的是“独自享用时更关注口味和品质”，占比高达70.71%',
+      conclusion:'独自享用零食时，70.71%更看重口味和品质。'},
+    {question:'购买休闲食品的主要原因是什么？',
+      quote:'“休闲消遣”占比42.53%，是所有选项中占比最高的。其次是“本来就喜欢吃”，占比40.52%。',
+      conclusion:'购买休闲食品的首要原因是休闲消遣（42.53%）。'},
+  ];
+  const findings=facts.map(({quote})=>({subject:'audience',evidence:quote,passage:quote,source:'艾媒咨询',url}));
+  const sections=facts.map(({question,quote,conclusion},i)=>({chapter,conclusion,explanation:quote,
+    audienceTopic:'选择因素',surveyQuestion:question,evidenceIndices:[i]}));
+  assert.deepEqual(selectAudienceRows(sections).map(row=>[row.surveyQuestion,row.evidenceIndices]),
+    facts.map(({question},i)=>[question,[i]]));
+  assert.ok(!automaticResearchGaps({sections,findings},{}).some(g=>g.chapter===chapter));
+});
+
+test('a stored poster keeps its own publication evidence when a sidebar changes',async()=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const page='https://publisher.example.org/a', original='甲为坚果活动发布系列海报。', sidebar='乙发布另一活动。';
+  const old={name:'poster.png',sha256:'a'.repeat(64),imageId:'ref-a',pageUrl:page,sourceUrl:page+'/poster.png',
+    carrier:'kv',assetType:'宣传海报或主视觉',publicationPlacement:'article',publicationQuote:original};
+  async function check(quote) {
+    return researchCompetitors({carrier:'kv',project:{brief:'坚果海报'},previous:[old],readSource:async()=>({text:sidebar}),
+      call:async(_prompt,_images,_schema,task)=>{
+        if (task.assignment==='海报原图内容核读') return {parsedOutput:{observation:'坚果插画'}};
+        assert.deepEqual(JSON.parse(task.context).sources[0].sourcePassages,[original]);
+        return {parsedOutput:{samples:[{source:'ref-a',title:'甲海报',observation:'坚果插画',sameCategory:true,assetType:'宣传海报或主视觉',publishedPoster:true,publicationQuote:quote}],
+          conclusion:'甲活动用了坚果插画',implication:'比较实际画面'}};
+      }});
+  }
+  assert.equal(await check(sidebar),null);
+  assert.equal((await check(original)).finding.images[0].publicationQuote,original);
+});
+
+test('a released video frame cannot count as a poster even when the model also marks it published',async()=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const url='https://publisher.example.org/case',page={url,title:'混合作品'},original='品牌发布贺岁轻喜剧。甲品牌上线本季影片。同期发布了短片同名海报。';
+  const image={name:'image.png',sha256:'c'.repeat(64),imageId:'c',sourceUrl:url+'/image.png',pageUrl:url,articleText:original,width:400,height:640};
+  async function review(title,assetType,quote) {
+    return researchCompetitors({carrier:'kv',project:{brief:'坚果海报'},pages:[page],acquiredByPage:new Map([[page,[image]]]),
+      call:async(_prompt,_images,_schema,task)=>({parsedOutput:task.assignment==='海报原图内容核读'?{observation:'可见标题'}:{samples:[{source:'c',title,observation:'可见标题',assetType,publishedPoster:true,sameCategory:true,publicationQuote:quote}],
+        conclusion:'画面有标题',implication:'比较层级'}})});
+  }
+  assert.equal(await review('请问大师','视频画面','品牌发布贺岁轻喜剧。'),null);
+  assert.equal(await review('请问大师广告片画面','宣传海报或主视觉','同期发布了短片同名海报。'),null);
+  assert.equal(await review('请问大师','宣传海报或主视觉','品牌发布贺岁轻喜剧。'),null);
+  assert.equal(await review('活动画面','宣传海报或主视觉','甲品牌上线本季影片。'),null);
+  assert.equal((await review('请问大师同名海报','宣传海报或主视觉','同期发布了短片同名海报。')).finding.images.length,1);
+});
+
+test('follow-up retains the verified side of a mixed older board without repeating the obsolete claim',async()=>{
+  const {reusableResearchFindings}=await import('./research-sources.mjs');
+  const good={title:'坚果礼盒',observation:'盒侧可见坚果名',carrier:'packaging',sameCategory:true,actualPackaging:true,
+    categoryMatch:'同类',visibleProduct:'坚果礼盒',sha256:'a'.repeat(64),pageUrl:'https://brand.example/case',sourceUrl:'https://brand.example/a.png'};
+  const stale={...good,title:'魔芋',actualPackaging:undefined};
+  const rows=reusableResearchFindings([{chapter:'竞争与同类传播',images:[good,stale],conclusion:'两种坚果包装'}]);
+  assert.deepEqual(rows.map(r=>r.images),[[good]]);
+  assert.equal(rows[0].evidence,good.observation);
+  assert.ok(!rows[0].conclusion.includes('两种'));
+});
+
+test('two posters from one campaign each receive only their own image and cannot borrow its sibling’s number',async()=>{
+  const {researchCompetitors}=await import('./research-competitors.mjs');
+  const url='https://publisher.example.org/spring',page={url},quote='品牌发布了坚果系列海报。';
+  const images=['a','b'].map(id=>({name:id+'.png',imageId:id,sha256:id.repeat(64),sourceUrl:url+'/'+id+'.png',
+    pageUrl:url,width:400,height:640,articleText:quote}));
+  const seen=[];
+  const board=await researchCompetitors({carrier:'kv',project:{brief:'坚果海报'},pages:[page],acquiredByPage:new Map([[page,images]]),
+    call:async(_prompt,group,schema,task)=>{
+      assert.equal(group.length,1);
+      const id=group[0].imageId;
+      if (task.assignment==='海报原图内容核读') {
+        assert.equal(id,'b');
+        return {parsedOutput:{observation:'节日礼盒'}};
+      }
+      seen.push(id);
+      assert.deepEqual(schema.properties.samples.items.properties.source.enum,[id]);
+      assert.deepEqual(JSON.parse(task.context).sources.map(x=>[x.source,x.imageNumber]),[[id,1]]);
+      return {parsedOutput:{conclusion:'主题',implication:'只属于'+id,samples:[{source:'b',title:'画面来自'+id,observation:'节日礼盒',
+        sameCategory:true,publishedPoster:true,assetType:'宣传海报或主视觉',publicationQuote:quote}]}};
+    }});
+  assert.deepEqual(seen.sort(),['a','b']);
+  assert.deepEqual(board.finding.images.map(i=>[i.title,i.sourceUrl]),[['画面来自b',url+'/b.png']]);
+  assert.equal(board.finding.implication,'只属于b');
+});

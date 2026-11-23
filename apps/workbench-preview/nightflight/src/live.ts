@@ -19,6 +19,7 @@ export interface Artifact extends Asset {
   visual?: {
     direction: string;
     candidate?: number; mean?: number; recommended?: boolean; blocked?: boolean; reason?: string;
+    selectionPolicy?: 'poster-evidence'; hardIssues?: string[]; selectionHold?: string;
     scores?: {role:string; score:number; reason:string}[];
     blind?: BlindReading; edit?: string; research?: string; references?: string[];
     sha256?: string; pageUrl?: string; sourceUrl?: string; title?: string;
@@ -81,11 +82,12 @@ export function headlineReviewProtocol(review?: CopyReview) {
 }
 export interface CopyReview {
   sloganWorkbook?: {
+    second?: {output:{items:{text:string;usable:boolean;observation:string}[]}}[];
     plan: { directions: { id: string; candidates: { text: string; method: string }[] }[] };
     polish: { directions: { id: string; original: string; killed: { text: string; reason: string }[]; versions: { text: string; use: string; tradeoff: string }[]; edits: string }[] };
   };
   sloganRevisions?: { changes: string[]; before: {id: string; main: string}[]; after: {id: string; main: string}[] }[];
-  protocol?: 'dual-panel-v2' | 'dual-panel-headline-v3' | 'dual-panel-headline-v4';
+  protocol?: 'director-headline-v1' | 'dual-panel-v2' | 'dual-panel-headline-v3' | 'dual-panel-headline-v4';
   anonymousReads?: CopyFirstRead[];
   finalAnonymousReads?: CopyFirstRead[];
   sameDraftRechecks?: CopyVote[];
@@ -129,6 +131,28 @@ export interface CopyReview {
     rulings: { challengeId: string; verdict: 'resolved' | 'rejected' | 'pending'; reason: string }[];
   };
 }
+interface EngineCopyDirection {
+  id: DirectionId;
+  name: string;
+  main: string;
+  secondary: string;
+  claim: string;
+  mechanism: string;
+}
+
+export interface EngineCopyReview {
+  protocol: 'director-engine-selection-v1' | 'director-engine-selection-v2';
+  version: 1;
+  status: 'ready';
+  bodyHash: string;
+  draft: { directions: EngineCopyDirection[] };
+  workbook: { directions: {
+    id: DirectionId;
+    candidates: { text: string; use: string }[];
+  }[] };
+  recommendation: { directionId: DirectionId; reason: string };
+}
+
 export interface ResearchImage {
   name: string;
   sha256: string;
@@ -136,6 +160,7 @@ export interface ResearchImage {
   pageUrl: string;
   sourceUrl: string;
   observation: string;
+  firstRead?: {front: string; raw: string};
   creatorRationale?: string;
   rationaleSourceUrl?: string;
   rationaleQuote?: string;
@@ -143,8 +168,21 @@ export interface ResearchImage {
   takeaway?: string;
 }
 export interface ResearchGap {kind:string;chapter:string;message:string;findingRef:string}
+type RefinedReview = {
+  protocol: 'case-b-1.2.0';
+  reason: string;
+  rounds: 2 | 3;
+  changed: number;
+  pptx: string;
+  originalPptx: string;
+  contact: string;
+  report: string;
+} & ({outcome: 'ready'; acceptedAt?: string} | {outcome: 'blocked'; returnStage: StageId});
+
 export interface Project extends Summary {
+  briefScope?: {status: 'accepted' | 'unclear' | 'unsupported'; types: string[]; reason: string};
   finalReturn?:{returnStage:StageId;reason:string};
+  finalReview?: RefinedReview | {outcome: 'pass' | 'return'; reason: string};
   revision: number;
   mode: Mode;
   brief: string;
@@ -152,7 +190,10 @@ export interface Project extends Summary {
   artifacts: Artifact[];
   versions?: { at: string; stage: StageId; artifacts: Artifact[]; research?: Project['research'] }[];
   canRequestStrategy?: boolean;
-  autoStrategyResume?: boolean;
+  canWriteManuscript?: boolean;
+  canRenderManuscript?: boolean;
+  layoutDraftOnly?: boolean;
+  layoutMaterialsOnly?: boolean;
   researchFollowup?: boolean;
   research?: {
     searchScope?: {replacements?:{from:string;to:string}[];attempts?:{query:string;source:string;count:number}[];unreadable?:{url:string;reason:string}[];queries:string[];urls:string[];readable:number;pages:{title:string;url:string;reason?:string}[]};
@@ -160,6 +201,7 @@ export interface Project extends Summary {
     question?: string;
     conditional?: boolean;
     digestPending?: boolean;
+    sections?: {chapter:string;conclusion:string;explanation:string;sourceDetail?:string;evidenceIndices:number[]}[];
     strategyAdvice?: { recommendation: string; findingIndices: number[] }[];
     digest?: {
       chapter: '行业与市场' | '竞争与同类传播' | '人群与接触情境';
@@ -171,16 +213,16 @@ export interface Project extends Summary {
     gaps: (string | ResearchGap)[];
     next: string;
   };
-  copyReview?: CopyReview | null;
+  copyReview?: CopyReview | EngineCopyReview | null;
   directions: string[];
   choice?: string;
   error?: string;
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'research_again' | 'research_continue' | 'research_digest';
+export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
-type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'research' | 'researchFollowup' | 'canRequestStrategy'>>;
+type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy' | 'layoutDraftOnly' | 'layoutMaterialsOnly'>>;
 export const researchQuestion = (p: ResearchStatus) =>
   p.stage === 'research' &&
   p.status === 'waiting' &&
@@ -190,7 +232,13 @@ export const researchQuestion = (p: ResearchStatus) =>
   p.research.findings.length
     ? p.research.question?.trim() || ''
     : '';
+export function briefNeedsClarification(p: ResearchStatus) {
+  return p.stage === 'brief' && p.status === 'waiting' &&
+    (p.briefScope?.status === 'unclear' || p.briefScope?.status === 'unsupported');
+}
 export const projectStatus = (p: ResearchStatus) => {
+  if (p.stage === 'layout' && p.layoutDraftOnly && p.status === 'waiting') return p.layoutMaterialsOnly ? '材料包已就绪' : '逐页稿已就绪';
+  if (briefNeedsClarification(p)) return p.briefScope?.status === 'unsupported' ? '委托超出范围' : '委托内容待明确';
   if (researchQuestion(p)) return '等待你的判断';
   if (p.stage === 'research' && p.status === 'running' && p.researchFollowup) return '定向补查中';
   if (p.stage === 'research' && p.status === 'waiting') {
@@ -226,6 +274,13 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
     throw new Error(typeof data.error === 'string' ? data.error : '请求失败（' + r.status + '）');
   return data;
 }
+export function visualCandidateStatus(visual?: Artifact['visual']) {
+  if (visual?.recommended) return '评审推荐';
+  if (visual?.selectionPolicy !== 'poster-evidence') return;
+  if (visual.selectionHold) return '待并排核对';
+  if (typeof visual.blocked === 'boolean') return visual.blocked ? '需修改' : '可选';
+}
+
 export function safeURL(raw: string) {
   try {
     const u = new URL(raw, location.origin);

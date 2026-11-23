@@ -10,7 +10,7 @@ import { Decisions, type Act } from './ChatPanel';
 function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
   const [focus, setFocus] = useState('');
   const handoff = p.research;
-  const gaps = researchDisplay(handoff?.gaps || []);
+  const gaps = researchDisplay((handoff?.gaps || []).filter(gap=>!handoff?.sections || typeof gap==='string' || !gap.chapter));
   const isResearch = p.stage === 'research';
   const isChecking = isResearch && p.status === 'running';
   const question = researchQuestion(p);
@@ -26,7 +26,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {isChecking && (
           <p role="status">{handoff?.ready ? '正在编辑研究摘要。' : p.researchFollowup ? '正在按本轮缺口补查。' : '正在查找与简报相关的来源。'}</p>
         )}
-        {handoff?.ready && isResearch && p.status === 'waiting' && !handoff.digest?.length && (
+        {handoff?.ready && isResearch && p.status === 'waiting' && !handoff.sections && !handoff.digest?.length && (
           <>
             {handoff.digestPending && <p role="status">{p.error || '研究底稿已保存，摘要待编辑。'}</p>}
             <button className="btn btn-dark" disabled={busy} onClick={() => act('research_digest', '')}>{handoff.digestPending ? '重新编辑摘要' : '从现有底稿编辑摘要'}</button>
@@ -40,8 +40,7 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         {!!handoff && !handoff.ready && (
           <>
             <h2>{p.canRequestStrategy ? '策略交接 · 可进入策略' : handoff.conditional ? '策略交接 · 已附研究限制' : '策略交接 · 待补查'}</h2>
-            {p.autoStrategyResume && <p role="status">正在自动将现有研究交给策略负责人。</p>}
-            {p.canRequestStrategy && !p.autoStrategyResume && <><p>已核发现可交给策略负责人。以下缺口随稿保留，作为策略的适用条件。</p>
+            {p.canRequestStrategy && <><p>已核发现可用于策略，仍缺的依据随稿保留。</p>
               <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>用现有研究进入策略</button></>}
             {returned && <p>历史退回记录　{handoff.next}</p>}
             {gaps.length ? <ul className="findings research-gaps">{gaps.map((gap,i)=><li key={i}>
@@ -138,6 +137,7 @@ export function DetailSheet({
   name,
   close,
   nav,
+  correct,
   act,
   busy,
 }: {
@@ -146,6 +146,7 @@ export function DetailSheet({
   name?: string;
   close: () => void;
   nav: (s: StageId) => void;
+  correct: () => void;
   act: Act;
   busy: boolean;
 }) {
@@ -197,7 +198,7 @@ export function DetailSheet({
           {id === 'visual' || id === 'layout' || id === 'final' ? (
             <MediaStageOutput p={p} id={id} name={name} act={act} busy={busy} />
           ) : (
-            <TextStageOutput p={p} id={id} busy={busy} onChoose={(value) => act('choice', value)} />
+            <TextStageOutput correct={correct} p={p} id={id} busy={busy} onChoose={(value) => act('choice', value)} />
           )}
           {id === 'research' && <ResearchReview key={p.id} p={p} act={act} busy={busy} />}
           {id === p.stage && (p.status === 'failed' || p.finalReturn || id === 'visual' || id==='brief') && (id !== 'research' || p.finalReturn) && (

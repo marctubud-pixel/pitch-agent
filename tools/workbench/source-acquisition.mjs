@@ -2,8 +2,8 @@ import {declaredArticleImages} from './script-image-declarations.mjs';
 import https from 'node:https';
 import dns from 'node:dns/promises';
 import net from 'node:net';
-import { createHash } from 'node:crypto';
-import { mkdir, writeFile, readFile, lstat, realpath } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { mkdir, writeFile, readFile, lstat, realpath, link, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
@@ -114,6 +114,7 @@ export function extractHtml(html, baseUrl) {
   let inTitle = false;
   let figure = null;
   let inCaption = false;
+  const pdfLinks = new Set();
   const tokens = htmlTokens(html);
   for (const token of tokens) {
     const raw = token[0];
@@ -125,6 +126,12 @@ export function extractHtml(html, baseUrl) {
       if (['script', 'style', 'noscript'].includes(name) && !closing) { suppressed = name; continue; }
       if (name === 'template') { templateDepth = Math.max(0, templateDepth + (closing ? -1 : 1)); continue; }
       if (templateDepth) continue;
+      if (name === 'a' && !closing && pdfLinks.size < 16) {
+        const {href} = imageAttributes(raw, tag[0].length);
+        if (href && /\.pdf(?:$|[?#])/i.test(href)) {
+          try { pdfLinks.add(publicUrl(href,baseUrl).href); } catch { /* Ignore invalid destinations. */ }
+        }
+      }
       if (name === 'title') inTitle = !closing;
       if (name === 'figure') {
         if (closing && figure) { for (const index of figure.images) images[index].caption = figure.caption.trim(); figure = null; }
@@ -156,7 +163,7 @@ export function extractHtml(html, baseUrl) {
     declared = declaredArticleImages(html, baseUrl).map(image => ({url: publicUrl(image.value, baseUrl).href, alt: '', caption: '', locator: image.locator, discovery: image.discovery}));
   } catch { declared = []; }
   images.push(...declared);
-  return { method: declared.length ? 'static-html-tokenizer-v2' : 'static-html-tokenizer-v1', title: title.trim(), text: text.join('').replace(/[ \t]+\n/g, '\n').replace(/\n[ \t]+/g, '\n').replace(/\n{3,}/g, '\n\n').trim(), images };
+  return { method: declared.length ? 'static-html-tokenizer-v2' : 'static-html-tokenizer-v1', title: title.trim(), ...(pdfLinks.size ? {pdfLinks:[...pdfLinks]} : {}), text: text.join('').replace(/[ \t]+\n/g, '\n').replace(/\n[ \t]+/g, '\n').replace(/\n{3,}/g, '\n\n').trim(), images };
 }
 
 async function immutableWrite(root, relative, bytes) {
@@ -164,10 +171,16 @@ async function immutableWrite(root, relative, bytes) {
   await mkdir(directory, { recursive: true });
   if ((await realpath(directory)) !== directory) throw new Error('Capture directory must not contain symlinks');
   const filename = path.join(root, relative);
-  try { await writeFile(filename, bytes, { flag: 'wx', mode: 0o444 }); }
-  catch (error) {
-    if (error.code !== 'EEXIST') throw error;
-    if (!(await lstat(filename)).isFile() || !(await readFile(filename)).equals(Buffer.from(bytes))) throw new Error('Immutable capture collision or unsafe path');
+  const temporary = path.join(directory,'.capture-'+randomUUID());
+  try {
+    await writeFile(temporary, bytes, { flag:'wx',mode:0o444 });
+    try { await link(temporary,filename); }
+    catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      if (!(await lstat(filename)).isFile() || !(await readFile(filename)).equals(Buffer.from(bytes))) throw new Error('Immutable capture collision or unsafe path');
+    }
+  } finally {
+    await unlink(temporary).catch(error=>{if (error.code!=='ENOENT') throw error;});
   }
   return filename;
 }

@@ -1,0 +1,164 @@
+"""Extract publisher links from the archived 360 Search results page."""
+from html.parser import HTMLParser
+from pathlib import Path
+from urllib.parse import parse_qs, urlsplit, unquote, urljoin
+import re
+import json
+import sys
+
+
+class ReportSearchResults(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_heading = False
+        self.url = ''
+        self.title = []
+        self.results = []
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        if tag == 'h3':
+            self.in_heading = 'res-title' in (attributes.get('class') or '').split()
+        elif tag == 'a' and (self.in_heading or attributes.get('data-md') == '{"b":"title"}'):
+            self.url = attributes.get('data-mdurl') or attributes.get('href') or ''
+            self.title = []
+
+    def handle_data(self, data):
+        if self.url:
+            self.title.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'a' and self.url:
+            try:
+                link = urlsplit(self.url)
+                if link.hostname == 'm.so.com' and link.path == '/jump':
+                    self.url = parse_qs(link.query).get('u', [''])[0]
+                    link = urlsplit(self.url)
+                if link.scheme == 'https' and link.hostname not in {'www.so.com', 'm.so.com', 'ai.so.com'}:
+                    self.results.append({'title': ''.join(self.title).strip(), 'url': self.url})
+            except ValueError:
+                pass
+            self.url = ''
+        elif tag == 'h3':
+            self.in_heading = False
+
+
+class YahooResults(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.results = []
+        self.link = ''
+        self.heading = False
+        self.title = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'a':
+            self.link = attrs.get('href') or ''
+        if tag == 'h3' and self.link and 'fc-2015C2-imp' in (attrs.get('class') or '').split():
+            self.heading = True
+            self.title = []
+
+    def handle_data(self, data):
+        if self.heading:
+            self.title.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'h3' and self.heading:
+            self.heading = False
+            url = self.link
+            if '/RU=' in url and '/RK=' in url:
+                url = unquote(url.split('/RU=', 1)[1].split('/RK=', 1)[0])
+            if url.startswith('https://') and not (urlsplit(url).hostname or '').endswith('yahoo.com'):
+                self.results.append({'url': url, 'title': ''.join(self.title).strip()})
+        if tag == 'a':
+            self.link = ''
+
+
+class PublisherResults(HTMLParser):
+    def __init__(self, provider):
+        super().__init__()
+        self.provider = provider
+        self.pattern = (r'https://www\.ipsos\.com/zh-cn/[^/?#]+' if provider == 'ipsos' else
+                        r'https://report\.iimedia\.cn/report\.jsp\?reportId=\d+' if provider == 'iimedia' else
+                        r'https://socialbeta\.com/campaign/\d+' if provider == 'campaign'
+                        else r'https://www\.199it\.com/archives/\d+\.html')
+        self.results = []
+        self.url = ''
+        self.title = []
+        self.result_heading = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'h2':
+            self.result_heading = 'h4' in (dict(attrs).get('class') or '').split()
+        if tag == 'a':
+            url = dict(attrs).get('href') or ''
+            if self.provider == 'ipsos':
+                url = urljoin('https://www.ipsos.com/', url) if self.result_heading else ''
+            if url.startswith('//'):
+                url = 'https:' + url
+            self.url = url if re.fullmatch(self.pattern, url) else ''
+            self.title = []
+
+    def handle_data(self, data):
+        if self.url:
+            self.title.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'h2':
+            self.result_heading = False
+        if tag == 'a' and self.url:
+            title = ''.join(self.title).strip()
+            if title and not any(r['url'] == self.url for r in self.results):
+                self.results.append({'title': title, 'url': self.url})
+            self.url = ''
+
+
+class ActivityResults(HTMLParser):
+    def __init__(self, provider):
+        super().__init__()
+        self.provider = provider
+        self.results = []
+        self.href = ''
+        self.label = []
+        self.paths = {
+            'weibo': ('weibo.com', r'/[0-9]+/[A-Za-z0-9]+'),
+            'redbook': ('xiaohongshu.com', r'/explore/[a-zA-Z0-9]+'),
+            'douyin': ('douyin.com', r'/video/[0-9]+'),
+            'wechat': ('mp.weixin.qq.com', r'/s(?:/|$)'),
+        }
+
+    def add(self, href, title):
+        if href.startswith('https://') and title and not any(r['url'] == href for r in self.results):
+            self.results.append({'url': href, 'title': title})
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if self.provider == 'sogou':
+            self.add(a.get('data-url', ''), unquote(a.get('data-title', '')))
+        elif tag == 'a':
+            host, pattern = self.paths[self.provider]
+            self.href = urljoin('https://' + host, a.get('href', ''))
+            u = urlsplit(self.href)
+            if self.provider == 'wechat' and a.get('id', '').startswith('sogou_vr_11002601_title_') and a.get('href','').startswith('/link?'):
+                self.href = urljoin('https://weixin.sogou.com', a['href'])
+            elif not ((u.hostname == host or (u.hostname or '').endswith('.' + host)) and re.match(pattern, u.path)):
+                self.href = ''
+            self.label = [a.get('title', '')]
+
+    def handle_data(self, data):
+        if self.href:
+            self.label.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'a' and self.href:
+            self.add(self.href, ''.join(self.label).strip())
+            self.href = ''
+
+
+provider = sys.argv[2] if len(sys.argv) > 2 else '360'
+parser = (ActivityResults(provider) if provider in ('sogou','weibo','redbook','douyin','wechat') else
+          PublisherResults(provider) if provider in ('campaign', 'reports', 'ipsos', 'iimedia') else
+          YahooResults() if provider == 'yahoo' else ReportSearchResults())
+parser.feed(Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace'))
+print(json.dumps(parser.results[:8]))

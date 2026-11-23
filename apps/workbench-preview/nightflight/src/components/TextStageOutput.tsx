@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from 'react';
-import { headlineReviewProtocol, safeURL, type Artifact, type Asset, type CopyDuty, type Project, type ResearchImage } from '../live';
+import { briefNeedsClarification, headlineReviewProtocol, safeURL, type Artifact, type Asset, type CopyDuty, type Project, type ResearchImage } from '../live';
 import { CopyReviewPanel } from './CopyReviewPanel';
 import { ResearchSource } from './ResearchSource';
 export { ResearchSource } from './ResearchSource';
 import { StrategyOutput } from './StrategyOutput';
 import { briefCard } from './briefCard';
-import { headlineFromSections, rowOf, sectionsOf, type Row } from './stageText';
+import { headlineFromSections, publishedSlogan, rowOf, sectionsOf, type Row } from './stageText';
 
 type TextStage = 'brief' | 'research' | 'strategy' | 'copy';
 
@@ -27,11 +27,17 @@ function Pending({ children }: { children: ReactNode }) {
   return <p className="pending">{children}</p>;
 }
 
-function Brief({ p, text, name }: { p: Project; text: string; name?: string }) {
+function Brief({ p, text, name, correct }: { p: Project; text: string; name?: string; correct?: () => void }) {
   const { rows, assumptions } = briefCard(text);
   return (
     <>
-      {text ? (
+      {briefNeedsClarification(p) ? (
+        <section className="block">
+          <h2>委托范围</h2>
+          <p>{p.briefScope?.reason}</p>
+          {correct && <button className="btn btn-dark" onClick={correct}>补充委托需求</button>}
+        </section>
+      ) : text ? (
         <section className="block" data-artifact={name}>
           <h2>项目任务卡</h2>
           {rows.length ? <Rows rows={rows} /> : <p>尚无可单列的已知项目信息，可展开原始需求或原稿核对。</p>}
@@ -80,6 +86,7 @@ export function ResearchImageGallery({ images, artifacts, attachments }: { image
             <figcaption>
               <strong>{image.title}</strong>
               <p>{image.observation}</p>
+              {image.firstRead && <details><summary>第一次读图原话</summary><p>{image.firstRead.front}</p></details>}
               {/^https?:\/\//i.test(image.pageUrl) && (
                 <a href={image.pageUrl} target="_blank" rel="noopener noreferrer" aria-label={`查看${image.title}的出处`}>查看出处 ↗</a>
               )}
@@ -204,6 +211,25 @@ function Research({ p }: { p: Project }) {
     ? [...(p.versions ?? [])].reverse().find(v=>v.research?.findings.length) : undefined;
   const report = p.research ?? archived?.research;
   const files = [...p.artifacts,...(p.versions ?? []).flatMap(v=>v.artifacts)];
+  const sections = report?.sections;
+  if (report && sections) {
+    const chapters = [...digestChapters,['产品与品牌','产品与品牌']];
+    return <>{chapters.map(([chapter,label])=>{
+      const rows=sections.filter(row=>row.chapter===chapter);
+      const gaps=report.gaps.flatMap(g=>typeof g!=='string' && g.chapter===chapter ? [g.message] : []);
+      return <section className="block" key={chapter}><h2>{label}</h2>
+        <ol className="findings">{rows.map((row,index)=><li key={index}><span className="finding-no">{index+1}</span>
+          <div><h3>{row.conclusion}</h3><p>{row.explanation}</p><details><summary>依据与来源</summary>
+            {row.sourceDetail && <p>{row.sourceDetail}</p>}
+            {row.evidenceIndices.map(i=>{const f=report.findings[i];return f && <div key={i}><p>{f.evidence}</p>
+              <ResearchSource finding={f} attachments={p.attachments}/>
+              {!!f.images?.length && <ResearchImageGallery images={f.images} artifacts={files} attachments={p.attachments}/>}</div>;})}
+          </details></div></li>)}</ol>
+        {!rows.length && !gaps.length && <p>本轮没有取得能回答此项的依据。</p>}
+        {rows.length ? <ResearchGaps gaps={gaps}/> : gaps.map(message=><p key={message}>{message}</p>)}
+      </section>;
+    })}</>;
+  }
   if (report && !report.digest?.length && report.findings.length) {
     const chapterNames: Record<string,string> = Object.fromEntries(digestChapters);
     const groups = [...new Set(report.findings.map(f=>f.chapter || '已核实的发现'))];
@@ -265,21 +291,26 @@ export function CopyOutput({
     return <Pending>{text ? '已有文案原稿，尚未登记候选方向。' : '尚无创意方向。'}</Pending>;
   const sections = sectionsOf(text);
   const rows = sections.flatMap((s) => s.lines.map(rowOf)).filter((r): r is Row => !!r);
-  const ticket = p.copyReview?.status === 'ready' ? p.copyReview : undefined;
+  const publication = p.copyReview?.status === 'ready' ? p.copyReview : undefined;
+  const isEngine = publication && 'workbook' in publication;
+  const engine = isEngine ? publication : undefined;
+  const ticket = isEngine ? undefined : publication;
   const headlineReview = headlineReviewProtocol(ticket);
-  const recommended = ticket
-    ? ticket.draft.directions.find((d) => d.id === ticket.recommendation.directionId)?.name
+  const recommended = publication
+    ? publication.draft.directions.find((d) => d.id === publication.recommendation.directionId)?.name
     : rows.find((r) => r.label === '推荐方向' && p.directions.includes(r.value))?.value;
   const directions = p.directions.map((name, i) => {
     const signed = ticket?.draft.directions.find((entry) => entry.name === name);
-    const copy = signed ?? publishedDirections?.find((entry) => entry.name === name);
-    const main = copy?.main ?? headlineFromSections(sections, name, i);
+    const main = publishedSlogan(p, name) ?? publishedDirections?.find((entry) => entry.name === name)?.main
+      ?? headlineFromSections(sections, name, i);
     return { name, main, signed };
   });
   const current = directions.find((d) => d.name === browsing)
     || directions.find((d) => d.name === p.choice)
     || directions.find((d) => d.name === recommended)
     || directions[0];
+  const engineDirection = engine?.draft.directions.find(d => d.name === current.name);
+  const engineCandidates = engine?.workbook.directions.find(d => d.id === engineDirection?.id)?.candidates;
   const workbook = ticket?.sloganWorkbook;
   const workingDraft = workbook?.polish.directions.find(d => d.id === current.signed?.id);
   const candidates = workbook?.plan.directions.find(d => d.id === current.signed?.id)?.candidates;
@@ -293,7 +324,7 @@ export function CopyOutput({
               <p className="mono-label">
                 {'方向 ' + String.fromCharCode(65 + index)}
                 {d.signed?.duty && ' · ' + copyDuties[d.signed.duty]}
-                {d.name === recommended && ' · ' + (recommendationLabel ?? (headlineReview ? '本版推荐' : '旧版推荐'))}
+                {d.name === recommended && ' · ' + (recommendationLabel ?? (engine || headlineReview || ticket?.protocol === 'director-headline-v1' ? '本版推荐' : '旧版推荐'))}
                 {d.name === p.choice && ' · 已选定'}
               </p>
               <h3>
@@ -305,7 +336,33 @@ export function CopyOutput({
         </div>
       </section>
       <section className="block copy-theme" key={current.name}>
-        {renderReview ? renderReview(current.name) : current.signed && headlineReview && ticket ? (
+        {renderReview ? renderReview(current.name) : engine && engineDirection ? (
+          <>
+            <p>{engineDirection.secondary}</p>
+            {current.name === recommended && <p><strong>推荐理由</strong>　{engine.recommendation.reason}</p>}
+            {engine?.protocol === 'director-engine-selection-v2' ? (
+              <>
+                <h3>本方向备选文案</h3>
+                <ul>
+                  {engineCandidates?.filter(candidate => candidate.text !== current.main).map(candidate =>
+                    <li key={candidate.text}>{candidate.text}</li>)}
+                </ul>
+              </>
+            ) : engineCandidates && <details className="research-original">
+              <summary>查看本案创作底稿</summary>
+              <p>{engineDirection.claim}　{engineDirection.mechanism}</p>
+              {engineCandidates.map(candidate => <p key={candidate.text}>
+                <strong>{candidate.text}</strong>　{candidate.text === current.main ? '已选 · ' : ''}{candidate.use}
+              </p>)}
+            </details>}
+          </>
+        ) : ticket?.protocol === 'director-headline-v1' ? (
+          <details className="research-original">
+            <summary>盲读与取舍</summary>
+            {ticket.sloganWorkbook?.second?.map((read,i)=><p key={i}><strong>{i===0?'是否读得懂':'是否愿意转述'}</strong>　{read.output.items.find(item=>item.text===current.main)?.observation}</p>)}
+            <p>{ticket.recommendation.reason}　{ticket.recommendation.tradeoff}</p>
+          </details>
+        ) : current.signed && headlineReview && ticket ? (
           <details className="research-original">
             <summary>本标题的评审与推荐</summary>
             <CopyReviewPanel review={ticket} direction={current.signed} />
@@ -341,6 +398,7 @@ export function CopyOutput({
 }
 
 export function TextStageOutput({
+  correct,
   p,
   id,
   onChoose,
@@ -348,6 +406,7 @@ export function TextStageOutput({
 }: {
   p: Project;
   id: TextStage;
+  correct?: () => void;
   onChoose?: (name: string) => void;
   busy?: boolean;
 }) {
@@ -359,7 +418,7 @@ export function TextStageOutput({
     .join('\n\n');
   switch (id) {
     case 'brief':
-      return <Brief p={p} text={text} name={name} />;
+      return <Brief p={p} text={text} name={name} correct={correct} />;
     case 'research':
       return <Research p={p} />;
     case 'strategy':

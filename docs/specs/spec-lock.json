@@ -1,48 +1,48 @@
 {
   "schemaVersion": 1,
-  "baselineVersion": "1.63.0",
-  "registrySha256": "8b12b7d10beca935c6deb6546b8731760bbb6584aee7beeee5a475fd8290396f",
+  "baselineVersion": "1.159.0",
+  "registrySha256": "370ca19ceb83ed83793749f5555b3245751fca3e33e0640523d00a98a2ef557c",
   "entries": {
     "agent.proposal-director": {
-      "version": "1.1.0",
+      "version": "2.0.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/proposal-director.md": "902175fc14b61bdc072b234c29ef7553014f6860465bd14e436cdfa04908c10d"
+        "docs/agents/proposal-director.md": "53e242b07e93a29713fbf67d0b56c5a38149e38ec72c9cd56d809237dc56378c"
       }
     },
     "agent.brief-owner": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/brief-owner.md": "73c428a80f23e10c5a10c43a3fcbbc419750e7b46419ed81dffb40f7af021fb4"
+        "docs/agents/brief-owner.md": "0d51c353354e284d5cc665884a634e6ed93a5a2b4b01057ce444d3467a1d44af"
       }
     },
     "agent.research-owner": {
-      "version": "1.7.2",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/research-owner.md": "d708528d882b2398cc998389dc3f7b0181f4d7f1f089e0930cb846eeed32c303"
+        "docs/agents/research-owner.md": "3ae46024ee78fe332817b51b0919d3f131e604594698901cd686aec8c2242135"
       }
     },
     "agent.strategy-owner": {
-      "version": "1.6.3",
-      "lifecycle": "current",
-      "files": {
-        "docs/agents/strategy-owner.md": "1cd54bec24fe18b36f3b7367d58a9ba52bf0812efcad8b1a4a780bbcc6d1a0ae"
-      }
-    },
-    "agent.copy-owner": {
       "version": "1.8.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/copy-owner.md": "3cd1d359a344cb508b363b47e8c572689254998323af234f683e2b5a282b8444"
+        "docs/agents/strategy-owner.md": "b1e64096a8a7402680c572a9dc87936f247fd64080e130661b9263526e946103"
+      }
+    },
+    "agent.copy-owner": {
+      "version": "1.10.0",
+      "lifecycle": "current",
+      "files": {
+        "docs/agents/copy-owner.md": "f210d2081e9b2ca50de9cdf458c313a8af3458e9b39bdccbccb7f95aacf94266"
       }
     },
     "agent.visual-owner": {
-      "version": "1.4.0",
+      "version": "1.6.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/visual-owner.md": "800a7404c01712c9afafbdcd46f2db4d92528a0bc3c37f2eff3d604e19bd0baf"
+        "docs/agents/visual-owner.md": "889293498b4f95d684552ae1382a788141d96ef1207ccc5c2a3e27481340b844"
       }
     },
     "agent.layout-owner": {
@@ -95,52 +95,52 @@
       }
     },
     "page.brief": {
-      "version": "1.3.0",
+      "version": "1.4.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/brief.md": "9956e8e5e3949a7acad5877694668b6af1dd6ce466a94f37e715c8a3d99ae4dc"
+        "docs/pages/brief.md": "18cb2d2fbe8872eedd1c888eb6674724f5f1b3b8f337f15d797318e9d0d39dff"
       }
     },
     "page.research": {
-      "version": "1.10.2",
+      "version": "1.15.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/research.md": "1ae7db2444b06e2ac88b8927dbba807e3ccefe06a4a19370eddf08467628e3dd"
+        "docs/pages/research.md": "9ed9364d1509ac6fef0d8da4bf9b823077e9df8ecc1f54d4f3b9ae0c8d5a1bc5"
       }
     },
     "page.strategy": {
-      "version": "1.7.1",
+      "version": "1.9.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/strategy.md": "cf99341207eeee4520351cda41b2e8bee16b92c5136fe25a226ea0225862eec8"
+        "docs/pages/strategy.md": "7e7ef945ccc0d3431dedefa898dc78d05a2494586326078ca5083a6ecb83512c"
       }
     },
     "page.themes": {
-      "version": "1.13.0",
+      "version": "1.16.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/themes.md": "ad74b355f5b61b0c6486b7c54db21d659fe3018b1ddbfab6cbbddc9203600c49"
+        "docs/pages/themes.md": "208830e5c31e7af2760d0e4bb8d6ebe84d9465eda9a5bd3cb5067244c49387d4"
       }
     },
     "page.visual": {
-      "version": "1.8.0",
+      "version": "1.10.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/visual.md": "081139adf04083e576105930a22485bc805df16448b83034ecf1cd575f7a02b1"
+        "docs/pages/visual.md": "1292564e7cb0b6bd0ebe4a35e19ae8d75d51b87ae19cc5564154f55cc6f8ffd0"
       }
     },
     "page.layout": {
-      "version": "1.3.1",
+      "version": "1.7.1",
       "lifecycle": "current",
       "files": {
-        "docs/pages/layout.md": "8ddb1bc2aae14f01423650d3c74969d7c80a2025865ca16078e94224acd48c2b"
+        "docs/pages/layout.md": "3a98017b798aa70238f7434f350ce069ef43c4ce88a010d6c2b6bb75da1b9ff7"
       }
     },
     "page.delivery": {
-      "version": "1.1.0",
+      "version": "1.3.0",
       "lifecycle": "current",
       "files": {
-        "docs/pages/delivery.md": "5b50be5ec09b24b3a9aecbdd48d269f7f4aa814733aebe7ac0f6529313b06b42"
+        "docs/pages/delivery.md": "f35061d92d81f17891ec00eeb688211f530950f083a8a7f8318a1b29d7c27685"
       }
     },
     "page.content_review": {
@@ -186,10 +186,10 @@
       }
     },
     "method.research": {
-      "version": "1.8.0",
+      "version": "1.35.0",
       "lifecycle": "current",
       "files": {
-        "skills/design-research-lead/SKILL.md": "d752baa4bb39be3490b5c4ab1b5fe256b72251bad9cbd7484200cd1ef34917be",
+        "skills/design-research-lead/SKILL.md": "01e52505cdbeddbe950e7d39eebaa75076e0219717749542b6c7938240cc3960",
         "skills/design-research-lead/SKILL.r7.md": "63fc112df891e0525efdec0f6142aa0dbdc73cc4f075c4e86af15769779ee80e",
         "skills/design-research-lead/agents/openai.yaml": "10b555e88fb26eee222ae9dfe2c5af08271a933cf887f7c97ce9911288b13d24",
         "skills/design-research-lead/references/analysis-models.md": "1f749e4b2cafe210e1f2657b9134a879be7544a0636ce0e304e61a0294438b43",
@@ -203,21 +203,21 @@
       }
     },
     "method.strategy-one-pager": {
-      "version": "1.7.0",
+      "version": "1.13.0",
       "lifecycle": "current",
       "files": {
-        "skills/strategy-one-pager/SKILL.md": "9b7b551955e1426524e27d536dee3328dfb6d890605ddf26c0a1256327d8bfad"
+        "skills/strategy-one-pager/SKILL.md": "38d36aa5f9ca7a4f1a8e74cd02da6b0e1354a896f1ecc92fa132011f44452b3a"
       }
     },
     "method.visual": {
-      "version": "1.4.0",
+      "version": "1.37.0",
       "lifecycle": "current",
       "files": {
-        "skills/visual-development-lead/SKILL.md": "1ac395f60e70963163b02670e14663fc571b0635c6be46e37856d1558d4abeaa",
-        "skills/visual-development-lead/references/kv.md": "d3403bc9a373bec1853e02d23c953e1acb0bdf5d15792996a458e5d0688d792b",
-        "skills/visual-development-lead/references/packaging.md": "3a7f3663123243968c9257ce22fe73771a42e31a2435cea6722d35135480eb64",
+        "skills/visual-development-lead/SKILL.md": "089abe2202029c4218966d28a993c902bb45bdca2ed7b5f9c0ab0219a325ff39",
+        "skills/visual-development-lead/references/kv.md": "c2cde9ea5cb6e05c0568da4c2ed7dd3ed85cfd95c8c3873dcc4f47488e0dd994",
+        "skills/visual-development-lead/references/packaging.md": "5fc42d40044503528b2a8e24c014595b1da76f87763954b7d43e8bf6cc5775d6",
         "skills/visual-development-lead/references/records.md": "e313a86b2dff3fe055a44be437bf590b1a24a1102a0512f5036932bc95ec5a97",
-        "skills/visual-development-lead/references/stage-review.md": "a1059333fc2da94e49b15b7be19ba24dacf19e036dc7f9ac2fcc7c48cae68295",
+        "skills/visual-development-lead/references/stage-review.md": "c430df10aa1fbf2f22a0152627ce2001ea2e8e3d613b46098f44de7e5777621c",
         "skills/visual-development-lead/scripts/check-stage.mjs": "73396ea1949f443b4437837a541a4f0f594bf6bae785b5a76ca1fa7c3c3eff75",
         "skills/visual-development-lead/tests/check-stage.test.mjs": "d3e8fa7e48ac35ddaf0d2c585681c224bd6e14230fc133bb32fefe9fdbd93adc"
       }
@@ -241,11 +241,24 @@
         "docs/plans/客户提案结构与排版交接_试行.md": "1f87a59f578e5d35c1221193fb411b881736c5fed097eb149718fb1b087f26aa"
       }
     },
-    "method.proposal-structure": {
+    "method.ppt-slide-script": {
       "version": "1.2.0",
       "lifecycle": "current",
       "files": {
-        "skills/proposal-structure-pilot/SKILL.md": "447d57895d854bf62e7f18b79abeaa7374150c8c33970e074ff3e1901fbb5b25",
+        "skills/ppt-slide-script/SKILL.md": "72cfa3dc7b7358becd8575520f9ea6c99fe3241968a3553810a124450323846d",
+        "skills/ppt-slide-script/references/copy-polish-rules.md": "05d2c05dc5d45adc5a5896bf66a65dce9981667b784038ec9877384f53ae7109",
+        "skills/ppt-slide-script/references/deck-studio-bridge.md": "ffd0358458c700529f1a2d7ddca144ad9710e637ebf24547bed6b3e83aa0f2a5",
+        "skills/ppt-slide-script/references/proposal-blueprints.md": "b680d2ba5fbb91b5ab55c29cd56654706bcbe02f217c6d9745d89625bf8c5488",
+        "skills/ppt-slide-script/references/route-b-ppt-design.md": "7c5c9f55f5bf398b94c7491e32b23118747b6f59c9681c9f85ccdd8b41db037f",
+        "skills/ppt-slide-script/scripts/render_preview.py": "888ecbd2b504d381c48966aca84dfd043462424811fa768b7bafd1f5acfb16d8",
+        "skills/ppt-slide-script/scripts/route_b_kit.py": "bd34afef709498f6d047bc50d310dc656d8606668cc1bf6fd6ce6cecaea22de9"
+      }
+    },
+    "method.proposal-structure": {
+      "version": "1.4.1",
+      "lifecycle": "current",
+      "files": {
+        "skills/proposal-structure-pilot/SKILL.md": "196be13c9b9e03e2be9ce456de5ff5a97c31b35842cdcbf735c0f924ffc4a5a3",
         "skills/proposal-structure-pilot/references/cases.md": "f03492b433044754047cee51b839faad9a093cf81ed0c71721ce1451fd755943",
         "skills/proposal-structure-pilot/references/page-library.json": "3d8a85f43205a27990cdb974438e1fff597b8fcf37167a515648f66a66b37ef3",
         "skills/proposal-structure-pilot/scripts/build_outline.py": "b3575f9a93fe24494de3421e3e266c7761bc267cfeec481f7c7e4bf0817df7a1"
@@ -273,17 +286,17 @@
       }
     },
     "contract.nightflight-stage-output": {
-      "version": "1.25.1",
+      "version": "1.29.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-stage-output.md": "18091bea8a3ab48b90100a2abeb70997aa4f569b4db720812770a92837629db2"
+        "docs/specs/nightflight-stage-output.md": "38d58d8be6cd2705b4e468465cee832ad22013101ba807ca21e3ee4f2ec25162"
       }
     },
     "contract.workflow": {
-      "version": "1.2.1",
+      "version": "1.2.3",
       "lifecycle": "current",
       "files": {
-        "docs/workflows/提案工作流_现行规则.md": "e8024a1b59ff92d0818754c5771247363a1a2b04398782c89db6b30cb03b1d5f"
+        "docs/workflows/提案工作流_现行规则.md": "6abff2a7ad07b83eb2b5fc21efab8805a7c47fd5958adc5a9eaac1d177a140c3"
       }
     },
     "contract.change": {
@@ -322,10 +335,10 @@
       }
     },
     "contract.organization": {
-      "version": "1.1.1",
+      "version": "2.0.0",
       "lifecycle": "current",
       "files": {
-        "docs/agents/README.md": "adc74f7c1ac3e5526df7f7c03675a09976b22c85a4f7ea078622352a8ca58ddf"
+        "docs/agents/README.md": "4333631c95cb172822719775a15cd976775104545f0e906eeab0b08cd69e0ece"
       }
     },
     "contract.pages": {
@@ -497,10 +510,10 @@
       }
     },
     "method.copy-generation": {
-      "version": "1.6.0",
+      "version": "1.14.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/copy-generation.md": "5b86933e94c7865b429c61fce84e734edbb8b4f8226ef82974af9fd60b6b2a86"
+        "docs/specs/copy-generation.md": "b0baeb3ef415e04aa045b3dc7ad43ab7cd31fed2c0dbefd6730f114464caffab"
       }
     },
     "method.slogan-engine": {
@@ -511,17 +524,17 @@
       }
     },
     "contract.nightflight-runtime": {
-      "version": "1.0.5",
+      "version": "1.83.0",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-runtime.md": "590610bc0421f1c653d24df6f8e031a683cb9ceaa461d350df1b7bb96234d9fb"
+        "docs/specs/nightflight-runtime.md": "541a70c5de04c3434436209d97091c4240280a5a489174643798f2d6708fe941"
       }
     },
     "contract.nightflight-final-reader": {
-      "version": "1.0.0",
+      "version": "1.2.3",
       "lifecycle": "current",
       "files": {
-        "docs/specs/nightflight-final-reader.md": "a96abc6dfa8990ce8324066216570eb0adb2dfef7f65f771a2f94c2816ccbcfa"
+        "docs/specs/nightflight-final-reader.md": "6372a40bf0d871e8ddd4a90989dfe1c3fc7d4635648b763f84d7742cbc715d8f"
       }
     }
   },
@@ -532,7 +545,7 @@
     "docs/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "docs/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "docs/storage-retention.md": "940c56a1fe8d75eee3bcc736c43a0324ac09da8e46d4248ae1973c1b5ecc1017",
-    "docs/specs/README.md": "b4cfb7fda63faf2a01d0501a21cf9c5ee6e138eca5d522e754d754b635ef9dd0",
+    "docs/specs/README.md": "8f024abc2a035aa26210a44ea0f794b0c20a5fab889f660019f4cbbedc205ab0",
     "CONTRIBUTING.md": "1e189f6fab04535277d3dae26cb47c406df62b8f10a18146cac3830ff9a1290d",
     "apps/workbench-preview/AGENTS.md": "9ea6ff2b2972869ae81a64ab05ac9f8323f59d3d9d3af346cc2dfde2fae1e312",
     "tools/AGENTS.md": "4bb8d0e01097ace4b3dedb90f0110f6ae708a5ba94c690a31942cceb19812e35"

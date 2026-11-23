@@ -60,7 +60,9 @@ export function Workspace({
             ? '查看研究发现，回答影响方向的问题。'
             : p.research?.digestPending ? '打开研究，重新编辑摘要。' : p.research?.ready ? '查看研究结果，准备好后进入策略。' : p.canRequestStrategy ? '查看已核结论，可带着缺口进入策略。' : '查看研究缺口，补查后再交给策略。'
           : p.stage === 'visual'
-            ? '打开视觉稿，确认是否采用这一版做本地排版。'
+            ? '打开视觉稿，选定要采用的图稿。'
+            : p.stage === 'layout' && p.layoutDraftOnly
+              ? p.layoutMaterialsOnly ? '打开版式，下载本版编稿材料包。' : '打开版式，查看逐页稿和本次交给模型的材料。'
             : '在对话里查看备选方向，选定后继续。'
         : p.status === 'done'
           ? '查看终审记录，下载可编辑提案。'
@@ -86,7 +88,7 @@ export function Workspace({
           <p>
             {researchPaused
               ? '本轮研究暂停：现有依据不足以交给策略。无需作选择。'
-              : p.canRequestStrategy ? '已核发现可交策略负责人撰写，未决问题随稿保留。' : p.error || latest || '项目已建立。'}
+              : p.canRequestStrategy ? '已核发现可用于撰写策略，未决问题随稿保留。' : p.error || latest || '项目已建立。'}
           </p>
           {p.status === 'running' && <span className="block-cursor" />}
         </div>

@@ -21,7 +21,7 @@ func profile(_ role: Capability) -> Profile {
           let value = try? JSONDecoder().decode(Profile.self, from: data) else {
         if role == .text { return Profile(base:"https://api.deepseek.com",model:"deepseek-flash") }
         if role == .image { return Profile(base:"https://api.openai.com/v1",model:"gpt-image-2") }
-        return Profile(base:"https://api.openai.com/v1",model:"gpt-4.1-mini")
+        return Profile(base:"https://api.openai.com/v1",model:"gpt-6.2-sol")
     }
     return value
 }
@@ -44,9 +44,31 @@ func credential(_ account: String, replacing value: String? = nil) throws -> Str
     }
     return key
 }
-final class NoRedirect: NSObject, URLSessionTaskDelegate {
+final class NoRedirect: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    private let lock = NSLock()
+    private var stoppedDuringHandshake = false
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
                     newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) { completionHandler(nil) }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
+        let transactions = metrics.transactionMetrics
+        let requestUnsent = transactions.allSatisfy {
+            $0.secureConnectionEndDate == nil && $0.requestStartDate == nil &&
+                $0.countOfRequestHeaderBytesSent == 0 && $0.countOfRequestBodyBytesSent == 0
+        }
+        lock.lock()
+        stoppedDuringHandshake = !transactions.isEmpty && requestUnsent
+        lock.unlock()
+    }
+
+    func isUnsentHandshakeFailure(_ error: Error?) -> Bool {
+        guard let error = error as NSError?, error.domain == NSURLErrorDomain,
+              error.code == NSURLErrorSecureConnectionFailed,
+              error.userInfo[NSURLErrorFailingURLPeerTrustErrorKey] == nil else { return false }
+        lock.lock()
+        defer { lock.unlock() }
+        return stoppedDuringHandshake
+    }
 }
 func canonical(_ input: String) throws -> URL {
     let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)

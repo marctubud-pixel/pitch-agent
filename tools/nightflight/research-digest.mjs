@@ -105,13 +105,13 @@ export function validateStrategyAdvice(items, digest) {
 export async function editResearchDigest(call, findings, project) {
   const reviewed = findings.some(f => f.editorialAngle);
   const eligible = findings.map((f,findingIndex)=>({findingIndex,visualOnly:f.visualOnly,chapter:f.chapter,conclusion:f.conclusion,evidence:f.evidence,
-    implication:f.implication,caseTakeaways:(f.images ?? []).filter(i=>i.creatorRationale).map(i=>i.takeaway).filter(Boolean),source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).filter(image=>!Object.hasOwn(image,'creatorRationale') || image.creatorRationale).map(image=>image.observation)})).filter(f=>!f.visualOnly && chapters.includes(f.chapter) && (!reviewed || f.angle));
+    implication:f.implication,caseTakeaways:(f.images ?? []).filter(i=>i.creatorRationale).map(i=>i.takeaway).filter(Boolean),source:f.source,angle:f.editorialAngle,observations:(f.images ?? []).filter(image=>image.sameCategory || !Object.hasOwn(image,'creatorRationale') || image.creatorRationale).map(image=>image.observation)})).filter(f=>!f.visualOnly && chapters.includes(f.chapter) && (!reviewed || f.angle));
   if (!eligible.length) return {researchDigest:[],strategyAdvice:[]};
   const productFacts = findings.filter(f => f.chapter === '产品与品牌').map(f => f.conclusion);
   const task = {
     editorial: true,
     rules: [],
-    assignment: '独立研究编辑',
+    assignment: '比稿负责人整理研究摘要',
     context: JSON.stringify({
       project: {title: project.title, brief: project.brief, proposalKind: project.proposalKind, productFacts},
       findings: eligible,
@@ -131,7 +131,7 @@ export async function editResearchDigest(call, findings, project) {
     '删除“摘要未确认样本量”“不能据此推断销量”等逐条局限尾注。若局限确实改变判断，在陈述中缩小范围：渠道数据只说调查中的购买渠道，样本只代表受访者。范围仍说不清或结论不能成立时，舍弃整条。不要删去会改变结论的年份、人群或场景。',
     '相关且口径明确的数据应保留数字、单位、样本范围，原文不能支持的数据一律不写。',
     '不得把相邻品类或外国样本写成本案调查，不下购买效果断言。',
-    'strategyAdvice 写一至三条给策略负责人的具体设计建议，每条的 findingIndices 只引用本版所选 digest 的原 findingIndex，不写市场预测或未经证实的功能承诺。建议应明确在本案的哪个触点、优先讲什么、用什么方式测试。',
+    'strategyAdvice 写一至三条供下一步策略使用的具体设计建议，每条的 findingIndices 只引用本版所选 digest 的原 findingIndex，不写市场预测或未经证实的功能承诺。建议应明确在本案的哪个触点、优先讲什么、用什么方式测试。',
     '只输出客户读得懂的短句，不写流程、来源编号和执行说明。',
   ].join('');
   let correction = '';
@@ -147,4 +147,59 @@ export async function editResearchDigest(call, findings, project) {
       correction='上一次输出未通过校验，请针对以下问题重编：'+error.message;
     }
   }
+}
+
+// These are rewrite triggers, not display limits. Never truncate a qualifier or a quotation.
+function crowdedResearchCopy({conclusion, explanation}) {
+  return [...conclusion].length > 32 || [...explanation].length > 60 ||
+    /[，,；;]\s*(?:但|不过)?(?:不能外推|不能推广|不能据此)/u.test(conclusion) ||
+    [conclusion,explanation].some(text=>/[。！？；;\n]\s*[^“”‘’。！？\s]/u.test(text.trim()));
+}
+
+function keepsSceneComparison(original, edit) {
+  if (original.audienceTopic!=='使用场景') return true;
+  const percentages=row=>(row.conclusion+' '+row.explanation).normalize('NFKC').match(/\d+(?:\.\d+)?%/gu) ?? [];
+  const before=new Set(percentages(original));
+  const after=new Set(percentages(edit));
+  return before.size<2 || [...before].every(value=>after.has(value));
+}
+
+export async function compactResearchPage(call, sections, findings, onEvent, signal, { maxAttempts = 2 } = {}) {
+  const pending = sections.map((row,index)=>({row,index})).filter(({row})=>crowdedResearchCopy(row));
+  if (!pending.length) return sections;
+  const packet = pending.map(({row,index})=>({...row,index,
+    evidence:row.evidenceIndices.map(i=>({source:findings[i].source,quote:findings[i].evidence,passage:findings[i].passage})),
+  }));
+  const rowSchema = {type:'object',additionalProperties:false,required:['index','conclusion','explanation','sourceDetail'],
+    properties:{index:{type:'integer',enum:pending.map(item=>item.index)},conclusion:string,explanation:string,sourceDetail:string}};
+  const responseSchema = {type:'object',additionalProperties:false,required:['edits'],
+    properties:{edits:{type:'array',items:rowSchema}}};
+  const written = [...sections];
+  await onEvent?.('比稿负责人正在精简研究页标题与副文');
+  let remaining = packet;
+  const instruction = '发布前精简自己的文案。每条标题只说一个判断，副文只说一个例子、数字或比较理由。同题场景合并时，副文用一句话并列保留原有的场景和各自的比例，两项合起来就是一个比较。标题用对象和动词限定范围，比如“受访者更愿意……”已交代这是受访者的意愿。“样本仅限……，不能外推……”等说明移到 sourceDetail。避免在标题和副文加上同一个限制尾句。每个 index 只写一次，保留时期、关键条件和原意。仅返回 edits。';
+  try {
+    for (let attempt=0;remaining.length && attempt<maxAttempts;attempt++) {
+      const retry = attempt ? '上一版仍有长句、多个判断或缺项。只处理这次给出的条目，删掉重复解释。' : '';
+      const response = await call(instruction+retry,[],responseSchema,
+        {editorial:true,context:JSON.stringify(remaining)});
+      const edits = response.parsedOutput?.edits;
+      if (!Array.isArray(edits)) continue;
+      const next = [];
+      for (const item of remaining) {
+        const matches = edits.filter(edit=>edit?.index===item.index);
+        const edit = matches[0];
+        if (matches.length===1 && keepsSceneComparison(item,edit) && typeof edit.sourceDetail==='string' &&
+            [edit.conclusion,edit.explanation].every(v=>typeof v==='string' && v.trim()) && !crowdedResearchCopy(edit)) {
+          written[item.index]={...sections[item.index],conclusion:edit.conclusion.trim(),explanation:edit.explanation.trim(),
+            sourceDetail:edit.sourceDetail.trim() || item.sourceDetail || ''};
+        } else next.push(item);
+      }
+      remaining=next;
+    }
+  } catch {
+    signal?.throwIfAborted();
+  }
+  if (remaining.length) await onEvent?.('部分条目未完成精简，已保留对应的有据原句。');
+  return written;
 }

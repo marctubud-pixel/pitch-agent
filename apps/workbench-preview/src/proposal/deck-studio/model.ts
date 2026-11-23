@@ -36,14 +36,14 @@ export type Template =
   | { kind: 'data.hero'; stats: { value: string; unit: string; label: string; }[]; sub: string; chart: Chart; }
   | { kind: 'combo.grid'; items: { item: Media | Chart; cap: string; }[]; }
   | { kind: 'compare.lineup'; items: { image: Media; name: string; desc: string; }[]; sub: string; }
-  | { kind: 'upload.framed'; chart: Chart; }
+  | ({ kind: 'upload.framed'; } & ({ chart: Chart; } | { image: Media; }))
   | { kind: 'summary.list'; points: Pair[]; }
   | { kind: 'summary.statement' | 'summary.question'; statement: string; sub: string; }
   | { kind: 'cover.split'; image: Media; sub: string; meta: string; }
   | { kind: 'cover.type' | 'closing.type'; sub: string; meta: string; }
-  | { kind: 'contents.list'; items: { title: string; page: number; }[]; }
-  | { kind: 'design.half' | 'design.stage'; image: Media; intro: string; points: Pair[]; };
-export type Draft = { id: string; title: string; eyebrow: string; chapter: string; notes: string; caption: string; highlight?: string; template: Template; };
+  | { kind: 'contents.list'; items: { title: string; page?: number; }[]; }
+  | { kind: 'design.half' | 'design.halfR' | 'design.stage'; image: Media; intro: string; points: Pair[]; fit?: 'contain' | 'cover'; };
+export type Draft = { id: string; title: string; eyebrow: string; chapter: string; notes: string; caption: string; highlight?: string; tone?: 'brand' | 'light'; template: Template; };
 export type Theme = { primary: string; accent: string; style: 'business' | 'elegant' | 'modern' | 'editorial' | 'bold' | 'guochao' | 'tech' | 'street' | 'playful' | 'fresh' | 'neon' | 'warm' | 'panel'; mode: 'light' | 'dark'; gradient?:'none'|'soft'|'deep'; fonts?:{display?:string;body?:string}; brandName?:string; brandLogo?:Media; agencyName?:string; agencyLogo?:Media; };
 export type Font = { size: number; face: string; fallback?: string; weight: number; color: string; };
 export type TextNode = Box & Font & {

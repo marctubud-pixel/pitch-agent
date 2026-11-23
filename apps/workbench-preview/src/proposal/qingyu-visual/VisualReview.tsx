@@ -4,6 +4,8 @@ export interface BlindReading {
   action: string;
   words: string;
   alternative: string;
+  model?: string;
+  slogan?: {status:'readable' | 'missing' | 'unreadable'; text:string; location:string};
 }
 
 export interface CandidateReview {
@@ -12,6 +14,8 @@ export interface CandidateReview {
   readings: BlindReading[];
   scores: {role: string; score: number; reason: string}[];
   reason?: string;
+  hardIssues?: string[];
+  selectionHold?: string;
   edit?: string;
   research?: string;
 }
@@ -32,10 +36,19 @@ export function VisualReview({board, order, candidates}: {
           {c.readings.length>1 && <h5>读者 {i+1}</h5>}
           {([['第一眼',b.first],['品牌与品类',b.brand],['画面动作',b.action],['靠读字确认',b.words],['其他读法',b.alternative]] as const)
             .map(([label,value])=>value && <p key={label}><strong>{label}</strong>　{value}</p>)}
+          {b.slogan && <>
+            <p><strong>主标题抄录</strong>　<span style={{whiteSpace:'pre-wrap'}}>{b.slogan.text || (b.slogan.status==='missing' ? '未见主标题' : '无法读清')}</span></p>
+            {b.slogan.location && <p><strong>位置</strong>　{b.slogan.location}</p>}
+            {b.model && <p><strong>读图模型</strong>　{b.model}</p>}
+          </>}
         </div>)}
       </details>}
-      {!!c.scores.length && <details><summary>四岗原分与理由</summary>
-        {c.scores.map(v=><p key={v.role}><strong>{v.role} · {v.score}/5</strong>　{v.reason}</p>)}
+      {c.selectionHold && <p><strong>待并排核对</strong>　{c.selectionHold}</p>}
+      {!!c.hardIssues?.length && <ul className="plain-list" aria-label="待修正事项">
+        {c.hardIssues.map(issue => <li key={issue}>{issue}</li>)}
+      </ul>}
+      {!!c.scores.length && <details><summary>{c.hardIssues ? '四岗意见' : '四岗原分与理由'}</summary>
+        {c.scores.map(v=><p key={v.role}><strong>{v.role}{!c.hardIssues && ' · ' + v.score + '/5'}</strong>　{v.reason}</p>)}
       </details>}
       {c.reason && <p>{c.reason}</p>}
       {c.edit && c.edit!=='无' && <p><strong>改图</strong>　{c.edit}</p>}

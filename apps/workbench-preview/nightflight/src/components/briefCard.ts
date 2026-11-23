@@ -32,6 +32,9 @@ export function briefCard(text: string) {
   )
     .map(rowOf)
     .filter((row): row is Row => Boolean(row));
+  if (explicit && sections.some(s => s.heading === '原稿记录' && s.lines.includes('任务卡格式：客户意向 v1'))) {
+    return { rows: inputs, assumptions: sections.find(s => s.heading === '影响下一步的未知项')?.lines ?? [] };
+  }
   const rows: Row[] = [];
   const add = (label: string, value: string) => {
     if (!value || rows.some((r) => comparable(r.value) === comparable(value))) return;

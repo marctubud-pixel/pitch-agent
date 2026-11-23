@@ -1,9 +1,9 @@
 [
   {
-    "source": "统一夜航研究至策略的直接交接，移除旧策略退回指令。",
+    "source": "混合坚果真实包装原图和发布海报的同原件对照",
     "path": "skills/design-research-lead/SKILL.md",
-    "sourceVersion": "r15-20261116",
-    "sha256": "d752baa4bb39be3490b5c4ab1b5fe256b72251bad9cbd7484200cd1ef34917be"
+    "sourceVersion": "r42-20261121",
+    "sha256": "01e52505cdbeddbe950e7d39eebaa75076e0219717749542b6c7938240cc3960"
   },
   {
     "source": "/Users/marc/Documents/ChatGPT/调研agent/.scratch/deck-studio-integration-20261109/skill-candidate/design-research-lead/SKILL.md",
@@ -102,15 +102,57 @@
     "sha256": "b58aaf06041f5ee16dccec3f04b1643ef81956ef5c9a05e346832bdd0ccddfd5"
   },
   {
-    "source": "夜航所有策略统一使用一页纸，未定载体按条件说明。",
+    "source": "夜航同版实际策略回执的装量、实物陈列与开启方式对照",
     "path": "skills/strategy-one-pager/SKILL.md",
-    "sourceVersion": "v1.7-20261116",
-    "sha256": "9b7b551955e1426524e27d536dee3328dfb6d890605ddf26c0a1256327d8bfad"
+    "sourceVersion": "v1.13.0-20261121",
+    "sha256": "38d36aa5f9ca7a4f1a8e74cd02da6b0e1354a896f1ecc92fa132011f44452b3a"
   },
   {
     "source": "用户提供的 slogan-engine-完整版.md",
     "path": "skills/slogan-engine/SKILL.md",
     "sourceVersion": "20261106-b7900017",
     "sha256": "b79000179b4df961d67acb662e66730bf97df88b7f5d2ca6493fd0beb36bc239"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/SKILL.md",
+    "sourceVersion": "v4",
+    "sha256": "72cfa3dc7b7358becd8575520f9ea6c99fe3241968a3553810a124450323846d"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/copy-polish-rules.md",
+    "sourceVersion": "v4",
+    "sha256": "05d2c05dc5d45adc5a5896bf66a65dce9981667b784038ec9877384f53ae7109"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/deck-studio-bridge.md",
+    "sourceVersion": "v4",
+    "sha256": "ffd0358458c700529f1a2d7ddca144ad9710e637ebf24547bed6b3e83aa0f2a5"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/proposal-blueprints.md",
+    "sourceVersion": "v4",
+    "sha256": "b680d2ba5fbb91b5ab55c29cd56654706bcbe02f217c6d9745d89625bf8c5488"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/references/route-b-ppt-design.md",
+    "sourceVersion": "v4",
+    "sha256": "7c5c9f55f5bf398b94c7491e32b23118747b6f59c9681c9f85ccdd8b41db037f"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/scripts/render_preview.py",
+    "sourceVersion": "v4",
+    "sha256": "888ecbd2b504d381c48966aca84dfd043462424811fa768b7bafd1f5acfb16d8"
+  },
+  {
+    "source": "用户提供的 ppt-slide-script_v4自包含完整技能包.zip",
+    "path": "skills/ppt-slide-script/scripts/route_b_kit.py",
+    "sourceVersion": "v4",
+    "sha256": "bd34afef709498f6d047bc50d310dc656d8606668cc1bf6fd6ce6cecaea22de9"
   }
 ]
