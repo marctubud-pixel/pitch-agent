@@ -1550,6 +1550,7 @@
     "tools/nightflight/runtime-dependencies.test.mjs",
     "tools/nightflight/service.mjs",
     "tools/nightflight/service.test.mjs",
+    "tools/nightflight/slogan-anchors.mjs",
     "tools/nightflight/slogan-workbook.mjs",
     "tools/nightflight/start.mjs",
     "tools/nightflight/strategy-one-pager.mjs",

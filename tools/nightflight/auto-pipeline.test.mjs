@@ -470,3 +470,134 @@ test('writeManuscript in auto mode normalizes prefix/count nitpicks and preserve
   assert.match(comparePage.points[0], /瓶身布满水珠显示冷藏状态.*适合/);
   assert.match(comparePage.points[1], /瓶身居中分隔左右冷暖场景.*适合/);
 });
+
+test('slogan-anchors isolates ceremony vs consumer tiers, sanitizes leaked prefixes, and hard-filters hazards', async () => {
+  const {
+    detectSloganRegister,
+    sanitizeSloganLine,
+    filterSloganCandidates,
+    buildEngineWriteInstruction,
+    buildBlindPickInstruction,
+  } = await import('./slogan-anchors.mjs');
+
+  assert.equal(detectSloganRegister('新锐低度酒品牌「清酌」28度轻型白酒包装+KV'), 'consumer');
+  assert.equal(detectSloganRegister('区域城商行「江城银行」成立20周年行庆主视觉海报'), 'ceremony');
+
+  const consumerPrompt = buildEngineWriteInstruction({ brief: '3-8岁弹性舒适童鞋，父母选购，六一海报' });
+  assert.match(consumerPrompt, /出手即英雄/);
+  assert.match(consumerPrompt, /购买人（掏钱人）/);
+  assert.doesNotMatch(consumerPrompt, /江城有信/);
+
+  const ceremonyPrompt = buildEngineWriteInstruction({ brief: '江城银行20周年行庆主视觉海报' });
+  assert.match(ceremonyPrompt, /江城有信/);
+  assert.match(ceremonyPrompt, /信我·信未来/);
+  assert.doesNotMatch(ceremonyPrompt, /不敬酒，敬这顿饭/);
+
+  assert.equal(sanitizeSloganLine('初选｜降了度数，没降香'), '降了度数，没降香');
+  assert.equal(sanitizeSloganLine('★二十年，把网点开成了街坊'), '二十年，把网点开成了街坊');
+  assert.equal(sanitizeSloganLine('副标：330ml透明小瓶。candidates 首条为初选。'), '330ml透明小瓶');
+
+  const { kept, dropped } = filterSloganCandidates([
+    { text: '初选｜清酌一瓶，刚好一顿', use: 'KV' },
+    { text: '不是少吃，是不用每口都算', use: 'KV' },
+    { text: '慢点跑？童年不签收', use: 'KV' },
+    { text: '松弛感微醺赋能美好生活', use: 'KV' },
+    { text: '不敬酒，敬这顿饭', use: 'KV' },
+  ], { register: 'consumer', dirId: 'C' });
+  assert.deepEqual(kept.map((x) => x.code), ['C1', 'C5']);
+  assert.equal(kept[0].text, '清酌一瓶，刚好一顿');
+  assert.equal(dropped.length, 3);
+  assert.match(buildBlindPickInstruction({ register: 'consumer' }), /本体在场与用户视角/);
+});
+
+test('runCopyReview supports 5 candidates, sanitizes leaked prefixes, and sends filtered candidates to blind pick', async () => {
+  const fullSkill = readFileSync(new URL('../../skills/slogan-engine/SKILL.md', import.meta.url), 'utf8');
+  const brief = '新锐低度酒品牌「清酌」推出28度轻型浓香白酒，330ml透明玻璃小瓶，适合冰饮与佐餐。';
+  let blindGroupsSeen = null;
+  let seq = 0;
+  const call = async (instruction, _images, _schema, task) => {
+    seq++;
+    const phase = instruction.split('\n')[0];
+    const base = { runId: 'r-' + seq, threadId: 't-' + seq, model: 'deepseek-flash', inputPacketHash: String(seq).repeat(64).slice(0, 64) };
+    if (phase === 'COPY_ENGINE_WRITE') {
+      return {
+        ...base,
+        parsedOutput: {
+          directions: [
+            {
+              id: 'A', name: '方向A：清酌轻瓶', basis: '330ml透明玻璃小瓶', claim: '透明小瓶配真纯粮', mechanism: '品牌+小瓶', strategyLink: '承接策略A', secondary: '副标：330ml透明小瓶，28度降度不降香。',
+              candidates: [
+                { text: '初选｜清酌，轻得刚好', use: 'KV' },
+                { text: '不是喝醉，是微醺松弛感', use: 'KV' },
+                { text: '清酌一瓶，刚好一顿', use: 'KV' },
+                { text: '太烈不敢喝？年轻人不签收', use: 'KV' },
+                { text: '28度真纯粮小瓶上桌', use: 'KV' },
+              ],
+            },
+            {
+              id: 'B', name: '下班开瓶', basis: '适合冰饮与佐餐', claim: '冰饮配家常菜', mechanism: '场景+动作', strategyLink: '承接策略B', secondary: '28度轻型浓香，冰过更顺口。',
+              candidates: [
+                { text: '一人一瓶，谁也不劝', use: 'KV' },
+                { text: '冰镇白酒，刚好配菜', use: 'KV' },
+                { text: '饭还没好，先把酒冰上', use: 'KV' },
+                { text: '赋能下班后的极致松弛感', use: 'KV' },
+                { text: '下班两盘菜，冰瓶白酒', use: 'KV' },
+              ],
+            },
+            {
+              id: 'C', name: '反劝酒桌', basis: '28度轻型浓香白酒', claim: '白酒回晚饭桌', mechanism: '态度对仗', strategyLink: '承接策略C', secondary: '宜宾小窖固态发酵，只负责配菜。',
+              candidates: [
+                { text: '★不敬酒，敬这顿饭', use: 'KV' },
+                { text: '这杯不办事，只办一顿饭', use: 'KV' },
+                { text: '白酒不敬人，只敬热菜', use: 'KV' },
+                { text: '不是为了应酬，是为了吃饭', use: 'KV' },
+                { text: '卸下酒局，回到晚饭', use: 'KV' },
+              ],
+            },
+          ],
+          picks: { A: 'A1', B: 'B1', C: 'C1' },
+          authorCheck: {
+            selections: [
+              { directionId: 'A', phrase: '初选｜清酌', takeaway: '轻瓶', sloganReady: true },
+              { directionId: 'B', phrase: '一人一瓶', takeaway: '不劝酒', sloganReady: true },
+              { directionId: 'C', phrase: '★不敬酒', takeaway: '反劝酒', sloganReady: true },
+            ],
+            pairs: [
+              { pair: 'AB', distinct: true, reason: '品牌气质 vs 场景动作' },
+              { pair: 'AC', distinct: true, reason: '品牌气质 vs 态度破局' },
+              { pair: 'BC', distinct: true, reason: '场景动作 vs 态度破局' },
+            ],
+          },
+        },
+      };
+    }
+    if (phase === 'COPY_ENGINE_BLIND_PICK') {
+      blindGroupsSeen = JSON.parse(task.context).groups;
+      return {
+        ...base,
+        parsedOutput: {
+          picks: { A: 'A3', B: 'B1', C: 'C1' },
+          lineNotes: { A: 'A3短脆有画面', B: 'B1自然反劝酒', C: 'C1干脆有态度' },
+        },
+      };
+    }
+    return { ...base, parsedOutput: { directionId: 'C', reason: 'C1最有传播态度' } };
+  };
+  const result = await runCopyReview({
+    call,
+    project: { title: '清酌28度轻型白酒', brief, mode: 'auto', proposalKind: 'kv' },
+    inputs: { texts: [{ name: 'brief.md', text: brief }] },
+    rules: [fullSkill],
+    singleOwner: true,
+  });
+  // Verify debate clichés, stale retorts, and dead words were filtered out BEFORE blind pick!
+  assert.deepEqual(blindGroupsSeen.A.map((x) => x.code), ['A1', 'A3', 'A5']);
+  assert.deepEqual(blindGroupsSeen.B.map((x) => x.code), ['B1', 'B2', 'B3', 'B5']);
+  assert.deepEqual(blindGroupsSeen.C.map((x) => x.code), ['C1', 'C2', 'C3', 'C5']);
+  // Verify leaked prefixes were stripped cleanly
+  assert.equal(result.directions[0], '清酌轻瓶');
+  assert.equal(result.copyReview.draft.directions[0].main, '清酌一瓶，刚好一顿');
+  assert.equal(result.copyReview.draft.directions[2].main, '不敬酒，敬这顿饭');
+  assert.equal(result.copyReview.draft.directions[0].secondary, '330ml透明小瓶，28度降度不降香。');
+  assert.equal(engineCopyHandoffReady(result.copyReview, result.directions, result.body), true);
+});

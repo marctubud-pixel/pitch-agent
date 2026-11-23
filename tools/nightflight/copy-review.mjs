@@ -1,4 +1,5 @@
 import {coreSloganSkill,matchesSourceBasis} from './auto-pipeline.mjs';
+import {buildBlindPickInstruction,buildEngineWriteInstruction,detectSloganRegister,filterSloganCandidates,sanitizeSloganLine,sanitizeSubhead} from './slogan-anchors.mjs';
 import {unsupportedOpeningClaims} from './packaging-quantity.mjs';
 import {invalidOutput} from './call-checkpoints.mjs';
 import {hasWrongOwnNutGroup,ownRecipe,recipeCount} from './product-recipe.mjs';
@@ -157,7 +158,7 @@ const engineDirections = list(object({
   candidates:list(object({text:str, use:str})),
 }));
 const engineDraftSchema = object({directions:engineDirections});
-const enginePicks = object(Object.fromEntries(ids.map(id=>[id,choice([1,2,3,4].map(n=>id+n))])));
+const enginePicks = object(Object.fromEntries(ids.map(id=>[id,choice([1,2,3,4,5].map(n=>id+n))])));
 const enginePairs = ['AB','AC','BC'];
 const engineAuthorCheck = object({
   selections:list(object({directionId:choice(ids),phrase:str,takeaway:str,sloganReady:{type:'boolean'}})),
@@ -180,9 +181,9 @@ function validateEngineDraft(draft, materials) {
     requireThat(d.name===d.name.trim() && d.name.length<=100 &&
       [d.name,d.claim,d.mechanism,d.strategyLink,d.secondary,...d.candidates.map(c=>c.text)].every(text=>!/[\r\n]/.test(text)),
       '方向名、文案和文案说明须分别为单行');
-    requireThat(d.candidates.length>=3 && d.candidates.length<=4 &&
+    requireThat(d.candidates.length>=3 && d.candidates.length<=5 &&
       new Set(d.candidates.map(c=>normalize(c.text))).size===d.candidates.length &&
-      d.candidates.every(c=>normalize(c.text)), '每个方向需要三到四条不同的原候选');
+      d.candidates.every(c=>normalize(c.text)), '每个方向需要三到五条不同的原候选');
     requireThat(!materials || matchesSourceBasis(materials,d.basis),'方向 '+d.id+' 的依据无法定位到当前上游原文');
   }
 }
@@ -304,20 +305,35 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
   }
 
   const leanSkill = project.mode==='auto' ? coreSloganSkill(skill) : skill;
-  await onEvent?.('DeepSeek 写作 Agent 正在按三差异轴起稿');
+  const register = detectSloganRegister(project.brief);
+  await onEvent?.('DeepSeek 写作 Agent 正在按' + (register==='ceremony' ? '仪式档' : '三差异轴') + '起稿');
   const {output:writing,receipt:written}=await run(enginePhases[0],
     [
-      '你是本次写作 Agent。沿用当前 Brief、研究与策略，严格执行原版 slogan-engine 01–05 步定位物料和受众。从本案有依据的事实与读者此刻的动作、关系、情境或感受之间，按三条彻底拉开的差异轴创作三个独立创意主题：',
-      '- 方向 A（产品实证轴）：死磕一个可验证的具体产品事实/物理特征，让事实本身成为记忆钩子；',
-      '- 方向 B（场景动作轴）：锁死一个具体的日常动作、时刻或使用场景，让读者一看就有画面；',
-      '- 方向 C（情绪关系轴）：击中目标人群的真实心理落差或社交关系，优先用短动词强对仗打出金句张力（包装已露品名或情绪轴时，可用“52度/酒局/脆/7天”等强品类特征词替代完整长SKU名，把字数省给动作反差）。',
-      '三案中至少一条显性承接 Brief 的核心规格或秩序资产（如容量、度数、分装数量）。主标优先控制在 10–14 字以内（方便海报与包装大字排版），口语自然好念，换三个无关品类绝对套不上。直接列品牌型号、价格、场次、时段、预约或试穿条件只完成了告知，放进副标 secondary。',
-      '依据 basis 从当前材料摘取一处简短连续原文。claim 写本案主张，mechanism 写哪两个具体事物怎样相连，strategyLink 写如何承接策略。按 A、B、C 返回 directions。每案保留围绕同一连接的三到四条不同候选（A1、A2 等编号）和各自用法，另写同案通用的简洁支撑副标 secondary。作为创作者从每案原候选初选一句填入 picks 并填写 authorCheck，整组推荐交给负责人。',
+      buildEngineWriteInstruction({brief:project.brief,register}),
       engineFactInstruction,
       '按系统给出的 JSON Schema 交稿。顶层的三个字段 directions、picks、authorCheck 并列。三案各填规定字段。authorCheck 中只有 selections 和 pairs。',
     ].join('\n'),
     engineWriterSchema,source,[leanSkill,'包装方向的 slogan 用于命名和呈现提案主题。候选用途写提案页或明确委托的其他传播触点。包装本体的印字以简报确认的产品信息为准。']);
   requireThat(writing && Object.keys(writing).every(key=>Object.hasOwn(engineWriterSchema.properties,key)),'写作 Agent 交稿包含意外字段');
+  if (Array.isArray(writing.directions)) {
+    for (const d of writing.directions) {
+      if (typeof d?.name === 'string') d.name = sanitizeSloganLine(d.name) || d.name.trim();
+      if (typeof d?.secondary === 'string') d.secondary = sanitizeSubhead(d.secondary) || d.secondary.trim();
+      if (Array.isArray(d?.candidates)) {
+        for (const c of d.candidates) {
+          if (typeof c?.text === 'string') c.text = sanitizeSloganLine(c.text) || c.text.trim();
+        }
+      }
+    }
+  }
+  if (Array.isArray(writing.authorCheck?.selections)) {
+    for (const sel of writing.authorCheck.selections) {
+      if (typeof sel?.phrase === 'string') {
+        const cleaned = sanitizeSloganLine(sel.phrase);
+        if (cleaned && cleaned !== sel.phrase) sel.phrase = cleaned;
+      }
+    }
+  }
   validateEngineDraft({directions:writing.directions});
   if (project.briefScope?.types?.includes('packaging') || /包装|外盒|小袋|瓶标|手撕/u.test(project.brief)) {
     validatePackagedCopyFacts(writing.directions,[project.brief,...source.feedback.map(entry=>entry.text)].filter(nonempty).join('\n'));
@@ -370,14 +386,14 @@ async function runEngineCopy({call, project, inputs, rules, onEvent}) {
   let blindNotes;
   if (project.mode==='auto' || project.blindCopyPick===true) {
     try {
-      await onEvent?.('独立空白盲读正在只看纯句子优选每案主标');
-      const pureGroups = Object.fromEntries(workbook.directions.map(d=>[
-        d.id,
-        d.candidates.map((c,i)=>({code:d.id+(i+1),text:c.text})),
-      ]));
+      await onEvent?.('独立空白盲读正在经硬过滤后优选每案主标');
+      const pureGroups = Object.fromEntries(workbook.directions.map(d=>{
+        const {kept}=filterSloganCandidates(d.candidates,{register,dirId:d.id});
+        return [d.id,kept.map(({code,text})=>({code,text}))];
+      }));
       const {output:blindOut,receipt:blindRec}=await run('COPY_ENGINE_BLIND_PICK',
-        '你是独立空白盲读读者（不看任何 Brief、品牌背景或策略，只看这三组纯中文句子）。按 slogan-engine 七道闸逐组挑出唯一最佳的一句编号（A/B/C 各选 1 个 code）：1) 零背景 2 秒能懂且像人话；2) 换三个无关品类绝对套不上；3) 有具体动作、画面或心理张力且字数适合大字排版。lineNotes 用一句简短口语写每条入选句的真实路人读感。',
-        engineBlindPickSchema,{groups:pureGroups});
+        buildBlindPickInstruction({register}),
+        engineBlindPickSchema,{categoryHint:project.title || '',register,groups:pureGroups});
       const validBlind = ids.every(id=>{
         const dirObj=workbook.directions.find(d=>d.id===id);
         const code=blindOut?.picks?.[id];
