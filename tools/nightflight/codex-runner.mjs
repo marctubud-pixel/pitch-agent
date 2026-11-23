@@ -11,6 +11,7 @@ import {readManuscriptPlan} from './manuscript.mjs';
 import {reviewFinalDeck} from './final-review.mjs';
 import {compactResearchPage,editResearchDigest} from './research-digest.mjs';
 import {searchVisualImages} from './public-visual-search.mjs';
+import {humanBrowseVisualReferences} from './human-visual-search.mjs';
 import {locatedPackagingMarks,prioritizePackagingRows} from './research-packaging.mjs';
 import {researchCompetitors} from './research-competitors.mjs';
 import { spawn, execFile } from 'node:child_process';
@@ -1091,7 +1092,7 @@ function publicVisualCandidate(item,direction,imageId) {
   return {...item,direction,imageId,name:'public-'+hash(direction+' '+item.sha256).slice(0,28)+(item.mediaType==='image/png'?'.png':'.jpg')};
 }
 
-async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, onEvent, referenceTasks, paper}) {
+async function prepareVisualPlans({project, images, active, call, dir, signal, search, searchCases, humanSearch, carriers = [], onEvent, referenceTasks, paper}) {
   const pool = [...images];
   const seen = new Set(images.map(i=>i.sha256));
   function addCandidates(items, direction) {
@@ -1101,7 +1102,8 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
       pool.push(publicVisualCandidate(item,direction,'public_'+item.sha256.slice(0,24)));
     }
   }
-  const knownReferences=[...(project.previousReferences ?? []),...(project.researchReferences ?? [])];
+  // Competitor research images stay in research/comparator boards and are never auto-mixed into art-direction references.
+  const knownReferences=[...(project.previousReferences ?? [])];
   const measured=paper ? await independentCalls(knownReferences,async image=>{
     if (image.width>0 && image.height>0) return image;
     const size=await inspectImage(await readFile(image.path),{pythonBinary:await pythonBinary()});
@@ -1116,6 +1118,7 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
   const diagnostics = [];
   const attempted = new Set();
   const directionSearches = new Map();
+  const humanSearched = new Set();
   const history = [];
   const observations = new Map();
   const accepted = new Map();
@@ -1186,6 +1189,26 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
     }
     catch (error) {
       if (!error.missing) throw error;
+      if (humanSearch) {
+        const humanPending = error.missing.filter(direction => !humanSearched.has(direction));
+        if (humanPending.length) {
+          const known = pool.length;
+          for (const direction of humanPending) {
+            humanSearched.add(direction);
+            signal?.throwIfAborted();
+            const creative = project.copyReview?.draft?.directions?.find(d => d.name === direction) ?? null;
+            try {
+              const found = await humanSearch({brief: project.brief, direction, creative, carriers});
+              if (found?.length) addCandidates(found, direction);
+              diagnostics.push(`${direction} / 类人看图搜图，新增 ${found?.length ?? 0} 张`);
+            } catch (err) {
+              signal?.throwIfAborted();
+              diagnostics.push(`${direction} / 类人看图搜图跳过：${String(err.message).slice(0, 120)}`);
+            }
+          }
+          if (pool.length > known) continue;
+        }
+      }
       if (!searchedCases && category && searchCases) {
         searchedCases=true;
         const known=pool.length;
@@ -1387,7 +1410,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
       };
       const referenceProject={...project,strategyText:strategyPurpose};
       const referenceTasks=desktop ? await describeReferenceTasks({call,project:referenceProject,active:directions,carriers}) : undefined;
-      const plans = await prepareVisualPlans({call,project:referenceProject,images:inputs.images,active:directions,dir,signal,search,searchCases,onEvent,referenceTasks,paper:posterPaper});
+      const humanSearch = visualSearch ? undefined : (args => humanBrowseVisualReferences({...args, call, dir, signal, onEvent}));
+      const plans = await prepareVisualPlans({call,project:referenceProject,images:inputs.images,active:directions,dir,signal,search,searchCases,humanSearch,carriers,onEvent,referenceTasks,paper:posterPaper});
       const seen = new Set(), directionBatches = [];
       for (const direction of directions) {
         const batch = [], images = [];
