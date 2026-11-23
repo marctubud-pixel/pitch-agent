@@ -1452,6 +1452,8 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
           .filter(Boolean);
         const generationReferences = handoff.references.filter(ref=>ref.role==='main'||ref.role==='sharedBrand');
         const generationImages = references.filter(image=>generationReferences.some(ref=>ref.sha256===image.sha256));
+        const mainImageSha = handoff.references.find(ref => ref.role === 'main')?.sha256;
+        const backupMainImage = references.find(image => image.roleHint === 'backup' && image.sha256 !== mainImageSha) ?? null;
         const sourceImages = best ? [best.image, ...generationImages] : generationImages;
         let posterReference;
         if (checkPosterTransfer) {
@@ -1513,15 +1515,23 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
             best ? '第一张输入图为上一批原稿。保留成立处，结合用户意见和前版问题改稿。'+best.visual.reason : '',
             '完成后简述设计。指定方向：'+JSON.stringify(direction),
           ].filter(Boolean).join('\n');
+          const useBackupStyle = desktop && !posterReference && !revision && index === 2 && Boolean(backupMainImage);
           const input = {...generationContext,transfer,...(revision ? {revision,previousTransferCriteria} : {})};
-          const slotAux = desktop && !posterReference && auxiliaryImages[index] ? [auxiliaryImages[index]] : [];
+          const slotAux = desktop && !posterReference
+            ? (useBackupStyle ? (auxiliaryImages[0] ? [auxiliaryImages[0]] : []) : (auxiliaryImages[index] ? [auxiliaryImages[index]] : []))
+            : [];
           const baseAttached = revision?.referenceInput==='observations'
             ? generationImages.filter(image=>image.sha256!==posterReference.image.sha256)
-            : sourceImages;
+            : useBackupStyle
+              ? sourceImages.map(image => image.sha256 === mainImageSha ? backupMainImage : image)
+              : sourceImages;
           const attached = [...baseAttached, ...slotAux.filter(aux => !baseAttached.some(img => img.sha256 === aux.sha256))];
+          const finalInstruction = useBackupStyle
+            ? `${instruction}\n【半发散备选画风】本稿改用同方向备选主参考（另一种美术表现手法/媒介），以不同画风重新演绎本方向核心主张，与前两稿拉开肉眼可见的美术差异。`
+            : instruction;
           const attempt = desktop
-            ? await generateVisualWithDesktopModels({call,images:attached,context:input,drawingBrief:instruction,posterSlogan,packaging,posterReference})
-            : {result:await call(instruction,attached,null,{delegate:true,context:JSON.stringify(input)})};
+            ? await generateVisualWithDesktopModels({call,images:attached,context:input,drawingBrief:finalInstruction,posterSlogan,packaging,posterReference})
+            : {result:await call(finalInstruction,attached,null,{delegate:true,context:JSON.stringify(input)})};
           if(revision && seen.has(hash(attempt.result.original.bytes))) return null;
           return saveVisual(attempt,index,transfer,attached,undefined,revision);
         }

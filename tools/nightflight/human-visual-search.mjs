@@ -783,6 +783,7 @@ export async function humanBrowseVisualReferences({
   creative = null,
   quadrant = null,
   aestheticCues = null,
+  avoidVisualModes = [],
   carriers = [],
   includeAuxiliary = false,
   dir,
@@ -800,7 +801,7 @@ export async function humanBrowseVisualReferences({
     ? '【本方向为「放大产品/品牌特征」】严禁死锁本品类常规图！请先在 thinking 中做一步「卖点 → 视觉构成语法/视觉锤转译」（例如：微分子→水滴点阵粒子构成、100%真茶真奶→超级数字+波普网点、透明不藏→玻璃折射/透视显影），再刻意跨行业去搜这种视觉手法的高审美大师参考！'
     : dirMode === 'emotion'
       ? `【本方向为「用户氛围 / 情绪共鸣」】重点锁住目标人群的真实使用场景、松弛人物动作或文化意境；可参考研究审美线索：${cues.guidance}`
-      : `【本方向为「稳健延续 / 品类标杆」】重点锁住本品类/节令的高水准成熟标杆表达，安全、高级、易过稿；可参考研究审美线索：${cues.guidance}`;
+      : `【本方向为「稳健延续 / 同品类成熟标杆」】必须优先搜**本品类（或强相关同赛道品类）的成熟高审美商业做法**！若 Brief 带有节日/节令（如端午、中秋、春节），必须把「同品类 + 节令/主题」绑在一起搜（例如：白酒 端午 海报、酒 端午 视觉、白酒 节气 海报），绝对不要漂移到无关行业或纯艺术抽象图！可参考研究审美线索：${cues.guidance}`;
   const workDir = join(dir, 'human-visual-search', `${trackId}-${sha256(direction || brief).slice(0, 8)}`);
   await mkdir(workDir, {recursive: true, mode: 0o700});
 
@@ -819,22 +820,33 @@ export async function humanBrowseVisualReferences({
     signal,
   });
 
-  // Step 1: Associative cross-category query planning (+ social keyword packs)
+  // Step 1: Associative query planning tailored to the 3 native business directions (+ social keyword packs)
   const effectiveSources = dirMode === 'feature'
     ? [
-        {adapter: 'huaban', lang: 'zh', hint: '2个中文【跨界视觉构成手法词】，严禁写普通品类词！例如：微分子→「点阵 粒子 海报」或「水滴 构成 视觉」、透明→「玻璃 折射 海报」、100%真茶奶→「波普 网点 海报」'},
-        {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【不同角度的视觉隐喻/图形手法词】，例如「微粒 艺术 海报」「流体 字体 创意」「几何 构成 海报」'},
-        {adapter: 'bpando', lang: 'en', hint: '2-3个英文【视觉手法词】，如 dot matrix poster / particle graphic / minimal typography'},
-        {adapter: 'colossal', lang: 'en', hint: '2个英文【艺术构成手法词】，如 droplet installation / optical art'},
+        {adapter: 'huaban', lang: 'zh', hint: '2个中文【跨界平面/插画视觉构成手法词】，严禁写普通品类词！例如：微分子→「点阵 粒子 海报」或「水滴 插画 海报」、透明→「玻璃 折射 海报」、100%真茶奶→「波普 网点 海报」'},
+        {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【不同美术媒介的视觉隐喻海报词】，如「微粒 平面 构成」「水滴 点阵 艺术」「流体 字体 海报」，严禁搜地毯/纯暗黑装置'},
+        {adapter: 'bpando', lang: 'en', hint: '2-3个英文【视觉手法海报词】，如 dot matrix poster / particle graphic / minimal typography'},
+        {adapter: 'openverse', lang: 'en', hint: '2-3个英文【清透微距/粒子构成视觉词】，如 water droplets minimal / optical refraction'},
       ]
-    : track.sources;
+    : dirMode === 'steady' && trackId === 'poster'
+      ? [
+          {adapter: 'huaban', lang: 'zh', hint: '2个中文【同品类+节令/主题海报词】，必须锁死本品类！例如白酒端午→「白酒 端午 海报」或「酒 端午 海报」；茶饮夏季→「茶饮 夏日 海报」'},
+          {adapter: 'huaban', lang: 'zh', hint: '第2组2个中文【同品类成熟商业KV词】，如「白酒 节气 海报」「酒类 视觉海报」「光瓶酒 海报」'},
+          {adapter: 'digitaling', lang: 'zh', hint: '1-2个中文【同品类品牌战役短词】，如「白酒 端午」或「白酒 海报」'},
+          {adapter: 'bpando', lang: 'en', hint: '2-3个英文【同品类标杆海报词】，如 spirits campaign poster / liquor bottle poster'},
+        ]
+      : track.sources;
+
+  const avoidNote = Array.isArray(avoidVisualModes) && avoidVisualModes.length
+    ? `\n【跨方向防撞车硬要求】其他方向已占用以下视觉手法/媒介：${avoidVisualModes.join('、')}。本方向必须主动切换到完全不同的美术媒介或视觉转译手法，严禁与已占用方向撞风格！`
+    : '';
 
   await onEvent?.(`「${direction || track.name}」按【${track.name}】模式联想拆词搜图`);
   const planResp = await call(
     `你是资深广告美术指导，正在为以下 Brief 的【${track.name}】方向找视觉参考图。
 Brief 摘要：${String(brief).slice(0, 420)}
 当前创意方向：${direction || '主方向'}${creative?.main ? `（主张：${creative.main}）` : ''}
-方向搜图心法：${modeGuidance}${quadrant?.quadrant ? `\n防撞车参考提示：请与其他方向拉开视觉表现差异（可参考切角：${quadrant.quadrant}；若 Brief 已指定画风则以 Brief 为准，不硬套固定画风）。` : ''}
+方向搜图心法：${modeGuidance}${avoidNote}${quadrant?.quadrant ? `\n防撞车参考提示：请与其他方向拉开视觉表现差异（可参考切角：${quadrant.quadrant}；若 Brief 已指定画风则以 Brief 为准，不硬套固定画风）。` : ''}
 本方向目标：${track.goal}
 找图规则：${track.humanRule}
 安全要求：只用通用品类和公开视觉词，不泄漏客户/品牌名、项目名、联系人或未公开配方。
@@ -893,18 +905,26 @@ ${effectiveSources.map((s, i) => `${i + 1}. adapter="${s.adapter}" (${s.lang}): 
     const allowedAdapters = [...new Set(track.sources.map(s => s.adapter))].join(', ');
     const allowedAdapterHints = [...new Set(track.sources.map(s => `${s.adapter}(${s.lang === 'zh' ? '中文1-2短词' : '英文2-3词'})`))].join(' / ');
 
+    const scanPrinciple = dirMode === 'steady'
+      ? `⚠️ 【稳健延续方向挑图心法（优先同品类成熟高审美标杆！）】：
+- 本方向要找的是**同品类（或强相关同赛道品类）的成熟高审美商业标杆**（若带节令如端午，优先选同品类节令/节气商业海报）！
+- 重点看：产品主体摆放是否稳健高级、节令/品类视觉元素融合是否自然、字图留白层级是否成熟易过稿。
+- 坚决刷掉：无关行业跑偏图、纯艺术抽象海报、纯 Logo 字标卡、土味促销大字报、PPT 策略分析图/示意图。`
+      : `⚠️ 最关键的「借三改二」挑图心法（严禁死板找同款！）：
+- 你不是在找已经长成一模一样产品的竞品同款，而是在找**视觉骨架/表现手法足够高级、拿来改掉两样（产品/颜色/品牌字）就能用**的设计参考！
+- 只要原图的**构图、光影、构成语法、空间尺度或版式比例**足够高级，即使品类或颜色不同，也大胆点进去翻图！
+- 真正应该刷掉的是：**纯 Logo 字标卡、土味促销大字报、PPT 策略分析图/示意图、毫无空间感的纯平面（针对活动类）**。`;
+
     await onEvent?.(`「${direction || track.name}」第 ${round} 轮九宫格扫图（${coverItems.length} 个项目）`);
     const scanResp = await call(
       `你是资深广告美术指导，正在「扫一屏项目封面图」（红底白字 #1 到 #${coverItems.length}）。
 当前任务：【${track.name}】—— ${track.goal}
+方向心法：${modeGuidance}
 方向规则：${track.humanRule}
 当前来源：
 ${coverItems.map(c => `#${c.index}: [${c.project.source}] ${c.project.title}`).join('\n')}
 
-⚠️ 最关键的「借三改二」挑图心法（严禁死板找同款！）：
-- 你不是在找已经长成一模一样产品的竞品同款，而是在找**视觉骨架足够高级、拿来改掉两样（产品/颜色/品牌字）就能用**的设计参考！
-- 只要原图的**构图、光影、空间尺度、立面结构或标签留白比例**足够高级，即使品类或颜色不同，也大胆点进去翻图！
-- 真正应该刷掉的是：**纯 Logo 字标卡、土味促销大字报、PPT 策略分析图/示意图、毫无空间感的纯平面（针对活动类）**。
+${scanPrinciple}
 
 请输出：
 1. eyeImpression：一句话评这屏图的视觉骨架上限与可借鉴度。
@@ -969,19 +989,25 @@ ${coverItems.map(c => `#${c.index}: [${c.project.source}] ${c.project.title}`).j
     path: c.path,
   })), finalGridPath);
 
+  const pickPrinciple = dirMode === 'steady'
+    ? '- 本方向是【稳健延续 / 同品类标杆】，**必须优先挑同品类（或强相关同赛道品类）的成熟高审美商业海报/KV 单帧**（若带节令如端午，优先选同品类节令商业海报），看产品主位构图、节令融合度与高级商业质感！无关行业图只有在整桌没有合格同品类图时才可退而求其次。'
+    : '- 挑的是**视觉骨架/表现手法最高级、拿来改掉品牌/颜色/产品就能出大片**的那 1 张单帧！原图品类/颜色/品牌名不同完全没关系，只要构图、光影、构成语法、空间尺度或版式比例够高级，就可以选！';
+
   const pickResp = await call(
     `你是 4A 资深美术指导。两轮扫图+进详情页后，桌面上摊开了这 ${finalPool.length} 张单帧大图（编号 #1 到 #${finalPool.length}）。
 任务：【${track.name}】—— ${track.goal}
+方向心法：${modeGuidance}
 方向规则：${track.humanRule}
 
 ⚠️ 「借三改二」终选原则：
-- 挑的是**视觉骨架最高级、拿来改掉品牌/颜色/产品就能出大片**的那 1 张单帧！原图品类/颜色/品牌名不同完全没关系，只要构图、光影、空间尺度或版式比例够高级，就可以选！
+${pickPrinciple}
 - **绝对硬红线（一票否决，严禁选中！）**：
   1. **PPT 策略分析页 / 概念示意图 / 原理图 / 三栏文字拆解图 / 手绘图表 / 信息表** —— 一律淘汰！
   2. **多图拼版 / 左右分屏 / 三联拼图（collage/trio）** —— 一律淘汰，只要干净单帧！
   3. **纯 Logo 字标卡 / 微信表情条 / 纯平面活动预告（对活动类）** —— 一律淘汰！
   4. **同款雷同重复图**：同一套空间或同一款产品若出现多张雷同视角，只留构图最好的一张，其余必须淘汰！
 - **编号自检**：输出的 top1Index 整数必须与 whyTop1 中提到的图号完全一致！
+- **半发散备选要求**：top2Index（同方向第 3 稿「半发散」备选主参考）**必须与 top1Index 在美术表现手法或媒介上有明显区分**（例如 top1 是实拍/摄影，top2 优先选插画/平面构成/强排版；或 top1 是点阵构成，top2 选光学折射/微距流体），绝不选和 top1 同画风的雷同图！
 - 只有当整桌图全踩上述硬红线时，才设 fallbackToArtDirection=true、top1Index=0。`,
     [{path: finalGridPath, mediaType: 'image/jpeg'}],
     PICK_SCHEMA,
@@ -1003,6 +1029,7 @@ ${coverItems.map(c => `#${c.index}: [${c.project.source}] ${c.project.title}`).j
       mediaType: item.mediaType,
       width: item.width,
       height: item.height,
+      source: item.source || '公开来源',
       title: item.title,
       pageUrl: item.pageUrl,
       sourceUrl: item.sourceUrl,
@@ -1074,6 +1101,7 @@ ${auxSlots.map((s, i) => `${i + 1}. slot="${s.slot}" (${s.label}): ${s.focus}`).
               label: s.label,
               focus: s.focus,
               query: q,
+              source: h.source || adapterKey,
               hitTitle: h.title || q,
               pageUrl: h.projectUrl || h.coverUrl,
               dl,
@@ -1088,7 +1116,7 @@ ${auxSlots.map((s, i) => `${i + 1}. slot="${s.slot}" (${s.label}): ${s.focus}`).
         const auxGridPath = join(workDir, 'aux_grid.jpg');
         await buildGrid(auxCandidates.map(c => ({
           index: c.index,
-          label: `${c.label.slice(0, 8)} | ${c.hitTitle.slice(0, 14)}`,
+          label: `${c.source} · ${c.label.slice(0, 6)} | ${c.hitTitle.slice(0, 12)}`,
           path: c.dl.path,
         })), auxGridPath);
         const auxScreenSchema = {
@@ -1110,10 +1138,10 @@ ${auxSlots.map((s, i) => `${i + 1}. slot="${s.slot}" (${s.label}): ${s.focus}`).
         const screenResp = await call(
           `你是 4A 美术指导，正在审核 3 个辅助参考槽位的候选图（编号 #1 到 #${auxCandidates.length}）。
 候选清单：
-${auxCandidates.map(c => `#${c.index} [槽位:${c.slot} / ${c.label}] ${c.hitTitle}（需要：${c.focus}）`).join('\n')}
+${auxCandidates.map(c => `#${c.index} [槽位:${c.slot} / ${c.label} / 来源:${c.source}] ${c.hitTitle}（需要：${c.focus}）`).join('\n')}
 严苛筛选原则：
 - 为每个槽位只挑 1 张真正贴题、高审美、干净单帧的编号；
-- 凡是跑题（如搜端午却出护手霜、搜微醺却出无关人物照）、低清糊图、多图拼版、PPT示意图的，一律拒绝！如果某个槽位没有一张合格，chosenIndex 必须填 0（宁缺毋滥）！`,
+- 【硬性淘汰红线】：凡是**纯美妆/口红人像特写、鞋服/球鞋穿搭、护手霜/日化无关商品、与本案品类及海报语境毫无关系的自拍/网红照**、低清糊图、多图拼版、PPT示意图的，一律拒绝！如果某个槽位没有一张合格，chosenIndex 必须填 0（宁缺毋滥）！`,
           [{path: auxGridPath, mediaType: 'image/jpeg'}],
           auxScreenSchema,
           {delegate: true, assignment: `视觉3辅九宫格筛图(${trackId})`, context: ''},
@@ -1129,6 +1157,7 @@ ${auxCandidates.map(c => `#${c.index} [槽位:${c.slot} / ${c.label}] ${c.hitTit
             mediaType: pickedAux.dl.mediaType,
             width: pickedAux.dl.width,
             height: pickedAux.dl.height,
+            source: pickedAux.source || '公开来源',
             title: `[辅·${pickedAux.label}] ${pickedAux.hitTitle}`,
             pageUrl: pickedAux.pageUrl,
             sourceUrl: pickedAux.dl.sourceUrl,
