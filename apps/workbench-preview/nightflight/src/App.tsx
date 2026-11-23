@@ -19,7 +19,12 @@ import {
   type Summary,
 } from './live';
 import { STAGES } from './data/project';
-import { buildExecutionStreams, deriveBotStatus, deriveChatMessages } from './components/stageText';
+import {
+  buildExecutionStreams,
+  deriveBotStatus,
+  deriveChatMessages,
+  deriveProjectHeading,
+} from './components/stageText';
 import type { Mode, StageId } from './types';
 
 const hash = () => location.hash.slice(1);
@@ -239,7 +244,7 @@ export function App() {
         status={botStatus ? `${botStatus.label} · ${botStatus.detail}` : undefined}
       />
       <TopBar
-        projectTitle={workspace ? p.title : undefined}
+        projectTitle={workspace ? deriveProjectHeading(p).topBarTitle : undefined}
         inWorkspace={workspace}
         onHome={() => navigate('/')}
         chatOpen={chat}

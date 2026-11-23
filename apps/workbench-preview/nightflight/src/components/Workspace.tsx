@@ -6,6 +6,7 @@ import { DeckPreview } from './DeckPreview';
 import {
   buildExecutionStreams,
   deriveBotStatus,
+  deriveProjectHeading,
   deriveWorkspaceTasks,
   isPrimaryReadableDoc,
   stageDocumentBlurb,
@@ -155,6 +156,7 @@ export function Workspace({
   const pendingTasks = tasks.filter((t) => t.status === 'pending');
   const doneTasks = tasks.filter((t) => t.status === 'done');
 
+  const heading = deriveProjectHeading(p);
   const doneStages = STAGES.filter((s) => phase(p, s.id) === 'done');
   const latestBusiness = events.at(-1)?.text;
   const hasLayoutDraft = p.artifacts.some(
@@ -268,8 +270,8 @@ export function Workspace({
         <h2 className="col-title col-title-gap">接下来</h2>
         <p className="next-text">{next}</p>
         <h2 className="col-title col-title-gap">项目</h2>
-        <p className="project-name">{p.title}</p>
-        <p className="project-brief">{p.brief}</p>
+        {heading.cardTitle && <p className="project-name">{heading.cardTitle}</p>}
+        {heading.cardBrief && <p className="project-brief">{heading.cardBrief}</p>}
         <dl className="stats">
           <div>
             <dt>阶段</dt>

@@ -2251,7 +2251,7 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "ceff08be4a8b038c4af3c9d59b3cee4f9ea1732d04c9a557f62c35b4c2eb66a3",
+      "sha256": "e9d948cf9a086a4183870bfa3b2968eac3581e88855913e3ef7b2c8e7c999553",
       "reason": "接入人话业务执行流、动态主理人状态与里程碑汇报对话，默认折叠底层 API 明细并统一正式 Slogan。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
@@ -2287,7 +2287,7 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "01688d0ef5468230f3c29b4ceb52ca8d6b3ece24f325770f20f4d0a5d7198ef3",
+      "sha256": "340c60b2c2d19b7b00671ec5745c7154e7d89d710cadf91184e29361373c054c",
       "reason": "四栏工作区升级为 10 项细分任务卡、分组阶段交付物、去重可读文档与三栏视觉缩略图画廊，并统一完成/等待/中断态。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {

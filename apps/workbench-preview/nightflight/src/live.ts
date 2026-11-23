@@ -221,7 +221,7 @@ export interface Project extends Summary {
   feedback?: { text: string; at: string }[];
 }
 export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final';
-const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
+const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '已完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy' | 'layoutDraftOnly' | 'layoutMaterialsOnly'>>;
 export const researchQuestion = (p: ResearchStatus) =>
   p.stage === 'research' &&

@@ -11,6 +11,7 @@ import {
 import { STAGE_BY_ID } from '../data/project';
 import type { BotStatus, EventKind, ExecutionEvent, StageId } from '../types';
 
+import { rowOf, sectionsOf } from '../../../../../shared/stage-text.mjs';
 export * from '../../../../../shared/stage-text.mjs';
 
 export function publishedSlogan(p: Pick<Project, 'copyReview'>, direction: string) {
@@ -554,4 +555,71 @@ export function stageDocumentBlurb(p: Project, file: Artifact): string {
   }
   if (file.stage === 'final') return p.finalReview?.reason || '终审检查与交付结论';
   return STAGE_BY_ID[file.stage].summary;
+}
+
+const UNKNOWN_FIELD = /未提供|未明确|尚未|未说明|未确定|待确认|待定|暂定|未知|不详|待核实/u;
+const normalizeCompare = (s: string) => s.replace(/[\s，。、,.!！?？：:；;「」“”"']/gu, '').trim();
+
+/** Derive a concise project heading from the structured Brief card and never duplicate the raw brief text. */
+export function deriveProjectHeading(p: Project): {
+  topBarTitle: string;
+  cardTitle: string;
+  cardBrief: string;
+} {
+  const rawTitle = (p.title || '').trim();
+  const rawBrief = (p.brief || '').trim();
+  let shortTitle = '';
+
+  const briefText = p.artifacts.find((a) => a.stage === 'brief' && a.kind === 'text')?.text || '';
+  if (briefText) {
+    const rows = sectionsOf(briefText)
+      .filter((s) => !/原稿记录|未知项|假设/u.test(s.heading))
+      .flatMap((s) => s.lines)
+      .map(rowOf)
+      .filter((r): r is NonNullable<typeof r> => Boolean(r && r.value && !UNKNOWN_FIELD.test(r.value)));
+
+    const pick = (re: RegExp) => rows.find((r) => re.test(r.label))?.value.trim() || '';
+    const brand = pick(/^(?:品牌|品牌名称|客户|客户名称)$/u);
+    const product = pick(/^(?:产品与品类|产品|产品名称|品类|新品|品牌与产品)$/u);
+    const rawTask = pick(/^(?:提案任务|提案要求|交付内容|项目目标|提案目标)$/u);
+    const task = rawTask
+      .replace(/^(?:帮我)?为(?:一款|一个)?/u, '')
+      .replace(/(?:设计|制作)(?:一款|一个)?/u, '')
+      .replace(/[。！!]+$/u, '')
+      .trim();
+
+    if (brand && task && task.length <= 24) {
+      shortTitle = task.includes(brand) ? task : `${brand} · ${task}`;
+    } else if (brand && product && product.length <= 24) {
+      shortTitle = product.includes(brand) ? product : `${brand} · ${product}`;
+    } else if (product && task && task.length <= 22 && !task.includes(product)) {
+      shortTitle = `${product} · ${task}`;
+    } else if (task && task.length <= 24) {
+      shortTitle = task;
+    } else if (brand) {
+      shortTitle = brand;
+    }
+  }
+
+  const normBrief = normalizeCompare(rawBrief);
+  const isTitleCopyOfBrief = (candidate: string) => {
+    const nc = normalizeCompare(candidate.replace(/…$/u, ''));
+    if (!nc || !normBrief) return false;
+    return nc === normBrief || normBrief.startsWith(nc);
+  };
+
+  if (shortTitle && !isTitleCopyOfBrief(shortTitle)) {
+    return { topBarTitle: shortTitle, cardTitle: shortTitle, cardBrief: rawBrief };
+  }
+
+  if (rawTitle && !isTitleCopyOfBrief(rawTitle)) {
+    return { topBarTitle: rawTitle, cardTitle: rawTitle, cardBrief: rawBrief };
+  }
+
+  // Raw title is identical to or a truncated prefix of the brief: show the full brief once without repeating it.
+  return {
+    topBarTitle: rawTitle || rawBrief,
+    cardTitle: '',
+    cardBrief: rawBrief || rawTitle,
+  };
 }
