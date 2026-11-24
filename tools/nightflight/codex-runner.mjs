@@ -1261,7 +1261,61 @@ async function prepareVisualPlans({project, images, active, call, dir, signal, s
         if (pool.length-known>=error.missing.length) continue;
       }
       const pending=error.missing.filter(direction=>(directionSearches.get(direction) ?? 0)<2);
-      if (!pending.length) throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
+      if (!pending.length) {
+        if (project.mode === 'auto' && project.visualQualityMode !== 'deep') {
+          const usedSha = new Set([...accepted.values()].flatMap(plan => plan.images.map(i => i.sha256)));
+          let recoveredAll = true;
+          for (const direction of error.missing) {
+            if (accepted.has(direction)) continue;
+            const pick =
+              pool.find(i => i.direction === direction && !usedSha.has(i.sha256)) ??
+              pool.find(i => !i.direction && !usedSha.has(i.sha256)) ??
+              pool.find(i => !usedSha.has(i.sha256));
+            if (!pick) { recoveredAll = false; break; }
+            usedSha.add(pick.sha256);
+            const ref = {
+              role: 'main',
+              name: pick.name,
+              sha256: pick.sha256,
+              ...(pick.sourceUrl ? {
+                pageUrl: pick.pageUrl,
+                sourceUrl: pick.sourceUrl,
+                query: pick.query || direction,
+                why: '自动模式精选高审美参考骨架，由生图阶段结合本方向创意重构主体与场景',
+                avoid: '不照搬原图品牌、文字与无关道具',
+              } : {}),
+              ...(observations.has(pick.sha256) ? { observation: observations.get(pick.sha256) } : {}),
+              borrow: '借鉴原图整体色彩氛围、商业光影质感与版式留白节奏',
+              apply: '围绕本方向核心主张与 Slogan 重构画面，完整绘制本案主体、道具与清晰中文标题',
+            };
+            const admission = {
+              scope: 'direction',
+              direction,
+              references: [ref],
+              hashes: [pick.sha256],
+              passed: true,
+              fastAuto: true,
+              autoFallback: true,
+              blockers: [],
+              ruling: { reason: '自动模式启用已有精选参考骨架兜底，进入生图按创意重画主体与道具' },
+            };
+            const handoff = {
+              direction,
+              selectionThread: 'auto-reference-fallback',
+              references: [ref],
+              ...(referenceTasks?.has(direction) ? { referenceTask: referenceTasks.get(direction) } : {}),
+              admission,
+              deferred: [],
+            };
+            accepted.set(direction, { images: [pick], handoff, missing: false, gap: '' });
+            await onEvent?.('自动模式启用精选参考骨架兜底：「' + direction + '」，由生图阶段按创意重画主体与场景');
+          }
+          if (recoveredAll && active.every(direction => accepted.has(direction))) {
+            return new Map(active.map(direction => [direction, accepted.get(direction)]));
+          }
+        }
+        throw Error(error.message+' 公开搜图记录：'+diagnostics.join('；'));
+      }
       for (const direction of pending) {
         directionSearches.set(direction,(directionSearches.get(direction) ?? 0)+1);
         signal?.throwIfAborted();
