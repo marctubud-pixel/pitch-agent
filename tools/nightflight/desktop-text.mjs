@@ -26,7 +26,12 @@ export function isReadTransportFailure(error) {
 function invoke(executable, action, input, signal, mode = '--text-model') {
   return new Promise((resolve,reject) => {
     const child=execFile(executable,[mode,action],{signal,timeout:300000,maxBuffer:32*1024*1024},(error,data)=>{
-      if(error) return reject(new Error('模型请求未完成：'+(error.code || error.name)));
+      if(error) {
+        if ((error.killed && error.signal==='SIGTERM' && !signal?.aborted) || error.code==='ETIMEDOUT') {
+          return reject(new Error('模型请求超时（5 分钟未返回；若桌面弹出 macOS 钥匙串授权窗口，请先允许访问后再重试）'));
+        }
+        return reject(new Error('模型请求未完成：'+(error.code || error.name)));
+      }
       try {
         const response=JSON.parse(data);
         if(response.failure) {

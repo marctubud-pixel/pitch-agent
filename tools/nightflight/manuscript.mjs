@@ -518,7 +518,7 @@ function buildManuscriptPlan(draft, materials) {
         return {source,url,conclusion,evidence,sampleScope};
       }):[];
       const title=p.role==='strategy' && approvedCore ? approvedCore :
-        p.role==='direction' ? figure.direction : p.role==='compare' ? '并排看差异与适用条件' : p.title;
+        p.role==='direction' ? (copyByDirection.get(figure.direction)?.main || figure.direction) : p.role==='compare' ? '并排看差异与适用条件' : p.title;
       add({...p,title,
         chapter:chapter.title.trim(),points,imageNote,figures:shown,notes:p.internalNote,sources,observedPointIndex});
     }

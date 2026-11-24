@@ -140,6 +140,7 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
   const plan=JSON.parse(await readFile(join(root,planFile.name),'utf8'));
   assert.equal(plan.version,3);
   assert.equal(plan.pages.find(p=>p.role==='strategy').title,'先识别活动，再读预约。');
+  assert.equal(plan.pages.find(p=>p.role==='direction').title,'进馆看虫');
   assert(!draft.includes('不讲展柜'));
   assert.deepEqual(plan.pages.filter(p=>p.role==='direction'||p.role==='work').map(p=>p.figures),[['A2'],['A2']]);
   const request=JSON.parse(await readFile(join(root,result.artifacts.find(a=>a.name.startsWith('DeepSeek实际请求-')).name),'utf8'));

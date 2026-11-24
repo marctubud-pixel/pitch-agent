@@ -362,6 +362,7 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
     return [source.id,{...source,width:img.naturalWidth,height:img.naturalHeight}];
   })));
   const figures=new Map(plan.figures.map(f=>[f.id,f]));
+  const sloganByDirection=new Map((plan.copy ?? []).filter(d=>d?.name && d?.main).map(d=>[d.name,d.main]));
   const placeholders=page=>[...page.imageNote.matchAll(/\[待补充\s*[:：]\s*([^\]]+)\]/gu)].map(m=>m[1]);
   let direction=0;
   const drafts=slides.map(page=>{
@@ -388,7 +389,10 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
       }
       case 'work': return {...draft,tone:'brand',template:{kind:'upload.framed',image:images[0]}};
       case 'compare': return {...draft,template:{kind:'compare.lineup',sub:points.slice(images.length).join('\n'),
-        items:images.map((image,i)=>({image,name:figures.get(page.figures[i]).direction,desc:points[i] || ''}))}};
+        items:images.map((image,i)=>{
+          const dirName=figures.get(page.figures[i]).direction;
+          return {image,name:sloganByDirection.get(dirName) || dirName,desc:points[i] || ''};
+        })}};
       case 'close': {
         const greeting=page.title.match(/^((?:感谢观看|谢谢观看|谢谢)(?:[，,。！!]|$))\s*(.*)$/u);
         if (greeting) return {...draft,title:greeting[1],template:{kind:'closing.type',sub:greeting[2],meta:''}};
