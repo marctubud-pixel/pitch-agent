@@ -187,5 +187,11 @@ test('unrelated competitor files cannot supply a brand identity and the original
     assert.equal(fallback.agencyName,undefined);
     const briefing=await projectTheme({...project,brief:'主色：#448899\n版式风格：杂志编辑'},dir,'kv');
     assert.equal(briefing.primary,'#448899');assert.equal(briefing.style,'editorial');
+    const petTheme=await projectTheme({brief:'帮我为一款高蛋白幼猫粮设计产品包装，品牌名为蛋萌',attachments:[]},dir,'packaging');
+    assert.equal(petTheme.primary,'#2C3A35');
+    assert.equal(petTheme.accent,'#C98A3E');
+    assert.equal(petTheme.style,'warm');
+    const teaTheme=await projectTheme({brief:'帮我为一个新中式茶饮品牌制作新品上市提案',attachments:[]},dir,'kv');
+    assert.equal(teaTheme.primary,'#23332C');
   } finally { await rm(dir,{recursive:true,force:true}); }
 });

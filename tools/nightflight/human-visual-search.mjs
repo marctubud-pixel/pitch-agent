@@ -826,28 +826,42 @@ export async function humanBrowseVisualReferences({
   });
 
   // Step 1: Dual-channel query planning (Pro sources: Digitaling/BP&O/Colossal + General sources: Huaban)
-  const effectiveSources = dirMode === 'feature'
+  const effectiveSources = dirMode === 'feature' && trackId === 'packaging'
     ? [
-        {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1个中文短词搜跨行业高审美创意商业海报战役（如 气泡水 / 茶饮 / 节气 / 创意海报）'},
-        {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【平面构成/插画商业海报词】，如 graphic poster illustration / beverage poster'},
-        {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【产品特质转译的非写实插画/点阵构成商业海报词】，如「点阵 插画 海报」「平面 构成 海报」，严禁普通棚拍'},
-        {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【另一媒介的跨行业商业海报词】，如「水彩 节气 海报」「光影 视觉 海报」，与上一组拉开美术媒介差距'},
+        {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【非写实平面构成/插画包装词】，如 geometric illustration packaging / minimal graphic pouch'},
+        {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文短词搜【平面图形/插画包装设计】，如 插画 包装 / 极简 包装'},
+        {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【瑞士网格/色块构成/版画风格包装词】，如「几何 包装 设计」「插画 袋装 包装」，严禁普通大头照片棚拍'},
+        {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【超级符号/品牌图形包装词】，如「极简 符号 包装」「高端 包装 平面」'},
       ]
-    : dirMode === 'steady' && trackId === 'poster'
+    : dirMode === 'emotion' && trackId === 'packaging'
       ? [
-          {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文【细品类或同品类商业战役短词】，如「低度酒」或「白酒 端午」'},
-          {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【同品类/东亚酒水标杆海报词】，如 sake poster / spirits campaign poster'},
-          {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【精准细品类或东亚同类商业海报词】，如「低度酒 海报」「梅酒 海报」「清酒 海报」'},
-          {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【上位同品类+节令商业海报词】，如「白酒 端午 海报」「白酒 节气 海报」'},
+          {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【温暖生活方式产品入景包装词】，如 lifestyle packaging editorial / warm studio packaging'},
+          {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文短词搜【生活方式/场景包装海报】，如 场景 包装 / 生活 包装'},
+          {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【温暖阳光/居家桌景产品包装词】，如「阳光 居家 包装」「温暖 生活 包装」'},
+          {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【情绪氛围商业产品场景词】，如「日系 氛围 包装」「自然 光影 包装」'},
         ]
-      : dirMode === 'emotion' && trackId === 'poster'
+      : dirMode === 'feature'
         ? [
-            {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文【跨品类同场景商业战役短词】，如「露营 海报」「朋友 小聚」「微醺」'},
-            {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【生活方式/氛围商业海报词】，如 lifestyle campaign poster / summer drink poster'},
-            {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【跨品类同场景商业海报词】，如「朋友 聚会 海报」「露营 商业 海报」'},
-            {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【轻盈/情绪氛围商业海报词】，如「夏日 饮品 海报」「轻盈 氛围 海报」'},
+            {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1个中文短词搜跨行业高审美创意商业海报战役（如 气泡水 / 茶饮 / 节气 / 创意海报）'},
+            {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【平面构成/插画商业海报词】，如 graphic poster illustration / beverage poster'},
+            {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【产品特质转译的非写实插画/点阵构成商业海报词】，如「点阵 插画 海报」「平面 构成 海报」，严禁普通棚拍'},
+            {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【另一媒介的跨行业商业海报词】，如「水彩 节气 海报」「光影 视觉 海报」，与上一组拉开美术媒介差距'},
           ]
-        : track.sources;
+        : dirMode === 'steady' && trackId === 'poster'
+          ? [
+              {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文【细品类或同品类商业战役短词】，如「低度酒」或「白酒 端午」'},
+              {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【同品类/东亚酒水标杆海报词】，如 sake poster / spirits campaign poster'},
+              {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【精准细品类或东亚同类商业海报词】，如「低度酒 海报」「梅酒 海报」「清酒 海报」'},
+              {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【上位同品类+节令商业海报词】，如「白酒 端午 海报」「白酒 节气 海报」'},
+            ]
+          : dirMode === 'emotion' && trackId === 'poster'
+            ? [
+                {adapter: 'digitaling', lang: 'zh', hint: '【专业源】1-2个中文【跨品类同场景商业战役短词】，如「露营 海报」「朋友 小聚」「微醺」'},
+                {adapter: 'bpando', lang: 'en', hint: '【专业源】2-3个英文【生活方式/氛围商业海报词】，如 lifestyle campaign poster / summer drink poster'},
+                {adapter: 'huaban', lang: 'zh', hint: '【综合源1】2个中文【跨品类同场景商业海报词】，如「朋友 聚会 海报」「露营 商业 海报」'},
+                {adapter: 'huaban', lang: 'zh', hint: '【综合源2】2个中文【轻盈/情绪氛围商业海报词】，如「夏日 饮品 海报」「轻盈 氛围 海报」'},
+              ]
+            : track.sources;
 
   const avoidNote = Array.isArray(avoidVisualModes) && avoidVisualModes.length
     ? `\n【跨方向防撞车硬要求】其他方向已占用以下视觉手法/媒介：${avoidVisualModes.join('、')}。本方向必须主动切换到完全不同的美术媒介或视觉转译手法，严禁与已占用方向撞风格！`
@@ -1023,6 +1037,7 @@ ${pickPrinciple}
   3. **图面直接印有 YOUR LOGO / GAODING / 稿定 / 酷图 / 千图 / 摄图 等模板或水印字样**（哪怕标题没写模板） —— 一律淘汰！
   4. **载体不符或非商业图**：做海报时选包装盒样机、或选无版式无打光的生活随手拍 —— 一律淘汰！
   5. **同款雷同重复图**：同一套空间或同一款产品若出现多张雷同视角，只留构图最好的一张，其余必须淘汰！
+  6. **品类/主题严重跑偏图**：与本案行业调性、容器形态或任务完全无关的装饰杂图（例如宠物粮搜到无关卡通 IP 联名纸杯、塔罗牌/占卜卡片、美妆洗护乱入或低俗电商促销贴片图） —— 一律淘汰，宁可设 fallbackToArtDirection=true 也绝不让脏参考图污染生图！
 - **编号自检**：输出的 top1Index 整数必须与 whyTop1 中提到的图号完全一致！
 - **双渠道 3 主参考配比（宁缺毋滥！）**：
   - 本方向将最多取 **3 张互相不雷同的高审美主参考**（top1Index、top2Index、top3Index），**优先按「1 张专业源 + 2 张综合源」配比组合**，兼顾专业广告水准与多样性；

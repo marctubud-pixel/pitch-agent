@@ -23,7 +23,10 @@ export function isReadTransportFailure(error) {
   return readRetryReasons.has(error?.code) || readRetryReasons.has(error?.cause?.code);
 }
 
-function invoke(executable, action, input, signal, mode = '--text-model') {
+const warmedModes = new Set();
+const warmingLocks = new Map();
+
+function invokeOnce(executable, action, input, signal, mode = '--text-model') {
   return new Promise((resolve,reject) => {
     const child=execFile(executable,[mode,action],{signal,timeout:300000,maxBuffer:32*1024*1024},(error,data)=>{
       if(error) {
@@ -45,6 +48,29 @@ function invoke(executable, action, input, signal, mode = '--text-model') {
     });
     child.stdin.on('error',()=>{}); child.stdin.end(input);
   });
+}
+
+// Serialize only the first credentialed call per (executable, mode) so macOS Keychain never pops
+// multiple overlapping password sheets when 3-4 parallel vision/image requests launch together.
+async function invoke(executable, action, input, signal, mode = '--text-model') {
+  if (action !== 'completion') return invokeOnce(executable, action, input, signal, mode);
+  const key = executable + '|' + mode;
+  if (warmedModes.has(key)) return invokeOnce(executable, action, input, signal, mode);
+  const pending = warmingLocks.get(key);
+  if (pending) {
+    await pending.catch(() => {});
+    if (signal?.aborted) throw Object.assign(new Error('模型请求未完成：AbortError'), { code: 'ABORT_ERR' });
+    return invokeOnce(executable, action, input, signal, mode);
+  }
+  const run = invokeOnce(executable, action, input, signal, mode);
+  warmingLocks.set(key, run);
+  try {
+    const res = await run;
+    warmedModes.add(key);
+    return res;
+  } finally {
+    if (warmingLocks.get(key) === run) warmingLocks.delete(key);
+  }
 }
 
 export function modelProfile(executable, signal, mode) {
@@ -102,7 +128,8 @@ export function desktopImageProvider(executable,dir,signal,onEvent) {
       const bytes = await readFile(image.path);
       inputs.push({mime:image.mediaType,data:bytes.toString('base64')});
     }
-    const body = {model:profile.model,prompt,n:1,output_format:'png'};
+    const portraitDefault = /^gpt-image/i.test(profile.model) ? { size: '1024x1536' } : {};
+    const body = {model:profile.model,prompt,n:1,output_format:'png',...portraitDefault};
     const packet = JSON.stringify({base:profile.base,body,images:inputs});
     const request = async () => {
       await onEvent?.('生图 API 请求 · '+profile.host+' · '+profile.model+' · '+inputs.length+' 张参考图');

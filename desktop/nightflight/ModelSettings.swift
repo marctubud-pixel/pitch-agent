@@ -25,22 +25,64 @@ func profile(_ role: Capability) -> Profile {
     }
     return value
 }
+private let unifiedKeychainAccount = "unified-credentials-v1"
+
+private func keychainService() -> String {
+    (Bundle.main.bundleIdentifier ?? "cn.onepitch.desktop") + ".api"
+}
+
+private func readKeychainRaw(_ account: String) -> (OSStatus, Data?) {
+    let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrService as String: keychainService(),
+        kSecAttrAccount as String: account,
+        kSecReturnData as String: true,
+    ]
+    var result: CFTypeRef?
+    let status = SecItemCopyMatching(query as CFDictionary, &result)
+    return (status, result as? Data)
+}
+
+private func writeKeychainRaw(_ account: String, data: Data) -> OSStatus {
+    let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrService as String: keychainService(),
+        kSecAttrAccount as String: account,
+    ]
+    var status = SecItemUpdate(query as CFDictionary, [kSecValueData: data] as CFDictionary)
+    if status == errSecItemNotFound {
+        status = SecItemAdd(query.merging([kSecValueData as String: data]) { _, b in b } as CFDictionary, nil)
+    }
+    return status
+}
+
 func credential(_ account: String, replacing value: String? = nil) throws -> String {
-    let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: (Bundle.main.bundleIdentifier ?? "cn.onepitch.desktop") + ".api", kSecAttrAccount as String: account]
+    let (bundleStatus, bundleData) = readKeychainRaw(unifiedKeychainAccount)
+    var bundle: [String: String] = [:]
+    if bundleStatus == errSecSuccess, let data = bundleData,
+       let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
+        bundle = parsed
+    }
+
     if let value = value, !value.isEmpty {
-        let bytes = Data(value.utf8)
-        var status = SecItemUpdate(query as CFDictionary, [kSecValueData: bytes] as CFDictionary)
-        if status == errSecItemNotFound {
-            status = SecItemAdd(query.merging([kSecValueData as String: bytes]) { _, b in b } as CFDictionary, nil)
+        bundle[account] = value
+        guard let encoded = try? JSONSerialization.data(withJSONObject: bundle) else {
+            throw SettingsError.message("钥匙串编码失败")
         }
+        let status = writeKeychainRaw(unifiedKeychainAccount, data: encoded)
         guard status == errSecSuccess else { throw SettingsError.message("钥匙串保存失败（\(status)）") }
         return value
     }
-    var result: CFTypeRef?
-    let status = SecItemCopyMatching(query.merging([kSecReturnData as String: true]) { _, b in b } as CFDictionary, &result)
-    guard status == errSecSuccess, let data = result as? Data, let key = String(data: data, encoding: .utf8) else {
-        throw SettingsError.message(status == errSecItemNotFound ? "请填写这个服务的 API Key。" : "无法读取钥匙串（\(status)）")
+
+    if let hit = bundle[account], !hit.isEmpty {
+        return hit
+    }
+
+    // Backward-compatible fallback to legacy per-capability Keychain entry.
+    let (legacyStatus, legacyData) = readKeychainRaw(account)
+    guard legacyStatus == errSecSuccess, let data = legacyData, let key = String(data: data, encoding: .utf8), !key.isEmpty else {
+        let code = legacyStatus == errSecItemNotFound ? bundleStatus : legacyStatus
+        throw SettingsError.message(code == errSecItemNotFound ? "请填写这个服务的 API Key。" : "无法读取钥匙串（\(code)）")
     }
     return key
 }

@@ -340,20 +340,46 @@ async function submitVisualPrompt({call,images,written,posterSlogan,packagingBri
     ...(visiblePackageUnits ? {visiblePackageUnits} : {})}};
 }
 
+const PREMIUM_BRIEF_RE = /高端|轻奢|精品|科学|专业|高营养|溢价|比市面.*高|贵\s*\d+|品质升级|旗舰/u;
+
+function directionVisualAxisGuide(mode, packaging) {
+  if (!mode) return '';
+  if (mode === 'steady') {
+    return packaging
+      ? '【方向轴 · 稳健延续】采用现代高审美商业棚拍包装，主体结构完整端正、品牌字标与品类层级清晰克制、自然建筑光影，一步建立货架专业信任感。'
+      : '【方向轴 · 稳健延续】成熟高审美商业海报，主角突出、字图留白克制稳健、易于过稿。';
+  }
+  if (mode === 'feature') {
+    return packaging
+      ? '【方向轴 · 卖点跳脱（严禁普通实拍棚拍！）】必须切换为非写实平面视觉媒介（如瑞士网格比例构成、复古套色版画、现代几何插画或极简超级图形包装概念），把核心卖点可视化为鲜明的图形符号与色块秩序，与稳健实拍方向彻底拉开艺术形式差距！'
+      : '【方向轴 · 卖点跳脱】切换为非写实平面构成/插画/版画等高审美艺术媒介，与常规棚拍彻底拉开差异。';
+  }
+  if (mode === 'emotion') {
+    return packaging
+      ? '【方向轴 · 用户场景与感受（严禁退回纯白底孤立袋装棚拍！）】必须呈现温暖真实的居家/生活使用情境（如清晨斜阳木地板、真实使用环境与温和情绪氛围），让产品包装自然融入有呼吸感的生活画面中，顶部留白承接品牌情绪感。'
+      : '【方向轴 · 用户场景与感受】真实温暖的生活方式情绪海报，呈现使用情境与人群情感共鸣。';
+  }
+  return '';
+}
+
 export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging, posterReference}) {
   if (posterReference) {
     const promptWriting = await writePosterPrompt({call,images,context,posterReference,posterSlogan});
     const result = await call(promptWriting.prompt,images,null,{exactImagePrompt:true});
     return {result,promptWriting};
   }
+  const premiumPackaging = Boolean(packaging && PREMIUM_BRIEF_RE.test(String(context?.brief || '')));
+  const axisGuide = directionVisualAxisGuide(context?.directionMode, Boolean(packaging));
   const instruction = [
     '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
     '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。按制图要求写清载体上的文字。',
+    axisGuide,
     posterSlogan && '海报或 KV 要把本方向已选 slogan 的完整原句排成画面主标题。提示词中逐字列出原句，明确文字放在画面上。标题分行时用连续的行写全原字和标点。',
     posterSlogan && !packaging && '【海报／KV 借图松紧度】以所附高审美主参考原图的自然光影、材质折射与高级色调质感为核心借鉴，不要死锁原图的多物平铺排列；放开重构为「主角产品/主体突出 + 干净标题留白区」的当代商业海报构图，彻底清除原图任何第三方品牌与外文字符。',
     (!posterSlogan || packaging) && '【包装／空间活动借图松紧度（严格借三改二）】牢牢锁住主参考原图高级的容器/建筑立面比例、开窗尺度、空间纵深或光影骨架，同时彻底替换瓶身/外墙材质、色彩、陈列内容与本案中文招牌/瓶贴，零残留原品牌字样。',
     images.length >= 2 && '【主借三、辅改二多图分工】第1张参考图为主参考（定整体大骨架与视觉基因），第2张参考图为本稿专属辅助参考（只借其精准局部：主题场景物象、材质光影或字体版式气质，把「改二」画高级），两图有机融合为统一大片，绝不拼贴割裂。',
-    '【强制单帧红线】无论参考图是否分格，最终成图必须输出单一完整单帧画面，严禁上下或左右分屏拼图。',
+    '【强制单帧与统一竖版构图】无论参考图是否分格，最终成图必须输出单一完整单帧 2:3 / 3:4 竖版画面，严禁上下或左右分屏拼图，严禁袋口/拉链异常撕裂缺口或盒体结构穿帮。',
+    premiumPackaging && '【高溢价包装审美红线】本案定位品质升级/轻溢价，严禁使用廉价平价大头宠物/人物实拍贴图叠红黄促销气泡标签；优先用高级哑光触感材质、克制大留白、清晰品牌字标、专属视觉超级符号或精细科学网格秩序在 3 秒内撑起溢价感。',
     packaging && '包装画面的设计主题转化成画面关系，包装本体只列确认可印的实际文字。盒内件数印在外盒上，单件只标对应单件规格。简报若只规定装量和外盒正面，优先闭盒正面或只露出局部、展示单件取用；不可凭空要求全数内装同时可见或可数。客户明确要求把全部内装画出时按原要求。目标价或拟售价留在提案材料，简报未要求上画时省略价签；要求上画时保留该限定。',
     packaging && confirmsInnerPackets(context.brief) && '外盒装的是独立小袋。参考图的透明窗、陈列框或食材区只能转用它的版面框形和位置；不能沿用与本品内装不符的盒型结构、材质或装料形态。若要借开窗式布局，画成明确可识别的平面印刷图框，或把食材特写放在外盒之外；若简报明确委托透窗，实物窗里只能显示完整独立袋。全篇的画面、借法、附件用途与包装转化要使用同一说法。',
     '返回一个 prompt 字段，内容是完整的生图提示词。',

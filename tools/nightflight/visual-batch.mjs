@@ -808,8 +808,8 @@ export async function fastReviewVisualBatch({call, direction, images, context, p
       '客观核读这张主视觉候选图（零主观夸赞），逐项检查 4 条比稿硬伤清单：',
       '1) bareProduct：主体商品是否完全无品牌标识/裸瓶/空白酒标（简报明确品牌待定除外）；',
       '2) garbledOrFakeSeal：主副标、瓶标微字是否出现错别字、AI 乱码英文或不可读伪红印章；',
-      '3) physicalGlitch：是否存在手部畸形、瓶口带盖倒酒、液流悬浮、透视断裂等物理穿帮；',
-      '4) quadrantAligned：画面风格是否清晰符合指定美学象限（' + (quadrant?.quadrant || '本方向既定风格') + '）。',
+      '3) physicalGlitch：是否存在包装袋封口/拉链异常撕裂缺口、盒盖透视错位、瓶口带盖倾倒、手部畸形、液流悬浮或透视断裂等物理穿帮；',
+      '4) quadrantAligned：画面风格与艺术媒介是否清晰符合指定方向/美学象限（' + (quadrant?.quadrant || '本方向既定风格') + '），而非退回普通平价大头贴棚拍；',
       posterSlogan ? '同时逐字核对主标题是否完整清晰呈现「' + posterSlogan + '」（headlineAccurate）。' : '',
       '将实际可见的硬伤逐条写入 hardIssues（无硬伤留空数组），visibleText 抄录画面主要文字，summary 一句话概述画面。',
     ].filter(Boolean).join('\n'), [image], readSchema, {
@@ -827,8 +827,8 @@ export async function fastReviewVisualBatch({call, direction, images, context, p
   });
   const pickResult = await call([
     '横向并排比较本方向「' + direction + '」的 ' + images.length + ' 张主视觉候选图及各自客观读图报告。',
-    '优先选出零硬伤（无裸瓶、无乱码/伪印章、无物理穿帮、符合象限「' + (quadrant?.quadrant || '') + '」）且商业审美、主标题可读性最高的一张作为 winner。',
-    '若两张均有轻度瑕疵，选硬伤更少、最接近可进比稿 PPT 的一张作为 winner，并在 edit 写明后续微调建议。',
+    '优先选出零硬伤（无裸瓶/无标、无乱码/伪印章、无包装破口/拉链撕裂等物理穿帮、符合象限「' + (quadrant?.quadrant || '') + '」）且商业溢价审美、主标题可读性最高的一张作为 winner。包装袋口破损或结构穿帮的稿件必须排在完整稿件之后。',
+    '若候选图均有轻度瑕疵，选硬伤更少、最接近可进比稿 PPT 的一张作为 winner，并在 edit 写明后续微调建议。',
   ].join('\n'), images, pickSchema, {
     delegate: true, rules: [], assignment: '同方向主视觉快速并排选优',
     context: JSON.stringify({ direction, posterSlogan: posterSlogan || '', quadrant, reads, brief: typeof context === 'string' ? context.slice(0, 1200) : '' }),
