@@ -1731,69 +1731,86 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         await writeFile(join(dir,'visual-review-set.json'),JSON.stringify(comparison,null,2),{flag:'wx',mode:0o600});
         holdSimilarPosterDirections(comparison,representatives);
       }
-      // Generate real category-aware extension (延展图) + physical/media mockup (样机图) anchored to each direction's winning main visual
+      // Generate real category-aware extension (延展图) + physical/media mockup (样机图) for EVERY candidate draft in each direction
       if (desktop && !visualSearch && project.generateVisualDerivatives !== false) {
         const outputKind = classifyVisualOutputKind({ project, packaging, poster });
-        await independentCalls(directionBatches, async ({direction, images, drafts}) => {
-          signal?.throwIfAborted();
-          const winnerDraft = drafts.find(item => item.visual.recommended) ?? drafts[0];
-          const winnerImage = winnerDraft ? images[(winnerDraft.visual.candidate ?? 1) - 1] : images[0];
-          if (!winnerImage) return;
+        const derivativeTasks = [];
+        for (const {direction, images, drafts} of directionBatches) {
           const dirIndex = Math.max(0, all.indexOf(direction));
           const dirNum = dirIndex + 1;
           const slogan = selected.get(direction)?.main || direction;
-          let mainFormat = winnerDraft?.visual?.format;
-          if (!mainFormat && winnerImage.path) {
-            try {
-              const winnerBytes = await readFile(winnerImage.path);
-              mainFormat = imageDimensionsFromBytes(winnerBytes)?.format;
-            } catch {}
-          }
-          const derivativeSpecs = derivativeSpecsForDirection({
-            outputKind,
-            mainFormat: mainFormat || (packaging ? 'portrait' : 'portrait'),
-            direction,
-            slogan,
-            brief: project.brief || '',
-            directionIndex: dirIndex,
-          });
-          await onEvent?.('正在为「' + direction + '」生成' + derivativeSpecs.map(s => s.label).join('与'));
-          const results = await Promise.allSettled(
-            derivativeSpecs.map(async (spec) => {
-              const res = await call(spec.prompt, [winnerImage], null, {
-                exactImagePrompt: true,
-                imageSize: spec.imageSize,
-              });
-              const original = res.original ?? await ownGeneratedImage(res, await realpath(codexHome));
-              const digest = hash(original.bytes);
-              if (seen.has(digest)) return null;
-              seen.add(digest);
-              const actualFormat = imageDimensionsFromBytes(original.bytes)?.format ?? spec.format;
-              const fileName = 'visual-' + dirNum + '-' + spec.suffix + '-' + digest.slice(0, 10) + '.png';
-              await writeFile(join(dir, fileName), original.bytes, { flag: 'wx', mode: 0o600 });
-              return {
-                name: fileName,
-                kind: 'image',
-                visual: {
-                  role: spec.role,
-                  direction,
-                  sha256: digest,
-                  output: outputKind,
-                  format: actualFormat,
-                  label: spec.label,
-                  subject: spec.subject,
-                },
-              };
-            }),
-          );
-          for (const settled of results) {
-            if (settled.status === 'fulfilled' && settled.value) {
-              artifacts.push(settled.value);
-            } else if (settled.status === 'rejected') {
-              await onEvent?.('「' + direction + '」延展/样机生成跳过：' + String(settled.reason?.message || settled.reason).slice(0, 100));
+          const orderedDrafts = [...drafts].sort((a, b) => Number(!!b.visual.recommended) - Number(!!a.visual.recommended));
+          for (const draft of orderedDrafts) {
+            const candNum = draft.visual.candidate ?? 1;
+            const candImage = images[candNum - 1];
+            if (!candImage) continue;
+            let mainFormat = draft.visual.format;
+            if (!mainFormat && candImage.path) {
+              try {
+                const candBytes = await readFile(candImage.path);
+                mainFormat = imageDimensionsFromBytes(candBytes)?.format;
+              } catch {}
+            }
+            const specs = derivativeSpecsForDirection({
+              outputKind,
+              mainFormat: mainFormat || 'portrait',
+              direction,
+              slogan,
+              brief: project.brief || '',
+              directionIndex: dirIndex,
+            });
+            for (const spec of specs) {
+              derivativeTasks.push({ direction, dirNum, candNum, candImage, spec });
             }
           }
-        });
+        }
+        if (derivativeTasks.length) {
+          await onEvent?.('正在为全部 ' + directionBatches.length + ' 个方向的每版候选主视觉生成对应延展图与实景样机（共 ' + derivativeTasks.length + ' 张）');
+          const batchSize = 3;
+          for (let i = 0; i < derivativeTasks.length; i += batchSize) {
+            signal?.throwIfAborted();
+            const chunk = derivativeTasks.slice(i, i + batchSize);
+            const settled = await Promise.allSettled(
+              chunk.map(async ({ direction, dirNum, candNum, candImage, spec }) => {
+                const res = await call(spec.prompt, [candImage], null, {
+                  exactImagePrompt: true,
+                  imageSize: spec.imageSize,
+                });
+                const original = res.original ?? await ownGeneratedImage(res, await realpath(codexHome));
+                const digest = hash(original.bytes);
+                if (seen.has(digest)) return null;
+                seen.add(digest);
+                const actualFormat = imageDimensionsFromBytes(original.bytes)?.format ?? spec.format;
+                const fileName = 'visual-' + dirNum + '-c' + candNum + '-' + spec.suffix + '-' + digest.slice(0, 10) + '.png';
+                await writeFile(join(dir, fileName), original.bytes, { flag: 'wx', mode: 0o600 });
+                return {
+                  name: fileName,
+                  kind: 'image',
+                  visual: {
+                    role: spec.role,
+                    direction,
+                    candidate: candNum,
+                    ...(candImage.sha256 ? { sourceSha256: candImage.sha256 } : {}),
+                    sha256: digest,
+                    output: outputKind,
+                    format: actualFormat,
+                    label: spec.label,
+                    subject: spec.subject,
+                  },
+                };
+              }),
+            );
+            for (let j = 0; j < settled.length; j++) {
+              const item = settled[j];
+              if (item.status === 'fulfilled' && item.value) {
+                artifacts.push(item.value);
+              } else if (item.status === 'rejected') {
+                const { direction, candNum, spec } = chunk[j];
+                await onEvent?.('「' + direction + '」第 ' + candNum + ' 稿' + spec.label + '生成跳过：' + String(item.reason?.message || item.reason).slice(0, 100));
+              }
+            }
+          }
+        }
       }
       await addText('# 主视觉推荐\n\n'+directionBatches.map(({direction,drafts})=>{
         const winner = drafts.find(item=>item.visual.recommended)?.visual;

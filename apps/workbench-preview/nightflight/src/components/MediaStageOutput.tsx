@@ -94,9 +94,18 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
           const captionTitle = role === 'main'
             ? candidateTitle(file)
             : (file.visual?.label || file.visual?.subject || candidateTitle(file));
-          return src ? [{ src, title: captionTitle, alt: title + ' · ' + file.name }] : [];
+          return src ? [{
+            src,
+            title: captionTitle,
+            alt: title + ' · ' + file.name,
+            candidate: file.visual?.candidate,
+            sha256: file.visual?.sha256,
+            sourceSha256: file.visual?.sourceSha256,
+            label: file.visual?.label,
+          }] : [];
         });
     }
+    const mockupList = pictures('mockup');
     return { id: title, name: publishedSlogan(p, title) || title,
       batchSummary: hasBatch ? (winner ? '推荐第 '+winner.candidate+' 稿' : pendingSummary) : undefined,
       auxiliaryMissing: false,
@@ -104,7 +113,7 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
       format: metadata?.format,
       extensionLabel: extMeta?.label || defaultExtLabel,
       mockupLabel: mockupMeta?.label || '样机效果',
-      sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: pictures('mockup')[0] };
+      sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: mockupList[0], mockups: mockupList };
   });
   const active = directions.find(item => item.id === selected) ?? directions[0];
   const current = reports.find(item => item.title === active?.id);

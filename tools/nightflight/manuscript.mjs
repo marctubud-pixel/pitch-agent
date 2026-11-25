@@ -87,10 +87,18 @@ export async function collectManuscriptMaterials(project, dir) {
   const derivatives = [];
   for (const name of visible) {
     const letter = String.fromCharCode(65 + project.directions.indexOf(name));
+    const adopted = originals.find((o) => o.direction === name);
+    const adoptedArtifact = selected.find((a) => a.visual?.direction === name) ?? (visible.length === 1 ? selected[0] : null);
+    const adoptedCandidate = adoptedArtifact?.visual?.candidate;
     for (const role of ['extension', 'mockup']) {
-      const item = artifacts.findLast(
+      const candidatesForRole = artifacts.filter(
         (a) => a.stage === 'visual' && a.kind === 'image' && a.visual?.direction === name && a.visual?.role === role,
       );
+      const item =
+        (adopted?.sha256 && candidatesForRole.findLast((a) => a.visual?.sourceSha256 === adopted.sha256)) ||
+        (adoptedCandidate != null && candidatesForRole.findLast((a) => a.visual?.candidate === adoptedCandidate)) ||
+        candidatesForRole.findLast((a) => a.visual?.candidate == null) ||
+        candidatesForRole.at(-1);
       if (!item) continue;
       const mediaType = imageTypes[extname(item.name).toLowerCase()];
       if (!mediaType) continue;
@@ -101,6 +109,7 @@ export async function collectManuscriptMaterials(project, dir) {
           id: `${letter}-${role === 'extension' ? 'ext' : 'mockup'}`,
           direction: name,
           role,
+          ...(item.visual?.candidate != null ? { candidate: item.visual.candidate } : {}),
           name: item.name,
           sha256: file.sha256,
           label: item.visual?.label || (role === 'extension' ? '延展视觉' : '样机效果'),
