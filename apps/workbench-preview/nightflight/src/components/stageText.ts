@@ -439,13 +439,17 @@ export function deriveChatMessages(p: Project): ChatMilestoneMessage[] {
 
   const visualRefs = p.artifacts.filter((a) => a.stage === 'visual' && a.visual?.role === 'reference');
   const visualMains = p.artifacts.filter(
-    (a) => a.stage === 'visual' && a.kind === 'image' && a.visual?.role !== 'reference' && a.visual?.role !== 'comparison',
+    (a) => a.stage === 'visual' && a.kind === 'image' && (!a.visual?.role || a.visual.role === 'main'),
+  );
+  const visualDerivatives = p.artifacts.filter(
+    (a) => a.stage === 'visual' && a.kind === 'image' && (a.visual?.role === 'extension' || a.visual?.role === 'mockup'),
   );
   if (visualMains.length > 0 || visualRefs.length > 0) {
     const recCount = visualMains.filter((a) => a.visual?.recommended).length;
+    const derivText = visualDerivatives.length ? `，另已生成 ${visualDerivatives.length} 张延展与样机图` : '';
     const text =
       visualMains.length > 0
-        ? `视觉开发已产出 ${visualMains.length} 张主视觉候选${visualRefs.length ? `（基于 ${visualRefs.length} 张精选参考图）` : ''}${recCount ? `，已为 ${recCount} 个方向标出推荐稿` : ''}。`
+        ? `视觉开发已产出 ${visualMains.length} 张主视觉候选${visualRefs.length ? `（基于 ${visualRefs.length} 张精选参考图）` : ''}${recCount ? `，已为 ${recCount} 个方向标出推荐稿` : ''}${derivText}。`
         : `已收集 ${visualRefs.length} 张高审美视觉参考图，正在绘制主视觉候选。`;
     push(stageEndIso(p, 'visual'), {
       id: 'm-visual',

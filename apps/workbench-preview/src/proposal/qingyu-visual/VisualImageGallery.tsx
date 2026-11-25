@@ -46,7 +46,7 @@ function Artwork({ images, label, zoom, loaded, rowRatio, showCaption = true }: 
   </figure>;
 }
 
-function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirection; letter: string; zoom: Zoom }) {
+function CurrentArtwork({ direction, letter, zoom, hideEmptySlots = false }: { direction: GalleryDirection; letter: string; zoom: Zoom; hideEmptySlots?: boolean }) {
   const [measuredPortrait, setMeasuredPortrait] = useState(false);
   const [rowRatio, setRowRatio] = useState(0);
   function measure(image: HTMLImageElement) {
@@ -55,19 +55,33 @@ function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirecti
   }
   const portrait = direction.format ? direction.format === 'portrait' : measuredPortrait;
   const extensionLabel = direction.extensionLabel ?? '延展图';
-  const extension = <Artwork label={extensionLabel} rowRatio={portrait ? rowRatio : undefined} loaded={portrait ? measure : undefined} images={direction.extensions ?? []} zoom={zoom} />;
+  const hasExtensions = Boolean(direction.extensions?.length);
+  const showExtension = hasExtensions || !hideEmptySlots;
+  const inlineExtension = showExtension && (portrait || !direction.sketch);
+  const extension = showExtension ? (
+    <Artwork label={extensionLabel} rowRatio={inlineExtension ? rowRatio : undefined} loaded={inlineExtension ? measure : undefined} images={direction.extensions ?? []} zoom={zoom} />
+  ) : null;
+  const pairCount = Number(Boolean(direction.sketch)) + 1 + Number(Boolean(inlineExtension));
+  const pairClass =
+    'vg-pair' +
+    (pairCount === 3 ? ' vg-portrait' : pairCount === 1 ? ' vg-single' : '');
+  const sectionTitle = direction.sketch
+    ? '草图与主视觉'
+    : inlineExtension
+      ? '主视觉与延展'
+      : '主视觉';
   return <>
     <section className="vg-section" data-visual-direction={direction.id}>
-      <h3>{direction.sketch ? '草图与主视觉' : '主视觉'} <span className="vg-letter">方向 {letter}</span></h3>
+      <h3>{sectionTitle} <span className="vg-letter">方向 {letter}</span></h3>
       {direction.batchSummary && <p className="vg-recommendation">{direction.batchSummary}</p>}
-      <div className={'vg-pair' + (portrait && direction.sketch ? ' vg-portrait' : '')}>
+      <div className={pairClass}>
         {direction.sketch && <Artwork label="构图草图" rowRatio={rowRatio} loaded={measure} images={[direction.sketch]} zoom={zoom} />}
         <Artwork label="主视觉" rowRatio={rowRatio} images={direction.mains} zoom={zoom}
           loaded={(image, index) => {
             measure(image);
             if (index === 0) setMeasuredPortrait(image.naturalHeight > image.naturalWidth);
           }} />
-        {portrait && extension}
+        {inlineExtension && extension}
       </div>
       {direction.sketchComparison && direction.sketch && <details className="vg-details vg-sketch-history">
         <summary>对照草图原稿与采用稿</summary>
@@ -78,15 +92,17 @@ function CurrentArtwork({ direction, letter, zoom }: { direction: GalleryDirecti
         <p>{direction.sketchComparison.note}</p>
       </details>}
     </section>
-    {!portrait && <section className="vg-section vg-extension"><h3>{extensionLabel}</h3>{extension}</section>}
-    <section className="vg-section vg-mockup"><h3>样机 <span className="vg-letter">方向 {letter}</span></h3>
-      {direction.mockup ? <Artwork showCaption={false} label="样机" images={[direction.mockup]} zoom={zoom} /> : <p className="vg-missing">样机待交回</p>}
-    </section>
+    {!inlineExtension && showExtension && <section className="vg-section vg-extension"><h3>{extensionLabel}</h3>{extension}</section>}
+    {(direction.mockup || !hideEmptySlots) && (
+      <section className="vg-section vg-mockup"><h3>样机 <span className="vg-letter">方向 {letter}</span></h3>
+        {direction.mockup ? <Artwork showCaption={false} label="样机" images={[direction.mockup]} zoom={zoom} /> : <p className="vg-missing">样机待交回</p>}
+      </section>
+    )}
   </>;
 }
 
-export function VisualImageGallery({ directions, currentId, onDirectionChange, details }: {
-  directions: readonly GalleryDirection[]; currentId: string; onDirectionChange: (id: string) => void; details?: ReactNode;
+export function VisualImageGallery({ directions, currentId, onDirectionChange, details, hideEmptySlots = false }: {
+  directions: readonly GalleryDirection[]; currentId: string; onDirectionChange: (id: string) => void; details?: ReactNode; hideEmptySlots?: boolean;
 }) {
   const current = directions.find((d) => d.id === currentId) ?? directions[0];
   const [enlarged, setEnlarged] = useState<GalleryImage>();
@@ -113,7 +129,7 @@ export function VisualImageGallery({ directions, currentId, onDirectionChange, d
         </div>
       </div>)}
     </section>
-    <CurrentArtwork key={current.id} direction={current} letter={String.fromCharCode(65 + directions.indexOf(current))} zoom={zoom} />
+    <CurrentArtwork key={current.id} direction={current} letter={String.fromCharCode(65 + directions.indexOf(current))} zoom={zoom} hideEmptySlots={hideEmptySlots} />
     {details && <details key={'notes-' + current.id} className="vg-details"><summary>评审与说明 · {current.name}</summary>{details}</details>}
     <dialog ref={dialog} className="vg-dialog" aria-labelledby={headingId}
       onClick={event => { if (event.target === dialog.current) dialog.current?.close(); }}>

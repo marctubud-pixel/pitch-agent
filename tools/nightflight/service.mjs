@@ -30,7 +30,7 @@ import { engineCopyHandoffReady, isEngineCopyProtocol, headlineMarkdown, headlin
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
 const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
-const nonCandidateVisualRoles = new Set(['comparison','reference','slogan-original','poster-original']);
+const nonCandidateVisualRoles = new Set(['comparison','reference','slogan-original','poster-original','extension','mockup']);
 const safeId = /^[a-zA-Z0-9_-]{1,100}$/;
 const now = () => new Date().toISOString();
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');

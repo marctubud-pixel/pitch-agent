@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { STAGES, STAGE_BY_ID } from '../data/project';
 import { researchDisplay } from './researchDisplay';
 import { MediaStageOutput } from './MediaStageOutput';
-import { ResearchImageGallery, ResearchSource, TextStageOutput } from './TextStageOutput';
-import { clock, phase, researchQuestion, safeURL, stageLabel, type Artifact, type Project } from '../live';
+import { TextStageOutput } from './TextStageOutput';
+import { phase, researchQuestion, stageLabel, type Project } from '../live';
 import type { StageId } from '../types';
 import { Decisions, type Act } from './ChatPanel';
 
@@ -18,49 +18,48 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
   const submitResearch = async (text: string) => {
     if (await act('research_again', text)) setFocus('');
   };
-  const canStart = !(isResearch && handoff?.ready) && !handoff?.digestPending && p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
+  const canStart = isResearch && !(handoff?.ready) && !handoff?.digestPending && p.status !== 'running' && p.artifacts.some((a) => a.stage === 'brief');
   if (p.stage === 'brief') return null;
+  const hasVisibleBlock =
+    isChecking ||
+    (handoff?.ready && isResearch && p.status === 'waiting') ||
+    (Boolean(handoff) && !handoff?.ready) ||
+    (isResearch && p.status === 'failed');
+  if (!hasVisibleBlock && !canStart) return null;
   return (
     <div className="research-review">
-      <section className="block">
-        {isChecking && (
-          <p role="status">{handoff?.ready ? '正在编辑研究摘要。' : p.researchFollowup ? '正在按本轮缺口补查。' : '正在查找与简报相关的来源。'}</p>
-        )}
-        {handoff?.ready && isResearch && p.status === 'waiting' && !handoff.sections && !handoff.digest?.length && (
-          <>
-            {handoff.digestPending && <p role="status">{p.error || '研究底稿已保存，摘要待编辑。'}</p>}
-            <button className="btn btn-dark" disabled={busy} onClick={() => act('research_digest', '')}>{handoff.digestPending ? '重新编辑摘要' : '从现有底稿编辑摘要'}</button>
-          </>
-        )}
-        {handoff?.ready && !handoff.digestPending && !isChecking && (
-          isResearch && p.status === 'waiting'
-            ? <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>进入策略</button>
-            : <p className="research-state">可交给策略</p>
-        )}
-        {!!handoff && !handoff.ready && (
-          <>
-            <h2>{p.canRequestStrategy ? '策略交接 · 可进入策略' : handoff.conditional ? '策略交接 · 已附研究限制' : '策略交接 · 待补查'}</h2>
-            {p.canRequestStrategy && <><p>已核发现可用于策略，仍缺的依据随稿保留。</p>
-              <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>用现有研究进入策略</button></>}
-            {returned && <p>历史退回记录　{handoff.next}</p>}
-            {gaps.length ? <ul className="findings research-gaps">{gaps.map((gap,i)=><li key={i}>
-              <div><span className="mono-label">{gap.label}</span><p>{gap.message}</p></div>
-            </li>)}</ul> : <p>{handoff.next}</p>}
-          </>
-        )}
-        {handoff?.searchScope && <details className="research-original"><summary>查看检索记录</summary>
-          <ul>{(handoff.searchScope.attempts ?? handoff.searchScope.queries.map(query=>({query,source:'',count:undefined}))).map((a,i)=>
-            <li key={i}>{a.query}{a.source && ' · '+a.source}{a.count!==undefined && ' · '+a.count+' 个候选'}</li>)}</ul>
-          <ul>{handoff.searchScope.pages.map(page=><li key={page.url}>{page.title} · {page.url}{page.reason && ' · '+page.reason}</li>)}
-            {handoff.searchScope.replacements?.map((r,i)=><li key={'replacement-'+i}>已换来源　{r.from} → {r.to}</li>)}
-            {handoff.searchScope.unreadable?.map(page=><li key={page.url}>{page.url} · {page.reason}</li>)}</ul>
-        </details>}
-        {isResearch && p.status === 'failed' && (
-          <p className="notice" role="status">
-            {p.error}
-          </p>
-        )}
-      </section>
+      {hasVisibleBlock && (
+        <section className="block">
+          {isChecking && (
+            <p role="status">{handoff?.ready ? '正在编辑研究摘要。' : p.researchFollowup ? '正在按本轮缺口补查。' : '正在查找与简报相关的来源。'}</p>
+          )}
+          {handoff?.ready && isResearch && p.status === 'waiting' && !handoff.sections && !handoff.digest?.length && (
+            <>
+              {handoff.digestPending && <p role="status">{p.error || '研究底稿已保存，摘要待编辑。'}</p>}
+              <button className="btn btn-dark" disabled={busy} onClick={() => act('research_digest', '')}>{handoff.digestPending ? '重新编辑摘要' : '从现有底稿编辑摘要'}</button>
+            </>
+          )}
+          {handoff?.ready && !handoff.digestPending && !isChecking && isResearch && p.status === 'waiting' && (
+            <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>进入策略</button>
+          )}
+          {!!handoff && !handoff.ready && (
+            <>
+              <h2>{p.canRequestStrategy ? '策略交接 · 可进入策略' : handoff.conditional ? '策略交接 · 已附研究限制' : '策略交接 · 待补查'}</h2>
+              {p.canRequestStrategy && <><p>已核发现可用于策略，仍缺的依据随稿保留。</p>
+                <button className="btn btn-dark" disabled={busy} onClick={() => act('research_continue', '')}>用现有研究进入策略</button></>}
+              {returned && <p>历史退回记录　{handoff.next}</p>}
+              {gaps.length ? <ul className="findings research-gaps">{gaps.map((gap,i)=><li key={i}>
+                <div><span className="mono-label">{gap.label}</span><p>{gap.message}</p></div>
+              </li>)}</ul> : <p>{handoff.next}</p>}
+            </>
+          )}
+          {isResearch && p.status === 'failed' && (
+            <p className="notice" role="status">
+              {p.error}
+            </p>
+          )}
+        </section>
+      )}
       {canStart && (
         <form
           className="research-action"
@@ -77,10 +76,9 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
             required={!!question}
             placeholder={question ? '写下你的判断或使用条件' : '例如，优先比较门店海报与社交媒体海报'}
           />
-          {!isResearch && <p>沿用原简报重新研究，历史版本可继续查看。</p>}
           <div className="btn-row">
             <button type="submit" className="btn btn-dark" disabled={busy || (!!question && !focus.trim())}>
-              {question ? '按此回答补查' : isResearch ? '开始补查' : '从研究重新开始'}
+              {question ? '按此回答补查' : '开始补查'}
             </button>
             {question && (
               <button
@@ -96,39 +94,6 @@ function ResearchReview({ p, act, busy }: { p: Project; act: Act; busy: boolean 
         </form>
       )}
     </div>
-  );
-}
-function FileView({ a }: { a: Artifact }) {
-  const [text, show] = useState(a.text || ''),
-    [err, setErr] = useState('');
-  const url = safeURL(a.url);
-  useEffect(() => {
-    show(a.text || '');
-    setErr('');
-    if (a.kind !== 'text' || a.text || !url) return;
-    const c = new AbortController();
-    fetch(url, { signal: c.signal })
-      .then((r) => {
-        if (!r.ok) throw new Error('读取失败');
-        return r.text();
-      })
-      .then((v) => {
-        if (!c.signal.aborted) show(v);
-      })
-      .catch(() => {
-        if (!c.signal.aborted) setErr('暂时无法预览，仍可下载原文件。');
-      });
-    return () => c.abort();
-  }, [a.text, a.kind, url]);
-  return (
-    <section className="block" data-artifact={a.name}>
-      <h2>{a.name}</h2>
-      {a.kind === 'image' && <img className="live-art" src={url} alt={a.name} />}{' '}
-      {a.kind === 'text' && <p className="live-text">{err || text || '正在读取…'}</p>}
-      <a className="btn btn-sm" href={url} download={a.name}>
-        下载{a.kind === 'pptx' ? '可编辑 PPTX' : '原文件'} ↓
-      </a>
-    </section>
   );
 }
 export function DetailSheet({
@@ -163,9 +128,6 @@ export function DetailSheet({
       target.scrollIntoView({ block: 'start' });
     } else el?.scrollTo(0, 0);
   }, [id, name]);
-  const findings = id === 'research' ? p.research?.findings ?? [] : [];
-  const a = p.artifacts.filter((x) => x.stage === id),
-    e = p.events.filter((x) => x.stage === id);
   return (
     <div className="sheet">
       <div className="sheet-bar">
@@ -203,44 +165,6 @@ export function DetailSheet({
           {id === 'research' && <ResearchReview key={p.id} p={p} act={act} busy={busy} />}
           {id === p.stage && (p.status === 'failed' || p.finalReturn || id === 'visual' || id==='brief') && (id !== 'research' || p.finalReturn) && (
             <Decisions p={p} act={act} busy={busy} />
-          )}
-          {id !== 'copy' && (a.length > 0 || findings.length > 0) && (
-            <details key={id + '-originals'} className="research-original">
-              <summary>{id === 'research' ? '研究底稿与原图' : `原始文件与下载（${a.length}）`}</summary>
-              {findings.map((finding, i) => (
-                <section className="block" key={i}>
-                  <h3>{finding.conclusion}</h3>
-                  <p>{finding.evidence}</p>
-                  {finding.source && <p><ResearchSource finding={finding} attachments={p.attachments} /></p>}
-                  {finding.implication && <p>{finding.implication}</p>}
-                  {!!finding.images?.length && <ResearchImageGallery images={finding.images} artifacts={a} attachments={p.attachments} />}
-                </section>
-              ))}
-              {a.map((x) =>
-                x.kind === 'text' && !x.name.endsWith('.deck.json') ? (
-                  <FileView key={x.url} a={x} />
-                ) : (
-                  <p key={x.url} data-artifact={x.name}>
-                    <a href={safeURL(x.url)} download={x.name}>
-                      {x.name} ↓
-                    </a>
-                  </p>
-                ),
-              )}
-            </details>
-          )}
-          {id !== 'copy' && e.length > 0 && (
-            <details key={id + '-events'} className="research-original">
-              <summary>执行记录（{e.length}）</summary>
-              <ul className="plain-list">
-                {e.map((v, i) => (
-                  <li key={i}>
-                    <span className="time">{clock(v.at)}　</span>
-                    {v.text}
-                  </li>
-                ))}
-              </ul>
-            </details>
           )}
         </article>
       </div>

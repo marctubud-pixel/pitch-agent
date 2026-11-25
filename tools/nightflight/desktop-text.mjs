@@ -120,7 +120,7 @@ export async function desktopTextProvider(executable,signal,onEvent) {
 }
 
 export function desktopImageProvider(executable,dir,signal,onEvent) {
-  return {async execute({runId,prompt,images}) {
+  return {async execute({runId,prompt,images,imageSize}) {
     const mode = '--image-model';
     const profile = await invoke(executable,'profile',null,signal,mode);
     const inputs = [];
@@ -128,8 +128,8 @@ export function desktopImageProvider(executable,dir,signal,onEvent) {
       const bytes = await readFile(image.path);
       inputs.push({mime:image.mediaType,data:bytes.toString('base64')});
     }
-    const portraitDefault = /^gpt-image/i.test(profile.model) ? { size: '1024x1536' } : {};
-    const body = {model:profile.model,prompt,n:1,output_format:'png',...portraitDefault};
+    const sizeParam = imageSize ? { size: imageSize } : /^gpt-image/i.test(profile.model) ? { size: '1024x1536' } : {};
+    const body = {model:profile.model,prompt,n:1,output_format:'png',...sizeParam};
     const packet = JSON.stringify({base:profile.base,body,images:inputs});
     const request = async () => {
       await onEvent?.('生图 API 请求 · '+profile.host+' · '+profile.model+' · '+inputs.length+' 张参考图');

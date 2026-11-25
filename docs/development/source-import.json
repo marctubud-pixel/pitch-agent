@@ -2263,8 +2263,8 @@
       "reason": "将右侧对话收口为主理人阶段里程碑汇报、可点击跳转交付链接与富方向决策卡，不再逐条刷底层事件。"
     },
     "apps/workbench-preview/nightflight/src/components/DetailSheet.tsx": {
-      "sha256": "9e9bb555bbae30a3fcf326912c0726c98b5d61986f91ebf61e6245021e0664fd",
-      "reason": "全自动研究交接由后端按四维证据判定，移除浏览器打开项目时带缺口进入策略的动作。"
+      "sha256": "7a0be2d3b5a8e3b61dd4bb5d05020449cc35da439dbd8253e7307151de0bd0ca",
+      "reason": "精简七阶段详情页，移除冗余的原始文件与下载、执行记录与检索记录折叠块，保留各阶段核心交付内容。"
     },
     "apps/workbench-preview/nightflight/src/components/Home.tsx": {
       "sha256": "9c5940034f0c30e34a622913d09aa38295e921da8753444f78b87065787f9cf9",
@@ -2287,8 +2287,8 @@
       "reason": "整合桌面项目资料库及登录后模型设置菜单，保留夜航原生交互。"
     },
     "apps/workbench-preview/nightflight/src/components/Workspace.tsx": {
-      "sha256": "340c60b2c2d19b7b00671ec5745c7154e7d89d710cadf91184e29361373c054c",
-      "reason": "四栏工作区升级为 10 项细分任务卡、分组阶段交付物、去重可读文档与三栏视觉缩略图画廊，并统一完成/等待/中断态。"
+      "sha256": "9de6d531d848945ff85b4adb4b40839291ca989cc28308da031b0f02efe33275",
+      "reason": "四栏工作区支持延展与样机交付物计数，保持主视觉缩略图区纯净。"
     },
     "apps/workbench-preview/nightflight/src/data/project.ts": {
       "sha256": "60228d35b264dc7931e60a0e00b060574f09c5ad40340ab4956e8a6763d65d8f",

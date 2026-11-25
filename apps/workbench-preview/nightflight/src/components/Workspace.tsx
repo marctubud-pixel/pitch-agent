@@ -41,7 +41,16 @@ function stageDeliverables(p: Project, stageId: StageId): StageDeliverableEntry[
   if (stageId === 'visual') {
     const refs = p.artifacts.filter((a) => a.stage === 'visual' && a.visual?.role === 'reference');
     const mains = p.artifacts.filter(
-      (a) => a.stage === 'visual' && a.kind === 'image' && a.visual?.role !== 'reference' && a.visual?.role !== 'comparison',
+      (a) =>
+        a.stage === 'visual' &&
+        a.kind === 'image' &&
+        (!a.visual?.role || a.visual.role === 'main'),
+    );
+    const derivatives = p.artifacts.filter(
+      (a) =>
+        a.stage === 'visual' &&
+        a.kind === 'image' &&
+        (a.visual?.role === 'extension' || a.visual?.role === 'mockup'),
     );
     const items: StageDeliverableEntry[] = [];
     if (refs.length) {
@@ -60,6 +69,15 @@ function stageDeliverables(p: Project, stageId: StageId): StageDeliverableEntry[
         label: `主视觉稿（${mains.length} 张）`,
         stage: 'visual',
         name: winner.name,
+        at: stageTime('visual'),
+      });
+    }
+    if (derivatives.length) {
+      items.push({
+        key: 'vis-derivatives',
+        label: `延展与样机（${derivatives.length} 张）`,
+        stage: 'visual',
+        name: derivatives[0].name,
         at: stageTime('visual'),
       });
     }
@@ -102,8 +120,7 @@ function pickWorkspaceVisuals(p: Project): {
     (a) =>
       a.kind === 'image' &&
       a.stage === 'visual' &&
-      a.visual?.role !== 'comparison' &&
-      a.visual?.role !== 'reference',
+      (!a.visual?.role || a.visual.role === 'main'),
   );
   const allRefs = p.artifacts.filter((a) => a.stage === 'visual' && a.visual?.role === 'reference');
   const dirs = p.directions.length
