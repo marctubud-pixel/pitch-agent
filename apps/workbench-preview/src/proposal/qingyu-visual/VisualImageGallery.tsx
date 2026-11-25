@@ -126,52 +126,32 @@ function CurrentArtwork({ direction, directions, letter, onDirectionChange, zoom
 
   return <>
     <section className="vg-section" data-visual-direction={direction.id}>
-      <h3>{sectionTitle} <span className="vg-letter">方向 {letter}</span></h3>
-      {directions.length > 1 && (
-        <div className="vg-dir-tabs" role="tablist" aria-label="切换创意方向">
-          {directions.map((item, idx) => {
-            const tabLetter = String.fromCharCode(65 + idx);
-            const active = item.id === direction.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                className={'vg-dir-tab' + (active ? ' is-active' : '')}
-                onClick={() => onDirectionChange(item.id)}
-              >
-                <span className="vg-dir-tab-letter">方向 {tabLetter}</span>
-                <span className="vg-dir-tab-name">{item.name}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-      {(direction.batchSummary || direction.mains.length > 1) && (
-        <div className="vg-draft-bar">
-          {direction.batchSummary && <p className="vg-recommendation">{direction.batchSummary}</p>}
-          {direction.mains.length > 1 && (
-            <div className="vg-draft-tabs" role="tablist" aria-label="切换本方向候选稿">
-              {direction.mains.map((item, idx) => {
-                const active = idx === mainIndex;
-                return (
-                  <button
-                    key={item.src}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    className={'vg-draft-tab' + (active ? ' is-active' : '')}
-                    onClick={() => setMainIndex(idx)}
-                  >
-                    {item.title || `第 ${idx + 1} 稿`}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+      <h3>
+        {sectionTitle}
+        {directions.length > 1 ? (
+          <span className="vg-dir-inline" role="tablist" aria-label="切换创意方向">
+            {directions.map((item, idx) => {
+              const tabLetter = String.fromCharCode(65 + idx);
+              const active = item.id === direction.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  title={item.name}
+                  className={'vg-dir-inline-btn' + (active ? ' is-active' : '')}
+                  onClick={() => onDirectionChange(item.id)}
+                >
+                  方向 {tabLetter}
+                </button>
+              );
+            })}
+          </span>
+        ) : (
+          <> <span className="vg-letter">方向 {letter}</span></>
+        )}
+      </h3>
       <div className={pairClass}>
         {direction.sketch && <Artwork label="构图草图" rowRatio={rowRatio} loaded={measure} images={[direction.sketch]} zoom={zoom} />}
         <Artwork
