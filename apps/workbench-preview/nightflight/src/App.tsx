@@ -56,6 +56,7 @@ export function App() {
   const [reload, refresh] = useState(0),
     generation = useRef(0),
     lastStatus = useRef(''),
+    skipCelebration = useRef(false),
     [seen, mark] = useState(0),
     [notice, setNotice] = useState(false);
   const [routePath, query] = route.split('?');
@@ -126,8 +127,14 @@ export function App() {
     const finalDecision = p.stage==='final' && ['ready','blocked'].some(outcome=>p.finalReview?.outcome===outcome);
     if (p.status === 'waiting' && p.stage !== 'research' && !finalDecision && lastStatus.current !== 'waiting') setChat(true);
     if (p.status === 'done' && lastStatus.current && lastStatus.current !== 'done') {
-      setParty(true);
-      setNotice(true);
+      if (skipCelebration.current) {
+        skipCelebration.current = false;
+      } else {
+        setParty(true);
+        setNotice(true);
+      }
+    } else if (p.status !== 'running' && skipCelebration.current) {
+      skipCelebration.current = false;
     }
     lastStatus.current = p.status;
     if (chat) mark(deriveChatMessages(p).length);
@@ -188,6 +195,7 @@ export function App() {
     setBusy(true);
     error('');
     generation.current++;
+    if (kind === 'deck_style') skipCelebration.current = true;
     try {
       const attachments = files?.length ? await Promise.all(files.map(encodeFile)) : undefined;
       const d = await api<{ project: Project }>(endpoint(id) + '/action', {
@@ -196,7 +204,7 @@ export function App() {
         attachments,
         ...options,
         expectedRevision:
-          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' || kind === 'accept_final' ? p.revision : undefined,
+          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' || kind === 'accept_final' || kind === 'deck_style' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;

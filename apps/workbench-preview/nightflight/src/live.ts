@@ -181,10 +181,13 @@ type RefinedReview = {
   report: string;
 } & ({outcome: 'ready'; acceptedAt?: string} | {outcome: 'blocked'; returnStage: StageId});
 
+export type DeckStyle = 'bento' | 'editorial' | 'consulting';
 export interface Project extends Summary {
   briefScope?: {status: 'accepted' | 'unclear' | 'unsupported'; types: string[]; reason: string};
   finalReturn?:{returnStage:StageId;reason:string};
   finalReview?: RefinedReview | {outcome: 'pass' | 'return'; reason: string};
+  deckStyle?: DeckStyle;
+  canSwitchDeckStyle?: boolean;
   revision: number;
   mode: Mode;
   brief: string;
@@ -222,7 +225,7 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final';
+export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final' | 'deck_style';
 const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '已完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy' | 'layoutDraftOnly' | 'layoutMaterialsOnly'>>;
 export const researchQuestion = (p: ResearchStatus) =>

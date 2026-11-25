@@ -8,6 +8,7 @@ import { basename, dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildProposalOutline } from './proposal-outline.mjs';
 import { readManuscriptPlan } from './manuscript.mjs';
+import { normalizeDeckStyle, renderHtmlDeck } from './html-deck.mjs';
 
 const app = fileURLToPath(new URL('../../apps/workbench-preview/', import.meta.url));
 const requireApp = createRequire(join(app, 'package.json'));
@@ -144,7 +145,7 @@ export function layoutEdits(project) {
   return edits;
 }
 
-export async function runLayout({ project, dir, onEvent = () => {}, signal = new AbortController().signal, reviewDraft }) {
+export async function runLayout({ project, dir, onEvent = () => {}, signal = new AbortController().signal, reviewDraft, style }) {
   signal.throwIfAborted();
   const root = await realpath(dir);
   const edits=reviewDraft ? [] : layoutEdits(project);
@@ -158,6 +159,61 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
     ? {pages:[{images:[...manuscript.figures.map(f=>f.name), ...(manuscript.derivatives ?? []).map(f=>f.name)]}]}
     : outline;
   const images = imageIndex ? await readOutlineImages(imageIndex, project, root) : [];
+
+  const requestedStyle = style ?? project.deckStyle;
+  if (manuscript && requestedStyle !== 'legacy') {
+    const resolvedStyle = normalizeDeckStyle(requestedStyle);
+    const id = randomUUID();
+    const name = '提案-' + id + '.pptx';
+    const htmlName = '提案演示-' + id + '.html';
+    const preview = '提案预览-' + id + '.deck.json';
+    const outlineName = '客户逐页稿-' + id + '.outline.json';
+    const tmp = join(root, '.' + id + '.tmp');
+    const artifacts = [
+      { kind: 'pptx', name },
+      { kind: 'text', name: htmlName },
+      { kind: 'text', name: preview },
+    ];
+    const created = [];
+    try {
+      const rendered = await renderHtmlDeck({
+        title: project.title,
+        manuscript,
+        images,
+        theme,
+        edits,
+        style: resolvedStyle,
+        signal,
+        onEvent,
+      });
+      signal.throwIfAborted();
+      await writeFile(tmp, rendered.pptxBuffer, { flag: 'wx', signal });
+      onEvent('已排成 ' + rendered.deck.pages.length + ' 页，正在保存可编辑 PPTX 与 HTML 演示');
+      await writeFile(join(root, htmlName), rendered.htmlContent, { flag: 'wx', signal });
+      created.push(htmlName);
+      if (rendered.outline) {
+        await writeFile(join(root, outlineName), JSON.stringify(rendered.outline), { flag: 'wx', signal });
+        created.push(outlineName);
+        artifacts.push({ kind: 'text', name: outlineName });
+      }
+      for (const [index, jpgBytes] of rendered.pageJpegs.entries()) {
+        signal.throwIfAborted();
+        const file = 'page-' + String(index + 1).padStart(4, '0') + '-' + id + '.jpg';
+        await writeFile(join(root, file), jpgBytes, { flag: 'wx', signal });
+        created.push(file);
+        artifacts.push({ kind: 'image', name: file, renderPage: index + 1 });
+      }
+      await writeFile(join(root, preview), JSON.stringify(rendered.deck), { flag: 'wx', signal });
+      created.push(preview);
+      await rename(tmp, join(root, name));
+      return { artifacts, pages: rendered.deck.pages.length, layoutChanges: edits, style: resolvedStyle };
+    } catch (error) {
+      await Promise.all(created.map(filename => rm(join(root, filename), { force: true })));
+      await rm(tmp, { force: true });
+      throw error;
+    }
+  }
+
   onEvent(manuscript ? '正在按本版逐页稿原页序生成可编辑 PPTX' : outline ? '正在按客户逐页稿排版并核对目录与材料' : '正在将现有材料按原阶段顺序排版');
   const code = await buildRenderer();
   signal.throwIfAborted();

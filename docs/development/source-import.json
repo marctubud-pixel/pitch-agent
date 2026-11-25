@@ -2251,8 +2251,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/App.tsx": {
-      "sha256": "e9d948cf9a086a4183870bfa3b2968eac3581e88855913e3ef7b2c8e7c999553",
-      "reason": "接入人话业务执行流、动态主理人状态与里程碑汇报对话，默认折叠底层 API 明细并统一正式 Slogan。"
+      "sha256": "f6861768f1d65658419ef986af564a161739c2d85371c0d389902ee2b413ef6c",
+      "reason": "支持三风格提案版式本地即时切换（deck_style）且切换风格不重复触发完成弹窗。"
     },
     "apps/workbench-preview/nightflight/src/components/Attachments.tsx": {
       "sha256": "1bd9cd31bbfe89a109a4c992a2d3c62167d15fd6b58b450b890861f148cfc45f",
@@ -2303,8 +2303,8 @@
       "reason": "接入夜航本机项目服务、页面状态或本机素材"
     },
     "apps/workbench-preview/nightflight/src/styles/detail.css": {
-      "sha256": "029d11a1e848b211ba1c6348a4e475057b429d035452569c2714a181b3ec5ab5",
-      "reason": "按夜航产品 review 更新运行、构建或交互并保留原始导入身份。"
+      "sha256": "5b66ceb7fd75b4d1aba8a43aa00270e32f24bc4053c0abb86600b42034d7e98a",
+      "reason": "补充高清 16:9 提案页图及极简行内风格切换器样式。"
     },
     "apps/workbench-preview/nightflight/src/styles/shell.css": {
       "sha256": "5a52a2343c4c95ac3e08e4098a16e8ce005e5e537b3ad69a7c0868ff75299e42",

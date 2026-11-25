@@ -97,6 +97,14 @@ details p { font-size: 14.5px; }
 .deck { max-width: 800px; }
 .deck:focus-visible { outline-offset: 6px; }
 .deck-stage { border: var(--rule); border-radius: 3px; overflow: hidden; }
+.deck-slide-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--paper-2); }
+.block > h2.deck-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 18px; }
+.deck-style-inline { display: inline-flex; align-items: baseline; gap: 14px; }
+.deck-style-inline .deck-style-btn { border: 0; background: transparent; padding: 0; cursor: pointer; font: 400 13px/1.6 var(--mono); letter-spacing: 0.05em; color: var(--mute); transition: color 120ms ease; }
+.deck-style-inline .deck-style-btn:hover:not(:disabled) { color: var(--ink); }
+.deck-style-inline .deck-style-btn.is-active { color: var(--ink); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; cursor: default; }
+.deck-style-inline .deck-style-btn:disabled:not(.is-active) { opacity: 0.45; cursor: wait; }
+.deck-style-inline .deck-style-status { font: 400 12px/1.6 var(--mono); color: var(--orange); }
 .deck-ctrl { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 14px 0; font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; }
 .deck-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
 .deck-strip button { border: 1px solid var(--line-soft); border-radius: 2px; overflow: hidden; }
