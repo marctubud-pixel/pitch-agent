@@ -25,8 +25,10 @@ export interface Artifact extends Asset {
     sha256?: string; pageUrl?: string; sourceUrl?: string; title?: string;
     referenceHandoff?: { admission?: { passed: boolean; ruling: {reason: string}; votes: {role: string; items: {dimension: string; score: number | null; evidence: string}[]}[] }; references: { why?: string; avoid?: string; role: 'main' | 'auxiliary' | 'sharedBrand'; name: string; sha256: string; borrow: string; apply: string }[] };
     role: 'reference' | 'comparison' | 'sketch' | 'main' | 'extension' | 'mockup';
-    output?: 'packaging' | 'kv';
+    output?: 'packaging' | 'kv' | 'event';
     format?: 'portrait' | 'landscape';
+    label?: string;
+    subject?: string;
   };
 }
 export type CopyRole = 'copy' | 'brand' | 'user' | 'comms';

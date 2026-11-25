@@ -66,7 +66,8 @@ async function readEdition(artifacts,plan,dir,signal) {
     const planned=plan.pages[index];
     const ref=numbered.find(item=>item.renderPage===number);
     const id='P'+String(number).padStart(2,'0');
-    const expected=planned.figures.map(id=>plan.figures.find(figure=>figure.id===id));
+    const allFigures=[...plan.figures,...(plan.derivatives ?? [])];
+    const expected=planned.figures.map(id=>allFigures.find(figure=>figure.id===id));
     const pictures=slide.nodes.filter(node=>node.kind==='image').map(({image})=>({
       name:image.id,sha256:sha(Buffer.from(image.data.split(',')[1],'base64')),
     }));

@@ -8,7 +8,7 @@ export interface GalleryDirection {
   auxiliaryMissing?: boolean;
   mains: readonly GalleryImage[]; extensions?: readonly GalleryImage[];
   batchSummary?: string;
-  format?: 'portrait' | 'landscape'; extensionLabel?: string;
+  format?: 'portrait' | 'landscape'; extensionLabel?: string; mockupLabel?: string;
   sketchComparison?: { previous: GalleryImage; note: string };
   mockup?: GalleryImage;
 }
@@ -21,13 +21,13 @@ function Picture({ image, loaded }: { image: GalleryImage; loaded?: (image: HTML
 
 type Zoom = (image: GalleryImage) => void;
 
-function Artwork({ images, label, zoom, loaded, rowRatio, showCaption = true }: {
-  images: readonly GalleryImage[]; label: string; showCaption?: boolean; rowRatio?: number; zoom: Zoom; loaded?: (image: HTMLImageElement, index: number) => void;
+function Artwork({ images, label, zoom, loaded, rowRatio, fixedFrame = false, showCaption = true }: {
+  images: readonly GalleryImage[]; label: string; showCaption?: boolean; rowRatio?: number; fixedFrame?: boolean; zoom: Zoom; loaded?: (image: HTMLImageElement, index: number) => void;
 }) {
   const [index, setIndex] = useState(0);
   const [ratio, setRatio] = useState<number>();
   const image = images[index] ?? images[0];
-  const displayRatio = rowRatio || (images.length > 1 ? ratio : undefined);
+  const displayRatio = fixedFrame ? undefined : (rowRatio || (images.length > 1 ? ratio : undefined));
   if (!image) return <figure><figcaption className="vg-missing">{label}待补</figcaption></figure>;
   return <figure>
     <button type="button" className="vg-zoom" style={displayRatio ? { aspectRatio: displayRatio } : undefined} aria-label={'放大' + image.title} aria-haspopup="dialog" onClick={() => zoom(image)}>
@@ -55,16 +55,20 @@ function CurrentArtwork({ direction, letter, zoom, hideEmptySlots = false }: { d
   }
   const portrait = direction.format ? direction.format === 'portrait' : measuredPortrait;
   const extensionLabel = direction.extensionLabel ?? '延展图';
+  const mockupLabel = direction.mockupLabel ?? '样机';
   const hasExtensions = Boolean(direction.extensions?.length);
   const showExtension = hasExtensions || !hideEmptySlots;
+  const sideBySideNoSketch = !direction.sketch && showExtension;
   const inlineExtension = showExtension && (portrait || !direction.sketch);
+  const useUniformFrame = sideBySideNoSketch;
   const extension = showExtension ? (
-    <Artwork label={extensionLabel} rowRatio={inlineExtension ? rowRatio : undefined} loaded={inlineExtension ? measure : undefined} images={direction.extensions ?? []} zoom={zoom} />
+    <Artwork label={extensionLabel} fixedFrame={useUniformFrame} rowRatio={inlineExtension && !useUniformFrame ? rowRatio : undefined} loaded={inlineExtension && !useUniformFrame ? measure : undefined} images={direction.extensions ?? []} zoom={zoom} />
   ) : null;
   const pairCount = Number(Boolean(direction.sketch)) + 1 + Number(Boolean(inlineExtension));
   const pairClass =
     'vg-pair' +
-    (pairCount === 3 ? ' vg-portrait' : pairCount === 1 ? ' vg-single' : '');
+    (pairCount === 3 ? ' vg-portrait' : pairCount === 1 ? ' vg-single' : '') +
+    (useUniformFrame ? ' vg-balanced' : '');
   const sectionTitle = direction.sketch
     ? '草图与主视觉'
     : inlineExtension
@@ -76,9 +80,9 @@ function CurrentArtwork({ direction, letter, zoom, hideEmptySlots = false }: { d
       {direction.batchSummary && <p className="vg-recommendation">{direction.batchSummary}</p>}
       <div className={pairClass}>
         {direction.sketch && <Artwork label="构图草图" rowRatio={rowRatio} loaded={measure} images={[direction.sketch]} zoom={zoom} />}
-        <Artwork label="主视觉" rowRatio={rowRatio} images={direction.mains} zoom={zoom}
+        <Artwork label="主视觉" fixedFrame={useUniformFrame} rowRatio={useUniformFrame ? undefined : rowRatio} images={direction.mains} zoom={zoom}
           loaded={(image, index) => {
-            measure(image);
+            if (!useUniformFrame) measure(image);
             if (index === 0) setMeasuredPortrait(image.naturalHeight > image.naturalWidth);
           }} />
         {inlineExtension && extension}
@@ -94,8 +98,8 @@ function CurrentArtwork({ direction, letter, zoom, hideEmptySlots = false }: { d
     </section>
     {!inlineExtension && showExtension && <section className="vg-section vg-extension"><h3>{extensionLabel}</h3>{extension}</section>}
     {(direction.mockup || !hideEmptySlots) && (
-      <section className="vg-section vg-mockup"><h3>样机 <span className="vg-letter">方向 {letter}</span></h3>
-        {direction.mockup ? <Artwork showCaption={false} label="样机" images={[direction.mockup]} zoom={zoom} /> : <p className="vg-missing">样机待交回</p>}
+      <section className="vg-section vg-mockup"><h3>{mockupLabel} <span className="vg-letter">方向 {letter}</span></h3>
+        {direction.mockup ? <Artwork showCaption={false} label={mockupLabel} images={[direction.mockup]} zoom={zoom} /> : <p className="vg-missing">样机待交回</p>}
       </section>
     )}
   </>;

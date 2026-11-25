@@ -154,7 +154,9 @@ export async function runLayout({ project, dir, onEvent = () => {}, signal = new
   const theme = await projectTheme(project,root,manuscript?.project.carriers[0] || outline?.kind || project.proposalKind,signal);
   if (manuscript) {delete theme.agencyLogo;delete theme.agencyName;}
   const sections = manuscript || outline ? [] : await readSources(project, root);
-  const imageIndex = manuscript ? {pages:[{images:manuscript.figures.map(f=>f.name)}]} : outline;
+  const imageIndex = manuscript
+    ? {pages:[{images:[...manuscript.figures.map(f=>f.name), ...(manuscript.derivatives ?? []).map(f=>f.name)]}]}
+    : outline;
   const images = imageIndex ? await readOutlineImages(imageIndex, project, root) : [];
   onEvent(manuscript ? '正在按本版逐页稿原页序生成可编辑 PPTX' : outline ? '正在按客户逐页稿排版并核对目录与材料' : '正在将现有材料按原阶段顺序排版');
   const code = await buildRenderer();

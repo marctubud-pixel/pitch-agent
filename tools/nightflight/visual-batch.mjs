@@ -873,3 +873,194 @@ export async function fastReviewVisualBatch({call, direction, images, context, p
     ruling: { threadId: pickResult.threadId, reason: pick.reason || '' },
   };
 }
+
+export function imageDimensionsFromBytes(bytes) {
+  if (!bytes || bytes.length < 24) return null;
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) {
+    const width = bytes.readUInt32BE(16);
+    const height = bytes.readUInt32BE(20);
+    if (width > 0 && height > 0) return { width, height, format: height > width ? 'portrait' : 'landscape' };
+  }
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) {
+    let offset = 2;
+    while (offset + 9 < bytes.length) {
+      if (bytes[offset] !== 0xff) { offset++; continue; }
+      const marker = bytes[offset + 1];
+      if (marker === 0xc0 || marker === 0xc2) {
+        const height = bytes.readUInt16BE(offset + 5);
+        const width = bytes.readUInt16BE(offset + 7);
+        if (width > 0 && height > 0) return { width, height, format: height > width ? 'portrait' : 'landscape' };
+        break;
+      }
+      if (marker === 0xd9 || marker === 0xda) break;
+      const len = bytes.readUInt16BE(offset + 2);
+      if (len < 2) break;
+      offset += 2 + len;
+    }
+  }
+  return null;
+}
+
+export function classifyVisualOutputKind({ project, packaging = false, poster = false } = {}) {
+  const types = project?.briefScope?.types ?? project?.research?.carriers ?? [];
+  if (packaging || types.includes('packaging')) return 'packaging';
+  const text = `${project?.title ?? ''}\n${project?.brief ?? ''}`;
+  if (types.includes('event') || /活动|发布会|快闪|市集|峰会|论坛|展览|音乐节|嘉年华|见面会|沙龙|打卡|周年庆|开业/u.test(text)) {
+    return 'event';
+  }
+  if (poster || types.includes('kv') || types.includes('poster')) return 'kv';
+  return 'kv';
+}
+
+export function derivativeSpecsForDirection({ outputKind, mainFormat = 'portrait', direction, slogan, brief = '', directionIndex = 0 }) {
+  const idx = Math.abs(Number(directionIndex) || 0);
+  const cleanSlogan = (slogan || direction || '').trim();
+  if (outputKind === 'packaging') {
+    const lifestyleScenes = [
+      '真实自然光居家生活场景中，一位气质清新的年轻消费者面带自然微笑双手捧握/手持附件中的本案产品包装（包装正面完整清晰直面镜头，品牌字标与核心信息一目了然），画面自然融入目标使用对象或使用环境，呈现温暖高级的品牌生活杂志摄影质感',
+      '温暖晨光生活空间中，一位年轻用户正在自然使用/开启附件中的本案产品包装（一手稳稳托举包装袋/盒使正面主视觉完整面向镜头，另一手自然演示取用/倒出或互动动作），真实皮肤与材质质感，高端商业生活摄影',
+      '柔和窗光室内木桌旁，一位年轻目标用户亲近自然地怀抱/手持附件中的本案产品包装并呈现真实日常使用陪伴感，包装正面图案、中文品牌名与配色100%清晰可读，高级生活方式商业人像摄影',
+    ];
+    const mockupScenes = [
+      {
+        label: '商场大屏与终端样机',
+        subject: '现代高端购物中心中庭 LED 大屏与精品门店陈列台实景',
+        prompt: '将附件中的本案包装主视觉真实置入现代高端购物中心中庭/品牌快闪区实景样机中（大幅高清室内广告屏展示本案产品主视觉，前方精品陈列台摆放同款实体包装，带真实环境光影、玻璃反光与自然景深）。100%保持附件原包装正面图案、中文字标与配色一致，横版 3:2 商业实拍样机，单帧画面，严禁拼图、水印或无关乱码。',
+      },
+      {
+        label: '地铁灯箱样机',
+        subject: '现代地铁站通道大型背光灯箱实景广告',
+        prompt: '将附件中的本案包装主视觉真实置入现代都市地铁站通道大型背光灯箱广告位实景样机中（整洁高级的现代地铁长廊、真实玻璃罩微反光、流动环境景深与建筑线条）。100%保持附件原包装画面、中文品牌字标与色调完整清晰不变，横版 3:2 商业实拍样机，单帧画面，严禁拼图或无关乱码。',
+      },
+      {
+        label: '手机屏幕样机',
+        subject: '手持智能手机浏览品牌社媒种草与电商主图实景',
+        prompt: '将附件中的本案包装主视觉真实置入年轻用户手持无边框智能手机的实景样机中（现代极简咖啡馆或阳光木桌自然环境，手机高清屏幕正在展示本案包装新品主视觉宣传页，画面清晰锐利、自然手部握持与浅景深）。100%保持附件原包装画面与中文字标清晰可读，横版 3:2 商业实拍样机，单帧画面，严禁拼图或乱码。',
+      },
+    ];
+    const mockup = mockupScenes[idx % mockupScenes.length];
+    return [
+      {
+        role: 'extension',
+        suffix: 'ext',
+        format: 'portrait',
+        imageSize: '1024x1536',
+        label: '模特手持与使用延展',
+        subject: '人物模特手持与使用产品生活场景',
+        prompt: `基于附件中的本案包装定稿，生成一张「人物模特手持或使用该产品」的真实生活场景延展图。${lifestyleScenes[idx % lifestyleScenes.length]}。100%严格沿用附件原图的包装形态、品牌字标、色彩体系、主视觉图案与文字版式，不得擅自篡改品牌名或包装结构；单帧 2:3 竖版构图，自然真实摄影光影，严禁分屏拼图、多手畸形、乱码英文或无关品牌。方向参考：「${cleanSlogan}」。`,
+      },
+      {
+        role: 'mockup',
+        suffix: 'mockup',
+        format: 'landscape',
+        imageSize: '1536x1024',
+        label: mockup.label,
+        subject: mockup.subject,
+        prompt: mockup.prompt,
+      },
+    ];
+  }
+
+  if (outputKind === 'event') {
+    const requestedItems = [];
+    for (const [pattern, name] of [
+      [/引导|导视|指路/u, '活动引导装置与导视牌'],
+      [/邀请函|请柬/u, '纸质邀请函'],
+      [/手牌|手举牌|应援牌/u, '互动手举牌'],
+      [/演讲台|主舞台|背板|讲台/u, '演讲台与主舞台背板'],
+      [/打卡|拍照|装置/u, '互动拍照打卡装置'],
+      [/签到|胸牌|挂绳|工牌/u, '签到台与参会证挂绳'],
+    ]) {
+      if (pattern.test(brief)) requestedItems.push(name);
+    }
+    const defaultBundles = [
+      '活动现场引导导视牌与互动拍照打卡装置',
+      '精致品牌活动邀请函、参会证与互动手举牌物料套装',
+      '活动主舞台演讲台、立体字装置与现场导视物料',
+    ];
+    const collateral = requestedItems.length
+      ? requestedItems.slice(0, 3).join('、')
+      : defaultBundles[idx % defaultBundles.length];
+    const eventMockups = [
+      {
+        label: '手机活动页样机',
+        subject: '手机端查看活动邀请函与报名主视觉实景',
+        prompt: `将附件中的本案活动主 KV 真实置入手持智能手机屏幕实景样机中（真实自然光场景下，年轻受众手持智能手机查看该活动的线上邀请函/活动详情主画面，屏幕清晰锐利、自然浅景深）。100%保持附件活动 KV 的主画面、品牌名与中文主标「${cleanSlogan}」清晰可读，横版 3:2 商业实拍样机，单帧画面，严禁拼图或乱码。`,
+      },
+      {
+        label: '活动大屏样机',
+        subject: '活动现场或商业综合体高清大屏实景展示',
+        prompt: `将附件中的本案活动主 KV 真实置入现代活动场馆入口大屏或商业综合体中庭高清巨幕实景样机中（建筑空间纵深、真实灯光反射与自然现场氛围）。100%保持附件活动 KV 的画面结构、色彩与中文主标「${cleanSlogan}」完整清晰不变，横版 3:2 商业实拍样机，单帧画面，严禁拼图或乱码。`,
+      },
+      {
+        label: '户外大屏样机',
+        subject: '城市核心商圈户外 LED 大屏宣传实景',
+        prompt: `将附件中的本案活动主 KV 真实置入现代城市核心商圈户外高清 LED 大屏实景样机中（黄昏或晴朗日间建筑街景、真实屏幕光晕与环境透视）。100%保持附件活动 KV 画面与中文主标「${cleanSlogan}」完整清晰不变，横版 3:2 商业实拍样机，单帧画面，严禁拼图或乱码。`,
+      },
+    ];
+    const mockup = eventMockups[idx % eventMockups.length];
+    return [
+      {
+        role: 'extension',
+        suffix: 'ext',
+        format: 'landscape',
+        imageSize: '1536x1024',
+        label: '活动物料延展',
+        subject: collateral,
+        prompt: `基于附件中的本案活动主 KV 定稿，延展设计并实拍呈现同系列的线下活动物料（重点包含：${collateral}）。100%沿用附件活动 KV 的主视觉图形、色彩体系、字体气质与中文主标「${cleanSlogan}」，呈现可直接落地的真实材质工艺与高级空间陈列感，单帧 3:2 横版商业摄影构图，严禁杂乱分屏拼图或乱码。`,
+      },
+      {
+        role: 'mockup',
+        suffix: 'mockup',
+        format: 'landscape',
+        imageSize: '1536x1024',
+        label: mockup.label,
+        subject: mockup.subject,
+        prompt: mockup.prompt,
+      },
+    ];
+  }
+
+  // Default: Brand / Product KV — extend to the opposite orientation (portrait <-> landscape) + real media mockup
+  const extIsLandscape = mainFormat !== 'landscape';
+  const kvMockups = [
+    {
+      label: '地铁灯箱样机',
+      subject: '现代地铁站通道大型灯箱实景广告',
+      prompt: `将附件中的本案主视觉海报真实置入现代都市地铁站通道大型背光灯箱广告位实景样机中（整洁现代的地铁通道建筑透视、灯箱玻璃轻微环境反光与自然景深）。100%保持附件原海报画面构图、配色、产品主体与中文主标「${cleanSlogan}」完整清晰不变，横版 3:2 商业实拍样机，单帧画面，严禁拼图或水印。`,
+    },
+    {
+      label: '商场与户外大屏样机',
+      subject: '现代高端购物中心中庭巨幕或城市户外大屏实景',
+      prompt: `将附件中的本案主视觉海报真实置入现代高端购物中心中庭高清巨幕大屏（或城市核心商业街户外大屏）实景样机中（高级建筑空间纵深、真实灯光与自然环境氛围）。100%保持附件原海报画面、品牌元素与中文主标「${cleanSlogan}」完整清晰不变，横版 3:2 商业实拍样机，单帧画面，严禁拼图或水印。`,
+    },
+    {
+      label: '手机屏幕样机',
+      subject: '手持智能手机查看品牌开屏与社媒推广海报实景',
+      prompt: `将附件中的本案主视觉海报真实置入年轻用户手持无边框智能手机的实景样机中（自然光现代桌面或户外咖啡馆背景，手机全屏清晰展示本案开屏/社媒海报，真实手部质感与浅景深）。100%保持附件原海报画面、产品主体与中文主标「${cleanSlogan}」完整清晰不变，横版 3:2 商业实拍样机，单帧画面，严禁拼图或水印。`,
+    },
+  ];
+  const mockup = kvMockups[idx % kvMockups.length];
+  return [
+    {
+      role: 'extension',
+      suffix: 'ext',
+      format: extIsLandscape ? 'landscape' : 'portrait',
+      imageSize: extIsLandscape ? '1536x1024' : '1024x1536',
+      label: extIsLandscape ? '横版 KV 延展' : '竖版 KV 延展',
+      subject: extIsLandscape ? '横版 3:2 宽幅 KV 延展版式' : '竖版 2:3 移动端 KV 延展版式',
+      prompt: extIsLandscape
+        ? `基于附件中的本案竖版主视觉 KV 定稿，重新构图延展为一张完整的「3:2 横版 KV 延展海报」（适用于户外横幅大屏、网站 Banner 与门店横版灯箱）。100%沿用附件原图的品牌视觉基因、核心产品/主体、色调光影、字体气质与中文主标「${cleanSlogan}」，采用左右或黄金分割的舒展横版版式重排，画面干净高级、无拉伸变形、无多余留白黑边，单帧 3:2 横版构图，严禁拼图或乱码。`
+        : `基于附件中的本案横版主视觉 KV 定稿，重新构图延展为一张完整的「2:3 竖版 KV 延展海报」（适用于手机开屏、社交媒体与电梯竖屏）。100%沿用附件原图的品牌视觉基因、核心产品/主体、色调光影、字体气质与中文主标「${cleanSlogan}」，采用上下层次分明的竖版版式重排，画面干净高级、无裁剪残缺，单帧 2:3 竖版构图，严禁拼图或乱码。`,
+    },
+    {
+      role: 'mockup',
+      suffix: 'mockup',
+      format: 'landscape',
+      imageSize: '1536x1024',
+      label: mockup.label,
+      subject: mockup.subject,
+      prompt: mockup.prompt,
+    },
+  ];
+}

@@ -74,20 +74,36 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
     const assignedReferences = (referencesByDirection.get(title) ?? []).filter(ref => ref.role !== 'sharedBrand');
     const current = group.find(item => !item.file.visual || item.file.visual.role === 'main');
     const metadata = current?.file.visual ?? group.find(item => item.file.visual)?.file.visual;
+    const extMeta = group.find(item => item.file.visual?.role === 'extension')?.file.visual;
+    const mockupMeta = group.find(item => item.file.visual?.role === 'mockup')?.file.visual;
+    const inferredOutput = extMeta?.output ?? metadata?.output ?? (
+      p.briefScope?.types?.includes('packaging') ? 'packaging' :
+      p.briefScope?.types?.includes('event') ? 'event' : 'kv'
+    );
+    const defaultExtLabel =
+      inferredOutput === 'packaging' ? '模特手持与使用延展' :
+      inferredOutput === 'event' ? '活动物料延展' :
+      extMeta?.format === 'landscape' ? '横版 KV 延展' :
+      extMeta?.format === 'portrait' ? '竖版 KV 延展' : '延展视觉';
     function pictures(role: 'sketch' | 'main' | 'extension' | 'mockup') {
       const ordered = group.filter(item => (item.file.visual?.role ?? 'main') === role);
       if (role === 'main' && name) ordered.sort((a,b) => Number(b.file.name === name) - Number(a.file.name === name));
       return ordered
         .flatMap(({ file }) => {
           const src = safeURL(file.url);
-          return src ? [{ src, title: candidateTitle(file), alt: title + ' · ' + file.name }] : [];
+          const captionTitle = role === 'main'
+            ? candidateTitle(file)
+            : (file.visual?.label || file.visual?.subject || candidateTitle(file));
+          return src ? [{ src, title: captionTitle, alt: title + ' · ' + file.name }] : [];
         });
     }
     return { id: title, name: publishedSlogan(p, title) || title,
       batchSummary: hasBatch ? (winner ? '推荐第 '+winner.candidate+' 稿' : pendingSummary) : undefined,
       auxiliaryMissing: false,
       description: current?.record?.description?.split(/[。\n]/)[0], references: assignedReferences.map(ref => ({src: ref.src, title: ref.title, alt: ref.borrow})),
-      format: metadata?.format, extensionLabel: metadata?.output === 'packaging' ? '包装延展' : metadata?.output === 'kv' ? 'KV 延展' : '延展图',
+      format: metadata?.format,
+      extensionLabel: extMeta?.label || defaultExtLabel,
+      mockupLabel: mockupMeta?.label || '样机效果',
       sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: pictures('mockup')[0] };
   });
   const active = directions.find(item => item.id === selected) ?? directions[0];

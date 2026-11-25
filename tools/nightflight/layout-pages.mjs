@@ -361,7 +361,7 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
     await img.decode();
     return [source.id,{...source,width:img.naturalWidth,height:img.naturalHeight}];
   })));
-  const figures=new Map(plan.figures.map(f=>[f.id,f]));
+  const figures=new Map([...plan.figures,...(plan.derivatives ?? [])].map(f=>[f.id,f]));
   const sloganByDirection=new Map((plan.copy ?? []).filter(d=>d?.name && d?.main).map(d=>[d.name,d.main]));
   const placeholders=page=>[...page.imageNote.matchAll(/\[待补充\s*[:：]\s*([^\]]+)\]/gu)].map(m=>m[1]);
   let direction=0;
@@ -388,6 +388,16 @@ export async function compileManuscript(plan, sources, {compile}, theme, edits=[
         return {...draft,template:{kind,image:images[0],intro:copy.join('\n'),points:explanation}};
       }
       case 'work': return {...draft,tone:'brand',template:{kind:'upload.framed',image:images[0]}};
+      case 'application': {
+        if (images.length >= 2) {
+          return {...draft,template:{kind:'compare.lineup',sub:'',
+            items:images.map((image,i)=>{
+              const meta=figures.get(page.figures[i]);
+              return {image,name:meta?.label || (meta?.role==='mockup'?'实景样机':'延展视觉'),desc:meta?.subject || ''};
+            })}};
+        }
+        return {...draft,tone:'brand',template:{kind:'upload.framed',image:images[0]}};
+      }
       case 'compare': return {...draft,template:{kind:'compare.lineup',sub:points.slice(images.length).join('\n'),
         items:images.map((image,i)=>{
           const dirName=figures.get(page.figures[i]).direction;

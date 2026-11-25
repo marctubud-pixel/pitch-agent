@@ -84,6 +84,31 @@ export async function collectManuscriptMaterials(project, dir) {
       image:{path:file.path,mediaType}});
   }
   if (originals.length !== selected.length) throw Error('采用图中包含未展示的方向');
+  const derivatives = [];
+  for (const name of visible) {
+    const letter = String.fromCharCode(65 + project.directions.indexOf(name));
+    for (const role of ['extension', 'mockup']) {
+      const item = artifacts.findLast(
+        (a) => a.stage === 'visual' && a.kind === 'image' && a.visual?.direction === name && a.visual?.role === role,
+      );
+      if (!item) continue;
+      const mediaType = imageTypes[extname(item.name).toLowerCase()];
+      if (!mediaType) continue;
+      try {
+        const file = await attemptFile(root, item);
+        if (item.visual?.sha256 && item.visual.sha256 !== file.sha256) continue;
+        derivatives.push({
+          id: `${letter}-${role === 'extension' ? 'ext' : 'mockup'}`,
+          direction: name,
+          role,
+          name: item.name,
+          sha256: file.sha256,
+          label: item.visual?.label || (role === 'extension' ? '延展视觉' : '样机效果'),
+          subject: item.visual?.subject || '',
+        });
+      } catch {}
+    }
+  }
   const {body: _copyBody, ...copyIdentity} = copy;
   const materials = {
     project:{title:project.title, id:project.id, mode:project.mode, revision:project.revision,
@@ -98,6 +123,7 @@ export async function collectManuscriptMaterials(project, dir) {
     })},
     adoption:{at:project.visualAdoption.at, explanation:project.visualAdoption.overrideReason ?? ''},
     feedback:project.feedback?.map(f=>f.text) ?? [],
+    ...(derivatives.length ? { derivatives } : {}),
   };
   return {materials, originals};
 }
@@ -477,14 +503,15 @@ function checkDraft(draft, materials) {
 }
 
 function buildManuscriptPlan(draft, materials) {
-  const {project,figures,copy,research,brief,strategy,adoption}=materials;
+  const {project,figures,copy,research,brief,strategy,adoption,derivatives=[]}=materials;
   const approvedCore=coreStrategy(strategy);
   const figuresById=new Map(figures.map(f=>[f.id,f]));
   const copyByDirection=new Map(copy.directions.map(d=>[d.name,d]));
   const kvAndTvc=project.carriers?.includes('kv') && project.carriers?.includes('tvc');
   const pages=[];
+  const attachedDirections=new Set();
   const add=({role,title,points=[],chapter='',imageNote='',figures:shown=[],notes='',sources=[],observedPointIndex})=>{
-    pages.push({number:pages.length+1,role,label:slideRoles[role] ?? {cover:'封面',contents:'目录',close:'封底'}[role],
+    pages.push({number:pages.length+1,role,label:slideRoles[role] ?? {cover:'封面',contents:'目录',close:'封底',application:'延展与样机'}[role],
       title:title.trim(),points,chapter,imageNote,notes,figures:shown.map(f=>f.id),sources,
       ...(Number.isInteger(observedPointIndex)?{observedPointIndex}:{})});
   };
@@ -521,16 +548,71 @@ function buildManuscriptPlan(draft, materials) {
         p.role==='direction' ? (copyByDirection.get(figure.direction)?.main || figure.direction) : p.role==='compare' ? '并排看差异与适用条件' : p.title;
       add({...p,title,
         chapter:chapter.title.trim(),points,imageNote,figures:shown,notes:p.internalNote,sources,observedPointIndex});
+      if (p.role==='work' && figure && !attachedDirections.has(figure.direction)) {
+        const dirDerivs=derivatives.filter(d=>d.direction===figure.direction);
+        if (dirDerivs.length) {
+          attachedDirections.add(figure.direction);
+          const dirTitle=copyByDirection.get(figure.direction)?.main || figure.direction;
+          add({
+            role:'application',
+            title:dirTitle+' · 延展与样机',
+            chapter:chapter.title.trim(),
+            points:[],
+            imageNote:dirDerivs.map(d=>d.label).join('与')+'并排呈现',
+            figures:dirDerivs,
+            notes:'',
+            sources:[],
+          });
+        }
+      }
     }
   }
   add({role:'close',title:draft.closing});
   return {version:3,project,brief,strategy,researchSha256:sha(JSON.stringify(research)),
-    copy:copy.directions.filter(d=>d.displayed),adoption,figures,pages};
+    copy:copy.directions.filter(d=>d.displayed),adoption,figures,
+    ...(derivatives.length ? { derivatives } : {}),
+    pages};
 }
 
-function manuscriptText(plan) {
+export function attachDerivativesToPlan(plan, derivatives = []) {
+  if (!derivatives.length) return plan;
+  const figuresById = new Map(plan.figures.map(f => [f.id, f]));
+  const copyByDirection = new Map((plan.copy ?? []).map(d => [d.name, d]));
+  const attached = new Set();
+  const nextPages = [];
+  for (const page of plan.pages) {
+    if (page.role === 'application') continue;
+    nextPages.push({ ...page });
+    if (page.role === 'work' && page.figures?.length === 1) {
+      const fig = figuresById.get(page.figures[0]);
+      if (fig && !attached.has(fig.direction)) {
+        const dirDerivs = derivatives.filter(d => d.direction === fig.direction);
+        if (dirDerivs.length) {
+          attached.add(fig.direction);
+          const dirTitle = copyByDirection.get(fig.direction)?.main || fig.direction;
+          nextPages.push({
+            number: 0,
+            role: 'application',
+            label: '延展与样机',
+            title: dirTitle + ' · 延展与样机',
+            points: [],
+            chapter: page.chapter || '',
+            imageNote: dirDerivs.map(d => d.label).join('与') + '并排呈现',
+            notes: '',
+            figures: dirDerivs.map(d => d.id),
+            sources: [],
+          });
+        }
+      }
+    }
+  }
+  const numbered = nextPages.map((p, idx) => ({ ...p, number: idx + 1 }));
+  return { ...plan, derivatives, pages: numbered };
+}
+
+export function manuscriptText(plan) {
   const number=n=>String(n).padStart(2,'0');
-  const byId=new Map(plan.figures.map(f=>[f.id,f]));
+  const byId=new Map([...plan.figures,...(plan.derivatives ?? [])].map(f=>[f.id,f]));
   const lines=['# '+plan.project.title+'｜逐页稿'];
   let chapter='',chapterNumber=0;
   for (const p of plan.pages) {
@@ -569,7 +651,7 @@ export async function readManuscriptPlan(project, dir) {
     JSON.stringify(plan.figures.map(f=>[f.id,f.name,f.sha256]))!==JSON.stringify(originals.map(f=>[f.id,f.name,f.sha256]))) {
     throw Error('逐页稿的简报、研究、策略、文案或采用原图已变，请重新编稿后排版');
   }
-  const ids=new Set(plan.figures.map(f=>f.id));
+  const ids=new Set([...plan.figures,...(plan.derivatives ?? [])].map(f=>f.id));
   if (!Array.isArray(plan.pages) || !plan.pages.length || plan.pages.some((p,i)=>p.number!==i+1 || !nonempty(p.title) ||
     !Array.isArray(p.figures) || p.figures.some(id=>!ids.has(id)))) throw Error('逐页稿页序或原图绑定无效');
   return plan;

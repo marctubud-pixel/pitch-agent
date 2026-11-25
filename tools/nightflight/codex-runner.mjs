@@ -27,7 +27,7 @@ import { searchPublicReferences } from '../workbench/reference-http-search.mjs';
 import { createCodexProvider } from '../workbench/codex-provider.mjs';
 import { cropReviewRegion, makeComparison, makeReviewPreviews } from './visual-comparison.mjs';
 import { describeReferenceTasks, fastReviewReferencePlan, generateVisualWithDesktopModels, oppositePosterOrientation, paperAspect, posterIdentityExclusions, posterStrategyPurpose, readPosterReference, repairVisualTitle, selectVisualReferences, reviewReferencePlan, visualElements } from './visual-references.mjs';
-import { fastReviewVisualBatch, holdSimilarPosterDirections, POSTER_EVIDENCE_POLICY, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
+import { classifyVisualOutputKind, derivativeSpecsForDirection, fastReviewVisualBatch, holdSimilarPosterDirections, imageDimensionsFromBytes, POSTER_EVIDENCE_POLICY, posterBrandFacts, reviewPosterDirections, reviewVisualBatch } from './visual-batch.mjs';
 import { runCopyReview, readPublishedCopy } from './copy-review.mjs';
 import { inspectImage } from '../workbench/image-evidence.mjs';
 import { createLocalPdfExtractor, PDF_LIMITS } from '../workbench/intake-pdf.mjs';
@@ -1731,27 +1731,33 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
         await writeFile(join(dir,'visual-review-set.json'),JSON.stringify(comparison,null,2),{flag:'wx',mode:0o600});
         holdSimilarPosterDirections(comparison,representatives);
       }
-      // Generate real extension (延展图) + physical mockup (样机图) anchored to each direction's winning main visual
+      // Generate real category-aware extension (延展图) + physical/media mockup (样机图) anchored to each direction's winning main visual
       if (desktop && !visualSearch && project.generateVisualDerivatives !== false) {
-        const outputKind = packaging ? 'packaging' : poster ? 'kv' : undefined;
+        const outputKind = classifyVisualOutputKind({ project, packaging, poster });
         await independentCalls(directionBatches, async ({direction, images, drafts}) => {
           signal?.throwIfAborted();
           const winnerDraft = drafts.find(item => item.visual.recommended) ?? drafts[0];
           const winnerImage = winnerDraft ? images[(winnerDraft.visual.candidate ?? 1) - 1] : images[0];
           if (!winnerImage) return;
-          const dirNum = all.indexOf(direction) + 1;
+          const dirIndex = Math.max(0, all.indexOf(direction));
+          const dirNum = dirIndex + 1;
           const slogan = selected.get(direction)?.main || direction;
-          await onEvent?.('正在为「' + direction + '」生成延展图与实景样机');
-          const extPrompt = packaging
-            ? '基于附件中的本案主视觉包装定稿，延展生成一张同品牌系列的包装应用延展图（同系列多规格组合、礼盒或品牌手提袋并排陈列）。100% 沿用附件原图的品牌字标、色彩体系、材质肌理与超级视觉符号，保持高端极简商业摄影质感与完整封口结构，单帧 2:3 竖版构图，严禁分屏拼图、乱码英文或无关品牌。方向主张参考：「' + slogan + '」。'
-            : '基于附件中的本案主视觉海报定稿，延展生成一张同品牌战役的延展视觉图（门店立牌或社媒竖版延展海报）。100% 沿用附件原图的品牌视觉基因、配色、字体气质与主标语「' + slogan + '」，重构为清爽的延展画面，单帧 2:3 竖版构图，严禁分屏拼图或乱码。';
-          const mockupPrompt = packaging
-            ? '将附件中的本案包装设计真实置入线下精品零售实景样机中（高端精品店实木货架或自然晨光下的精致实木陈列台与真实环境景深）。100% 保持附件原包装袋/盒的正面图案、字标与配色不变，呈现真实物理光影、材质反光与环境纵深，横版 3:2 商业实拍样机，单帧画面，严禁拼图或无关文字。'
-            : '将附件中的本案海报定稿真实置入线下城市核心投放实景样机中（现代地铁站灯箱广告位、商业街玻璃橱窗或精品门店入口立式灯箱，带真实环境光影、玻璃微反光与自然景深）。100% 保持附件海报画面与中文主标「' + slogan + '」完整可读不变，横版 3:2 商业样机实拍，单帧画面，严禁拼图或水印。';
-          const derivativeSpecs = [
-            { role: 'extension', suffix: 'ext', prompt: extPrompt, imageSize: '1024x1536' },
-            { role: 'mockup', suffix: 'mockup', prompt: mockupPrompt, imageSize: '1536x1024' },
-          ];
+          let mainFormat = winnerDraft?.visual?.format;
+          if (!mainFormat && winnerImage.path) {
+            try {
+              const winnerBytes = await readFile(winnerImage.path);
+              mainFormat = imageDimensionsFromBytes(winnerBytes)?.format;
+            } catch {}
+          }
+          const derivativeSpecs = derivativeSpecsForDirection({
+            outputKind,
+            mainFormat: mainFormat || (packaging ? 'portrait' : 'portrait'),
+            direction,
+            slogan,
+            brief: project.brief || '',
+            directionIndex: dirIndex,
+          });
+          await onEvent?.('正在为「' + direction + '」生成' + derivativeSpecs.map(s => s.label).join('与'));
           const results = await Promise.allSettled(
             derivativeSpecs.map(async (spec) => {
               const res = await call(spec.prompt, [winnerImage], null, {
@@ -1762,6 +1768,7 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
               const digest = hash(original.bytes);
               if (seen.has(digest)) return null;
               seen.add(digest);
+              const actualFormat = imageDimensionsFromBytes(original.bytes)?.format ?? spec.format;
               const fileName = 'visual-' + dirNum + '-' + spec.suffix + '-' + digest.slice(0, 10) + '.png';
               await writeFile(join(dir, fileName), original.bytes, { flag: 'wx', mode: 0o600 });
               return {
@@ -1771,8 +1778,10 @@ export function createStageRunner({binary, model, historicalPanels = false, rese
                   role: spec.role,
                   direction,
                   sha256: digest,
-                  ...(outputKind ? { output: outputKind } : {}),
-                  ...(spec.role === 'extension' ? { format: 'portrait' } : { format: 'landscape' }),
+                  output: outputKind,
+                  format: actualFormat,
+                  label: spec.label,
+                  subject: spec.subject,
                 },
               };
             }),
