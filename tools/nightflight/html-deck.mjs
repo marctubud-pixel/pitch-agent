@@ -52,9 +52,13 @@ function clampText(text, maxChars) {
 }
 
 /**
- * Extract verifiable percentage/numeric metrics from page.points without inventing data.
+ * Extract percentage metrics ONLY when all extracted metrics share the same
+ * statistical scope (e.g. same-report preference/share ratios, never mixing
+ * growth rates with market shares).
  */
 function extractPercentMetrics(points = []) {
+  const growthRe = /同比增长|环比增长|增速|增长|下降|低于|高于|涨幅|跌幅/u;
+  const shareRe = /偏好|占比|者占|占|选择|关注|认同|购买/u;
   const out = [];
   const seen = new Set();
   for (const pt of points) {
@@ -62,28 +66,36 @@ function extractPercentMetrics(points = []) {
     for (const clause of clauses) {
       const m = clause.match(/(\d+(?:\.\d+)?)\s*%/);
       if (!m) continue;
+      // Reject mixed growth-rate clauses immediately
+      if (growthRe.test(clause)) return [];
+      if (!shareRe.test(clause)) return [];
       const val = Number(m[1]);
       if (!Number.isFinite(val) || val <= 0 || val > 100) continue;
       const label = clause
         .replace(/(\d+(?:\.\d+)?)\s*%/g, '')
         .replace(/^(?:在|据|同一报告里|其中|而|以及|同时|且)?/u, '')
-        .replace(/(?:占比|占|达|达到|为|者占|约为|同比增长|增长|上升|提升)$/u, '')
+        .replace(/《[^》]*》中?/gu, '')
+        .replace(/^[^，,。]*?(?:报告|调查|调研|数据)中?/u, '')
+        .replace(/(?:占比|占|达|达到|为|者占|约为)$/u, '')
         .replace(/[：:（）()《》“”「」]/gu, '')
         .trim();
-      const shortLabel = clampText(label || '指标', 10);
+      if (!label || label.length < 2) return [];
+      const shortLabel = clampText(label, 12);
       const key = `${shortLabel}:${val}`;
       if (seen.has(key)) continue;
       seen.add(key);
       out.push({ label: shortLabel, value: val, raw: clause });
     }
   }
-  return out.slice(0, 4);
+  return out.length >= 2 ? out.slice(0, 4) : [];
 }
 
-function splitPeerLine(line, idx) {
-  const m = line.match(/^([^，,：:用将以把在的]{2,12})(?:用|以|将|把|在|通过|主推|采用|：|:)(.+)$/u);
-  if (m) return { brand: m[1].trim(), detail: line.trim() };
-  return { brand: `参考 ${idx + 1}`, detail: line.trim() };
+function splitPeerLine(line) {
+  const m = line.match(/^([^，,：:用将以把在的]{2,10})(?:用|以|将|把|在|通过|主推|采用|：|:)(.+)$/u);
+  if (m && !/^(?:两家|三家|多数|同类|竞品|行业|市场|品牌|主要|目前|常见)/u.test(m[1].trim())) {
+    return { brand: m[1].trim(), detail: line.trim() };
+  }
+  return { brand: '', detail: line.trim() };
 }
 
 function paletteFor(style, theme = {}) {
@@ -144,7 +156,6 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
   const deckLabel = theme.brandName || clampText(plan.pages[0]?.title || title, 20) || '品牌提案';
   const allFigures = new Map([...plan.figures, ...(plan.derivatives ?? [])].map((f) => [f.id, f]));
   const copyByDir = new Map((plan.copy ?? []).filter((d) => d?.name).map((d) => [d.name, d]));
-  const heroFig = plan.figures[0] ? imageByName.get(plan.figures[0].name) : null;
   const styleLabel = DECK_STYLE_LABELS[style] || '现代 4A';
 
   const imgTag = (img, css, fit = 'contain') => {
@@ -155,15 +166,16 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
   const footerHtml = (num, dark = false) => {
     const col = dark ? '#8FA39C' : P.mute;
     return `
-      <div data-ppt="text" style="position:absolute;left:56px;bottom:18px;font-size:11px;color:${col}">${esc(deckLabel)} · ${esc(styleLabel)}</div>
+      <div data-ppt="text" style="position:absolute;left:56px;bottom:18px;font-size:11px;color:${col}">${esc(deckLabel)}</div>
       <div data-ppt="text" class="mono" style="position:absolute;right:56px;bottom:18px;font-size:11px;color:${col}">${String(num).padStart(2, '0')} / ${String(total).padStart(2, '0')}</div>
     `;
   };
 
   const headerHtml = (eyebrow, heading) => {
+    const labelText = String(eyebrow || '').trim();
     if (style === 'editorial') {
       return `
-        <div data-ppt="text" class="mono" style="position:absolute;left:60px;top:32px;font-size:11px;letter-spacing:.14em;color:${P.mute}">${esc(eyebrow)}</div>
+        ${labelText ? `<div data-ppt="text" class="mono" style="position:absolute;left:60px;top:32px;font-size:11.5px;letter-spacing:.12em;color:${P.mute}">${esc(labelText)}</div>` : ''}
         <div data-ppt="text" class="serif" style="position:absolute;left:60px;top:60px;width:1160px;font-size:32px;font-weight:700;color:${P.ink}">${esc(heading)}</div>
         <div data-ppt="line" style="position:absolute;left:60px;top:116px;width:1160px;height:1px;background:${P.line}"></div>
       `;
@@ -171,15 +183,17 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
     if (style === 'consulting') {
       return `
         <div data-ppt="shape" style="position:absolute;left:60px;top:38px;width:34px;height:4px;background:${P.accent}"></div>
-        <div data-ppt="text" style="position:absolute;left:104px;top:30px;font-size:12px;font-weight:700;color:${P.mute};letter-spacing:.04em">${esc(eyebrow)}</div>
+        ${labelText ? `<div data-ppt="text" style="position:absolute;left:104px;top:30px;font-size:12px;font-weight:700;color:${P.mute};letter-spacing:.04em">${esc(labelText)}</div>` : ''}
         <div data-ppt="text" style="position:absolute;left:60px;top:56px;width:1160px;font-size:28px;font-weight:700;color:${P.ink}">${esc(heading)}</div>
         <div data-ppt="line" style="position:absolute;left:60px;top:112px;width:1160px;height:1px;background:${P.line}"></div>
       `;
     }
     // bento
     return `
-      <div data-ppt="shape" style="position:absolute;left:56px;top:30px;width:168px;height:26px;border-radius:13px;background:#E2E8E5"></div>
-      <div data-ppt="text" style="position:absolute;left:68px;top:35px;font-size:11.5px;font-weight:700;color:${P.dark2}">${esc(clampText(eyebrow, 16))}</div>
+      ${labelText ? `
+        <div data-ppt="shape" style="position:absolute;left:56px;top:30px;width:${Math.min(260, Math.max(96, labelText.length * 14 + 28))}px;height:26px;border-radius:13px;background:#E2E8E5"></div>
+        <div data-ppt="text" style="position:absolute;left:68px;top:35px;font-size:11.5px;font-weight:700;color:${P.dark2}">${esc(clampText(labelText, 18))}</div>
+      ` : ''}
       <div data-ppt="text" style="position:absolute;left:56px;top:66px;width:1168px;font-size:29px;font-weight:700;color:${P.ink}">${esc(heading)}</div>
     `;
   };
@@ -197,52 +211,60 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       return fig ? { fig, img: imageByName.get(fig.name) } : null;
     }).filter((x) => x?.img);
 
-    // 1. COVER — Always clean Split Cover (zero text-on-text overlap!)
+    // 1. COVER — Pure typographic cover (100% manuscript-faithful, zero artwork spoilers, zero fabricated copy)
     if (page.role === 'cover') {
       slideTemplates[idx] = 'cover.type';
-      const sub = pts.join(' · ') || '品牌策略与视觉创意提案';
-      const coverTitleSize = page.title.length > 11 ? 44 : 52;
+      const sub = pts.join(' · ');
+      const coverTitleSize = page.title.length > 16 ? 48 : page.title.length > 11 ? 54 : 62;
       if (style === 'editorial') {
         return `<section class="slide" style="background:${P.bg}">
-          <div data-ppt="shape" style="position:absolute;left:60px;top:58px;width:104px;height:28px;background:${P.accent}"></div>
-          <div data-ppt="text" class="mono" style="position:absolute;left:70px;top:64px;font-size:11.5px;color:${P.white};letter-spacing:.1em">${esc(page.label || '提案封面')}</div>
-          <div data-ppt="text" class="serif" style="position:absolute;left:60px;top:172px;width:590px;font-size:${page.title.length > 11 ? 46 : 54}px;font-weight:700;line-height:1.25;color:${P.ink}">${esc(page.title)}</div>
-          <div data-ppt="line" style="position:absolute;left:60px;top:368px;width:72px;height:2px;background:${P.accent}"></div>
-          <div data-ppt="text" style="position:absolute;left:60px;top:398px;width:540px;font-size:19px;line-height:1.7;color:${P.mute}">${esc(sub)}</div>
-          <div data-ppt="line" style="position:absolute;left:60px;top:604px;width:520px;height:1px;background:${P.line}"></div>
-          <div data-ppt="text" class="mono" style="position:absolute;left:60px;top:624px;font-size:11.5px;color:${P.mute};letter-spacing:.08em">NIGHTFLIGHT PROPOSAL STUDIO · ${total} PAGES</div>
-          ${heroFig ? `
-            <div data-ppt="shape" style="position:absolute;left:716px;top:48px;width:504px;height:624px;background:${P.soft};border:1px solid ${P.line}"></div>
-            ${imgTag(heroFig, 'position:absolute;left:732px;top:64px;width:472px;height:592px', 'contain')}
+          <div data-ppt="shape" style="position:absolute;left:96px;top:138px;width:56px;height:4px;background:${P.accent}"></div>
+          ${page.label ? `<div data-ppt="text" class="mono" style="position:absolute;left:96px;top:160px;font-size:12.5px;letter-spacing:.14em;color:${P.mute}">${esc(page.label)}</div>` : ''}
+          <div data-ppt="text" class="serif" style="position:absolute;left:96px;top:220px;width:1080px;font-size:${coverTitleSize}px;font-weight:700;line-height:1.28;color:${P.ink}">${esc(page.title)}</div>
+          ${sub ? `
+            <div data-ppt="line" style="position:absolute;left:96px;top:418px;width:88px;height:1.5px;background:${P.accent}"></div>
+            <div data-ppt="text" style="position:absolute;left:96px;top:448px;width:920px;font-size:21px;line-height:1.75;color:${P.mute}">${esc(sub)}</div>
           ` : ''}
+          ${footerHtml(num)}
         </section>`;
       }
-      // bento & consulting: Deep Emerald Split Cover + Framed Hero Visual
+      if (style === 'consulting') {
+        return `<section class="slide" style="background:${P.dark};color:#fff">
+          <div data-ppt="shape" style="position:absolute;left:0;top:0;width:24px;height:720px;background:${P.accent}"></div>
+          <div data-ppt="shape" style="position:absolute;left:108px;top:154px;width:64px;height:4px;background:${P.accent}"></div>
+          ${page.label ? `<div data-ppt="text" class="mono" style="position:absolute;left:108px;top:174px;font-size:13px;font-weight:700;color:${P.accent};letter-spacing:.12em">${esc(page.label)}</div>` : ''}
+          <div data-ppt="text" class="serif" style="position:absolute;left:108px;top:232px;width:1040px;font-size:${coverTitleSize}px;font-weight:700;line-height:1.28;color:#FFFFFF">${esc(page.title)}</div>
+          ${sub ? `
+            <div data-ppt="line" style="position:absolute;left:108px;top:430px;width:540px;height:1px;background:#335247"></div>
+            <div data-ppt="text" style="position:absolute;left:108px;top:456px;width:960px;font-size:21px;line-height:1.7;color:#D4DFDA">${esc(sub)}</div>
+          ` : ''}
+          ${footerHtml(num, true)}
+        </section>`;
+      }
+      // bento (现代 4A): Deep architectural dark surface with sleek geometric accent frame
       return `<section class="slide" style="background:${P.dark};color:#fff">
-        <div data-ppt="shape" style="position:absolute;left:68px;top:118px;width:64px;height:5px;background:${P.accent}"></div>
-        <div data-ppt="text" class="mono" style="position:absolute;left:68px;top:138px;font-size:12px;font-weight:700;color:${P.accent};letter-spacing:.12em">${esc(page.label || 'BRAND PROPOSAL')} · ${styleLabel.toUpperCase()}</div>
-        <div data-ppt="text" class="serif" style="position:absolute;left:68px;top:190px;width:650px;font-size:${coverTitleSize}px;font-weight:700;line-height:1.26;color:#FFFFFF">${esc(page.title)}</div>
-        <div data-ppt="text" style="position:absolute;left:68px;top:392px;width:610px;font-size:19px;line-height:1.65;color:#D4DFDA">${esc(sub)}</div>
-        <div data-ppt="line" style="position:absolute;left:68px;top:514px;width:520px;height:1px;background:#335247"></div>
-        <div data-ppt="text" style="position:absolute;left:68px;top:534px;width:620px;font-size:13.5px;color:#9BB0A8">交付包含：核心洞察 · 品牌策略 · ${plan.figures.length} 套视觉方案${plan.derivatives?.length ? '（含延展与实景样机）' : ''}</div>
-        ${heroFig ? `
-          <div data-ppt="shape" style="position:absolute;left:776px;top:64px;width:436px;height:592px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${P.dark2};border:1.5px solid ${P.accent}"></div>
-          ${imgTag(heroFig, 'position:absolute;left:794px;top:82px;width:400px;height:556px', 'contain')}
+        <div data-ppt="shape" style="position:absolute;left:56px;top:52px;width:1168px;height:604px;border-radius:18px;background:${P.dark2};border:1px solid #2A4A3E"></div>
+        <div data-ppt="shape" style="position:absolute;left:116px;top:152px;width:68px;height:5px;border-radius:3px;background:${P.accent}"></div>
+        ${page.label ? `<div data-ppt="text" class="mono" style="position:absolute;left:116px;top:176px;font-size:13px;font-weight:700;color:${P.accent};letter-spacing:.12em">${esc(page.label)}</div>` : ''}
+        <div data-ppt="text" class="serif" style="position:absolute;left:116px;top:234px;width:1040px;font-size:${coverTitleSize}px;font-weight:700;line-height:1.28;color:#FFFFFF">${esc(page.title)}</div>
+        ${sub ? `
+          <div data-ppt="line" style="position:absolute;left:116px;top:434px;width:480px;height:1px;background:#35594C"></div>
+          <div data-ppt="text" style="position:absolute;left:116px;top:460px;width:960px;font-size:21px;line-height:1.7;color:#D4DFDA">${esc(sub)}</div>
         ` : ''}
         ${footerHtml(num, true)}
       </section>`;
     }
 
-    // 2. CONTENTS
+    // 2. CONTENTS — 100% manuscript items only (zero fabricated intro text)
     if (page.role === 'contents') {
       slideTemplates[idx] = 'contents.list';
-      const items = pts.length ? pts : ['项目与洞察', '策略与版式', '视觉方向', '对比与确认'];
+      const items = pts.length ? pts : [];
       if (style === 'editorial') {
         const step = Math.min(116, Math.floor(520 / Math.max(1, items.length)));
         return `<section class="slide" style="background:${P.bg}">
-          <div data-ppt="text" class="mono" style="position:absolute;left:60px;top:36px;font-size:11px;letter-spacing:.16em;color:${P.mute}">CONTENTS · ${esc(page.label || '目录')}</div>
-          <div data-ppt="text" class="serif" style="position:absolute;left:60px;top:118px;font-size:54px;font-weight:700;line-height:1.15;color:${P.ink}">${esc(page.title)}</div>
-          <div data-ppt="text" style="position:absolute;left:60px;top:240px;width:300px;font-size:15px;line-height:1.8;color:${P.mute}">按决策顺序梳理全案脉络，从消费事实推演至可落地的视觉成品与媒介样机。</div>
+          ${page.label ? `<div data-ppt="text" class="mono" style="position:absolute;left:60px;top:36px;font-size:11.5px;letter-spacing:.14em;color:${P.mute}">${esc(page.label)}</div>` : ''}
+          <div data-ppt="text" class="serif" style="position:absolute;left:60px;top:120px;width:320px;font-size:52px;font-weight:700;line-height:1.18;color:${P.ink}">${esc(page.title)}</div>
+          <div data-ppt="shape" style="position:absolute;left:60px;top:210px;width:48px;height:3px;background:${P.accent}"></div>
           ${items.map((item, i) => `
             <div data-ppt="line" style="position:absolute;left:460px;top:${132 + i * step}px;width:760px;height:1px;background:${P.line}"></div>
             <div data-ppt="text" class="mono" style="position:absolute;left:460px;top:${152 + i * step}px;font-size:15px;font-weight:700;color:${P.accent}">${String(i + 1).padStart(2, '0')}</div>
@@ -252,11 +274,11 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
         </section>`;
       }
       const cols = Math.min(4, Math.max(2, items.length));
-      const rows = Math.ceil(items.length / cols);
+      const rows = Math.max(1, Math.ceil(items.length / cols));
       const cardW = Math.floor((1168 - (cols - 1) * 20) / cols);
       const cardH = rows === 1 ? 444 : Math.floor((460 - (rows - 1) * 20) / rows);
       return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml('AGENDA · 目录', page.title)}
+        ${headerHtml(page.label || '目录', page.title)}
         ${items.map((item, i) => {
           const x = 56 + (i % cols) * (cardW + 20);
           const y = 164 + Math.floor(i / cols) * (cardH + 20);
@@ -272,7 +294,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       </section>`;
     }
 
-    // 3. BRIEF — Bento asymmetric grid or 2x2 spec cards
+    // 3. BRIEF — Clean asymmetric Bento or 2-column grid (zero fabricated copy or English tags)
     if (page.role === 'brief') {
       slideTemplates[idx] = 'summary.list';
       if (style === 'bento' && pts.length >= 2) {
@@ -281,12 +303,11 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
         const cardH = Math.floor((514 - (rightPts.length - 1) * gap) / rightPts.length);
         const fontSz = rightPts.length > 4 ? 14 : 17;
         return `<section class="slide" style="background:${P.bg}">
-          ${headerHtml(`01 · ${page.label || '需求回顾'}`, page.title)}
+          ${headerHtml(page.label || '需求回顾', page.title)}
           <div data-ppt="shape" style="position:absolute;left:56px;top:134px;width:456px;height:514px;border-radius:14px;background:${P.dark2}"></div>
-          <div data-ppt="text" class="mono" style="position:absolute;left:86px;top:168px;font-size:12px;font-weight:700;color:${P.accent};letter-spacing:.1em">CORE BRIEF</div>
-          <div data-ppt="text" class="serif" style="position:absolute;left:86px;top:210px;width:396px;font-size:28px;font-weight:700;line-height:1.5;color:#FFFFFF">${esc(pts[0])}</div>
-          <div data-ppt="line" style="position:absolute;left:86px;top:416px;width:64px;height:3px;background:${P.accent}"></div>
-          <div data-ppt="text" style="position:absolute;left:86px;top:444px;width:396px;font-size:14.5px;line-height:1.7;color:#BDD0C9">围绕品牌核心任务展开本轮研究、策略与创意视觉提案。</div>
+          <div data-ppt="text" class="mono" style="position:absolute;left:86px;top:168px;font-size:14px;font-weight:700;color:${P.accent}">01</div>
+          <div data-ppt="text" class="serif" style="position:absolute;left:86px;top:216px;width:396px;font-size:28px;font-weight:700;line-height:1.55;color:#FFFFFF">${esc(pts[0])}</div>
+          <div data-ppt="line" style="position:absolute;left:86px;top:450px;width:56px;height:3px;background:${P.accent}"></div>
           ${rightPts.map((pt, i) => {
             const y = 134 + i * (cardH + gap);
             const isLast = i === rightPts.length - 1;
@@ -303,7 +324,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       const rows = Math.max(1, Math.ceil(pts.length / 2));
       const rowH = Math.min(220, Math.floor((490 - (rows - 1) * 18) / rows));
       return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml(`01 · ${page.label || '需求回顾'}`, page.title)}
+        ${headerHtml(page.label || '需求回顾', page.title)}
         ${pts.map((pt, i) => {
           const col = i % 2, row = Math.floor(i / 2);
           const x = 60 + col * 592, y = 152 + row * (rowH + 18);
@@ -318,7 +339,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       </section>`;
     }
 
-    // 4. TREND / INSIGHT — Auto-extract real percentages into Visual Bars + Native PPTX Chart!
+    // 4. TREND / INSIGHT — Chart ONLY when all percentages share the same scope/denominator; otherwise clean conclusion cards!
     if (page.role === 'trend' || page.role === 'insight') {
       slideTemplates[idx] = 'summary.list';
       const metrics = extractPercentMetrics(pts);
@@ -328,7 +349,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
           const colW = Math.floor((1160 - (metrics.length - 1) * 36) / metrics.length);
           const lineStep = Math.min(56, Math.floor(236 / Math.max(1, pts.length)));
           return `<section class="slide" style="background:${P.bg}">
-            ${headerHtml(`01 · ${page.label || '趋势洞察'}`, page.title)}
+            ${headerHtml(page.label || '趋势洞察', page.title)}
             ${metrics.map((m, i) => {
               const x = 60 + i * (colW + 36);
               const col = i === metrics.length - 1 ? P.accent : P.ink;
@@ -348,7 +369,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
           </section>`;
         }
 
-        // Bento & Consulting: Register a real native PowerPoint bar chart for the PPTX compiler!
+        // Bento & Consulting: Native PowerPoint bar chart for verified same-scope ratios
         const maxVal = Math.min(100, Math.max(70, Math.ceil(Math.max(...metrics.map((m) => m.value)) / 10) * 10 + 15));
         chartSpecs.set(idx, {
           x: 68, y: 186, w: 690, h: 350,
@@ -360,9 +381,9 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
         const cardGap = pts.length > 4 ? 10 : 14;
         const cardH = Math.floor((492 - (Math.max(1, pts.length) - 1) * cardGap) / Math.max(1, pts.length));
         return `<section class="slide" style="background:${P.bg}">
-          ${headerHtml(`01 · ${page.label || '趋势洞察'}`, page.title)}
+          ${headerHtml(page.label || '趋势洞察', page.title)}
           <div data-ppt="shape" style="position:absolute;left:56px;top:138px;width:714px;height:492px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${P.card};border:1px solid ${P.line}"></div>
-          <div data-ppt="text" style="position:absolute;left:84px;top:162px;font-size:16px;font-weight:700;color:${P.ink}">关键指标占比对比（%）</div>
+          <div data-ppt="text" style="position:absolute;left:84px;top:162px;font-size:16px;font-weight:700;color:${P.ink}">同口径指标对比（%）</div>
           ${metrics.map((m, i) => {
             const y = 224 + i * Math.min(92, Math.floor(300 / metrics.length));
             const barCol = i === 0 ? P.dark2 : i === metrics.length - 1 ? P.accent : '#2F6655';
@@ -374,7 +395,6 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
             `;
           }).join('')}
           ${sourceNote ? `<div data-ppt="text" style="position:absolute;left:84px;top:586px;width:660px;font-size:11.5px;color:${P.mute}">来源：${esc(sourceNote)}</div>` : ''}
-          <!-- Right Verbatim Evidence Cards (ALL pts preserved!) -->
           ${pts.map((pt, i) => {
             const y = 138 + i * (cardH + cardGap);
             const darkCard = style === 'bento' && i === 0;
@@ -386,27 +406,30 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
           ${footerHtml(num)}
         </section>`;
       }
-      // Qualitative trend/insight: clean multi-card layout (ALL pts preserved!)
+      // Qualitative or multi-scope trend/insight: clean multi-card layout (zero forced bar charts!)
       const cols = Math.min(3, Math.max(1, pts.length));
       const rows = Math.max(1, Math.ceil(pts.length / cols));
       const cardW = Math.floor((1168 - (cols - 1) * 20) / cols);
-      const h = rows === 1 ? 440 : Math.floor((470 - (rows - 1) * 18) / rows);
+      const availH = sourceNote ? 452 : 486;
+      const h = rows === 1 ? availH : Math.floor((availH - (rows - 1) * 18) / rows);
       return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml(`01 · ${page.label || '趋势洞察'}`, page.title)}
+        ${headerHtml(page.label || '趋势洞察', page.title)}
         ${pts.map((pt, i) => {
           const x = 56 + (i % cols) * (cardW + 20);
-          const y = 152 + Math.floor(i / cols) * (h + 18);
+          const y = 148 + Math.floor(i / cols) * (h + 18);
+          const darkFirst = style === 'bento' && i === 0 && pts.length <= 3;
           return `
-            <div data-ppt="shape" style="position:absolute;left:${x}px;top:${y}px;width:${cardW}px;height:${h}px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${P.card};border:1px solid ${P.line}"></div>
-            <div data-ppt="text" class="mono" style="position:absolute;left:${x + 26}px;top:${y + 20}px;font-size:20px;font-weight:700;color:${P.accent}">0${i + 1}</div>
-            <div data-ppt="text" style="position:absolute;left:${x + 26}px;top:${y + 56}px;width:${cardW - 52}px;font-size:${rows > 2 ? 13.5 : 16}px;line-height:1.62;color:${P.ink}">${esc(pt)}</div>
+            <div data-ppt="shape" style="position:absolute;left:${x}px;top:${y}px;width:${cardW}px;height:${h}px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${darkFirst ? P.dark2 : P.card};border:1px solid ${darkFirst ? P.dark2 : P.line}"></div>
+            <div data-ppt="text" class="mono" style="position:absolute;left:${x + 26}px;top:${y + 24}px;font-size:20px;font-weight:700;color:${P.accent}">0${i + 1}</div>
+            <div data-ppt="text" style="position:absolute;left:${x + 26}px;top:${y + 66}px;width:${cardW - 52}px;font-size:${rows > 2 ? 14 : 17.5}px;line-height:1.7;color:${darkFirst ? '#FFFFFF' : P.ink}">${esc(pt)}</div>
           `;
         }).join('')}
+        ${sourceNote ? `<div data-ppt="text" style="position:absolute;left:56px;top:628px;width:1168px;font-size:11.5px;color:${P.mute}">来源：${esc(sourceNote)}</div>` : ''}
         ${footerHtml(num)}
       </section>`;
     }
 
-    // 5. PEERS — 3-Column Brand Comparison Cards + Bottom Takeaway Strip
+    // 5. PEERS — 3-Column Comparison Cards + Bottom Takeaway Strip (zero fabricated "参考 1/2/3" titles!)
     if (page.role === 'peers') {
       slideTemplates[idx] = 'summary.list';
       const mainPeers = pts.slice(0, Math.min(3, pts.length));
@@ -416,23 +439,25 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       const stripColors = [P.dark2, P.accent, '#4A5550'];
       const cardH = bottomNote ? 378 : 486;
       return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml(`01 · ${page.label || '同类参考'}`, page.title)}
+        ${headerHtml(page.label || '同类参考', page.title)}
         ${mainPeers.map((pt, i) => {
-          const { brand, detail } = splitPeerLine(pt, i);
+          const { brand, detail } = splitPeerLine(pt);
           const x = 56 + i * (colW + 20);
           if (style === 'editorial') {
             return `
               ${i > 0 ? `<div data-ppt="line" style="position:absolute;left:${x - 10}px;top:156px;width:1px;height:${cardH}px;background:${P.line}"></div>` : ''}
-              <div data-ppt="text" class="mono" style="position:absolute;left:${x + 6}px;top:162px;font-size:12px;color:${P.accent}">0${i + 1}</div>
-              <div data-ppt="text" class="serif" style="position:absolute;left:${x + 6}px;top:194px;width:${colW - 16}px;font-size:28px;font-weight:700;color:${P.ink}">${esc(brand)}</div>
-              <div data-ppt="text" style="position:absolute;left:${x + 6}px;top:254px;width:${colW - 16}px;font-size:16px;line-height:1.75;color:${P.mute}">${esc(detail)}</div>
+              <div data-ppt="text" class="mono" style="position:absolute;left:${x + 6}px;top:162px;font-size:12.5px;font-weight:700;color:${P.accent}">0${i + 1}</div>
+              ${brand ? `<div data-ppt="text" class="serif" style="position:absolute;left:${x + 6}px;top:194px;width:${colW - 16}px;font-size:26px;font-weight:700;color:${P.ink}">${esc(brand)}</div>` : ''}
+              <div data-ppt="text" style="position:absolute;left:${x + 6}px;top:${brand ? 250 : 204}px;width:${colW - 16}px;font-size:16.5px;line-height:1.78;color:${brand ? P.mute : P.ink}">${esc(detail)}</div>
             `;
           }
           return `
             <div data-ppt="shape" style="position:absolute;left:${x}px;top:144px;width:${colW}px;height:${cardH}px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${P.card};border:1px solid ${P.line}"></div>
             <div data-ppt="shape" style="position:absolute;left:${x}px;top:144px;width:${colW}px;height:8px;border-radius:${style === 'bento' ? '14px' : '0'};background:${stripColors[i % stripColors.length]}"></div>
-            <div data-ppt="text" class="serif" style="position:absolute;left:${x + 26}px;top:180px;width:${colW - 52}px;font-size:24px;font-weight:700;color:${P.ink}">${esc(brand)}</div>
-            <div data-ppt="text" style="position:absolute;left:${x + 26}px;top:236px;width:${colW - 52}px;font-size:15.5px;line-height:1.72;color:${P.mute}">${esc(detail)}</div>
+            ${brand
+              ? `<div data-ppt="text" class="serif" style="position:absolute;left:${x + 26}px;top:180px;width:${colW - 52}px;font-size:24px;font-weight:700;color:${P.ink}">${esc(brand)}</div>`
+              : `<div data-ppt="text" class="mono" style="position:absolute;left:${x + 26}px;top:180px;font-size:18px;font-weight:700;color:${P.accent}">0${i + 1}</div>`}
+            <div data-ppt="text" style="position:absolute;left:${x + 26}px;top:${brand ? 236 : 226}px;width:${colW - 52}px;font-size:16px;line-height:1.75;color:${brand ? P.mute : P.ink}">${esc(detail)}</div>
           `;
         }).join('')}
         ${bottomNote ? `
@@ -448,7 +473,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       slideTemplates[idx] = 'summary.statement';
       const dark = style !== 'editorial';
       return `<section class="slide" style="background:${dark ? P.dark : P.bg};color:${dark ? '#fff' : P.ink}">
-        <div data-ppt="text" class="mono" style="position:absolute;left:${dark ? 88 : 60}px;top:${dark ? 132 : 36}px;font-size:13px;font-weight:700;color:${P.accent};letter-spacing:.14em">02 · ${esc(page.label || '核心策略')}</div>
+        <div data-ppt="text" class="mono" style="position:absolute;left:${dark ? 88 : 60}px;top:${dark ? 132 : 36}px;font-size:13px;font-weight:700;color:${P.accent};letter-spacing:.14em">${esc(page.label || '核心策略')}</div>
         <div data-ppt="shape" style="position:absolute;left:${dark ? 88 : 596}px;top:${dark ? 174 : 168}px;width:84px;height:4px;background:${P.accent}"></div>
         <div data-ppt="text" class="serif" style="position:absolute;left:${dark ? 88 : 130}px;top:${dark ? 218 : 226}px;width:${dark ? 1100 : 1020}px;font-size:46px;font-weight:700;line-height:1.45;text-align:${dark ? 'left' : 'center'};color:${dark ? '#FFFFFF' : P.ink}">${esc(page.title)}</div>
         ${pts.length ? `<div data-ppt="text" style="position:absolute;left:${dark ? 88 : 160}px;top:450px;width:${dark ? 1060 : 960}px;font-size:17px;line-height:1.7;text-align:${dark ? 'left' : 'center'};color:${dark ? '#BFD1CA' : P.mute}">${esc(pts.join(' · '))}</div>` : ''}
@@ -456,26 +481,20 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       </section>`;
     }
 
-    // 7. EXECUTION — Left Visual Hierarchy Diagram + Right Numbered Tiers (ALL pts preserved!)
+    // 7. EXECUTION — Full-width clean numbered execution cards (zero hardcoded poster wireframe!)
     if (page.role === 'execution') {
       slideTemplates[idx] = 'summary.list';
-      const gap = pts.length > 4 ? 10 : 14;
-      const cardH = Math.floor((498 - (Math.max(1, pts.length) - 1) * gap) / Math.max(1, pts.length));
+      const gap = pts.length > 4 ? 12 : 16;
+      const cardH = Math.min(126, Math.floor((498 - (Math.max(1, pts.length) - 1) * gap) / Math.max(1, pts.length)));
       return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml(`02 · ${page.label || '执行展开'}`, page.title)}
-        <div data-ppt="shape" style="position:absolute;left:56px;top:144px;width:336px;height:498px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${P.card};border:1.5px solid ${P.dark2}"></div>
-        <div data-ppt="shape" style="position:absolute;left:76px;top:164px;width:296px;height:142px;border-radius:${style === 'bento' ? '10px' : '0'};background:${P.accentSoft};border:1px solid ${P.accent}"></div>
-        <div data-ppt="text" style="position:absolute;left:92px;top:220px;width:264px;font-size:15px;font-weight:700;text-align:center;color:${P.ink}">第一视觉层级 · 主标题</div>
-        <div data-ppt="shape" style="position:absolute;left:76px;top:322px;width:296px;height:224px;border-radius:${style === 'bento' ? '10px' : '0'};background:${P.soft};border:1px solid ${P.line}"></div>
-        <div data-ppt="text" style="position:absolute;left:92px;top:418px;width:264px;font-size:15px;font-weight:700;text-align:center;color:${P.ink}">核心画面 · 产品与场景</div>
-        <div data-ppt="shape" style="position:absolute;left:76px;top:562px;width:296px;height:60px;border-radius:${style === 'bento' ? '8px' : '0'};background:${P.dark2}"></div>
-        <div data-ppt="text" style="position:absolute;left:92px;top:581px;width:264px;font-size:13.5px;font-weight:600;text-align:center;color:#FFFFFF">底部守线 · 卖点与收口</div>
+        ${headerHtml(page.label || '执行展开', page.title)}
         ${pts.map((pt, i) => {
-          const y = 144 + i * (cardH + gap);
+          const y = 148 + i * (cardH + gap);
+          const isFirst = style === 'bento' && i === 0;
           return `
-            <div data-ppt="shape" style="position:absolute;left:420px;top:${y}px;width:804px;height:${cardH}px;border-radius:${style === 'bento' ? '12px' : '2px'};background:${P.card};border:1px solid ${P.line}"></div>
-            <div data-ppt="text" class="mono" style="position:absolute;left:448px;top:${y + Math.min(20, Math.round(cardH * 0.22))}px;font-size:18px;font-weight:700;color:${P.accent}">0${i + 1}</div>
-            <div data-ppt="text" style="position:absolute;left:496px;top:${y + Math.min(18, Math.round(cardH * 0.2))}px;width:700px;font-size:${pts.length > 4 ? 14 : 16}px;line-height:1.55;color:${P.ink}">${esc(pt)}</div>
+            <div data-ppt="shape" style="position:absolute;left:56px;top:${y}px;width:1168px;height:${cardH}px;border-radius:${style === 'bento' ? '12px' : '2px'};background:${isFirst ? P.dark2 : P.card};border:1px solid ${isFirst ? P.dark2 : P.line}"></div>
+            <div data-ppt="text" class="mono" style="position:absolute;left:88px;top:${y + Math.round((cardH - 26) / 2)}px;font-size:20px;font-weight:700;color:${P.accent}">0${i + 1}</div>
+            <div data-ppt="text" style="position:absolute;left:156px;top:${y + Math.max(12, Math.round((cardH - 28) / 2))}px;width:1032px;font-size:${pts.length > 4 ? 15 : 17.5}px;line-height:1.55;color:${isFirst ? '#FFFFFF' : P.ink}">${esc(pt)}</div>
           `;
         }).join('')}
         ${footerHtml(num)}
@@ -498,8 +517,9 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       const detailH = detailPts.length
         ? Math.min(148, Math.floor((availH - (detailPts.length - 1) * detailGap) / detailPts.length))
         : 0;
+      const dirEyebrow = [page.chapter, page.label].filter(Boolean).join(' · ') || '方向阐述';
       return `<section class="slide" style="background:${P.bg}">
-        <div data-ppt="text" class="mono" style="position:absolute;left:${txtX}px;top:38px;font-size:12px;font-weight:700;color:${P.accent};letter-spacing:.1em">${esc(page.chapter || '03 · 创意方向')} · ${esc(page.label || '方向阐述')}</div>
+        <div data-ppt="text" class="mono" style="position:absolute;left:${txtX}px;top:38px;font-size:12px;font-weight:700;color:${P.accent};letter-spacing:.1em">${esc(dirEyebrow)}</div>
         <div data-ppt="text" class="serif" style="position:absolute;left:${txtX}px;top:76px;width:668px;font-size:44px;font-weight:700;line-height:1.22;color:${P.ink}">${esc(page.title)}</div>
         ${copyPts.length ? `
           <div data-ppt="shape" style="position:absolute;left:${txtX}px;top:186px;width:668px;height:132px;border-radius:${style === 'bento' ? '12px' : '2px'};background:${style === 'editorial' ? P.accentSoft : P.dark2}"></div>
@@ -548,56 +568,29 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       </section>`;
     }
 
-    // 10. APPLICATION (延展与样机) — Signature 3-in-1 Bento Panorama on 'bento', High-Ratio Gallery on 'editorial'/'consulting'!
+    // 10. APPLICATION (延展与样机) — Pure large-format gallery of Extension + Real Mockup ONLY, ZERO extra body text!
     if (page.role === 'application') {
       slideTemplates[idx] = pageImgs.length >= 2 ? 'compare.lineup' : 'upload.framed';
-      const extItem = pageImgs.find((x) => x.fig.role === 'extension') ?? pageImgs[0];
-      const mockupItem = pageImgs.find((x) => x.fig.role === 'mockup' && x !== extItem) ?? pageImgs[1];
-      const dirName = extItem?.fig.direction || mockupItem?.fig.direction || '';
-      const dirMainFig = plan.figures.find((f) => f.direction === dirName);
-      const dirMainImg = dirMainFig ? imageByName.get(dirMainFig.name) : null;
-
-      if (style === 'bento' && dirMainImg && extItem && mockupItem && pageImgs.length === 2) {
-        return `<section class="slide" style="background:${P.dark};color:#fff">
-          <div data-ppt="text" class="mono" style="position:absolute;left:48px;top:22px;font-size:12px;font-weight:700;color:${P.accent};letter-spacing:.08em">${esc(page.label || '延展与样机')} · 主视觉 × 延展 × 实景样机</div>
-          <div data-ppt="text" class="serif" style="position:absolute;right:48px;top:18px;font-size:20px;font-weight:700;color:#FFFFFF">${esc(page.title)}</div>
-          <div data-ppt="shape" style="position:absolute;left:48px;top:58px;width:416px;height:608px;border-radius:12px;background:#182A24"></div>
-          ${imgTag(dirMainImg, 'position:absolute;left:58px;top:68px;width:396px;height:558px', 'contain')}
-          <div data-ppt="text" style="position:absolute;left:64px;top:634px;font-size:12px;color:#B8C9C2">主视觉定稿（${esc(dirMainFig.id)}）</div>
-          <div data-ppt="shape" style="position:absolute;left:484px;top:58px;width:748px;height:294px;border-radius:12px;background:#182A24"></div>
-          ${imgTag(extItem.img, 'position:absolute;left:496px;top:68px;width:440px;height:274px', 'contain')}
-          <div data-ppt="text" class="mono" style="position:absolute;left:960px;top:114px;font-size:11px;font-weight:700;color:${P.accent}">01 · EXTENSION</div>
-          <div data-ppt="text" style="position:absolute;left:960px;top:144px;width:248px;font-size:20px;font-weight:700;color:#FFFFFF">${esc(extItem.fig.label || '延展视觉')}</div>
-          <div data-ppt="text" style="position:absolute;left:960px;top:184px;width:248px;font-size:13.5px;line-height:1.65;color:#A8BEB6">${esc(pts[0] || extItem.fig.subject || '沿用主视觉同一设计基因与核心主张的系列延展。')}</div>
-          <div data-ppt="shape" style="position:absolute;left:484px;top:372px;width:748px;height:294px;border-radius:12px;background:#182A24"></div>
-          ${imgTag(mockupItem.img, 'position:absolute;left:496px;top:382px;width:440px;height:274px', 'contain')}
-          <div data-ppt="text" class="mono" style="position:absolute;left:960px;top:426px;font-size:11px;font-weight:700;color:${P.accent}">02 · REAL MOCKUP</div>
-          <div data-ppt="text" style="position:absolute;left:960px;top:456px;width:248px;font-size:20px;font-weight:700;color:#FFFFFF">${esc(mockupItem.fig.label || '实景样机')}</div>
-          <div data-ppt="text" style="position:absolute;left:960px;top:496px;width:248px;font-size:13.5px;line-height:1.65;color:#A8BEB6">${esc(pts[1] || mockupItem.fig.subject || '真实光影与投放环境透视，直接验证终端效果。')}</div>
-          ${pts.length > 2 ? `<div data-ppt="text" style="position:absolute;left:48px;top:672px;width:1184px;font-size:12px;color:#A8BEB6">${esc(pts.slice(2).join(' · '))}</div>` : ''}
-          ${footerHtml(num, true)}
-        </section>`;
-      }
-
-      // High-ratio gallery (75%+ image area, borderless on editorial, crisp cards on consulting/bento)
-      const gallery = pageImgs.length ? pageImgs : [extItem, mockupItem].filter(Boolean);
+      const dark = style === 'bento';
+      const gallery = pageImgs;
       const count = Math.max(1, gallery.length);
-      const cardW = count === 1 ? 920 : Math.floor((1160 - (count - 1) * 28) / count);
-      const startX = count === 1 ? 180 : 60;
-      return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml(`03 · ${page.label || '延展与样机'}`, page.title)}
+      const gap = 24;
+      const cardW = count === 1 ? 1040 : Math.floor((1184 - (count - 1) * gap) / count);
+      const startX = count === 1 ? 120 : 48;
+      const topY = 82;
+      const frameH = pts.length ? 556 : 584;
+      return `<section class="slide" style="background:${dark ? P.dark : P.bg};color:${dark ? '#fff' : P.ink}">
+        <div data-ppt="text" class="mono" style="position:absolute;left:48px;top:28px;font-size:12px;font-weight:700;color:${P.accent};letter-spacing:.1em">${esc(page.label || '延展与样机')}</div>
+        <div data-ppt="text" class="serif" style="position:absolute;right:48px;top:22px;font-size:22px;font-weight:700;color:${dark ? '#FFFFFF' : P.ink}">${esc(page.title)}</div>
         ${gallery.map((item, k) => {
-          const x = startX + k * (cardW + 28);
-          const cap = pts[k] || item.fig.subject || '';
+          const x = startX + k * (cardW + gap);
           return `
-            ${style !== 'editorial' ? `<div data-ppt="shape" style="position:absolute;left:${x}px;top:140px;width:${cardW}px;height:514px;border-radius:${style === 'bento' ? '12px' : '2px'};background:${P.card};border:1px solid ${P.line}"></div>` : ''}
-            ${imgTag(item.img, `position:absolute;left:${x + 12}px;top:152px;width:${cardW - 24}px;height:434px`, 'contain')}
-            <div data-ppt="line" style="position:absolute;left:${x + 12}px;top:602px;width:${cardW - 24}px;height:1px;background:${P.line}"></div>
-            <div data-ppt="text" style="position:absolute;left:${x + 14}px;top:614px;width:${cardW - 28}px;font-size:15.5px;font-weight:700;color:${P.ink}">${esc(item.fig.label || (item.fig.role === 'mockup' ? '实景样机' : '延展视觉'))}${cap ? ' · ' + esc(cap) : ''}</div>
+            ${style !== 'editorial' ? `<div data-ppt="shape" style="position:absolute;left:${x}px;top:${topY}px;width:${cardW}px;height:${frameH}px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${dark ? '#182A24' : P.card};border:1px solid ${dark ? '#2D483E' : P.line}"></div>` : ''}
+            ${imgTag(item.img, `position:absolute;left:${x + 14}px;top:${topY + 14}px;width:${cardW - 28}px;height:${frameH - 28}px`, 'contain')}
           `;
         }).join('')}
-        ${pts.length > gallery.length ? `<div data-ppt="text" style="position:absolute;left:60px;top:666px;width:1160px;font-size:12.5px;color:${P.mute}">${esc(pts.slice(gallery.length).join(' · '))}</div>` : ''}
-        ${footerHtml(num)}
+        ${pts.length ? `<div data-ppt="text" style="position:absolute;left:48px;top:648px;width:1184px;font-size:12.5px;color:${dark ? '#B8C9C2' : P.mute}">${esc(pts.join(' · '))}</div>` : ''}
+        ${footerHtml(num, dark)}
       </section>`;
     }
 
@@ -610,7 +603,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       const cardH = extraNote ? 464 : 520;
       const imgH = extraNote ? 270 : 312;
       return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml(`04 · ${page.label || '横向对比'}`, page.title)}
+        ${headerHtml(page.label || '横向对比', page.title)}
         ${pageImgs.map((item, i) => {
           const x = 56 + i * (colW + 24);
           const dirTitle = copyByDir.get(item.fig.direction)?.main || item.fig.direction;
@@ -637,7 +630,7 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
       const gap = pts.length > 5 ? 10 : 14;
       const rowH = Math.min(110, Math.floor((500 - (Math.max(1, pts.length) - 1) * gap) / Math.max(1, pts.length)));
       return `<section class="slide" style="background:${P.bg}">
-        ${headerHtml(`04 · ${page.label || '决策与待确认'}`, page.title)}
+        ${headerHtml(page.label || '决策与待确认', page.title)}
         ${pts.map((pt, i) => {
           const y = 148 + i * (rowH + gap);
           return `
