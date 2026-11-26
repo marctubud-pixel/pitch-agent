@@ -52,42 +52,53 @@ function clampText(text, maxChars) {
 }
 
 /**
- * Extract percentage metrics ONLY when all extracted metrics share the same
- * statistical scope (e.g. same-report preference/share ratios, never mixing
- * growth rates with market shares).
+ * Extract percentage metrics from page.points with clean, readable Chinese labels.
+ * Flags whether all metrics share the same ratio scope (for native PPTX addChart)
+ * vs. mixed growth/share metrics (rendered as editable horizontal data bars).
  */
 function extractPercentMetrics(points = []) {
-  const growthRe = /同比增长|环比增长|增速|增长|下降|低于|高于|涨幅|跌幅/u;
-  const shareRe = /偏好|占比|者占|占|选择|关注|认同|购买/u;
+  const growthRe = /同比增长|环比增长|同比增|增速|增长|下降|低于|高于|涨幅|跌幅/u;
   const out = [];
   const seen = new Set();
   for (const pt of points) {
     const clauses = pt.split(/[，,；;。]/u).map((s) => s.trim()).filter(Boolean);
+    let subjectHint = '';
     for (const clause of clauses) {
       const m = clause.match(/(\d+(?:\.\d+)?)\s*%/);
-      if (!m) continue;
-      // Reject mixed growth-rate clauses immediately
-      if (growthRe.test(clause)) return [];
-      if (!shareRe.test(clause)) return [];
+      if (!m) {
+        const hint = clause
+          .replace(/^(?:\d{4}年|同年|在|据|同一报告里|其中|而|以及|同时|且)+/u, '')
+          .replace(/\d+(?:\.\d+)?(?:亿元|万元|元|万|亿|人|户|家|件|盒|袋|倍).*$/u, '')
+          .replace(/《[^》]*》中?/gu, '')
+          .trim();
+        if (hint.length >= 2 && hint.length <= 14) subjectHint = hint;
+        continue;
+      }
       const val = Number(m[1]);
       if (!Number.isFinite(val) || val <= 0 || val > 100) continue;
-      const label = clause
+      const isGrowth = growthRe.test(clause);
+      let label = clause
         .replace(/(\d+(?:\.\d+)?)\s*%/g, '')
-        .replace(/^(?:在|据|同一报告里|其中|而|以及|同时|且)?/u, '')
+        .replace(/^(?:在|据|同年|同一报告里|其中|而|以及|同时|且)+/u, '')
         .replace(/《[^》]*》中?/gu, '')
         .replace(/^[^，,。]*?(?:报告|调查|调研|数据)中?/u, '')
+        .replace(/^(?:高于|低于)/u, '')
         .replace(/(?:占比|占|达|达到|为|者占|约为)$/u, '')
         .replace(/[：:（）()《》“”「」]/gu, '')
         .trim();
-      if (!label || label.length < 2) return [];
-      const shortLabel = clampText(label, 12);
+      if (/^(?:同比增|同比增长|环比增长|增速|增长)$/u.test(label)) {
+        label = (subjectHint ? subjectHint + '同比增速' : '同比增速');
+      } else if (isGrowth && !/增速|增长|下降/u.test(label)) {
+        label = label + '增速';
+      }
+      const shortLabel = clampText(label || subjectHint || '关键指标', 12);
       const key = `${shortLabel}:${val}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      out.push({ label: shortLabel, value: val, raw: clause });
+      out.push({ label: shortLabel, value: val, isGrowth, raw: clause });
     }
   }
-  return out.length >= 2 ? out.slice(0, 4) : [];
+  return out.slice(0, 4);
 }
 
 function splitPeerLine(line) {
@@ -369,29 +380,35 @@ function buildHtmlSlides({ title, plan, imageByName, style, theme }) {
           </section>`;
         }
 
-        // Bento & Consulting: Native PowerPoint bar chart for verified same-scope ratios
-        const maxVal = Math.min(100, Math.max(70, Math.ceil(Math.max(...metrics.map((m) => m.value)) / 10) * 10 + 15));
-        chartSpecs.set(idx, {
-          x: 68, y: 186, w: 690, h: 350,
-          labels: metrics.map((m) => m.label),
-          values: metrics.map((m) => m.value),
-          maxVal,
-          color: P.dark2.slice(1),
-        });
+        // Bento & Consulting: Native PPTX bar chart when all metrics share ratio scope;
+        // clean editable horizontal data bars when growth & share metrics appear together.
+        const sameScopeRatios = metrics.every((m) => !m.isGrowth);
+        const maxVal = Math.min(100, Math.max(60, Math.ceil(Math.max(...metrics.map((m) => m.value)) / 10) * 10 + 10));
+        if (sameScopeRatios) {
+          chartSpecs.set(idx, {
+            x: 68, y: 186, w: 690, h: 350,
+            labels: metrics.map((m) => m.label),
+            values: metrics.map((m) => m.value),
+            maxVal,
+            color: P.dark2.slice(1),
+          });
+        }
+        const barPptAttr = sameScopeRatios ? '' : ' data-ppt="shape"';
+        const barTxtAttr = sameScopeRatios ? '' : ' data-ppt="text"';
         const cardGap = pts.length > 4 ? 10 : 14;
         const cardH = Math.floor((492 - (Math.max(1, pts.length) - 1) * cardGap) / Math.max(1, pts.length));
         return `<section class="slide" style="background:${P.bg}">
           ${headerHtml(page.label || '趋势洞察', page.title)}
           <div data-ppt="shape" style="position:absolute;left:56px;top:138px;width:714px;height:492px;border-radius:${style === 'bento' ? '14px' : '2px'};background:${P.card};border:1px solid ${P.line}"></div>
-          <div data-ppt="text" style="position:absolute;left:84px;top:162px;font-size:16px;font-weight:700;color:${P.ink}">同口径指标对比（%）</div>
+          <div data-ppt="text" style="position:absolute;left:84px;top:162px;font-size:16px;font-weight:700;color:${P.ink}">${sameScopeRatios ? '关键指标对比（%）' : '关键趋势数据一览（%）'}</div>
           ${metrics.map((m, i) => {
-            const y = 224 + i * Math.min(92, Math.floor(300 / metrics.length));
+            const y = 228 + i * Math.min(96, Math.floor(300 / metrics.length));
             const barCol = i === 0 ? P.dark2 : i === metrics.length - 1 ? P.accent : '#2F6655';
             return `
-              <div style="position:absolute;left:84px;top:${y}px;width:154px;font-size:14.5px;font-weight:600;color:${P.ink};text-align:right">${esc(m.label)}</div>
-              <div style="position:absolute;left:254px;top:${y - 4}px;width:396px;height:30px;border-radius:${style === 'bento' ? '6px' : '0'};background:${P.soft}"></div>
-              <div style="position:absolute;left:254px;top:${y - 4}px;width:${Math.max(16, Math.round(396 * m.value / maxVal))}px;height:30px;border-radius:${style === 'bento' ? '6px' : '0'};background:${barCol}"></div>
-              <div class="mono" style="position:absolute;left:664px;top:${y - 2}px;font-size:18px;font-weight:700;color:${barCol}">${m.value}%</div>
+              <div${barTxtAttr} style="position:absolute;left:76px;top:${y}px;width:176px;font-size:14px;font-weight:600;color:${P.ink};text-align:right">${esc(m.label)}</div>
+              <div${barPptAttr} style="position:absolute;left:266px;top:${y - 4}px;width:380px;height:28px;border-radius:${style === 'bento' ? '6px' : '0'};background:${P.soft}"></div>
+              <div${barPptAttr} style="position:absolute;left:266px;top:${y - 4}px;width:${Math.max(18, Math.round(380 * m.value / maxVal))}px;height:28px;border-radius:${style === 'bento' ? '6px' : '0'};background:${barCol}"></div>
+              <div${barTxtAttr} class="mono" style="position:absolute;left:660px;top:${y - 2}px;font-size:17.5px;font-weight:700;color:${barCol}">${m.value}%</div>
             `;
           }).join('')}
           ${sourceNote ? `<div data-ppt="text" style="position:absolute;left:84px;top:586px;width:660px;font-size:11.5px;color:${P.mute}">来源：${esc(sourceNote)}</div>` : ''}
