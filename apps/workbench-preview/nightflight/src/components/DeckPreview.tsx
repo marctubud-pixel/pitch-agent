@@ -5,12 +5,21 @@ import { safeURL, type Artifact } from '../live';
 
 import { OutlineReading } from './OutlineReading';
 
+type PreviewPage = Page & { previewData?: string };
+
+function SlideFrame({ page }: { page: PreviewPage }) {
+  if (page.previewData) {
+    return <img className="deck-slide-img" src={page.previewData} alt={page.title || ''} />;
+  }
+  return <DeckStudioPage page={page} />;
+}
+
 export function DeckPreview({ file, open, foldIndex = false, outline }: {
   file: Artifact; open?: () => void; foldIndex?: boolean; outline?: Artifact;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const [indexOpen, setIndexOpen] = useState(false);
-  const [pages, setPages] = useState<Page[]>([]),
+  const [pages, setPages] = useState<PreviewPage[]>([]),
     [index, setIndex] = useState(0),
     [err, setErr] = useState('');
   useEffect(() => {
@@ -44,7 +53,7 @@ export function DeckPreview({ file, open, foldIndex = false, outline }: {
   if (open)
     return (
       <button className="deck-thumb appear" onClick={open}>
-        <DeckStudioPage page={pages[0]} />
+        <SlideFrame page={pages[0]} />
         <span className="deck-thumb-foot">
           <span>提案预览 · {pages.length} 页</span>
           <span>打开 →</span>
@@ -67,7 +76,7 @@ export function DeckPreview({ file, open, foldIndex = false, outline }: {
           aria-label={'第 ' + (i + 1) + ' 页'}
           aria-current={i === index}
         >
-          <DeckStudioPage page={p} />
+          <SlideFrame page={p} />
         </button>
       ))}
     </div>
@@ -85,7 +94,7 @@ export function DeckPreview({ file, open, foldIndex = false, outline }: {
       }}
     >
       <div className="deck-stage" ref={stage} tabIndex={-1}>
-        <DeckStudioPage page={pages[index]} />
+        <SlideFrame page={pages[index]} />
       </div>
       <div className="deck-ctrl">
         <button className="btn btn-sm" disabled={index === 0} onClick={() => go(index - 1)}>

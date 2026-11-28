@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {POSTER_EVIDENCE_POLICY,holdSimilarPosterDirections,reviewPosterDirections,reviewPosterTransfer,reviewVisualBatch} from './visual-batch.mjs';
+import {POSTER_EVIDENCE_POLICY,classifyVisualOutputKind,derivativeSpecsForDirection,holdSimilarPosterDirections,imageDimensionsFromBytes,reviewPosterDirections,reviewPosterTransfer,reviewVisualBatch} from './visual-batch.mjs';
 import {imageManifest} from '../workbench/image-evidence.mjs';
 
 const image = n => ({imageId:'image-'+n,path:'/fixture/'+n+'.png',mediaType:'image/png',byteLength:4000,sha256:String(n).repeat(64)});
@@ -779,4 +779,39 @@ test('a loose-filled window never wins a box for individual bags, but printed fo
   assert.equal(batch.candidates[0].blind.innerPackets.form,'loose_in_outer_box');
   assert.equal(batch.candidates[2].blocked,false);
   assert.equal(calls.filter(entry=>entry.task.assignment==='独立读图者').length,3);
+});
+
+test('derivative specs adapt by category: KV flips orientation, packaging uses model lifestyle, event extracts collateral', () => {
+  assert.equal(classifyVisualOutputKind({ project: { briefScope: { types: ['packaging'] } } }), 'packaging');
+  assert.equal(classifyVisualOutputKind({ project: { title: '秋季品牌快闪活动策划与主视觉' } }), 'event');
+  assert.equal(classifyVisualOutputKind({ project: { briefScope: { types: ['kv'] } } }), 'kv');
+
+  const kvFromPortrait = derivativeSpecsForDirection({ outputKind: 'kv', mainFormat: 'portrait', direction: '泉水映月', slogan: '一泉虎跑，半盏悦茶', directionIndex: 0 });
+  assert.equal(kvFromPortrait[0].format, 'landscape');
+  assert.equal(kvFromPortrait[0].imageSize, '1536x1024');
+  assert.equal(kvFromPortrait[0].label, '横版 KV 延展');
+  assert.equal(kvFromPortrait[1].role, 'mockup');
+
+  const kvFromLandscape = derivativeSpecsForDirection({ outputKind: 'kv', mainFormat: 'landscape', direction: '泉水映月', slogan: '一泉虎跑，半盏悦茶', directionIndex: 1 });
+  assert.equal(kvFromLandscape[0].format, 'portrait');
+  assert.equal(kvFromLandscape[0].imageSize, '1024x1536');
+  assert.equal(kvFromLandscape[0].label, '竖版 KV 延展');
+
+  const pkg = derivativeSpecsForDirection({ outputKind: 'packaging', mainFormat: 'portrait', direction: '蛋萌先认这一袋', slogan: '蛋萌高蛋白，幼猫第一口', directionIndex: 0 });
+  assert.equal(pkg[0].label, '模特手持与使用延展');
+  assert.match(pkg[0].prompt, /人物模特手持或使用该产品/u);
+  assert.equal(pkg[1].role, 'mockup');
+
+  const ev = derivativeSpecsForDirection({ outputKind: 'event', mainFormat: 'portrait', direction: '主视觉', slogan: '开春市集', brief: '需要现场打卡装置、邀请函与演讲台物料', directionIndex: 0 });
+  assert.equal(ev[0].label, '活动物料延展');
+  assert.match(ev[0].prompt, /邀请函/u);
+  assert.match(ev[0].prompt, /演讲台/u);
+  assert.match(ev[0].prompt, /打卡装置/u);
+  assert.equal(ev[1].role, 'mockup');
+
+  const pngHeader = Buffer.alloc(24);
+  pngHeader.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 0);
+  pngHeader.writeUInt32BE(1024, 16);
+  pngHeader.writeUInt32BE(1536, 20);
+  assert.deepEqual(imageDimensionsFromBytes(pngHeader), { width: 1024, height: 1536, format: 'portrait' });
 });

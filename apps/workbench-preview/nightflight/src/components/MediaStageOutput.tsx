@@ -1,7 +1,7 @@
 import { VisualReview, type CandidateReview } from '../../../src/proposal/qingyu-visual/VisualReview';
 import { useState } from 'react';
-import { isDeckPreview, safeURL, visualCandidateStatus, type Artifact, type Project } from '../live';
-import { RevisionStage, type Act } from './ChatPanel';
+import { isDeckPreview, safeURL, visualCandidateStatus, type Artifact, type DeckStyle, type Project } from '../live';
+import type { Act } from './ChatPanel';
 import { VisualImageGallery, type GalleryDirection } from '../../../src/proposal/qingyu-visual/VisualImageGallery';
 import { DeckPreview } from './DeckPreview';
 import { publishedSlogan } from './stageText';
@@ -74,21 +74,46 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
     const assignedReferences = (referencesByDirection.get(title) ?? []).filter(ref => ref.role !== 'sharedBrand');
     const current = group.find(item => !item.file.visual || item.file.visual.role === 'main');
     const metadata = current?.file.visual ?? group.find(item => item.file.visual)?.file.visual;
+    const extMeta = group.find(item => item.file.visual?.role === 'extension')?.file.visual;
+    const mockupMeta = group.find(item => item.file.visual?.role === 'mockup')?.file.visual;
+    const inferredOutput = extMeta?.output ?? metadata?.output ?? (
+      p.briefScope?.types?.includes('packaging') ? 'packaging' :
+      p.briefScope?.types?.includes('event') ? 'event' : 'kv'
+    );
+    const defaultExtLabel =
+      inferredOutput === 'packaging' ? '模特手持与使用延展' :
+      inferredOutput === 'event' ? '活动物料延展' :
+      extMeta?.format === 'landscape' ? '横版 KV 延展' :
+      extMeta?.format === 'portrait' ? '竖版 KV 延展' : '延展视觉';
     function pictures(role: 'sketch' | 'main' | 'extension' | 'mockup') {
       const ordered = group.filter(item => (item.file.visual?.role ?? 'main') === role);
       if (role === 'main' && name) ordered.sort((a,b) => Number(b.file.name === name) - Number(a.file.name === name));
       return ordered
         .flatMap(({ file }) => {
           const src = safeURL(file.url);
-          return src ? [{ src, title: candidateTitle(file), alt: title + ' · ' + file.name }] : [];
+          const captionTitle = role === 'main'
+            ? candidateTitle(file)
+            : (file.visual?.label || file.visual?.subject || candidateTitle(file));
+          return src ? [{
+            src,
+            title: captionTitle,
+            alt: title + ' · ' + file.name,
+            candidate: file.visual?.candidate,
+            sha256: file.visual?.sha256,
+            sourceSha256: file.visual?.sourceSha256,
+            label: file.visual?.label,
+          }] : [];
         });
     }
+    const mockupList = pictures('mockup');
     return { id: title, name: publishedSlogan(p, title) || title,
       batchSummary: hasBatch ? (winner ? '推荐第 '+winner.candidate+' 稿' : pendingSummary) : undefined,
-      auxiliaryMissing: hasBatch && assignedReferences.length > 0 && !assignedReferences.some(ref => ref.role === 'auxiliary'),
+      auxiliaryMissing: false,
       description: current?.record?.description?.split(/[。\n]/)[0], references: assignedReferences.map(ref => ({src: ref.src, title: ref.title, alt: ref.borrow})),
-      format: metadata?.format, extensionLabel: metadata?.output === 'packaging' ? '包装延展' : metadata?.output === 'kv' ? 'KV 延展' : '延展图',
-      sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: pictures('mockup')[0] };
+      format: metadata?.format,
+      extensionLabel: extMeta?.label || defaultExtLabel,
+      mockupLabel: mockupMeta?.label || '样机效果',
+      sketch: pictures('sketch')[0], mains: pictures('main'), extensions: pictures('extension'), mockup: mockupList[0], mockups: mockupList };
   });
   const active = directions.find(item => item.id === selected) ?? directions[0];
   const current = reports.find(item => item.title === active?.id);
@@ -112,7 +137,7 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   const other = reports.filter(item => !directions.some(direction => direction.id === item.title));
   return <>
     {!!directions.length && active && <div data-artifact={current?.file.name}>
-      <VisualImageGallery directions={directions} currentId={active.id} onDirectionChange={setSelected}
+      <VisualImageGallery directions={directions} currentId={active.id} onDirectionChange={setSelected} hideEmptySlots
         details={(selectedRefs.length || candidates.length || current?.record?.description) ? <>
           {!!selectedRefs.length && <section><h4>参考依据</h4><ul className="plain-list">{selectedRefs.map(ref =>
             <li key={ref.sha256}><strong>{{main:'主参考',auxiliary:'辅助参考',sharedBrand:'品牌共用'}[ref.role]}</strong>
@@ -121,9 +146,9 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
               {ref.pageUrl?.startsWith('https://') && <a href={ref.pageUrl} target="_blank" rel="noopener noreferrer">查看来源页</a>}
             </li>)}</ul></section>}
           {admission && <details><summary>查看参考图准入原票</summary>
-            <p>{admission.ruling.reason}</p>
-            {admission.votes.map(vote => <section key={vote.role}><h4>{reviewLabels[vote.role] ?? vote.role}</h4>
-              <ul>{vote.items.map(item => <li key={item.dimension}>{reviewLabels[item.dimension] ?? item.dimension} · {item.score === null ? '待核' : item.score+'/5'}　{item.evidence}</li>)}</ul>
+            {admission.ruling?.reason && <p>{admission.ruling.reason}</p>}
+            {(admission.votes ?? []).map(vote => <section key={vote.role}><h4>{reviewLabels[vote.role] ?? vote.role}</h4>
+              <ul>{(vote.items ?? []).map(item => <li key={item.dimension}>{reviewLabels[item.dimension] ?? item.dimension} · {item.score === null ? '待核' : item.score+'/5'}　{item.evidence}</li>)}</ul>
             </section>)}
           </details>}
           {candidates.length ? <VisualReview board={board && safeURL(board.url) || undefined}
@@ -142,46 +167,43 @@ function VisualOutput({ p, name }: { p: Project; name?: string }) {
   </>;
 }
 
-function Feedback({ p, act, busy }: { p: Project; act: Act; busy: boolean }) {
-  const [text, setText] = useState('');
-  const [targetStage,setTargetStage]=useState<import('../types').StageId>(
-    p.finalReview?.outcome==='blocked' ? p.finalReview.returnStage : 'layout',
-  );
-  const revisions = (p.feedback || []).filter((item) => 'stage' in item && item.stage === 'final');
+const DECK_STYLE_OPTIONS: readonly { id: DeckStyle; label: string }[] = [
+  { id: 'bento', label: '现代 4A' },
+  { id: 'editorial', label: '东方画册' },
+  { id: 'consulting', label: '商务咨询' },
+];
+
+function DeckStyleSwitcher({
+  p,
+  act,
+  busy,
+}: {
+  p: Project;
+  act: Act;
+  busy: boolean;
+}) {
+  if (!p.canSwitchDeckStyle) return null;
+  const current: DeckStyle = p.deckStyle || 'bento';
+  const switching = busy || p.status === 'running';
   return (
-    <section className="block">
-      <h2>你的反馈</h2>
-      <form
-        className="feedback"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          if (text.trim() && await act('message',text.trim(),undefined,{targetStage})) setText('');
-        }}
-      >
-        <RevisionStage value={targetStage} change={setTargetStage}/>
-        <label className="sr-only" htmlFor="final-feedback">
-          修改意见
-        </label>
-        <textarea
-          id="final-feedback"
-          rows={3}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="写下页码和修改意见"
-        />
-        <button className="btn btn-dark" disabled={!text.trim() || busy}>
-          发给主理人
-        </button>
-      </form>
-      <p className="hint">提交后会保存本版提案，从所选阶段修改。</p>
-      {!!revisions.length && (
-        <ul className="plain-list">
-          {revisions.map((r, i) => (
-            <li key={i}>{r.text}</li>
-          ))}
-        </ul>
-      )}
-    </section>
+    <span className="deck-style-inline" role="group" aria-label="切换提案风格">
+      {DECK_STYLE_OPTIONS.map((opt) => {
+        const isActive = opt.id === current;
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            className={'deck-style-btn' + (isActive ? ' is-active' : '')}
+            aria-pressed={isActive}
+            disabled={switching || isActive}
+            onClick={() => void act('deck_style', opt.id)}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+      {switching && <span className="deck-style-status">切换中…</span>}
+    </span>
   );
 }
 
@@ -210,8 +232,6 @@ export function MediaStageOutput({
     const downloads = [
       ['逐页稿-', '下载完整逐页稿'],
       ['逐页材料包-', '下载编稿材料包'],
-      ['DeepSeek实际请求-', '查看 DeepSeek 实际请求'],
-      ['采用原图读图-', '查看采用原图读图回执'],
     ].flatMap(([prefix,label])=>{
       const file = prefix==='逐页稿-' ? draft : saved.findLast(item=>item.name.startsWith(prefix));
       return file ? [{file,label}] : [];
@@ -228,11 +248,12 @@ export function MediaStageOutput({
   }
   const priorFinal = id === 'final' && p.finalReturn ? p.versions?.findLast(v=>v.stage==='final') : undefined;
   const saved = priorFinal?.artifacts ?? p.artifacts;
-  const deck = saved.find(isDeckPreview);
+  const deck = saved.findLast(isDeckPreview);
   const outlineId = deck?.name.match(/([0-9a-f-]{36})\.deck\.json$/i)?.[1];
   const outline = outlineId ? saved.find(file => file.stage === 'layout' && file.kind === 'text' &&
     file.name.endsWith(outlineId + '.outline.json')) : undefined;
   const pptx = saved.filter((file) => file.stage === 'layout' && file.kind === 'pptx');
+  const htmlDeck = saved.findLast((file) => file.stage === 'layout' && file.kind === 'text' && file.name.endsWith('.html'));
   if (id === 'layout') {
     if (!deck && !pptx.length) {
       const message = p.stage === 'layout'
@@ -242,9 +263,12 @@ export function MediaStageOutput({
     }
     return (
       <section className="block" data-artifact={deck?.name}>
-        <h2>提案预览</h2>
+        <h2 className="deck-head">
+          提案预览
+          <DeckStyleSwitcher p={p} act={act} busy={busy} />
+        </h2>
         {deck ? <DeckPreview key={deck.url} file={deck} foldIndex outline={outline} /> : <p>本版可下载 PPTX，在线预览尚未就绪。</p>}
-        <DeckDownloads files={pptx} />
+        <DeckDownloads files={pptx} htmlFile={htmlDeck} />
       </section>
     );
   }
@@ -252,7 +276,7 @@ export function MediaStageOutput({
   const refinement=p.finalReview;
   const proof=refinement && (refinement.outcome==='ready' || refinement.outcome==='blocked') ? refinement : null;
   const overview=proof && saved.find(file=>file.name===proof.contact);
-  const original=proof && p.versions?.flatMap(version=>version.artifacts).find(file=>file.name===proof.originalPptx);
+  const canAcceptFinal = Boolean(proof && proof.outcome==='ready' && !proof.acceptedAt && p.stage==='final' && p.status==='waiting');
   if (!deck && !pptx.length && !reviews.length) {
     return <p className="pending">等待排版稿，随后进入终审。</p>;
   }
@@ -260,8 +284,46 @@ export function MediaStageOutput({
     <>
       {(deck || !!pptx.length) && (
         <section className="block" data-artifact={deck?.name}>
-          <h2>{priorFinal ? '退回的提案' : proof ? '精修版提案' : '本版提案'}</h2>
+          <h2 className="deck-head">
+            {priorFinal ? '退回的提案' : proof ? '精修版提案' : '本版提案'}
+            {!priorFinal && <DeckStyleSwitcher p={p} act={act} busy={busy} />}
+          </h2>
           {deck && <DeckPreview key={deck.url} file={deck} foldIndex outline={outline} />}
+          {(canAcceptFinal || pptx.length > 0 || htmlDeck || overview) && (
+            <div className="deliver">
+              {canAcceptFinal && (
+                <button
+                  type="button"
+                  className="btn btn-dark"
+                  disabled={busy}
+                  onClick={() => act('accept_final', '验收本版精修 PPTX')}
+                >
+                  验收这版
+                </button>
+              )}
+              {pptx.map((file) => (
+                <a
+                  key={file.url}
+                  data-artifact={file.name}
+                  className={canAcceptFinal ? 'btn' : 'btn btn-dark'}
+                  href={safeURL(file.url)}
+                  download={file.name}
+                >
+                  {pptx.length === 1 ? (priorFinal ? '下载退回版 PPTX' : '下载可编辑 PPTX') : '下载 ' + file.name}
+                </a>
+              ))}
+              {htmlDeck && (
+                <a className="btn" data-artifact={htmlDeck.name} href={safeURL(htmlDeck.url)} download={htmlDeck.name}>
+                  下载 HTML 演示
+                </a>
+              )}
+              {overview && (
+                <a className="btn" href={safeURL(overview.url)} download={overview.name}>
+                  下载整套全览图
+                </a>
+              )}
+            </div>
+          )}
         </section>
       )}
       <section className="block">
@@ -269,7 +331,7 @@ export function MediaStageOutput({
         {reviews.length ? (
           <>
             <p className="demo-banner">{proof?.outcome==='blocked' ? '必改项待处理' :
-              proof?.outcome==='ready' ? (proof.acceptedAt ? '提案人已验收' : '待提案人验收') :
+              proof?.outcome==='ready' ? (proof.acceptedAt ? '提案人已验收' : '已通过终审') :
                 priorFinal ? '上一版退回意见' : '本地审读记录'}</p>
             {reviews.map((review) => <ReviewRecord key={review.url} file={review} />)}
           </>
@@ -284,23 +346,13 @@ export function MediaStageOutput({
             </a>
           </details>
         )}
-        <DeckDownloads files={pptx} returned={Boolean(priorFinal)} />
-        {proof && <div className="deliver">
-          {proof.outcome==='ready' && !proof.acceptedAt && p.stage==='final' && p.status==='waiting' &&
-            <button type="button" className="btn btn-dark" disabled={busy}
-              onClick={()=>act('accept_final','验收本版精修 PPTX')}>验收这版</button>}
-          {original && <a className="btn" href={safeURL(original.url)} download={original.name}>下载初版 PPTX</a>}
-          {overview && <a className="btn" href={safeURL(overview.url)} download={overview.name}>下载全览图</a>}
-        </div>}
       </section>
-      {(p.status==='done' || proof && p.stage==='final' && p.status==='waiting') &&
-        <Feedback key={proof?.pptx} p={p} act={act} busy={busy} />}
     </>
   );
 }
 
-function DeckDownloads({ files, returned = false }: { files: Artifact[]; returned?: boolean }) {
-  if (!files.length) return null;
+function DeckDownloads({ files, htmlFile, returned = false }: { files: Artifact[]; htmlFile?: Artifact; returned?: boolean }) {
+  if (!files.length && !htmlFile) return null;
   return (
     <div className="deliver">
       {files.map((file) => (
@@ -308,6 +360,11 @@ function DeckDownloads({ files, returned = false }: { files: Artifact[]; returne
           {files.length === 1 ? returned ? '下载退回版 PPTX' : '下载可编辑 PPTX' : '下载 ' + file.name}
         </a>
       ))}
+      {htmlFile && (
+        <a className="btn" data-artifact={htmlFile.name} href={safeURL(htmlFile.url)} download={htmlFile.name}>
+          下载 HTML 演示
+        </a>
+      )}
     </div>
   );
 }

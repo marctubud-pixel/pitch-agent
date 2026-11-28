@@ -5,7 +5,12 @@ import {libraryRequest} from './library.mjs';
 import {validateResearchDigest, validateStrategyAdvice} from './research-digest.mjs';
 import {isManuscriptSupport, manuscriptArtifact} from './manuscript.mjs';
 import {finalProtocol} from './final-review.mjs';
+import {DECK_STYLES, DECK_STYLE_LABELS} from './html-deck.mjs';
+import {pythonBinary} from './runtime-dependencies.mjs';
 import {POSTER_EVIDENCE_POLICY} from './visual-batch.mjs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
 import {
@@ -30,7 +35,7 @@ import { engineCopyHandoffReady, isEngineCopyProtocol, headlineMarkdown, headlin
 
 const stages = ['brief', 'research', 'strategy', 'copy', 'visual', 'layout', 'final'];
 const labels = ['简报与任务', '研究', '策略', '文案与主题', '视觉开发', '版式', '终审与交付'];
-const nonCandidateVisualRoles = new Set(['comparison','reference','slogan-original','poster-original']);
+const nonCandidateVisualRoles = new Set(['comparison','reference','slogan-original','poster-original','extension','mockup']);
 const safeId = /^[a-zA-Z0-9_-]{1,100}$/;
 const now = () => new Date().toISOString();
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -171,13 +176,15 @@ function canRequestStrategy(p) {
 }
 
 function publicView(p) {
-  const { owner, claim, attemptKey, inputHash, commands, ...visible } = p;
+  const { owner, claim, attemptKey, inputHash, commands, pendingDeckStyle, ...visible } = p;
   const unstore = ({ storageKey, ...record }) => record;
   return {
     ...visible,
     canRequestStrategy: Boolean(canRequestStrategy(p)),
     canRenderManuscript: p.stage==='layout' && p.status==='waiting' && p.layoutDraftOnly && !p.layoutMaterialsOnly &&
       Boolean(manuscriptArtifact(p.artifacts)),
+    canSwitchDeckStyle: !p.claim && ['layout','final'].includes(p.stage) &&
+      Boolean(manuscriptArtifact(p.artifacts) || p.artifacts.some(a=>a.stage==='layout' && /^终审逐页稿-[a-f0-9-]{36}\.plan\.json$/u.test(a.name))),
     artifacts: p.artifacts.map(unstore),
     attachments: p.attachments.map(unstore),
     versions: p.versions.map((v) => ({ ...v, artifacts: v.artifacts.map(unstore) })),
@@ -206,9 +213,12 @@ const mime = {
   '.pdf': 'application/pdf',
   '.md': 'text/plain; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 };
+const execFileAsync = promisify(execFile);
+const finalEditionHelper = fileURLToPath(new URL('./final-edition.py', import.meta.url));
 
 export function createNightflight({ root, runStage, runLayout, runManuscript }) {
   root = resolve(root);
@@ -415,7 +425,8 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
               return {adopted:previous.visualAdoption?.artifacts?.includes(a.storageKey)===true,visual:a.visual,image:{path,imageId:'previous',sha256:hash(bytes),byteLength:bytes.length,mediaType:'image/png'}};
             });
           }
-          if (p.stage === 'layout') {
+          const isLayoutStage = p.stage === 'layout' || Boolean(p.pendingDeckStyle);
+          if (isLayoutStage) {
             const adopted = new Set(p.visualAdoption?.artifacts ?? []);
             const directions = new Set(p.artifacts.filter(a => adopted.has(a.storageKey)).map(a => a.visual?.direction));
             const compared = p.artifacts.filter(a => a.stage === 'visual' && a.visual?.role === 'comparison' &&
@@ -424,13 +435,13 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             input.layoutCompetitorReferences = [...p.attachments, ...originals].filter(a => compared.includes(a.name)).map(a => a.name);
           }
           for (const type of ['artifacts', 'attachments']) {
-            const source = type === 'attachments' && p.stage === 'layout'
+            const source = type === 'attachments' && isLayoutStage
               ? [...p.attachments, ...(p.visualAdoption?.materials ?? []), ...p.artifacts.filter(a =>
                 a.visual?.role === 'reference' && input.layoutCompetitorReferences.includes(a.name))] : p[type];
             const records = p.researchDigestOnly ? [] : source.filter(a=>{
               const role=a.visual?.role;
               if (type==='artifacts' && ['reference','poster-original','slogan-original'].includes(role)) return false;
-              return p.stage!=='layout' || !(a.visual?.candidate || role==='comparison') || p.visualAdoption?.artifacts.includes(a.storageKey);
+              return !isLayoutStage || role==='extension' || role==='mockup' || !(a.visual?.candidate || role==='comparison') || p.visualAdoption?.artifacts.includes(a.storageKey);
             });
             input[type] = records.map((record) => {
               const path = join(dir, filename(record.name));
@@ -457,6 +468,87 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
               db.prepare("INSERT INTO project_events(project_id,entry) SELECT id,? FROM projects WHERE id=? AND json_extract(state,'$.claim')=?").run(event,id,claim);
             }
           };
+          if (p.pendingDeckStyle) {
+            const { style: nextStyle, returnStatus } = p.pendingDeckStyle;
+            check(typeof runLayout === 'function', '当前工作台缺少排版执行器', 409);
+            onEvent('切换提案版式风格为「' + (DECK_STYLE_LABELS[nextStyle] || nextStyle) + '」');
+            const refinedPlanFile = input.artifacts.findLast(
+              (a) => a.stage === 'layout' && /^终审逐页稿-[a-f0-9-]{36}\.plan\.json$/u.test(a.name),
+            );
+            const reviewDraft = refinedPlanFile ? JSON.parse(readFileSync(refinedPlanFile.path, 'utf8')) : undefined;
+            const styled = await runLayout({
+              project: input,
+              dir,
+              onEvent,
+              signal: abort.signal,
+              reviewDraft,
+              style: nextStyle,
+            });
+            const newPptx = styled.artifacts.find((a) => a.kind === 'pptx');
+            const newBatch = newPptx?.name.match(/^提案-([a-f0-9-]{36})\.pptx$/u)?.[1];
+            const pageFiles = styled.artifacts
+              .filter((a) => Number.isInteger(a.renderPage))
+              .sort((a, b) => a.renderPage - b.renderPage);
+            let newContact = null;
+            if (p.finalReview?.contact && newBatch && pageFiles.length) {
+              const contactName = '终审全览-' + newBatch + '.jpg';
+              const contactPath = join(dir, contactName);
+              await execFileAsync(
+                await pythonBinary(),
+                ['-I', '-B', finalEditionHelper, 'contact', contactPath, ...pageFiles.map((f) => join(dir, f.name))],
+                { signal: abort.signal, timeout: 30000, maxBuffer: 4 * 1024 * 1024 },
+              );
+              newContact = { name: contactName, kind: 'image', stage: 'final' };
+            }
+            const live = get(id);
+            check(live?.claim === claim, '该次运行已结束', 409);
+            const isReplacedLayoutOutput = (a) =>
+              a.stage === 'layout' &&
+              !isManuscriptSupport(a.name) &&
+              !/^终审逐页稿-[a-f0-9-]{36}\.plan\.json$/u.test(a.name);
+            const oldContactName = live.finalReview?.contact;
+            live.artifacts = live.artifacts.filter(
+              (a) => !isReplacedLayoutOutput(a) && !(newContact && a.stage === 'final' && a.name === oldContactName),
+            );
+            const storedOutputs = styled.artifacts.map((a) => {
+              const name = filename(a.name);
+              const stored = storeFile(live, name, join(dir, name), a.kind);
+              unpublished.add(disk(live, stored.storageKey));
+              return {
+                ...stored,
+                stage: 'layout',
+                ...(Number.isInteger(a.renderPage) ? { renderPage: a.renderPage } : {}),
+              };
+            });
+            if (newContact) {
+              const storedContact = storeFile(live, newContact.name, join(dir, newContact.name), 'image');
+              unpublished.add(disk(live, storedContact.storageKey));
+              storedOutputs.push({ ...storedContact, stage: 'final' });
+            }
+            live.artifacts.push(...storedOutputs);
+            live.deckStyle = nextStyle;
+            if (live.finalReview && newPptx) {
+              live.finalReview = {
+                ...live.finalReview,
+                pptx: newPptx.name,
+                sha256: hash(readFileSync(join(dir, newPptx.name))),
+                pages: pageFiles.map((f) => f.renderPage),
+                ...(newContact ? { contact: newContact.name } : {}),
+              };
+            }
+            delete live.pendingDeckStyle;
+            live.status = returnStatus || 'waiting';
+            live.error = null;
+            live.claim = null;
+            live.owner = null;
+            note(live, '已切换为「' + (DECK_STYLE_LABELS[nextStyle] || nextStyle) + '」风格（' + styled.pages + ' 页）');
+            delete live.attemptKey;
+            save(live);
+            unpublished.clear();
+            prune();
+            claim = null;
+            continue;
+          }
           onEvent('比稿负责人执行「'+labels[stages.indexOf(p.stage)]+'」');
           const runner = p.stage === 'layout' ? (p.layoutDraftOnly ? runManuscript : runLayout) : runStage;
           check(typeof runner === 'function', '当前工作台缺少这个阶段的执行器', 409);
@@ -555,12 +647,13 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
             }
             const isFastAutoVisual = p.mode==='auto' && images.length>0 && images.every(a=>a.visual?.fastAuto===true);
             if (isFastAutoVisual) {
-              check(images.length===expected.length*2 && expected.every(direction=>{
+              const perDirection = expected.length ? images.length / expected.length : 0;
+              check((perDirection === 3 || perDirection === 2) && expected.every(direction=>{
                 const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
-                return [1,2].every(i=>batch.some(a=>a.candidate===i)) &&
+                return Array.from({length: perDirection}, (_, k) => k + 1).every(i=>batch.some(a=>a.candidate===i)) &&
                   batch.every(a=>a.role==='main' && Array.isArray(a.hardIssues) && typeof a.reason==='string' && a.reason.trim()) &&
                   batch.filter(a=>a.recommended).length<=1;
-              }), '自动模式视觉阶段需要每方向两张同版主视觉及快速选优记录', 422);
+              }), '自动模式视觉阶段需要每方向两至三张同版主视觉及快速选优记录', 422);
             } else check(images.length===expected.length*3 && expected.every(direction=>{
               const batch = images.filter(a=>a.visual?.direction===direction).map(a=>a.visual);
               if (![1,2,3].every(i=>batch.some(a=>a.candidate===i)) || !batch.every(a=>a.role==='main' &&
@@ -728,7 +821,9 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
         const p = get(id);
         if (p && p.claim === claim) {
           if (p.researchDigestOnly && !p.research?.digest) p.research.digestPending = true;
-          p.status = p.researchDigestOnly ? 'waiting' : 'failed';
+          p.status = p.pendingDeckStyle ? (p.pendingDeckStyle.returnStatus || 'waiting')
+            : p.researchDigestOnly ? 'waiting' : 'failed';
+          delete p.pendingDeckStyle;
           delete p.researchDigestOnly;
           p.claim = null;
           p.owner = null;
@@ -756,7 +851,9 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
         p.claim = null;
         p.owner = null;
         if (p.researchDigestOnly && !p.research?.digest) p.research.digestPending = true;
-        p.status = p.researchDigestOnly ? 'waiting' : 'failed';
+        p.status = p.pendingDeckStyle ? (p.pendingDeckStyle.returnStatus || 'waiting')
+          : p.researchDigestOnly ? 'waiting' : 'failed';
+        delete p.pendingDeckStyle;
         delete p.researchDigestOnly;
         p.error = '本地服务已重启，请核对已保存的结果后重试当前阶段。';
         note(p, p.error);
@@ -880,7 +977,7 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
         return p;
       }
     }
-    if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind==='accept_final')
+    if ((kind==='message' && input.expectedRevision!==undefined) || kind==='confirm_brief' || kind === 'research_digest' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind==='accept_final' || (kind==='deck_style' && input.expectedRevision!==undefined))
       check(input.expectedRevision === p.revision, '项目版本已更新，请查看最新结果再决定', 409);
     if (p.stage==='brief' && p.briefScope && p.briefScope.status!=='accepted' && ['confirm_brief','retry'].includes(kind))
       check(false,'请先补充或重新描述提案需求',409);
@@ -1000,6 +1097,21 @@ export function createNightflight({ root, runStage, runLayout, runManuscript }) 
           ...(continuing && question ? { question } : {}),
         });
       note(p, '已保存前版，沿用原简报重新研究' + (text ? '：' + text.slice(0, 180) : ''));
+    } else if (kind === 'deck_style') {
+      check(DECK_STYLES.includes(text), '不支持的提案风格');
+      check(!p.claim && p.status !== 'running' && ['layout', 'final'].includes(p.stage), '当前状态暂不支持切换版式风格', 409);
+      check(typeof runLayout === 'function', '当前工作台缺少排版执行器', 409);
+      check(
+        manuscriptArtifact(p.artifacts) ||
+          p.artifacts.some((a) => a.stage === 'layout' && /^终审逐页稿-[a-f0-9-]{36}\.plan\.json$/u.test(a.name)),
+        '当前项目缺少逐页稿，暂不支持切换风格',
+        409,
+      );
+      p.deckStyle = text;
+      p.pendingDeckStyle = { style: text, returnStatus: p.status };
+      p.status = 'running';
+      p.error = null;
+      note(p, '切换提案版式风格为「' + DECK_STYLE_LABELS[text] + '」，正在本地重排');
     } else if (kind === 'accept_final') {
       const review=p.finalReview;
       const current=p.artifacts.findLast(a=>a.stage==='layout' && a.kind==='pptx');

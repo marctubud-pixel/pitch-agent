@@ -12,15 +12,19 @@ import { Celebration } from './components/Celebration';
 import { Icon } from './components/Icon';
 import {
   api,
-  clock,
   encodeFile,
   endpoint,
-  projectStatus,
   type Action,
   type Project,
   type Summary,
 } from './live';
 import { STAGES } from './data/project';
+import {
+  buildExecutionStreams,
+  deriveBotStatus,
+  deriveChatMessages,
+  deriveProjectHeading,
+} from './components/stageText';
 import type { Mode, StageId } from './types';
 
 const hash = () => location.hash.slice(1);
@@ -52,6 +56,7 @@ export function App() {
   const [reload, refresh] = useState(0),
     generation = useRef(0),
     lastStatus = useRef(''),
+    skipCelebration = useRef(false),
     [seen, mark] = useState(0),
     [notice, setNotice] = useState(false);
   const [routePath, query] = route.split('?');
@@ -122,11 +127,17 @@ export function App() {
     const finalDecision = p.stage==='final' && ['ready','blocked'].some(outcome=>p.finalReview?.outcome===outcome);
     if (p.status === 'waiting' && p.stage !== 'research' && !finalDecision && lastStatus.current !== 'waiting') setChat(true);
     if (p.status === 'done' && lastStatus.current && lastStatus.current !== 'done') {
-      setParty(true);
-      setNotice(true);
+      if (skipCelebration.current) {
+        skipCelebration.current = false;
+      } else {
+        setParty(true);
+        setNotice(true);
+      }
+    } else if (p.status !== 'running' && skipCelebration.current) {
+      skipCelebration.current = false;
     }
     lastStatus.current = p.status;
-    if (chat) mark(p.events.length);
+    if (chat) mark(deriveChatMessages(p).length);
   }, [workspace, p, chat]);
   useEffect(() => {
     if (detail?.id!=='final') return;
@@ -184,6 +195,7 @@ export function App() {
     setBusy(true);
     error('');
     generation.current++;
+    if (kind === 'deck_style') skipCelebration.current = true;
     try {
       const attachments = files?.length ? await Promise.all(files.map(encodeFile)) : undefined;
       const d = await api<{ project: Project }>(endpoint(id) + '/action', {
@@ -192,7 +204,7 @@ export function App() {
         attachments,
         ...options,
         expectedRevision:
-          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' || kind === 'accept_final' ? p.revision : undefined,
+          kind === 'message' || kind === 'confirm_brief' || kind === 'choice' || kind === 'adopt' || kind === 'render_manuscript' || kind === 'research_again' || kind === 'research_continue' || kind === 'research_digest' || kind === 'accept_final' || kind === 'deck_style' ? p.revision : undefined,
         opId: crypto.randomUUID(),
       });
       generation.current++;
@@ -213,15 +225,9 @@ export function App() {
     open({ id: s, name });
     if (window.innerWidth <= 1000) setChat(false);
   };
-  const events = (workspace ? p.events : []).map((e, i) => ({
-    id: String(i),
-    seq: i,
-    at: clock(e.at),
-    text: e.text,
-    stageId: e.stage,
-    kind: 'info' as const,
-    simulated: false,
-  }));
+  const streams = workspace ? buildExecutionStreams(p) : { primary: [], all: [] };
+  const botStatus = workspace ? deriveBotStatus(p, streams.primary) : undefined;
+  const chatMessages = workspace ? deriveChatMessages(p) : [];
   if (routePath === '/reference/qingyu/visual') return (
     <Suspense fallback={<p className="pending">正在读取青屿视觉稿…</p>}>
       <QingyuVisualReading directionId={new URLSearchParams(query).get('dir')} />
@@ -236,16 +242,17 @@ export function App() {
   return (
     <div className={'app phase-' + (workspace ? 'workspace' : start ? 'start' : mode ? 'mode' : 'home')}>
       <LogBar
-        events={events}
+        events={streams.primary}
+        allEvents={streams.all}
         expanded={log && workspace}
         onToggle={() => setLog(!log)}
         mode={workspace ? p.mode : null}
         live={workspace && p.status === 'running'}
         idleText="就绪。把 Brief 交给我。"
-        status={workspace ? projectStatus(p) : undefined}
+        status={botStatus ? `${botStatus.label} · ${botStatus.detail}` : undefined}
       />
       <TopBar
-        projectTitle={workspace ? p.title : undefined}
+        projectTitle={workspace ? deriveProjectHeading(p).topBarTitle : undefined}
         inWorkspace={workspace}
         onHome={() => navigate('/')}
         chatOpen={chat}
@@ -256,7 +263,7 @@ export function App() {
           setLibrary(true);
           open(undefined);
         }}
-        unread={!!p && p.events.length > seen}
+        unread={!!p && chatMessages.length > seen}
       />
       {routePath === '/library' && <Library projects={projects} close={() => navigate('/')}
         create={newProject} open={project => navigate('/p/' + project.id)} />}
@@ -336,6 +343,7 @@ export function App() {
             <div className="ws-scroll">
               <Workspace
                 p={p}
+                primaryEvents={streams.primary}
                 open={openDetail}
                 log={() => setLog(true)}
                 chat={() => setChat(true)}
@@ -394,6 +402,7 @@ export function App() {
             <ChatPanel
               composerRef={composerRef}
               openResearch={() => openDetail('research')}
+              openStage={openDetail}
               p={p}
               projects={projects}
               close={() => setChat(false)}
@@ -403,6 +412,7 @@ export function App() {
           ) : (
             <button className="chat-fab" onClick={() => setChat(true)} aria-label="打开与主理人的对话">
               <Icon name="chat" size={26} />
+              {chatMessages.length > seen && <span className="dot dot-live" />}
             </button>
           )}
         </div>

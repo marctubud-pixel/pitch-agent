@@ -37,8 +37,8 @@ export function VisualReview({board, order, candidates}: {
           {([['第一眼',b.first],['品牌与品类',b.brand],['画面动作',b.action],['靠读字确认',b.words],['其他读法',b.alternative]] as const)
             .map(([label,value])=>value && <p key={label}><strong>{label}</strong>　{value}</p>)}
           {b.slogan && <>
-            <p><strong>主标题抄录</strong>　<span style={{whiteSpace:'pre-wrap'}}>{b.slogan.text || (b.slogan.status==='missing' ? '未见主标题' : '无法读清')}</span></p>
-            {b.slogan.location && <p><strong>位置</strong>　{b.slogan.location}</p>}
+            <p><strong>主标题抄录</strong>　<span style={{whiteSpace:'pre-wrap'}}>{typeof b.slogan === 'string' ? b.slogan : (b.slogan.text || (b.slogan.status==='missing' ? '未见主标题' : '无法读清'))}</span></p>
+            {typeof b.slogan !== 'string' && b.slogan.location && <p><strong>位置</strong>　{b.slogan.location}</p>}
             {b.model && <p><strong>读图模型</strong>　{b.model}</p>}
           </>}
         </div>)}

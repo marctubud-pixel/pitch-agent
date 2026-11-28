@@ -340,16 +340,46 @@ async function submitVisualPrompt({call,images,written,posterSlogan,packagingBri
     ...(visiblePackageUnits ? {visiblePackageUnits} : {})}};
 }
 
+const PREMIUM_BRIEF_RE = /高端|轻奢|精品|科学|专业|高营养|溢价|比市面.*高|贵\s*\d+|品质升级|旗舰/u;
+
+function directionVisualAxisGuide(mode, packaging) {
+  if (!mode) return '';
+  if (mode === 'steady') {
+    return packaging
+      ? '【方向轴 · 稳健延续】采用现代高审美商业棚拍包装，主体结构完整端正、品牌字标与品类层级清晰克制、自然建筑光影，一步建立货架专业信任感。'
+      : '【方向轴 · 稳健延续】成熟高审美商业海报，主角突出、字图留白克制稳健、易于过稿。';
+  }
+  if (mode === 'feature') {
+    return packaging
+      ? '【方向轴 · 卖点跳脱（严禁普通实拍棚拍！）】必须切换为非写实平面视觉媒介（如瑞士网格比例构成、复古套色版画、现代几何插画或极简超级图形包装概念），把核心卖点可视化为鲜明的图形符号与色块秩序，与稳健实拍方向彻底拉开艺术形式差距！'
+      : '【方向轴 · 卖点跳脱】切换为非写实平面构成/插画/版画等高审美艺术媒介，与常规棚拍彻底拉开差异。';
+  }
+  if (mode === 'emotion') {
+    return packaging
+      ? '【方向轴 · 用户场景与感受（严禁退回纯白底孤立袋装棚拍！）】必须呈现温暖真实的居家/生活使用情境（如清晨斜阳木地板、真实使用环境与温和情绪氛围），让产品包装自然融入有呼吸感的生活画面中，顶部留白承接品牌情绪感。'
+      : '【方向轴 · 用户场景与感受】真实温暖的生活方式情绪海报，呈现使用情境与人群情感共鸣。';
+  }
+  return '';
+}
+
 export async function generateVisualWithDesktopModels({call, images, context, drawingBrief, posterSlogan, packaging, posterReference}) {
   if (posterReference) {
     const promptWriting = await writePosterPrompt({call,images,context,posterReference,posterSlogan});
     const result = await call(promptWriting.prompt,images,null,{exactImagePrompt:true});
     return {result,promptWriting};
   }
+  const premiumPackaging = Boolean(packaging && PREMIUM_BRIEF_RE.test(String(context?.brief || '')));
+  const axisGuide = directionVisualAxisGuide(context?.directionMode, Boolean(packaging));
   const instruction = [
     '为夜航这个方向写一段可以直接交给生图模型的提示词。用简报、文案、借改项目和图片用途来写。',
     '写清画面、背景和前景的关系，明确要借的三项、重新设计的两项，以及每张实际附件怎样使用。按制图要求写清载体上的文字。',
+    axisGuide,
     posterSlogan && '海报或 KV 要把本方向已选 slogan 的完整原句排成画面主标题。提示词中逐字列出原句，明确文字放在画面上。标题分行时用连续的行写全原字和标点。',
+    posterSlogan && !packaging && '【海报／KV 借图松紧度】以所附高审美主参考原图的自然光影、材质折射与高级色调质感为核心借鉴，不要死锁原图的多物平铺排列；放开重构为「主角产品/主体突出 + 干净标题留白区」的当代商业海报构图，彻底清除原图任何第三方品牌与外文字符。',
+    (!posterSlogan || packaging) && '【包装／空间活动借图松紧度（严格借三改二）】牢牢锁住主参考原图高级的容器/建筑立面比例、开窗尺度、空间纵深或光影骨架，同时彻底替换瓶身/外墙材质、色彩、陈列内容与本案中文招牌/瓶贴，零残留原品牌字样。',
+    images.length >= 2 && '【主借三、辅改二多图分工】第1张参考图为主参考（定整体大骨架与视觉基因），第2张参考图为本稿专属辅助参考（只借其精准局部：主题场景物象、材质光影或字体版式气质，把「改二」画高级），两图有机融合为统一大片，绝不拼贴割裂。',
+    '【强制单帧与统一竖版构图】无论参考图是否分格，最终成图必须输出单一完整单帧 2:3 / 3:4 竖版画面，严禁上下或左右分屏拼图，严禁袋口/拉链异常撕裂缺口或盒体结构穿帮。',
+    premiumPackaging && '【高溢价包装审美红线】本案定位品质升级/轻溢价，严禁使用廉价平价大头宠物/人物实拍贴图叠红黄促销气泡标签；优先用高级哑光触感材质、克制大留白、清晰品牌字标、专属视觉超级符号或精细科学网格秩序在 3 秒内撑起溢价感。',
     packaging && '包装画面的设计主题转化成画面关系，包装本体只列确认可印的实际文字。盒内件数印在外盒上，单件只标对应单件规格。简报若只规定装量和外盒正面，优先闭盒正面或只露出局部、展示单件取用；不可凭空要求全数内装同时可见或可数。客户明确要求把全部内装画出时按原要求。目标价或拟售价留在提案材料，简报未要求上画时省略价签；要求上画时保留该限定。',
     packaging && confirmsInnerPackets(context.brief) && '外盒装的是独立小袋。参考图的透明窗、陈列框或食材区只能转用它的版面框形和位置；不能沿用与本品内装不符的盒型结构、材质或装料形态。若要借开窗式布局，画成明确可识别的平面印刷图框，或把食材特写放在外盒之外；若简报明确委托透窗，实物窗里只能显示完整独立袋。全篇的画面、借法、附件用途与包装转化要使用同一说法。',
     '返回一个 prompt 字段，内容是完整的生图提示词。',
@@ -429,9 +459,10 @@ export async function selectVisualReferences({call, project, images, active, obs
     packet.observations=sources.map(image=>({source:image.imageId,visible:observations.get(image.sha256).visible}));
   }
   const selection = [
-    '先为各方向分配互不重复的主参考，再按需选至多两张作用不同的辅助图。source 只填图册给出的图号，例如 R1。每张原图只分给一个用途。main 必须是一个对象，找不到时为 null 并写 gap。',
+    '先为各方向分配互不重复的主参考，再按需选至多三张作用不同的辅助图。source 只填图册给出的图号，例如 R1。每张原图只分给一个用途。main 必须是一个对象，找不到时为 null 并写 gap。',
     paper ? '按 posterPaper 及原图实测尺寸选主参考。能回应同一美术任务时，优先横竖一致、长宽比接近的独立作品。相反版幅仅在相关作品仍缺且相对位置能重画时作为主参考。能参考使用动作的图可单独做辅助。多图拼接中几个独立广告的排版不代表单张海报的版式。' : '',
     referenceTasks ? '主参考用图上一个可定位的形式、布局、笔法或动作关系建立本案的整体读法。优先载体相近的原图。没有时，选相邻类别中能够呈现同一关系的图文版面、艺术作品或活动图。信息需一项项看清时，可用并排、图文对应、分格后突出一项或按阅读顺序呈现。原图能承担这项转译即可作为主参考。确无可借的画面关系才填 main=null。具体包装形态、品牌、配料、规格、价格和文案由后续出图按 Brief 处理。' : '',
+    project.mode === 'auto' ? '【全自动模式选图原则】如果某方向在图册中已有对应的类人搜图候选（searchDirection 匹配该方向）或同品类高审美图，优先从中挑选构图、光影或色调骨架最合适的一张作为主参考，并在 apply 中明确按本案创意重画具体道具与场景（如月饼、茶杯、桌面物件等）；严禁因为原图缺少完全一模一样的具体实物组合而轻易返回 main=null 阻断自动流程！' : '',
     '主参考须能转译方向创意。说明实际载体及画面整体风格，观察配色、布局、景别、笔法、字体，以及背景怎样衬托主体。在 borrow 写可借位置，在 apply 写本案怎样重画。辅助图用于动作、场景或材质的文字说明。',
     '按 observations 里的可见原图写 borrow。Brief 的规格、品名、动作和新画法只写入 apply，原图看不到的细节不补写为原图事实。',
     '有 priorAdmissions 时，按各案的具体问题调整借法或换图。原图适合而借法有问题时，明确能借的画面位置与必须重新画的物件。主图和辅助图各有具体作用。',
@@ -441,7 +472,7 @@ export async function selectVisualReferences({call, project, images, active, obs
   ].filter(Boolean).join('\n');
   const fields = sources.some(s=>s.sourceUrl) ? publicUse.properties : use.properties;
   const itemSchema = object({...fields,source:{...string,enum:sources.map(s=>s.imageId)}});
-  const directionFields = {main:{anyOf:[itemSchema,{type:'null'}]},auxiliary:{...list(itemSchema),maxItems:2},gap:string};
+  const directionFields = {main:{anyOf:[itemSchema,{type:'null'}]},auxiliary:{...list(itemSchema),maxItems:3},gap:string};
   const directionSchema = object(directionFields);
   const outputSchema = object({sharedBrand:list(itemSchema),directions:object(Object.fromEntries(directionIds.map(id=>[id,directionSchema])))});
   const result = await call(selection,readSeparately ? [] : sources,outputSchema,{
@@ -472,7 +503,7 @@ export async function selectVisualReferences({call, project, images, active, obs
   const primaries = new Map();
   for (const row of rows) {
     if (row.main!==null && (typeof row.main!=='object' || Array.isArray(row.main)) ||
-        !Array.isArray(row.auxiliary) || row.auxiliary.length>2) throw invalidOutput('每方向最多一张主参考、两张辅助参考。');
+        !Array.isArray(row.auxiliary) || row.auxiliary.length>3) throw invalidOutput('每方向最多一张主参考、三张辅助参考。');
     const empty = row.main && row.main.source===null && !nonempty(row.main.borrow) && !nonempty(row.main.apply) && nonempty(row.gap);
     primaries.set(row.direction,row.main && !empty ? [bind(row.main,'main',row.direction)] : []);
   }

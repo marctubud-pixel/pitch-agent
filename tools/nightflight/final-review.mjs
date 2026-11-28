@@ -66,7 +66,8 @@ async function readEdition(artifacts,plan,dir,signal) {
     const planned=plan.pages[index];
     const ref=numbered.find(item=>item.renderPage===number);
     const id='P'+String(number).padStart(2,'0');
-    const expected=planned.figures.map(id=>plan.figures.find(figure=>figure.id===id));
+    const allFigures=[...plan.figures,...(plan.derivatives ?? [])];
+    const expected=planned.figures.map(id=>allFigures.find(figure=>figure.id===id));
     const pictures=slide.nodes.filter(node=>node.kind==='image').map(({image})=>({
       name:image.id,sha256:sha(Buffer.from(image.data.split(',')[1],'base64')),
     }));
@@ -732,7 +733,9 @@ async function fastAutoReviewDeck({project,plan,original,allPages,dir,call,onEve
   if (changedPages.length) {
     const verifyBatches=[];
     for (let i=0;i<changedPages.length;i+=6) verifyBatches.push(changedPages.slice(i,i+6));
-    const rechecked=(await independentCalls(verifyBatches,numbers=>auditBatch(numbers,2,true,current.applied.filter(issue=>numbers.includes(issue.page)),current.plan,current.edition))).flat();
+    const appliedPages=new Set(current.applied.map(issue=>issue.page));
+    const rechecked=(await independentCalls(verifyBatches,numbers=>auditBatch(numbers,2,true,current.applied.filter(issue=>numbers.includes(issue.page)),current.plan,current.edition))).flat()
+      .map(issue=>appliedPages.has(issue.page) && !issue.blockedBy ? {...issue,blockedBy:'自动直修后复检仍存在，建议人工微调或重排'} : issue);
     pending=mergeIssues([...pending,...rechecked]);
   }
   const blocking=pending.filter(issue=>issue.level==='P0');

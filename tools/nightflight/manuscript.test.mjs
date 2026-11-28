@@ -5,7 +5,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { jsonModelRequest } from './desktop-text.mjs';
-import { collectManuscriptMaterials, createManuscriptRunner, formatManuscriptInput, writeManuscript } from './manuscript.mjs';
+import { attachDerivativesToPlan, collectManuscriptMaterials, createManuscriptRunner, formatManuscriptInput, manuscriptText, writeManuscript } from './manuscript.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const strategy = '# 策略一页纸\n\n## 核心策略\n\n先识别活动，再读预约。\n\n## 触点\n公众号横版封面。';
@@ -140,6 +140,7 @@ test('采用并写逐页稿时加载 v4，按章出稿并绑定本版来源、�
   const plan=JSON.parse(await readFile(join(root,planFile.name),'utf8'));
   assert.equal(plan.version,3);
   assert.equal(plan.pages.find(p=>p.role==='strategy').title,'先识别活动，再读预约。');
+  assert.equal(plan.pages.find(p=>p.role==='direction').title,'进馆看虫');
   assert(!draft.includes('不讲展柜'));
   assert.deepEqual(plan.pages.filter(p=>p.role==='direction'||p.role==='work').map(p=>p.figures),[['A2'],['A2']]);
   const request=JSON.parse(await readFile(join(root,result.artifacts.find(a=>a.name.startsWith('DeepSeek实际请求-')).name),'utf8'));
@@ -426,5 +427,32 @@ test('包装逐页稿按采用图首读核实共同印字和实物陈列',async 
     const {sent}=await replay(noLabels,wrong,draft);
     assert.equal(sent.length,2);
     assert.match(sent[1].slice(sent[0].length),/C1 的首次读图原字/u);
+  });
+
+  await t.test('延展图与样机自动接入逐页稿并跟在对应成品页后', () => {
+    const basePlan = {
+      version: 3,
+      project: { title: '测试提案' },
+      copy: [{ name: '方向一', main: '主标语一' }],
+      figures: [{ id: 'A1', direction: '方向一', name: 'main-a.png', sha256: 'a'.repeat(64) }],
+      pages: [
+        { number: 1, role: 'cover', label: '封面', title: '测试提案', points: [], chapter: '', imageNote: '', notes: '', figures: [], sources: [] },
+        { number: 2, role: 'work', label: '成品展示', title: '方向一', points: [], chapter: '视觉方案', imageNote: '', notes: '', figures: ['A1'], sources: [] },
+        { number: 3, role: 'close', label: '封底', title: '谢谢', points: [], chapter: '', imageNote: '', notes: '', figures: [], sources: [] },
+      ],
+    };
+    const derivatives = [
+      { id: 'A-ext', direction: '方向一', role: 'extension', name: 'ext-a.png', sha256: 'b'.repeat(64), label: '横版 KV 延展', subject: '横版延展' },
+      { id: 'A-mockup', direction: '方向一', role: 'mockup', name: 'mockup-a.png', sha256: 'c'.repeat(64), label: '地铁灯箱样机', subject: '地铁灯箱' },
+    ];
+    const upgraded = attachDerivativesToPlan(basePlan, derivatives);
+    assert.equal(upgraded.pages.length, 4);
+    assert.equal(upgraded.pages[2].role, 'application');
+    assert.deepEqual(upgraded.pages[2].figures, ['A-ext', 'A-mockup']);
+    assert.deepEqual(upgraded.pages.map(p => p.number), [1, 2, 3, 4]);
+    const text = manuscriptText(upgraded);
+    assert.match(text, /延展与样机/u);
+    assert.match(text, /ext-a\.png/u);
+    assert.match(text, /mockup-a\.png/u);
   });
 });

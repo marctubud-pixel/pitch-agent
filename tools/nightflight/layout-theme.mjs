@@ -39,6 +39,27 @@ async function fileBytes(root,name,limit) {
   } finally {await file.close();}
 }
 
+function inferCategoryPalette(brief = '') {
+  const s = String(brief || '');
+  if (!s.trim()) return null;
+  if (/猫|狗|宠物|幼猫|幼犬|猫粮|狗粮|母婴|婴儿|宝宝|烘焙|面包|糕点|饼干|燕麦|牛奶|羊乳|乳品|零食|坚果|甜品|蜂蜜|食品/u.test(s)) {
+    return { primary: '#2C3A35', accent: '#C98A3E', style: 'warm' };
+  }
+  if (/茶|抹茶|咖啡|拿铁|果茶|奶茶|新中式|东方|草本|酒|白酒|青梅|清酒|精酿|饮品|果汁|气泡水/u.test(s)) {
+    return { primary: '#23332C', accent: '#B57B45', style: 'elegant' };
+  }
+  if (/护肤|美妆|香氛|香水|精华|面霜|口红|洗护|洗发|沐浴|彩妆|个护/u.test(s)) {
+    return { primary: '#2E2A27', accent: '#B8846B', style: 'editorial' };
+  }
+  if (/服饰|家居|生活|文创|博物馆|展览|书店|酒店|民宿|文旅|艺术|户外|露营/u.test(s)) {
+    return { primary: '#293038', accent: '#B86B43', style: 'editorial' };
+  }
+  if (/科技|智能|AI|芯片|软件|SaaS|新能源|汽车|数码|电竞|手机/iu.test(s)) {
+    return { primary: '#162A4C', accent: '#0EA5A0', style: 'tech' };
+  }
+  return null;
+}
+
 export async function projectTheme(project,root,kind,signal) {
   const hints={}, attachments=project.attachments ?? [];
   // Only original brand instructions can set the identity. Research and competitor images are excluded.
@@ -62,8 +83,9 @@ export async function projectTheme(project,root,kind,signal) {
   }
   for (const [key,values] of all) if (values.size===1) hints[key]=[...values][0];
   readFields(project.brief || '',hints);
+  const categoryPalette = inferCategoryPalette(project.brief || '');
   const style=(Object.hasOwn(styles,hints.style) ? styles[hints.style] : undefined) || (Object.values(styles).includes(hints.style) ? hints.style : undefined) ||
-    ({packaging:'elegant',kv:'bold'}[kind] || 'business');
+    ({packaging: categoryPalette?.style === 'warm' ? 'warm' : 'elegant', kv:'bold'}[kind] || categoryPalette?.style || 'business');
   const logos={};
   const available=attachments.filter(a=>a.kind==='attachment' && /\.(?:png|jpe?g)$/i.test(a.name));
   for (const [key,guess] of [['brandLogo',/^(?:(?:品牌|brand)[ _-]*)?(?:logo|标志)(?:[ _-]*(?:正式|透明|正稿|final))?\./i],['agencyLogo',/^(?:agency|提案方)[ _-]*(?:logo|标志)\./i]]) {
@@ -76,7 +98,9 @@ export async function projectTheme(project,root,kind,signal) {
     logos[key]={id:'nightflight-'+key,alt:name,data:'data:image/'+mime+';base64,'+bytes.toString('base64')};
   }
   return {
-    primary:hex(hints.primary) || '#143F9B',accent:hex(hints.accent) || '#08746D',style,
+    primary:hex(hints.primary) || categoryPalette?.primary || '#143F9B',
+    accent:hex(hints.accent) || categoryPalette?.accent || '#08746D',
+    style,
     mode:({浅色:'light',深色:'dark',light:'light',dark:'dark'})[hints.mode] || (['tech','street','neon'].includes(style)?'dark':'light'),
     gradient:({柔和:'soft',轻渐变:'soft',深渐变:'deep',soft:'soft',deep:'deep'})[hints.gradient] || 'none',
     fonts:{display:font(hints.display),body:font(hints.body)},

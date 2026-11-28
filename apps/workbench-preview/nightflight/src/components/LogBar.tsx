@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ExecutionEvent, Mode, StageId } from '../types';
 import { STAGE_BY_ID } from '../data/project';
 
 /**
  * 顶部黑色执行记录。
- * 默认只显示最近几行；展开后按时间顺序列出完整路径，并按阶段分段。
- * 事件来自 ExecutionEvent[]，将来可直接换成真实执行事件。
+ * 默认只显示最近几行可读的业务进度；展开后按阶段分段，并可按需切换查看底层 API 明细。
  */
 
 interface Props {
   events: ExecutionEvent[];
+  allEvents?: ExecutionEvent[];
   expanded: boolean;
   onToggle: () => void;
   mode: Mode | null;
@@ -29,13 +29,17 @@ const MARK: Record<ExecutionEvent['kind'], string> = {
 
 const VISIBLE = 5;
 
-export function LogBar({ events, expanded, onToggle, mode, live, idleText, status }: Props) {
+export function LogBar({ events, allEvents, expanded, onToggle, mode, live, idleText, status }: Props) {
+  const [showTech, setShowTech] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
+  const list = showTech && allEvents?.length ? allEvents : events;
+  const hasTechExtras = Boolean(allEvents && allEvents.length > events.length);
+
   useEffect(() => {
     if (expanded && scroller.current) scroller.current.scrollTop = scroller.current.scrollHeight;
-  }, [expanded, events.length]);
+  }, [expanded, list.length, showTech]);
 
-  const hasEvents = events.length > 0;
+  const hasEvents = events.length > 0 || (allEvents?.length ?? 0) > 0;
   const tail = events.slice(-VISIBLE);
   const pad = Math.max(0, VISIBLE - Math.max(tail.length, 1));
   const modeLabel = mode === 'auto' ? '全自动 · SURPRISE ME' : mode === 'collab' ? '协作 · IDEA' : null;
@@ -87,16 +91,26 @@ export function LogBar({ events, expanded, onToggle, mode, live, idleText, statu
           <div className="log-full">
             <div className="log-full-head">
               <span>执行记录</span>
-              <span className="log-count">{events.length} 条</span>
+              <span className="log-count">{list.length} 条</span>
               <span className="tag-demo on-dark">本地执行</span>
               {status && <span className="log-status">当前：{status}</span>}
+              {hasTechExtras && (
+                <button
+                  type="button"
+                  className="log-toggle"
+                  onClick={() => setShowTech((v) => !v)}
+                  aria-pressed={showTech}
+                >
+                  {showTech ? `仅看业务进度 (${events.length})` : `含 API 明细 (${allEvents!.length})`}
+                </button>
+              )}
             </div>
             <div className="log-scroll" ref={scroller}>
-              {events.map((e, i) => {
+              {list.map((e, i) => {
                 const head = e.stageId !== lastStage;
                 lastStage = e.stageId;
                 const stage = STAGE_BY_ID[e.stageId];
-                const current = i === events.length - 1;
+                const current = i === list.length - 1;
                 return (
                   <div key={e.id}>
                     {head && (

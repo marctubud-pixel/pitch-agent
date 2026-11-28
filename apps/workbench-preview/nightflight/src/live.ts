@@ -22,11 +22,13 @@ export interface Artifact extends Asset {
     selectionPolicy?: 'poster-evidence'; hardIssues?: string[]; selectionHold?: string;
     scores?: {role:string; score:number; reason:string}[];
     blind?: BlindReading; edit?: string; research?: string; references?: string[];
-    sha256?: string; pageUrl?: string; sourceUrl?: string; title?: string;
+    sha256?: string; sourceSha256?: string; pageUrl?: string; sourceUrl?: string; title?: string;
     referenceHandoff?: { admission?: { passed: boolean; ruling: {reason: string}; votes: {role: string; items: {dimension: string; score: number | null; evidence: string}[]}[] }; references: { why?: string; avoid?: string; role: 'main' | 'auxiliary' | 'sharedBrand'; name: string; sha256: string; borrow: string; apply: string }[] };
     role: 'reference' | 'comparison' | 'sketch' | 'main' | 'extension' | 'mockup';
-    output?: 'packaging' | 'kv';
+    output?: 'packaging' | 'kv' | 'event';
     format?: 'portrait' | 'landscape';
+    label?: string;
+    subject?: string;
   };
 }
 export type CopyRole = 'copy' | 'brand' | 'user' | 'comms';
@@ -179,10 +181,13 @@ type RefinedReview = {
   report: string;
 } & ({outcome: 'ready'; acceptedAt?: string} | {outcome: 'blocked'; returnStage: StageId});
 
+export type DeckStyle = 'bento' | 'editorial' | 'consulting';
 export interface Project extends Summary {
   briefScope?: {status: 'accepted' | 'unclear' | 'unsupported'; types: string[]; reason: string};
   finalReturn?:{returnStage:StageId;reason:string};
   finalReview?: RefinedReview | {outcome: 'pass' | 'return'; reason: string};
+  deckStyle?: DeckStyle;
+  canSwitchDeckStyle?: boolean;
   revision: number;
   mode: Mode;
   brief: string;
@@ -220,8 +225,8 @@ export interface Project extends Summary {
   attachments?: Asset[];
   feedback?: { text: string; at: string }[];
 }
-export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final';
-const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '演练完成' };
+export type Action = 'confirm_brief' | 'message' | 'choice' | 'retry' | 'adopt' | 'render_manuscript' | 'research_again' | 'research_continue' | 'research_digest' | 'accept_final' | 'deck_style';
+const statusName = { running: '进行中', waiting: '等你决定', failed: '已中断', done: '已完成' };
 type ResearchStatus = Summary & Partial<Pick<Project, 'mode' | 'briefScope' | 'research' | 'researchFollowup' | 'canRequestStrategy' | 'layoutDraftOnly' | 'layoutMaterialsOnly'>>;
 export const researchQuestion = (p: ResearchStatus) =>
   p.stage === 'research' &&
